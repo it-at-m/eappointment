@@ -1241,4 +1241,33 @@ describe("AppointmentView", () => {
     expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
   });
   });
+  describe("Book another appointment button", () => {
+    it("renders with correct label and redirects to start when clicked", async () => {
+      const originalLocation = window.location as any;
+      delete (window as any).location;
+      (window as any).location = {
+        ...originalLocation,
+        href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.confirmAppointmentSuccess = true;
+      await nextTick();
+
+      const button = wrapper.find(".m-button-group button");
+      expect(button.exists()).toBe(true);
+
+      const expectedLabel =
+        (de as any).bookAnotherAppointment ?? "bookAnotherAppointment";
+      expect(button.text()).toContain(expectedLabel);
+      expect(button.attributes("variant")).toBe("secondary");
+
+      await button.trigger("click");
+      expect(window.location.href).toBe("http://localhost:8082/");
+
+      (window as any).location = originalLocation;
+    });
+  });
 });
