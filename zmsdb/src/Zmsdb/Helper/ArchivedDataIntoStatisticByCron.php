@@ -39,11 +39,11 @@ class ArchivedDataIntoStatisticByCron
                 $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($scope->getId());
                 $department = (new \BO\Zmsdb\Department())->readByScopeId($scope->getId());
                 if ($department) {
-                    $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->getId());
-                    $owner = (new \BO\Zmsdb\Owner())->readByOrganisationId($organisation->getId());
+                    $organization = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->getId());
+                    $owner = (new \BO\Zmsdb\Owner())->readByOrganisationId($organization->getId());
                 } else {
                     $department = new \BO\Zmsentities\Department();
-                    $organisation = new \BO\Zmsentities\Organisation();
+                    $organization = new \BO\Zmsentities\Organisation();
                     $owner = new \BO\Zmsentities\Owner();
                 }
                 foreach ($processList as $process) {
@@ -52,7 +52,7 @@ class ArchivedDataIntoStatisticByCron
                         $scope,
                         $cluster,
                         $department,
-                        $organisation,
+                        $organization,
                         $owner,
                         $dateTime,
                         $commit
@@ -82,7 +82,7 @@ class ArchivedDataIntoStatisticByCron
         $scope,
         $cluster,
         $department,
-        $organisation,
+        $organization,
         $owner,
         $dateTime,
         $commit = false
@@ -104,7 +104,7 @@ class ArchivedDataIntoStatisticByCron
                     $cluster ? $cluster->getId() : 0,
                     $scope->toProperty()->provider->id->get(0),
                     $department->getId(),
-                    $organisation->getId(),
+                    $organization->getId(),
                     $owner->getId(),
                     $dateTime,
                     $processingTime

@@ -11,9 +11,9 @@ class Slot extends Base implements MappingInterface
     const TABLE = 'slot';
 
     const QUERY_OPTIMIZE_SLOT = 'OPTIMIZE TABLE slot;';
-    const QUERY_OPTIMIZE_SLOT_HIERA = 'OPTIMIZE TABLE slot_hiera;';
+    const QUERY_OPTIMIZE_SLOT_HIERA = 'OPTIMIZE TABLE slot_hierarchy;';
     const QUERY_OPTIMIZE_SLOT_PROCESS = 'OPTIMIZE TABLE slot_proces;';
-    const QUERY_OPTIMIZE_PROCESS = 'OPTIMIZE TABLE buerger;';
+    const QUERY_OPTIMIZE_PROCESS = 'OPTIMIZE TABLE citizen;';
 
     const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
 
@@ -52,7 +52,7 @@ class Slot extends Base implements MappingInterface
           b.BuergerID,
           NOW() updateTimestamp
         FROM slot s
-          INNER JOIN buerger b ON
+          INNER JOIN citizen b ON
             s.year = YEAR(b.Datum)
             AND s.month = MONTH(b.Datum)
             AND s.day = DAY(b.Datum)
@@ -75,7 +75,7 @@ class Slot extends Base implements MappingInterface
           b.BuergerID,
           NOW()
         FROM slot s
-          INNER JOIN buerger b ON
+          INNER JOIN citizen b ON
             s.year = YEAR(b.Datum)
             AND s.month = MONTH(b.Datum)
             AND s.day = DAY(b.Datum)
@@ -98,7 +98,7 @@ class Slot extends Base implements MappingInterface
     const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY_BY_SCOPE = '
     UPDATE
          slot s
-           LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+           LEFT JOIN availability a ON s.availabilityID = a.OeffnungszeitID
            SET s.status = "cancelled"
            WHERE
              (
@@ -111,7 +111,7 @@ class Slot extends Base implements MappingInterface
     const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY = '
     UPDATE
          slot s
-           LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+           LEFT JOIN availability a ON s.availabilityID = a.OeffnungszeitID
            SET s.status = "cancelled"
            WHERE
              a.OeffnungszeitID IS NULL
@@ -121,7 +121,7 @@ class Slot extends Base implements MappingInterface
     const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
         SELECT sp.processID AS processId
             FROM slot_process sp
-              LEFT JOIN buerger b ON sp.processID = b.BuergerID
+              LEFT JOIN citizen b ON sp.processID = b.BuergerID
               LEFT JOIN slot s ON sp.slotID = s.slotID
             WHERE (
                 b.BuergerID IS NULL
@@ -172,11 +172,11 @@ class Slot extends Base implements MappingInterface
 ';
 
     const QUERY_INSERT_ANCESTOR = '
-    INSERT INTO slot_hiera SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
+    INSERT INTO slot_hierarchy SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
 ';
 
     const QUERY_DELETE_ANCESTOR = '
-    DELETE FROM slot_hiera WHERE slotID = :slotID
+    DELETE FROM slot_hierarchy WHERE slotID = :slotID
 ';
 
     const QUERY_CANCEL_AVAILABILITY = '
@@ -213,7 +213,7 @@ class Slot extends Base implements MappingInterface
 
     const QUERY_DELETE_SLOT_HIERA = '
         DELETE sh 
-            FROM slot_hiera sh LEFT JOIN slot s USING(slotID)
+            FROM slot_hierarchy sh LEFT JOIN slot s USING(slotID)
             WHERE s.slotID IS NULL
     ';
 

@@ -18,9 +18,9 @@ class Organisation extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($itemId);
-        $organisation = $this->fetchOne($query, new Entity());
-        if (isset($organisation['id'])) {
-            return $this->readResolvedReferences($organisation, $resolveReferences);
+        $organization = $this->fetchOne($query, new Entity());
+        if (isset($organization['id'])) {
+            return $this->readResolvedReferences($organization, $resolveReferences);
         }
         return array();
     }
@@ -43,8 +43,8 @@ class Organisation extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
-        $organisation = $this->fetchOne($query, new Entity());
-        return $this->readResolvedReferences($organisation, $resolveReferences);
+        $organization = $this->fetchOne($query, new Entity());
+        return $this->readResolvedReferences($organization, $resolveReferences);
     }
 
     public function readByDepartmentId($departmentId, $resolveReferences = 0)
@@ -53,8 +53,8 @@ class Organisation extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
-        $organisation = $this->fetchOne($query, new Entity());
-        return $this->readResolvedReferences($organisation, $resolveReferences);
+        $organization = $this->fetchOne($query, new Entity());
+        return $this->readResolvedReferences($organization, $resolveReferences);
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
@@ -75,8 +75,8 @@ class Organisation extends Base
             ->addConditionOwnerId($ownerId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            foreach ($result as $organisation) {
-                $entity = $this->readResolvedReferences($organisation, $resolveReferences);
+            foreach ($result as $organization) {
+                $entity = $this->readResolvedReferences($organization, $resolveReferences);
                 if ($entity instanceof Entity) {
                     $organisationList->addEntity($entity);
                 }
@@ -110,8 +110,8 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            foreach ($result as $organisation) {
-                $entity = new Entity($organisation);
+            foreach ($result as $organization) {
+                $entity = new Entity($organization);
                 if ($entity instanceof Entity) {
                     $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $organisationList->addEntity($entity);
@@ -122,7 +122,7 @@ class Organisation extends Base
     }
 
     /**
-     * remove an organisation
+     * remove an organization
      *
      * @param
      *            itemId
@@ -141,7 +141,7 @@ class Organisation extends Base
     }
 
     /**
-     * write a organisation
+     * write a organization
      *
      * @param
      *            organisationId
@@ -163,7 +163,7 @@ class Organisation extends Base
     }
 
     /**
-     * update a organisation
+     * update a organization
      *
      * @param
      *            organisationId
@@ -184,7 +184,7 @@ class Organisation extends Base
     }
 
     /**
-     * create ticketprinters of an organisation
+     * create ticketprinters of an organization
      *
      * @param
      *            organisationID,
@@ -206,7 +206,7 @@ class Organisation extends Base
     }
 
     /**
-     * update ticketprinters of an organisation
+     * update ticketprinters of an organization
      *
      * @param
      *            organisationID,

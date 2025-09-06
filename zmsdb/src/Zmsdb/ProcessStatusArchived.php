@@ -206,7 +206,7 @@ class ProcessStatusArchived extends Process
     }
 
     /**
-     * Anonymizes names in the buergerarchiv table for entries older than a specified timespan.
+     * Anonymizes names in the citizen_archive table for entries older than a specified timespan.
      *
      * @param \DateTimeInterface $dateTime The date before which records should be anonymized.
      * @return bool Indicates whether the update operation was successful.

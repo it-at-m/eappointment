@@ -145,7 +145,7 @@ class Department extends Base
         self::$departmentCache = [];
         $query = new Query\Department(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);
-        // get owner by organisation
+        // get owner by organization
         $owner = (new Owner())->readByOrganisationId($parentId);
         $values['KundenID'] = $owner->id;
         $query->addValues($values);

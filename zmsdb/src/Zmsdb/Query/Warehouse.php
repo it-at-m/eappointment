@@ -7,7 +7,7 @@ class Warehouse extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'wartenrstatistik';
+    const TABLE = 'queue_number_statistics';
 
     const QUERY_READ_DAY = '
         SELECT * FROM ' . self::TABLE . '

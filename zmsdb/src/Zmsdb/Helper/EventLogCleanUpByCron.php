@@ -18,7 +18,7 @@ class EventLogCleanUpByCron
     {
         if ($verbose) {
             $this->verbose = true;
-            $this->log("INFO: Delete old eventlog entries");
+            $this->log("INFO: Delete old event_log entries");
         }
     }
 

@@ -10,12 +10,12 @@ class Availability extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'oeffnungszeit';
+    const TABLE = 'availability';
 
-    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
+    const TEMPORARY_DELETE = 'DELETE FROM availability WHERE kommentar = "--temporary--"';
 
     const QUERY_GET_LOCK = '
-        SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
+        SELECT OeffnungszeitID FROM availability WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 
     public function addRequiredJoins()

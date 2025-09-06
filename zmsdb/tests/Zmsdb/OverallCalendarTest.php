@@ -16,7 +16,7 @@ class OverallCalendarTest extends Base
         $cal->book(self::SCOPE, $start, 900001, 2);
 
         $cnt = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
-            'SELECT COUNT(*) FROM gesamtkalender
+            'SELECT COUNT(*) FROM overall_calendar
               WHERE scope_id = ? AND process_id = 900001',
             [self::SCOPE]
         );
@@ -25,7 +25,7 @@ class OverallCalendarTest extends Base
         $cal->book(self::SCOPE, $start, 900002, 1);
 
         $cntConflict = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
-            'SELECT COUNT(*) FROM gesamtkalender
+            'SELECT COUNT(*) FROM overall_calendar
               WHERE scope_id = ? AND process_id = 900002',
             [self::SCOPE]
         );
@@ -36,7 +36,7 @@ class OverallCalendarTest extends Base
         );
 
         $cntStill = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
-            'SELECT COUNT(*) FROM gesamtkalender
+            'SELECT COUNT(*) FROM overall_calendar
               WHERE scope_id = ? AND process_id = 900001',
             [self::SCOPE]
         );
@@ -58,7 +58,7 @@ class OverallCalendarTest extends Base
 
         $row = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchOne(
             'SELECT status, process_id
-               FROM gesamtkalender
+               FROM overall_calendar
               WHERE scope_id = ? AND time = ?',
             [self::SCOPE, $start]
         );

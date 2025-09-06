@@ -7,11 +7,11 @@ class Scope extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standort';
+    const TABLE = 'scope';
 
     const QUERY_BY_DEPARTMENTID = 'SELECT
             scope.`StandortID` AS id
-        FROM `standort` scope
+        FROM `scope` scope
         WHERE
             scope.`BehoerdenID` = :department_id
     ';
@@ -20,7 +20,7 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT letztewartenr
-            FROM `standort` scope
+            FROM `scope` scope
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
@@ -28,7 +28,7 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT *
-            FROM `standort` scope
+            FROM `scope` scope
             WHERE
                 scope.`StandortID` = :scope_id AND
                 IF(
@@ -47,7 +47,7 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT standortID AS id
-            FROM `clusterzuordnung`
+            FROM `cluster_assignment`
             WHERE
                 clusterID = ?
         ';
@@ -57,7 +57,7 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT s.StandortID AS id, p.name AS contact__name
-            FROM `standort` AS s
+            FROM `scope` AS s
             LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
                 AND p.source = s.source
             WHERE
@@ -69,7 +69,7 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT `imagecontent`, `imagename`
-            FROM `imagedata`
+            FROM `image_data`
             WHERE
                 `imagename` LIKE :imagename
         ';
@@ -78,17 +78,17 @@ class Scope extends Base implements MappingInterface
     public function getQueryWriteImageData()
     {
         return '
-            REPLACE INTO `imagedata`
+            REPLACE INTO `image_data`
             SET
                 imagename=:imagename,
-                imagecontent=:imagedata
+                imagecontent=:image_data
         ';
     }
 
     public function getQueryDeleteImage()
     {
         return '
-            DELETE FROM `imagedata`
+            DELETE FROM `image_data`
             WHERE
                 `imagename` LIKE :imagename
         ';
@@ -245,10 +245,10 @@ class Scope extends Base implements MappingInterface
                     `scope`.`virtuellesachbearbeiterzahl`,
                     (
                         SELECT COUNT(*)
-                        FROM nutzer
-                        WHERE nutzer.StandortID = scope.StandortID
-                        AND nutzer.Datum = "' . $dateTime->format('Y-m-d') . '"
-                        AND nutzer.Arbeitsplatznr <> 0
+                        FROM user
+                        WHERE user.StandortID = scope.StandortID
+                        AND user.Datum = "' . $dateTime->format('Y-m-d') . '"
+                        AND user.Arbeitsplatznr <> 0
                     )
                 )
             ')
@@ -271,7 +271,7 @@ class Scope extends Base implements MappingInterface
     public function addConditionClusterId($clusterId)
     {
         $this->leftJoin(
-            new Alias('clusterzuordnung', 'cluster_scope'),
+            new Alias('cluster_assignment', 'cluster_scope'),
             'scope.StandortID',
             '=',
             'cluster_scope.standortID'

@@ -7,21 +7,21 @@ class Mailtemplate extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailtemplate';
+    const TABLE = 'mail_template';
 
     const QUERY_SELECT = '
-        SELECT * FROM mailtemplate
+        SELECT * FROM mail_template
     ';
 
     const QUERY_SELECT_PROPERTY =
             'SELECT
                 value
-            FROM mailtemplate
+            FROM mail_template
             WHERE name = ?
             ';
 
     const QUERY_REPLACE_PROPERTY =
-        'REPLACE INTO mailtemplate
+        'REPLACE INTO mail_template
             SET name  = :property, 
                 value = :value
             ';
@@ -31,25 +31,25 @@ class Mailtemplate extends Base
 
     public function addConditionName($itemName)
     {
-        $this->query->where(self::TABLE . '.name', '=', $itemName);
+        $this->query->where('mailtemplate.name', '=', $itemName);
         return $this;
     }
 
     public function addConditionWithoutProvider()
     {
-        $this->query->where(self::TABLE . '.provider', '=', '')->orWhere(self::TABLE . '.provider', 'IS', null);
+        $this->query->where('mailtemplate.provider', '=', '')->orWhere('mailtemplate.provider', 'IS', null);
         return $this;
     }
 
     public function addConditionProviderId($providerId)
     {
-        $this->query->where(self::TABLE . '.provider', '=', $providerId);
+        $this->query->where('mailtemplate.provider', '=', $providerId);
         return $this;
     }
 
     public function addConditionId($templateId)
     {
-        $this->query->where(self::TABLE . '.id', '=', $templateId);
+        $this->query->where('mailtemplate.id', '=', $templateId);
         return $this;
     }
 

@@ -121,7 +121,7 @@ class Provider extends Base
                 'contact__street' => $provider['address']['street'],
                 'contact__streetNumber' => $provider['address']['house_number'],
                 'link' => ('dldb' == $source)
-                    ? 'https://service.berlin.de/standort/' . $provider['id'] . '/'
+                    ? 'https://service.berlin.de/scope/' . $provider['id'] . '/'
                     : ((isset($provider['link'])) ? $provider['link'] : ''),
                 'data' => json_encode($provider)
             ]);

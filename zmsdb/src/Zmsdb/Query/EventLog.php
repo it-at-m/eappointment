@@ -10,7 +10,7 @@ use BO\Zmsentities\EventLog as EventLogEntity;
 
 class EventLog extends Base
 {
-    public const TABLE = 'eventlog';
+    public const TABLE = 'event_log';
     public const ALIAS = 'eventLog';
 
     protected $resolveLevel = 0;

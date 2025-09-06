@@ -56,7 +56,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $processData = $this->getReader()->fetchOne(
             'SELECT
             *
-            FROM buerger AS b
+            FROM citizen AS b
             WHERE
                 b.BuergerID = "' . $processId . '"
                 AND b.absagecode = "' . $authKey . '"

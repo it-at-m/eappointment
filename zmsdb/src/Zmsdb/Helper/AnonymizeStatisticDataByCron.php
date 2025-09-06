@@ -19,7 +19,7 @@ class AnonymizeStatisticDataByCron
         $config = (new ConfigRepository())->readEntity();
 
         // Extracting the retention setting and converting it to an integer
-        $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));
+        $retentionSetting = explode(',', $config->getPreference('citizen_archive', 'setRetentionPeriodDays'));
         if ($retentionSetting[0] !== "none") {
             // Ensure it's a positive integer and assign it to timespan
             print("Using retention period set in admin system config {$retentionSetting[0]} days.\n\n");

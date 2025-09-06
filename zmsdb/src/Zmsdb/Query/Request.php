@@ -6,11 +6,11 @@ class Request extends Base
 {
     const TABLE = 'request';
 
-    const BATABLE = 'buergeranliegen';
+    const BATABLE = 'citizen_requests';
 
     const QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
-        FROM `buergeranliegen` ba
+        FROM `citizen_requests` ba
         WHERE
             ba.`BuergerID` = :process_id
     ';
@@ -39,26 +39,26 @@ class Request extends Base
     public function addConditionProcessId($processId)
     {
         $this->leftJoin(
-            new Alias("buergeranliegen", 'buergeranliegen'),
+            new Alias("citizen_requests", 'citizen_requests'),
             self::expression('
-                buergeranliegen.AnliegenID = request.id
-                AND buergeranliegen.source = request.source
+                citizen_requests.AnliegenID = request.id
+                AND citizen_requests.source = request.source
             ')
         );
-        $this->query->where('buergeranliegen.BuergerID', '=', $processId);
+        $this->query->where('citizen_requests.BuergerID', '=', $processId);
         return $this;
     }
 
     public function addConditionArchiveId($archiveId)
     {
         $this->leftJoin(
-            new Alias("buergeranliegen", 'buergeranliegen'),
+            new Alias("citizen_requests", 'citizen_requests'),
             self::expression('
-                buergeranliegen.AnliegenID = request.id
-                AND buergeranliegen.source = request.source
+                citizen_requests.AnliegenID = request.id
+                AND citizen_requests.source = request.source
             ')
         );
-        $this->query->where('buergeranliegen.BuergerarchivID', '=', $archiveId);
+        $this->query->where('citizen_requests.BuergerarchivID', '=', $archiveId);
         return $this;
     }
 

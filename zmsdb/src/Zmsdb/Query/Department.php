@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Query;
 
 class Department extends Base implements MappingInterface
 {
-    const TABLE = 'behoerde';
+    const TABLE = 'department';
 
     const QUERY_MAIL_UPDATE = '
         SET @tempEmailID = (SELECT emailID from email WHERE BehoerdenID=:departmentId);
@@ -113,7 +113,7 @@ class Department extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->leftJoin(
-            new Alias('standort', 'scope_department'),
+            new Alias('scope', 'scope_department'),
             'scope_department.BehoerdenID',
             '=',
             'department.BehoerdenID'

@@ -22,9 +22,9 @@ class ExchangeClientdepartment extends Base
         $costs = $config->getNotificationPreferences()['costs'];
 
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
+        $entity['title'] = "Kundenstatistik $organization->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date');
@@ -77,9 +77,9 @@ class ExchangeClientdepartment extends Base
     public function readPeriodList($subjectid, $period = 'day')
     {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
+        $entity['title'] = "Kundenstatistik $organization->name -> $department->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

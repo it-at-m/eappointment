@@ -7,7 +7,7 @@ class DayOff extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'feiertage';
+    const TABLE = 'holidays';
 
     /**
      * No resolving required here
@@ -57,7 +57,7 @@ class DayOff extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->leftJoin(
-            new Alias('standort', 'scope_dayoff'),
+            new Alias('scope', 'scope_dayoff'),
             'scope_dayoff.BehoerdenID',
             '=',
             'dayOff.BehoerdenID'

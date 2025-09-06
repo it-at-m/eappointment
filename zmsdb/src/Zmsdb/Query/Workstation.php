@@ -11,7 +11,7 @@ class Workstation extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
+    const TABLE = 'user';
 
     const QUERY_LOGIN = '
         UPDATE

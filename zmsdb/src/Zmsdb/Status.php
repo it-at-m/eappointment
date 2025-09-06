@@ -56,7 +56,7 @@ class Status extends Base
     {
         $result = $this->getReader()->fetchOne(
             'SELECT COUNT(n.SessionID) as totalActiveSessions
-             FROM nutzer n
+             FROM user n
              WHERE n.SessionID IS NOT NULL
              AND n.SessionID != ""
              AND n.sessionExpiry > UNIX_TIMESTAMP()'
@@ -78,9 +78,9 @@ class Status extends Base
                     COALESCE(SUM(CASE 
                         WHEN n.sessionExpiry > UNIX_TIMESTAMP()
                         THEN 1 ELSE 0 END), 0) as activeSessions
-             FROM behoerde b
-             LEFT JOIN standort s ON b.BehoerdenID = s.BehoerdenID
-             LEFT JOIN nutzer n ON s.StandortID = n.StandortID
+             FROM department b
+             LEFT JOIN scope s ON b.BehoerdenID = s.BehoerdenID
+             LEFT JOIN user n ON s.StandortID = n.StandortID
              GROUP BY b.BehoerdenID, b.Name, s.StandortID, s.Bezeichnung'
         );
 
@@ -149,7 +149,7 @@ class Status extends Base
         $stats = $this->getReader()->fetchOne(
             'SELECT COUNT(*) cnt, MIN(a.updateTimestamp) oldest
              FROM slot s 
-             LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+             LEFT JOIN availability a ON s.availabilityID = a.OeffnungszeitID
              WHERE s.updateTimestamp < a.updateTimestamp AND s.status = "free"'
         );
         return $stats;
@@ -191,7 +191,7 @@ class Status extends Base
         $stats = $this->getReader()->fetchOne(
             'SELECT COUNT(id) as queueCount, UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds, 
                 UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
-             FROM mailqueue'
+             FROM mail_queue'
         );
         return $stats;
     }
@@ -206,7 +206,7 @@ class Status extends Base
         $stats = $this->getReader()->fetchOne(
             'SELECT COUNT(id) as queueCount, UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds, 
                 UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
-             FROM notificationqueue'
+             FROM notification_queue'
         );
         return $stats;
     }
@@ -234,7 +234,7 @@ class Status extends Base
                 SUM(CASE WHEN IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
                     AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
                 FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
-             FROM buerger AS b
+             FROM citizen AS b
              WHERE b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0'
         );
         return $processStats;

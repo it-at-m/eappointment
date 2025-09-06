@@ -7,7 +7,7 @@ class Organisation extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'organisation';
+    const TABLE = 'organization';
 
     public function getEntityMapping()
     {
@@ -50,13 +50,13 @@ class Organisation extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->leftJoin(
-            new Alias('behoerde', 'department'),
+            new Alias('department', 'department'),
             'department.OrganisationsID',
             '=',
             'organisation.OrganisationsID'
         );
         $this->leftJoin(
-            new Alias('standort', 'scope'),
+            new Alias('scope', 'scope'),
             'scope.BehoerdenID',
             '=',
             'department.BehoerdenID'
@@ -68,7 +68,7 @@ class Organisation extends Base implements MappingInterface
     public function addConditionDepartmentId($departmentId)
     {
         $this->leftJoin(
-            new Alias('behoerde', 'department'),
+            new Alias('department', 'department'),
             'department.OrganisationsID',
             '=',
             'organisation.OrganisationsID'

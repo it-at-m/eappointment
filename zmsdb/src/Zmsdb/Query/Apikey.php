@@ -10,14 +10,14 @@ class Apikey extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apikey';
+    const TABLE = 'api_key';
 
-    const QUOTATABLE = 'apiquota';
+    const QUOTATABLE = 'api_quota';
 
     protected function addRequiredJoins()
     {
         $this->leftJoin(
-            new Alias('apiclient', 'apiclientkey'),
+            new Alias('api_client', 'apiclientkey'),
             'apikey.apiClientID',
             '=',
             'apiclientkey.apiClientID'
@@ -37,9 +37,9 @@ class Apikey extends Base implements MappingInterface
         return $mapping;
     }
 
-    public function addConditionApikey($apikey)
+    public function addConditionApikey($api_key)
     {
-        $this->query->where('apikey.key', '=', $apikey);
+        $this->query->where('apikey.key', '=', $api_key);
         return $this;
     }
 }

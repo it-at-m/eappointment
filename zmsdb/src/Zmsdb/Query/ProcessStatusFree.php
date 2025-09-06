@@ -38,8 +38,8 @@ class ProcessStatusFree extends Base
                     ON c.scopeID = s.scopeID
                         %s
                         AND s.status = "free"
-                LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
-                LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
+                LEFT JOIN availability a ON s.availabilityID = a.OeffnungszeitID
+                LEFT JOIN slot_hierarchy h ON h.ancestorID = s.slotID
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN slot_process p ON h.slotID = p.slotID

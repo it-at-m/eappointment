@@ -11,9 +11,9 @@ class Process extends Base implements MappingInterface
     /**
      *     * @var String TABLE mysql table reference
      */
-    const TABLE = 'buerger';
+    const TABLE = 'citizen';
 
-    const QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+    const QUERY_DEREFERENCED = "UPDATE `citizen` process LEFT JOIN `scope` s USING(StandortID)
         SET
             process.Anmerkung = ?,
             process.custom_text_field = ?,
@@ -38,7 +38,7 @@ class Process extends Base implements MappingInterface
         ";
 
     const QUERY_CANCELED = "
-        UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+        UPDATE `citizen` process LEFT JOIN `scope` s USING(StandortID)
             SET
                 process.Anmerkung = CONCAT(
                     'Abgesagter Termin gebucht am: ',
@@ -57,31 +57,31 @@ class Process extends Base implements MappingInterface
                 OR process.istFolgeterminvon = :processId
         ";
 
-    const QUERY_DELETE = "DELETE FROM `buerger`
+    const QUERY_DELETE = "DELETE FROM `citizen`
         WHERE
             BuergerID = ?
             OR istFolgeterminvon = ?
         ";
 
-    const QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
+    const QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `citizen` process
        SET 
             process.BuergerID = :newProcessId, 
             process.absagecode = :newAuthKey
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
+    const QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `citizen_requests` requests
         SET 
             requests.BuergerID = :newProcessId
         WHERE BuergerID = :processId
     ";
 
-    const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
+    const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `citizen` process
         SET process.istFolgeterminvon = :newProcessId
         WHERE istFolgeterminvon = :processId
     ";
 
-    const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
+    const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE citizen 
         SET vorlaeufigeBuchung = :reserved 
         WHERE istFolgeterminvon = :processID
         ";
@@ -728,12 +728,12 @@ class Process extends Base implements MappingInterface
     public function addConditionRequestId($requestId)
     {
         $this->leftJoin(
-            new Alias("buergeranliegen", 'buergeranliegen'),
-            'buergeranliegen.BuergerID',
+            new Alias("citizen_requests", 'citizen_requests'),
+            'citizen_requests.BuergerID',
             '=',
             'process.BuergerID'
         );
-        $this->query->where('buergeranliegen.AnliegenID', '=', $requestId);
+        $this->query->where('citizen_requests.AnliegenID', '=', $requestId);
         return $this;
     }
 
@@ -761,8 +761,8 @@ class Process extends Base implements MappingInterface
             'istFolgeterminvon' => $parentProcess,
             'wartenummer' => $process->queue['number']
         ];
-        if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
-            $values['apiClientID'] = $process->apiclient->apiClientID;
+        if ($process->toProperty()->api_client->apiClientID->isAvailable()) {
+            $values['apiClientID'] = $process->api_client->apiClientID;
         }
         $this->addValues($values);
     }

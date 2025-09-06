@@ -18,13 +18,13 @@ class ExchangeNotificationorganisation extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "SMS-Statistik $organisation->name";
+        $entity['title'] = "SMS-Statistik $organization->name";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organisation', 'organisation.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organization', 'organization.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
-        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
+        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organization');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
         $entity->addDictionaryEntry('scopename', 'string', 'name of the scope');
         $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications ');
@@ -55,7 +55,7 @@ class ExchangeNotificationorganisation extends Base
         $entity = new Exchange();
         $entity['title'] = "SMS-Statistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
+        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organization.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('description', 'string', 'Name der Organisation');
@@ -67,9 +67,9 @@ class ExchangeNotificationorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "SMS-Statistik $organisation->name";
+        $entity['title'] = "SMS-Statistik $organization->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

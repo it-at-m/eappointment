@@ -10,7 +10,7 @@ class Apiclient extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apiclient';
+    const TABLE = 'api_client';
 
     public function getEntityMapping()
     {

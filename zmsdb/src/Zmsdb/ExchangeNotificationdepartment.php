@@ -19,13 +19,13 @@ class ExchangeNotificationdepartment extends Base
         $period = 'day'
     ) {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "SMS-Statistik $organisation->name -> $department->name";
+        $entity['title'] = "SMS-Statistik $organization->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
-        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
+        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organization');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
         $entity->addDictionaryEntry('scopename', 'string', 'name of the scope');
         $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications ');
@@ -70,9 +70,9 @@ class ExchangeNotificationdepartment extends Base
     public function readPeriodList($subjectid, $period = 'day')
     {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "SMS-Statistik $organisation->name -> $department->name";
+        $entity['title'] = "SMS-Statistik $organization->name -> $department->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

@@ -7,7 +7,7 @@ class MailQueue extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailqueue';
+    const TABLE = 'mail_queue';
 
     const QUERY_DELETE = '
         DELETE mq,  mp

@@ -24,7 +24,7 @@ class ExchangeRequestscope extends Base
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('scopeid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('departmentid', 'string', 'ID of a department', '');
-        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organisation', '');
+        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organization', '');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');

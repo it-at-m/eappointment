@@ -7,11 +7,11 @@ class Notification extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'notificationqueue';
+    const TABLE = 'notification_queue';
 
     const QUERY_WRITE_IN_CALCULATION = '
     REPLACE INTO
-        abrechnung
+        billing
     SET
         StandortID=?,
         Telefonnummer=?,

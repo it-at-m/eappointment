@@ -58,16 +58,16 @@ class Calldisplay extends Base
 
     public function readResolvedOrganisation(Entity $entity)
     {
-        $organisation = null;
+        $organization = null;
         $query = new Organisation();
         $scope = $entity->getScopeList()->getFirst();
         $cluster = $entity->getClusterList()->getFirst();
         if ($scope) {
-            $organisation = $query->readByScopeId($scope->id);
+            $organization = $query->readByScopeId($scope->id);
         } elseif ($cluster) {
-            $organisation = $query->readByClusterId($cluster->id);
+            $organization = $query->readByClusterId($cluster->id);
         }
-        return $organisation;
+        return $organization;
     }
 
     public function readImage(Entity $entity)
