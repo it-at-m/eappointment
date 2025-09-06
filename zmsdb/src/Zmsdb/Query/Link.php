@@ -7,7 +7,7 @@ class Link extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kundenlinks';
+    const TABLE = 'customer_links';
 
     /**
      * No resolving required here
@@ -35,7 +35,7 @@ class Link extends Base
     public function addConditionDepartmentId($departmentId)
     {
         $this->leftJoin(
-            new Alias('behoerde', 'link_department'),
+            new Alias('department', 'link_department'),
             'link_department.OrganisationsID',
             '=',
             'link.organisationsid'

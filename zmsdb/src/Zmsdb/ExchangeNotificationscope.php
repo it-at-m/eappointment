@@ -24,7 +24,7 @@ class ExchangeNotificationscope extends Base
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
-        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
+        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organization');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
         $entity->addDictionaryEntry('scopename', 'string', 'name of the scope');
         $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications ');

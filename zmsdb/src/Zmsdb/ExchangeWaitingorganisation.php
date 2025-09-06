@@ -12,11 +12,11 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik $organisation->name";
+        $entity['title'] = "Wartestatistik $organization->name";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organisation', 'organisation.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organization', 'organization.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
         $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
         $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
@@ -70,7 +70,7 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         $entity = new Exchange();
         $entity['title'] = "Wartestatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
+        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organization.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('description', 'string', 'Name der Organisation');
@@ -83,9 +83,9 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik $organisation->name";
+        $entity['title'] = "Wartestatistik $organization->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

@@ -10,12 +10,12 @@ class Apiquota extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'apiquota';
+    const TABLE = 'api_quota';
 
     public static function getQueryReadApiQuotaListByKey()
     {
         return '
-            SELECT * FROM `apiquota` WHERE `key` = :key
+            SELECT * FROM `api_quota` WHERE `key` = :key
         ';
     }
 
@@ -23,7 +23,7 @@ class Apiquota extends Base implements MappingInterface
     {
         $timeStamp = $dateTime->getTimestamp();
         return '
-        SELECT * FROM apiquota WHERE ts <= (CASE period
+        SELECT * FROM api_quota WHERE ts <= (CASE period
             WHEN "month" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 MONTH))
             WHEN "week" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 WEEK))
             WHEN "day" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 DAY))
@@ -51,9 +51,9 @@ class Apiquota extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionApikey($apikey)
+    public function addConditionApikey($api_key)
     {
-        $this->query->where('apiquota.key', '=', $apikey);
+        $this->query->where('apiquota.key', '=', $api_key);
         return $this;
     }
 

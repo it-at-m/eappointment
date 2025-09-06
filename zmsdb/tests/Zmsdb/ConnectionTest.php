@@ -20,15 +20,15 @@ class ConnectionTest extends Base
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         $writer = \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $sql = 'INSERT INTO `sessiondata` SET sessionid="unittest", sessionname="unittest"';
+        $sql = 'INSERT INTO `session_data` SET sessionid="unittest", sessionname="unittest"';
         $writer->exec($sql);
         $reader = \BO\Zmsdb\Connection\Select::getReadConnection();
-        $insert = $reader->fetchOne('SELECT * FROM `sessiondata` WHERE sessionname="unittest"');
+        $insert = $reader->fetchOne('SELECT * FROM `session_data` WHERE sessionname="unittest"');
         $this->assertEquals('unittest', $insert['sessionname']);
         \BO\Zmsdb\Connection\Select::writeCommit();
-        $insert = $reader->fetchOne('SELECT * FROM `sessiondata` WHERE sessionname="unittest"');
+        $insert = $reader->fetchOne('SELECT * FROM `session_data` WHERE sessionname="unittest"');
         $this->assertEquals('unittest', $insert['sessionname']);
-        $writer->exec('DELETE FROM `sessiondata` WHERE sessionid="unittest"');
+        $writer->exec('DELETE FROM `session_data` WHERE sessionid="unittest"');
         \BO\Zmsdb\Connection\Select::writeCommit();
     }
 
@@ -36,13 +36,13 @@ class ConnectionTest extends Base
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         $writer = \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $sql = 'INSERT INTO `sessiondata` SET sessionid="unittest", sessionname="unittest"';
+        $sql = 'INSERT INTO `session_data` SET sessionid="unittest", sessionname="unittest"';
         $writer->exec($sql);
         $reader = \BO\Zmsdb\Connection\Select::getReadConnection();
-        $insert = $reader->fetchOne('SELECT * FROM `sessiondata` WHERE sessionname="unittest"');
+        $insert = $reader->fetchOne('SELECT * FROM `session_data` WHERE sessionname="unittest"');
         $this->assertEquals('unittest', $insert['sessionname']);
         \BO\Zmsdb\Connection\Select::writeRollback();
-        $insert = $reader->fetchOne('SELECT * FROM `sessiondata` WHERE sessionname="unittest"');
+        $insert = $reader->fetchOne('SELECT * FROM `session_data` WHERE sessionname="unittest"');
         $this->assertFalse($insert);
     }
 }

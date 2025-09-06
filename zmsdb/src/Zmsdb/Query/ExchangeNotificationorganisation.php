@@ -7,7 +7,7 @@ class ExchangeNotificationorganisation extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'abrechnung';
+    const TABLE = 'billing';
 
     const QUERY_READ_REPORT = '
         SELECT

@@ -13,9 +13,9 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         $period = 'day'
     ) {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik $organisation->name -> $department->name";
+        $entity['title'] = "Wartestatistik $organization->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
@@ -82,9 +82,9 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
     public function readPeriodList($subjectid, $period = 'day')
     {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik $organisation->name -> $department->name";
+        $entity['title'] = "Wartestatistik $organization->name -> $department->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

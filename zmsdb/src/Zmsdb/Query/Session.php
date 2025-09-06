@@ -7,7 +7,7 @@ class Session extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'sessiondata';
+    const TABLE = 'session_data';
 
     /**
      * No resolving required here
@@ -16,7 +16,7 @@ class Session extends Base
 
     const QUERY_WRITE = '
         REPLACE INTO
-            sessiondata
+            session_data
         SET
             sessionid=?,
             sessionname=?,
@@ -25,7 +25,7 @@ class Session extends Base
 
     const QUERY_DELETE = '
         DELETE FROM
-            sessiondata
+            session_data
         WHERE
             sessionid=? AND
             sessionname=?

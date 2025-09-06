@@ -21,11 +21,11 @@ class ExchangeClientorganisation extends Base
         $config = (new Config())->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik $organisation->name";
+        $entity['title'] = "Kundenstatistik $organization->name";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organization', 'organization.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('notificationscount');
         $entity->addDictionaryEntry('notificationscost');
@@ -61,7 +61,7 @@ class ExchangeClientorganisation extends Base
         $raw = $this->getReader()->fetchAll(Query\ExchangeClientorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
+        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organization.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('description', 'string', 'Name der Organisation');
@@ -73,9 +73,9 @@ class ExchangeClientorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $organization = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik $organisation->name";
+        $entity['title'] = "Kundenstatistik $organization->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

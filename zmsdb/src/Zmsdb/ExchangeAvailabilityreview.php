@@ -135,17 +135,17 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
 
 
         $sql = 'SELECT 
-                    organisation.Organisationsname,
-                    CONCAT(standort.Bezeichnung,
+                    organization.Organisationsname,
+                    CONCAT(scope.Bezeichnung,
                             " ",
-                            standort.standortkuerzel) Standortname,
-                    standort.StandortID,
-                    oeffnungszeit.Startdatum,
-                    oeffnungszeit.Endedatum,
-                    oeffnungszeit.Terminanfangszeit Anfang,
-                    oeffnungszeit.Terminendzeit Ende,
-                    oeffnungszeit.jedexteWoche,
-                    oeffnungszeit.allexWochen,
+                            scope.standortkuerzel) Standortname,
+                    scope.StandortID,
+                    availability.Startdatum,
+                    availability.Endedatum,
+                    availability.Terminanfangszeit Anfang,
+                    availability.Terminendzeit Ende,
+                    availability.jedexteWoche,
+                    availability.allexWochen,
                     Wochentag & 2 montag,
                     Wochentag & 4 dienstag,
                     Wochentag & 8 mittwoch,
@@ -153,33 +153,33 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
                     Wochentag & 32 freitag,
                     Wochentag & 64 samstag,
                     Wochentag & 1 sonntag,
-                    oeffnungszeit.Timeslot,
-                    oeffnungszeit.Anzahlterminarbeitsplaetze Arbpltz,
-                    oeffnungszeit.reduktionTermineCallcenter minusCall,
-                    oeffnungszeit.reduktionTermineImInternet minusOnline,
-                    oeffnungszeit.erlaubemehrfachslots mehrfach,
-                    IF(oeffnungszeit.`Offen_ab`,
-                        oeffnungszeit.`Offen_ab`,
-                        standort.`Termine_ab`) buchVon,
-                    IF(oeffnungszeit.`Offen_bis`,
-                        oeffnungszeit.`Offen_bis`,
-                        standort.`Termine_bis`) buchBis
+                    availability.Timeslot,
+                    availability.Anzahlterminarbeitsplaetze Arbpltz,
+                    availability.reduktionTermineCallcenter minusCall,
+                    availability.reduktionTermineImInternet minusOnline,
+                    availability.erlaubemehrfachslots mehrfach,
+                    IF(availability.`Offen_ab`,
+                        availability.`Offen_ab`,
+                        scope.`Termine_ab`) buchVon,
+                    IF(availability.`Offen_bis`,
+                        availability.`Offen_bis`,
+                        scope.`Termine_bis`) buchBis
                 FROM
-                    oeffnungszeit
+                    availability
                         LEFT JOIN
-                    standort ON oeffnungszeit.StandortID = standort.StandortID
+                    scope ON availability.StandortID = scope.StandortID
                         LEFT JOIN
-                    behoerde ON standort.BehoerdenID = behoerde.BehoerdenID
+                    department ON scope.BehoerdenID = department.BehoerdenID
                         LEFT JOIN
-                    organisation ON behoerde.OrganisationsID = organisation.OrganisationsID
+                    organization ON department.OrganisationsID = organization.OrganisationsID
                 WHERE
-                    oeffnungszeit.Endedatum >= NOW()
-                        AND behoerde.Name = "Bürgeramt"
-                ORDER BY organisation.Organisationsname ASC,
+                    availability.Endedatum >= NOW()
+                        AND department.Name = "Bürgeramt"
+                ORDER BY organization.Organisationsname ASC,
                     Standortname ASC,
-                    oeffnungszeit.Wochentag ASC,
-                    oeffnungszeit.Startdatum ASC,
-                    oeffnungszeit.Terminanfangszeit ASC;
+                    availability.Wochentag ASC,
+                    availability.Startdatum ASC,
+                    availability.Terminanfangszeit ASC;
         ';
         return $this->fetchDataSet($entity, $sql);
     }

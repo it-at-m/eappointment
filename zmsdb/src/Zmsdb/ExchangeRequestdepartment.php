@@ -19,12 +19,12 @@ class ExchangeRequestdepartment extends Base
         $period = 'day'
     ) {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $organisation->name -> $department->name";
+        $entity['title'] = "Dienstleistungsstatistik $organization->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('departmentid', 'string', 'ID of a department', 'department.id');
-        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organisation', '');
+        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organization', '');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
@@ -70,9 +70,9 @@ class ExchangeRequestdepartment extends Base
     public function readPeriodList($subjectid, $period = 'day')
     {
         $department = (new Department())->readEntity($subjectid);
-        $organisation = (new Organisation())->readByDepartmentId($subjectid);
+        $organization = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $organisation->name -> $department->name";
+        $entity['title'] = "Dienstleistungsstatistik $organization->name -> $department->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

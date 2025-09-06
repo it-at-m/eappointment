@@ -7,7 +7,7 @@ class ExchangeRequestowner extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'statistik';
+    const TABLE = 'statistics';
 
     const REQUESTTABLE = 'request';
 

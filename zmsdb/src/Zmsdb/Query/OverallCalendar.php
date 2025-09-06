@@ -4,10 +4,10 @@ namespace BO\Zmsdb\Query;
 
 class OverallCalendar extends Base
 {
-    const TABLE = 'gesamtkalender';
+    const TABLE = 'overall_calendar';
 
     const UPSERT_MULTI = '
-        INSERT INTO gesamtkalender
+        INSERT INTO overall_calendar
                (scope_id, availability_id, time, seat, status)
         VALUES %s
         ON DUPLICATE KEY UPDATE
@@ -26,7 +26,7 @@ class OverallCalendar extends Base
         ';
 
     const CANCEL_AVAILABILITY = '
-        UPDATE gesamtkalender
+        UPDATE overall_calendar
            SET status         = "cancelled",
                availability_id= NULL,
                updated_at     = CURRENT_TIMESTAMP
@@ -36,8 +36,8 @@ class OverallCalendar extends Base
     ';
 
     const PURGE_MISSING_AVAIL_BY_SCOPE = '
-        UPDATE gesamtkalender g
-           LEFT JOIN oeffnungszeit a
+        UPDATE overall_calendar g
+           LEFT JOIN availability a
                   ON g.availability_id = a.OeffnungszeitID
            SET g.status         = "cancelled",
                g.availability_id= NULL,
@@ -50,13 +50,13 @@ class OverallCalendar extends Base
 
 
     const DELETE_ALL_BEFORE = '
-        DELETE FROM gesamtkalender
+        DELETE FROM overall_calendar
          WHERE time < :threshold
     ';
 
     const FIND_FREE_SEAT = '
         SELECT seat
-          FROM gesamtkalender
+          FROM overall_calendar
          WHERE scope_id = :scope
            AND time >= :start
            AND time <  :end
@@ -68,7 +68,7 @@ class OverallCalendar extends Base
     ';
 
     const BLOCK_SEAT_RANGE = '
-        UPDATE gesamtkalender
+        UPDATE overall_calendar
            SET process_id = :pid,
                slots      = CASE
                               WHEN time = :start THEN :units
@@ -82,8 +82,8 @@ class OverallCalendar extends Base
     ';
 
     const UNBOOK_PROCESS = '
-        UPDATE gesamtkalender g
-        LEFT  JOIN oeffnungszeit a
+        UPDATE overall_calendar g
+        LEFT  JOIN availability a
                ON g.availability_id = a.OeffnungszeitID
            SET g.process_id  = NULL,
                g.slots       = NULL,
@@ -103,8 +103,8 @@ class OverallCalendar extends Base
     const SELECT_RANGE = '
         SELECT g.scope_id, g.time, g.availability_id, g.seat, g.status, g.process_id, g.slots, g.updated_at, 
                s.Bezeichnung as scope_name, s.standortkuerzel as scope_short
-          FROM gesamtkalender g
-          JOIN standort s ON g.scope_id = s.StandortID
+          FROM overall_calendar g
+          JOIN scope s ON g.scope_id = s.StandortID
          WHERE g.scope_id IN (%s)            
            AND g.time BETWEEN :from AND :until
          ORDER BY g.scope_id, g.time, g.seat
@@ -113,8 +113,8 @@ class OverallCalendar extends Base
     const SELECT_RANGE_UPDATED = '
         SELECT g.scope_id, g.time, g.availability_id, g.seat, g.status, g.process_id, g.slots, g.updated_at, 
                s.Bezeichnung as scope_name, s.standortkuerzel as scope_short
-          FROM gesamtkalender g
-          JOIN standort s ON g.scope_id = s.StandortID
+          FROM overall_calendar g
+          JOIN scope s ON g.scope_id = s.StandortID
          WHERE g.scope_id IN (%s)
            AND g.time BETWEEN :from AND :until
            AND g.updated_at > :updatedAfter

@@ -8,9 +8,9 @@ use DateTimeImmutable;
 /**
  * Berechnung der Wartezeiten pro Standort und Stunde,
  *
- * Liest alle 'buerger'-Einträge für ein Datum, filtert stornierte/ohne Wartezeit,
+ * Liest alle 'citizen'-Einträge für ein Datum, filtert stornierte/ohne Wartezeit,
  * korrigiert StandortIDs aus Anmerkungen und speichert die Durchschnittswerte
- * in 'wartenrstatistik'.
+ * in 'queue_number_statistics'.
  */
 class CalculateDailyWaitingStatisticByCron extends Base
 {
@@ -25,7 +25,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
         echo "Done collecting stats for {$day->format('Y-m-d')}\n";
     }
 
-    // Alle 'buerger'-Einträge für das Datum laden (außer stornierte bzw. gelöschte).
+    // Alle 'citizen'-Einträge für das Datum laden (außer stornierte bzw. gelöschte).
     private function fetchBuergerData(DateTimeImmutable $day): array
     {
         $sql = "
@@ -41,7 +41,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
               Anmerkung,
               custom_text_field,
               custom_text_field2
-            FROM buerger
+            FROM citizen
             WHERE Datum = :theDay
               AND Name NOT IN ('(abgesagt)')  
         ";
@@ -148,12 +148,12 @@ class CalculateDailyWaitingStatisticByCron extends Base
         }
     }
 
-    //Eine Zeile in wartenrstatistik für jeden (Standort, Datum) einfügen
+    //Eine Zeile in queue_number_statistics für jeden (Standort, Datum) einfügen
     private function insertStatisticsRow(int $scopeId, string $dateStr, bool $commit): void
     {
         if ($commit) {
             $insertSql = "
-                INSERT IGNORE INTO wartenrstatistik (standortid, datum)
+                INSERT IGNORE INTO queue_number_statistics (standortid, datum)
                 VALUES (:sid, :d)
             ";
             $this->perform($insertSql, [
@@ -179,7 +179,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
         }
 
         $sqlUpdate = sprintf(
-            "UPDATE wartenrstatistik
+            "UPDATE queue_number_statistics
              SET %s
              WHERE standortid = :sid
                AND datum = :d

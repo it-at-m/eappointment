@@ -23,7 +23,7 @@ class Apikey extends Base
     }
 
     /**
-     * write a new apikey
+     * write a new api_key
      *
      * @param
      *      entity
@@ -45,7 +45,7 @@ class Apikey extends Base
     }
 
     /**
-     * update an existing active apikey quota
+     * update an existing active api_key quota
      *
      * @param
      *      entity
@@ -81,7 +81,7 @@ class Apikey extends Base
     }
 
     /**
-     * read api quotas by apikey
+     * read api quotas by api_key
      *
      * @param
      *      apiKey
@@ -155,10 +155,10 @@ class Apikey extends Base
     }
 
     /**
-     * delete an existing outdated apikey
+     * delete an existing outdated api_key
      *
      * @param
-     *      apikey
+     *      api_key
      *
      * @return Entity
      */
@@ -182,7 +182,7 @@ class Apikey extends Base
      * delete api quota by its period setting and creation timestamp
      *
      * @param
-     *      apikey
+     *      api_key
      *
      * @return Entity
      */
@@ -193,10 +193,10 @@ class Apikey extends Base
     }
 
     /**
-     * delete an existing outdated apikey
+     * delete an existing outdated api_key
      *
      * @param
-     *      apikey
+     *      api_key
      *
      * @return Entity
      */

@@ -5,7 +5,7 @@ require_once(__DIR__."/script_bootstrap.php");
 $usage = <<<EOS
 
 Usage: {$argv[0]} [--verbose] --commit
-        ATTENTION! Anonymizes names in the buergerarchiv table for entries older than a specified timespan. USE WITH CAUTION!
+        ATTENTION! Anonymizes names in the citizen_archive table for entries older than a specified timespan. USE WITH CAUTION!
         --commit        Execute the changes on the database (no dry run).
         --verbose       Show detailed logs.
 

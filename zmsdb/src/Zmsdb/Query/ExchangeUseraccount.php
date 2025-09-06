@@ -19,10 +19,10 @@ class ExchangeUseraccount extends Base
    	   IF(n.Berechtigung >= 50, 1, 0) AS 'Administration von Behörden',
        IF(n.Berechtigung >= 70, 1, 0) AS 'Administration von Bezirken',   	   
        IF(n.Berechtigung >= 90, 1, 0) AS 'Superuser'
-       FROM nutzerzuordnung nz LEFT JOIN nutzer n ON nz.nutzerid = n.NutzerID
-       LEFT JOIN behoerde b ON nz.behoerdenid = b.BehoerdenID
-       LEFT JOIN standort s ON s.BehoerdenID = b.BehoerdenID
-       LEFT JOIN organisation o USING(OrganisationsID)
+       FROM user_assignment nz LEFT JOIN user n ON nz.nutzerid = n.NutzerID
+       LEFT JOIN department b ON nz.behoerdenid = b.BehoerdenID
+       LEFT JOIN scope s ON s.BehoerdenID = b.BehoerdenID
+       LEFT JOIN organization o USING(OrganisationsID)
        WHERE 1
        AND n.Name IS NOT NULL
        GROUP BY o.OrganisationsID, n.BehoerdenID, n.Name

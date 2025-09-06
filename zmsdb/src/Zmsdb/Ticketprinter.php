@@ -178,11 +178,11 @@ class Ticketprinter extends Base
         $ticketprinter = (new Entity())->getHashWith($organisationId);
         $ticketprinter->name = $ticketprinterName;
 
-        $organisation = (new Organisation())->readEntity($organisationId);
+        $organization = (new Organisation())->readEntity($organisationId);
         $owner = (new Owner())->readByOrganisationId($organisationId);
 
-        $values = $query->reverseEntityMapping($ticketprinter, $organisation->id);
-        //get owner by organisation
+        $values = $query->reverseEntityMapping($ticketprinter, $organization->id);
+        //get owner by organization
         $owner = (new Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
         $query->addValues($values);
@@ -205,7 +205,7 @@ class Ticketprinter extends Base
         $query = new Query\Ticketprinter(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
 
-        //get owner by organisation
+        //get owner by organization
         $owner = (new Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
 
@@ -216,7 +216,7 @@ class Ticketprinter extends Base
     }
 
     /**
-     * read list of ticketprinter by organisation
+     * read list of ticketprinter by organization
      *
      * @param
      * organisationId

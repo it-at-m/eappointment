@@ -119,7 +119,7 @@ class SessionHandler implements \SessionHandlerInterface
          * $compareTs = time() - $max_lifetime;
          * $query = '
          * DELETE FROM
-         * sessiondata
+         * session_data
          * WHERE
          * UNIX_TIMESTAMP(`ts`) < ? AND
          * sessionname=?

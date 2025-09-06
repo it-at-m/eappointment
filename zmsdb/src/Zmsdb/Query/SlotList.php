@@ -66,9 +66,9 @@ class SlotList extends Base
             IF(o.Offen_ab, o.Offen_ab, s.Termine_ab) AS availability__bookable__startInDays,
             IF(o.Offen_bis, o.Offen_bis, s.Termine_bis) AS availability__bookable__endInDays
         FROM
-            standort s
-            LEFT JOIN oeffnungszeit o USING(StandortID)
-            LEFT JOIN buerger b ON
+            scope s
+            LEFT JOIN availability o USING(StandortID)
+            LEFT JOIN citizen b ON
                 (
                     b.StandortID = o.StandortID
 
@@ -112,7 +112,7 @@ class SlotList extends Base
                     -- match day off
                     AND (
                         b.Datum NOT IN (
-                            SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0
+                            SELECT Datum FROM holidays f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0
                         )
                         -- ignore day off if availabilty is valid for two or less days
                         OR UNIX_TIMESTAMP(o.Endedatum) - UNIX_TIMESTAMP(o.Startdatum) < 172800

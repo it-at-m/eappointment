@@ -21,7 +21,7 @@ class Warehouse extends Base
         [
             'subject' => 'waitingorganisation',
             'description' => 'Wartestatistik Organisation',
-            'right' => 'organisation'
+            'right' => 'organization'
         ],
         [
             'subject' => 'waitingowner',
@@ -41,7 +41,7 @@ class Warehouse extends Base
         [
             'subject' => 'clientorganisation',
             'description' => 'Kundenstatistik Organisation',
-            'right' => 'organisation'
+            'right' => 'organization'
         ],
         [
             'subject' => 'clientowner',
@@ -61,7 +61,7 @@ class Warehouse extends Base
         [
             'subject' => 'notificationorganisation',
             'description' => 'SMS-Statistik Organisation',
-            'right' => 'organisation'
+            'right' => 'organization'
         ],
         [
             'subject' => 'notificationowner',
@@ -81,7 +81,7 @@ class Warehouse extends Base
         [
             'subject' => 'requestorganisation',
             'description' => 'Dienstleistungsstatistik Organisation',
-            'right' => 'organisation'
+            'right' => 'organization'
         ],
         [
             'subject' => 'requestowner',

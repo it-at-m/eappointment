@@ -84,9 +84,9 @@ class Day extends Base
                         AND c.year = s.year
                         AND c.month = s.month
                         AND s.status = "free"
-                    LEFT JOIN oeffnungszeit a
+                    LEFT JOIN availability a
                         ON s.availabilityID = a.OeffnungszeitID
-                    LEFT JOIN slot_hiera h
+                    LEFT JOIN slot_hierarchy h
                         ON h.ancestorID = s.slotID
                         AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                     LEFT JOIN slot_process p

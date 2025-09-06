@@ -7,12 +7,12 @@ class Cluster extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'standortcluster';
+    const TABLE = 'scope_cluster';
 
     public function getQueryWriteAssignedScopes()
     {
         return '
-            REPLACE INTO `clusterzuordnung`
+            REPLACE INTO `cluster_assignment`
             SET
                 clusterID=:clusterId,
                 standortID=:scopeId
@@ -22,7 +22,7 @@ class Cluster extends Base
     public function getQueryDeleteAssignedScopes()
     {
         return '
-            DELETE FROM `clusterzuordnung`
+            DELETE FROM `cluster_assignment`
             WHERE
                 `clusterID` = :clusterId
         ';
@@ -48,7 +48,7 @@ class Cluster extends Base
     public function addConditionDepartmentId($departementId)
     {
         $this->leftJoin(
-            new Alias('standort', 'scope'),
+            new Alias('scope', 'scope'),
             'scope.StandortID',
             '=',
             'cluster_scope.standortID'
@@ -60,7 +60,7 @@ class Cluster extends Base
     public function addConditionScopeId($scopeId)
     {
         $this->leftJoin(
-            new Alias('standort', 'scope'),
+            new Alias('scope', 'scope'),
             'scope.StandortID',
             '=',
             'cluster_scope.standortID'
@@ -86,7 +86,7 @@ class Cluster extends Base
     public function addRequiredJoins()
     {
         $this->leftJoin(
-            new Alias('clusterzuordnung', 'cluster_scope'),
+            new Alias('cluster_assignment', 'cluster_scope'),
             'cluster.clusterID',
             '=',
             'cluster_scope.clusterID'

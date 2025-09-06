@@ -9,8 +9,8 @@ class Useraccount extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'nutzer';
-    const TABLE_ASSIGNMENT = 'nutzerzuordnung';
+    const TABLE = 'user';
+    const TABLE_ASSIGNMENT = 'user_assignment';
 
     const QUERY_READ_ID_BY_USERNAME = '
         SELECT user.`NutzerID` AS id
@@ -36,23 +36,23 @@ class Useraccount extends Base implements MappingInterface
     ';
 
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
-        SELECT behoerde.`BehoerdenID` AS id,
-            organisation.Organisationsname as organisation__name
+        SELECT department.`BehoerdenID` AS id,
+            organization.Organisationsname as organisation__name
         FROM ' . Department::TABLE . '
         LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY organization.Organisationsname, department.Name
     ';
 
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
         SELECT userAssignment.`behoerdenid` AS id,
-            organisation.Organisationsname as organisation__name
+            organization.Organisationsname as organisation__name
         FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
         LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.Name = :useraccountName
-        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
+        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = department.BehoerdenID
         LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         WHERE
             useraccount.`NutzerID` = userAssignment.`nutzerid`
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY organization.Organisationsname, department.Name
     ';
 
     public function getEntityMapping()

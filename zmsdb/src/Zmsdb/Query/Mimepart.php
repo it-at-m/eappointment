@@ -7,7 +7,7 @@ class Mimepart extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'mailpart';
+    const TABLE = 'mail_part';
 
     /**
      * No resolving required here

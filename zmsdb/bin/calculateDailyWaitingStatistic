@@ -2,7 +2,7 @@
 <?php
 /**
  * calculate average waiting times for each scope, date, and hour,
- * separated by 'spontan' vs. 'termin', and store results into wartenrstatistik.
+ * separated by 'spontan' vs. 'termin', and store results into queue_number_statistics.
  */
 echo "calculateDailyWaitingStatistic: calculate average waiting times\n";
 require_once(__DIR__."/script_bootstrap.php");

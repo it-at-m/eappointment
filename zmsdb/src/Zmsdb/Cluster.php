@@ -260,7 +260,7 @@ class Cluster extends Base
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
                 'imagename' => $imageName,
-                'imagedata' => $entity->content
+                'image_data' => $entity->content
                 )
             );
         }

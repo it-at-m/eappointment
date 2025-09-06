@@ -7,11 +7,11 @@ class ExchangeClientdepartment extends Base
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'statistik';
+    const TABLE = 'statistics';
 
-    const BATABLE = 'buergeranliegen';
+    const BATABLE = 'citizen_requests';
 
-    const NOTIFICATIONSTABLE = 'abrechnung';
+    const NOTIFICATIONSTABLE = 'billing';
 
     const QUERY_READ_REPORT = '
     SELECT
@@ -38,7 +38,7 @@ class ExchangeClientdepartment extends Base
             0 as requestcount
           FROM ' . Department::TABLE . ' d
               LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-              LEFT JOIN abrechnung n ON n.`StandortID` = scope.`StandortID`
+              LEFT JOIN billing n ON n.`StandortID` = scope.`StandortID`
           WHERE d.`BehoerdenID` = :departmentid AND n.`Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
 

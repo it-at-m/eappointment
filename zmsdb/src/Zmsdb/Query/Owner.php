@@ -7,7 +7,7 @@ class Owner extends Base implements MappingInterface
     /**
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'kunde';
+    const TABLE = 'customer';
 
     public function getEntityMapping()
     {

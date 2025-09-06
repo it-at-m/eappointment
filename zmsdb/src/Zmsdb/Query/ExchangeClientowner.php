@@ -8,11 +8,11 @@ class ExchangeClientowner extends Base
      * @var String TABLE mysql table reference
      */
 
-    const TABLE = 'statistik';
+    const TABLE = 'statistics';
 
-    const BATABLE = 'buergeranliegen';
+    const BATABLE = 'citizen_requests';
 
-    const NOTIFICATIONSTABLE = 'abrechnung';
+    const NOTIFICATIONSTABLE = 'billing';
 
     const QUERY_READ_REPORT = '
     SELECT

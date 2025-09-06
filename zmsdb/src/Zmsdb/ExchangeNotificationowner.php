@@ -25,7 +25,7 @@ class ExchangeNotificationowner extends Base
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of the owner', 'owner.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('ownername', 'string', 'name of the owner');
-        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
+        $entity->addDictionaryEntry('organisationname', 'string', 'name of the organization');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
         $entity->addDictionaryEntry('scopename', 'string', 'name of the scope');
         $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications ');
