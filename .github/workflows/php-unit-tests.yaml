@@ -136,8 +136,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.docker
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile*', '**/Containerfile*') }}
+          key: ${{ runner.os }}-docker-php83-dev-${{ hashFiles('**/Dockerfile*', '**/Containerfile*') }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
             ${{ runner.os }}-docker-
       - name: Install python3
         run: |
@@ -217,8 +218,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.docker
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile*', '**/Containerfile*') }}
+          key: ${{ runner.os }}-docker-php83-dev-${{ hashFiles('**/Dockerfile*', '**/Containerfile*') }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
             ${{ runner.os }}-docker-
       - name: Install python3
         run: |
