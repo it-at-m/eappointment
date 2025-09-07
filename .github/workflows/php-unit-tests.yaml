@@ -170,10 +170,6 @@ jobs:
           rm -rf data
           ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
           echo "Importing test data..."
-          # Ensure config file is available for importTestData
-          if [ ! -f config.php ]; then
-            cp config.example.php config.php
-          fi
           vendor/bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
@@ -244,10 +240,6 @@ jobs:
         run: |
           set -e  # Exit immediately on any error
           cd zmsdb
-          # Ensure config file is available for importTestData
-          if [ ! -f config.php ]; then
-            cp config.example.php config.php
-          fi
           bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
