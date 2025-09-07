@@ -167,8 +167,6 @@ jobs:
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
             echo "Updating $module composer.json..."
-            # Add local repository references
-            jq '.repositories = (.repositories // []) | map(select(.type != "path" or .url != "../*")) | . + [{"type": "path", "url": "../*", "options": {"symlink": false}}]' "$module/composer.json" > "$module/composer.json.tmp" && mv "$module/composer.json.tmp" "$module/composer.json"
             # Update eappointment dependencies to @dev
             jq '.require = (.require | to_entries | map(if .key | startswith("eappointment/") then .value = "@dev" else . end) | from_entries)' "$module/composer.json" > "$module/composer.json.tmp" && mv "$module/composer.json.tmp" "$module/composer.json"
           done
