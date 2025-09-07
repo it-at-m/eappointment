@@ -153,6 +153,7 @@ jobs:
           echo "Module references completed"
 
       - name: Install Composer Dependencies
+        if: steps.cache-composer-api.outputs.cache-hit != 'true'
         run: |
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
@@ -240,6 +241,7 @@ jobs:
           echo "Module references completed"
 
       - name: Install Composer Dependencies
+        if: steps.cache-composer-db.outputs.cache-hit != 'true'
         run: |
           modules=('zmsdb')
           for module in "${modules[@]}"; do
