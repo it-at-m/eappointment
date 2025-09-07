@@ -133,7 +133,7 @@ jobs:
       - name: Install python3
         run: |
           apt update
-          apt install -y python3 python3-click python3-git
+          apt install -y python3 python3-click python3-git jq
       - name: Cache Third-Party Dependencies
         id: cache-composer-api
         uses: actions/cache@v4
@@ -270,7 +270,7 @@ jobs:
       - name: Install python3
         run: |
           apt update
-          apt install -y python3 python3-click python3-git
+          apt install -y python3 python3-click python3-git jq
       - name: Cache Third-Party Dependencies
         id: cache-composer-db
         uses: actions/cache@v4
