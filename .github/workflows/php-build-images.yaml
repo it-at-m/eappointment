@@ -22,6 +22,18 @@ jobs:
             ${{ runner.os }}-composer-build-${{ matrix.module }}-
             ${{ runner.os }}-composer-build-
           ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
+      - name: Cache Node.js Dependencies
+        id: cache-node-build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ matrix.module }}/node_modules
+            ${{ matrix.module }}/public/_libs
+          key: ${{ runner.os }}-node-build-${{ matrix.module }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-build-${{ matrix.module }}-
+            ${{ runner.os }}-node-build-
+          ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
       - name: Referencing local Modules and Libraries
         if: steps.cache-composer-build.outputs.cache-hit != 'true'
         run: |
@@ -29,11 +41,16 @@ jobs:
           python3 ./cli modules reference-libraries --no-symlink
           echo "Module references completed"
       - name: Cache Hit Notification
-        if: steps.cache-composer-build.outputs.cache-hit == 'true'
+        if: steps.cache-composer-build.outputs.cache-hit == 'true' || steps.cache-node-build.outputs.cache-hit == 'true'
         run: |
-          echo "🚀 CACHE HIT! Skipping module referencing for ${{ matrix.module }}"
-          echo "✅ Dependencies already cached - saving ~1-2 minutes"
-          echo "📦 Using cached vendor directory from previous run"
+          echo "🚀 CACHE HIT! Some dependencies are cached for ${{ matrix.module }}"
+          if [ "${{ steps.cache-composer-build.outputs.cache-hit }}" = "true" ]; then
+            echo "✅ PHP dependencies cached - skipping module referencing"
+          fi
+          if [ "${{ steps.cache-node-build.outputs.cache-hit }}" = "true" ]; then
+            echo "✅ Node.js dependencies cached - npm install/build will be faster"
+          fi
+          echo "📦 Using cached dependencies from previous run"
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
