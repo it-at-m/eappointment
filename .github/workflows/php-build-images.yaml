@@ -21,6 +21,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-build-${{ matrix.module }}-
             ${{ runner.os }}-composer-build-
+      - name: Create Node.js directories
+        run: |
+          mkdir -p ${{ matrix.module }}/node_modules
+          mkdir -p ${{ matrix.module }}/public/_libs
       - name: Cache Node.js Dependencies
         id: cache-node-build
         uses: actions/cache@v4
