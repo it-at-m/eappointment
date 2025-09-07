@@ -11,6 +11,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: ${{ runner.os }}-docker-php83-dev
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
 
       - name: Install Composer Dependencies
         run: |

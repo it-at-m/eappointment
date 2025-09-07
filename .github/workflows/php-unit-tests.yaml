@@ -28,6 +28,14 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: ${{ runner.os }}-docker-php83-dev
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
       
       - name: Configure PHP
         run: |
@@ -130,6 +138,15 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: ${{ runner.os }}-docker-php83-dev-mariadb
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-mariadb-
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
 
       - name: Install Composer Dependencies
         run: |
@@ -198,6 +215,15 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: ${{ runner.os }}-docker-php83-dev-mariadb
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-mariadb-
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
 
       - name: Install Composer Dependencies
         run: |
@@ -243,6 +269,14 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: ${{ runner.os }}-docker-php83-dev
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
