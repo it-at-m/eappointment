@@ -133,20 +133,8 @@ jobs:
       - name: Install python3
         run: |
           apt update
-          apt install -y python3 python3-click python3-git jq
+          apt install -y python3 python3-click python3-git
 
-      - name: Referencing local Modules and Libraries
-        run: |
-          echo "Setting up module references..."
-          # Update composer.json for zmsapi and zmsdb to reference local eappointment modules
-          modules=('zmsapi' 'zmsdb')
-          for module in "${modules[@]}"; do
-            echo "Updating $module composer.json..."
-            # Update eappointment dependencies to @dev
-            jq '.require = (.require | to_entries | map(if .key | startswith("eappointment/") then .value = "@dev" else . end) | from_entries)' "$module/composer.json" > "$module/composer.json.tmp" && mv "$module/composer.json.tmp" "$module/composer.json"
-          done
-          echo "Module references completed"
-        shell: bash
 
       - name: Install Composer Dependencies
         run: |
@@ -234,17 +222,8 @@ jobs:
       - name: Install python3
         run: |
           apt update
-          apt install -y python3 python3-click python3-git jq
+          apt install -y python3 python3-click python3-git
 
-      - name: Referencing local Modules and Libraries
-        run: |
-          echo "Setting up module references..."
-          # Update composer.json for zmsdb to reference local eappointment modules
-          echo "Updating zmsdb composer.json..."
-          # Update eappointment dependencies to @dev
-          jq '.require = (.require | to_entries | map(if .key | startswith("eappointment/") then .value = "@dev" else . end) | from_entries)' "zmsdb/composer.json" > "zmsdb/composer.json.tmp" && mv "zmsdb/composer.json.tmp" "zmsdb/composer.json"
-          echo "Module references completed"
-        shell: bash
 
       - name: Install Composer Dependencies
         run: |

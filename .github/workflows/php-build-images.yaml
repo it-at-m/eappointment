@@ -9,18 +9,9 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Install python3 and jq
-        run: sudo apt install -y python3 python3-click python3-git jq
+      - name: Install python3
+        run: sudo apt install -y python3 python3-click python3-git
 
-      - name: Referencing local Modules and Libraries
-        run: |
-          echo "Setting up module references for ${{ matrix.module }}..."
-          # Update composer.json to reference local eappointment modules
-          echo "Updating ${{ matrix.module }} composer.json..."
-          # Update eappointment dependencies to @dev
-          jq '.require = (.require | to_entries | map(if .key | startswith("eappointment/") then .value = "@dev" else . end) | from_entries)' "${{ matrix.module }}/composer.json" > "${{ matrix.module }}/composer.json.tmp" && mv "${{ matrix.module }}/composer.json.tmp" "${{ matrix.module }}/composer.json"
-          echo "Module references completed"
-        shell: bash
 
       - name: Install Composer Dependencies
         run: |
