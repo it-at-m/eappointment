@@ -145,6 +145,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-api-
 
+      - name: Referencing local Modules and Libraries
+        run: |
+          echo "Setting up module references..."
+          python3 ./cli modules reference-libraries --no-symlink
+          echo "Module references completed"
+
       - name: Restore Third-Party Dependencies
         if: steps.cache-composer-api.outputs.cache-hit == 'true'
         run: |
@@ -159,12 +165,6 @@ jobs:
             fi
           done
         shell: bash
-
-      - name: Referencing local Modules and Libraries
-        run: |
-          echo "Setting up module references..."
-          python3 ./cli modules reference-libraries --no-symlink
-          echo "Module references completed"
 
       - name: Install Composer Dependencies
         run: |
@@ -272,6 +272,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-db-
 
+      - name: Referencing local Modules and Libraries
+        run: |
+          echo "Setting up module references..."
+          python3 ./cli modules reference-libraries --no-symlink
+          echo "Module references completed"
+
       - name: Restore Third-Party Dependencies
         if: steps.cache-composer-db.outputs.cache-hit == 'true'
         run: |
@@ -283,12 +289,6 @@ jobs:
             find "zmsdb/vendor-cache" -maxdepth 1 -type d ! -name "vendor-cache" -exec cp -r {} "zmsdb/vendor/" \; 2>/dev/null || true
           fi
         shell: bash
-
-      - name: Referencing local Modules and Libraries
-        run: |
-          echo "Setting up module references..."
-          python3 ./cli modules reference-libraries --no-symlink
-          echo "Module references completed"
 
       - name: Install Composer Dependencies
         run: |
