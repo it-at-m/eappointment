@@ -31,7 +31,7 @@ jobs:
       - name: Cache Docker images
         uses: actions/cache@v4
         with:
-          path: /tmp/.docker
+          path: ~/.docker
           key: ${{ runner.os }}-docker-php83-dev
           restore-keys: |
             ${{ runner.os }}-docker-php83-dev-
@@ -141,7 +141,7 @@ jobs:
       - name: Cache Docker images
         uses: actions/cache@v4
         with:
-          path: /tmp/.docker
+          path: ~/.docker
           key: ${{ runner.os }}-docker-php83-dev-mariadb
           restore-keys: |
             ${{ runner.os }}-docker-php83-dev-mariadb-
@@ -218,7 +218,7 @@ jobs:
       - name: Cache Docker images
         uses: actions/cache@v4
         with:
-          path: /tmp/.docker
+          path: ~/.docker
           key: ${{ runner.os }}-docker-php83-dev-mariadb
           restore-keys: |
             ${{ runner.os }}-docker-php83-dev-mariadb-
@@ -272,7 +272,7 @@ jobs:
       - name: Cache Docker images
         uses: actions/cache@v4
         with:
-          path: /tmp/.docker
+          path: ~/.docker
           key: ${{ runner.os }}-docker-php83-dev
           restore-keys: |
             ${{ runner.os }}-docker-php83-dev-
