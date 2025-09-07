@@ -21,7 +21,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-build-${{ matrix.module }}-
             ${{ runner.os }}-composer-build-
-          ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
       - name: Cache Node.js Dependencies
         id: cache-node-build
         uses: actions/cache@v4
@@ -33,7 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-build-${{ matrix.module }}-
             ${{ runner.os }}-node-build-
-          ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
       - name: Referencing local Modules and Libraries
         if: steps.cache-composer-build.outputs.cache-hit != 'true'
         run: |
