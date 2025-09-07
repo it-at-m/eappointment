@@ -47,10 +47,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install python3
-        run: |
-          apt update
-          apt install -y python3 python3-click python3-git
 
       - name: Install Composer Dependencies
         continue-on-error: true
