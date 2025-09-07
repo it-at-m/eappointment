@@ -11,15 +11,11 @@ jobs:
         uses: actions/checkout@main
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
-
-
       - name: Install Composer Dependencies
         run: |
           echo "Installing Composer dependencies for ${{ matrix.module }}"
           (cd "${{ matrix.module }}" && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
-
-
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |

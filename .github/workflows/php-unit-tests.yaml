@@ -135,7 +135,6 @@ jobs:
           apt update
           apt install -y python3 python3-click python3-git
 
-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -144,7 +143,6 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
-
 
       - name: Import Test Data and Run Unit Tests
         env:
@@ -209,13 +207,11 @@ jobs:
           apt update
           apt install -y python3 python3-click python3-git
 
-
       - name: Install Composer Dependencies
         run: |
           echo "Installing Composer dependencies for zmsdb"
           (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
-
 
       - name: Import Test Data and Run Unit Tests
         env:
