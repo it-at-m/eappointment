@@ -160,6 +160,7 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+        shell: bash
 
       - name: Cache Hit Notification
         if: steps.cache-composer-api.outputs.cache-hit == 'true'
@@ -323,6 +324,7 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+        shell: bash
 
       - name: Install Docker Compose
         run: |
