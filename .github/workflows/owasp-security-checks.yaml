@@ -46,16 +46,6 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Cache Docker images
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.docker
-          key: ${{ runner.os }}-docker-php83-dev
-          restore-keys: |
-            ${{ runner.os }}-docker-php83-dev-
-            ${{ runner.os }}-docker-
 
 
       - name: Install Composer Dependencies
