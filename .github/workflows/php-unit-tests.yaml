@@ -134,26 +134,39 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
-      - name: Cache Composer Dependencies
+      - name: Cache Third-Party Dependencies
         id: cache-composer-api
         uses: actions/cache@v4
         with:
           path: |
-            zmsapi/vendor
-            zmsdb/vendor
-          key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}-${{ hashFiles('mellon/composer.lock', 'zmsdb/composer.lock', 'zmsentities/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsslim/composer.lock') }}
+            zmsapi/vendor-cache
+            zmsdb/vendor-cache
+          key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-api-
 
+      - name: Restore Third-Party Dependencies
+        if: steps.cache-composer-api.outputs.cache-hit == 'true'
+        run: |
+          echo "Restoring cached third-party dependencies..."
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            if [ -d "$module/vendor-cache" ]; then
+              echo "Restoring $module third-party dependencies"
+              mkdir -p "$module/vendor"
+              # Copy only third-party packages, exclude eappointment
+              find "$module/vendor-cache" -maxdepth 1 -type d ! -name "vendor-cache" -exec cp -r {} "$module/vendor/" \; 2>/dev/null || true
+            fi
+          done
+        shell: bash
+
       - name: Referencing local Modules and Libraries
-        if: steps.cache-composer-api.outputs.cache-hit != 'true'
         run: |
           echo "Setting up module references..."
           python3 ./cli modules reference-libraries --no-symlink
           echo "Module references completed"
 
       - name: Install Composer Dependencies
-        if: steps.cache-composer-api.outputs.cache-hit != 'true'
         run: |
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
@@ -162,12 +175,27 @@ jobs:
           done
         shell: bash
 
+      - name: Cache Third-Party Dependencies
+        if: steps.cache-composer-api.outputs.cache-hit != 'true'
+        run: |
+          echo "Caching third-party dependencies..."
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Caching $module third-party dependencies"
+            mkdir -p "$module/vendor-cache"
+            # Copy only third-party packages, exclude eappointment
+            if [ -d "$module/vendor" ]; then
+              find "$module/vendor" -maxdepth 1 -type d ! -name "eappointment" ! -name "vendor" -exec cp -r {} "$module/vendor-cache/" \; 2>/dev/null || true
+            fi
+          done
+        shell: bash
+
       - name: Cache Hit Notification
         if: steps.cache-composer-api.outputs.cache-hit == 'true'
         run: |
-          echo "🚀 CACHE HIT! Skipping module referencing and composer install"
-          echo "✅ Dependencies already cached - saving ~2-3 minutes"
-          echo "📦 Using cached vendor directories from previous run"
+          echo "🚀 CACHE HIT! Third-party dependencies are cached"
+          echo "✅ Third-party dependencies cached - composer install will be faster"
+          echo "📦 Using cached third-party packages from previous run"
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -234,25 +262,35 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
-      - name: Cache Composer Dependencies
+      - name: Cache Third-Party Dependencies
         id: cache-composer-db
         uses: actions/cache@v4
         with:
           path: |
-            zmsdb/vendor
-          key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}-${{ hashFiles('mellon/composer.lock', 'zmsdb/composer.lock', 'zmsentities/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsslim/composer.lock') }}
+            zmsdb/vendor-cache
+          key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-db-
 
+      - name: Restore Third-Party Dependencies
+        if: steps.cache-composer-db.outputs.cache-hit == 'true'
+        run: |
+          echo "Restoring cached third-party dependencies..."
+          if [ -d "zmsdb/vendor-cache" ]; then
+            echo "Restoring zmsdb third-party dependencies"
+            mkdir -p "zmsdb/vendor"
+            # Copy only third-party packages, exclude eappointment
+            find "zmsdb/vendor-cache" -maxdepth 1 -type d ! -name "vendor-cache" -exec cp -r {} "zmsdb/vendor/" \; 2>/dev/null || true
+          fi
+        shell: bash
+
       - name: Referencing local Modules and Libraries
-        if: steps.cache-composer-db.outputs.cache-hit != 'true'
         run: |
           echo "Setting up module references..."
           python3 ./cli modules reference-libraries --no-symlink
           echo "Module references completed"
 
       - name: Install Composer Dependencies
-        if: steps.cache-composer-db.outputs.cache-hit != 'true'
         run: |
           modules=('zmsdb')
           for module in "${modules[@]}"; do
@@ -261,12 +299,24 @@ jobs:
           done
         shell: bash
 
+      - name: Cache Third-Party Dependencies
+        if: steps.cache-composer-db.outputs.cache-hit != 'true'
+        run: |
+          echo "Caching third-party dependencies..."
+          echo "Caching zmsdb third-party dependencies"
+          mkdir -p "zmsdb/vendor-cache"
+          # Copy only third-party packages, exclude eappointment
+          if [ -d "zmsdb/vendor" ]; then
+            find "zmsdb/vendor" -maxdepth 1 -type d ! -name "eappointment" ! -name "vendor" -exec cp -r {} "zmsdb/vendor-cache/" \; 2>/dev/null || true
+          fi
+        shell: bash
+
       - name: Cache Hit Notification
         if: steps.cache-composer-db.outputs.cache-hit == 'true'
         run: |
-          echo "🚀 CACHE HIT! Skipping module referencing and composer install"
-          echo "✅ Dependencies already cached - saving ~2-3 minutes"
-          echo "📦 Using cached vendor directories from previous run"
+          echo "🚀 CACHE HIT! Third-party dependencies are cached"
+          echo "✅ Third-party dependencies cached - composer install will be faster"
+          echo "📦 Using cached third-party packages from previous run"
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
