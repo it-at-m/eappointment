@@ -47,7 +47,18 @@ jobs:
       - name: Install Composer Dependencies
         run: |
           echo "Installing Composer dependencies for ${{ matrix.module }}"
+          echo "=== Fetching eappointment dependencies ==="
+          (cd "${{ matrix.module }}" && composer show --installed | grep "eappointment/" || echo "No eappointment packages found")
+          echo "=== Installing with composer ==="
           (cd "${{ matrix.module }}" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          echo "=== Final eappointment dependencies ==="
+          (cd "${{ matrix.module }}" && composer show --installed | grep "eappointment/" || echo "No eappointment packages found")
+          echo "=== eappointment package sources ==="
+          (cd "${{ matrix.module }}" && composer show --installed | grep "eappointment/" | while read line; do
+            package=$(echo "$line" | awk '{print $1}')
+            echo "Checking source for $package:"
+            (cd "${{ matrix.module }}" && composer show "$package" | grep -E "(source|dist)" || echo "  No source info found")
+          done)
         shell: bash
 
       - name: Cache Third-Party Dependencies
