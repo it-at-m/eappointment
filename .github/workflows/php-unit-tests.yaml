@@ -144,7 +144,6 @@ jobs:
           key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-api-
-          ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
 
       - name: Referencing local Modules and Libraries
         if: steps.cache-composer-api.outputs.cache-hit != 'true'
@@ -244,7 +243,6 @@ jobs:
           key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-db-
-          ttl: 604800  # 7 days in seconds (7 * 24 * 60 * 60)
 
       - name: Referencing local Modules and Libraries
         if: steps.cache-composer-db.outputs.cache-hit != 'true'
