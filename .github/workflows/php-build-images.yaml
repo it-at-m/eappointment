@@ -21,21 +21,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-build-${{ matrix.module }}-
             ${{ runner.os }}-composer-build-
-      - name: Create Node.js directories
-        run: |
-          mkdir -p ${{ matrix.module }}/node_modules
-          mkdir -p ${{ matrix.module }}/public/_libs
-      - name: Cache Node.js Dependencies
-        id: cache-node-build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ matrix.module }}/node_modules
-            ${{ matrix.module }}/public/_libs
-          key: ${{ runner.os }}-node-build-${{ matrix.module }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-build-${{ matrix.module }}-
-            ${{ runner.os }}-node-build-
       - name: Referencing local Modules and Libraries
         if: steps.cache-composer-build.outputs.cache-hit != 'true'
         run: |
@@ -43,16 +28,11 @@ jobs:
           python3 ./cli modules reference-libraries --no-symlink
           echo "Module references completed"
       - name: Cache Hit Notification
-        if: steps.cache-composer-build.outputs.cache-hit == 'true' || steps.cache-node-build.outputs.cache-hit == 'true'
+        if: steps.cache-composer-build.outputs.cache-hit == 'true'
         run: |
-          echo "🚀 CACHE HIT! Some dependencies are cached for ${{ matrix.module }}"
-          if [ "${{ steps.cache-composer-build.outputs.cache-hit }}" = "true" ]; then
-            echo "✅ PHP dependencies cached - skipping module referencing"
-          fi
-          if [ "${{ steps.cache-node-build.outputs.cache-hit }}" = "true" ]; then
-            echo "✅ Node.js dependencies cached - npm install/build will be faster"
-          fi
-          echo "📦 Using cached dependencies from previous run"
+          echo "🚀 CACHE HIT! PHP dependencies are cached for ${{ matrix.module }}"
+          echo "✅ PHP dependencies cached - skipping module referencing"
+          echo "📦 Using cached vendor directory from previous run"
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
