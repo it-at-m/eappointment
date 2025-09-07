@@ -14,12 +14,25 @@ class Db
     {
         $pdo = self::startUsingDatabase($dbname, $verbose);
         $startTime = microtime(true);
-        $sqlFile = gzopen($file, 'r');
+        
+        // Check if file is compressed or not
+        $isCompressed = (substr($file, -3) === '.gz');
+        
+        if ($isCompressed) {
+            $sqlFile = gzopen($file, 'r');
+            $readFunction = 'gzgets';
+            $closeFunction = 'gzclose';
+        } else {
+            $sqlFile = fopen($file, 'r');
+            $readFunction = 'fgets';
+            $closeFunction = 'fclose';
+        }
+        
         if ($verbose) {
             echo "Importing " . basename($file) . "\n";
         }
         $query = '';
-        while ($line = gzgets($sqlFile)) {
+        while ($line = $readFunction($sqlFile)) {
             $query .= $line;
             if (preg_match('/;\s*$/', $line)) {
                 try {
@@ -37,7 +50,7 @@ class Db
                 }
             }
         }
-        gzclose($sqlFile);
+        $closeFunction($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
         if ($verbose) {
             echo "\nTook $time seconds\n";
@@ -73,7 +86,7 @@ class Db
         return $pdo;
     }
 
-    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql.gz')
+    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql')
     {
         $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 
