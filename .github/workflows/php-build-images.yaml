@@ -37,8 +37,14 @@ jobs:
       - name: Referencing local Modules and Libraries
         run: |
           echo "Setting up module references for ${{ matrix.module }}..."
-          python3 ./cli modules reference-libraries --no-symlink
+          # Update composer.json to reference local eappointment modules
+          echo "Updating ${{ matrix.module }} composer.json..."
+          # Add local repository references
+          jq '.repositories = (.repositories // []) | map(select(.type != "path" or .url != "../*")) | . + [{"type": "path", "url": "../*", "options": {"symlink": false}}]' "${{ matrix.module }}/composer.json" > "${{ matrix.module }}/composer.json.tmp" && mv "${{ matrix.module }}/composer.json.tmp" "${{ matrix.module }}/composer.json"
+          # Update eappointment dependencies to @dev
+          jq '.require = (.require | to_entries | map(if .key | startswith("eappointment/") then .value = "@dev" else . end) | from_entries)' "${{ matrix.module }}/composer.json" > "${{ matrix.module }}/composer.json.tmp" && mv "${{ matrix.module }}/composer.json.tmp" "${{ matrix.module }}/composer.json"
           echo "Module references completed"
+        shell: bash
 
       - name: Install Composer Dependencies
         run: |
