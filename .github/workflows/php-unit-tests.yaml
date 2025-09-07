@@ -134,8 +134,24 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
+      - name: Cache Composer Dependencies
+        id: cache-composer-api
+        uses: actions/cache@v4
+        with:
+          path: |
+            zmsapi/vendor
+            zmsdb/vendor
+          key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-api-
+
       - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
+        if: steps.cache-composer-api.outputs.cache-hit != 'true'
+        run: |
+          echo "Setting up module references..."
+          python3 ./cli modules reference-libraries --no-symlink
+          echo "Module references completed"
+
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -206,8 +222,23 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
+      - name: Cache Composer Dependencies
+        id: cache-composer-db
+        uses: actions/cache@v4
+        with:
+          path: |
+            zmsdb/vendor
+          key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-db-
+
       - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
+        if: steps.cache-composer-db.outputs.cache-hit != 'true'
+        run: |
+          echo "Setting up module references..."
+          python3 ./cli modules reference-libraries --no-symlink
+          echo "Module references completed"
+
       - name: Install Composer Dependencies
         run: |
           modules=('zmsdb')
