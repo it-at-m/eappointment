@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.docker
-          key: ${{ runner.os }}-docker-php83-dev-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-docker-php83-dev
           restore-keys: |
             ${{ runner.os }}-docker-php83-dev-
             ${{ runner.os }}-docker-
