@@ -161,6 +161,13 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+
+      - name: Cache Hit Notification
+        if: steps.cache-composer-api.outputs.cache-hit == 'true'
+        run: |
+          echo "🚀 CACHE HIT! Skipping module referencing and composer install"
+          echo "✅ Dependencies already cached - saving ~2-3 minutes"
+          echo "📦 Using cached vendor directories from previous run"
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -253,6 +260,13 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+
+      - name: Cache Hit Notification
+        if: steps.cache-composer-db.outputs.cache-hit == 'true'
+        run: |
+          echo "🚀 CACHE HIT! Skipping module referencing and composer install"
+          echo "✅ Dependencies already cached - saving ~2-3 minutes"
+          echo "📦 Using cached vendor directories from previous run"
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
