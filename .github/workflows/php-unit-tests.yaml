@@ -28,6 +28,14 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-docker-php83-dev
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
       - name: Configure PHP
         run: |
           mkdir -p /tmp/php/conf.d
@@ -129,6 +137,15 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-docker-php83-dev-mariadb
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-mariadb-
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -196,6 +213,15 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-docker-php83-dev-mariadb
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-mariadb-
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
       - name: Install Composer Dependencies
         run: |
           echo "Installing Composer dependencies for zmsdb"
@@ -240,6 +266,14 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-docker-php83-dev
+          restore-keys: |
+            ${{ runner.os }}-docker-php83-dev-
+            ${{ runner.os }}-docker-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
