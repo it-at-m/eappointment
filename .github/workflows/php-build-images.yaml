@@ -11,28 +11,6 @@ jobs:
         uses: actions/checkout@main
       - name: Install python3 and jq
         run: sudo apt install -y python3 python3-click python3-git jq
-      - name: Cache Third-Party Dependencies
-        id: cache-composer-build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ matrix.module }}/vendor-cache
-          key: ${{ runner.os }}-composer-build-${{ matrix.module }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-build-${{ matrix.module }}-
-            ${{ runner.os }}-composer-build-
-
-      - name: Restore Third-Party Dependencies
-        if: steps.cache-composer-build.outputs.cache-hit == 'true'
-        run: |
-          echo "Restoring cached third-party dependencies for ${{ matrix.module }}..."
-          if [ -d "${{ matrix.module }}/vendor-cache" ]; then
-            echo "Restoring ${{ matrix.module }} third-party dependencies"
-            mkdir -p "${{ matrix.module }}/vendor"
-            # Copy only third-party packages, exclude eappointment
-            find "${{ matrix.module }}/vendor-cache" -maxdepth 1 -type d ! -name "vendor-cache" -exec cp -r {} "${{ matrix.module }}/vendor/" \; 2>/dev/null || true
-          fi
-        shell: bash
 
       - name: Referencing local Modules and Libraries
         run: |
@@ -61,24 +39,7 @@ jobs:
           done)
         shell: bash
 
-      - name: Cache Third-Party Dependencies
-        if: steps.cache-composer-build.outputs.cache-hit != 'true'
-        run: |
-          echo "Caching third-party dependencies for ${{ matrix.module }}..."
-          echo "Caching ${{ matrix.module }} third-party dependencies"
-          mkdir -p "${{ matrix.module }}/vendor-cache"
-          # Copy only third-party packages, exclude eappointment
-          if [ -d "${{ matrix.module }}/vendor" ]; then
-            find "${{ matrix.module }}/vendor" -maxdepth 1 -type d ! -name "eappointment" ! -name "vendor" -exec cp -r {} "${{ matrix.module }}/vendor-cache/" \; 2>/dev/null || true
-          fi
-        shell: bash
 
-      - name: Cache Hit Notification
-        if: steps.cache-composer-build.outputs.cache-hit == 'true'
-        run: |
-          echo "🚀 CACHE HIT! Third-party dependencies are cached for ${{ matrix.module }}"
-          echo "✅ Third-party dependencies cached - composer install will be faster"
-          echo "📦 Using cached third-party packages from previous run"
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
