@@ -141,7 +141,7 @@ jobs:
           path: |
             zmsapi/vendor
             zmsdb/vendor
-          key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-api-${{ hashFiles('**/composer.lock') }}-${{ hashFiles('mellon/composer.lock', 'zmsdb/composer.lock', 'zmsentities/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsslim/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-api-
 
@@ -160,7 +160,6 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
-        shell: bash
 
       - name: Cache Hit Notification
         if: steps.cache-composer-api.outputs.cache-hit == 'true'
@@ -240,7 +239,7 @@ jobs:
         with:
           path: |
             zmsdb/vendor
-          key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-db-${{ hashFiles('**/composer.lock') }}-${{ hashFiles('mellon/composer.lock', 'zmsdb/composer.lock', 'zmsentities/composer.lock', 'zmsclient/composer.lock', 'zmsdldb/composer.lock', 'zmsslim/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-db-
 

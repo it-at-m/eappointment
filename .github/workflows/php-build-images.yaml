@@ -17,7 +17,7 @@ jobs:
         with:
           path: |
             ${{ matrix.module }}/vendor
-          key: ${{ runner.os }}-composer-build-${{ matrix.module }}-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-build-${{ matrix.module }}-${{ hashFiles('**/composer.lock') }}-${{ hashFiles('mellon/composer.lock', 'zmsentities/composer.lock', 'zmsclient/composer.lock', 'zmsslim/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-build-${{ matrix.module }}-
             ${{ runner.os }}-composer-build-
