@@ -118,6 +118,10 @@ class Source extends Schema\Entity
 
     public function isCompleteAndEditable()
     {
+        $source = $this->getSource();
+        if (empty($source) || !is_string($source)) {
+            return false;
+        }
         return ($this->isEditable() && 0 < $this->getProviderList()->count() && $this->getRequestList()->count());
     }
 
