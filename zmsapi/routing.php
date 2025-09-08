@@ -4228,6 +4228,50 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("AvailabilityClosureToggle");
 
+/**
+ *  @swagger
+ *  "/closure/":
+ *      get:
+ *          summary: Listet Closures (Schließtage) je Scope im Zeitraum
+ *          tags: [closure, scope]
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: Kommagetrennte Liste von Scope-IDs (z.B. "12,34,56")
+ *                type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: Startdatum (YYYY-MM-DD)
+ *                type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Enddatum (YYYY-MM-DD, inkl.)
+ *                type: string
+ *              - name: X-Authkey
+ *                in: header
+ *                required: true
+ *                type: string
+ *          responses:
+ *              200:
+ *                  description: OK
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          items:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      date:    { type: string,  example: "2025-09-03" }
+ *                                      scopeId: { type: integer, example: 123 }
+ */
+\App::$slim->get(
+    '/closure/',
+    '\BO\Zmsapi\AvailabilityClosureRead'
+)->setName('AvailabilityClosureRead');
 
 /**
  *  @swagger
