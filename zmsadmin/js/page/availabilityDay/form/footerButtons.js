@@ -20,6 +20,11 @@ const FooterButtons = (props) => {
         availability => availability?.tempId?.includes('__temp__')
     );
 
+    const hasNewAvailabilitiesWithEmptyTimes = availabilitylist?.some(
+        availability => availability?.tempId?.includes('__temp__') && 
+        (!availability.startTime || !availability.endTime)
+    );
+
     const isPastDate = moment.unix(selectedDate).isBefore(moment(), 'day');
 
     return (
@@ -47,7 +52,7 @@ const FooterButtons = (props) => {
                 type="save"
                 value="publish"
                 onClick={onPublish}
-                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasConflicts || hasErrors || isPastDate}
+                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasErrors || isPastDate || hasNewAvailabilitiesWithEmptyTimes}
             >
                 Alle Änderungen aktivieren
             </button>

@@ -99,10 +99,14 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfield2Required" => true,
                 "customTextfield2Label" => "Zusätzliche Bemerkung",
                 "captchaActivatedRequired" => false,
-                "displayInfo" => null,
+                "infoForAppointment" => null,
+                "infoForAllAppointments" => null,
                 "slotsPerAppointment" => null,
                 "appointmentsPerMail" => 1,
-                "whitelistedMails" => null
+                "whitelistedMails" => null,
+                "reservationDuration" => 15,
+                "activationDuration" => 15,
+                "hint"=> null
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,
@@ -229,11 +233,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('appointmentNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'], 
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('appointmentNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -332,11 +332,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('departmentNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('departmentNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -369,11 +365,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('mailNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('mailNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -406,11 +398,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('organisationNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('organisationNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -443,11 +431,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('providerNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('providerNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -480,11 +464,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('requestNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('requestNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -517,11 +497,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('scopeNotFound');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('scopeNotFound')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());
@@ -554,11 +530,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         $expectedError = ErrorMessages::get('processInvalid');
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => $expectedError['errorCode'],
-                    'errorMessage' => $expectedError['errorMessage'],
-                    'statusCode' => $expectedError['statusCode']
-                ]
+                ErrorMessages::get('processInvalid')
             ]
         ];
         $this->assertEquals($expectedError['statusCode'], $response->getStatusCode());

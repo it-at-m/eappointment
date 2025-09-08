@@ -24,7 +24,7 @@ $cli->description("Load DLDB exports into ElasticSearch")
 $args = $cli->parse($argv, true);
 
 try {
-    $indexer = new \BO\Dldb\Indexer\ElasticSearch($args->getOpt('exports'));
+    $indexer = new \BO\Zmsdldb\Indexer\ElasticSearch($args->getOpt('exports'));
     if ($args->getOpt('host')) {
         $indexer->setHost($args->getOpt('host'));
     }

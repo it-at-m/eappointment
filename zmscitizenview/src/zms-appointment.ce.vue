@@ -5,8 +5,8 @@
   />
   <main>
     <div>
-      <div v-html="mucIconsSprite"></div>
-      <div v-html="customIconsSprit"></div>
+      <div v-html="sanitizeHtml(mucIconsSprite)"></div>
+      <div v-html="sanitizeHtml(customIconsSprit)"></div>
       <appointment-view
         :base-url="baseUrl"
         :service-id="serviceId"
@@ -20,12 +20,34 @@
   </main>
 </template>
 
+<script lang="ts">
+const hash = window.location.hash || "";
+const path = window.location.pathname || "";
+
+const confirmHashMatch =
+  hash.match(/#\/appointment\/confirm\/(.+)/) ||
+  path.match(/\/appointment\/confirm\/(.+)/);
+const appointmentHashMatch =
+  hash.match(/#\/appointment\/([^/]+)$/) ||
+  path.match(/\/appointment\/([^/]+)$/);
+
+const hashMatch = hash.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
+const pathMatch = path.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
+
+export const fallbackConfirmAppointmentHash = confirmHashMatch?.[1];
+export const fallbackAppointmentHash = appointmentHashMatch?.[1];
+
+export const fallbackServiceId = hashMatch?.[1] || pathMatch?.[1];
+export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
+</script>
+
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 defineProps({
   baseUrl: {
@@ -36,12 +58,12 @@ defineProps({
   serviceId: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackServiceId,
   },
   locationId: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackLocationId,
   },
   exclusiveLocation: {
     type: String,
@@ -51,12 +73,12 @@ defineProps({
   appointmentHash: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackAppointmentHash,
   },
   confirmAppointmentHash: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackConfirmAppointmentHash,
   },
 });
 

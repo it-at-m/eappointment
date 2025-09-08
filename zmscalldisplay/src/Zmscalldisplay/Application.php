@@ -9,11 +9,16 @@
 
 namespace BO\Zmscalldisplay;
 
-if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
+
+if (!defined('ZMS_CALLDISPLAY_TWIG_CACHE')) {
+    $value = getenv('ZMS_CALLDISPLAY_TWIG_CACHE');
+    define('ZMS_CALLDISPLAY_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+}
 
 class Application extends \BO\Slim\Application
 {
@@ -23,6 +28,7 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'zms';
     const MODULE_NAME = 'zmscalldisplay';
     const DEBUG = false;
+    const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
 
     /**
      * language preferences

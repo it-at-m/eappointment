@@ -1,4 +1,4 @@
 #!/bin/bash
 
 DIR=$(dirname ${BASH_SOURCE[0]})
-$DIR/dldbIndexerES -e $DIR/../tests/Dldb/fixtures/ -a dldbtest -d
+$DIR/dldbIndexerES -e $DIR/../tests/Zmsdldb/fixtures/ -a dldbtest -d

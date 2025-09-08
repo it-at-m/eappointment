@@ -19,16 +19,15 @@ const FormContent = (props) => {
     } = props;
 
     const hasEndTimePastError = Object.values(errorList)
-        .some(error => error.itemList?.some(items => 
-            items.some(item => item.type === 'endTimePast')
-        ));
+        .some(error => error.itemList?.some(item => item.type === 'endTimePast')
+        );
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true;
     const inputDisabled = hasEndTimePastError || calenderDisabled;
 
     const isUnsafedSpontaneous = data.id == 0;
 
     const filteredErrorList = Object.values(errorList)
-        .filter(error => error.itemList?.[0]?.[0]?.type !== 'endTimePast')
+        .filter(error => !error.itemList?.some(item => item.type === 'endTimePast'))
         .reduce((acc, error) => {
             acc[error.id] = error;
             return acc;
@@ -69,9 +68,7 @@ const FormContent = (props) => {
                         </section> : null
                     }
                     {hasEndTimePastError && Object.values(errorList).map(error => {
-                        const endTimePastError = error.itemList?.find(items => 
-                            items.some(item => item.type === 'endTimePast')
-                        )?.find(item => item.type === 'endTimePast');
+                        const endTimePastError = error.itemList?.find(item => item.type === 'endTimePast');
                         
                         if (endTimePastError) {
                             return (
