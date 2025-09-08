@@ -9,11 +9,12 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Install Composer Dependencies
+      - name: Install python3
         run: |
-          echo "Installing Composer dependencies for ${{ matrix.module }}"
-          (cd "${{ matrix.module }}" && composer install --no-progress --prefer-dist --optimize-autoloader)
-        shell: bash
+          apt update
+          apt install -y python3 python3-click python3-git
+      - name: Reference local modules
+        run: python3 ./cli modules reference-libraries --no-symlink
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
