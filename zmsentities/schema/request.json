@@ -190,6 +190,24 @@
             ],
             "description": "number of time slots assumend for the request",
             "default": 1
+        },
+        "parent_id": {
+            "oneOf": [
+                { "type": "null" },
+                { "type": "number" },
+                { "type": "string", "pattern": "^[0-9]+$" }
+            ],
+            "description": "optional parent request id (FK)",
+            "default": null
+        },
+        "variant_id": {
+            "oneOf": [
+                { "type": "null" },
+                { "type": "number" },
+                { "type": "string", "pattern": "^[0-9]+$" }
+            ],
+            "description": "optional request variant (FK)",
+            "default": null
         }
     }
 }

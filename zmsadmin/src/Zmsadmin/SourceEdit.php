@@ -35,6 +35,20 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
+        $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
+        $parentProviders = $parents->providers ?? [];
+        $parentRequests  = $parents->requests  ?? [];
+
+        try {
+            $apiRes  = \App::$http->readGetResult('/requestvariants/');
+            $body    = (string) $apiRes->getResponse()->getBody();
+            $payload = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            $requestVariants = $payload['data'] ?? [];
+        } catch (\JsonException $e) {
+            \BO\Log::error('requestvariants JSON decode failed', ['error' => $e->getMessage()]);
+            $requestVariants = [];
+        }
+
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $result = $this->testUpdateEntity($input);
@@ -53,6 +67,9 @@ class SourceEdit extends BaseController
                 'menuActive' => 'source',
                 'workstation' => $workstation,
                 'source' => (isset($source)) ? $source : null,
+                'parentProviders' => $parentProviders,
+                'parentRequests' => $parentRequests,
+                'requestVariants' => $requestVariants,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
             )
@@ -67,7 +84,7 @@ class SourceEdit extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
                 ];
                 $exceptionData['data'] = $exception->data;
                 return $exceptionData;

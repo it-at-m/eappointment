@@ -22,7 +22,9 @@ class Request extends Base
             'link' => 'request.link',
             'name' => 'request.name',
             'group' => 'request.group',
-            'source' => 'request.source'
+            'source' => 'request.source',
+            'parent_id' => 'request.parent_id',
+            'variant_id' => 'request.variant_id',
         ];
         if ($this->getResolveLevel() > 0) {
             $mapping['data'] = 'request.data';
@@ -101,5 +103,14 @@ class Request extends Base
         });
 
         return $this;
+    }
+
+    public function getQueryCountInBuergeranliegen(): string
+    {
+        return '
+        SELECT COUNT(*)
+        FROM ' . self::BATABLE . '
+        WHERE AnliegenID = :request_id
+    ';
     }
 }

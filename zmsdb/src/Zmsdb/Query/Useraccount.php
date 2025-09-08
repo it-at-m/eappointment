@@ -60,7 +60,6 @@ class Useraccount extends Base implements MappingInterface
         return [
             'id' => 'useraccount.Name',
             'password' => 'useraccount.Passworthash',
-            'email' => 'useraccount.email',
             'lastLogin' => 'useraccount.lastUpdate',
             'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
@@ -119,7 +118,6 @@ class Useraccount extends Base implements MappingInterface
                 $queryString = trim($queryString);
                 $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
                 $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
-                $query->orWith('useraccount.email', 'LIKE', "%$queryString%");
             };
 
             if ($orWhere) {
@@ -156,7 +154,6 @@ class Useraccount extends Base implements MappingInterface
             $queryString = trim($queryString);
             $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
             $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
-            $query->orWith('useraccount.email', 'LIKE', "%$queryString%");
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
@@ -170,7 +167,6 @@ class Useraccount extends Base implements MappingInterface
     {
         $data = array();
         $data['Name'] = $entity->id;
-        $data['email'] = (isset($entity->email)) ? $entity->email : null;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['Berechtigung'] = $entity->getRightsLevel();
         $data['BehoerdenID'] = 0;
