@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Query;
 
 use DateTime;
+use DateTimeInterface;
 
 class Closure extends Base implements MappingInterface
 {
@@ -20,6 +21,7 @@ class Closure extends Base implements MappingInterface
     {
         return [
             'id' => 'closure.id',
+            'scopeId'    => 'closure.StandortID',
             'year' => 'closure.year',
             'month' => 'closure.month',
             'day' => 'closure.day',
@@ -38,6 +40,54 @@ class Closure extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->query->where('closure.StandortID', '=', $scopeId);
+        return $this;
+    }
+
+    public function addConditionScopeIds(array $scopeIds)
+    {
+        $ids = array_values(array_unique(array_map('intval', $scopeIds)));
+
+        if (empty($ids)) {
+            $this->query->where(self::expression('1 = 0'));
+            return $this;
+        }
+
+        if (count($ids) === 1) {
+            return $this->addConditionScopeId($ids[0]);
+        }
+
+        $this->query->where(function ($conditions) use ($ids) {
+            $first = true;
+            foreach ($ids as $id) {
+                if ($first) {
+                    $conditions->andWith('closure.StandortID', '=', $id);
+                    $first = false;
+                } else {
+                    $conditions->orWith('closure.StandortID', '=', $id);
+                }
+            }
+        });
+
+        return $this;
+    }
+
+    public function addConditionDateRange(\DateTimeInterface $from, \DateTimeInterface $until)
+    {
+        $dateExpr = self::expression(
+            "DATE(CONCAT(closure.year,'-',LPAD(closure.month,2,'0'),'-',LPAD(closure.day,2,'0')))"
+        );
+        $this->query->where($dateExpr, '>=', $from->format('Y-m-d'));
+        $this->query->where($dateExpr, '<=', $until->format('Y-m-d'));
+        return $this;
+    }
+
+    public function addSelectVirtualDate()
+    {
+        $this->query->select([
+            $this->getPrefixed('date') => self::expression(
+                "DATE(CONCAT(closure.year,'-',LPAD(closure.month,2,'0'),'-',LPAD(closure.day,2,'0')))"
+            )
+        ]);
         return $this;
     }
 
