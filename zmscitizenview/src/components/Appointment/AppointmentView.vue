@@ -967,7 +967,7 @@ onMounted(() => {
 
       // Check if any error state should be activated (maintenance/system failure)
       if (handleApiResponseForDownTime(data, props.baseUrl)) {
-        return; // Error state was activated, stop processing
+        return;
       }
 
       services.value = (data as any).services;

@@ -185,7 +185,7 @@ onMounted(() => {
     .then((data) => {
       // Check if any error state should be activated
       if (handleApiResponseForDownTime(data, props.baseUrl)) {
-        return; // Error state was activated, stop processing
+        return;
       }
 
       // Handle normal errors (like rate limit)
