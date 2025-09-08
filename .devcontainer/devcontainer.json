@@ -19,4 +19,5 @@
   // },
   // "postCreateCommand": "cp .ddev/.env.template .ddev/.env || true",
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway"]
+  // "postCreateCommand": "bash -lc './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build'"
 }

@@ -3,7 +3,7 @@ services:
     container_name: zms-web
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Containerfile
     volumes:
       - ..:/var/www/html:cached
     ports:
