@@ -19,7 +19,6 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $entity = $query->readEntity(static::$username, 1);
-        $entity->email = "test@berlinonline.de";
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
     }
 
@@ -59,7 +58,6 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $useraccount = $query->readEntityByUserId('137'); //testReadByUserId
-        $useraccount->email = "test@berlinonline.de";
         $useraccount->departments[] = (new \BO\Zmsdb\Department())->readEntity(72);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $useraccount);
         $this->assertEquals('testuser', $useraccount->id);
@@ -71,7 +69,6 @@ class UserAccountTest extends Base
         $entityList = $query->readList(2);
         foreach ($entityList as $entity) {
             $entity->departments[] = (new \BO\Zmsdb\Department())->readEntity(72);
-            $entity->email = "test@berlinonline.de";
             $entity->id = "superuser";
         }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
@@ -84,7 +81,6 @@ class UserAccountTest extends Base
         $entityList = $query->readCollectionByDepartmentId(74);
         foreach ($entityList as $entity) {
             $entity->departments[] = (new \BO\Zmsdb\Department())->readEntity(72);
-            $entity->email = "test@berlinonline.de";
         }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('testuser')); //superuser bo
