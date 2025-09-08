@@ -1,3 +1,169 @@
+## Release Muc-30 (03.09.2025)              
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-615'>ZMSKVR-615</a>] -         Fehler bei Ablauf der Blocker-Zeit und doppelter Buchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-668'>ZMSKVR-668</a>] -         Bürgerfrontend2: Dropdown zur Leistungsauswahl schließen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-730'>ZMSKVR-730</a>] -         Jump Link führt unter bestimmten Bedingungen zu falschem Tag im Kalender
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-767'>ZMSKVR-767</a>] -          Interne Dienstleistungen in der neuen Bürgeransicht angezeigt und verursachen Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-770'>ZMSKVR-770</a>] -         Falsche Anzeige von buchbaren Tagen in der neuen Bürgeransicht /Vorlauf
+</li>
+</ul>
+                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-470'>ZMSKVR-470</a>] -         Captcha Design
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-516'>ZMSKVR-516</a>] -         Schritt 3: Kontakt – Abstand zwischen Inputs und Buttons erhöhen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-525'>ZMSKVR-525</a>] -         Schritt 5: Bestätigung – Texte Callouts anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-611'>ZMSKVR-611</a>] -         Schritt 1: Leistung – Abstand bei &quot;Kombinierbaren Leistungen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-768'>ZMSKVR-768</a>] -         Bürgerfrontend 2: Sprache sollte Deutsch sein für Barrierefreiheit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-772'>ZMSKVR-772</a>] -         BF2: Kalenderansicht: Kalender nicht barrierefrei
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-775'>ZMSKVR-775</a>] -         Schritt 2: Termin – Abstand vor Ort-Checkboxen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-776'>ZMSKVR-776</a>] -         Schritt 2: Termin – Formatierung Akkordeon-Headlines Listenansicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-801'>ZMSKVR-801</a>] -         Standortspezifische Meldungen bei nicht verfügbaren Terminen pflegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-812'>ZMSKVR-812</a>] -         Hinweismeldungen zu Terminverfügbarkeiten per Pop-up anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-813'>ZMSKVR-813</a>] -         Kundenhinweis im Bürgerfrontend nach Adressblock anzeigen
+</li>
+</ul>
+                                                        
+
+## Release Muc-29 (22.08.2025)                       
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-565'>ZMSKVR-565</a>] -         Schritt 2: Termin – Ansicht &quot;Keine Termine&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-601'>ZMSKVR-601</a>] -         Schritt 4: Übersicht – Fehlermeldung &quot;Zu viele Termine pro E-Mail&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-648'>ZMSKVR-648</a>] -         ZMS-Admin: Sachbearbeiterplatz -Layout verschoben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-668'>ZMSKVR-668</a>] -         Bürgerfrontend2: Dropdown zur Leistungsauswahl schließen
+</li>
+</ul>
+                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-211'>ZMSKVR-211</a>] -         Alte Image Backups automatisiert löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-215'>ZMSKVR-215</a>] -         Http-Request aus ZMS-Slim umziehen Mini-Refactor
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-291'>ZMSKVR-291</a>] -         Links in den E-Mails anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-488'>ZMSKVR-488</a>] -         404- Patternlab Seite für fehlerhafte Links in der neuen Bürgeransicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-494'>ZMSKVR-494</a>] -         Terminvarianten in ZMSAdmin pflegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-508'>ZMSKVR-508</a>] -         Schritt 2: Termin – Kalender-Schriftgröße erhöhen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-535'>ZMSKVR-535</a>] -         Inhalt einer ICS Datei anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-536'>ZMSKVR-536</a>] -         Öffnungszeit nicht vorbelegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-621'>ZMSKVR-621</a>] -         Statistiküberarbeitung 1: Kundenstatistik - Frontend dynamische Datenübersicht MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-695'>ZMSKVR-695</a>] -         Bürgerfrontend 2:  Abwahl aller Standorte
+</li>
+</ul>                                                      
+
+## Release Muc-28 (01.08.2025)                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-375'>ZMSKVR-375</a>] -         Aufruf von nicht berechtigter Behörde per Link unterbinden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-614'>ZMSKVR-614</a>] -         Schritt 2: Termin – Fehlermeldung vergebener Termin
+</li>
+</ul>
+                                                
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-531'>ZMSKVR-531</a>] -         Möglichkeiten automatische Abmeldung zu verlängern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-567'>ZMSKVR-567</a>] -         Terminnummer Spike
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-575'>ZMSKVR-575</a>] -         Spontankunden Prio einführen Spike
+</li>
+</ul>
+                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-80'>ZMSKVR-80</a>] -         Roave SecurityAdvisories einbauen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-110'>ZMSKVR-110</a>] -         Zeitauswahl: Ansichtwechsel für verfügbare Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-173'>ZMSKVR-173</a>] -         zmscalldisplay: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-177'>ZMSKVR-177</a>] -         zmsapi: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-183'>ZMSKVR-183</a>] -         zmsclient: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-188'>ZMSKVR-188</a>] -         zmsadmin: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-194'>ZMSKVR-194</a>] -         zmsticketprinter: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-197'>ZMSKVR-197</a>] -         zmsstatistic: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-198'>ZMSKVR-198</a>] -         zmsentities: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-199'>ZMSKVR-199</a>] -         zmsmessaging: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-200'>ZMSKVR-200</a>] -         zmsdldb: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-205'>ZMSKVR-205</a>] -         zmsdb: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-218'>ZMSKVR-218</a>] -         Secure Tokens als Umgebungsvariablen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-267'>ZMSKVR-267</a>] -         Haken in den Öffnungszeiten entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-291'>ZMSKVR-291</a>] -         Links in den E-Mails anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-405'>ZMSKVR-405</a>] -         Unterbinden von Aufrufen aus der Zukunft  
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-416'>ZMSKVR-416</a>] -         Bürgerfrontend 2: Anzeige eines Counters bei Freitextfeldern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-442'>ZMSKVR-442</a>] -         zmscitizenapi: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-513'>ZMSKVR-513</a>] -         Schritt 2: Termin – Ausgewählte Uhrzeit klarer markieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-520'>ZMSKVR-520</a>] -         Schritt 4: Übersicht – Leistungen verlinken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-533'>ZMSKVR-533</a>] -         Benutzeranlage Validierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-564'>ZMSKVR-564</a>] -         Callout-Headlines: Barrierefreies HTML
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-566'>ZMSKVR-566</a>] -         Schritt 2: Termin – Zeitanzeige bei nur einem Ort
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-573'>ZMSKVR-573</a>] -         Spontankunden Prio einführen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-584'>ZMSKVR-584</a>] -         Bürgerfrontend 2: Hinweismeldung bei Abwahl aller Standorte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-590'>ZMSKVR-590</a>] -         Automatische Standortauswahl im Kalender via JumpIn Link anhand der Location Id
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-617'>ZMSKVR-617</a>] -         Schritt 5: Bestätigung – Fehlermeldung &quot;Aktivierung nicht möglich&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-682'>ZMSKVR-682</a>] -         Automatische Abmeldung auf 10h erhöhen
+</li>
+</ul>
+                                                        
+
      
 ## Release Muc-27 (11.07.2025)
                   

@@ -36,7 +36,7 @@
     "jquery": "^3.4.1",
     "parcel": "^2.7.0",
     "react-datepicker": "^4.2.1",
-    "svgo": "^3.3.2"
+    "svgo": "^4.0.0"
   },
   "dependencies": {
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",

@@ -7,11 +7,16 @@
 
 namespace BO\Zmsapi;
 
-if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
+
+if (!defined('ZMS_API_TWIG_CACHE')) {
+    $value = getenv('ZMS_API_TWIG_CACHE');
+    define('ZMS_API_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+}
 
 class Application extends \BO\Slim\Application
 {
@@ -26,6 +31,7 @@ class Application extends \BO\Slim\Application
      * @var Bool DEBUG
      */
     const DEBUG = false;
+    const TWIG_CACHE = ZMS_API_TWIG_CACHE;
 
     /**
      * @var Bool DB_ENABLE_WSREPSYNCWAIT

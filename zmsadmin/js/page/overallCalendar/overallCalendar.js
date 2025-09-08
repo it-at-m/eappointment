@@ -3,6 +3,7 @@ let lastUpdateAfter = null;
 let autoRefreshTimer = null;
 let currentRequest = null;
 let SCOPE_COLORS = {};
+let CLOSURES = new Set();
 
 function buildScopeColorMap(days) {
     const ids = [...new Set(days.flatMap(d => d.scopes.map(s => s.id)))];
@@ -31,6 +32,21 @@ function isSameRequest(a, b) {
     return [...a.scopeIds].sort().join(',') === [...b.scopeIds].sort().join(',');
 }
 
+async function fetchClosures({scopeIds, dateFrom, dateUntil, fullReload = true}) {
+    const res = await fetch(`closureData/?${new URLSearchParams({
+        scopeIds: scopeIds.join(','),
+        dateFrom,
+        dateUntil
+    })}`);
+    if (!res.ok) throw new Error('Fehler beim Laden der Closures');
+    const { data } = await res.json();
+    const set = new Set();
+    for (const it of (data?.items || [])) {
+        set.add(`${it.date}|${it.scopeId}`);
+    }
+    CLOSURES = set;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('overall-calendar-form');
     const btnRefresh = document.getElementById('refresh-calendar');
@@ -56,7 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!currentRequest) return;
             const {scopeIds, dateFrom, dateUntil} = currentRequest;
             try {
-                await loadCalendar({scopeIds, dateFrom, dateUntil, fullReload: false});
+                await Promise.all([
+                    fetchCalendar({ scopeIds, dateFrom, dateUntil, fullReload: false }),
+                    fetchClosures({ scopeIds, dateFrom, dateUntil })
+                ]);
+                renderMultiDayCalendar(calendarCache);
             } catch (e) {
                 alert('Fehler beim Aktualisieren: ' + e.message);
             }
@@ -101,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function loadCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}) {
+async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}) {
     const incremental = !fullReload && isSameRequest({scopeIds, dateFrom, dateUntil}, currentRequest);
     const paramsObj = {scopeIds: scopeIds.join(','), dateFrom, dateUntil};
     if (incremental && lastUpdateAfter) {
@@ -120,7 +140,6 @@ async function loadCalendar({scopeIds, dateFrom, dateUntil, fullReload = false})
         calendarCache = json.data.days;
     }
 
-    renderMultiDayCalendar(calendarCache);
     currentRequest = {scopeIds, dateFrom, dateUntil};
     lastUpdateAfter = serverTs;
 }
@@ -156,7 +175,11 @@ async function handleSubmit(event) {
     }
 
     try {
-        await loadCalendar({scopeIds, dateFrom, dateUntil, fullReload: true});
+        await Promise.all([
+            fetchCalendar({ scopeIds, dateFrom, dateUntil, fullReload: true }),
+            fetchClosures({ scopeIds, dateFrom, dateUntil })
+        ]);
+        renderMultiDayCalendar(calendarCache);
         startAutoRefresh();
     } catch (e) {
         alert(e.message);
@@ -176,19 +199,21 @@ function startAutoRefresh() {
 
 async function fetchIncrementalUpdate() {
     if (!currentRequest || !lastUpdateAfter) return;
-    const {scopeIds, dateFrom, dateUntil} = currentRequest;
-    const params = new URLSearchParams({
+    const { scopeIds, dateFrom, dateUntil } = currentRequest;
+
+    const res = await fetch(`overallcalendarData/?${new URLSearchParams({
         scopeIds: scopeIds.join(','),
         dateFrom,
         dateUntil,
         updateAfter: lastUpdateAfter
-    });
-    const res = await fetch(`overallcalendarData/?${params}`);
-    if (!res.ok) return;
+    })}`);
+    if (res.ok) {
+        lastUpdateAfter = toMysql(res.headers.get('Last-Modified') || new Date());
+        const json = await res.json();
+        mergeDelta(json.data.days);
+    }
 
-    lastUpdateAfter = toMysql(res.headers.get('Last-Modified') || new Date());
-    const json = await res.json();
-    mergeDelta(json.data.days);
+    await fetchClosures({ scopeIds, dateFrom, dateUntil });
     renderMultiDayCalendar(calendarCache);
 }
 
@@ -237,6 +262,8 @@ function renderMultiDayCalendar(days) {
         container.innerHTML = '<p>Keine Daten verfügbar.</p>';
         return;
     }
+
+    const ymdLocalFromUnix = (ts) => new Date(ts * 1000).toLocaleDateString('sv-SE');
 
     SCOPE_COLORS = buildScopeColorMap(days);
     const allTimes = [...new Set(
@@ -303,6 +330,7 @@ function renderMultiDayCalendar(days) {
 
     colCursor = 2;
     days.forEach((day, dayIdx) => {
+        const dateIsoForDay = new Date(day.date * 1000).toLocaleDateString('sv-SE');
         day.scopes.forEach((scope, scopeIdx) => {
             const head = addCell({
                 text: scope.shortName || scope.name || `Scope ${scope.id}`,
@@ -310,6 +338,9 @@ function renderMultiDayCalendar(days) {
                 row: 2, col: colCursor, colSpan: scope.maxSeats
             });
             head.style.background = SCOPE_COLORS[scope.id];
+            if (isScopeClosed(dateIsoForDay, scope.id)) {
+                head.classList.add('is-closed');
+            }
             colCursor += scope.maxSeats;
             if (scopeIdx < day.scopes.length - 1) {
                 addCell({
@@ -342,10 +373,10 @@ function renderMultiDayCalendar(days) {
 
         let col = 2;
         days.forEach((day, dayIdx) => {
-            const dateKey = new Date(day.date * 1000).toISOString().slice(0, 10);
+            const dateKey = ymdLocalFromUnix(day.date);
             day.scopes.forEach((scope, scopeIdx) => {
                 const timeObj = scope.times.find(t => t.name === time) || {seats: []};
-
+                const closed = isScopeClosed(dateKey, scope.id);
                 for (let seatIdx = 0; seatIdx < scope.maxSeats; seatIdx++) {
                     if (occupied.has(`${gridRow}-${col}`)) { col++; continue; }
 
@@ -368,7 +399,7 @@ function renderMultiDayCalendar(days) {
                         for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
                     } else if (status !== 'skip') {
                         addCell({
-                            className: `overall-calendar-seat overall-calendar-${status}`,
+                            className: `overall-calendar-seat overall-calendar-${status}${closed ? ' overall-calendar-closed' : ''}`,
                             row: gridRow,
                             col,
                             id: cellId,
@@ -390,4 +421,8 @@ function renderMultiDayCalendar(days) {
 function togglePageScroll(disable) {
     document.documentElement.classList.toggle('no-page-scroll', disable);
     document.body.classList.toggle('no-page-scroll', disable);
+}
+
+function isScopeClosed(dateIso, scopeId) {
+    return CLOSURES.has(`${dateIso}|${scopeId}`);
 }

@@ -1,4 +1,4 @@
 # Coverage
-- source: /src/Dldb/(.+?\.php).*/
+- source: /src/Zmsdldb/(.+?\.php).*/
   public: '_tests/coverage/\1.html'
 

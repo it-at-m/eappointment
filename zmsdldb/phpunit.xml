@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" processIsolation="false" stopOnFailure="false" bootstrap="tests/bootstrap.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
   <testsuites>
-    <testsuite name="Dldb">
-      <directory>./tests/Dldb/</directory>
+    <testsuite name="Zmsdldb Test Suite">
+      <directory>./tests/Zmsdldb/</directory>
     </testsuite>
   </testsuites>
-  <coverage>
-    <report>
-      <html outputDirectory="./coverage/html"/>
-      <clover outputFile="./coverage/clover.xml"/>
-    </report>
-  </coverage>
   <source>
     <include>
       <directory suffix=".php">./src</directory>
@@ -18,8 +12,6 @@
     <exclude>
       <directory>./vendor</directory>
       <directory>./tests</directory>
-      <file>./src/Dldb/Importer/test_mysql.php</file>
-      <file>./src/Dldb/Importer/test_sqlite.php</file>
     </exclude>
   </source>
 </phpunit>

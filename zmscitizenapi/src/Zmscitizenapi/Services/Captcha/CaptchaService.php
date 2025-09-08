@@ -6,7 +6,6 @@ namespace BO\Zmscitizenapi\Services\Captcha;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
-use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use BO\Zmsentities\Schema\Entity;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
@@ -165,6 +164,7 @@ class CaptchaService extends Entity implements CaptchaInterface
                 'json' => [
                     'siteKey' => $this->siteKey,
                     'siteSecret' => $this->siteSecret,
+                    'clientAddress' => ClientIpHelper::getClientIp(),
                     'payload' => $decodedPayload,
                 ]
             ]);

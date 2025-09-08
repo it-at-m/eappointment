@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# zmsapi-test - Automated testing script for zmsapi module
+# Usage: ./zmsapi-test [PHPUnit arguments...]
+#        ./zmsapi-test --reset (reset all containers and volumes)
+
+set -e
+
+# Check for reset command
+if [[ $1 == "--reset" ]]; then
+    echo "🧹 Resetting zmsapi test environment..."
+    docker-compose down -v
+    echo "✅ Reset complete! All containers and volumes removed."
+    exit 0
+fi
+
+# Parse all PHPUnit arguments
+PHPUNIT_ARGS=""
+if [[ $# -gt 0 ]]; then
+    PHPUNIT_ARGS="$*"
+    echo "Running tests with arguments: $PHPUNIT_ARGS"
+fi
+
+# Already in zmsapi directory
+
+# Check if mariadb is running, start if not
+if ! docker-compose ps mariadb | grep -q "Up"; then
+    echo "Starting mariadb container..."
+    docker-compose up -d mariadb
+    # Wait for mariadb to be healthy
+    echo "Waiting for mariadb to be ready..."
+                    until docker-compose exec -T mariadb mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
+        sleep 2
+    done
+    echo "MariaDB is ready!"
+else
+    echo "MariaDB is already running"
+fi
+
+# Check if docker-compose services are already running
+if ! docker-compose ps | grep -q "zmsapi"; then
+    echo "Setting up test environment (first run)..."
+    docker-compose down
+    docker-compose up -d --build
+    docker-compose logs -f test
+else
+    echo "Test environment already set up, running tests..."
+    # Run tests with or without filter
+                    if [ -n "$PHPUNIT_ARGS" ]; then
+                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit $PHPUNIT_ARGS"
+                else
+                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit"
+                fi
+fi

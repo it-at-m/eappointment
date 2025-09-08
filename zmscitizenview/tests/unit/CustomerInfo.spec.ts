@@ -8,6 +8,8 @@ import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 describe("CustomerInfo", () => {
   let mockCustomerData;
   let mockSelectedProvider;
+  let mockAppointmentProvider: any;
+  let mockReservationStartMs: any;
 
   beforeEach(() => {
     mockCustomerData = ref({
@@ -28,6 +30,13 @@ describe("CustomerInfo", () => {
         customTextfield2Required: false,
       },
     });
+
+    mockAppointmentProvider = {
+      appointment: ref<{ scope?: { reservationDuration?: number } } | null>({
+        scope: { reservationDuration: 15 },
+      }),
+    };
+    mockReservationStartMs = ref<number | null>(Date.now());
   });
 
   const createWrapper = () => {
@@ -45,6 +54,8 @@ describe("CustomerInfo", () => {
             isBookingAppointment: ref(false),
             isCancelingAppointment: ref(false),
           },
+          appointment: mockAppointmentProvider,
+          reservationStartMs: mockReservationStartMs,
         },
         stubs: {
           'muc-input': {
@@ -55,17 +66,31 @@ describe("CustomerInfo", () => {
             template: '<textarea :id="id" />',
             props: ['id'],
           },
-          "muc-button": true,
+          "muc-button": {
+            template:
+              '<button class="muc-button" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+            props: ["icon", "iconShownLeft", "variant", "disabled"],
+          },
+          "muc-callout": {
+            template:
+              '<div class="muc-callout"><slot name="header" /><slot name="content" /></div>',
+            props: ["type"],
+          },
         },
       },
     });
   };
 
+  // helper function: finds the next-button (second Button)
+  const findNextButton = (wrapper: any) => wrapper.findAll(".muc-button")[1];
+  // helper function: finds the back-button (first Button)
+  const findBackButton = (wrapper: any) => wrapper.findAll(".muc-button")[0];
+
   describe("Form Validation", () => {
     it("should not emit next when form is invalid", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("next")).toBeUndefined();
@@ -77,7 +102,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "invalid-email";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMailAddressValidation");
@@ -90,7 +115,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@test.de";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("next")).toBeTruthy();
@@ -102,7 +127,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@example.com";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageFirstName");
@@ -115,7 +140,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@example.com";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageLastName");
@@ -128,7 +153,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMailAddressRequired");
@@ -144,7 +169,7 @@ describe("CustomerInfo", () => {
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageTelephoneNumberRequired");
@@ -160,7 +185,7 @@ describe("CustomerInfo", () => {
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
+      const nextButton = findNextButton(wrapper);
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageTelephoneNumberValidation");
@@ -170,23 +195,13 @@ describe("CustomerInfo", () => {
 
   describe("Optional Fields", () => {
     it("should not show telephone field when not activated", async () => {
-      // default is not activated
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.find("#telephonenumber").exists()).toBe(false);
     });
 
     it("should show telephone field when activated", async () => {
-      mockSelectedProvider.value = {
-        scope: {
-          telephoneActivated: true,
-          telephoneRequired: false,
-          customTextfieldActivated: false,
-          customTextfieldRequired: false,
-          customTextfield2Activated: false,
-          customTextfield2Required: false,
-        },
-      };
+      mockSelectedProvider.value.scope.telephoneActivated = true;
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.find("#telephonenumber").exists()).toBe(true);
@@ -199,16 +214,7 @@ describe("CustomerInfo", () => {
     });
 
     it("should show custom textfield when activated", async () => {
-      mockSelectedProvider.value = {
-        scope: {
-          telephoneActivated: false,
-          telephoneRequired: false,
-          customTextfieldActivated: true,
-          customTextfieldRequired: false,
-          customTextfield2Activated: false,
-          customTextfield2Required: false,
-        },
-      };
+      mockSelectedProvider.value.scope.customTextfieldActivated = true;
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.find("#remarks").exists()).toBe(true);
@@ -219,7 +225,7 @@ describe("CustomerInfo", () => {
     it("should emit back when back button is clicked", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      const backButton = wrapper.find('muc-button-stub[variant="secondary"]');
+      const backButton = findBackButton(wrapper);
       await backButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("back")).toBeTruthy();
@@ -230,17 +236,13 @@ describe("CustomerInfo", () => {
     it("test loading state when booking appointment", async () => {
       const wrapper = createWrapper();
 
-      // Set loading state
       wrapper.vm.loadingStates.isBookingAppointment.value = true;
       await nextTick();
-
       expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
 
       wrapper.vm.loadingStates.isBookingAppointment.value = false;
       await nextTick();
-
       expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(false);
-
     });
 
     it("enables the next button when form is valid and not loading, disables it during update, and re-enables after update", async () => {
@@ -249,22 +251,104 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@test.de";
       const wrapper = createWrapper();
       await nextTick();
-      // Find the Next button (should be the second muc-button-stub)
-      let nextButton = wrapper.findAll('muc-button-stub')[1];
-      // Should be enabled when form is valid and not loading
-      expect(nextButton.attributes('disabled')).toBe('false');
 
-      // Set loading state
+      let nextButton = findNextButton(wrapper);
+      // enabled
+      expect(nextButton.attributes("disabled")).toBeUndefined();
+
       wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
       await nextTick();
-      nextButton = wrapper.findAll('muc-button-stub')[1];
-      expect(nextButton.attributes('disabled')).toBe('true');
+      nextButton = findNextButton(wrapper);
+      // disabled
+      expect(nextButton.attributes("disabled")).toBeDefined();
 
-      // Reset loading state
       wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
       await nextTick();
-      nextButton = wrapper.findAll('muc-button-stub')[1];
-      expect(nextButton.attributes('disabled')).toBe('false');
+      nextButton = findNextButton(wrapper);
+      expect(nextButton.attributes("disabled")).toBeUndefined();
+    });
+  });
+
+  const MAX_LENGTH_STANDARD = 50;
+  const MAX_LENGTH_CUSTOM = 100;
+  const setupValidCustomerData = () => {
+    mockCustomerData.value.firstName = "Max";
+    mockCustomerData.value.lastName = "Mustermann";
+    mockCustomerData.value.mailAddress = "max@example.com";
+  };
+
+  describe("Field length validation", () => {
+    it("should show max length error when firstName reaches/exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.firstName = "A".repeat(MAX_LENGTH_STANDARD);
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show max length error when lastName reaches/exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.lastName = "B".repeat(MAX_LENGTH_STANDARD);
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show max length error when mailAddress reaches/exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.mailAddress =
+        "a".repeat(MAX_LENGTH_STANDARD - 12) + "@example.com";
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show max length error when telephoneNumber exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.telephoneNumber = "1".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show max length error when customTextfield exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.customTextfield = "X".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockSelectedProvider.value.scope.customTextfieldActivated = true;
+      mockSelectedProvider.value.scope.customTextfieldRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show max length error when customTextfield2 exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.customTextfield2 = "Y".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockSelectedProvider.value.scope.customTextfield2Activated = true;
+      mockSelectedProvider.value.scope.customTextfield2Required = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+  });
+  describe("Session timeout", () => {
+    it("displays the timeout message when the reservation time has expired", async () => {
+      // Reservationtime: 1 minute
+      mockAppointmentProvider.appointment.value = { scope: { reservationDuration: 1 } };
+      mockReservationStartMs.value = Date.now() - 2 * 60 * 1000;
+  
+      const wrapper = createWrapper();
+      await nextTick();
+  
+      expect(wrapper.html()).toContain("apiErrorSessionTimeoutHeader");
+      expect(wrapper.html()).toContain("apiErrorSessionTimeoutText");
+  
+      // form and next-button sre not displayed
+      expect(wrapper.find(".m-form").exists()).toBe(false);
+      const buttons = wrapper.findAll(".m-button-group .muc-button");
+      expect(buttons.length).toBe(1); // only back-button
     });
   });
 });

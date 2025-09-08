@@ -31,6 +31,7 @@ class GraphDefaults
             client
             workstation
             ticketprinter
+            queue
         }
         status 
     },
@@ -295,6 +296,7 @@ EOS;
     customTextfield
     customTextfield2
     authKey
+    priority
     id
     status
     createTimestamp

@@ -3,11 +3,9 @@
 namespace BO\Slim\Middleware\OAuth\Keycloak;
 
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
-use BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
 use BO\Zmsclient\PSR7\Client;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use BO\Zmsentities\Useraccount;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -18,6 +16,11 @@ class Provider extends Keycloak
     const PROVIDERNAME = 'keycloak';
 
     /**
+     * @var \BO\Zmsclient\OAuthService
+     */
+    protected $oauthService;
+
+    /**
      * Sets the config options for keycloak access from json file.
      *
      * @param array $options An array of options to set on this provider.
@@ -25,8 +28,9 @@ class Provider extends Keycloak
      *     Individual providers may introduce more options, as needed.
      * @return parent
      */
-    public function __construct($client = null)
+    public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
     {
+        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
         $client = ((null === $client)) ? new Client() : $client;
         $options = $this->getOptionsFromJsonFile();
         return parent::__construct($options, ['httpClient' => $client]);
@@ -35,7 +39,7 @@ class Provider extends Keycloak
     /**
      * Sets the HTTP client instance.
      *
-     * @param  HttpClientInterface $client
+     * @param  \BO\Zmsclient\PSR7\ClientInterface $client
      * @return self
      */
     public function setHttpClient($client)
@@ -51,7 +55,7 @@ class Provider extends Keycloak
      * @param AccessToken $token
      * @return ResourceOwner
      */
-    protected function createResourceOwner(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token): ResourceOwner
     {
         return new ResourceOwner($response);
     }
@@ -60,24 +64,25 @@ class Provider extends Keycloak
      * Requests and returns the resource owner data of given access token.
      *
      * @param  AccessToken $token
-     * @return Array
+     * @return array
      */
-    public function getResourceOwnerData(AccessToken $token)
+    public function getResourceOwnerData(AccessToken $token): Useraccount
     {
         $resourceOwner = $this->getResourceOwner($token);
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = $this->oauthService->readConfig();
         $ownerData['username'] = $resourceOwner->getName() . '@' . static::PROVIDERNAME;
         if (1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
-            if ($resourceOwner->getVerifiedEmail()) {
-                $ownerData['email'] = $resourceOwner->getVerifiedEmail();
+            $email = $resourceOwner->getEmail();
+            if ($email && $resourceOwner->toArray()['email_verified'] ?? false) {
+                $ownerData['email'] = $email;
             }
         } else {
             $ownerData['email'] = $resourceOwner->getEmail();
         }
-        return $ownerData;
+        return new Useraccount($ownerData);
     }
 
-    private function getOptionsFromJsonFile()
+    private function getOptionsFromJsonFile(): array
     {
         $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {
@@ -90,7 +95,7 @@ class Provider extends Keycloak
         return $realmData;
     }
 
-    public function getBasicOptionsFromJsonFile()
+    public function getBasicOptionsFromJsonFile(): array
     {
         $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {

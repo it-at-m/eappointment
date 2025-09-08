@@ -2,7 +2,10 @@
   <div class="m-component m-component-form">
     <div
       v-if="
-        !confirmAppointmentHash && !appointmentNotFoundError && currentView < 4
+        !confirmAppointmentHash &&
+        !apiErrorAppointmentNotFound &&
+        !apiErrorInvalidJumpinLink &&
+        currentView < 4
       "
     >
       <muc-stepper
@@ -23,6 +26,7 @@
                 :t="t"
                 @next="setServices"
                 @captchaTokenChanged="captchaToken = $event ?? undefined"
+                @invalidJumpinLink="handleInvalidJumpinLink"
               />
             </div>
 
@@ -35,7 +39,13 @@
                 :selected-service-map="selectedServiceMap"
                 :captcha-token="captchaToken ?? null"
                 :t="t"
-                :booking-error="captchaError || appointmentNotAvailableError"
+                :booking-error="
+                  captchaError ||
+                  apiErrorAppointmentNotAvailable ||
+                  errorStates.errorStateMap.apiErrorCaptchaExpired.value ||
+                  errorStates.errorStateMap.apiErrorCaptchaMissing.value ||
+                  errorStates.errorStateMap.apiErrorCaptchaInvalid.value
+                "
                 :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
                 @next="nextReserveAppointment"
@@ -51,8 +61,7 @@
             <div v-if="currentView === 3">
               <appointment-summary
                 v-if="
-                  !updateAppointmentError &&
-                  !tooManyAppointmentsWithSameMailError
+                  !hasUpdateAppointmentError && !hasPreconfirmAppointmentError
                 "
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCanelDialog"
@@ -63,26 +72,30 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
-              <div v-if="tooManyAppointmentsWithSameMailError">
-                <muc-callout type="error">
+              <div v-if="hasUpdateAppointmentError">
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
                   <template #content>
-                    {{ t("tooManyAppointmentsWithSameMailErrorText") }}
+                    {{ t(apiErrorTranslation.textKey) }}
                   </template>
 
-                  <template #header>{{
-                    t("tooManyAppointmentsWithSameMailErrorHeader")
-                  }}</template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
                 </muc-callout>
               </div>
-              <div v-if="updateAppointmentError">
-                <muc-callout type="error">
+              <div v-if="hasPreconfirmAppointmentError">
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
                   <template #content>
-                    {{ t("updateAppointmentErrorText") }}
+                    {{ t(apiErrorTranslation.textKey) }}
                   </template>
 
-                  <template #header>{{
-                    t("updateAppointmentErrorHeader")
-                  }}</template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
                 </muc-callout>
               </div>
             </div>
@@ -101,7 +114,7 @@
             type="warning"
           >
             <template #content>
-              {{ t("confirmAppointmentText") }}
+              {{ confirmText }}
             </template>
 
             <template #header>{{ t("confirmAppointmentHeader") }}</template>
@@ -117,6 +130,18 @@
             <template #header>{{
               t("appointmentSuccessfullyCanceledHeader")
             }}</template>
+          </muc-callout>
+          <muc-callout
+            v-if="hasCancelAppointmentError"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
+          >
+            <template #content>
+              {{ t(apiErrorTranslation.textKey) }}
+            </template>
+
+            <template #header>
+              {{ t(apiErrorTranslation.headerKey) }}
+            </template>
           </muc-callout>
         </div>
         <div
@@ -135,41 +160,74 @@
               t("appointmentSuccessfullyBookedHeader")
             }}</template>
           </muc-callout>
+          <div
+            v-if="confirmAppointmentSuccess"
+            class="m-button-group"
+          >
+            <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
+                <muc-button
+                  icon="download"
+                  @click="downloadIcsAppointment"
+                >
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                bis hierhin. -->
+            <muc-button
+              @click="redirectToAppointmentStart"
+              variant="secondary"
+            >
+              {{ t("bookAnotherAppointment") }}
+            </muc-button>
+          </div>
           <muc-callout
-            v-if="confirmAppointmentError"
-            type="error"
+            v-if="hasConfirmAppointmentError"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
-              {{ t("appointmentBookingErrorText") }}
-            </template>
-
-            <template #header>{{
-              t("appointmentBookingErrorHeader")
-            }}</template>
-          </muc-callout>
-          <muc-callout
-            v-if="confirmAppointmentActivationExpiredError"
-            type="error"
-          >
-            <template #content>
-              {{ t("appointmentActivationExpiredErrorText") }}
+              {{ t(apiErrorTranslation.textKey) }}
             </template>
 
             <template #header>
-              {{ t("appointmentActivationExpiredErrorHeader") }}
+              {{ t(apiErrorTranslation.headerKey) }}
             </template>
           </muc-callout>
+
           <muc-callout
-            v-if="appointmentNotFoundError"
+            v-if="hasInitializationError"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
+          >
+            <template #content>
+              {{ t(apiErrorTranslation.textKey) }}
+            </template>
+
+            <template #header>
+              {{ t(apiErrorTranslation.headerKey) }}
+            </template>
+          </muc-callout>
+
+          <muc-callout
+            v-if="apiErrorInvalidJumpinLink"
             type="error"
           >
             <template #content>
-              {{ t("appointmentNotFoundErrorText") }}
+              <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
+              <div
+                class="m-button-group"
+                style="margin-top: 1rem"
+              >
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                  style="margin-bottom: 0; margin-right: 0"
+                >
+                  {{ t("bookAppointmentStart") }}
+                </muc-button>
+              </div>
             </template>
 
-            <template #header>{{
-              t("appointmentNotFoundErrorHeader")
-            }}</template>
+            <template #header>
+              {{ t("apiErrorInvalidJumpinLinkHeader") }}
+            </template>
           </muc-callout>
         </div>
       </div>
@@ -178,11 +236,17 @@
 </template>
 
 <script setup lang="ts">
-import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
+import type { CalloutType } from "@/utils/callout";
+import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
+
+import {
+  MucButton,
+  MucCallout,
+  MucStepper,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
@@ -212,6 +276,19 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import { toCalloutType } from "@/utils/callout";
+import {
+  clearContextErrors,
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiError,
+  handleApiResponse,
+  hasCancelContextError,
+  hasConfirmContextError,
+  hasInitializationContextError,
+  hasPreconfirmContextError,
+  hasUpdateContextError,
+} from "@/utils/errorHandler";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -277,20 +354,32 @@ const captchaError = ref<boolean>(false);
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
-  if (appointmentNotAvailableError.value) return "noAppointmentsAvailable";
+  if (apiErrorAppointmentNotAvailable.value)
+    return "apiErrorAppointmentNotAvailable";
+  if (errorStateMap.value.apiErrorCaptchaExpired.value)
+    return "apiErrorCaptchaExpired";
+  if (errorStateMap.value.apiErrorCaptchaMissing.value)
+    return "apiErrorCaptchaMissing";
+  if (errorStateMap.value.apiErrorCaptchaInvalid.value)
+    return "apiErrorCaptchaInvalid";
   return "";
 });
-const appointmentNotAvailableError = ref<boolean>(false);
-const updateAppointmentError = ref<boolean>(false);
-const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
-const appointmentNotFoundError = ref<boolean>(false);
-const confirmAppointmentActivationExpiredError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
-const confirmAppointmentError = ref<boolean>(false);
-
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
+
+// Create centralized error states
+const errorStates = createErrorStates();
+const errorStateMap = computed<ErrorStateMap>(() => errorStates.errorStateMap);
+const currentErrorData = computed(() => errorStates.currentErrorData);
+
+// Access individual error refs from the error state map
+const apiErrorAppointmentNotAvailable =
+  errorStateMap.value.apiErrorAppointmentNotAvailable;
+const apiErrorAppointmentNotFound =
+  errorStateMap.value.apiErrorAppointmentNotFound;
+const apiErrorInvalidJumpinLink = errorStateMap.value.apiErrorInvalidJumpinLink;
 
 const isReservingAppointment = ref<boolean>(false);
 const isUpdatingAppointment = ref<boolean>(false);
@@ -298,6 +387,71 @@ const isBookingAppointment = ref<boolean>(false);
 const isCancelingAppointment = ref<boolean>(false);
 
 const preselectedLocationId = ref<string | undefined>(props.locationId);
+
+const reservationStartMs = ref<number | null>(null);
+
+const activationMinutes = computed<number | undefined>(() => {
+  const fromAppt = (appointment.value as any)?.scope?.activationDuration;
+  const fromProv = (selectedProvider.value as any)?.scope?.activationDuration;
+  const raw = fromAppt ?? fromProv;
+  const n = typeof raw === "string" ? Number.parseInt(raw, 10) : raw;
+  return Number.isFinite(n as number) ? (n as number) : undefined;
+});
+
+const confirmText = computed<string>(() => {
+  const minutes = activationMinutes.value ?? "30";
+  return props.t("confirmAppointmentText", { activationMinutes: minutes });
+});
+
+const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
+  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
+});
+
+// Track the current context based on API calls and props
+const currentContext = ref<string>("update");
+
+// Computed property to determine the active context
+const activeContext = computed<string>(() => {
+  if (props.confirmAppointmentHash) {
+    return "confirm";
+  }
+  // During rebooking, use the current context instead of initialization
+  if (props.appointmentHash && isRebooking.value) {
+    return currentContext.value;
+  }
+  if (props.appointmentHash) {
+    return "initialization";
+  }
+  return currentContext.value;
+});
+
+// Computed property to check if any update appointment error is active
+const hasUpdateAppointmentError = computed<boolean>(() => {
+  return hasUpdateContextError(errorStateMap.value, activeContext.value);
+});
+
+// Computed property to check if any confirm appointment error is active
+const hasConfirmAppointmentError = computed<boolean>(() => {
+  return hasConfirmContextError(errorStateMap.value, activeContext.value);
+});
+
+// Computed property to check if any initialization error is active
+const hasInitializationError = computed<boolean>(() => {
+  return hasInitializationContextError(
+    errorStateMap.value,
+    activeContext.value
+  );
+});
+
+// Computed property to check if any preconfirm appointment error is active
+const hasPreconfirmAppointmentError = computed<boolean>(() => {
+  return hasPreconfirmContextError(errorStateMap.value, activeContext.value);
+});
+
+// Computed property to check if any cancel appointment error is active
+const hasCancelAppointmentError = computed<boolean>(() => {
+  return hasCancelContextError(errorStateMap.value, activeContext.value);
+});
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -317,6 +471,8 @@ provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
 
+provide("reservationStartMs", reservationStartMs);
+
 provide("loadingStates", {
   isReservingAppointment,
   isUpdatingAppointment,
@@ -333,6 +489,7 @@ const decreaseCurrentView = () => currentView.value--;
  */
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
+    clearContextErrors(errorStateMap.value);
     currentView.value = parseInt(step);
   }
 };
@@ -373,18 +530,14 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield;
     appointment.value.customTextfield2 =
       rebookedAppointment.value.customTextfield2;
+    clearContextErrors(errorStateMap.value);
+    currentContext.value = "update";
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          if (
-            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-          ) {
-            tooManyAppointmentsWithSameMailError.value = true;
-          } else {
-            updateAppointmentError.value = true;
-          }
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
         }
         currentView.value = 3;
       }
@@ -398,7 +551,7 @@ const nextReserveAppointment = () => {
   }
 
   isReservingAppointment.value = true;
-  appointmentNotAvailableError.value = false;
+  clearContextErrors(errorStateMap.value);
   captchaError.value = false;
   rebookOrCanelDialog.value = false;
 
@@ -413,25 +566,18 @@ const nextReserveAppointment = () => {
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         if (appointment.value && !isRebooking.value) {
+          currentContext.value = "cancel";
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
         }
         appointment.value = data as AppointmentDTO;
+        reservationStartMs.value = Date.now();
         if (isRebooking.value) {
           setRebookData();
         } else {
           increaseCurrentView();
         }
       } else {
-        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-        if (firstErrorCode === "appointmentNotAvailable") {
-          appointmentNotAvailableError.value = true;
-        } else if (
-          ["captchaMissing", "captchaExpired", "captchaInvalid"].includes(
-            firstErrorCode
-          )
-        ) {
-          captchaError.value = true;
-        }
+        handleApiResponse(data, errorStateMap.value, currentErrorData.value);
       }
     })
     .finally(() => {
@@ -446,6 +592,7 @@ const nextUpdateAppointment = () => {
 
   if (appointment.value) {
     isUpdatingAppointment.value = true;
+    clearContextErrors(errorStateMap.value);
     appointment.value.familyName =
       customerData.value.firstName + " " + customerData.value.lastName;
     appointment.value.email = customerData.value.mailAddress;
@@ -459,18 +606,13 @@ const nextUpdateAppointment = () => {
       ? customerData.value.customTextfield2
       : undefined;
 
+    currentContext.value = "update";
     updateAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          if (
-            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-          ) {
-            tooManyAppointmentsWithSameMailError.value = true;
-          } else {
-            updateAppointmentError.value = true;
-          }
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
         }
         increaseCurrentView();
       })
@@ -487,11 +629,19 @@ const nextBookAppointment = () => {
 
   if (appointment.value) {
     isBookingAppointment.value = true;
+    clearContextErrors(errorStateMap.value);
+    currentContext.value = "preconfirm";
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
+        if ((data as any)?.errors?.length > 0) {
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          return;
+        }
+
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
           if (isRebooking.value && rebookedAppointment.value) {
+            currentContext.value = "cancel";
             cancelAppointment(
               rebookedAppointment.value,
               props.baseUrl ?? undefined
@@ -513,8 +663,15 @@ const nextCancelAppointment = () => {
 
   if (appointment.value) {
     isCancelingAppointment.value = true;
+    clearContextErrors(errorStateMap.value);
+    currentContext.value = "cancel";
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
+        if ((data as any)?.errors?.length > 0) {
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          return;
+        }
+
         if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
         } else {
@@ -529,6 +686,7 @@ const nextCancelAppointment = () => {
 };
 
 const nextRescheduleAppointment = () => {
+  clearContextErrors(errorStateMap.value);
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -536,6 +694,7 @@ const nextRescheduleAppointment = () => {
 };
 
 const nextCancelReschedule = () => {
+  clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
   rebookOrCanelDialog.value = true;
 };
@@ -606,11 +765,31 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   }
 };
 
+const handleInvalidJumpinLink = () => {
+  handleApiError(
+    "invalidJumpinLink",
+    errorStateMap.value,
+    currentErrorData.value
+  );
+};
+
+const redirectToAppointmentStart = () => {
+  // Clear jump-in link parameters and reset to clean start state
+  // This keeps users within our application instead of redirecting to external site
+  const baseUrl = window.location.origin + window.location.pathname;
+  window.location.href = baseUrl;
+};
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
+    clearContextErrors(errorStateMap.value);
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
-      confirmAppointmentError.value = true;
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
       return;
     }
 
@@ -620,13 +799,22 @@ onMounted(() => {
           confirmAppointmentSuccess.value = true;
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+
           if (
             firstErrorCode === "processNotPreconfirmedAnymore" ||
             firstErrorCode === "appointmentNotFound"
           ) {
-            confirmAppointmentActivationExpiredError.value = true;
+            handleApiError(
+              "preconfirmationExpired",
+              errorStateMap.value,
+              currentErrorData.value
+            );
           } else {
-            confirmAppointmentError.value = true;
+            handleApiResponse(
+              data,
+              errorStateMap.value,
+              currentErrorData.value
+            );
           }
         }
       }
@@ -634,6 +822,7 @@ onMounted(() => {
   }
 
   if (props.appointmentHash) {
+    clearContextErrors(errorStateMap.value);
     rebookOrCanelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
@@ -646,7 +835,11 @@ onMounted(() => {
 
       const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
       if (!appointmentData) {
-        appointmentNotFoundError.value = true;
+        handleApiError(
+          "appointmentNotFound",
+          errorStateMap.value,
+          currentErrorData.value
+        );
         return;
       }
 
@@ -715,7 +908,11 @@ onMounted(() => {
               currentView.value = 3;
             }
           } else {
-            appointmentNotFoundError.value = true;
+            handleApiError(
+              "appointmentNotFound",
+              errorStateMap.value,
+              currentErrorData.value
+            );
           }
         }
       );
@@ -723,3 +920,31 @@ onMounted(() => {
   }
 });
 </script>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
+.m-button-group {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
+}
+
+.button-item {
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
+
+@include xs-down {
+  .m-button-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .button-item {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    width: auto;
+    flex: none;
+  }
+}
+</style>
