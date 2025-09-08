@@ -1,0 +1,1 @@
+ALTER TABLE nutzer DROP COLUMN email;

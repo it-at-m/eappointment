@@ -175,8 +175,8 @@ class Process extends Schema\Entity
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
-        $this->addCustomTextfield($requestData, $notice);
-        $this->addCustomTextfield2($requestData, $notice);
+        $this->addCustomTextfield($requestData);
+        $this->addCustomTextfield2($requestData);
         $this->addPriority($requestData);
         return $this;
     }
@@ -384,9 +384,8 @@ class Process extends Schema\Entity
         return $this->toProperty()->customTextfield->get();
     }
 
-    public function addCustomTextfield($input, $notice = '')
+    public function addCustomTextfield($input)
     {
-        $this->customTextfield = $notice;
         $this->customTextfield .= (
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
@@ -399,9 +398,8 @@ class Process extends Schema\Entity
         return $this->toProperty()->customTextfield2->get();
     }
 
-    public function addCustomTextfield2($input, $notice = '')
+    public function addCustomTextfield2($input)
     {
-        $this->customTextfield2 = $notice;
         $this->customTextfield2 .= (
             isset($input['customTextfield2']) && $input['customTextfield2']
         ) ? $input['customTextfield2'] : '';
