@@ -178,9 +178,6 @@ const emit = defineEmits<{
 // Error handling state
 const errorStates = createErrorStates();
 const currentErrorData = computed(() => errorStates.currentErrorData);
-const apiErrorTranslation = computed(() =>
-  getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value)
-);
 
 // Watch for rate limit errors and emit event
 watch(
