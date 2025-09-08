@@ -20,7 +20,8 @@ class Provider extends Base
             'link' => 'provider.link',
             'name' => 'provider.name',
             'displayName' => 'provider.display_name',
-            'source' => 'provider.source'
+            'source' => 'provider.source',
+            'parent_id' => 'provider.parent_id'
         ];
         if ($this->getResolveLevel() > 0) {
             $mapping['data'] = 'provider.data';
