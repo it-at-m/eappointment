@@ -46,6 +46,7 @@
           <error-alert
             :message="t(apiErrorTranslation.textKey)"
             :header="t(apiErrorTranslation.headerKey)"
+            :type="apiErrorTranslation.errorType"
           />
         </div>
       </div>
@@ -66,6 +67,7 @@
           <error-alert
             :message="t('apiErrorRateLimitExceededText')"
             :header="t('apiErrorRateLimitExceededHeader')"
+            type="warning"
           />
         </div>
       </div>

@@ -45,6 +45,7 @@
         <error-alert
           :message="t(apiErrorTranslation.textKey)"
           :header="t(apiErrorTranslation.headerKey)"
+          :type="apiErrorTranslation.errorType"
         />
       </div>
     </div>
