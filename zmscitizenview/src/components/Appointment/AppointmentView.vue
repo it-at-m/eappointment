@@ -52,26 +52,7 @@
       </div>
     </div>
 
-    <!-- ServiceFinder Rate Limit Error Alert -->
-    <div
-      v-if="
-        !isInMaintenanceModeComputed &&
-        !isInSystemFailureModeComputed &&
-        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-        serviceFinderRateLimitError
-      "
-      class="container"
-    >
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <error-alert
-            :message="t('apiErrorRateLimitExceededText')"
-            :header="t('apiErrorRateLimitExceededHeader')"
-            type="warning"
-          />
-        </div>
-      </div>
-    </div>
+    <!-- ServiceFinder-specific rate limit alert removed; centralized via errorStates -->
 
     <!-- Normal Application Content -->
     <div
@@ -79,7 +60,6 @@
         !isInMaintenanceModeComputed &&
         !isInSystemFailureModeComputed &&
         !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-        !serviceFinderRateLimitError &&
         !confirmAppointmentHash &&
         !apiErrorAppointmentNotFound &&
         !apiErrorInvalidJumpinLink &&
@@ -186,8 +166,7 @@
       v-if="
         !isInMaintenanceModeComputed &&
         !isInSystemFailureModeComputed &&
-        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-        !serviceFinderRateLimitError
+        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
       "
       class="m-component__grid"
     >
@@ -899,7 +878,12 @@ const handleInvalidJumpinLink = () => {
 };
 
 const handleServiceFinderRateLimitError = () => {
-  serviceFinderRateLimitError.value = true;
+  handleApiError(
+    "rateLimitExceeded",
+    errorStateMap.value,
+    currentErrorData.value,
+    "warning"
+  );
 };
 
 const redirectToAppointmentStart = () => {
