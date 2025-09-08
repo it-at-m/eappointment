@@ -160,6 +160,25 @@
               t("appointmentSuccessfullyBookedHeader")
             }}</template>
           </muc-callout>
+          <div
+            v-if="confirmAppointmentSuccess"
+            class="m-button-group"
+          >
+            <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
+                <muc-button
+                  icon="download"
+                  @click="downloadIcsAppointment"
+                >
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                bis hierhin. -->
+            <muc-button
+              @click="redirectToAppointmentStart"
+              variant="secondary"
+            >
+              {{ t("bookAnotherAppointment") }}
+            </muc-button>
+          </div>
           <muc-callout
             v-if="hasConfirmAppointmentError"
             :type="toCalloutType(apiErrorTranslation.errorType)"
@@ -901,3 +920,31 @@ onMounted(() => {
   }
 });
 </script>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
+.m-button-group {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
+}
+
+.button-item {
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
+
+@include xs-down {
+  .m-button-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .button-item {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    width: auto;
+    flex: none;
+  }
+}
+</style>
