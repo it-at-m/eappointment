@@ -44,7 +44,7 @@ class Request extends Base
             new Alias("buergeranliegen", 'buergeranliegen'),
             self::expression('
                 buergeranliegen.AnliegenID = request.id
-                AND buergeranliegen.source = request.source
+                AND FIND_IN_SET(request.source, REPLACE(buergeranliegen.source, ";", ",")) > 0
             ')
         );
         $this->query->where('buergeranliegen.BuergerID', '=', $processId);
@@ -57,7 +57,7 @@ class Request extends Base
             new Alias("buergeranliegen", 'buergeranliegen'),
             self::expression('
                 buergeranliegen.AnliegenID = request.id
-                AND buergeranliegen.source = request.source
+                AND FIND_IN_SET(request.source, REPLACE(buergeranliegen.source, ";", ",")) > 0
             ')
         );
         $this->query->where('buergeranliegen.BuergerarchivID', '=', $archiveId);
