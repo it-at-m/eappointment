@@ -1,0 +1,123 @@
+name: Prune Old Workflow Runs
+
+on:
+  schedule:
+    # Run every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      days_to_keep:
+        description: 'Number of days to keep workflow runs (default: 30)'
+        required: false
+        default: '30'
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  delete-old-runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Delete old workflow runs
+        run: |
+          # Calculate cutoff date
+          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 30 }}
+          CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "=== Workflow Run Cleanup ==="
+          echo "Retention period: $CUTOFF_DAYS days"
+          echo "Cutoff date: $CUTOFF_DATE"
+          echo "Current date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo ""
+          
+          # Get total count of all runs (GitHub CLI has a max limit of 1000 per request)
+          TOTAL_RUNS=$(gh run list --repo ${{ github.repository }} --limit 1000 --json databaseId | jq length)
+          echo "Total workflow runs found in first 1000: $TOTAL_RUNS"
+          echo "Note: GitHub CLI limits to 1000 runs per request. We'll process in batches."
+          
+          # Get total count and calculate last page
+          TOTAL_COUNT=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=1" --jq '.total_count')
+          LAST_PAGE=$(( (TOTAL_COUNT + 99) / 100 ))  # Round up division
+          START_PAGE=$LAST_PAGE  # Start from the last page (oldest runs)
+          
+          echo "Total workflow runs: $TOTAL_COUNT"
+          echo "Total pages: $LAST_PAGE"
+          echo "Starting from page $START_PAGE (oldest runs) and going forward..."
+          echo "Will process pages $START_PAGE through 1 (newest runs)"
+          
+          DELETED_COUNT=0
+          MAX_DELETIONS=300  # Rate limit: 1000 requests per hour, cap at 300 for safety
+          
+          for PAGE in $(seq $START_PAGE -1 1); do
+            # Check if we've reached the rate limit BEFORE processing
+            if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+              echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping to avoid API limits."
+              break
+            fi
+            
+            echo "Processing page $PAGE (oldest to newest)... (deleted so far: $DELETED_COUNT)"
+            
+            # Get runs from this page using GitHub API
+            echo "Fetching page $PAGE from GitHub API..."
+            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Prune Old Workflow Runs" and (.head_branch | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}')
+            
+            if [ -z "$RUNS_JSON" ] || [ "$RUNS_JSON" = "null" ]; then
+              echo "No more old runs found on page $PAGE. Stopping."
+              break
+            fi
+            
+            # Extract run IDs
+            RUN_IDS=$(echo "$RUNS_JSON" | jq -r '.id')  # Process all runs found on this page
+            
+            RUN_COUNT=$(echo "$RUN_IDS" | wc -l)
+            echo "Found $RUN_COUNT old runs on page $PAGE"
+            
+            if [ "$RUN_COUNT" -eq 0 ]; then
+              echo "No runs to delete on this page. Moving to next page."
+              continue
+            fi
+            
+            # Show some sample runs we're about to delete
+            echo "Sample runs to delete:"
+            echo "$RUNS_JSON" | jq -r '. | "  - \(.name) (\(.head_branch)) (\(.created_at))"' | head -5
+            
+            # Delete runs one by one with delays
+            for run_id in $RUN_IDS; do
+              if [ -n "$run_id" ]; then
+                echo "Deleting workflow run: $run_id"
+                if gh run delete --repo ${{ github.repository }} "$run_id"; then
+                  echo "Successfully deleted run: $run_id"
+                  DELETED_COUNT=$((DELETED_COUNT + 1))
+                  
+                  # Check rate limit after each deletion
+                  if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+                    echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping."
+                    break 2  # Break out of both loops
+                  fi
+                else
+                  echo "Failed to delete run: $run_id"
+                fi
+                
+                # Add delay between deletions to avoid rate limiting
+                sleep 1
+              fi
+            done
+            
+            # Small delay to avoid rate limiting
+            sleep 2
+          done
+          
+          echo "Deletion process completed. Total deleted: $DELETED_COUNT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "Cleanup completed. Remaining workflow runs:"
+          gh run list --repo ${{ github.repository }} --limit 10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

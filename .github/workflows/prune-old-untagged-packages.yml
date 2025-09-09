@@ -1,0 +1,122 @@
+name: Prune Untagged Packages
+
+on:
+  schedule:
+    # Run every Sunday at 3 AM UTC (after workflow runs cleanup)
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      days_to_keep:
+        description: 'Number of days to keep untagged packages (default: 7)'
+        required: false
+        default: '7'
+        type: string
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  prune-untagged-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Prune untagged packages
+        run: |
+          # Calculate cutoff date
+          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 7 }}
+          CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "=== Package Cleanup ==="
+          echo "Retention period: $CUTOFF_DAYS days"
+          echo "Cutoff date: $CUTOFF_DATE"
+          echo "Current date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo ""
+          
+          # List of packages to clean up
+          PACKAGES=(
+            "zmsmessaging"
+            "zmsapi" 
+            "zmscalldisplay"
+            "zmsadmin"
+            "zmsstatistic"
+            "zmsticketprinter"
+            "zmscitizenapi"
+            "zmscitizenview"
+          )
+          
+          DELETED_COUNT=0
+          MAX_DELETIONS=200  # Rate limit safety
+          
+          for PACKAGE in "${PACKAGES[@]}"; do
+            echo "=== Processing package: $PACKAGE ==="
+            
+            # Get untagged package versions older than cutoff date
+            OLD_VERSIONS=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" \
+              --jq --arg cutoff "$CUTOFF_DATE" '
+                [.[] | 
+                  select(
+                    .metadata.container.tags | length == 0 and 
+                    .updated_at < $cutoff
+                  )
+                ] | .[].id')
+            
+            VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+            echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
+            
+            if [ "$VERSION_COUNT" -eq 0 ]; then
+              echo "No old untagged versions found for $PACKAGE"
+              continue
+            fi
+            
+            # Show sample versions to be deleted
+            echo "Sample versions to delete:"
+            gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" \
+              --jq --arg cutoff "$CUTOFF_DATE" '
+                [.[] | 
+                  select(
+                    .metadata.container.tags | length == 0 and 
+                    .updated_at < $cutoff
+                  )
+                ] | .[0:5] | .[] | "  - \(.id) (\(.updated_at))"' || echo "  (No versions to show)"
+            
+            # Delete versions one by one with rate limiting
+            for version_id in $OLD_VERSIONS; do
+              if [ -n "$version_id" ]; then
+                echo "Deleting version: $version_id"
+                if gh api -X DELETE "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions/$version_id"; then
+                  echo "Successfully deleted version: $version_id"
+                  DELETED_COUNT=$((DELETED_COUNT + 1))
+                  
+                  # Check rate limit after each deletion
+                  if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+                    echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping."
+                    break 2  # Break out of both loops
+                  fi
+                else
+                  echo "Failed to delete version: $version_id"
+                fi
+                
+                # Add delay between deletions to avoid rate limiting
+                sleep 2
+              fi
+            done
+            
+            echo "Completed cleanup for $PACKAGE"
+            echo ""
+            
+            # Small delay to avoid rate limiting
+            sleep 3
+          done
+          
+          echo "Package cleanup completed. Total versions deleted: $DELETED_COUNT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "Package cleanup completed. Remaining packages:"
+          gh api "orgs/it-at-m/packages" --jq '.[] | select(.name | contains("eappointment")) | "\(.name): \(.package_type)"'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
