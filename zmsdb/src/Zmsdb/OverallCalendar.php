@@ -58,14 +58,63 @@ class OverallCalendar extends Base
         ]);
     }
 
-    public function book(
-        int $scopeId,
-        string $startTime,
-        int $processId,
-        int $slotUnits
-    ): void {
+    public function book(int $scopeId, string $startTime, int $processId, int $slotUnits): void
+    {
         $start = new DateTimeImmutable($startTime);
         $end   = $start->add(new DateInterval('PT' . ($slotUnits * 5) . 'M'));
+
+        $windowBefore = $this->fetchRow('
+            SELECT
+              SUM(status="free")      AS free_cnt,
+              SUM(status="cancelled") AS cancelled_cnt,
+              SUM(status="termin")    AS termin_cnt,
+              COUNT(DISTINCT availability_id) AS availability_ids
+            FROM gesamtkalender
+            WHERE scope_id=:scope AND time>=:start AND time<:end
+        ', [
+            'scope' => $scopeId,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+        ]) ?? ['free_cnt'=>0,'cancelled_cnt'=>0,'termin_cnt'=>0,'availability_ids'=>0];
+
+        $availabilityDetails = $this->fetchAll('
+            SELECT DISTINCT
+                   g.availability_id,
+                   a.OeffnungszeitID,
+                   a.Startdatum, a.Endedatum,
+                   a.Anfangszeit, a.Terminanfangszeit,
+                   a.Endzeit, a.Terminendzeit,
+                   a.Timeslot,
+                   a.Anzahlarbeitsplaetze,
+                   a.Anzahlterminarbeitsplaetze
+            FROM gesamtkalender g
+            LEFT JOIN oeffnungszeit a ON a.OeffnungszeitID = g.availability_id
+            WHERE g.scope_id=:scope AND g.time>=:start AND g.time<:end
+        ', [
+            'scope' => $scopeId,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+        ]);
+
+        $recentCancelled = (int)$this->fetchValue('
+            SELECT COUNT(*) FROM gesamtkalender
+             WHERE scope_id=:scope AND time>=:start AND time<:end
+               AND status="cancelled" AND updated_at > (NOW() - INTERVAL 2 MINUTE)
+        ', [
+            'scope' => $scopeId,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->log('info', 'calendar.book.attempt', [
+            'scope_id'        => $scopeId,
+            'process_id'      => $processId,
+            'window'          => ['from' => $start->format('Y-m-d H:i:s'), 'until' => $end->format('Y-m-d H:i:s')],
+            'slot_units'      => $slotUnits,
+            'window_before'   => $windowBefore,
+            'availability'    => $availabilityDetails,
+            'recent_cancelled'=> $recentCancelled,
+        ]);
 
         $seat = $this->fetchValue(Calender::FIND_FREE_SEAT, [
             'scope' => $scopeId,
@@ -75,17 +124,67 @@ class OverallCalendar extends Base
         ]);
 
         if (!$seat) {
-            error_log("Failed to book a seat for scope ID {$scopeId} from {$start->format('Y-m-d H:i:s')} to {$end->format('Y-m-d H:i:s')}. No free seats available.");
+            $this->log('warning', 'calendar.book.no_seat', [
+                'scope_id'        => $scopeId,
+                'process_id'      => $processId,
+                'window'          => ['from' => $start->format('Y-m-d H:i:s'), 'until' => $end->format('Y-m-d H:i:s')],
+                'slot_units'      => $slotUnits,
+                'window_before'   => $windowBefore,
+                'recent_cancelled'=> $recentCancelled,
+            ]);
             return;
         }
 
-        $this->perform(Calender::BLOCK_SEAT_RANGE, [
-            'pid'   => $processId,
-            'units' => $slotUnits,
+        try {
+            $this->perform(Calender::BLOCK_SEAT_RANGE, [
+                'pid'   => $processId,
+                'units' => $slotUnits,
+                'scope' => $scopeId,
+                'seat'  => $seat,
+                'start' => $start->format('Y-m-d H:i:s'),
+                'end'   => $end  ->format('Y-m-d H:i:s'),
+            ]);
+        } catch (\PDOException $e) {
+            $this->log('critical', 'calendar.book.update_failed', [
+                'scope_id'   => $scopeId,
+                'process_id' => $processId,
+                'seat'       => $seat,
+                'error'      => $e->getMessage()
+            ]);
+            throw $e;
+        }
+
+        $windowAfter = $this->fetchRow('
+            SELECT
+              SUM(status="free")      AS free_cnt,
+              SUM(status="cancelled") AS cancelled_cnt,
+              SUM(status="termin")    AS termin_cnt
+            FROM gesamtkalender
+            WHERE scope_id=:scope AND time>=:start AND time<:end
+        ', [
             'scope' => $scopeId,
-            'seat'  => $seat,
             'start' => $start->format('Y-m-d H:i:s'),
             'end'   => $end  ->format('Y-m-d H:i:s'),
+        ]) ?? ['free_cnt'=>0,'cancelled_cnt'=>0,'termin_cnt'=>0];
+
+        $terminByPid = (int)$this->fetchValue('
+            SELECT COUNT(*) FROM gesamtkalender
+             WHERE scope_id=:scope AND time>=:start AND time<:end
+               AND status="termin" AND process_id=:pid
+        ', [
+            'scope' => $scopeId,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+            'pid'   => $processId,
+        ]);
+
+        $this->log('info', 'calendar.book.result', [
+            'scope_id'       => $scopeId,
+            'process_id'     => $processId,
+            'seat'           => $seat,
+            'window_after'   => $windowAfter,
+            'termin_by_pid'  => $terminByPid,
+            'complete_chain' => ($terminByPid === $slotUnits),
         ]);
     }
 
@@ -123,5 +222,13 @@ class OverallCalendar extends Base
         }
 
         return $this->fetchAll($sql, $params);
+    }
+
+    private function log(string $level, string $msg, array $ctx = []): void {
+        if (isset(\App::$log) && method_exists(\App::$log, $level)) {
+            \App::$log->{$level}($msg, $ctx);
+        } else {
+            error_log($msg . ($ctx ? ' ' . json_encode($ctx) : ''));
+        }
     }
 }
