@@ -54,7 +54,22 @@ jobs:
             
             # Get untagged package versions older than cutoff date
             echo "Fetching package versions for $PACKAGE..."
-            PACKAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions")
+            
+            # Get total count and calculate pages
+            TOTAL_COUNT=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=1" --jq '. | length')
+            PER_PAGE=100
+            LAST_PAGE=$(( (TOTAL_COUNT + PER_PAGE - 1) / PER_PAGE ))
+            echo "Total package versions: $TOTAL_COUNT"
+            echo "Total pages: $LAST_PAGE"
+            
+            # Fetch all pages
+            PACKAGE_DATA="[]"
+            for PAGE in $(seq 1 $LAST_PAGE); do
+              echo "Fetching page $PAGE of $LAST_PAGE..."
+              PAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=$PER_PAGE&page=$PAGE")
+              PACKAGE_DATA=$(echo "$PACKAGE_DATA $PAGE_DATA" | jq -s '.[0] + .[1]')
+              sleep 1  # Rate limiting
+            done
             echo "Sample package data structure:"
             echo "$PACKAGE_DATA" | jq '.[0] | {id, created_at, metadata}'
             # Debug: Show what we're looking for
@@ -73,7 +88,11 @@ jobs:
             # Sort packages by created_at (oldest first) and then filter
             OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
             
-            VERSION_COUNT=$(echo "$OLD_VERSIONS" | grep -c '^[0-9]' || echo "0")
+            if [ -z "$OLD_VERSIONS" ]; then
+              VERSION_COUNT=0
+            else
+              VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+            fi
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
             
             # Debug: Show what was actually selected
