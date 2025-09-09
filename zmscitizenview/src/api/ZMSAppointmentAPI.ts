@@ -6,7 +6,7 @@ import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import {
-  getAPIBaseURL,
+  getGeneratedAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
@@ -30,9 +30,10 @@ export function fetchServicesAndProviders(
   serviceId?: string,
   locationId?: string,
   baseUrl?: string
-): Promise<OfficesAndServicesDTO> {
+): Promise<OfficesAndServicesDTO | ErrorDTO> {
   let apiUrl =
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
+    getGeneratedAPIBaseURL(baseUrl, false) +
+    VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
 
   const params = new URLSearchParams();
   if (serviceId) {
@@ -45,9 +46,40 @@ export function fetchServicesAndProviders(
     apiUrl += "?" + params.toString();
   }
 
-  return fetch(apiUrl).then((response) => {
-    return response.json();
-  });
+  return fetch(apiUrl)
+    .then((response) => {
+      if (response.status >= 400 && response.status < 600) {
+        return response
+          .json()
+          .catch(() => ({}))
+          .then((data: any) => {
+            if (!data.errors) {
+              data.errors = [
+                {
+                  errorCode:
+                    response.status >= 500 ? "serverError" : "internalError",
+                  errorMessage: `HTTP ${response.status}`,
+                  statusCode: response.status,
+                },
+              ];
+            }
+            return data;
+          });
+      }
+      return response.json();
+    })
+    .catch(() => {
+      return {
+        errors: [
+          {
+            errorCode: "networkError",
+            errorMessage: "Network error or service unavailable",
+            errorType: "error",
+            statusCode: 0,
+          },
+        ],
+      };
+    });
 }
 
 export function fetchAvailableDays(
@@ -67,7 +99,7 @@ export function fetchAvailableDays(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) +
+    getGeneratedAPIBaseURL(baseUrl, false) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -93,7 +125,7 @@ export function fetchAvailableTimeSlots(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) +
+    getGeneratedAPIBaseURL(baseUrl, false) +
       VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -126,7 +158,8 @@ export function reserveAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -153,7 +186,8 @@ export function updateAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -175,7 +209,8 @@ export function preconfirmAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -197,7 +232,8 @@ export function confirmAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -219,7 +255,7 @@ export function fetchAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) +
+    getGeneratedAPIBaseURL(baseUrl, false) +
       VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -239,7 +275,8 @@ export function cancelAppointment(
   };
 
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -254,7 +291,8 @@ export function fetchCaptchaDetails(
   baseUrl?: string
 ): Promise<CaptchaDetailsDTO | ErrorDTO> {
   return fetch(
-    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
+    getGeneratedAPIBaseURL(baseUrl, false) +
+      VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
   ).then((response) => {
     return response.json();
   });

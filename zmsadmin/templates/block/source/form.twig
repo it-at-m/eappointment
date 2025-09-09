@@ -2,8 +2,6 @@
 
 {% set dataDescriptions = {
         "data": "%s"|format("Die weiteren Daten werden im JSON Format hinterlegt und sind optional.")|trans,
-        "delete": "%s"|format("Ein Löschen einmal erstellter Dienstleister/Dienstleistungen ist nicht möglich! Diese müssen für bestehende Termin-Buchungen und eine statistische Auswertung erhalten bleiben.")|trans,
-        "requestrelation": "%s"|format("Wenn hier keine Kombinationen zwischen Dienstleistungen und Dienstleistern aufgeführt werden, werden automatisch alle Dienstleistungen zu allen Dienstleistern mit einem Zeitslot pro Buchung hinzugefügt.")|trans,
         "mandantlabel": "%s"|format("Dieses Kürzel lässt sich nur beim Anlegen des Mandanten festlegen, danach ist es nicht mehr änderbar.")|trans
     }
 %}
@@ -20,7 +18,8 @@
         "name": "%s"|format("Name")|trans, 
         "url": "%s"|format("URL")|trans, 
         "group": "%s"|format("Gruppe")|trans, 
-        "data": "%s"|format("Weitere Daten")|trans 
+        "data": "%s"|format("Weitere Daten")|trans,
+        "variant": "%s"|format("Variante")|trans
     } 
 %}
 {% set dataLabelsProviders = { 
@@ -31,7 +30,7 @@
         "streetNumber": "%s"|format("Hausnummer")|trans,
         "postalCode": "%s"|format("PLZ")|trans,
         "city": "%s"|format("Ort")|trans,
-        "data": "%s"|format("Weitere Daten")|trans 
+        "data": "%s"|format("Weitere Daten")|trans
     } 
 %}
 
@@ -42,6 +41,7 @@
         "delete": "%s"|format("Löschen")|trans,
         "new": "%s"|format("Neue Kombination")|trans,
         "noName": "- %s -"|format("Keinen Namen angegeben")|trans,
+        "public": "%s"|format("Öffentlichkeit")|trans
     } 
 %}
 
@@ -49,6 +49,7 @@
     "requests": [{
                     id: 1,
                     name: '',
+                    parent_id: null,
                     link: '',
                     group: '',
                     data: ''
@@ -56,6 +57,7 @@
     "providers": [{
                     id: 1,
                     name: '',
+                    parent_id: null,
                     link: '',
                     contact: {
                         street: '',
@@ -80,7 +82,7 @@
 </div>
 
 <form method="post" action="./" enctype="multipart/form-data" class="form--base source-form">
-    <div class="source-form-edit" data-source="{{ source|default(defaultSource)|json_encode }}" data-labelsrequests={{ dataLabelsRequests|json_encode|e('html_attr') }} data-labelsproviders={{ dataLabelsProviders|json_encode|e('html_attr') }} data-labelsmandant={{ dataLabelsMandant|json_encode|e('html_attr') }} data-labelsmandant={{ dataLabelsMandant|json_encode|e('html_attr') }} data-labelsrequestrelation={{ dataLabelsRequestRelation|json_encode|e('html_attr') }} data-descriptions={{ dataDescriptions|json_encode|e('html_attr') }}>
+    <div class="source-form-edit" data-source="{{ source|default(defaultSource)|json_encode }}" data-labelsrequests={{ dataLabelsRequests|json_encode|e('html_attr') }} data-labelsproviders={{ dataLabelsProviders|json_encode|e('html_attr') }} data-labelsmandant={{ dataLabelsMandant|json_encode|e('html_attr') }} data-labelsrequestrelation={{ dataLabelsRequestRelation|json_encode|e('html_attr') }} data-descriptions={{ dataDescriptions|json_encode|e('html_attr') }} data-parentproviders={{ parentProviders|json_encode|e('html_attr') }} data-parentrequests={{ parentRequests|json_encode|e('html_attr') }} data-requestvariants={{ requestVariants|json_encode|e('html_attr') }}>
     </div>
 
     <div class="form-actions">
