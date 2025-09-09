@@ -34,20 +34,14 @@ jobs:
           echo "Current date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           echo ""
           
-          # List of packages to clean up
+          # List of packages to clean up (process 2 at a time to avoid rate limits)
           PACKAGES=(
             "zmsmessaging"
-            "zmsapi" 
-            "zmscalldisplay"
-            "zmsadmin"
-            "zmsstatistic"
-            "zmsticketprinter"
-            "zmscitizenapi"
-            "zmscitizenview"
+            "zmsapi"
           )
           
           DELETED_COUNT=0
-          MAX_DELETIONS=200  # Rate limit safety
+          MAX_DELETIONS=1000  # Process 1000 deletions per run to stay within rate limits
           
           for PACKAGE in "${PACKAGES[@]}"; do
             echo "=== Processing package: $PACKAGE ==="
@@ -55,21 +49,17 @@ jobs:
             # Get untagged package versions older than cutoff date
             echo "Fetching package versions for $PACKAGE..."
             
-            # Get total count and calculate pages
-            TOTAL_COUNT=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=1" --jq '. | length')
-            PER_PAGE=100
-            LAST_PAGE=$(( (TOTAL_COUNT + PER_PAGE - 1) / PER_PAGE ))
-            echo "Total package versions: $TOTAL_COUNT"
-            echo "Total pages: $LAST_PAGE"
+            # Fetch all pages using --paginate (simpler approach)
+            echo "Fetching all pages with --paginate..."
+            PACKAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=100" --paginate)
+            TOTAL_COUNT=$(echo "$PACKAGE_DATA" | jq length)
+            echo "Total package versions fetched: $TOTAL_COUNT"
             
-            # Fetch all pages
-            PACKAGE_DATA="[]"
-            for PAGE in $(seq 1 $LAST_PAGE); do
-              echo "Fetching page $PAGE of $LAST_PAGE..."
-              PAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=$PER_PAGE&page=$PAGE")
-              PACKAGE_DATA=$(echo "$PACKAGE_DATA $PAGE_DATA" | jq -s '.[0] + .[1]')
-              sleep 1  # Rate limiting
-            done
+            # Debug: Check if we have the oldest packages
+            echo "Oldest package found:"
+            echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[0] | {id, created_at}'
+            echo "Newest package found:"
+            echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[-1] | {id, created_at}'
             echo "Sample package data structure:"
             echo "$PACKAGE_DATA" | jq '.[0] | {id, created_at, metadata}'
             # Debug: Show what we're looking for
@@ -133,7 +123,7 @@ jobs:
                 fi
                 
                 # Add delay between deletions to avoid rate limiting
-                sleep 2
+                sleep 5
               fi
             done
             
