@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import $ from "jquery"
 import * as Inputs from '../../lib/inputs'
 import { getEntity } from '../../lib/schema'
 
-const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source) => {
+const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source, parentRequests, onParentChange, canDelete, requestVariants = []) => {
     const formName = `requests[${index}]`
-
+    const parentValue = request.parent_id == null ? '' : String(request.parent_id);
+    const variantValue = request.variant_id == null ? '' : String(request.variant_id);
     return (
         <tr key={index} className="request-item">
             <td className="request-item__id" width="auto">
@@ -24,6 +24,18 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     value={request.name}
                     onChange={onChange}
                     attributes={{ "aria-label": "Bezeichnung" }}
+                />
+            </td>
+            <td className="request-item__parent" width="auto">
+                <Inputs.Select
+                    name={request.parent_id == null ? undefined : `${formName}[parent_id]`}
+                    value={parentValue}
+                    onChange={(_, v) => onParentChange(index, v)}
+                    options={[
+                        { name: '—', value: '' },
+                        ...parentRequests.map(r => ({ name: r.name, value: String(r.id) }))
+                    ]}
+                    attributes={{ "aria-label": labels.parent }}
                 />
             </td>
             <td className="request-item__link">
@@ -64,6 +76,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
+                            key={`req-data-${index}-${request.parent_id ?? 'none'}`}
                             name={`${formName}[data]`}
                             value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder='{}'
@@ -81,13 +94,39 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     value={source}
                 />
             </td>
-            <td className="request-item__delete">
-                <div className="form-check">
-                    <label className="checkboxdeselect request__delete-button form-check-label">
-                        <input className="form-check-input" type="checkbox" readOnly={true} checked={true} onClick={() => onDeleteClick(index)} role="button" />
-                        <span>Löschen</span>
-                    </label>
-                </div>
+            <td>
+                <Inputs.FormGroup>
+                    <Inputs.Label
+                        value={labels.variant}
+                        attributes={{ "htmlFor": `requestVariant${index}` }}
+                    />
+                    <Inputs.Controls>
+                        <Inputs.Select
+                            name={variantValue === '' ? undefined : `${formName}[variant_id]`}
+                            value={request.variant_id == null ? '' : String(request.variant_id)}
+                            onChange={(_, v) =>
+                                onChange(`${formName}[variant_id]`, v === '' ? null : Number(v))
+                            }
+                            options={[
+                                { name: '—', value: '' },
+                                ...requestVariants.map(v => ({ name: v.name, value: String(v.id) }))
+                            ]}
+                            attributes={{ id: `requestVariant${index}` }}
+                        />
+                    </Inputs.Controls>
+                </Inputs.FormGroup>
+            </td>
+            <td className="request-item__delete" style={{verticalAlign:'middle'}}>
+                {canDelete && (
+                    <button type="button"
+                            className="link button-default request__delete-button"
+                            onClick={() => onDeleteClick(index)}
+                            aria-label="Diesen Datensatz löschen"
+                            style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <i className="fas fa-trash-alt color-negative" style={{ marginRight: '5px' }}></i>
+                        Löschen
+                    </button>
+                )}
             </td>
         </tr >
     )
@@ -103,25 +142,39 @@ class RequestsView extends Component {
         return nextId;
     }
 
-    getRequestsWithLabels(onChange, onDeleteClick) {
-        return this.props.source.requests.map((request, index) => renderRequest(request, index, onChange, onDeleteClick, this.props.labelsrequests, this.props.descriptions, this.props.source.source))
-    }
+    onParentChange = (rowIndex, rawValue) => {
+        const parent_id = rawValue === '' ? null : Number(rawValue);
+        const parent = parent_id == null
+            ? null
+            : this.props.parentrequests.find(r => Number(r.id) === parent_id);
 
-    hideDeleteButton() {
-        $('.request-item').each((index, item) => {
-            if ($(item).find('.request-item__id input').val()) {
-                $(item).find('.request__delete-button').css("visibility", "hidden");
-            }
-        })
+        this.props.changeHandler(`requests[${rowIndex}][parent_id]`, parent_id);
+        this.props.changeHandler(`requests[${rowIndex}][link]`, parent?.link || '');
+        this.props.changeHandler(`requests[${rowIndex}][group]`, parent?.group || '');
+        this.props.changeHandler(`requests[${rowIndex}][data]`, parent?.data || {});
+    };
+
+    getRequestsWithLabels(onChange, onDeleteClick) {
+        const list = (this.props.source.requests || []);
+        const moreThanOne = list.length > 1;
+
+        return list.map((request, idx) => {
+            const canDelete = moreThanOne && (request.canDelete !== false);
+            return renderRequest(
+                request, idx, onChange, onDeleteClick,
+                this.props.labelsrequests, this.props.descriptions,
+                this.props.source.source, this.props.parentrequests,
+                this.onParentChange,
+                canDelete,
+                (this.props.requestvariants || [])
+            );
+        });
     }
 
     componentDidMount() {
-        console.log("mounted request component")
-        this.hideDeleteButton()
     }
 
     componentDidUpdate() {
-        //console.log("updated request component")
     }
 
     render() {
@@ -130,13 +183,22 @@ class RequestsView extends Component {
             getEntity('request').then((entity) => {
                 entity.id = this.getNextId()
                 entity.source = this.props.source.source
+                entity.__isNew = true
+                entity.variant_id = null;
                 this.props.addNewHandler('requests', [entity])
             })
         }
 
         const onDeleteClick = index => {
-            this.props.deleteHandler('requests', index)
-        }
+            const item = this.props.source.requests[index];
+            const name = item?.name || 'diesen Datensatz';
+            if (item?.__isNew === true) {
+                return this.props.deleteHandler('requests', index);
+            }
+            const msg = `„${name}“ wirklich löschen?\n\nHinweis: Die Änderung wird erst nach „Speichern“ wirksam.`;
+            if (window.confirm(msg)) this.props.deleteHandler('requests', index);
+        };
+
 
         const onChange = (field, value) => {
             this.props.changeHandler(field, value)
@@ -149,24 +211,15 @@ class RequestsView extends Component {
                         <tr>
                             <th>LfdNr.</th>
                             <th>Bezeichnung</th>
+                            <th>Hauptdienstleistung</th>
                             <th>Link und weitere Daten</th>
+                            <th>Variante</th>
                             <th>Löschen</th>
                         </tr>
                     </thead>
                     <tbody>
                         {this.getRequestsWithLabels(onChange, onDeleteClick)}
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colSpan="4">
-                                <p>
-                                    <Inputs.Description
-                                        value={this.props.descriptions.delete}
-                                    />
-                                </p>
-                            </td>
-                        </tr>
-                    </tfoot>
                 </table>
                 <div className="table-actions">
                     <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neue Dienstleistung</button>
@@ -182,7 +235,9 @@ RequestsView.propTypes = {
     source: PropTypes.object.isRequired,
     changeHandler: PropTypes.func,
     addNewHandler: PropTypes.func,
-    deleteHandler: PropTypes.func
+    deleteHandler: PropTypes.func,
+    parentrequests: PropTypes.array.isRequired,
+    requestvariants: PropTypes.array
 }
 
 export default RequestsView

@@ -12,7 +12,7 @@ if (preg_grep('/--commit/', $argv)) {
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
     $importer = new \BO\Zmsdb\Source\Zmsdldb();
     $importer->startImport(true, false);
-    \BO\Zmsdb\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql.gz');
+    \BO\Zmsdb\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql');
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
         $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
@@ -35,5 +35,12 @@ if (preg_grep('/--dump/', $argv)) {
     $password = \BO\Zmsdb\Connection\Select::$password;
     $host = $dsn_data['host'];
     $dbname = $dsn_data['dbname'];
-    system("mysqldump -u$username -p$password -h $host $dbname |gzip | cat > testdataset.sql.gz");
+    $cmd = sprintf(
+        "MYSQL_PWD=%s mysqldump -u%s -h %s %s | gzip > testdataset.sql.gz",
+        escapeshellarg($password),
+        escapeshellarg($username),
+        escapeshellarg($host),
+        escapeshellarg($dbname)
+    );
+    system($cmd);
 }

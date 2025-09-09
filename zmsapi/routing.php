@@ -4081,6 +4081,33 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/requestvariants/":
+ *      get:
+ *          summary: Get all request variants
+ *          tags:
+ *              - requestvariant
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                       type: object
+ *                       properties:
+ *                           meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/requestvariant.json"
+ *              404:
+ *                  description: "no variants found"
+ */
+\App::$slim->get(
+    '/requestvariants/',
+    '\BO\Zmsapi\RequestVariantList'
+)->setName("RequestVariantList");
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/request/":
  *      get:
  *          summary: Get a list of requests by provider ID
@@ -4201,6 +4228,50 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("AvailabilityClosureToggle");
 
+/**
+ *  @swagger
+ *  "/closure/":
+ *      get:
+ *          summary: Listet Closures (Schließtage) je Scope im Zeitraum
+ *          tags: [closure, scope]
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: Kommagetrennte Liste von Scope-IDs (z.B. "12,34,56")
+ *                type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: Startdatum (YYYY-MM-DD)
+ *                type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Enddatum (YYYY-MM-DD, inkl.)
+ *                type: string
+ *              - name: X-Authkey
+ *                in: header
+ *                required: true
+ *                type: string
+ *          responses:
+ *              200:
+ *                  description: OK
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          items:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      date:    { type: string,  example: "2025-09-03" }
+ *                                      scopeId: { type: integer, example: 123 }
+ */
+\App::$slim->get(
+    '/closure/',
+    '\BO\Zmsapi\AvailabilityClosureRead'
+)->setName('AvailabilityClosureRead');
 
 /**
  *  @swagger

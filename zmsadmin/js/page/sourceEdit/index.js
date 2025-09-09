@@ -56,27 +56,30 @@ class SourceView extends Component {
                     changeHandler={this.changeHandler}
                 />
                 <fieldset>
+                    <legend>Dienstleister</legend>
+                    <ProvidersView
+                        {...this.props}
+                        parentproviders={this.props.parentproviders}
+                        source={this.props.source}
+                        changeHandler={this.changeHandler}
+                        addNewHandler={this.addNewHandler}
+                        deleteHandler={this.deleteHandler}
+                    />
+                </fieldset>
+                <fieldset>
                     <legend>Dienstleistungen</legend>
                     <RequestsView
                         {...this.props}
                         source={this.props.source}
+                        parentrequests={this.props.parentrequests}
+                        requestvariants={this.props.requestvariants}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
                     />
                 </fieldset>
                 <fieldset>
-                    <legend>Dienstleister</legend>
-                    <ProvidersView
-                        {...this.props}
-                        source={this.props.source}
-                        changeHandler={this.changeHandler}
-                        addNewHandler={this.addNewHandler}
-                        deleteHandler={this.deleteHandler}
-                    />
-                </fieldset>
-                <fieldset>
-                    <legend>Zeitslots</legend>
+                    <legend>Kombinationen</legend>
                     <RequestRelationView
                         {...this.props}
                         source={this.props.source}
@@ -91,7 +94,9 @@ class SourceView extends Component {
 }
 
 SourceView.propTypes = {
-    source: PropTypes.object
+    source: PropTypes.object,
+    parentProviders: PropTypes.array.isRequired,
+    parentrequests: PropTypes.array.isRequired,
 }
 
 export default SourceView

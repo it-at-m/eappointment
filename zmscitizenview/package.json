@@ -10,7 +10,8 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "prettier src/ --check",
     "format": "prettier --write src/",
-    "test": "vitest run"
+    "test": "vitest run",
+    "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "5.6.2",
@@ -31,8 +32,9 @@
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.6.0",
     "@vue/test-utils": "^2.4.1",
-    "eslint": "9.34.0",
+    "eslint": "9.35.0",
     "eslint-plugin-vue": "10.4.0",
+    "local-web-server": "^5.4.0",
     "sass": "^1.90.0",
     "typescript": "^5.4.2",
     "vite": "^7.1.3",
