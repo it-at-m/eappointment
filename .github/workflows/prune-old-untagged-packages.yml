@@ -69,8 +69,11 @@ jobs:
             
             # Show sample versions to be deleted
             echo "Sample versions to delete:"
-            gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" | \
-              jq --arg cutoff "$CUTOFF_DATE" '[.[] | select(.metadata.container.tags | length == 0 and .created_at < $cutoff) | .[0:5] | .[] | "  - \(.id) (\(.created_at))"]' || echo "  (No versions to show)"
+            echo "$OLD_VERSIONS" | head -5 | while read -r version_id; do
+              if [ -n "$version_id" ]; then
+                echo "  - $version_id"
+              fi
+            done
             
             # Delete versions one by one with rate limiting
             echo "$OLD_VERSIONS" | while read -r version_id; do
@@ -107,7 +110,7 @@ jobs:
 
       - name: Summary
         run: |
-          echo "Package cleanup completed. Remaining packages:"
-          gh api "orgs/it-at-m/packages" --jq '.[] | select(.name | contains("eappointment")) | "\(.name): \(.package_type)"'
+          echo "Package cleanup completed."
+          echo "Processed packages: zmsmessaging, zmsapi, zmscalldisplay, zmsadmin, zmsstatistic, zmsticketprinter, zmscitizenapi, zmscitizenview"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
