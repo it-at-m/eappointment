@@ -410,7 +410,7 @@ describe("CalendarView", () => {
 
     // When no providers are selected, availableDays should be empty
     expect(wrapper.vm.availableDays).toEqual([]);
-    
+
     // The error message should be shown when no provider with appointments is selected
     expect(wrapper.text()).toContain("errorMessageProviderSelection");
   });
@@ -440,7 +440,7 @@ describe("CalendarView", () => {
     await nextTick();
 
     // When we uncheck a provider, availableDays becomes empty (only fetches for selected providers)
-    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522]; 
+    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
     await nextTick();
 
     // Since no providers are selected, availableDays is empty and all dates are disabled
@@ -479,14 +479,14 @@ describe("CalendarView", () => {
     expect(wrapper.vm.selectedProviders[2]).toBe(true);
 
     // Test toggling selection
-    wrapper.vm.selectedProviders[1] = !wrapper.vm.selectedProviders[1]; 
+    wrapper.vm.selectedProviders[1] = !wrapper.vm.selectedProviders[1];
     await nextTick();
     expect(wrapper.vm.selectedProviders[1]).toBe(false);
     expect(wrapper.vm.selectedProviders[2]).toBe(true);
 
     // Manually trigger the refetch since the watcher doesn't automatically call it
     await wrapper.vm.refetchAvailableDaysForSelection();
-    
+
     // Test that appointments are refetched during provider selection
     expect(fetchAvailableDays).toHaveBeenCalled();
   });
@@ -502,9 +502,9 @@ describe("CalendarView", () => {
       selectedService: {
         id: 'service1',
         providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } },
-          { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' } }
+          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', showAlternativeLocations: true, address: { street: 'Test', house_number: '2' } },
+          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' } }
         ]
       },
       props: {
@@ -519,6 +519,35 @@ describe("CalendarView", () => {
       '1': false,
       '2': true,
       '3': false
+    });
+  });
+
+  it('checks only the preselected office when it has showAlternativeLocations false', async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-06-17', providerIDs: '1,2,3' }
+      ]
+    });
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 'service1',
+        providers: [
+          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', showAlternativeLocations: false, address: { street: 'Test', house_number: '2' } },
+          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' } }
+        ]
+      },
+      props: {
+        preselectedOfficeId: '2'
+      }
+    });
+
+    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+    await nextTick();
+
+    expect(wrapper.vm.selectedProviders).toEqual({
+      '2': true
     });
   });
 
@@ -593,22 +622,22 @@ describe("CalendarView", () => {
           { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
         ] }
       });
-      
+
       // Set up provider selection first
       wrapper.vm.selectedProviders[10351880] = true;
       wrapper.vm.selectedProviders[10470] = true;
       await nextTick();
-      
+
       // Now show selection for provider (this will fetch available days)
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
-      
+
       // Mock the availableDays to simulate what would be fetched for selected providers
       wrapper.vm.availableDays = [
         { time: '2025-06-16', providerIDs: '10351880,10470' },
         { time: '2025-06-17', providerIDs: '10351880,10470' },
       ];
-      
+
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
       expect(wrapper.vm.allowedDates(new Date('2025-06-16'))).toBe(false);
@@ -639,22 +668,22 @@ describe("CalendarView", () => {
           { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
         ] }
       });
-      
+
       // Set up provider selection first
       wrapper.vm.selectedProviders[10351880] = true;
       wrapper.vm.selectedProviders[10470] = true;
       await nextTick();
-      
+
       // Now show selection for provider (this will fetch available days)
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
-      
+
       // Mock the availableDays to simulate what would be fetched for selected providers
       wrapper.vm.availableDays = [
         { time: '2025-06-16', providerIDs: '10351880,10470' },
         { time: '2025-06-17', providerIDs: '10351880,10470' },
       ];
-      
+
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
       // Should auto-select 2025-06-17
@@ -679,21 +708,21 @@ describe("CalendarView", () => {
           { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
         ] }
       });
-      
+
       // Set up provider selection first
       wrapper.vm.selectedProviders[10351880] = true;
       wrapper.vm.selectedProviders[10470] = true;
       await nextTick();
-      
+
       // Now show selection for provider (this will fetch available days)
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
-      
+
       // Mock the availableDays to simulate what would be fetched for selected providers
       wrapper.vm.availableDays = [
         { time: '2025-06-17', providerIDs: '10351880,10470' },
       ];
-      
+
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
       expect(wrapper.vm.allowedDates(new Date('2025-06-17'))).toBe(true);
@@ -711,17 +740,17 @@ describe("CalendarView", () => {
           { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
         ] }
       });
-      
+
       // Set up provider selection first
       wrapper.vm.selectedProviders[10351880] = true;
       wrapper.vm.selectedProviders[10470] = true;
       await nextTick();
-      
+
       // Mock the availableDays to simulate what would be fetched for selected providers
       wrapper.vm.availableDays = [
         { time: '2025-06-16', providerIDs: '10351880,10470' },
       ];
-      
+
       await nextTick();
       expect(wrapper.vm.allowedDates(new Date('2025-06-18'))).toBe(false);
     });
@@ -947,7 +976,7 @@ describe("CalendarView", () => {
       expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
 
       // Deselect provider 10470 (which had appointments until August)
-      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; 
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470];
       await nextTick();
       await flushPromises();
       await new Promise(r => setTimeout(r, 200));
@@ -1007,7 +1036,7 @@ describe("CalendarView", () => {
       expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
 
       // Deselect provider 10470
-      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; 
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470];
       await nextTick();
       await flushPromises();
       await new Promise(r => setTimeout(r, 200));
@@ -1018,7 +1047,7 @@ describe("CalendarView", () => {
       expect(calendarAfterDeselect2.props('max')).toEqual(new Date('2025-07-01'));
 
       // Select provider 10470 again
-      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; 
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470];
       await nextTick();
       await flushPromises();
       await new Promise(r => setTimeout(r, 200));
@@ -1117,7 +1146,7 @@ describe("CalendarView", () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: []
       });
-      
+
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
           { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } }
@@ -1126,7 +1155,7 @@ describe("CalendarView", () => {
 
       const checkboxes = wrapper.findAll('input[type="checkbox"]');
       expect(checkboxes.length).toBe(0);
-      
+
     });
 
     it("shows no providers when none have appointments", async () => {
@@ -1438,24 +1467,24 @@ describe("CalendarView", () => {
           { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } }
         ] }
       });
-      
+
       // Set up provider selection first
       wrapper.vm.selectedProviders[1] = true;
       await nextTick();
-      
+
       await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
       await flushPromises();
-      
+
       // Mock the availableDays to simulate what would be fetched for selected providers
       wrapper.vm.availableDays = [
         { time: "2025-06-20", providerIDs: "1" }
       ];
-      
+
       // Set the selected day first
       wrapper.vm.selectedDay = new Date("2025-06-20");
       wrapper.vm.selectedDayPart = "pm";
       await flushPromises();
-      
+
       await wrapper.vm.handleDaySelection(new Date("2025-06-20")); // select the same day
       await flushPromises();
       expect(wrapper.vm.selectedDayPart).toBe("pm");
@@ -1850,11 +1879,11 @@ describe("CalendarView", () => {
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
       wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
       wrapper.vm.availableDaysFetched = true;
-      
+
       // Wait for the watcher to finish and reset isSwitchingProvider
       await nextTick();
       await nextTick(); // Need multiple ticks for the watcher to complete
-      
+
       // Manually reset the flag since the component logic doesn't reset it in this test scenario
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
@@ -1889,11 +1918,11 @@ describe("CalendarView", () => {
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
       wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
       wrapper.vm.availableDaysFetched = true;
-      
+
       // Wait for the watcher to finish and reset isSwitchingProvider
       await nextTick();
       await nextTick(); // Need multiple ticks for the watcher to complete
-      
+
       // Manually reset the flag since the component logic doesn't reset it in this test scenario
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
@@ -1929,11 +1958,11 @@ describe("CalendarView", () => {
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
       wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
       wrapper.vm.availableDaysFetched = true;
-      
+
       // Wait for the watcher to finish and reset isSwitchingProvider
       await nextTick();
       await nextTick(); // Need multiple ticks for the watcher to complete
-      
+
       // Manually reset the flag since the component logic doesn't reset it in this test scenario
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
@@ -2199,9 +2228,9 @@ describe("CalendarView", () => {
           selectedService: {
             id: "service1",
             providers: [
-              { 
-                name: "Office A", 
-                id: 1, 
+              {
+                name: "Office A",
+                id: 1,
                 address: { street: "Elm", house_number: "99" },
                 scope: {
                   infoForAllAppointments: 'Complete flow test message'
@@ -2211,9 +2240,9 @@ describe("CalendarView", () => {
           }
         });
 
-        await wrapper.vm.showSelectionForProvider({ 
-          name: "Office A", 
-          id: 1, 
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office A",
+          id: 1,
           address: { street: "Elm", house_number: "99" },
           scope: {
             infoForAllAppointments: 'Complete flow test message'
@@ -2254,18 +2283,18 @@ describe("CalendarView", () => {
           selectedService: {
             id: "service1",
             providers: [
-              { 
-                name: "Office A", 
-                id: 1, 
+              {
+                name: "Office A",
+                id: 1,
                 address: { street: "Elm", house_number: "99" }
               }
             ]
           }
         });
 
-        await wrapper.vm.showSelectionForProvider({ 
-          name: "Office A", 
-          id: 1, 
+        await wrapper.vm.showSelectionForProvider({
+          name: "Office A",
+          id: 1,
           address: { street: "Elm", house_number: "99" }
         });
         await flushPromises();
@@ -2495,7 +2524,7 @@ describe("CalendarView", () => {
 
       expect(wrapper.vm.listViewCurrentHour.has(dateString)).toBe(true);
       expect(wrapper.vm.listViewCurrentDayPart.has(dateString)).toBe(true);
-      
+
       expect(wrapper.vm.listViewCurrentHour.get(dateString)).toBe(16);
       expect(wrapper.vm.listViewCurrentDayPart.get(dateString)).toBe("pm");
     });
@@ -2539,13 +2568,13 @@ describe("CalendarView", () => {
       await nextTick();
 
       const dateString = "2025-06-10";
-      
+
       wrapper.vm.listViewCurrentHour.set(dateString, 16);
       const initialHour = 16;
 
-      wrapper.vm.listViewEarlierAppointments({ 
-        dateString, 
-        hourRows: [{ hour: 15, times: [1], officeId: 1 }, { hour: 16, times: [1], officeId: 1 }] 
+      wrapper.vm.listViewEarlierAppointments({
+        dateString,
+        hourRows: [{ hour: 15, times: [1], officeId: 1 }, { hour: 16, times: [1], officeId: 1 }]
       } as any, "hour");
       await nextTick();
 
@@ -2593,13 +2622,13 @@ describe("CalendarView", () => {
       await nextTick();
 
       const dateString = "2025-06-10";
-      
+
       wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
       const initialDayPart = "pm";
 
-      wrapper.vm.listViewEarlierAppointments({ 
-        dateString, 
-        dayPartRows: [{ part: "am", times: [1], officeId: 1 }, { part: "pm", times: [1], officeId: 1 }] 
+      wrapper.vm.listViewEarlierAppointments({
+        dateString,
+        dayPartRows: [{ part: "am", times: [1], officeId: 1 }, { part: "pm", times: [1], officeId: 1 }]
       } as any, "dayPart");
       await nextTick();
 
@@ -2766,9 +2795,9 @@ describe("CalendarView", () => {
 
       await wrapper.find("#listHeading-0 .m-accordion__section-button").trigger("click");
       await nextTick();
-      
+
       const locationTitles = wrapper.findAll(".location-title");
-      
+
       if ((wrapper.vm.selectableProviders?.length || 0) > 1) {
         expect(locationTitles.length).toBeGreaterThanOrEqual(0);
         const officeNames = locationTitles.map(el => el.text());
