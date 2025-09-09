@@ -63,7 +63,7 @@ jobs:
             
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
-            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Prune Old Workflow Runs" and (.head_branch | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}')
+            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Prune Old Workflow Runs" and (.head_branch | test("^[0-9]+\\.[0-9]+\\.[0-9]+-.*$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}')
             
             if [ -z "$RUNS_JSON" ] || [ "$RUNS_JSON" = "null" ]; then
               echo "No more old runs found on page $PAGE. Stopping."
