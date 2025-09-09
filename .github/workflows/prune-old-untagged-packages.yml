@@ -66,11 +66,12 @@ jobs:
             # Debug: Show total count and first few packages
             TOTAL_PACKAGES=$(echo "$PACKAGE_DATA" | jq length)
             echo "Total packages found: $TOTAL_PACKAGES"
-            echo "First 10 packages for $PACKAGE:"
-            echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[0:10] | .[] | {id, created_at, tags: (.metadata.container.tags // []), is_old: (.created_at < $cutoff), is_untagged: ((.metadata.container.tags // []) | length == 0)}'
+            echo "First 10 packages for $PACKAGE (sorted by date, oldest first):"
+            echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[0:10] | .[] | {id, created_at, tags: (.metadata.container.tags // []), is_old: (.created_at < $cutoff), is_untagged: ((.metadata.container.tags // []) | length == 0)}'
             echo ""
             
-            OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
+            # Sort packages by created_at (oldest first) and then filter
+            OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
             
             VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
