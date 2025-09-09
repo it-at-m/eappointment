@@ -79,6 +79,9 @@ class ProcessConfirm extends BaseController
     {
         $appointment = $process->getFirstAppointment();
         if (!$appointment || !$appointment->date || !$appointment->scope) {
+             \App::$log?->warning('process.confirm.skipped_no_appointment', [
+                 'process_id' => $process->id,
+             ]);
             return;
         }
 
