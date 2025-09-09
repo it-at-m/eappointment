@@ -64,7 +64,7 @@ jobs:
             fi
             
             # Extract run IDs
-            RUN_IDS=$(echo "$RUNS_JSON" | jq -r '.id' | head -20)  # Process up to 20 at a time
+            RUN_IDS=$(echo "$RUNS_JSON" | jq -r '.id')  # Process all runs found on this page
             
             RUN_COUNT=$(echo "$RUN_IDS" | wc -l)
             echo "Found $RUN_COUNT old runs on page $PAGE"
