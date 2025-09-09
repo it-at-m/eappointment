@@ -53,10 +53,10 @@ jobs:
             echo "=== Processing package: $PACKAGE ==="
             
             # Get untagged package versions older than cutoff date
-            OLD_VERSIONS=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" \
-              --jq --arg cutoff "$CUTOFF_DATE" '[.[] | select(.metadata.container.tags | length == 0 and .updated_at < $cutoff) | .id]')
+            OLD_VERSIONS=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" | \
+              jq --arg cutoff "$CUTOFF_DATE" '[.[] | select(.metadata.container.tags | length == 0 and .updated_at < $cutoff) | .id]')
             
-            VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+            VERSION_COUNT=$(echo "$OLD_VERSIONS" | jq length)
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
             
             if [ "$VERSION_COUNT" -eq 0 ]; then
@@ -66,11 +66,11 @@ jobs:
             
             # Show sample versions to be deleted
             echo "Sample versions to delete:"
-            gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" \
-              --jq --arg cutoff "$CUTOFF_DATE" '[.[] | select(.metadata.container.tags | length == 0 and .updated_at < $cutoff) | .[0:5] | .[] | "  - \(.id) (\(.updated_at))"]' || echo "  (No versions to show)"
+            gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions" | \
+              jq --arg cutoff "$CUTOFF_DATE" '[.[] | select(.metadata.container.tags | length == 0 and .updated_at < $cutoff) | .[0:5] | .[] | "  - \(.id) (\(.updated_at))"]' || echo "  (No versions to show)"
             
             # Delete versions one by one with rate limiting
-            for version_id in $OLD_VERSIONS; do
+            echo "$OLD_VERSIONS" | jq -r '.[]' | while read -r version_id; do
               if [ -n "$version_id" ]; then
                 echo "Deleting version: $version_id"
                 if gh api -X DELETE "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions/$version_id"; then
