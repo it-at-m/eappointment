@@ -75,7 +75,7 @@ class OverallCalendar extends Base
             'scope' => $scopeId,
             'start' => $start->format('Y-m-d H:i:s'),
             'end'   => $end  ->format('Y-m-d H:i:s'),
-        ]) ?? ['free_cnt'=>0,'cancelled_cnt'=>0,'termin_cnt'=>0,'availability_ids'=>0];
+        ]) ?? ['free_cnt' => 0,'cancelled_cnt' => 0,'termin_cnt' => 0,'availability_ids' => 0];
 
         $availabilityDetails = $this->fetchAll('
             SELECT DISTINCT
@@ -113,7 +113,7 @@ class OverallCalendar extends Base
             'slot_units'      => $slotUnits,
             'window_before'   => $windowBefore,
             'availability'    => $availabilityDetails,
-            'recent_cancelled'=> $recentCancelled,
+            'recent_cancelled' => $recentCancelled,
         ]);
 
         $seat = $this->fetchValue(Calender::FIND_FREE_SEAT, [
@@ -130,7 +130,7 @@ class OverallCalendar extends Base
                 'window'          => ['from' => $start->format('Y-m-d H:i:s'), 'until' => $end->format('Y-m-d H:i:s')],
                 'slot_units'      => $slotUnits,
                 'window_before'   => $windowBefore,
-                'recent_cancelled'=> $recentCancelled,
+                'recent_cancelled' => $recentCancelled,
             ]);
             return;
         }
@@ -165,7 +165,7 @@ class OverallCalendar extends Base
             'scope' => $scopeId,
             'start' => $start->format('Y-m-d H:i:s'),
             'end'   => $end  ->format('Y-m-d H:i:s'),
-        ]) ?? ['free_cnt'=>0,'cancelled_cnt'=>0,'termin_cnt'=>0];
+        ]) ?? ['free_cnt' => 0,'cancelled_cnt' => 0,'termin_cnt' => 0];
 
         $terminByPid = (int)$this->fetchValue('
             SELECT COUNT(*) FROM gesamtkalender
@@ -224,7 +224,8 @@ class OverallCalendar extends Base
         return $this->fetchAll($sql, $params);
     }
 
-    private function log(string $level, string $msg, array $ctx = []): void {
+    private function log(string $level, string $msg, array $ctx = []): void
+    {
         if (isset(\App::$log) && method_exists(\App::$log, $level)) {
             \App::$log->{$level}($msg, $ctx);
         } else {
