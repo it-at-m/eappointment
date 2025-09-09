@@ -2,8 +2,8 @@ name: Prune Untagged Packages
 
 on:
   schedule:
-    # Run every Sunday at 3 AM UTC (after workflow runs cleanup)
-    - cron: '0 3 * * 0'
+    # Run every Sunday at 4 AM UTC (after workflow runs cleanup)
+    - cron: '0 4 * * 0'
   workflow_dispatch:
     inputs:
       days_to_keep:
@@ -19,137 +19,96 @@ permissions:
 jobs:
   prune-untagged-packages:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [
+          "zmsmessaging",
+          "zmsapi", 
+          "zmscalldisplay",
+          "zmsadmin",
+          "zmsstatistic",
+          "zmsticketprinter",
+          "zmscitizenapi",
+          "zmscitizenview"
+        ]
+      max-parallel: 8
     steps:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Prune untagged packages
+      - name: Prune untagged packages for ${{ matrix.package }}
         run: |
           # Calculate cutoff date
           CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 60 }}
           CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "=== Package Cleanup ==="
+          echo "=== Package Cleanup for ${{ matrix.package }} ==="
           echo "Retention period: $CUTOFF_DAYS days"
           echo "Cutoff date: $CUTOFF_DATE"
           echo "Current date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           echo ""
           
-          # List of packages to clean up (all modules, 100 deletions each)
-          PACKAGES=(
-            "zmsmessaging"
-            "zmsapi" 
-            "zmscalldisplay"
-            "zmsadmin"
-            "zmsstatistic"
-            "zmsticketprinter"
-            "zmscitizenapi"
-            "zmscitizenview"
-          )
-          
+          PACKAGE="${{ matrix.package }}"
+          MAX_DELETIONS=100  # 100 deletions per package
           DELETED_COUNT=0
-          MAX_DELETIONS_PER_PACKAGE=100  # Process 100 deletions per package
-          MAX_DELETIONS_TOTAL=800  # Total limit for all packages combined
           
-          for PACKAGE in "${PACKAGES[@]}"; do
-            echo "=== Processing package: $PACKAGE ==="
-            
-            # Get untagged package versions older than cutoff date
-            echo "Fetching package versions for $PACKAGE..."
-            
-            # Fetch all pages using --paginate (simpler approach)
-            echo "Fetching all pages with --paginate..."
-            PACKAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=100" --paginate)
-            TOTAL_COUNT=$(echo "$PACKAGE_DATA" | jq length)
-            echo "Total package versions fetched: $TOTAL_COUNT"
-            
-            # Debug: Check if we have the oldest packages
-            echo "Oldest package found:"
-            echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[0] | {id, created_at}'
-            echo "Newest package found:"
-            echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[-1] | {id, created_at}'
-            echo "Sample package data structure:"
-            echo "$PACKAGE_DATA" | jq '.[0] | {id, created_at, metadata}'
-            # Debug: Show what we're looking for
-            echo "Looking for packages with:"
-            echo "  - created_at < $CUTOFF_DATE"
-            echo "  - no tags (tags array length == 0)"
-            echo ""
-            
-            # Debug: Show total count and first few packages
-            TOTAL_PACKAGES=$(echo "$PACKAGE_DATA" | jq length)
-            echo "Total packages found: $TOTAL_PACKAGES"
-            echo "First 10 packages for $PACKAGE (sorted by date, oldest first):"
-            echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[0:10] | .[] | {id, created_at, tags: (.metadata.container.tags // []), is_old: (.created_at < $cutoff), is_untagged: ((.metadata.container.tags // []) | length == 0)}'
-            echo ""
-            
-            # Sort packages by created_at (oldest first) and then filter
-            OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
-            
-            if [ -z "$OLD_VERSIONS" ]; then
-              VERSION_COUNT=0
-            else
-              VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+          # Fetch package versions
+          echo "Fetching package versions for $PACKAGE..."
+          PACKAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions?per_page=100" --paginate)
+          TOTAL_COUNT=$(echo "$PACKAGE_DATA" | jq length)
+          echo "Total package versions fetched: $TOTAL_COUNT"
+          
+          # Debug: Check if we have the oldest packages
+          echo "Oldest package found:"
+          echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[0] | {id, created_at}'
+          echo "Newest package found:"
+          echo "$PACKAGE_DATA" | jq 'sort_by(.created_at) | .[-1] | {id, created_at}'
+          
+          # Sort packages by created_at (oldest first) and then filter
+          OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
+          
+          if [ -z "$OLD_VERSIONS" ]; then
+            VERSION_COUNT=0
+          else
+            VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+          fi
+          echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
+          
+          if [ "$VERSION_COUNT" -eq 0 ]; then
+            echo "No old untagged versions found for $PACKAGE"
+            exit 0
+          fi
+          
+          # Show sample versions to be deleted
+          echo "Sample versions to delete:"
+          echo "$OLD_VERSIONS" | head -5 | while read -r version_id; do
+            if [ -n "$version_id" ]; then
+              echo "  - $version_id"
             fi
-            echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
-            
-            # Debug: Show what was actually selected
-            if [ "$VERSION_COUNT" -gt 0 ]; then
-              echo "Selected versions:"
-              echo "$OLD_VERSIONS"
-              echo ""
-            fi
-            
-            if [ "$VERSION_COUNT" -eq 0 ]; then
-              echo "No old untagged versions found for $PACKAGE"
-              continue
-            fi
-            
-            # Show sample versions to be deleted
-            echo "Sample versions to delete:"
-            echo "$OLD_VERSIONS" | head -5 | while read -r version_id; do
-              if [ -n "$version_id" ]; then
-                echo "  - $version_id"
-              fi
-            done
-            
-            # Delete versions one by one with rate limiting
-            PACKAGE_DELETED_COUNT=0
-            echo "$OLD_VERSIONS" | while read -r version_id; do
-              if [ -n "$version_id" ]; then
-                echo "Deleting version: $version_id"
-                if gh api -X DELETE "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions/$version_id"; then
-                  echo "Successfully deleted version: $version_id"
-                  DELETED_COUNT=$((DELETED_COUNT + 1))
-                  PACKAGE_DELETED_COUNT=$((PACKAGE_DELETED_COUNT + 1))
-                  
-                  # Check per-package limit
-                  if [ $PACKAGE_DELETED_COUNT -ge $MAX_DELETIONS_PER_PACKAGE ]; then
-                    echo "Reached per-package limit of $MAX_DELETIONS_PER_PACKAGE deletions for $PACKAGE. Moving to next package."
-                    break
-                  fi
-                  
-                  # Check total limit
-                  if [ $DELETED_COUNT -ge $MAX_DELETIONS_TOTAL ]; then
-                    echo "Reached total limit of $MAX_DELETIONS_TOTAL deletions. Stopping."
-                    break 2  # Break out of both loops
-                  fi
-                else
-                  echo "Failed to delete version: $version_id"
-                fi
-                
-                # Add delay between deletions to avoid rate limiting
-                sleep 5
-              fi
-            done
-            
-            echo "Completed cleanup for $PACKAGE"
-            echo ""
-            
-            # Small delay to avoid rate limiting
-            sleep 3
           done
           
-          echo "Package cleanup completed. Total versions deleted: $DELETED_COUNT"
+          # Delete versions one by one with rate limiting
+          echo "$OLD_VERSIONS" | while read -r version_id; do
+            if [ -n "$version_id" ]; then
+              echo "Deleting version: $version_id"
+              if gh api -X DELETE "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions/$version_id"; then
+                echo "Successfully deleted version: $version_id"
+                DELETED_COUNT=$((DELETED_COUNT + 1))
+                
+                # Check per-package limit
+                if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+                  echo "Reached limit of $MAX_DELETIONS deletions for $PACKAGE. Stopping."
+                  break
+                fi
+              else
+                echo "Failed to delete version: $version_id"
+              fi
+              
+              # Add delay between deletions to avoid rate limiting
+              sleep 5
+            fi
+          done
+          
+          echo "Completed cleanup for $PACKAGE. Deleted $DELETED_COUNT versions."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
