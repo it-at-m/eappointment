@@ -128,3 +128,16 @@ VALUES
   (59, 2025, 9, 4, '2025-09-01 12:00:00');
 
 UNLOCK TABLES;
+
+/* ------------------------------------------------------------------
+   Test-Daten RequestVariant
+-------------------------------------------------------------------*/
+LOCK TABLES `request_variant` WRITE;
+DELETE FROM `request_variant`;
+
+INSERT INTO `request_variant` (`id`, `name`) VALUES
+  (2, 'B – Anmeldung'),
+  (1, 'A – Abmeldung'),
+  (3, 'C – Änderungsmeldung');
+
+UNLOCK TABLES;
