@@ -12,7 +12,7 @@ jobs:
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
+        run: python3 ./cli modules reference-libraries --no-symlink --update-lock
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |

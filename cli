@@ -49,7 +49,8 @@ def cli_modules():
 
 @cli_modules.command("reference-libraries")
 @click.option("--no-symlink", is_flag=True, show_default=True, default=False)
-def cli_modules_reference_libraries(no_symlink: bool):
+@click.option("--update-lock", is_flag=True, show_default=True, default=False, help="Run composer update for eappointment deps to refresh composer.lock")
+def cli_modules_reference_libraries(no_symlink: bool, update_lock: bool):
   module_dependencies = {}
   for module in modules:
     composer_file_path = os.path.join(repo_dir, module, "composer.json")
