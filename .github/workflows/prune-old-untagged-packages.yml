@@ -63,15 +63,24 @@ jobs:
             echo "  - no tags (tags array length == 0)"
             echo ""
             
-            # Debug: Show all packages and their status
-            echo "All packages for $PACKAGE:"
-            echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[] | {id, created_at, tags: (.metadata.container.tags // []), is_old: (.created_at < $cutoff), is_untagged: ((.metadata.container.tags // []) | length == 0)}'
+            # Debug: Show total count and first few packages
+            TOTAL_PACKAGES=$(echo "$PACKAGE_DATA" | jq length)
+            echo "Total packages found: $TOTAL_PACKAGES"
+            echo "First 10 packages for $PACKAGE:"
+            echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[0:10] | .[] | {id, created_at, tags: (.metadata.container.tags // []), is_old: (.created_at < $cutoff), is_untagged: ((.metadata.container.tags // []) | length == 0)}'
             echo ""
             
             OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
             
             VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
+            
+            # Debug: Show what was actually selected
+            if [ "$VERSION_COUNT" -gt 0 ]; then
+              echo "Selected versions:"
+              echo "$OLD_VERSIONS"
+              echo ""
+            fi
             
             if [ "$VERSION_COUNT" -eq 0 ]; then
               echo "No old untagged versions found for $PACKAGE"
