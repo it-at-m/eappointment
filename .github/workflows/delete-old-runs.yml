@@ -41,8 +41,8 @@ jobs:
           
           # Use GitHub API to get older runs by page - start from a much earlier page
           DELETED_COUNT=0
-          START_PAGE=10  # Start from page 10 to get older runs
-          MAX_PAGES=600  # Process up to 600 pages (60,000 runs) - you have 533 pages
+          START_PAGE=50  # Start from page 50 to get older runs (13,318 total runs = 134 pages)
+          MAX_PAGES=134  # Process up to page 134 (all available pages)
           
           echo "Starting from page $START_PAGE to find older runs..."
           echo "Will process pages $START_PAGE through $MAX_PAGES"
