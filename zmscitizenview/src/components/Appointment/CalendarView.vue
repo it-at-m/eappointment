@@ -1761,20 +1761,28 @@ onMounted(() => {
       }
     });
 
-    // If alternative locations are allowed to be selected, they will be added to the slider.
-    if (
-      offices.length == 0 ||
-      !props.exclusiveLocation ||
-      offices[0].showAlternativeLocations
-    ) {
-      const otherOffices = availableProviders.filter((office) => {
-        if (props.preselectedOfficeId || selectedProvider.value) {
-          return false;
-        }
+    // Add alternative locations to the slider if allowed
+    const allowAlternativeLocations =
+      offices.length === 0 ||
+      offices[0].showAlternativeLocations === null ||
+      offices[0].showAlternativeLocations;
 
-        return true;
-      });
-      offices = [...offices, ...otherOffices];
+    const allowNonExclusive =
+      offices.length === 0 || !props.exclusiveLocation;
+
+    if (allowAlternativeLocations && allowNonExclusive) {
+      const excludedId =
+        props.preselectedOfficeId ?? selectedProvider.value?.id;
+
+      const otherOffices = availableProviders.filter(
+        (office) => office.id !== excludedId
+      );
+
+      const officeIds = new Set(offices.map((office) => office.id));
+      offices = [
+        ...offices,
+        ...otherOffices.filter((office) => !officeIds.has(office.id)),
+      ];
     }
 
     if (selectableProviders.value) {
