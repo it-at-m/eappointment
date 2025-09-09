@@ -106,7 +106,7 @@ class OverallCalendar extends Base
             'end'   => $end  ->format('Y-m-d H:i:s'),
         ]);
 
-        $this->log('info', 'calendar.book.attempt', [
+        \App::$log->info('calendar.book.attempt', [
             'scope_id'        => $scopeId,
             'process_id'      => $processId,
             'window'          => ['from' => $start->format('Y-m-d H:i:s'), 'until' => $end->format('Y-m-d H:i:s')],
@@ -124,7 +124,7 @@ class OverallCalendar extends Base
         ]);
 
         if (!$seat) {
-            $this->log('warning', 'calendar.book.no_seat', [
+            \App::$log->warning('calendar.book.no_seat', [
                 'scope_id'        => $scopeId,
                 'process_id'      => $processId,
                 'window'          => ['from' => $start->format('Y-m-d H:i:s'), 'until' => $end->format('Y-m-d H:i:s')],
@@ -145,7 +145,7 @@ class OverallCalendar extends Base
                 'end'   => $end  ->format('Y-m-d H:i:s'),
             ]);
         } catch (\PDOException $e) {
-            $this->log('critical', 'calendar.book.update_failed', [
+            \App::$log->critical('calendar.book.update_failed', [
                 'scope_id'   => $scopeId,
                 'process_id' => $processId,
                 'seat'       => $seat,
@@ -178,7 +178,7 @@ class OverallCalendar extends Base
             'pid'   => $processId,
         ]);
 
-        $this->log('info', 'calendar.book.result', [
+        \App::$log->info('calendar.book.result', [
             'scope_id'       => $scopeId,
             'process_id'     => $processId,
             'seat'           => $seat,
@@ -222,14 +222,5 @@ class OverallCalendar extends Base
         }
 
         return $this->fetchAll($sql, $params);
-    }
-
-    private function log(string $level, string $msg, array $ctx = []): void
-    {
-        if (isset(\App::$log) && method_exists(\App::$log, $level)) {
-            \App::$log->{$level}($msg, $ctx);
-        } else {
-            error_log($msg . ($ctx ? ' ' . json_encode($ctx) : ''));
-        }
     }
 }
