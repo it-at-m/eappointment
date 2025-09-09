@@ -82,7 +82,7 @@ jobs:
             echo "$RUN_IDS" | while read -r run_id; do
               if [ -n "$run_id" ]; then
                 echo "Deleting workflow run: $run_id"
-                if gh run delete --repo ${{ github.repository }} "$run_id" --confirm; then
+                if gh run delete --repo ${{ github.repository }} "$run_id"; then
                   echo "Successfully deleted run: $run_id"
                 else
                   echo "Failed to delete run: $run_id"
