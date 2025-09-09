@@ -7,6 +7,10 @@ on:
         description: "Security scan result"
         value: ${{ jobs.security-scan.outputs.result }}
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   security-scan:
     runs-on: ubuntu-latest
