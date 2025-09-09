@@ -40,6 +40,8 @@ $cache = new \Symfony\Component\Cache\Psr16Cache(
 
 $logger = new LoggerService();
 // Security middleware (order is important)
+// Maintenance middleware must be first to intercept all requests
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
