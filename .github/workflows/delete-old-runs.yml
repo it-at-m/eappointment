@@ -39,16 +39,20 @@ jobs:
           echo "Total workflow runs found in first 1000: $TOTAL_RUNS"
           echo "Note: GitHub CLI limits to 1000 runs per request. We'll process in batches."
           
-          # Use GitHub API to get older runs by page - start from a much earlier page
-          DELETED_COUNT=0
-          START_PAGE=50  # Start from page 50 to get older runs (13,318 total runs = 134 pages)
-          MAX_PAGES=134  # Process up to page 134 (all available pages)
+          # Get total count and calculate last page
+          TOTAL_COUNT=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=1" --jq '.total_count')
+          LAST_PAGE=$(( (TOTAL_COUNT + 99) / 100 ))  # Round up division
+          START_PAGE=$((LAST_PAGE - 20))  # Start from 20 pages before the end
           
+          echo "Total workflow runs: $TOTAL_COUNT"
+          echo "Total pages: $LAST_PAGE"
           echo "Starting from page $START_PAGE to find older runs..."
-          echo "Will process pages $START_PAGE through $MAX_PAGES"
+          echo "Will process pages $START_PAGE through $LAST_PAGE"
           
-          for PAGE in $(seq $START_PAGE $MAX_PAGES); do
-            echo "Processing page $PAGE of $MAX_PAGES... (deleted so far: $DELETED_COUNT)"
+          DELETED_COUNT=0
+          
+          for PAGE in $(seq $START_PAGE $LAST_PAGE); do
+            echo "Processing page $PAGE of $LAST_PAGE... (deleted so far: $DELETED_COUNT)"
             
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
