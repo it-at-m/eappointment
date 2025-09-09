@@ -50,9 +50,16 @@ jobs:
           echo "Will process pages $START_PAGE through 1 (newest runs)"
           
           DELETED_COUNT=0
+          MAX_DELETIONS=500  # Rate limit: 1000 requests per hour, cap at 500 for safety
           
           for PAGE in $(seq $START_PAGE -1 1); do
             echo "Processing page $PAGE (oldest to newest)... (deleted so far: $DELETED_COUNT)"
+            
+            # Check if we've reached the rate limit
+            if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+              echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping to avoid API limits."
+              break
+            fi
             
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
