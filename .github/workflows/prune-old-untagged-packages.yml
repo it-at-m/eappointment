@@ -34,14 +34,21 @@ jobs:
           echo "Current date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           echo ""
           
-          # List of packages to clean up (process 2 at a time to avoid rate limits)
+          # List of packages to clean up (all modules, 100 deletions each)
           PACKAGES=(
             "zmsmessaging"
-            "zmsapi"
+            "zmsapi" 
+            "zmscalldisplay"
+            "zmsadmin"
+            "zmsstatistic"
+            "zmsticketprinter"
+            "zmscitizenapi"
+            "zmscitizenview"
           )
           
           DELETED_COUNT=0
-          MAX_DELETIONS=1000  # Process 1000 deletions per run to stay within rate limits
+          MAX_DELETIONS_PER_PACKAGE=100  # Process 100 deletions per package
+          MAX_DELETIONS_TOTAL=800  # Total limit for all packages combined
           
           for PACKAGE in "${PACKAGES[@]}"; do
             echo "=== Processing package: $PACKAGE ==="
@@ -106,16 +113,24 @@ jobs:
             done
             
             # Delete versions one by one with rate limiting
+            PACKAGE_DELETED_COUNT=0
             echo "$OLD_VERSIONS" | while read -r version_id; do
               if [ -n "$version_id" ]; then
                 echo "Deleting version: $version_id"
                 if gh api -X DELETE "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions/$version_id"; then
                   echo "Successfully deleted version: $version_id"
                   DELETED_COUNT=$((DELETED_COUNT + 1))
+                  PACKAGE_DELETED_COUNT=$((PACKAGE_DELETED_COUNT + 1))
                   
-                  # Check rate limit after each deletion
-                  if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
-                    echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping."
+                  # Check per-package limit
+                  if [ $PACKAGE_DELETED_COUNT -ge $MAX_DELETIONS_PER_PACKAGE ]; then
+                    echo "Reached per-package limit of $MAX_DELETIONS_PER_PACKAGE deletions for $PACKAGE. Moving to next package."
+                    break
+                  fi
+                  
+                  # Check total limit
+                  if [ $DELETED_COUNT -ge $MAX_DELETIONS_TOTAL ]; then
+                    echo "Reached total limit of $MAX_DELETIONS_TOTAL deletions. Stopping."
                     break 2  # Break out of both loops
                   fi
                 else
