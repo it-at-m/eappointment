@@ -2,8 +2,8 @@ name: Prune Untagged Packages
 
 on:
   schedule:
-    # Run every Sunday at 4 AM UTC (after workflow runs cleanup)
-    - cron: '0 4 * * 0'
+    # Run daily at 4 AM UTC (after workflow runs cleanup)
+    - cron: '0 4 * * *'
   workflow_dispatch:
     inputs:
       days_to_keep:
