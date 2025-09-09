@@ -73,7 +73,7 @@ jobs:
             # Sort packages by created_at (oldest first) and then filter
             OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" 'sort_by(.created_at) | .[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
             
-            VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
+            VERSION_COUNT=$(echo "$OLD_VERSIONS" | grep -c '^[0-9]' || echo "0")
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
             
             # Debug: Show what was actually selected
