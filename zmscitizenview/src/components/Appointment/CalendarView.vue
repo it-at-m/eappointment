@@ -1768,11 +1768,11 @@ onMounted(() => {
       offices[0].showAlternativeLocations
     ) {
       const otherOffices = availableProviders.filter((office) => {
-        if (props.preselectedOfficeId)
-          return office.id != props.preselectedOfficeId;
-        else if (selectedProvider.value)
-          return office.id != selectedProvider.value.id;
-        else return true;
+        if (props.preselectedOfficeId || selectedProvider.value) {
+          return false;
+        }
+
+        return true;
       });
       offices = [...offices, ...otherOffices];
     }
