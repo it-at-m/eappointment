@@ -49,8 +49,7 @@ def cli_modules():
 
 @cli_modules.command("reference-libraries")
 @click.option("--no-symlink", is_flag=True, show_default=True, default=False)
-@click.option("--update-lock", is_flag=True, show_default=True, default=False, help="Run composer update for eappointment deps to refresh composer.lock")
-def cli_modules_reference_libraries(no_symlink: bool, update_lock: bool):
+def cli_modules_reference_libraries(no_symlink: bool):
   module_dependencies = {}
   for module in modules:
     composer_file_path = os.path.join(repo_dir, module, "composer.json")
@@ -81,11 +80,7 @@ def cli_modules_reference_libraries(no_symlink: bool, update_lock: bool):
 
   for module in module_dependencies:
     module_dir = os.path.join(repo_dir, module)
-    if update_lock:
-      deps = " ".join(module_dependencies[module])
-      os.system(f"cd {module_dir} && composer update {deps} --no-scripts --no-plugins 1>/dev/null")
-    else:
-      os.system(f"cd {module_dir} && composer install --no-scripts --no-plugins --no-progress --prefer-dist --optimize-autoloader 1>/dev/null")
+    os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
 
 
 @cli_modules.command("check-upgrade")
