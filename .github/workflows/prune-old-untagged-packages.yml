@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       days_to_keep:
-        description: 'Number of days to keep untagged packages (default: 7)'
+        description: 'Number of days to keep untagged packages (default: 60)'
         required: false
-        default: '7'
+        default: '60'
         type: string
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
       - name: Prune untagged packages
         run: |
           # Calculate cutoff date
-          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 7 }}
+          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 60 }}
           CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "=== Package Cleanup ==="
           echo "Retention period: $CUTOFF_DAYS days"
