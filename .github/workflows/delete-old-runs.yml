@@ -42,17 +42,17 @@ jobs:
           # Get total count and calculate last page
           TOTAL_COUNT=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=1" --jq '.total_count')
           LAST_PAGE=$(( (TOTAL_COUNT + 99) / 100 ))  # Round up division
-          START_PAGE=$((LAST_PAGE - 20))  # Start from 20 pages before the end
+          START_PAGE=$LAST_PAGE  # Start from the last page (oldest runs)
           
           echo "Total workflow runs: $TOTAL_COUNT"
           echo "Total pages: $LAST_PAGE"
-          echo "Starting from page $START_PAGE to find older runs..."
-          echo "Will process pages $START_PAGE through $LAST_PAGE"
+          echo "Starting from page $START_PAGE (oldest runs) and going forward..."
+          echo "Will process pages $START_PAGE through 1 (newest runs)"
           
           DELETED_COUNT=0
           
-          for PAGE in $(seq $START_PAGE $LAST_PAGE); do
-            echo "Processing page $PAGE of $LAST_PAGE... (deleted so far: $DELETED_COUNT)"
+          for PAGE in $(seq $START_PAGE -1 1); do
+            echo "Processing page $PAGE (oldest to newest)... (deleted so far: $DELETED_COUNT)"
             
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
