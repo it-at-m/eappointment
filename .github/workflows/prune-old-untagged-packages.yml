@@ -57,7 +57,7 @@ jobs:
             PACKAGE_DATA=$(gh api "orgs/it-at-m/packages/container/eappointment%2F$PACKAGE/versions")
             echo "Sample package data structure:"
             echo "$PACKAGE_DATA" | jq '.[0] | {id, created_at, metadata}'
-            OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[] | select((.metadata.container.tags // []) | length == 0 and .created_at < $cutoff) | .id')
+            OLD_VERSIONS=$(echo "$PACKAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '.[] | select(.created_at < $cutoff and ((.metadata.container.tags // []) | length == 0)) | .id')
             
             VERSION_COUNT=$(echo "$OLD_VERSIONS" | wc -l)
             echo "Found $VERSION_COUNT untagged versions older than $CUTOFF_DAYS days"
