@@ -1,4 +1,4 @@
-name: Delete Old Workflow Runs
+name: Prune Old Workflow Runs
 
 on:
   schedule:
@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       days_to_keep:
-        description: 'Number of days to keep workflow runs (default: 30)'
+        description: 'Number of days to keep workflow runs (default: 60)'
         required: false
-        default: '30'
+        default: '60'
         type: string
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
       - name: Delete old workflow runs
         run: |
           # Calculate cutoff date
-          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 30 }}
+          CUTOFF_DAYS=${{ github.event.inputs.days_to_keep || 60 }}
           CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "=== Workflow Run Cleanup ==="
           echo "Retention period: $CUTOFF_DAYS days"
@@ -50,20 +50,20 @@ jobs:
           echo "Will process pages $START_PAGE through 1 (newest runs)"
           
           DELETED_COUNT=0
-          MAX_DELETIONS=500  # Rate limit: 1000 requests per hour, cap at 500 for safety
+          MAX_DELETIONS=300  # Rate limit: 1000 requests per hour, cap at 300 for safety
           
           for PAGE in $(seq $START_PAGE -1 1); do
-            echo "Processing page $PAGE (oldest to newest)... (deleted so far: $DELETED_COUNT)"
-            
-            # Check if we've reached the rate limit
+            # Check if we've reached the rate limit BEFORE processing
             if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
               echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping to avoid API limits."
               break
             fi
             
+            echo "Processing page $PAGE (oldest to newest)... (deleted so far: $DELETED_COUNT)"
+            
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
-            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Delete Old Workflow Runs") | {id: .id, created_at: .created_at, name: .name}')
+            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Prune Old Workflow Runs" and (.head_branch | test("^[0-9]+\\.[0-9]+\\.[0-9]+(-.*)?$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}')
             
             if [ -z "$RUNS_JSON" ] || [ "$RUNS_JSON" = "null" ]; then
               echo "No more old runs found on page $PAGE. Stopping."
@@ -83,21 +83,29 @@ jobs:
             
             # Show some sample runs we're about to delete
             echo "Sample runs to delete:"
-            echo "$RUNS_JSON" | jq -r '. | "  - \(.name) (\(.created_at))"' | head -5
+            echo "$RUNS_JSON" | jq -r '. | "  - \(.name) (\(.head_branch)) (\(.created_at))"' | head -5
             
-            # Delete runs one by one
-            echo "$RUN_IDS" | while read -r run_id; do
+            # Delete runs one by one with delays
+            for run_id in $RUN_IDS; do
               if [ -n "$run_id" ]; then
                 echo "Deleting workflow run: $run_id"
                 if gh run delete --repo ${{ github.repository }} "$run_id"; then
                   echo "Successfully deleted run: $run_id"
+                  DELETED_COUNT=$((DELETED_COUNT + 1))
+                  
+                  # Check rate limit after each deletion
+                  if [ $DELETED_COUNT -ge $MAX_DELETIONS ]; then
+                    echo "Reached rate limit of $MAX_DELETIONS deletions. Stopping."
+                    break 2  # Break out of both loops
+                  fi
                 else
                   echo "Failed to delete run: $run_id"
                 fi
+                
+                # Add delay between deletions to avoid rate limiting
+                sleep 1
               fi
             done
-            
-            DELETED_COUNT=$((DELETED_COUNT + RUN_COUNT))
             
             # Small delay to avoid rate limiting
             sleep 2

@@ -16,6 +16,10 @@ on:
         description: "ZMSClient test result"
         value: ${{ jobs.zmsclient-test.outputs.result }}
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   module-test:
     runs-on: ubuntu-latest
