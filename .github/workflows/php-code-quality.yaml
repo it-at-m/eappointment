@@ -3,6 +3,9 @@ name: code quality
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   module-code-quality:
     runs-on: ubuntu-latest
