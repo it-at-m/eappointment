@@ -45,11 +45,13 @@ jobs:
           MAX_PAGES=600  # Process up to 600 pages (60,000 runs) - you have 533 pages
           
           echo "Starting from page $START_PAGE to find older runs..."
+          echo "Will process pages $START_PAGE through $MAX_PAGES"
           
           for PAGE in $(seq $START_PAGE $MAX_PAGES); do
             echo "Processing page $PAGE of $MAX_PAGES... (deleted so far: $DELETED_COUNT)"
             
             # Get runs from this page using GitHub API
+            echo "Fetching page $PAGE from GitHub API..."
             RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Delete Old Workflow Runs") | {id: .id, created_at: .created_at, name: .name}')
             
             if [ -z "$RUNS_JSON" ] || [ "$RUNS_JSON" = "null" ]; then
