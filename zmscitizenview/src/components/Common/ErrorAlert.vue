@@ -1,33 +1,33 @@
 <template>
-  <div class="container">
-    <muc-callout type="error">
-      <template #header>
-        {{ header }}
-      </template>
-      <template #content>
-        <p v-html="message" />
-        <slot />
-      </template>
-    </muc-callout>
-  </div>
+  <muc-callout :type="props.type">
+    <template #header>
+      {{ header }}
+    </template>
+    <template #content>
+      <p v-html="message" />
+      <slot />
+    </template>
+  </muc-callout>
 </template>
 
 <script lang="ts" setup>
-import { MucCallout } from "@muenchen/muc-patternlab-vue";
+import type { CalloutType } from "@/utils/callout";
 
-defineProps<{
-  message: string;
-  header: string;
-}>();
+import { MucCallout } from "@muenchen/muc-patternlab-vue";
+import { withDefaults } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    message: string;
+    header: string;
+    type?: CalloutType;
+  }>(),
+  {
+    type: "error",
+  }
+);
 
 defineSlots<{
   default(): unknown;
 }>();
 </script>
-
-<style scoped>
-.container {
-  padding-top: 32px;
-  padding-bottom: 32px;
-}
-</style>

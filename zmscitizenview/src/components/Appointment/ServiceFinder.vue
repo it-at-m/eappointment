@@ -2,8 +2,11 @@
   <div class="m-content">
     <h2 tabindex="0">{{ t("service") }}</h2>
   </div>
+
   <div
-    v-if="!service"
+    v-if="
+      !service && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
     :hidden="!!preselectedServiceId"
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
@@ -41,17 +44,17 @@
       </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else-if="!errorStates.errorStateMap.apiErrorRateLimitExceeded.value">
     <div class="m-component">
       <muc-counter
         v-model="countOfService"
-        :label="service.name"
-        :link="getServiceBaseURL() + service.id"
+        :label="service?.name || ''"
+        :link="getServiceBaseURL() + (service?.id || '')"
         :max="maxValueOfService"
         :min="1"
       />
     </div>
-    <div v-if="service.subServices && service.subServices.length > 0">
+    <div v-if="service?.subServices && service.subServices.length > 0">
       <h3 tabindex="0">{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
@@ -142,12 +145,18 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
+import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse as handleErrorApiResponse,
+} from "@/utils/errorHandler";
 
 const isCaptchaValid = ref<boolean>(false);
 
@@ -163,7 +172,22 @@ const emit = defineEmits<{
   (e: "next"): void;
   (e: "captchaTokenChanged", token: string | null): void;
   (e: "invalidJumpinLink"): void;
+  (e: "rateLimitError"): void;
 }>();
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+
+// Watch for rate limit errors and emit event
+watch(
+  () => errorStates.errorStateMap.apiErrorRateLimitExceeded.value,
+  (isRateLimitError) => {
+    if (isRateLimitError) {
+      emit("rateLimitError");
+    }
+  }
+);
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -444,9 +468,21 @@ onMounted(() => {
       props.preselectedOfficeId ?? undefined,
       props.baseUrl ?? undefined
     ).then((data) => {
-      services.value = data.services;
-      relations.value = data.relations;
-      offices.value = data.offices;
+      // Handle normal errors (like rate limit) first
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
+      // Check if any error state should be activated (maintenance/system failure)
+      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+        return;
+      }
+
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
 
       if (props.preselectedServiceId) {
         const foundService = services.value.find(
