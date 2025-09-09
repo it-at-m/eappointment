@@ -1767,8 +1767,7 @@ onMounted(() => {
       offices[0].showAlternativeLocations === null ||
       offices[0].showAlternativeLocations;
 
-    const allowNonExclusive =
-      offices.length === 0 || !props.exclusiveLocation;
+    const allowNonExclusive = offices.length === 0 || !props.exclusiveLocation;
 
     if (allowAlternativeLocations && allowNonExclusive) {
       const excludedId =
