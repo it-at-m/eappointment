@@ -16,19 +16,22 @@ on:
         description: "ZMSClient test result"
         value: ${{ jobs.zmsclient-test.outputs.result }}
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
-      env:
-        XDEBUG_MODE: coverage
-        PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
+    env:
+      XDEBUG_MODE: coverage
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
-      
       - name: Configure PHP
         run: |
           mkdir -p /tmp/php/conf.d
@@ -125,15 +128,11 @@ jobs:
           --health-interval 10s
           --health-timeout 10s
           --health-retries 5
+          --memory=1g
+          --cpus=1
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Install python3
-        run: |
-          apt update
-          apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -142,6 +141,7 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -159,7 +159,7 @@ jobs:
           mkdir -p coverage
           echo "Running tests with coverage"
           
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
@@ -195,23 +195,17 @@ jobs:
           --health-interval 10s
           --health-timeout 10s
           --health-retries 5
+          --memory=1g
+          --cpus=1
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Install python3
-        run: |
-          apt update
-          apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsdb')
-          for module in "${modules[@]}"; do
-            echo "Installing Composer dependencies for $module"
-            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
-          done
+          echo "Installing Composer dependencies for zmsdb"
+          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
+
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -226,7 +220,7 @@ jobs:
           echo "Running tests with coverage"
           php -i | grep -i xdebug
           
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
@@ -250,7 +244,6 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -265,6 +258,7 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+        shell: bash
 
       - name: Install Docker Compose
         run: |

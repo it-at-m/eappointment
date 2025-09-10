@@ -1,5 +1,65 @@
 <template>
-  <div v-if="loadingError">
+  <!-- Maintenance Page -->
+  <div
+    v-if="isInMaintenanceModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('maintenancePageText')"
+          :header="t('maintenancePageHeader')"
+          type="warning"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- System Failure Page -->
+  <div
+    v-if="isInSystemFailureModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('systemFailurePageText')"
+          :header="t('systemFailurePageHeader')"
+          type="error"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alert (for rate limit, etc.) -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t(apiErrorTranslation.textKey)"
+          :header="t(apiErrorTranslation.headerKey)"
+          :type="apiErrorTranslation.errorType"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Normal Content -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+      loadingError
+    "
+  >
     <muc-intro
       :tagline="t('appointment')"
       :title="appointmentId ? appointmentId : ''"
@@ -16,7 +76,14 @@
       </muc-button>
     </error-alert>
   </div>
-  <div v-else-if="!loading">
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+      !loading
+    "
+  >
     <appointment-detail-header
       :appointment="appointment"
       :selected-provider="selectedProvider"
@@ -138,7 +205,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -153,11 +220,22 @@ import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
+import {
+  getApiStatusState,
+  handleApiResponseForDownTime,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse as handleErrorApiResponse,
+} from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 
@@ -179,6 +257,18 @@ const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+
+// API status state
+const apiStatusState = getApiStatusState();
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+const apiErrorTranslation = computed(() =>
+  getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value)
+);
 
 /**
  * This function determines the expected duration of the appointment.
@@ -220,6 +310,18 @@ onMounted(() => {
     undefined,
     props.baseUrl ?? undefined
   ).then((data) => {
+    // Check if any error state should be activated
+    if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      return;
+    }
+
+    // Handle normal errors (like rate limit)
+    handleErrorApiResponse(
+      data,
+      errorStates.errorStateMap,
+      currentErrorData.value
+    );
+
     services.value = data.services;
     relations.value = data.relations;
     offices.value = data.offices;
