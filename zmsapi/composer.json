@@ -39,7 +39,7 @@
         "eappointment/zmsdldb": "@dev",
         "eappointment/zmsdb": "@dev",
         "eappointment/zmsentities": "@dev",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "ulrichsg/getopt-php": "^2.3",
         "league/climate": "^3.2",
         "roave/security-advisories": "dev-latest"

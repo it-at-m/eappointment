@@ -34,7 +34,7 @@
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "firebase/php-jwt": "^6.11",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "roave/security-advisories": "dev-latest"
     },
     "scripts": {
