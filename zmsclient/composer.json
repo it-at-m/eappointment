@@ -31,7 +31,7 @@
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/mellon": "@dev",
-        "psr/http-message": "^1.0",
+        "psr/http-message": "^2.0",
         "aronduby/dump": "^0.9",
         "php-http/curl-client": "^2.2",
         "slim/psr7": "^1.5",
