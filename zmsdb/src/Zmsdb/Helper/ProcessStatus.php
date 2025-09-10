@@ -30,12 +30,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesStatusData($entity, $dateTime);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
-        Log::writeProcessLog(
-            "UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum",
-            Log::ACTION_STATUS_CHANGE,
-            $process,
-            $userAccount
-        );
+
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
@@ -43,6 +38,14 @@ class ProcessStatus extends \BO\Zmsdb\Process
         ]);
         $process = $this->readEntity($process['id'], $process['authKey'], $resolveReferences);
         $process['status'] = $this->readProcessStatus($process['id'], $process['authKey']);
+
+        Log::writeProcessLog(
+            "UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum",
+            Log::ACTION_STATUS_CHANGE,
+            $process,
+            $userAccount
+        );
+
         return $process;
     }
 
@@ -63,6 +66,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
             LIMIT 1
             '
         );
+
+        return $processData['status'];
 
         $statusList = [
             'free' => true,
