@@ -2380,8 +2380,29 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
       }
     });
 
-    hourRows.sort((a, b) => a.hour - b.hour);
-    dayPartRows.sort((a, b) => (a.part === "am" ? -1 : 1));
+    // hourRows: first by hour, then by provider order (officeOrder)
+    hourRows.sort((hourRowLeft, hourRowRight) => {
+      if (hourRowLeft.hour !== hourRowRight.hour) {
+        return hourRowLeft.hour - hourRowRight.hour;
+      }
+      const orderIndexLeft =
+        officeOrder.value.get(Number(hourRowLeft.officeId))
+      const orderIndexRight =
+        officeOrder.value.get(Number(hourRowRight.officeId))
+      return orderIndexLeft - orderIndexRight;
+    });
+
+    // dayPartRows: first AM before PM, then by provider order (officeOrder)
+    dayPartRows.sort((dayPartRowLeft, dayPartRowRight) => {
+      if (dayPartRowLeft.part !== dayPartRowRight.part) {
+        return dayPartRowLeft.part === "am" ? -1 : 1;
+      }
+      const orderIndexLeft =
+        officeOrder.value.get(Number(dayPartRowLeft.officeId))
+      const orderIndexRight =
+        officeOrder.value.get(Number(dayPartRowRight.officeId))
+      return orderIndexLeft - orderIndexRight;
+    });
 
     if (!listViewCurrentHour.value.has(dateString)) {
       const availableHours = getListDayAvailableHours({
