@@ -2385,8 +2385,12 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
       if (hourRowLeft.hour !== hourRowRight.hour) {
         return hourRowLeft.hour - hourRowRight.hour;
       }
-      const left = officeOrder.value.get(Number(hourRowLeft.officeId)) ?? Number.MAX_SAFE_INTEGER;
-      const right = officeOrder.value.get(Number(hourRowRight.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      const left =
+        officeOrder.value.get(Number(hourRowLeft.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      const right =
+        officeOrder.value.get(Number(hourRowRight.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
       return left - right;
     });
 
@@ -2395,8 +2399,12 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
       if (dayPartRowLeft.part !== dayPartRowRight.part) {
         return dayPartRowLeft.part === "am" ? -1 : 1;
       }
-      const left = officeOrder.value.get(Number(dayPartRowLeft.officeId)) ?? Number.MAX_SAFE_INTEGER;
-      const right = officeOrder.value.get(Number(dayPartRowRight.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      const left =
+        officeOrder.value.get(Number(dayPartRowLeft.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      const right =
+        officeOrder.value.get(Number(dayPartRowRight.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
       return left - right;
     });
 
