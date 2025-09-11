@@ -2385,13 +2385,9 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
       if (hourRowLeft.hour !== hourRowRight.hour) {
         return hourRowLeft.hour - hourRowRight.hour;
       }
-      const orderIndexLeft = officeOrder.value.get(
-        Number(hourRowLeft.officeId)
-      );
-      const orderIndexRight = officeOrder.value.get(
-        Number(hourRowRight.officeId)
-      );
-      return orderIndexLeft - orderIndexRight;
+      const left = officeOrder.value.get(Number(hourRowLeft.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      const right = officeOrder.value.get(Number(hourRowRight.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      return left - right;
     });
 
     // dayPartRows: first AM before PM, then by provider order (officeOrder)
@@ -2399,13 +2395,9 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
       if (dayPartRowLeft.part !== dayPartRowRight.part) {
         return dayPartRowLeft.part === "am" ? -1 : 1;
       }
-      const orderIndexLeft = officeOrder.value.get(
-        Number(dayPartRowLeft.officeId)
-      );
-      const orderIndexRight = officeOrder.value.get(
-        Number(dayPartRowRight.officeId)
-      );
-      return orderIndexLeft - orderIndexRight;
+      const left = officeOrder.value.get(Number(dayPartRowLeft.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      const right = officeOrder.value.get(Number(dayPartRowRight.officeId)) ?? Number.MAX_SAFE_INTEGER;
+      return left - right;
     });
 
     if (!listViewCurrentHour.value.has(dateString)) {
