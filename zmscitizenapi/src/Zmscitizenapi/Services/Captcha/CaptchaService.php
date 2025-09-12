@@ -165,7 +165,7 @@ class CaptchaService extends Entity implements CaptchaInterface
         $this->logger->logInfo('[Altcha] verifySolution payload received', [
             'payload_base64_len' => strlen($payload),
             'decoded_json_len' => strlen($decodedJson),
-            'decoded_payload_keys' => is_array($decodedPayload) ? array_keys($decodedPayload) : [],
+            'decoded_payload_keys' => $decodedPayload,
         ]);
 
         try {
