@@ -204,6 +204,10 @@ class Request extends Base
 
     public function writeDeleteListBySource($source)
     {
+        // First, set parent_id to NULL for all child requests that reference requests from this source
+        $this->clearParentReferencesForSource($source);
+
+        // Then delete all requests from this source
         $query = new Query\Request(Query\Base::DELETE);
         $query->addConditionRequestSource($source);
         return $this->deleteItem($query);
@@ -220,5 +224,18 @@ class Request extends Base
     {
         $sql = (new Query\Request(Query\Base::SELECT))->getQueryCountInBuergeranliegen();
         return (int) $this->getReader()->fetchValue($sql, ['request_id' => $requestId]);
+    }
+
+    /**
+     * Clear parent_id references for all child requests that reference requests from the given source
+     * This prevents foreign key constraint violations when deleting requests by source
+     */
+    protected function clearParentReferencesForSource(string $source): void
+    {
+        $sql = "UPDATE request SET parent_id = NULL WHERE parent_id IN (
+            SELECT id FROM request WHERE source = :source
+        )";
+        $stmt = $this->getWriter()->prepare($sql);
+        $stmt->execute(['source' => $source]);
     }
 }
