@@ -440,10 +440,11 @@ class MapperService
     {
         $scope = new Scope();
         if ($thinnedProcess->scope) {
-            $scope->id = $thinnedProcess->scope->id;
-            $scope->source = \App::$source_name;
+            $providerSource = $thinnedProcess->scope->provider->source ?? null;
 
-            // Set preferences as array structure
+            $scope->id = $thinnedProcess->scope->id;
+            $scope->source = $providerSource;
+
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
@@ -482,7 +483,8 @@ class MapperService
                     $scope->provider->contact->streetNumber = $provider->contact->streetNumber ?? null;
                 }
             }
-            $scope->provider->source = \App::$source_name;
+
+            $scope->provider->source = $thinnedProcess->scope->provider->source ?? null;
         }
 
         return $scope;
@@ -490,6 +492,12 @@ class MapperService
 
     private static function createRequests(ThinnedProcess $thinnedProcess): array
     {
+        $serviceSourceMap = [];
+        $allServices = ZmsApiClientService::getServices() ?? new RequestList();
+        foreach ($allServices as $service) {
+            $serviceSourceMap[(string)$service->id] = (string)($service->source ?? '');
+        }
+
         $requests = [];
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceName = $thinnedProcess->serviceName ?? null;
@@ -499,16 +507,25 @@ class MapperService
             $request = new Request();
             $request->id = $mainServiceId;
             $request->name = $mainServiceName;
-            $request->source = \App::$source_name;
+            $request->source = $mainServiceId !== null
+                ? ($serviceSourceMap[(string)$mainServiceId] ?? null)
+                : null;
             $requests[] = $request;
         }
 
         foreach ($thinnedProcess->subRequestCounts ?? [] as $subRequest) {
-            for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
+            $subId = $subRequest['id'] ?? null;
+            $subName = $subRequest['name'] ?? null;
+            $count = (int)($subRequest['count'] ?? 0);
+
+            for ($i = 0; $i < $count; $i++) {
                 $request = new Request();
-                $request->id = $subRequest['id'];
-                $request->name = $subRequest['name'];
-                $request->source = \App::$source_name;
+                $request->id = $subId;
+                $request->name = $subName;
+                $request->source = $subId !== null
+                    ? ($serviceSourceMap[(string)$subId] ?? null)
+                    : null;
+
                 $requests[] = $request;
             }
         }
