@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
-use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
