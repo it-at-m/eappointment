@@ -69,6 +69,8 @@ const fetchCaptchaDetails = async () => {
 const handleStateChange = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
     const state = ev.detail.state;
+    console.debug("[Altcha] State changed:", state, ev.detail);
+
     if (state === "verified") {
       emit("validationResult", true);
     } else {
@@ -79,7 +81,18 @@ const handleStateChange = (ev: CustomEvent | Event) => {
 
 const handleServerVerification = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
+    console.log("[Altcha] Server verification event:", ev.detail);
+
+    if (ev.detail.token) {
+      console.log("[Altcha] Token:", ev.detail.token);
+    }
+    if (ev.detail.payload) {
+      console.log("[Altcha] Full Payload:", ev.detail.payload);
+    }
+
     emit("tokenChanged", ev.detail.token);
+  } else {
+    console.warn("[Altcha] Server verification event without detail:", ev);
   }
 };
 
