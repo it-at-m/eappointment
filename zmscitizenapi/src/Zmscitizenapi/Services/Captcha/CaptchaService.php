@@ -159,6 +159,10 @@ class CaptchaService extends Entity implements CaptchaInterface
             ];
         }
 
+        error_log('[Altcha] Raw payload (base64): ' . $payload);
+        error_log('[Altcha] Decoded payload JSON: ' . $decodedJson);
+        error_log('[Altcha] Decoded payload array: ' . print_r($decodedPayload, true));
+
         try {
             $response = $this->httpClient->post($this->verifyUrl, [
                 'json' => [
