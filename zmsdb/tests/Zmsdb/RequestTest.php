@@ -92,4 +92,40 @@ class RequestTest extends Base
         $this->assertEquals(120335, $entity->getId());
         $this->assertEquals('test', $entity->group);
     }
+
+    public function testWriteDeleteListBySourceWithParentChildRelationship()
+    {
+        $query = new Query();
+        
+        // Create a parent request
+        $parentRequest = new \BO\Zmsentities\Request();
+        $parentRequest['id'] = '999001';
+        $parentRequest['name'] = 'Parent Request';
+        $parentRequest['source'] = 'dldb';
+        $parentRequest['group'] = 'Testgruppe';
+        $parentRequest['link'] = '';
+        $parentRequest['parent_id'] = null;
+        $parentRequest = $query->writeEntity($parentRequest);
+        
+        // Create a child request that references the parent
+        $childRequest = new \BO\Zmsentities\Request();
+        $childRequest['id'] = '999002';
+        $childRequest['name'] = 'Child Request';
+        $childRequest['source'] = 'dldb';
+        $childRequest['group'] = 'Testgruppe';
+        $childRequest['link'] = '';
+        $childRequest['parent_id'] = '999001';
+        $childRequest = $query->writeEntity($childRequest);
+        
+        // Verify the child request has the parent_id set
+        $this->assertEquals('999001', $childRequest->getParentId());
+        
+        // Now delete all requests from 'test' source - this should work without foreign key constraint violation
+        $result = $query->writeDeleteListBySource('dldb');
+        $this->assertTrue($result);
+        
+        // Verify both requests are deleted
+        $this->expectException('BO\Zmsdb\Exception\Request\RequestNotFound');
+        $query->readEntity('dldb', '999001');
+    }
 }
