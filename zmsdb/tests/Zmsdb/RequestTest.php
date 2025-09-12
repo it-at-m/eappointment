@@ -101,7 +101,9 @@ class RequestTest extends Base
         $parentRequest = new \BO\Zmsentities\Request();
         $parentRequest['id'] = '999001';
         $parentRequest['name'] = 'Parent Request';
-        $parentRequest['source'] = 'test';
+        $parentRequest['source'] = 'dldb';
+        $parentRequest['group'] = 'Testgruppe';
+        $parentRequest['link'] = '';
         $parentRequest['parent_id'] = null;
         $parentRequest = $query->writeEntity($parentRequest);
         
@@ -109,7 +111,9 @@ class RequestTest extends Base
         $childRequest = new \BO\Zmsentities\Request();
         $childRequest['id'] = '999002';
         $childRequest['name'] = 'Child Request';
-        $childRequest['source'] = 'test';
+        $childRequest['source'] = 'dldb';
+        $childRequest['group'] = 'Testgruppe';
+        $childRequest['link'] = '';
         $childRequest['parent_id'] = '999001';
         $childRequest = $query->writeEntity($childRequest);
         
@@ -117,11 +121,11 @@ class RequestTest extends Base
         $this->assertEquals('999001', $childRequest->getParentId());
         
         // Now delete all requests from 'test' source - this should work without foreign key constraint violation
-        $result = $query->writeDeleteListBySource('test');
+        $result = $query->writeDeleteListBySource('dldb');
         $this->assertTrue($result);
         
         // Verify both requests are deleted
         $this->expectException('BO\Zmsdb\Exception\Request\RequestNotFound');
-        $query->readEntity('test', '999001');
+        $query->readEntity('dldb', '999001');
     }
 }
