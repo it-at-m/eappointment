@@ -440,7 +440,7 @@ class MapperService
     {
         $scope = new Scope();
         if ($thinnedProcess->scope) {
-            $providerSource = $thinnedProcess->scope->provider->source ?? null;
+            $providerSource = $thinnedProcess->scope->provider->source ?? 'dldb';
 
             $scope->id = $thinnedProcess->scope->id;
             $scope->source = $providerSource;
@@ -492,11 +492,7 @@ class MapperService
 
     private static function createRequests(ThinnedProcess $thinnedProcess): array
     {
-        $serviceSourceMap = [];
-        $allServices = ZmsApiClientService::getServices() ?? new RequestList();
-        foreach ($allServices as $service) {
-            $serviceSourceMap[(string)$service->id] = (string)($service->source ?? '');
-        }
+        $providerSource = $thinnedProcess->scope->provider->source ?? 'dldb';
 
         $requests = [];
         $mainServiceId = $thinnedProcess->serviceId ?? null;
@@ -507,9 +503,7 @@ class MapperService
             $request = new Request();
             $request->id = $mainServiceId;
             $request->name = $mainServiceName;
-            $request->source = $mainServiceId !== null
-                ? ($serviceSourceMap[(string)$mainServiceId] ?? null)
-                : null;
+            $request->source = $providerSource;
             $requests[] = $request;
         }
 
@@ -522,10 +516,7 @@ class MapperService
                 $request = new Request();
                 $request->id = $subId;
                 $request->name = $subName;
-                $request->source = $subId !== null
-                    ? ($serviceSourceMap[(string)$subId] ?? null)
-                    : null;
-
+                $request->source = $providerSource;
                 $requests[] = $request;
             }
         }
