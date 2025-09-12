@@ -35,10 +35,10 @@ class CaptchaService extends Entity implements CaptchaInterface
 /**
      * Constructor.
      */
-    public function __construct(LoggerService $logger)
+    public function __construct()
     {
         $this->service = 'CaptchaService';
-        $this->logger = $logger;
+        $this->logger = new LoggerService();
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
         $this->tokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
