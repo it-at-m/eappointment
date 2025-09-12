@@ -69,7 +69,7 @@ const fetchCaptchaDetails = async () => {
 const handleStateChange = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
     const state = ev.detail.state;
-    console.debug("[Altcha] State changed:", state, ev.detail);
+    console.log("[Altcha] State changed:", state, ev.detail);
 
     if (state === "verified") {
       emit("validationResult", true);
