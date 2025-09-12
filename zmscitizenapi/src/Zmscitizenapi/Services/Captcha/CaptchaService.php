@@ -162,10 +162,15 @@ class CaptchaService extends Entity implements CaptchaInterface
             ];
         }
 
+        $serializablePayload = array_map(
+            fn($v) => is_scalar($v) ? $v : json_encode($v),
+            $decodedPayload
+        );
+
         $this->logger->logInfo('[Altcha] verifySolution payload received', [
             'payload_base64_len' => strlen($payload),
             'decoded_json_len' => strlen($decodedJson),
-            'decoded_payload_keys' => $decodedPayload,
+            'decoded_payload' => $serializablePayload,
         ]);
 
         try {
