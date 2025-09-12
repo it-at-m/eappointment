@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Services\Captcha;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 use BO\Zmsentities\Schema\Entity;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
@@ -30,12 +31,14 @@ class CaptchaService extends Entity implements CaptchaInterface
     public string $verifyUrl;
 /** @var Client */
     protected Client $httpClient;
+    private LoggerService $logger;
 /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(LoggerService $logger)
     {
         $this->service = 'CaptchaService';
+        $this->logger = $logger;
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
         $this->tokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
@@ -159,9 +162,11 @@ class CaptchaService extends Entity implements CaptchaInterface
             ];
         }
 
-        error_log('[Altcha] Raw payload (base64): ' . $payload);
-        error_log('[Altcha] Decoded payload JSON: ' . $decodedJson);
-        error_log('[Altcha] Decoded payload array: ' . print_r($decodedPayload, true));
+        $this->logger->logInfo('[Altcha] verifySolution payload received', [
+            'payload_base64_len' => strlen($payload),
+            'decoded_json_len' => strlen($decodedJson),
+            'decoded_payload_keys' => is_array($decodedPayload) ? array_keys($decodedPayload) : [],
+        ]);
 
         try {
             $response = $this->httpClient->post($this->verifyUrl, [
