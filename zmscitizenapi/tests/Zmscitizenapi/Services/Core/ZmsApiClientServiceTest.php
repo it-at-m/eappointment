@@ -509,6 +509,14 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testReserveTimeslotSuccess(): void
     {
+        $req = new \BO\Zmsentities\Request();
+        $req->id = 1;
+        $req->source = 'unittest';
+        $this->source->requests = new RequestList([$req]);
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($this->source);
+
         $process = new Process();
         $process->appointments = [(object) ['date' => '1724907600']];
         $process->scope = new Scope();
@@ -529,6 +537,14 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testReserveTimeslotInvalidResponse(): void
     {
+        $req = new \BO\Zmsentities\Request();
+        $req->id = 1;
+        $req->source = 'unittest';
+        $this->source->requests = new RequestList([$req]);
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($this->source);
+
         $process = new Process();
 
         $result = $this->createMock(Result::class);
@@ -545,6 +561,14 @@ class ZmsApiClientServiceTest extends TestCase
 
     public function testReserveTimeslotException(): void
     {
+        $req = new \BO\Zmsentities\Request();
+        $req->id = 1;
+        $req->source = 'unittest';
+        $this->source->requests = new RequestList([$req]);
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($this->source);
+
         $process = new Process();
 
         $this->httpMock->method('readPostResult')
