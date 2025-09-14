@@ -54,7 +54,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     }
 
     /**
-     * Gibt die Captcha-Konfigurationsdetails zurück.
+     * Return the captcha configuration details.
      *
      * @return array
      */
@@ -69,7 +69,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     }
 
     /**
-     * Generiert einen JWT für die Captcha-Validierung.
+     * Generate a JWT for captcha validation.
      *
      * @return string
      */
@@ -85,7 +85,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     }
 
     /**
-     * Fordert eine neue Captcha-Challenge an.
+     * Request a new captcha challenge.
      *
      * @return array
      * @throws \Exception
@@ -104,19 +104,19 @@ class CaptchaService extends Entity implements CaptchaInterface
             $responseData = json_decode((string) $response->getBody(), true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Fehler beim Dekodieren der JSON-Antwort');
+                throw new \Exception('Error decoding the JSON response');
             }
 
             $challenge = $responseData['challenge'] ?? null;
 
             if ($challenge === null) {
-                throw new \Exception('Challenge-Daten fehlen in der Antwort');
+                throw new \Exception('Missing challenge data');
             }
 
             return $challenge;
         } catch (RequestException $e) {
             return [
-                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'meta' => ['success' => false, 'error' => 'Request error: ' . $e->getMessage()],
                 'data' => null,
             ];
         } catch (\Throwable $e) {
@@ -128,7 +128,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     }
 
     /**
-     * Überprüft die Captcha-Lösung.
+     * Verify the captcha solution.
      *
      * @param string $payload
      * @return mixed
@@ -138,7 +138,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     {
         if (!$payload) {
             return [
-                'meta' => ['success' => false, 'error' => 'Keine Payload übergeben'],
+                'meta' => ['success' => false, 'error' => 'No payload provided'],
                 'data' => null,
             ];
         }
@@ -146,15 +146,15 @@ class CaptchaService extends Entity implements CaptchaInterface
         $decodedJson = base64_decode(strtr($payload, '-_', '+/'));
         if (!$decodedJson) {
             return [
-                'meta' => ['success' => false, 'error' => 'Payload konnte nicht dekodiert werden'],
+                'meta' => ['success' => false, 'error' => 'Payload could not be decoded'],
                 'data' => null,
             ];
         }
 
         $decodedPayload = json_decode($decodedJson, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decodedPayload)) {
             return [
-                'meta' => ['success' => false, 'error' => 'Ungültiges JSON in Payload'],
+                'meta' => ['success' => false, 'error' => 'Invalid JSON in payload'],
                 'data' => null,
             ];
         }
@@ -171,8 +171,22 @@ class CaptchaService extends Entity implements CaptchaInterface
 
             $responseData = json_decode((string) $response->getBody(), true);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Antwort vom Captcha-Service ist kein gültiges JSON');
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($responseData)) {
+                throw new \Exception('Response from Captcha service is not valid JSON');
+            }
+
+            if (!array_key_exists('valid', $responseData)) {
+                return [
+                    'meta' => ['success' => false, 'error' => 'Response does not contain a "valid" field'],
+                    'data' => $responseData,
+                ];
+            }
+    
+            if ($responseData['valid'] !== true) {
+                return [
+                    'meta' => ['success' => false, 'error' => 'Captcha verification failed'],
+                    'data' => $responseData,
+                ];
             }
 
             return [
@@ -182,7 +196,7 @@ class CaptchaService extends Entity implements CaptchaInterface
             ];
         } catch (RequestException $e) {
             return [
-                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'meta' => ['success' => false, 'error' => 'Request error: ' . $e->getMessage()],
                 'data' => null,
             ];
         } catch (\Throwable $e) {
