@@ -181,7 +181,7 @@ class CaptchaService extends Entity implements CaptchaInterface
                     'data' => $responseData,
                 ];
             }
-    
+
             if ($responseData['valid'] !== true) {
                 return [
                     'meta' => ['success' => false, 'error' => 'Captcha verification failed'],
