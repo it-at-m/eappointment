@@ -20,9 +20,32 @@
       </div>
       <div
         class="header-right"
-        style="font-size: 1.45em; font-weight: normal"
-        v-html="currentDateTime"
-      ></div>
+        style="
+          font-size: 1.45em;
+          font-weight: normal;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        "
+      >
+        <div
+          v-if="!audioEnabled"
+          @click="showSoundPermissionModal = true"
+          style="
+            background: #ffc107;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 10px;
+            cursor: pointer;
+          "
+          title="Click to open Sound permissions for this domain"
+        >
+          🔊 Click to enable Sound
+        </div>
+        <span v-html="currentDateTime"></span>
+      </div>
     </div>
 
     <div v-if="loading" class="loading">
@@ -148,6 +171,10 @@
                               getQueueItemForRow(row, 1)?.status || '',
                             )
                           "
+                          :data-appointment="getQueueItemForRow(row, 1)?.number"
+                          :data-status="
+                            getQueueItemForRow(row, 1)?.status || 'called'
+                          "
                           class="queue-number"
                         >
                           {{ getQueueItemForRow(row, 1)?.number || "" }}
@@ -175,6 +202,10 @@
                             getStatusClass(
                               getQueueItemForRow(row, 1)?.status || '',
                             )
+                          "
+                          :data-appointment="getQueueItemForRow(row, 1)?.number"
+                          :data-status="
+                            getQueueItemForRow(row, 1)?.status || 'called'
                           "
                           class="queue-destination"
                         >
@@ -272,6 +303,12 @@
                               getQueueItemForRow(row + 5, 1)?.status || '',
                             )
                           "
+                          :data-appointment="
+                            getQueueItemForRow(row + 5, 1)?.number
+                          "
+                          :data-status="
+                            getQueueItemForRow(row + 5, 1)?.status || 'called'
+                          "
                           class="queue-number"
                         >
                           {{ getQueueItemForRow(row + 5, 1)?.number || "" }}
@@ -300,6 +337,12 @@
                               getQueueItemForRow(row + 5, 1)?.status || '',
                             )
                           "
+                          :data-appointment="
+                            getQueueItemForRow(row + 5, 1)?.number
+                          "
+                          :data-status="
+                            getQueueItemForRow(row + 5, 1)?.status || 'called'
+                          "
                           class="queue-destination"
                         >
                           {{
@@ -323,17 +366,27 @@
       </div>
     </div>
   </div>
+
+  <!-- Sound Permission Modal -->
+  <SoundPermissionModal
+    :is-visible="showSoundPermissionModal"
+    :domain="currentDomain"
+    @close="showSoundPermissionModal = false"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import SoundPermissionModal from "./SoundPermissionModal.vue";
 import type {
   CalldisplayEntity,
   QueueList,
   Scope,
 } from "../api/CalldisplayAPI";
 import { sanitizeHtml } from "../utils/sanitizeHtml";
+import { audioManager } from "../utils/audioManager";
+import { blinkElementsByAppointmentIds } from "../utils/blinkEffect";
 
 const { t: $t } = useI18n();
 
@@ -350,6 +403,13 @@ const props = defineProps<Props>();
 
 // Date and time functionality
 const currentTime = ref(new Date());
+
+// Audio enabled state
+const audioEnabled = ref(false);
+
+// Sound permission modal state
+const showSoundPermissionModal = ref(false);
+const currentDomain = ref(window.location.origin);
 
 const currentDateTime = computed(() => {
   const date = currentTime.value.toLocaleDateString("de-DE", {
@@ -379,13 +439,80 @@ onMounted(() => {
   timeInterval = setInterval(() => {
     currentTime.value = new Date();
   }, 1000);
+
+  // Check audio enabled state periodically
+  const checkAudioState = () => {
+    const debugState = audioManager.getDebugState();
+    audioEnabled.value = debugState.userHasInteracted;
+  };
+
+  // Check immediately and then every second
+  checkAudioState();
+  const audioCheckInterval = setInterval(checkAudioState, 1000);
+
+  // Clean up interval on unmount
+  onUnmounted(() => {
+    if (audioCheckInterval) {
+      clearInterval(audioCheckInterval);
+    }
+  });
 });
 
 onUnmounted(() => {
   if (timeInterval) {
     clearInterval(timeInterval);
   }
+  // Reset audio manager when component is unmounted
+  audioManager.reset();
 });
+
+// Watch for changes in queue data to handle audio and blinking effects
+watch(
+  () => props.queue,
+  (newQueue) => {
+    console.log("CalldisplayView - Queue data changed:", newQueue);
+
+    if (!newQueue || newQueue.length === 0) {
+      console.log("CalldisplayView - No queue data, skipping audio check");
+      return;
+    }
+
+    // Convert QueueList to the format expected by audioManager
+    const queueItems = newQueue.map((item) => ({
+      number: item.number,
+      destination: item.destination,
+      status: item.status, // Use actual status from API
+      appointmentId: item.number, // Use number as appointment ID
+    }));
+
+    console.log("CalldisplayView - Raw queue data:", newQueue);
+    console.log("CalldisplayView - Converted queue items:", queueItems);
+    console.log(
+      "CalldisplayView - Status values found:",
+      queueItems.map((item) => item.status),
+    );
+
+    // Get new appointment IDs and play audio
+    const newIds = audioManager.updateAndPlayAudio(queueItems);
+
+    // Blink elements for new appointments
+    if (newIds.length > 0) {
+      console.log(
+        "CalldisplayView - Blinking elements for new appointments:",
+        newIds,
+      );
+      // Use nextTick to ensure DOM is updated
+      setTimeout(() => {
+        blinkElementsByAppointmentIds(newIds, {
+          duration: 3000,
+          interval: 300,
+          times: 3,
+        });
+      }, 100);
+    }
+  },
+  { immediate: false },
+);
 
 const getStatusClass = (status: string) => {
   switch (status) {

@@ -1,6 +1,13 @@
 // Import MUC Patternlab Vue styles
 @import "@muenchen/muc-patternlab-vue/muc-patternlab-vue.css";
 
+/* Blinking effect for new appointments */
+.blink {
+  transition:
+    opacity 0.1s ease-in-out,
+    visibility 0.1s ease-in-out;
+}
+
 // Reset and base styles
 * {
   box-sizing: border-box;
