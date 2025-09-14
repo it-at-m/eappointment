@@ -5,7 +5,6 @@ spring:
         cors-configurations:
           '[/**]':
             allowedOriginPatterns:
-              - "https://*.ddev.site"
               - "http://localhost:*"
               - "https://localhost:*"
             allowedMethods:
@@ -16,14 +15,14 @@ spring:
         - id: "citizen-api"
           uri: "http://zms-web:80"
           predicates:
-            - Path=/buergeransicht2/api/citizen/**
+            - Path=/buergeransicht/api/citizen/**
           filters:
-            - RewritePath=/buergeransicht2/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
+            - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
             - RemoveResponseHeader=WWW-Authenticate
         - id: "webcomponent"
           uri: "${WEBCOMPONENT_URI}"
           predicates:
-            - Path=/buergeransicht2/**
+            - Path=/buergeransicht/**
           filters:
-            - RewritePath=/buergeransicht2/(?<segment>.*), /${segment}
+            - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
             - RemoveResponseHeader=WWW-Authenticate
