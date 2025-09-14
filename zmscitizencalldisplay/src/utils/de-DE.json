@@ -1,0 +1,21 @@
+{
+  "calldisplay": {
+    "loading": "Lade Daten...",
+    "error": "Fehler beim Laden der Daten",
+    "errorHeader": "Entschuldigung, es ist ein Fehler aufgetreten.",
+    "errorContent": "Die gewünschte Seite kann derzeit nicht angezeigt werden. Dies kann durch technische Probleme verursacht werden, die kurzfristig behoben werden.<br/>Versuchen Sie bitte zunächst, dieses Gerät neu zu starten. Sollte das Problem weiterhin bestehen, melden Sie die Störung bitte unter:",
+    "errorSupportLink": "https://it-services.muenchen.de",
+    "config": {
+      "title": "Konfiguration erforderlich",
+      "description": "Diese Aufrufanzeige benötigt Scope-Parameter, um Daten anzuzeigen. Bitte konfigurieren Sie die URL mit den entsprechenden Scope-IDs.",
+      "example": "Beispiel-URL:",
+      "urlExample": "?collections[scopelist]=413,416,419,559&template=default_counter"
+    },
+    "table": {
+      "number": "Nummer",
+      "numberEn": "Number",
+      "counter": "Schalter",
+      "counterEn": "Counter"
+    }
+  }
+}

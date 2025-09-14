@@ -1,0 +1,124 @@
+// Import MUC Patternlab Vue styles
+@import "@muenchen/muc-patternlab-vue/muc-patternlab-vue.css";
+
+// Reset and base styles
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+// Loading spinner animation
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Utility classes
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+.mb-5 {
+  margin-bottom: 3rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-3 {
+  margin-top: 1rem;
+}
+.mt-4 {
+  margin-top: 1.5rem;
+}
+.mt-5 {
+  margin-top: 3rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+.p-2 {
+  padding: 0.5rem;
+}
+.p-3 {
+  padding: 1rem;
+}
+.p-4 {
+  padding: 1.5rem;
+}
+.p-5 {
+  padding: 3rem;
+}
+
+// Status color classes
+.status-called {
+  color: #28a745 !important;
+}
+
+.status-pickup {
+  color: #ffc107 !important;
+}
+
+.status-confirmed {
+  color: #007bff !important;
+}
+
+.status-queued {
+  color: #dc3545 !important;
+}
+
+.status-pending {
+  color: #6c757d !important;
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+  .d-none-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .d-none-desktop {
+    display: none !important;
+  }
+}
