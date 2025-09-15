@@ -13,8 +13,8 @@ SELECT
   Datum      AS datum,
   HOUR(STR_TO_DATE(`Timestamp`, '%H:%i:%s')) AS bucket_hour,
   CASE WHEN mitTermin = 1 THEN 'termin' ELSE 'spontan' END AS type,
-  CASE WHEN wartezeit = 0 THEN NULL ELSE ROUND(wartezeit, 2) END AS waited_minutes,  -- exclude zeros from AVG
-  ROUND(COALESCE(wegezeit, 0) / 60.0, 2) AS way_minutes      -- per-row rounding like cron
+  ROUND(wartezeit, 2)                    AS waited_minutes,  -- per-row rounding like cron
+  ROUND(COALESCE(wegezeit, 0) / 60.0, 2) AS way_minutes       -- per-row rounding like cron
 FROM buergerarchiv
 WHERE Datum = @target_date
   AND (nicht_erschienen IS NULL OR nicht_erschienen = 0)
