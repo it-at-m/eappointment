@@ -421,7 +421,7 @@ describe("ServiceFinder", () => {
       expect(subServiceItems.length).toBe(6);
     });
 
-    it("should show showLessButton after showing all services", async () => {
+    it("should show 'showLessServices' after showing all services", async () => {
       const wrapper = createWrapper(makeService(6));
       await nextTick();
       await wrapper
@@ -432,6 +432,27 @@ describe("ServiceFinder", () => {
       const button = wrapper.find(".m-button-group--secondary");
       expect(button.exists()).toBe(true);
       expect(button.text()).toBe("showLessServices");
+    });
+
+    it("should get back to first 3 services when 'showLessServices' is clicked", async () => {
+      const wrapper = createWrapper(makeService(6));
+      await nextTick();
+      await wrapper
+        .find(".m-button-group--secondary")
+        .find("button")
+        .trigger("click");
+      await nextTick();
+      expect(wrapper.find(".m-button-group--secondary").text()).toBe("showLessServices");
+      await wrapper
+        .find(".m-button-group--secondary")
+        .find("button")
+        .trigger("click");
+      await nextTick();
+      const subServiceItems = wrapper.findAll(".subservice-stub");
+      expect(subServiceItems.length).toBe(3);
+      const button = wrapper.find(".m-button-group--secondary");
+      expect(button.exists()).toBe(true);
+      expect(button.text()).toBe("showAllServices");
     });
   });
 
