@@ -1,5 +1,65 @@
 <template>
-  <div class="container">
+  <!-- Maintenance Page -->
+  <div
+    v-if="isInMaintenanceModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('maintenancePageText')"
+          :header="t('maintenancePageHeader')"
+          type="warning"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- System Failure Page -->
+  <div
+    v-if="isInSystemFailureModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('systemFailurePageText')"
+          :header="t('systemFailurePageHeader')"
+          type="error"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alert (for rate limit, etc.) -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t(apiErrorTranslation.textKey)"
+          :header="t(apiErrorTranslation.headerKey)"
+          :type="apiErrorTranslation.errorType"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Normal Content -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
+    class="container"
+  >
     <h2
       tabindex="0"
       style="display: flex; align-items: center; margin-bottom: 24px"
@@ -67,7 +127,7 @@ import {
   MucCardContainer,
   MucIcon,
 } from "@muenchen/muc-patternlab-vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -77,6 +137,17 @@ import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentC
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import {
+  getApiStatusState,
+  handleApiResponseForDownTime,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse as handleErrorApiResponse,
+} from "@/utils/errorHandler";
 import AppointmentCard from "./AppointmentCard.vue";
 
 const props = defineProps<{
@@ -92,6 +163,18 @@ const offices = ref<Office[]>([]);
 const loading = ref(true);
 const loadingError = ref(false);
 
+// API status state
+const apiStatusState = getApiStatusState();
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+const apiErrorTranslation = computed(() =>
+  getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value)
+);
+
 const goToOverviewLink = () => {
   location.href = props.overviewUrl;
 };
@@ -100,6 +183,18 @@ onMounted(() => {
   loading.value = true;
   fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
     .then((data) => {
+      // Check if any error state should be activated
+      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+        return;
+      }
+
+      // Handle normal errors (like rate limit)
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
       offices.value = data.offices;
       getAppointments("user").then((data) => {
         if (

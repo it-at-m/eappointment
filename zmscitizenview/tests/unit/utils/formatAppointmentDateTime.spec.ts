@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatAppointmentDateTime } from "../../src/utils/formatAppointmentDateTime";
+import { formatAppointmentDateTime } from "../../../src/utils/formatAppointmentDateTime";
 
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",

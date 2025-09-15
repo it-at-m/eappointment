@@ -9,6 +9,7 @@ permissions:
   packages: write
   pages: write
   id-token: write
+  actions: write
 
 jobs:
   call-php-code-quality:

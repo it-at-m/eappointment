@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatMultilineTitle } from "../../src/utils/formatMultilineTitle";
+import { formatMultilineTitle } from "../../../src/utils/formatMultilineTitle";
 
 const singleAppointment = {
   processId: "1111",
