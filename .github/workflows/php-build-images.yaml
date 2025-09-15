@@ -3,12 +3,16 @@ name: build images
 on:
   workflow_call:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
-        uses: actions/checkout@main
+        uses: actions/checkout@v5
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
