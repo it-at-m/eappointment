@@ -7,7 +7,7 @@ DROP TEMPORARY TABLE IF EXISTS tmp_ba_agg;
 DROP TEMPORARY TABLE IF EXISTS tmp_pivot;
 
 -- 1) Pull relevant archive rows for the date
-CREATE TEMPORARY TABLE tmp_ba_raw AS
+CREATE TEMPORARY TABLE tmp_ba_raw ENGINE=MEMORY AS
 SELECT
   StandortID AS scope_id,
   Datum      AS datum,
@@ -26,7 +26,7 @@ WHERE Datum = @target_date
   );
 
 -- 2) Aggregate per scope/date/hour/type
-CREATE TEMPORARY TABLE tmp_ba_agg AS
+CREATE TEMPORARY TABLE tmp_ba_agg ENGINE=MEMORY AS
 SELECT
   scope_id,
   datum,
@@ -39,7 +39,7 @@ FROM tmp_ba_raw
 GROUP BY scope_id, datum, bucket_hour, type;
 
 -- 3) Pivot to one row per scope/date with all 24h columns (counts + avg wait + avg way)
-CREATE TEMPORARY TABLE tmp_pivot AS
+CREATE TEMPORARY TABLE tmp_pivot ENGINE=MEMORY AS
 SELECT
   scope_id,
   datum,
