@@ -1,10 +1,6 @@
 {
   "name": "zms-devcontainer",
-  "dockerComposeFile": [
-    "docker-compose.yaml",
-    "docker-compose.phpmyadmin.yaml",
-    "docker-compose.refarch-gateway.yaml"
-  ],
+  "dockerComposeFile": "docker-compose.yaml",
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
@@ -17,7 +13,11 @@
   //     ]
   //   }
   // },
-  // "postCreateCommand": "cp .ddev/.env.template .ddev/.env || true",
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
+  "postStartCommand": [
+    // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
+    // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
+    "bash", "-c", "for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chown -R www-data:www-data /var/www/html/$dir/cache; done"
+  ],
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway"]
-  // "postCreateCommand": "bash -lc './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build'"
 }
