@@ -1,31 +1,39 @@
--- Set the target date
-SET @target_date := '2025-08-08';
+-- Restore wartenrstatistik for all dates since 2025-07-31 (inclusive)
+-- Strategy:
+-- 1) Delete existing stats since start date
+-- 2) Aggregate from buergerarchiv across the full date range
+-- 3) Pivot per (scope, date) into the wartenrstatistik schema
 
--- Cleanup
+SET @start_date := '2025-07-31';
+
+-- 0) Safety: temp tables cleanup
 DROP TEMPORARY TABLE IF EXISTS tmp_ba_raw;
 DROP TEMPORARY TABLE IF EXISTS tmp_ba_agg;
 DROP TEMPORARY TABLE IF EXISTS tmp_pivot;
 
--- 1) Pull relevant archive rows for the date
+-- 1) Remove existing stats in range so we fully rebuild
+DELETE FROM wartenrstatistik
+WHERE datum >= @start_date;
+
+-- 2) Pull relevant archive rows for the date range
+--    We approximate cron logic:
+--    - exclude missed (nicht_erschienen)
+--    - use mitTermin to distinguish buckets
+--    - map Timestamp hour to buckets
+--    - round similar to cron
 CREATE TEMPORARY TABLE tmp_ba_raw ENGINE=MEMORY AS
 SELECT
   StandortID AS scope_id,
   Datum      AS datum,
   HOUR(STR_TO_DATE(`Timestamp`, '%H:%i:%s')) AS bucket_hour,
   CASE WHEN mitTermin = 1 THEN 'termin' ELSE 'spontan' END AS type,
-  ROUND(wartezeit, 2)                    AS waited_minutes,  -- per-row rounding like cron
-  ROUND(COALESCE(wegezeit, 0) / 60.0, 2) AS way_minutes       -- per-row rounding like cron
+  ROUND(wartezeit, 2)                    AS waited_minutes,
+  ROUND(COALESCE(wegezeit, 0) / 60.0, 2) AS way_minutes
 FROM buergerarchiv
-WHERE Datum = @target_date
-  AND (nicht_erschienen IS NULL OR nicht_erschienen = 0)
-  AND NOT EXISTS (
-    SELECT 1
-    FROM wartenrstatistik w
-    WHERE w.standortid = buergerarchiv.StandortID
-      AND w.datum = @target_date
-  );
+WHERE Datum >= @start_date
+  AND (nicht_erschienen IS NULL OR nicht_erschienen = 0);
 
--- 2) Aggregate per scope/date/hour/type
+-- 3) Aggregate per scope/date/hour/type
 CREATE TEMPORARY TABLE tmp_ba_agg ENGINE=MEMORY AS
 SELECT
   scope_id,
@@ -38,7 +46,7 @@ SELECT
 FROM tmp_ba_raw
 GROUP BY scope_id, datum, bucket_hour, type;
 
--- 3) Pivot to one row per scope/date with all 24h columns (counts + avg wait + avg way)
+-- 4) Pivot to one row per scope/date with all 24h columns (counts + avg wait + avg way)
 CREATE TEMPORARY TABLE tmp_pivot ENGINE=MEMORY AS
 SELECT
   scope_id,
@@ -203,10 +211,10 @@ SELECT
 FROM tmp_ba_agg
 GROUP BY scope_id, datum;
 
--- 4) Insert/update only for scopes without existing rows on the date
-
+-- 5) Insert and update wartenrstatistik for all scope/date pairs
 INSERT INTO wartenrstatistik (standortid, datum)
-SELECT scope_id, datum FROM tmp_pivot;
+SELECT scope_id, datum FROM tmp_pivot
+ON DUPLICATE KEY UPDATE datum = VALUES(datum);
 
 UPDATE wartenrstatistik w
 JOIN tmp_pivot p ON p.scope_id = w.standortid AND p.datum = w.datum
@@ -367,7 +375,9 @@ SET
   w.wegezeit_ab_22_termin = COALESCE(p.wegezeit_ab_22_termin, 0),
   w.wegezeit_ab_23_termin = COALESCE(p.wegezeit_ab_23_termin, 0);
 
--- Optional cleanup temp tables
+-- Optional: cleanup temp tables for long-running sessions
 DROP TEMPORARY TABLE IF EXISTS tmp_ba_raw;
 DROP TEMPORARY TABLE IF EXISTS tmp_ba_agg;
 DROP TEMPORARY TABLE IF EXISTS tmp_pivot;
+
+
