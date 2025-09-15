@@ -40,7 +40,7 @@ class Request extends Base
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
-        $requestRelation = new RequestRelation();
+        //$requestRelation = new RequestRelation();
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $request = new Entity($query->postProcessJoins($requestData));
             // NOTE: canDelete eager computation intentionally disabled for performance
