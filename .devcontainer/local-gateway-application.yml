@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:*"
+              - "https://localhost:*"
+            allowedMethods:
+              - '*'
+            allowedHeaders:
+              - '*'
+      routes:
+        - id: "citizen-api"
+          uri: "http://zms-web:80"
+          predicates:
+            - Path=/buergeransicht/api/citizen/**
+          filters:
+            - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
+            - RemoveResponseHeader=WWW-Authenticate
+        - id: "webcomponent"
+          uri: "${WEBCOMPONENT_URI}"
+          predicates:
+            - Path=/buergeransicht/**
+          filters:
+            - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
+            - RemoveResponseHeader=WWW-Authenticate
