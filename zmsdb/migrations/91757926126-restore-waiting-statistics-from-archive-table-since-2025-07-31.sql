@@ -21,7 +21,7 @@ WHERE datum >= @start_date;
 --    - use mitTermin to distinguish buckets
 --    - map Timestamp hour to buckets
 --    - round similar to cron
-CREATE TEMPORARY TABLE tmp_ba_raw ENGINE=MEMORY AS
+CREATE TEMPORARY TABLE tmp_ba_raw ENGINE=Aria AS
 SELECT
   StandortID AS scope_id,
   Datum      AS datum,
@@ -34,7 +34,7 @@ WHERE Datum >= @start_date
   AND (nicht_erschienen IS NULL OR nicht_erschienen = 0);
 
 -- 3) Aggregate per scope/date/hour/type
-CREATE TEMPORARY TABLE tmp_ba_agg ENGINE=MEMORY AS
+CREATE TEMPORARY TABLE tmp_ba_agg ENGINE=Aria AS
 SELECT
   scope_id,
   datum,
@@ -47,7 +47,7 @@ FROM tmp_ba_raw
 GROUP BY scope_id, datum, bucket_hour, type;
 
 -- 4) Pivot to one row per scope/date with all 24h columns (counts + avg wait + avg way)
-CREATE TEMPORARY TABLE tmp_pivot ENGINE=MEMORY AS
+CREATE TEMPORARY TABLE tmp_pivot ENGINE=Aria AS
 SELECT
   scope_id,
   datum,
