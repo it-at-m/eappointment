@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/Zmscitizenapi/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
-  <testsuites>
-    <testsuite name="Zmscititzenapi Test Suite">
-      <directory>./tests/Zmscitizenapi/</directory>
-    </testsuite>
-  </testsuites>
-  <coverage>
-    <report>
-      <html outputDirectory="./coverage/html"/>
-      <clover outputFile="./coverage/clover.xml"/>
-    </report>
-  </coverage>
-  <source>
-    <include>
-      <directory suffix=".php">./src</directory>
-    </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-    </exclude>
-  </source>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false"
+         bootstrap="tests/Zmscitizenapi/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false"
+         cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
+    <testsuites>
+        <testsuite name="Zmscititzenapi Test Suite">
+            <directory>./tests/Zmscitizenapi/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <report>
+            <html outputDirectory="./coverage/html"/>
+            <clover outputFile="./coverage/clover.xml"/>
+        </report>
+    </coverage>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+    </php>
 </phpunit>
