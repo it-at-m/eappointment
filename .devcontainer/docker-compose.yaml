@@ -2,7 +2,6 @@ services:
   web:
     container_name: zms-web
     build:
-    build:
       context: .
       dockerfile: Containerfile
     volumes:
