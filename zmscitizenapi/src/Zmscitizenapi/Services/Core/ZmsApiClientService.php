@@ -180,7 +180,7 @@ class ZmsApiClientService
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
-            $requestList  = self::getServices() ?? new RequestList();
+            $requestList = self::getServices() ?? new RequestList();
             $requestSource = [];
             foreach ($requestList as $r) {
                 $requestSource[(string)$r->id] = (string)($r->source ?? '');
@@ -188,8 +188,8 @@ class ZmsApiClientService
 
             $requests = [];
             foreach ($serviceIds as $index => $serviceId) {
-                $sid   = (string)$serviceId;
-                $src   = $requestSource[$sid] ?? null;
+                $sid = (string)$serviceId;
+                $src = $requestSource[$sid] ?? null;
                 if (!$src) {
                     return new Process();
                 }
@@ -200,13 +200,13 @@ class ZmsApiClientService
             }
 
             $processEntity = new Process();
-            $processEntity->appointments  = $appointmentProcess->appointments ?? [];
-            $processEntity->authKey       = $appointmentProcess->authKey ?? null;
-            $processEntity->clients       = $appointmentProcess->clients ?? [];
-            $processEntity->scope         = $appointmentProcess->scope ?? null;
-            $processEntity->requests      = $requests;
-            $processEntity->lastChange    = $appointmentProcess->lastChange ?? time();
-            $processEntity->createIP      = ClientIpHelper::getClientIp();
+            $processEntity->appointments = $appointmentProcess->appointments ?? [];
+            $processEntity->authKey = $appointmentProcess->authKey ?? null;
+            $processEntity->clients = $appointmentProcess->clients ?? [];
+            $processEntity->scope = $appointmentProcess->scope ?? null;
+            $processEntity->requests = $requests;
+            $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
+            $processEntity->createIP = ClientIpHelper::getClientIp();
             $processEntity->createTimestamp = time();
             if (isset($appointmentProcess->queue)) {
                 $processEntity->queue = $appointmentProcess->queue;
@@ -349,7 +349,7 @@ class ZmsApiClientService
             if (!$scopeList instanceof ScopeList) {
                 return new ScopeList();
             }
-            $result = $scopeList->withProviderID($source, (string) $providerId);
+            $result = $scopeList->withProviderID($source, (string)$providerId);
             if (!$result instanceof ScopeList) {
                 return new ScopeList();
             }
@@ -376,6 +376,13 @@ class ZmsApiClientService
 
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
+            if (getenv('APP_ENV') !== 'testing') {
+                LoggerService::logInfo('Cache set', [
+                    'key' => $cacheKey,
+                    'ttl' => \App::$SOURCE_CACHE_TTL,
+                    'entity_type' => get_class($entity)
+                ]);
+            }
         }
 
         return $entity;
