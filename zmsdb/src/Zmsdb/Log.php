@@ -88,6 +88,8 @@ class Log extends Base
             "Anmerkung" => $process->getAmendment(),
             "E-Mail" => $process->getFirstClient()->email,
             "Telefon" => $process->getFirstClient()->telephone,
+            "Status" => $process->getStatus(),
+            "DB Status" => $process->dbstatus,
         ]), JSON_UNESCAPED_UNICODE);
 
         Log::writeLogEntry(

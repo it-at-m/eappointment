@@ -19,9 +19,9 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-        $inUseByScope = (new Scope())->countByInfoDienstleister($providerId, $source) > 0;
-        $inUseByRel   = (new RequestRelation())->countByProviderId($providerId, $source) > 0;
-        $provider['canDelete'] = ! ($inUseByScope || $inUseByRel);
+//        $inUseByScope = (new Scope())->countByInfoDienstleister($providerId, $source) > 0;
+//        $inUseByRel   = (new RequestRelation())->countByProviderId($providerId, $source) > 0;
+        $provider['canDelete'] = false;
         return $provider;
     }
 
@@ -35,11 +35,11 @@ class Provider extends Base
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($providerData));
-            $source = $entity->getSource();
-            $id     = $entity->getId();
-            $inUseByScope = (new Scope())->countByInfoDienstleister($id, $source) > 0;
-            $inUseByRel   = (new RequestRelation())->countByProviderId($id, $source) > 0;
-            $entity['canDelete'] = ! ($inUseByScope || $inUseByRel);
+//            $source = $entity->getSource();
+//            $id     = $entity->getId();
+//            $inUseByScope = (new Scope())->countByInfoDienstleister($id, $source) > 0;
+//            $inUseByRel   = (new RequestRelation())->countByProviderId($id, $source) > 0;
+            $entity['canDelete'] = false;
             $providerList->addEntity($entity);
         }
         return $providerList;

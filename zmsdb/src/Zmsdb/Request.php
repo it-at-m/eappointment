@@ -25,9 +25,9 @@ class Request extends Base
         if (! $request->hasId()) {
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
-        $inUseByRel = (new RequestRelation())->countByRequestId($requestId, $source) > 0;
-        $inUseByBa  = $this->countInBuergeranliegen($requestId) > 0;
-        $request['canDelete'] = ! ($inUseByRel || $inUseByBa);
+//        $inUseByRel = (new RequestRelation())->countByRequestId($requestId, $source) > 0;
+//        $inUseByBa  = $this->countInBuergeranliegen($requestId) > 0;
+        $request['canDelete'] = false;
         return $request;
     }
 
@@ -39,14 +39,14 @@ class Request extends Base
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
-        $requestRelation = new RequestRelation();
+//        $requestRelation = new RequestRelation();
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $request = new Entity($query->postProcessJoins($requestData));
-            $source = $request->getSource();
-            $id     = $request->getId();
-            $inUseByRel = $requestRelation->countByRequestId($id, $source) > 0;
-            $inUseByBa  = $this->countInBuergeranliegen($id) > 0;
-            $request['canDelete'] = ! ($inUseByRel || $inUseByBa);
+//            $source = $request->getSource();
+//            $id     = $request->getId();
+//            $inUseByRel = $requestRelation->countByRequestId($id, $source) > 0;
+//            $inUseByBa  = $this->countInBuergeranliegen($id) > 0;
+            $request['canDelete'] = false;
             $requestList->addEntity($request);
         }
         return $requestList;

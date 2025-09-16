@@ -774,7 +774,6 @@ class Process extends Base implements MappingInterface
         $previousStatus = null
     ) {
         $this->addValuesIPAdress($process);
-        $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
             $this->addProcessingTimeData($process, $dateTime, $previousStatus);
@@ -787,6 +786,7 @@ class Process extends Base implements MappingInterface
         }
         $this->addValuesWasMissed($process);
         $this->addValuesPriority($process);
+        $this->addValuesStatusData($process, $dateTime);
     }
 
     public function addValuesIPAdress($process)
@@ -874,7 +874,7 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
         }
-        $data['status'] = $process->status;
+        $data['status'] = $process['status'] ?? $process->status;
 
         $this->addValues($data);
     }

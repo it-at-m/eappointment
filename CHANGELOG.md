@@ -1,3 +1,56 @@
+## Release Muc-31 (12.09.2025) 
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-368'>ZMSKVR-368</a>] -          Doppelte Einträge im Freitextfeld bei Spontankunden buchen vermeiden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-744'>ZMSKVR-744</a>] -         Fehlerhafte Anzeige der Termindauer in Warteschlange 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-852'>ZMSKVR-852</a>] -         Standesamt + Sozialbürgerhaus exklusive Standorte
+</li>
+</ul>
+                                                
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-662'>ZMSKVR-662</a>] -         Terminstatus richtig speichern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-757'>ZMSKVR-757</a>] -         Wartezeit falsch, warum?
+</li>
+</ul>
+                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/MUXDBS-75'>MUXDBS-75</a>] -         New appointment webcomponents and pages plus multiple UI components: appointment-overview, appointment-detail, appointment-slider in the zmscitizenview
+</li>
+
+
+
+ 
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-151'>ZMSKVR-151</a>] -         Reihenfolge der Wache in BD in Bürgeransicht anpassen NEUE BÜRGERANSICHT
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-436'>ZMSKVR-436</a>] -         Wartungsseite automatisch anzeigen, wenn offices-and-services in zmscitizenview nicht erreichbar sind
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-494'>ZMSKVR-494</a>] -         Terminvarianten in ZMSAdmin pflegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-526'>ZMSKVR-526</a>] -         Schritt 5: Bestätigung – Button &quot;Weitere Termine buchen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-670'>ZMSKVR-670</a>] -         Gesamtübersicht - Tagessperre Wochenkalender 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-738'>ZMSKVR-738</a>] -         Entfernung der Spalte &quot;E-Mail&quot; aus der Gesamtnutzerliste in ZMS Admin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-773'>ZMSKVR-773</a>] -         HELM Chart für die Routen in Openshift anpassen (Bürgeransicht2 wird Bürgeransicht, Bürgeransicht wird Bürgeransicht1)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-851'>ZMSKVR-851</a>] -         Mehr Logging für Terminstatus
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-856'>ZMSKVR-856</a>] -         Erweitertes Logging für die Gesamtübersicht
+</li>
+</ul>
+            
+
+
 ## Release Muc-30 (03.09.2025)              
 <h2>        Bug
 </h2>
