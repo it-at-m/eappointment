@@ -376,13 +376,11 @@ class ZmsApiClientService
 
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
-            if (getenv('APP_ENV') !== 'testing') {
-                LoggerService::logInfo('Cache set', [
-                    'key' => $cacheKey,
-                    'ttl' => \App::$SOURCE_CACHE_TTL,
-                    'entity_type' => get_class($entity)
-                ]);
-            }
+            LoggerService::logInfo('Cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL,
+                'entity_type' => get_class($entity)
+            ]);
         }
 
         return $entity;
