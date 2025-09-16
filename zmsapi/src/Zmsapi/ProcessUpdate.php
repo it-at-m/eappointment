@@ -76,7 +76,7 @@ class ProcessUpdate extends BaseController
             );
 
             Log::writeProcessLog(
-                "UPDATE (Process::updateEntity) $process ",
+                "UPDATE (ProcessUpdate.php) $process ",
                 Log::ACTION_CALLED,
                 $process,
                 $workstation->getUseraccount()

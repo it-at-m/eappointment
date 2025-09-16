@@ -89,6 +89,18 @@
             <template #default>{{ t("showAllServices") }}</template>
           </muc-button>
         </div>
+        <div
+          v-else-if="shouldShowLessButton"
+          class="m-button-group m-button-group--secondary"
+        >
+          <muc-button
+            icon="chevron-up"
+            variant="secondary"
+            @click="showAllServices = false"
+          >
+            <template #default>{{ t("showLessServices") }}</template>
+          </muc-button>
+        </div>
       </div>
     </div>
     <div class="m-component">
@@ -220,6 +232,14 @@ const shouldShowMoreButton = computed(() => {
     service.value?.subServices &&
     service.value.subServices.length > 5 &&
     !showAllServices.value
+  );
+});
+
+const shouldShowLessButton = computed(() => {
+  return (
+    service.value?.subServices &&
+    service.value.subServices.length > 5 &&
+    showAllServices.value
   );
 });
 

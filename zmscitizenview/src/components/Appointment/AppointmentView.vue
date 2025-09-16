@@ -441,7 +441,6 @@ const bookingErrorKey = computed(() => {
 const confirmAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
-const serviceFinderRateLimitError = ref<boolean>(false);
 
 // Create centralized error states
 const errorStates = createErrorStates();
@@ -478,10 +477,10 @@ const activationMinutes = computed<number | undefined>(() => {
 });
 
 const confirmText = computed<string>(() => {
-  const minutes = activationMinutes.value ?? "30";
-  return props
-    .t("confirmAppointmentText")
-    .replace("{activationMinutes}", String(minutes));
+  const minutes = String(activationMinutes.value ?? 30);
+  return (props.t as any)("confirmAppointmentText", {
+    activationMinutes: minutes,
+  });
 });
 
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
