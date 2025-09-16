@@ -27,7 +27,7 @@ SELECT
   Datum      AS datum,
   HOUR(STR_TO_DATE(`Timestamp`, '%H:%i:%s')) AS bucket_hour,
   CASE WHEN mitTermin = 1 THEN 'termin' ELSE 'spontan' END AS type,
-  ROUND(wartezeit, 2)                    AS waited_minutes,
+  CASE WHEN wartezeit = 0 THEN NULL ELSE ROUND(wartezeit, 2) END AS waited_minutes,
   ROUND(COALESCE(wegezeit, 0) / 60.0, 2) AS way_minutes
 FROM buergerarchiv
 WHERE Datum >= @start_date
