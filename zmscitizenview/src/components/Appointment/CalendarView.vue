@@ -2514,10 +2514,11 @@ const getCurrentDayPartForDay = (
 .grid {
   display: flex;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
 .grid-item {
-  margin: 8px 8px;
+  margin: 0;
 }
 
 .float-right {
@@ -2531,6 +2532,11 @@ const getCurrentDayPartForDay = (
 
 .timeslot {
   height: 2rem;
+}
+
+.timeslot.m-button,
+.timeslot .m-button {
+  padding: 4px 12px !important;
 }
 
 .centered-text {
