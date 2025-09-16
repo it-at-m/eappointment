@@ -1,0 +1,56 @@
+services:
+  web:
+    container_name: zms-web
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - ..:/var/www/html:cached
+    ports:
+      - "8090:80"
+      - "8091:443"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.4
+    container_name: zms-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: zms-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8036:80"
+    environment:
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_HOST=zms-db
+      - PMA_PORT=3306
+      - UPLOAD_LIMIT=4000M
+    depends_on:
+      - db
+
+  refarch-gateway:
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.4.4
+    container_name: zms-refarch-gateway
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=no-security
+      - WEBCOMPONENT_URI=http://localhost:8080
+    volumes:
+      - ./local-gateway-application.yml:/deployments/application.yml:ro
+    restart: unless-stopped
+
+volumes:
+  db-data:
