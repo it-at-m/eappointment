@@ -69,9 +69,7 @@ const fetchCaptchaDetails = async () => {
 const handleStateChange = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
     const state = ev.detail.state;
-    if (state === "verified") {
-      emit("validationResult", true);
-    } else {
+    if (state === "verifying") {
       emit("validationResult", false);
     }
   }
@@ -79,6 +77,17 @@ const handleStateChange = (ev: CustomEvent | Event) => {
 
 const handleServerVerification = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
+    const payload = ev.detail;
+    if (payload?.meta?.success === true && payload?.data?.valid === true) {
+      emit("validationResult", true);
+    } else {
+      emit("validationResult", false);
+      getWidget()?.configure({
+        strings: {
+          verified: props.t("altcha.error"),
+        },
+      });
+    }
     emit("tokenChanged", ev.detail.token);
   }
 };
