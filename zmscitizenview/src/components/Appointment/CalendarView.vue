@@ -2534,11 +2534,6 @@ const getCurrentDayPartForDay = (
   height: 2rem;
 }
 
-.timeslot.m-button,
-.timeslot .m-button {
-  padding: 4px 12px !important;
-}
-
 .centered-text {
   display: flex;
   justify-content: center;
@@ -2611,18 +2606,13 @@ div:has(.left-text) {
 /* Mobile styles - grouped together for better organization */
 @include xs-down {
   .wrapper {
-    grid-template-columns: 5.5rem 1fr; /* 5.5rem width of the hour column, 1fr times grid takes all remaining width */
-    padding: 8px 0 6px; /* 8px top padding, 0 left/right, 6px bottom padding */
+    grid-template-columns: 5.75rem 1fr; /* 5.75rem width of the hour column, 1fr times grid takes all remaining width */
+    padding: 13px 0 11px; /* 13px top padding, 0 left/right, 11px bottom padding */
   }
 
   .grid {
     margin-right: 0;
-    gap: 0;
-  }
-
-  /* Grid layout adjustments for mobile */
-  .grid-item {
-    margin: 7px 5px; /* 7px vertical spacing between rows, 5px horizontal spacing between adjacent buttons */
+    gap: 13px 11px; /* space between buttons */
   }
 
   /* Timeslot buttons - smaller padding for mobile */
