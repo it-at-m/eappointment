@@ -2531,7 +2531,17 @@ const getCurrentDayPartForDay = (
 }
 
 .timeslot {
-  height: 2rem;
+  min-height: 2rem;
+  height: auto;
+}
+
+.timeslot.m-button,
+.timeslot .m-button :deep(.timeslot .m-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px 12px !important;
 }
 
 .centered-text {
