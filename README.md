@@ -382,6 +382,7 @@ graph TD;
     zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
     zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
     zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
+    zmsticketprinter --> mellon & zmsclient & zmsentities & zmsslim;
 
     zmsdb --> zmsentities & zmsdldb & mellon;
     zmsclient --> zmsentities & zmsslim & mellon;
@@ -411,6 +412,7 @@ graph TD;
         zmscalldisplay
         zmsstatistic
         zmsmessaging
+        zmsticketprinter
         zmsdb
         zmsclient
         zmsentities
