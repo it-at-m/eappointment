@@ -1,5 +1,7 @@
 import { onMounted, ref } from "vue";
 
+import AuthorizationEventDetails from "@/types/AuthorizationEventDetails";
+
 /**
  * Event from the Login-Webcomponent which notifies when the
  * oauth2-token changes.
@@ -20,12 +22,12 @@ const AUTH_REFRESH_EVENT_NAME = "authorization-event";
  * @return loggedIn default false, turns true after a successfull authentification.
  */
 export function useDBSLoginWebcomponentPlugin(
-  loginCallback: (accessToken: string) => void = () => {},
+  loginCallback: (accessToken: AuthorizationEventDetails) => void = () => {},
   logoutCallback: () => void = () => {}
 ) {
   const loading = ref(true);
   const loggedIn = ref(false);
-  let previousAccessToken = "";
+  let prevAuthDetails: AuthorizationEventDetails | undefined = undefined;
 
   onMounted(() => {
     document.addEventListener(AUTH_REFRESH_EVENT_NAME, (ev: any) => {
@@ -38,16 +40,16 @@ export function useDBSLoginWebcomponentPlugin(
     });
   });
 
-  function authChanged(newAccessToken: string | undefined) {
+  function authChanged(newAuthDetails: AuthorizationEventDetails | undefined) {
     loading.value = false;
-    if (newAccessToken) {
+    if (newAuthDetails) {
       loggedIn.value = true;
-      if (newAccessToken !== previousAccessToken) {
+      if (JSON.stringify(newAuthDetails) !== JSON.stringify(prevAuthDetails)) {
         console.debug("#authChanged calling loginCallback");
-        loginCallback(newAccessToken);
-        previousAccessToken = newAccessToken;
+        loginCallback(newAuthDetails);
+        prevAuthDetails = newAuthDetails;
       } else {
-        // token unchanged, do nothing.
+        // details unchanged, do nothing.
       }
     } else {
       loggedIn.value = false;
