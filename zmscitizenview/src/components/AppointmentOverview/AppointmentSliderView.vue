@@ -6,10 +6,8 @@
     <div class="container">
       <div class="header">
         <div class="headline">
-          <span class="header-icon">
-            <muc-icon icon="calendar" />
-          </span>
-          <h2 tabindex="0">
+          <h2 tabindex="0" style="display: flex; align-items: center;">
+            <muc-icon style="width: 32px; height: 32px; margin-right: 8px" icon="calendar" />
             <span v-if="displayedOnDetailScreen">{{
               t("myFurtherAppointments")
             }}</span>
@@ -162,10 +160,6 @@ onUnmounted(() => {
 .headline {
   display: flex;
   align-items: center;
-}
-
-.header-icon {
-  margin-right: 8px;
 }
 
 /* Mobile link styles */
