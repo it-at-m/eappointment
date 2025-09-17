@@ -2610,19 +2610,26 @@ div:has(.left-text) {
 
 /* Mobile styles - grouped together for better organization */
 @include xs-down {
+  .wrapper {
+    grid-template-columns: 5.5rem 1fr; /* 5.5rem width of the hour column, 1fr times grid takes all remaining width */
+    padding: 8px 0 6px; /* 8px top padding, 0 left/right, 6px bottom padding */
+  }
+
+  .grid {
+    margin-right: 0;
+    gap: 0;
+  }
+
+  /* Grid layout adjustments for mobile */
+  .grid-item {
+    margin: 7px 5px; /* 7px vertical spacing between rows, 5px horizontal spacing between adjacent buttons */
+  }
+
   /* Timeslot buttons - smaller padding for mobile */
   .timeslot.m-button,
   .timeslot .m-button {
     padding: 1px 8px !important; /* Even smaller padding for very small screens */
     min-height: 2.25rem;
-  }
-
-  /* Grid layout adjustments for mobile */
-  .grid-item {
-    margin: 6px 6px;
-  }
-  .grid {
-    margin-right: 0px;
   }
 }
 
