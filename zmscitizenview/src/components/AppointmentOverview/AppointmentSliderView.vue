@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="appointments.length > 0 || !displayedOnDetailScreen"
-    :class="displayedOnDetailScreen ? 'details-background' : 'overview-padding'"
+    :class="displayedOnDetailScreen ? 'details-background' : 'overview-margin'"
   >
     <div class="container">
       <div class="header">
@@ -139,8 +139,9 @@ onUnmounted(() => {
 
 <style>
 /* Padding on overview page */
-.overview-padding {
-  padding-top: 40px;
+.overview-margin {
+  margin-top: 40px;
+  margin-bottom: 48px;
 }
 
 /* Background color on details page */
@@ -179,8 +180,8 @@ onUnmounted(() => {
 
 /* CSS for desktop */
 @media (min-width: 768px) {
-  .overview-padding {
-    padding-top: 40px;
+  .overview-margin {
+    margin: 56px 0;
   }
 
   .details-background {
