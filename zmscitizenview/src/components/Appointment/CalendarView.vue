@@ -2535,11 +2535,8 @@ const getCurrentDayPartForDay = (
   height: auto;
 }
 
-.timeslot.m-button,:deep(.timeslot .m-button) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+.timeslot.m-button,
+:deep(.timeslot .m-button) {
   padding: 4px 12px !important;
 }
 
