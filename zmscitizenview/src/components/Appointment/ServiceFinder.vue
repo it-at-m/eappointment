@@ -561,10 +561,9 @@ onMounted(() => {
 }
 
 @include xs-down {
-  .container  {
+  .container {
     padding-left: 24px;
     padding-right: 24px;
   }
 }
-
 </style>
