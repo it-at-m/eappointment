@@ -1,13 +1,19 @@
 <template>
   <div
     v-if="appointments.length > 0 || !displayedOnDetailScreen"
-    :class="displayedOnDetailScreen ? 'details-background' : 'overview-margin'"
+    :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
   >
     <div class="container">
       <div class="header">
         <div class="headline">
-          <h2 tabindex="0" style="display: flex; align-items: center;">
-            <muc-icon style="width: 32px; height: 32px; margin-right: 8px" icon="calendar" />
+          <h2
+            tabindex="0"
+            style="display: flex; align-items: center"
+          >
+            <muc-icon
+              style="width: 32px; height: 32px; margin-right: 8px"
+              icon="calendar"
+            />
             <span v-if="displayedOnDetailScreen">{{
               t("myFurtherAppointments")
             }}</span>
@@ -142,9 +148,8 @@ onUnmounted(() => {
   margin-bottom: 48px;
 }
 
-/* Background color on details page */
-.details-background {
-  background-color: var(--color-neutrals-blue-xlight);
+/* Padding on details page */
+.details-padding {
   padding: 24px 0;
 }
 
@@ -178,7 +183,7 @@ onUnmounted(() => {
     margin: 56px 0;
   }
 
-  .details-background {
+  .details-padding {
     padding: 64px 0;
   }
 }

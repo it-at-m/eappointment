@@ -3,7 +3,7 @@
     href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
     rel="stylesheet"
   />
-  <main>
+  <main :class="{ 'details-background': displayOptionDetailScreen }">
     <div>
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
@@ -12,9 +12,7 @@
         :appointment-detail-url="appointmentDetailUrl"
         :appointment-overview-url="appointmentOverviewUrl"
         :new-appointment-url="newAppointmentUrl"
-        :displayed-on-detail-screen="
-          displayedOnDetailScreen.toLowerCase() === 'true'
-        "
+        :displayed-on-detail-screen="displayOptionDetailScreen"
         :t="t"
       />
     </div>
@@ -30,7 +28,7 @@ import { useI18n } from "vue-i18n";
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
 import { registerAuthenticationHook } from "./utils/auth";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -54,6 +52,9 @@ defineProps({
     default: "false",
   },
 });
+
+const displayOptionDetailScreen =
+  props.displayedOnDetailScreen.toLowerCase() === "true";
 
 const { t } = useI18n();
 const accessToken = ref<string | null>(null);
@@ -79,5 +80,10 @@ registerAuthenticationHook(
 
 main {
   padding-bottom: 32px;
+}
+
+/* Background color on details page */
+.details-background {
+  background-color: var(--color-neutrals-blue-xlight);
 }
 </style>
