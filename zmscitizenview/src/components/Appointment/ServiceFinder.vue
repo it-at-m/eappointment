@@ -545,7 +545,9 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
 .wrapper {
   display: flex;
 }
@@ -557,4 +559,12 @@ onMounted(() => {
 .m-button-group--secondary {
   margin-top: 1rem;
 }
+
+@include xs-down {
+  .container  {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
 </style>
