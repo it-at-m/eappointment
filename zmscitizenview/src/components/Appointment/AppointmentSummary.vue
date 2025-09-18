@@ -65,7 +65,10 @@
             class="m-content border-bottom"
           >
             <p tabindex="0">{{ selectedProvider.name }}<br /></p>
-            <p tabindex="0">
+            <p
+              tabindex="0"
+              class="no-bottom-margin smaller-front-size"
+            >
               <strong>{{ t("address") }}</strong>
               <br />
             </p>
@@ -164,7 +167,10 @@
               <h3 tabindex="0">{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <p tabindex="0">
+              <p
+                tabindex="0"
+                class="smaller-front-size"
+              >
                 <strong>{{ t("privacyCheckboxLabel") }}</strong
                 ><br />
               </p>
@@ -188,7 +194,10 @@
               </div>
             </div>
             <div class="m-content">
-              <p tabindex="0">
+              <p
+                tabindex="0"
+                class="smaller-front-size"
+              >
                 <strong>{{ t("communicationCheckboxLabel") }}</strong
                 ><br />
               </p>
@@ -401,5 +410,18 @@ const estimatedDuration = () => {
 
 .m-component {
   padding-top: 0;
+}
+
+.m-contact .m-content .no-bottom-margin {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1200px) {
+  .m-contact .m-content .no-bottom-margin {
+    margin-bottom: 0;
+  }
+}
+.smaller-front-size {
+  font-size: 16px;
 }
 </style>
