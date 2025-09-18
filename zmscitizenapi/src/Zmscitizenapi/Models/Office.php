@@ -88,7 +88,7 @@ class Office extends Entity implements JsonSerializable
             'priority' => $this->priority,
             'scope' => $this->scope?->toArray(),
             'maxSlotsPerAppointment' => $this->maxSlotsPerAppointment,
-            'parent_id' => $this->parentId
+            'parentId' => $this->parentId
         ];
     }
 
