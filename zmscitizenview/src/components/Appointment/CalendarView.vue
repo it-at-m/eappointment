@@ -521,7 +521,12 @@
           background-color: var(--color-neutrals-blue-xlight);
         "
       >
-        <h4 tabindex="0">{{ formatDay(selectedDay) }}</h4>
+        <h4
+          tabindex="0"
+          class="date-padding"
+        >
+          {{ formatDay(selectedDay) }}
+        </h4>
       </div>
 
       <div
@@ -2677,5 +2682,11 @@ div:has(.left-text) {
 
 #listViewAccordion .m-accordion__section-button {
   font-size: 1.125rem !important;
+}
+
+.date-padding {
+  padding-left: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 </style>
