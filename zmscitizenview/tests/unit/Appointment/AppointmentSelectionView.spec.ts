@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi, type Mock, beforeEach, afterEach } from "vitest";
 import { flushPromises } from '@vue/test-utils';
 // @ts-expect-error: Vue SFC import for test
-import CalendarView from "@/components/Appointment/CalendarView.vue";
+import AppointmentSelectionView from "@/components/Appointment/AppointmentSelectionView.vue";
 import { ref, nextTick } from "vue";
 import {
   fetchAvailableDays,

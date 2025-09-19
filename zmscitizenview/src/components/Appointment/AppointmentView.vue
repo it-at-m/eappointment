@@ -90,7 +90,7 @@
             </div>
 
             <div v-if="currentView === 1">
-              <calendar-view
+              <appointment-selection-view
                 :base-url="baseUrl"
                 :is-rebooking="isRebooking"
                 :exclusive-location="exclusiveLocation"
@@ -325,8 +325,8 @@ import {
   reserveAppointment,
   updateAppointment,
 } from "@/api/ZMSAppointmentAPI";
+import AppointmentSelectionView from "@/components/Appointment/AppointmentSelectionView.vue";
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
-import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";

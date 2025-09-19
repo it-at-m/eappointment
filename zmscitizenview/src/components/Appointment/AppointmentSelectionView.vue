@@ -1,77 +1,13 @@
 <template>
-  <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
-    <div class="m-component slider-no-margin">
-      <div class="m-content">
-        <h2
-          tabindex="0"
-          style="margin-bottom: 0"
-        >
-          {{ t("location") }}
-        </h2>
-      </div>
-      <div class="m-content">
-        <MucCheckboxGroup :errorMsg="providerSelectionError">
-          <template #checkboxes>
-            <MucCheckbox
-              v-for="provider in selectableProviders"
-              :key="provider.id"
-              :id="'checkbox-' + provider.id"
-              :label="provider.name"
-              :hint="
-                provider.address.street + ' ' + provider.address.house_number
-              "
-              v-model="selectedProviders[provider.id]"
-            />
-          </template>
-        </MucCheckboxGroup>
-      </div>
-    </div>
-  </div>
-
-  <div
-    v-if="
-      selectedProvider &&
-      selectableProviders &&
-      selectableProviders.length === 1
-    "
-  >
-    <div class="m-component">
-      <div class="m-content">
-        <h2 tabindex="0">{{ t("location") }}</h2>
-      </div>
-      <div class="m-teaser-contained m-teaser-contained-contact">
-        <div class="m-teaser-contained-contact__body">
-          <div class="m-teaser-contained-contact__body__inner">
-            <div class="m-teaser-contained-contact__icon">
-              <svg
-                aria-hidden="true"
-                class="icon"
-              >
-                <use xlink:href="#icon-place"></use>
-              </svg>
-            </div>
-            <h3 class="m-teaser-contained-contact__headline">
-              {{ selectedProvider.name }}
-            </h3>
-            <div class="m-teaser-contained-contact__details">
-              <p class="m-teaser-contained-contact__detail">
-                <svg
-                  aria-hidden="true"
-                  class="icon icon--before"
-                >
-                  <use xlink:href="#icon-map-pin"></use>
-                </svg>
-                <span>
-                  {{ selectedProvider.address.street }}
-                  {{ selectedProvider.address.house_number }}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <ProviderView
+    :t="t"
+    :selectableProviders="selectableProviders"
+    :providersWithAppointments="providersWithAppointments"
+    :selectedProvider="selectedProvider"
+    :selectedProviders="selectedProviders"
+    @update:selectedProviders="onUpdateSelectedProviders"
+    :providerSelectionError="providerSelectionError"
+  />
 
   <div
     v-if="
@@ -944,6 +880,7 @@ import {
 import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
+import ProviderView from "./ProviderView.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -2462,6 +2399,15 @@ const onDayAccordionSelect = (day: AccordionDay) => {
     if (availableDayParts.length > 0) {
       listViewCurrentDayPart.value.set(day.dateString, availableDayParts[0]);
     }
+  }
+};
+
+const onUpdateSelectedProviders = (val: { [id: string]: boolean }) => {
+  // Avoid unnecessary triggers when value is identical
+  const current = JSON.stringify(selectedProviders.value);
+  const next = JSON.stringify(val);
+  if (current !== next) {
+    selectedProviders.value = { ...val };
   }
 };
 
