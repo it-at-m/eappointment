@@ -52,6 +52,7 @@
       @update:isListView="isListView = $event"
     />
     <CalendarView
+      ref="calendarViewRef"
       v-if="!isListView"
       :t="t"
       :selectedDay="selectedDay"
@@ -84,39 +85,32 @@
         ({ officeId, time }) =>
           handleTimeSlotSelection(officeId as number, time)
       "
-      @earlier="({ type }) => earlierAppointments(type)"
-      @later="({ type }) => laterAppointments(type)"
+      @setSelectedHour="(h) => (selectedHour = h as number | null)"
+      @setSelectedDayPart="(p) => (selectedDayPart = p as any)"
       @openInfo="openAvailabilityInfoModal"
     />
 
     <ListView
+      ref="listViewRef"
       v-if="isListView"
       :t="t"
-      :firstFiveAvailableDays="firstFiveAvailableDays"
-      :openAccordionDate="openAccordionDate"
       :isLoadingAppointments="isLoadingAppointments"
       :availabilityInfoHtml="availabilityInfoHtml"
       :selectableProviders="selectableProviders"
       :selectedProviders="selectedProviders"
       :providersWithAppointments="providersWithAppointments"
-      :canLoadMore="
-        firstFiveAvailableDays.length < (availableDays?.length || 0)
-      "
       :officeNameById="officeNameById"
-      :getCurrentHourForDay="getCurrentHourForDay"
-      :getCurrentDayPartForDay="getCurrentDayPartForDay"
-      :getListDayAvailableHours="getListDayAvailableHours"
-      :getListDayAvailableDayParts="getListDayAvailableDayParts"
       :isSlotSelected="isSlotSelected"
       :formatTime="formatTime"
-      @toggleDay="onDayAccordionSelect"
+      :availableDays="availableDays"
+      :datesWithoutAppointments="datesWithoutAppointments"
+      :appointmentTimestampsByOffice="appointmentTimestampsByOffice"
+      :officeOrder="officeOrder"
+      @update:selectedDay="handleDaySelection"
       @selectTimeSlot="
         ({ officeId, time }) =>
           handleTimeSlotSelection(officeId as number, time)
       "
-      @earlier="({ day, type }) => listViewEarlierAppointments(day, type)"
-      @later="({ day, type }) => listViewLaterAppointments(day, type)"
-      @loadMore="loadMoreDays"
       @openInfo="openAvailabilityInfoModal"
     />
 
@@ -128,7 +122,7 @@
       :selectedTimeslot="selectedTimeslot"
       :formatDay="formatDay"
       :formatTime="formatTime"
-      :estimatedDuration="estimatedDuration"
+      :selectedService="selectedService"
     />
   </div>
   <div
@@ -200,7 +194,6 @@
 </template>
 
 <script setup lang="ts">
-import type { AccordionDay } from "@/types/AccordionDay";
 import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
@@ -236,7 +229,10 @@ import {
   handleApiResponse,
 } from "@/utils/errorHandler";
 import {
+  berlinHourFormatter,
+  convertDateToString,
   formatDayFromDate,
+  formatterWeekday,
   formatTimeFromUnix,
 } from "@/utils/formatAppointmentDateTime";
 import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
@@ -329,6 +325,8 @@ const officeOrder = ref<Map<number, number>>(new Map());
 const calendarKey = ref(0);
 
 const selectedProviders = ref<{ [id: string]: boolean }>({});
+const listViewRef = ref<any>();
+const calendarViewRef = ref<any>();
 
 let initialized = false;
 const availableDaysFetched = ref(false);
@@ -383,125 +381,6 @@ const getOfficeById = (id: number | string): OfficeImpl | undefined => {
 const officeNameById = (id: number | string): string | null => {
   return getOfficeById(id)?.name ?? null;
 };
-
-const getAvailableHours = () => {
-  // Only include hours where at least one selected provider has appointments
-  const hourSet = new Set<number>();
-  for (const [officeId, office] of timeSlotsInHoursByOffice.value) {
-    if (selectedProviders.value[officeId]) {
-      for (const hour of office.appointments.keys()) {
-        if ((office.appointments.get(hour) || []).length > 0) {
-          hourSet.add(hour);
-        }
-      }
-    }
-  }
-  return Array.from(hourSet).sort((a, b) => a - b);
-};
-
-const laterAppointments = (type = "hour") => {
-  if (type === "dayPart" && currentDayPart.value === "am") {
-    selectedDayPart.value = "pm";
-    return;
-  }
-  if (currentHour.value !== null) {
-    const availableHours = getAvailableHours();
-    const idx = availableHours.indexOf(currentHour.value);
-    if (idx !== -1 && idx < availableHours.length - 1) {
-      selectedHour.value = availableHours[idx + 1];
-    }
-  }
-};
-
-const earlierAppointments = (type = "hour") => {
-  if (type === "dayPart" && currentDayPart.value === "pm") {
-    selectedDayPart.value = "am";
-    return;
-  }
-  if (currentHour.value !== null) {
-    const availableHours = getAvailableHours();
-    const idx = availableHours.indexOf(currentHour.value);
-    if (idx > 0) {
-      selectedHour.value = availableHours[idx - 1];
-    }
-  }
-};
-
-const getListDayAvailableHours = (day: AccordionDay) => {
-  const hourSet = new Set<number>();
-  day.hourRows.forEach((hourRow) => {
-    if (hourRow.times.length > 0) {
-      hourSet.add(hourRow.hour);
-    }
-  });
-  return Array.from(hourSet).sort((a, b) => a - b);
-};
-
-const getListDayAvailableDayParts = (day: AccordionDay) => {
-  const dayParts: ("am" | "pm")[] = [];
-  day.dayPartRows.forEach((partRow) => {
-    if (partRow.times.length > 0) {
-      dayParts.push(partRow.part);
-    }
-  });
-  return dayParts.sort((a, b) => (a === "am" ? -1 : 1));
-};
-
-const listViewEarlierAppointments = (
-  day: AccordionDay,
-  type: "hour" | "dayPart"
-) => {
-  const dateString = day.dateString;
-
-  if (type === "dayPart") {
-    const currentPart = listViewCurrentDayPart.value.get(dateString);
-    if (currentPart === "pm") {
-      listViewCurrentDayPart.value.set(dateString, "am");
-    }
-  } else {
-    const currentHour = listViewCurrentHour.value.get(dateString);
-    if (currentHour !== undefined) {
-      const availableHours = getListDayAvailableHours(day);
-      const idx = availableHours.indexOf(currentHour);
-      if (idx > 0) {
-        listViewCurrentHour.value.set(dateString, availableHours[idx - 1]);
-      }
-    }
-  }
-};
-
-const listViewLaterAppointments = (
-  day: AccordionDay,
-  type: "hour" | "dayPart"
-) => {
-  const dateString = day.dateString;
-
-  if (type === "dayPart") {
-    const currentPart = listViewCurrentDayPart.value.get(dateString);
-    if (currentPart === "am") {
-      listViewCurrentDayPart.value.set(dateString, "pm");
-    }
-  } else {
-    const currentHour = listViewCurrentHour.value.get(dateString);
-    if (currentHour !== undefined) {
-      const availableHours = getListDayAvailableHours(day);
-      const idx = availableHours.indexOf(currentHour);
-      if (idx !== -1 && idx < availableHours.length - 1) {
-        listViewCurrentHour.value.set(dateString, availableHours[idx + 1]);
-      }
-    }
-  }
-};
-
-const formatterWeekday = new Intl.DateTimeFormat("de-DE", { weekday: "long" });
-
-// Time formatter centralized in utils; keep berlinHourFormatter for grouping
-
-const berlinHourFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: "Europe/Berlin",
-  hour: "numeric",
-  hour12: false,
-});
 
 const formatTime = (time: any) => formatTimeFromUnix(time);
 
@@ -828,13 +707,6 @@ const getAppointmentsOfDay = (date: string) => {
     });
 };
 
-const convertDateToString = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 const allowedDates = (date: Date) => {
   const beforeMaxDate =
     date.getFullYear() < MAXDATE.getFullYear() ||
@@ -900,32 +772,7 @@ const hasSelectedProviderWithAppointments = computed(() => {
 });
 
 // Watch for changes in selectedProviders and update selectedProvider accordingly
-watch(
-  selectedProviders,
-  (newSelection) => {
-    const selectedCount = Object.values(newSelection).filter(Boolean).length;
-
-    if (selectedCount === 1) {
-      // Exactly one provider selected, update selectedProvider to that one
-      const selectedProviderId = Object.keys(newSelection).find(
-        (id) => newSelection[id]
-      );
-
-      if (selectedProviderId && selectableProviders.value) {
-        const provider = selectableProviders.value.find(
-          (p) => p.id.toString() === selectedProviderId
-        );
-        if (provider) {
-          selectedProvider.value = provider;
-        }
-      }
-    } else {
-      // Multiple or no providers selected, clear selectedProvider
-      selectedProvider.value = undefined;
-    }
-  },
-  { deep: true }
-);
+// merged into the main provider-change watcher below
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
@@ -944,16 +791,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   }
 };
 
-/**
- * This function determines the expected duration of the appointment.
- * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
- */
-const estimatedDuration = () => {
-  return calculateEstimatedDuration(
-    selectedService.value,
-    selectedProvider.value
-  );
-};
+// estimatedDuration moved into SelectedAppointmentSummary
 
 const nextStep = () => emit("next");
 const previousStep = () => emit("back");
@@ -1260,179 +1098,60 @@ async function validateCurrentDateHasAppointments() {
   }
 }
 
-async function snapToCalendarViewNearestAvailableTimeSlot() {
-  await nextTick(); // Ensure computed properties are updated
-
-  // Hourly view: snap selectedHour to the nearest available hour if current is not available
-  if (timeSlotsInHoursByOffice.value.size > 0) {
-    const availableHours = Array.from(timeSlotsInHoursByOffice.value.values())
-      .flatMap((office) => Array.from((office as any).appointments.keys()))
-      .filter((hour): hour is number => typeof hour === "number");
-    if (
-      selectedHour.value === null ||
-      !availableHours.includes(selectedHour.value as number)
-    ) {
-      if (availableHours.length > 0) {
-        // Snap to the nearest available hour, prefer earlier if equally close
-        const prevHour = selectedHour.value;
-        let nearest = availableHours[0];
-        let minDiff = Math.abs((prevHour ?? nearest) - nearest);
-        for (const hour of availableHours) {
-          const diff = Math.abs((prevHour ?? hour) - hour);
-          if (diff < minDiff || (diff === minDiff && hour < nearest)) {
-            nearest = hour;
-            minDiff = diff;
-          }
-        }
-        selectedHour.value = nearest;
-      } else {
-        selectedHour.value = null;
-      }
-    }
-  }
-  // DayPart view: snap selectedDayPart to the other part if current is not available
-  else if (timeSlotsInDayPartByOffice.value.size > 0) {
-    const availableDayParts = Array.from(
-      timeSlotsInDayPartByOffice.value.values()
-    )
-      .flatMap((office) => Array.from((office as any).appointments.keys()))
-      .filter((part): part is "am" | "pm" => part === "am" || part === "pm");
-    if (
-      selectedDayPart.value === null ||
-      !availableDayParts.includes(selectedDayPart.value as "am" | "pm")
-    ) {
-      // Prefer the other part if available
-      if (selectedDayPart.value === "am" && availableDayParts.includes("pm")) {
-        selectedDayPart.value = "pm";
-      } else if (
-        selectedDayPart.value === "pm" &&
-        availableDayParts.includes("am")
-      ) {
-        selectedDayPart.value = "am";
-      } else if (availableDayParts.length > 0) {
-        selectedDayPart.value = availableDayParts[0];
-      } else {
-        selectedDayPart.value = null;
-      }
-    }
+/**
+ * Snap selection according to the currently active view.
+ */
+async function snapToNearestForCurrentView() {
+  if (isListView.value) {
+    await listViewRef.value?.snapToNearest?.();
+  } else {
+    await calendarViewRef.value?.snapToNearest?.();
   }
 }
 
-async function snapToListViewNearestAvailableTimeSlot() {
-  await nextTick();
-
-  for (const [dateString] of listViewCurrentHour.value) {
-    const currentHour = listViewCurrentHour.value.get(dateString);
-    if (currentHour !== undefined) {
-      const hasAppointmentsInHour = firstFiveAvailableDays.value.some((day) => {
-        if (day.dateString === dateString) {
-          return day.hourRows.some(
-            (hourRow) =>
-              hourRow.hour === currentHour &&
-              hourRow.times.length > 0 &&
-              selectedProviders.value[hourRow.officeId]
-          );
-        }
-        return false;
-      });
-
-      if (!hasAppointmentsInHour) {
-        const day = firstFiveAvailableDays.value.find(
-          (d) => d.dateString === dateString
-        );
-        if (day) {
-          const availableHours = getListDayAvailableHours(day);
-          if (availableHours.length > 0) {
-            let nearest = availableHours[0];
-            let minDiff = Math.abs(currentHour - nearest);
-            for (const hour of availableHours) {
-              const diff = Math.abs(currentHour - hour);
-              if (diff < minDiff || (diff === minDiff && hour < nearest)) {
-                nearest = hour;
-                minDiff = diff;
-              }
-            }
-            if (nearest !== currentHour) {
-              listViewCurrentHour.value.set(dateString, nearest);
-            }
-          }
-        }
-      }
+/**
+ * Debounced refresh pipeline after provider selection changes.
+ */
+function scheduleRefreshAfterProviderChange() {
+  const selectionSnapshot = JSON.stringify(selectedProviders.value);
+  if (refetchTimer) clearTimeout(refetchTimer);
+  refetchTimer = setTimeout(async () => {
+    await refetchAvailableDaysForSelection();
+    // Selection changed while awaiting? Abort this cycle.
+    if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
+      return;
     }
-  }
-
-  for (const [dateString] of listViewCurrentDayPart.value) {
-    const currentDayPart = listViewCurrentDayPart.value.get(dateString);
-    if (currentDayPart !== undefined) {
-      const hasAppointmentsInDayPart = firstFiveAvailableDays.value.some(
-        (day) => {
-          if (day.dateString === dateString) {
-            return day.dayPartRows.some(
-              (partRow) =>
-                partRow.part === currentDayPart &&
-                partRow.times.length > 0 &&
-                selectedProviders.value[partRow.officeId]
-            );
-          }
-          return false;
-        }
-      );
-
-      if (!hasAppointmentsInDayPart) {
-        const day = firstFiveAvailableDays.value.find(
-          (d) => d.dateString === dateString
-        );
-        if (day) {
-          const availableDayParts = getListDayAvailableDayParts(day);
-          if (availableDayParts.length > 0) {
-            let newDayPart = currentDayPart;
-            if (currentDayPart === "am" && availableDayParts.includes("pm")) {
-              newDayPart = "pm";
-            } else if (
-              currentDayPart === "pm" &&
-              availableDayParts.includes("am")
-            ) {
-              newDayPart = "am";
-            } else {
-              newDayPart = availableDayParts[0];
-            }
-            if (newDayPart !== currentDayPart) {
-              listViewCurrentDayPart.value.set(dateString, newDayPart);
-            }
-          }
-        }
-      }
-    }
-  }
+    const availableDaysForSelectedProviders =
+      updateDateRangeForSelectedProviders();
+    await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    await validateCurrentDateHasAppointments();
+    await snapToNearestForCurrentView();
+  }, 150);
 }
 
 watch(
   selectedProviders,
   async () => {
+    // Sync single-selection provider immediately
+    const selectedIds = Object.keys(selectedProviders.value).filter(
+      (id) => selectedProviders.value[id]
+    );
+    if (selectedIds.length === 1 && selectableProviders.value) {
+      const provider = selectableProviders.value.find(
+        (p) => p.id.toString() === selectedIds[0]
+      );
+      selectedProvider.value = provider ?? undefined;
+    } else if (selectedIds.length !== 1) {
+      selectedProvider.value = undefined;
+    }
+
     // Pre-hook: set switching state and clear errors immediately
     isSwitchingProvider.value = true;
     error.value = false;
     Object.values(errorStateMap.value).forEach((es) => (es.value = false));
 
-    // Re-fetch available days whenever provider selection changes (debounced)
-    const selectionSnapshot = JSON.stringify(selectedProviders.value);
-    if (refetchTimer) clearTimeout(refetchTimer);
-    refetchTimer = setTimeout(async () => {
-      await refetchAvailableDaysForSelection();
-      // Selection changed while awaiting? Abort this cycle.
-      if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
-        return;
-      }
-      const availableDaysForSelectedProviders =
-        updateDateRangeForSelectedProviders();
-      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
-      await snapToCalendarViewNearestAvailableTimeSlot();
-      await validateCurrentDateHasAppointments();
-
-      if (isListView.value) {
-        await snapToListViewNearestAvailableTimeSlot();
-      }
-    }, 150);
+    // Debounced pipeline
+    scheduleRefreshAfterProviderChange();
   },
   { deep: true }
 );
@@ -1536,171 +1255,6 @@ const openNoneSelectedInfoModal = () => {
   }
 };
 
-const openAccordionDate = ref<string | null>(null);
-
-const daysToShow = ref(5);
-
-const listViewCurrentHour = ref<Map<string, number>>(new Map());
-const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
-
-const loadMoreDays = () => {
-  daysToShow.value += 3;
-};
-
-const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
-  if (!availableDays.value) return [];
-
-  const availableForProviders = availableDays.value.filter((day) =>
-    day.providerIDs.split(",").some((id) => selectedProviders.value[id])
-  );
-
-  const trulyAvailable = availableForProviders.filter((day) => {
-    const dateStr = convertDateToString(new Date(day.time));
-    return !datesWithoutAppointments.value.has(dateStr);
-  });
-
-  return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
-    const d = new Date(dayObj.time);
-    const dateString = convertDateToString(d);
-    const label =
-      formatterWeekday.format(d) +
-      ", " +
-      String(d.getDate()).padStart(2, "0") +
-      "." +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "." +
-      d.getFullYear();
-
-    let appointmentsCount = 0;
-    const hourRows: AccordionDay["hourRows"] = [];
-    const dayPartRows: AccordionDay["dayPartRows"] = [];
-
-    appointmentTimestampsByOffice.value.forEach((office) => {
-      if (!selectedProviders.value[office.officeId]) return;
-
-      const times = office.appointments.filter((ts) => {
-        return convertDateToString(new Date(ts * 1000)) === dateString;
-      });
-      appointmentsCount += times.length;
-
-      const byHour: Record<number, number[]> = {};
-      const byPart: { am: number[]; pm: number[] } = { am: [], pm: [] };
-
-      times.forEach((ts) => {
-        const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
-        (byHour[hr] ||= []).push(ts);
-        const part = hr >= 12 ? "pm" : "am";
-        byPart[part].push(ts);
-      });
-
-      Object.entries(byHour).forEach(([hour, tsArray]) => {
-        hourRows.push({
-          hour: Number(hour),
-          times: tsArray,
-          officeId: office.officeId,
-        });
-      });
-      if (byPart.am.length) {
-        dayPartRows.push({
-          part: "am",
-          times: byPart.am,
-          officeId: office.officeId,
-        });
-      }
-      if (byPart.pm.length) {
-        dayPartRows.push({
-          part: "pm",
-          times: byPart.pm,
-          officeId: office.officeId,
-        });
-      }
-    });
-
-    // hourRows: first by hour, then by provider order (officeOrder)
-    hourRows.sort((hourRowLeft, hourRowRight) => {
-      if (hourRowLeft.hour !== hourRowRight.hour) {
-        return hourRowLeft.hour - hourRowRight.hour;
-      }
-      const left =
-        officeOrder.value.get(Number(hourRowLeft.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      const right =
-        officeOrder.value.get(Number(hourRowRight.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      return left - right;
-    });
-
-    // dayPartRows: first AM before PM, then by provider order (officeOrder)
-    dayPartRows.sort((dayPartRowLeft, dayPartRowRight) => {
-      if (dayPartRowLeft.part !== dayPartRowRight.part) {
-        return dayPartRowLeft.part === "am" ? -1 : 1;
-      }
-      const left =
-        officeOrder.value.get(Number(dayPartRowLeft.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      const right =
-        officeOrder.value.get(Number(dayPartRowRight.officeId)) ??
-        Number.MAX_SAFE_INTEGER;
-      return left - right;
-    });
-
-    if (!listViewCurrentHour.value.has(dateString)) {
-      const availableHours = getListDayAvailableHours({
-        hourRows,
-        dayPartRows,
-      } as AccordionDay);
-      if (availableHours.length > 0) {
-        listViewCurrentHour.value.set(dateString, availableHours[0]);
-      }
-    }
-
-    if (!listViewCurrentDayPart.value.has(dateString)) {
-      const availableDayParts = getListDayAvailableDayParts({
-        hourRows,
-        dayPartRows,
-      } as AccordionDay);
-      if (availableDayParts.length > 0) {
-        listViewCurrentDayPart.value.set(dateString, availableDayParts[0]);
-      }
-    }
-
-    return {
-      date: d,
-      dateString,
-      label,
-      appointmentsCount,
-      hourRows,
-      dayPartRows,
-    };
-  });
-});
-
-watch(firstFiveAvailableDays, (newDays) => {
-  if (newDays.length > 0 && !openAccordionDate.value) {
-    openAccordionDate.value = newDays[0].dateString;
-  }
-});
-
-const onDayAccordionSelect = (day: AccordionDay) => {
-  if (openAccordionDate.value === day.dateString) {
-    openAccordionDate.value = null;
-  } else {
-    openAccordionDate.value = day.dateString;
-    selectedDay.value = day.date;
-    handleDaySelection(day.date);
-
-    const availableHours = getListDayAvailableHours(day);
-    if (availableHours.length > 0) {
-      listViewCurrentHour.value.set(day.dateString, availableHours[0]);
-    }
-
-    const availableDayParts = getListDayAvailableDayParts(day);
-    if (availableDayParts.length > 0) {
-      listViewCurrentDayPart.value.set(day.dateString, availableDayParts[0]);
-    }
-  }
-};
-
 const onUpdateSelectedProviders = (val: { [id: string]: boolean }) => {
   // Avoid unnecessary triggers when value is identical
   const current = JSON.stringify(selectedProviders.value);
@@ -1713,20 +1267,16 @@ const onUpdateSelectedProviders = (val: { [id: string]: boolean }) => {
 const isSlotSelected = (officeId: number | string, time: number) =>
   selectedTimeslot.value === time &&
   selectedProvider.value?.id?.toString() === officeId.toString();
-
-const getCurrentHourForDay = (dateString: string): number | undefined => {
-  return listViewCurrentHour.value.get(dateString);
-};
-
-const getCurrentDayPartForDay = (
-  dateString: string
-): "am" | "pm" | undefined => {
-  return listViewCurrentDayPart.value.get(dateString);
-};
 </script>
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.m-button-group {
+  margin-bottom: 20px;
+  padding-bottom: 0;
+  padding-top: 30px;
+}
 
 .no-bottom-margin,
 .no-bottom-margin.m-button,

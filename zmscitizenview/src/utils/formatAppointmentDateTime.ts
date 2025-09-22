@@ -41,3 +41,20 @@ export function formatTimeFromUnix(time: number): string {
   if (isNaN(date.getTime())) return "";
   return formatterTime.format(date);
 }
+
+export function convertDateToString(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export const berlinHourFormatter = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "Europe/Berlin",
+  hour: "numeric",
+  hour12: false,
+});
+
+export const formatterWeekday = new Intl.DateTimeFormat("de-DE", {
+  weekday: "long",
+});

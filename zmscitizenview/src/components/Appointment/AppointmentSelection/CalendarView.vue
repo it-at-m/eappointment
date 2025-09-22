@@ -120,7 +120,7 @@
           icon="chevron-left"
           icon-shown-left
           variant="ghost"
-          @click="$emit('earlier', { type: 'hour' })"
+          @click="onEarlier('hour')"
           :disabled="
             currentHour === null ||
             firstHour === null ||
@@ -137,7 +137,7 @@
           icon="chevron-right"
           icon-shown-right
           variant="ghost"
-          @click="$emit('later', { type: 'hour' })"
+          @click="onLater('hour')"
           :disabled="
             currentHour === null ||
             lastHour === null ||
@@ -246,7 +246,7 @@
           icon="chevron-left"
           icon-shown-left
           variant="ghost"
-          @click="$emit('earlier', { type: 'dayPart' })"
+          @click="onEarlier('dayPart')"
           :disabled="
             currentDayPart === 'am' ||
             firstDayPart === 'pm' ||
@@ -261,7 +261,7 @@
           icon="chevron-right"
           icon-shown-right
           variant="ghost"
-          @click="$emit('later', { type: 'dayPart' })"
+          @click="onLater('dayPart')"
           :disabled="
             currentDayPart === 'pm' ||
             lastDayPart === 'am' ||
@@ -279,9 +279,10 @@
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucButton, MucCalendar } from "@muenchen/muc-patternlab-vue";
+import { computed, nextTick, ref, watch } from "vue";
 
-import AppointmentLayout from "./AppointmentLayout.vue";
 import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
+import AppointmentLayout from "./AppointmentLayout.vue";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -318,16 +319,112 @@ const props = defineProps<{
   formatDay: (date: Date) => string | undefined;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "update:selectedDay", day: Date): void;
   (
     e: "selectTimeSlot",
     payload: { officeId: number | string; time: number }
   ): void;
-  (e: "earlier", payload: { type: "hour" | "dayPart" }): void;
-  (e: "later", payload: { type: "hour" | "dayPart" }): void;
   (e: "openInfo"): void;
+  (e: "setSelectedHour", hour: number | null): void;
+  (e: "setSelectedDayPart", part: "am" | "pm" | null): void;
 }>();
+
+async function snapToNearestForCurrentSelection() {
+  await nextTick();
+
+  // Hourly view: snap selectedHour to the nearest available hour if current is not available
+  if (props.timeSlotsInHoursByOffice.size > 0) {
+    const availableHours = Array.from(props.timeSlotsInHoursByOffice.values())
+      .flatMap((office) => Array.from((office as any).appointments.keys()))
+      .filter((hour): hour is number => typeof hour === "number");
+    if (
+      props.currentHour === null ||
+      !availableHours.includes(props.currentHour as number)
+    ) {
+      if (availableHours.length > 0) {
+        const prevHour = props.currentHour ?? availableHours[0];
+        let nearest = availableHours[0];
+        let minDiff = Math.abs(prevHour - nearest);
+        for (const hour of availableHours) {
+          const diff = Math.abs(prevHour - hour);
+          if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+            nearest = hour;
+            minDiff = diff;
+          }
+        }
+        // request parent to update
+        emit("setSelectedHour", nearest);
+      } else {
+        emit("setSelectedHour", null);
+      }
+    }
+  }
+  // DayPart view: snap selectedDayPart if current is not available
+  else if (props.timeSlotsInDayPartByOffice.size > 0) {
+    const availableDayParts = Array.from(
+      props.timeSlotsInDayPartByOffice.values()
+    )
+      .flatMap((office) => Array.from((office as any).appointments.keys()))
+      .filter((part): part is "am" | "pm" => part === "am" || part === "pm");
+    if (
+      !props.currentDayPart ||
+      !availableDayParts.includes(props.currentDayPart as "am" | "pm")
+    ) {
+      let newPart: "am" | "pm" | null = null;
+      if (props.currentDayPart === "am" && availableDayParts.includes("pm")) {
+        newPart = "pm";
+      } else if (
+        props.currentDayPart === "pm" &&
+        availableDayParts.includes("am")
+      ) {
+        newPart = "am";
+      } else if (availableDayParts.length > 0) {
+        newPart = availableDayParts[0];
+      }
+      emit("setSelectedDayPart", newPart);
+    }
+  }
+}
+
+defineExpose({ snapToNearest: snapToNearestForCurrentSelection });
+
+function getAvailableHours(): number[] {
+  const hourSet = new Set<number>();
+  for (const [, office] of props.timeSlotsInHoursByOffice) {
+    for (const hour of office.appointments.keys()) {
+      if ((office.appointments.get(hour) || []).length > 0) {
+        hourSet.add(hour);
+      }
+    }
+  }
+  return Array.from(hourSet).sort((a, b) => a - b);
+}
+
+function onEarlier(type: "hour" | "dayPart") {
+  if (type === "dayPart") {
+    if (props.currentDayPart === "pm") emit("setSelectedDayPart", "am");
+    return;
+  }
+  const hours = getAvailableHours();
+  const current = props.currentHour;
+  if (current === null) return;
+  const idx = hours.indexOf(current);
+  if (idx > 0) emit("setSelectedHour", hours[idx - 1]);
+}
+
+function onLater(type: "hour" | "dayPart") {
+  if (type === "dayPart") {
+    if (props.currentDayPart === "am") emit("setSelectedDayPart", "pm");
+    return;
+  }
+  const hours = getAvailableHours();
+  const current = props.currentHour;
+  if (current === null) return;
+  const idx = hours.indexOf(current);
+  if (idx >= 0 && idx < hours.length - 1)
+    emit("setSelectedHour", hours[idx + 1]);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -352,12 +449,6 @@ defineEmits<{
 .float-right {
   margin-left: auto;
   margin-right: 0 !important;
-}
-
-.m-button-group {
-  margin-bottom: 20px;
-  padding-bottom: 0;
-  padding-top: 30px;
 }
 
 /* Ensure consistent width for earlier/later buttons */

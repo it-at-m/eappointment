@@ -2572,7 +2572,7 @@ describe("CalendarView", () => {
       wrapper.vm.listViewCurrentHour.set(dateString, 16);
       const initialHour = 16;
 
-      wrapper.vm.listViewEarlierAppointments({
+      wrapper.vm.onEarlier({
         dateString,
         hourRows: [{ hour: 15, times: [1], officeId: 1 }, { hour: 16, times: [1], officeId: 1 }]
       } as any, "hour");
@@ -2626,7 +2626,7 @@ describe("CalendarView", () => {
       wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
       const initialDayPart = "pm";
 
-      wrapper.vm.listViewEarlierAppointments({
+      wrapper.vm.onEarlier({
         dateString,
         dayPartRows: [{ part: "am", times: [1], officeId: 1 }, { part: "pm", times: [1], officeId: 1 }]
       } as any, "dayPart");

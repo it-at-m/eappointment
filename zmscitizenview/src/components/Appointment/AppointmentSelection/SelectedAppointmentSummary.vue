@@ -24,7 +24,7 @@
             {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
             {{ t("clock") }}
             <br />
-            {{ t("estimatedDuration") }} {{ estimatedDuration() }}
+            {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
             {{ t("minutes") }}
           </p>
         </div>
@@ -50,8 +50,10 @@
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucCallout } from "@muenchen/muc-patternlab-vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
+// Calculate duration locally
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
@@ -61,7 +63,7 @@ const props = defineProps<{
   selectedTimeslot: number;
   formatDay: (date: Date) => string | undefined;
   formatTime: (time: number) => string;
-  estimatedDuration: () => number;
+  selectedService: any;
 }>();
 
 const summary = ref<HTMLElement | null>(null);
@@ -69,4 +71,11 @@ const summary = ref<HTMLElement | null>(null);
 defineExpose({
   summary,
 });
+
+const localEstimatedDuration = computed(() =>
+  calculateEstimatedDuration(
+    props.selectedService,
+    (props.selectedProvider ?? undefined) as OfficeImpl | undefined
+  )
+);
 </script>

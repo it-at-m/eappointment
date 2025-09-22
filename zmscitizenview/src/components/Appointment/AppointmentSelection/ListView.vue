@@ -48,9 +48,9 @@
                   type="button"
                   data-bs-toggle="collapse"
                   :data-bs-target="'#listContent-' + index"
-                  :aria-expanded="day.dateString === openAccordionDate"
+                  :aria-expanded="day.dateString === localOpenAccordionDate"
                   :aria-controls="'#listContent-' + index"
-                  @click="$emit('toggleDay', day)"
+                  @click="onToggleDay(day)"
                 >
                   {{ day.label }}
                   <svg
@@ -60,7 +60,7 @@
                   >
                     <use
                       :xlink:href="
-                        day.dateString === openAccordionDate
+                        day.dateString === localOpenAccordionDate
                           ? '#icon-chevron-up'
                           : '#icon-chevron-down'
                       "
@@ -71,7 +71,7 @@
 
               <section
                 class="m-accordion__section-content collapse"
-                :class="{ show: day.dateString === openAccordionDate }"
+                :class="{ show: day.dateString === localOpenAccordionDate }"
                 :id="'listContent-' + index"
                 :aria-labelledby="'listHeading-' + index"
                 data-bs-parent="#listViewAccordion"
@@ -80,7 +80,7 @@
                   <template
                     v-if="
                       isLoadingAppointments &&
-                      day.dateString === openAccordionDate
+                      day.dateString === localOpenAccordionDate
                     "
                   >
                     <div
@@ -140,7 +140,7 @@
                         icon="chevron-left"
                         icon-shown-left
                         variant="ghost"
-                        @click="$emit('earlier', { day, type: 'hour' })"
+                        @click="onEarlier(day, 'hour')"
                         :disabled="
                           getCurrentHourForDay(day.dateString) === undefined ||
                           getListDayAvailableHours(day).indexOf(
@@ -156,7 +156,7 @@
                         icon="chevron-right"
                         icon-shown-right
                         variant="ghost"
-                        @click="$emit('later', { day, type: 'hour' })"
+                        @click="onLater(day, 'hour')"
                         :disabled="
                           getCurrentHourForDay(day.dateString) === undefined ||
                           getListDayAvailableHours(day).indexOf(
@@ -212,7 +212,7 @@
                         icon="chevron-left"
                         icon-shown-left
                         variant="ghost"
-                        @click="$emit('earlier', { day, type: 'dayPart' })"
+                        @click="onEarlier(day, 'dayPart')"
                         :disabled="
                           getCurrentDayPartForDay(day.dateString) === 'am' ||
                           getListDayAvailableDayParts(day).indexOf('am') === -1
@@ -226,7 +226,7 @@
                         icon="chevron-right"
                         icon-shown-right
                         variant="ghost"
-                        @click="$emit('later', { day, type: 'dayPart' })"
+                        @click="onLater(day, 'dayPart')"
                         :disabled="
                           getCurrentDayPartForDay(day.dateString) === 'pm' ||
                           getListDayAvailableDayParts(day).indexOf('pm') === -1
@@ -246,7 +246,7 @@
 
     <muc-button
       v-if="canLoadMore"
-      @click="$emit('loadMore')"
+      @click="loadMoreDays"
       icon="chevron-down"
       icon-animated
       style="margin-top: 16px"
@@ -261,31 +261,41 @@ import type { AccordionDay } from "@/types/AccordionDay";
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucButton } from "@muenchen/muc-patternlab-vue";
+import { computed, nextTick, ref, watch } from "vue";
 
-import AppointmentLayout from "./AppointmentLayout.vue";
 import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
+import {
+  berlinHourFormatter,
+  convertDateToString,
+  formatDayFromDate,
+  formatterWeekday,
+  formatTimeFromUnix,
+} from "@/utils/formatAppointmentDateTime";
+import AppointmentLayout from "./AppointmentLayout.vue";
 
 const props = defineProps<{
   t: (key: string) => string;
-  firstFiveAvailableDays: AccordionDay[];
-  openAccordionDate: string | null;
   isLoadingAppointments: boolean;
   availabilityInfoHtml: string | null;
   selectableProviders: OfficeImpl[] | undefined;
   selectedProviders: { [id: string]: boolean };
   providersWithAppointments: OfficeImpl[];
-  canLoadMore: boolean;
   officeNameById: (id: number | string) => string | null;
-  getCurrentHourForDay: (dateString: string) => number | undefined;
-  getCurrentDayPartForDay: (dateString: string) => "am" | "pm" | undefined;
-  getListDayAvailableHours: (day: AccordionDay) => number[];
-  getListDayAvailableDayParts: (day: AccordionDay) => ("am" | "pm")[];
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   formatTime: (time: number) => string;
+  // New raw data to compute firstFiveAvailableDays inside this component
+  availableDays:
+    | Array<{ time: string | number; providerIDs: string }>
+    | undefined;
+  datesWithoutAppointments: Set<string>;
+  appointmentTimestampsByOffice: Array<{
+    officeId: number | string;
+    appointments: number[];
+  }>;
+  officeOrder: Map<number, number>;
 }>();
 
-defineEmits<{
-  (e: "toggleDay", day: AccordionDay): void;
+const emit = defineEmits<{
   (
     e: "selectTimeSlot",
     payload: { officeId: number | string; time: number }
@@ -295,16 +305,339 @@ defineEmits<{
     payload: { day: AccordionDay; type: "hour" | "dayPart" }
   ): void;
   (e: "later", payload: { day: AccordionDay; type: "hour" | "dayPart" }): void;
-  (e: "loadMore"): void;
   (e: "openInfo"): void;
+  (e: "update:selectedDay", date: Date): void;
 }>();
 
 const t = props.t;
 const officeNameById = props.officeNameById;
-const getCurrentHourForDay = props.getCurrentHourForDay;
-const getCurrentDayPartForDay = props.getCurrentDayPartForDay;
-const getListDayAvailableHours = props.getListDayAvailableHours;
-const getListDayAvailableDayParts = props.getListDayAvailableDayParts;
 const isSlotSelected = props.isSlotSelected;
 const formatTime = props.formatTime as (time: number) => string;
+
+const daysToShow = ref(5);
+const localOpenAccordionDate = ref<string | null>(null);
+
+const listViewCurrentHour = ref<Map<string, number>>(new Map());
+const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
+const getCurrentHourForDay = (dateString: string): number | undefined => {
+  return listViewCurrentHour.value.get(dateString);
+};
+
+const getCurrentDayPartForDay = (
+  dateString: string
+): "am" | "pm" | undefined => {
+  return listViewCurrentDayPart.value.get(dateString);
+};
+
+function setCurrentHourForDay(dateString: string, hour: number) {
+  listViewCurrentHour.value.set(dateString, hour);
+}
+
+function setCurrentDayPartForDay(dateString: string, part: "am" | "pm") {
+  listViewCurrentDayPart.value.set(dateString, part);
+}
+
+function getListDayAvailableHours(day: AccordionDay) {
+  const hourSet = new Set<number>();
+  day.hourRows.forEach((hourRow) => {
+    if (hourRow.times.length > 0) {
+      hourSet.add(hourRow.hour);
+    }
+  });
+  return Array.from(hourSet).sort((a, b) => a - b);
+}
+
+function getListDayAvailableDayParts(day: AccordionDay) {
+  const dayParts: ("am" | "pm")[] = [];
+  day.dayPartRows.forEach((partRow) => {
+    if (partRow.times.length > 0) {
+      dayParts.push(partRow.part);
+    }
+  });
+  return dayParts.sort((a, b) => (a === "am" ? -1 : 1));
+}
+
+function onEarlier(day: AccordionDay, type: "hour" | "dayPart") {
+  if (type === "hour") {
+    const hours = getListDayAvailableHours(day);
+    const current = getCurrentHourForDay(day.dateString);
+    if (current === undefined) return;
+    const idx = hours.indexOf(current);
+    if (idx > 0) setCurrentHourForDay(day.dateString, hours[idx - 1]);
+  } else {
+    const parts = getListDayAvailableDayParts(day);
+    const current = getCurrentDayPartForDay(day.dateString);
+    if (!current) return;
+    if (current === "pm" && parts.includes("am"))
+      setCurrentDayPartForDay(day.dateString, "am");
+  }
+}
+
+function onLater(day: AccordionDay, type: "hour" | "dayPart") {
+  if (type === "hour") {
+    const hours = getListDayAvailableHours(day);
+    const current = getCurrentHourForDay(day.dateString);
+    if (current === undefined) return;
+    const idx = hours.indexOf(current);
+    if (idx >= 0 && idx < hours.length - 1)
+      setCurrentHourForDay(day.dateString, hours[idx + 1]);
+  } else {
+    const parts = getListDayAvailableDayParts(day);
+    const current = getCurrentDayPartForDay(day.dateString);
+    if (!current) return;
+    if (current === "am" && parts.includes("pm"))
+      setCurrentDayPartForDay(day.dateString, "pm");
+  }
+}
+
+function loadMoreDays() {
+  daysToShow.value += 3;
+}
+
+async function snapToNearestForCurrentSelection() {
+  await nextTick();
+
+  for (const [dateString] of listViewCurrentHour.value) {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const hasAppointmentsInHour = firstFiveAvailableDays.value.some((day) => {
+        if (day.dateString === dateString) {
+          return day.hourRows.some(
+            (hourRow) =>
+              hourRow.hour === currentHour &&
+              hourRow.times.length > 0 &&
+              props.selectedProviders[hourRow.officeId]
+          );
+        }
+        return false;
+      });
+
+      if (!hasAppointmentsInHour) {
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableHours = getListDayAvailableHours(day);
+          if (availableHours.length > 0) {
+            let nearest = availableHours[0];
+            let minDiff = Math.abs(currentHour - nearest);
+            for (const hour of availableHours) {
+              const diff = Math.abs(currentHour - hour);
+              if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+                nearest = hour;
+                minDiff = diff;
+              }
+            }
+            if (nearest !== currentHour) {
+              listViewCurrentHour.value.set(dateString, nearest);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for (const [dateString] of listViewCurrentDayPart.value) {
+    const currentDayPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentDayPart !== undefined) {
+      const hasAppointmentsInDayPart = firstFiveAvailableDays.value.some(
+        (day) => {
+          if (day.dateString === dateString) {
+            return day.dayPartRows.some(
+              (partRow) =>
+                partRow.part === currentDayPart &&
+                partRow.times.length > 0 &&
+                props.selectedProviders[partRow.officeId]
+            );
+          }
+          return false;
+        }
+      );
+
+      if (!hasAppointmentsInDayPart) {
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableDayParts = getListDayAvailableDayParts(day);
+          if (availableDayParts.length > 0) {
+            let newDayPart = currentDayPart;
+            if (currentDayPart === "am" && availableDayParts.includes("pm")) {
+              newDayPart = "pm";
+            } else if (
+              currentDayPart === "pm" &&
+              availableDayParts.includes("am")
+            ) {
+              newDayPart = "am";
+            } else {
+              newDayPart = availableDayParts[0];
+            }
+            if (newDayPart !== currentDayPart) {
+              listViewCurrentDayPart.value.set(dateString, newDayPart);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+defineExpose({ snapToNearest: snapToNearestForCurrentSelection });
+
+function onToggleDay(day: AccordionDay) {
+  if (localOpenAccordionDate.value === day.dateString) {
+    localOpenAccordionDate.value = null;
+  } else {
+    localOpenAccordionDate.value = day.dateString;
+    emit("update:selectedDay", day.date);
+    const availableHours = getListDayAvailableHours(day);
+    if (availableHours.length > 0) {
+      setCurrentHourForDay(day.dateString, availableHours[0]);
+    }
+    const availableDayParts = getListDayAvailableDayParts(day);
+    if (availableDayParts.length > 0) {
+      setCurrentDayPartForDay(day.dateString, availableDayParts[0]);
+    }
+  }
+}
+
+const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
+  if (!props.availableDays) return [];
+
+  const availableForProviders = props.availableDays.filter((day) =>
+    day.providerIDs.split(",").some((id) => props.selectedProviders[id])
+  );
+
+  const trulyAvailable = availableForProviders.filter((day) => {
+    const dateStr = convertDateToString(new Date(day.time));
+    return !props.datesWithoutAppointments.has(dateStr);
+  });
+
+  return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
+    const d = new Date(dayObj.time);
+    const dateString = convertDateToString(d);
+    const label =
+      formatterWeekday.format(d) +
+      ", " +
+      String(d.getDate()).padStart(2, "0") +
+      "." +
+      String(d.getMonth() + 1).padStart(2, "0") +
+      "." +
+      d.getFullYear();
+
+    let appointmentsCount = 0;
+    const hourRows: AccordionDay["hourRows"] = [];
+    const dayPartRows: AccordionDay["dayPartRows"] = [];
+
+    props.appointmentTimestampsByOffice.forEach((office) => {
+      if (!props.selectedProviders[office.officeId as any]) return;
+
+      const times = office.appointments.filter((ts) => {
+        return convertDateToString(new Date(ts * 1000)) === dateString;
+      });
+      appointmentsCount += times.length;
+
+      const byHour: Record<number, number[]> = {};
+      const byPart: { am: number[]; pm: number[] } = { am: [], pm: [] };
+
+      times.forEach((ts) => {
+        const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
+        (byHour[hr] ||= []).push(ts);
+        const part = hr >= 12 ? "pm" : "am";
+        byPart[part].push(ts);
+      });
+
+      Object.entries(byHour).forEach(([hour, tsArray]) => {
+        hourRows.push({
+          hour: Number(hour),
+          times: tsArray,
+          officeId: Number(office.officeId as any),
+        });
+      });
+      if (byPart.am.length) {
+        dayPartRows.push({
+          part: "am",
+          times: byPart.am,
+          officeId: Number(office.officeId as any),
+        });
+      }
+      if (byPart.pm.length) {
+        dayPartRows.push({
+          part: "pm",
+          times: byPart.pm,
+          officeId: Number(office.officeId as any),
+        });
+      }
+    });
+
+    // hourRows: first by hour, then by provider order (officeOrder)
+    hourRows.sort((hourRowLeft, hourRowRight) => {
+      if (hourRowLeft.hour !== hourRowRight.hour) {
+        return hourRowLeft.hour - hourRowRight.hour;
+      }
+      const left =
+        props.officeOrder.get(Number(hourRowLeft.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      const right =
+        props.officeOrder.get(Number(hourRowRight.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      return left - right;
+    });
+
+    // dayPartRows: first AM before PM, then by provider order (officeOrder)
+    dayPartRows.sort((dayPartRowLeft, dayPartRowRight) => {
+      if (dayPartRowLeft.part !== dayPartRowRight.part) {
+        return dayPartRowLeft.part === "am" ? -1 : 1;
+      }
+      const left =
+        props.officeOrder.get(Number(dayPartRowLeft.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      const right =
+        props.officeOrder.get(Number(dayPartRowRight.officeId)) ??
+        Number.MAX_SAFE_INTEGER;
+      return left - right;
+    });
+
+    if (!listViewCurrentHour.value.has(dateString)) {
+      const availableHours = getListDayAvailableHours({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableHours.length > 0) {
+        listViewCurrentHour.value.set(dateString, availableHours[0]);
+      }
+    }
+
+    if (!listViewCurrentDayPart.value.has(dateString)) {
+      const availableDayParts = getListDayAvailableDayParts({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableDayParts.length > 0) {
+        listViewCurrentDayPart.value.set(dateString, availableDayParts[0]);
+      }
+    }
+
+    return {
+      date: d,
+      dateString,
+      label,
+      appointmentsCount,
+      hourRows,
+      dayPartRows,
+    };
+  });
+});
+
+watch(firstFiveAvailableDays, (newDays) => {
+  if (newDays.length > 0 && !localOpenAccordionDate.value) {
+    onToggleDay(newDays[0]);
+  }
+});
+
+const canLoadMore = computed(() => {
+  return (
+    firstFiveAvailableDays.value.length < (props.availableDays?.length || 0)
+  );
+});
 </script>
