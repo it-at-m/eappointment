@@ -37,7 +37,7 @@ interface WrapperOverrides {
 }
 
 const createWrapper = (overrides: WrapperOverrides = {}) => {
-  return mount(CalendarView, {
+  return mount(AppointmentSelectionView, {
     global: {
       provide: {
         selectedServiceProvider: {
@@ -1783,7 +1783,7 @@ describe("CalendarView", () => {
         isBookingAppointment: ref(false),
         isCancelingAppointment: ref(false),
       };
-      wrapper = mount(CalendarView, {
+      wrapper = mount(AppointmentSelectionView, {
         global: {
           provide: {
             selectedServiceProvider: {
