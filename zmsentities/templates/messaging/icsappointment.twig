@@ -25,12 +25,12 @@ RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:{{ startTime|date("Ymd") }}-{{ process.id }}
+UID:{{ startTime|date("Ymd") }}-{{ process.displayNumber }}
 ORGANIZER;CN="{{ process.scope.provider.displayName }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
 SEQUENCE:0
 LOCATION:{{ process.scope.provider.displayName }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
 GEO:48.85299;2.36885
-SUMMARY:{{ "München-Termin:"|trans }} {{ process.id }}
+SUMMARY:{{ "München-Termin:"|trans }} {{ process.displayNumber }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
@@ -38,7 +38,7 @@ DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:{{ "München-Termin:"|trans }} {{ process.id }}
+DESCRIPTION:{{ "München-Termin:"|trans }} {{ process.displayNumber }}
 TRIGGER:-P1D
 END:VALARM
 STATUS:CONFIRMED
