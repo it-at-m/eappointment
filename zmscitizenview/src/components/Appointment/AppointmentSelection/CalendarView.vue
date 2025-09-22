@@ -102,7 +102,7 @@
                   : ''
               "
               :showLocationTitle="(selectableProviders?.length || 0) > 1"
-              :officeName="officeName"
+              :officeNameById="officeNameById"
               :isSlotSelected="isSlotSelected"
               :formatTime="formatTime"
               @selectTimeSlot="$emit('selectTimeSlot', $event)"
@@ -229,7 +229,7 @@
               :times="times"
               :timeLabel="t(timeslot)"
               :showLocationTitle="(selectableProviders?.length || 0) > 1"
-              :officeName="officeName"
+              :officeNameById="officeNameById"
               :isSlotSelected="isSlotSelected"
               :formatTime="formatTime"
               @selectTimeSlot="$emit('selectTimeSlot', $event)"
@@ -281,6 +281,7 @@ import type { OfficeImpl } from "@/types/OfficeImpl";
 import { MucButton, MucCalendar } from "@muenchen/muc-patternlab-vue";
 
 import AppointmentLayout from "./AppointmentLayout.vue";
+import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -308,11 +309,10 @@ const props = defineProps<{
   selectedProviders: { [id: string]: boolean };
   providersWithAppointments: OfficeImpl[];
   appointmentsCount: number;
-  APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW: number;
   isLoadingAppointments: boolean;
   isLoadingComplete: boolean;
   availabilityInfoHtml: string | null;
-  officeName: (id: number | string) => string | null;
+  officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   formatTime: (time: number) => string;
   formatDay: (date: Date) => string | undefined;

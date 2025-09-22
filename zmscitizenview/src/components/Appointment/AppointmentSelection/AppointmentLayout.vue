@@ -11,7 +11,7 @@
       >
         <use xlink:href="#icon-map-pin"></use>
       </svg>
-      {{ officeName(officeId) }}
+      {{ officeNameById(officeId) }}
     </div>
 
     <!-- Time slot display -->
@@ -46,7 +46,7 @@ const props = defineProps<{
   times: number[];
   timeLabel: string;
   showLocationTitle: boolean;
-  officeName: (id: number | string) => string | null;
+  officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
   formatTime: (time: number) => string;
 }>();

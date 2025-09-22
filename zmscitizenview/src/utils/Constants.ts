@@ -74,3 +74,8 @@ export function getGeneratedAPIBaseURL(
     return url + API_BASE_URL_EXTENSION;
   }
 }
+
+/**
+ * UI thresholds and limits
+ */
+export const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;

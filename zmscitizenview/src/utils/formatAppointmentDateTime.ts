@@ -23,3 +23,21 @@ export function formatAppointmentDateTime(time: number): string {
   if (isNaN(date.getTime())) return "";
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 }
+
+/**
+ * Formats a Date to a localized day string (e.g., Dienstag, 18.10.2024).
+ */
+export function formatDayFromDate(date: Date | undefined): string {
+  if (!date) return "";
+  if (isNaN(date.getTime())) return "";
+  return formatterDate.format(date);
+}
+
+/**
+ * Formats a UNIX timestamp (seconds) to a localized time string (e.g., 15:30).
+ */
+export function formatTimeFromUnix(time: number): string {
+  const date = new Date(time * 1000);
+  if (isNaN(date.getTime())) return "";
+  return formatterTime.format(date);
+}

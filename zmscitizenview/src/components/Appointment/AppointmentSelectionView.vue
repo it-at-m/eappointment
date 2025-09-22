@@ -72,13 +72,10 @@
       :selectedProviders="selectedProviders"
       :providersWithAppointments="providersWithAppointments"
       :appointmentsCount="appointmentsCount"
-      :APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW="
-        APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
-      "
       :isLoadingAppointments="isLoadingAppointments"
       :isLoadingComplete="isLoadingComplete"
       :availabilityInfoHtml="availabilityInfoHtml"
-      :officeName="officeName"
+      :officeNameById="officeNameById"
       :isSlotSelected="isSlotSelected"
       :formatTime="formatTime"
       :formatDay="formatDay"
@@ -102,13 +99,10 @@
       :selectableProviders="selectableProviders"
       :selectedProviders="selectedProviders"
       :providersWithAppointments="providersWithAppointments"
-      :APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW="
-        APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
-      "
       :canLoadMore="
         firstFiveAvailableDays.length < (availableDays?.length || 0)
       "
-      :officeName="officeName"
+      :officeNameById="officeNameById"
       :getCurrentHourForDay="getCurrentHourForDay"
       :getCurrentDayPartForDay="getCurrentDayPartForDay"
       :getListDayAvailableHours="getListDayAvailableHours"
@@ -241,6 +235,10 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import {
+  formatDayFromDate,
+  formatTimeFromUnix,
+} from "@/utils/formatAppointmentDateTime";
 import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import CalendarView from "./AppointmentSelection/CalendarView.vue";
@@ -362,22 +360,6 @@ watch(selectableProviders, (newVal) => {
   }
 });
 
-watch(
-  selectedProviders,
-  () => {
-    // Set flag when provider selection changes to prevent error callout flash
-    isSwitchingProvider.value = true;
-    // Immediately clear any existing error states
-    error.value = false;
-    Object.values(errorStateMap.value).forEach((errorState) => {
-      errorState.value = false;
-    });
-    // Note: isSwitchingProvider flag is now reset when the API request completes
-    // in refetchAvailableDaysForSelection, so no timeout needed here
-  },
-  { deep: true }
-);
-
 /**
  * Reference to the appointment summary.
  * After selecting a time slot, the focus is placed on the appointment summary.
@@ -391,31 +373,15 @@ const MAXDATE = new Date(
   TODAY.getDate()
 );
 
-const formatDay = (date: Date) => {
-  if (date) {
-    return (
-      formatterWeekday.format(date) +
-      ", " +
-      String(date.getDate()).padStart(2, "0") +
-      "." +
-      String(date.getMonth() + 1).padStart(2, "0") +
-      "." +
-      date.getFullYear()
-    );
-  }
+const formatDay = (date: Date) => formatDayFromDate(date) || "";
+
+const getOfficeById = (id: number | string): OfficeImpl | undefined => {
+  const idStr = String(id);
+  return (selectableProviders.value || []).find((p) => String(p.id) === idStr);
 };
 
-const getProvider = (id: number | string): OfficeImpl | undefined => {
-  return (selectableProviders.value || []).find(
-    (p) => String(p.id) === String(id)
-  );
-};
-
-const officeName = (id: number | string): string | null => {
-  const office = (selectableProviders.value || []).find(
-    (p) => String(p.id) === String(id)
-  );
-  return office?.name ?? null;
+const officeNameById = (id: number | string): string | null => {
+  return getOfficeById(id)?.name ?? null;
 };
 
 const getAvailableHours = () => {
@@ -527,20 +493,9 @@ const listViewLaterAppointments = (
   }
 };
 
-const timeSlotsInDayPartBySelectedOffice = computed(() => {
-  return Object.entries(timeSlotsInDayPartByOffice).filter(
-    ([officeId]) => selectedProviders.value[officeId]
-  );
-});
-
 const formatterWeekday = new Intl.DateTimeFormat("de-DE", { weekday: "long" });
 
-const formatterTime = new Intl.DateTimeFormat("de-DE", {
-  timeZone: "Europe/Berlin",
-  hour: "numeric",
-  minute: "numeric",
-  hour12: false,
-});
+// Time formatter centralized in utils; keep berlinHourFormatter for grouping
 
 const berlinHourFormatter = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
@@ -548,10 +503,7 @@ const berlinHourFormatter = new Intl.DateTimeFormat("de-DE", {
   hour12: false,
 });
 
-const formatTime = (time: any) => {
-  const date = new Date(time * 1000);
-  return formatterTime.format(date);
-};
+const formatTime = (time: any) => formatTimeFromUnix(time);
 
 const timeSlotsInHoursByOffice = computed(() => {
   const offices = new Map<
@@ -984,7 +936,7 @@ watch(selectedDay, (newDate) => {
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
-  selectedProvider.value = getProvider(officeId);
+  selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
     summary.value.focus();
@@ -1308,7 +1260,7 @@ async function validateCurrentDateHasAppointments() {
   }
 }
 
-async function snapToNearestAvailableTimeSlot() {
+async function snapToCalendarViewNearestAvailableTimeSlot() {
   await nextTick(); // Ensure computed properties are updated
 
   // Hourly view: snap selectedHour to the nearest available hour if current is not available
@@ -1457,6 +1409,11 @@ async function snapToListViewNearestAvailableTimeSlot() {
 watch(
   selectedProviders,
   async () => {
+    // Pre-hook: set switching state and clear errors immediately
+    isSwitchingProvider.value = true;
+    error.value = false;
+    Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+
     // Re-fetch available days whenever provider selection changes (debounced)
     const selectionSnapshot = JSON.stringify(selectedProviders.value);
     if (refetchTimer) clearTimeout(refetchTimer);
@@ -1469,7 +1426,7 @@ watch(
       const availableDaysForSelectedProviders =
         updateDateRangeForSelectedProviders();
       await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
-      await snapToNearestAvailableTimeSlot();
+      await snapToCalendarViewNearestAvailableTimeSlot();
       await validateCurrentDateHasAppointments();
 
       if (isListView.value) {
@@ -1521,7 +1478,7 @@ const noProviderSelected = computed(() => {
   return selectedProviderIds.length === 0;
 });
 
-const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
+// Threshold moved to constants
 
 const isListView = ref(false);
 

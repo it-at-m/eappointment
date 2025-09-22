@@ -122,7 +122,7 @@
                               hourRow.officeId ||
                             day.hourRows[hIndex - 1].hour !== hourRow.hour)
                         "
-                        :officeName="officeName"
+                        :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
                         :formatTime="formatTime"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
@@ -194,7 +194,7 @@
                               partRow.officeId ||
                             day.dayPartRows[pIndex - 1].part !== partRow.part)
                         "
-                        :officeName="officeName"
+                        :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
                         :formatTime="formatTime"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
@@ -263,6 +263,7 @@ import type { OfficeImpl } from "@/types/OfficeImpl";
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 
 import AppointmentLayout from "./AppointmentLayout.vue";
+import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -273,9 +274,8 @@ const props = defineProps<{
   selectableProviders: OfficeImpl[] | undefined;
   selectedProviders: { [id: string]: boolean };
   providersWithAppointments: OfficeImpl[];
-  APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW: number;
   canLoadMore: boolean;
-  officeName: (id: number | string) => string | null;
+  officeNameById: (id: number | string) => string | null;
   getCurrentHourForDay: (dateString: string) => number | undefined;
   getCurrentDayPartForDay: (dateString: string) => "am" | "pm" | undefined;
   getListDayAvailableHours: (day: AccordionDay) => number[];
@@ -300,7 +300,7 @@ defineEmits<{
 }>();
 
 const t = props.t;
-const officeName = props.officeName;
+const officeNameById = props.officeNameById;
 const getCurrentHourForDay = props.getCurrentHourForDay;
 const getCurrentDayPartForDay = props.getCurrentDayPartForDay;
 const getListDayAvailableHours = props.getListDayAvailableHours;
