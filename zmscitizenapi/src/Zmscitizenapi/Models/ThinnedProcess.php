@@ -79,14 +79,10 @@ class ThinnedProcess extends Entity implements JsonSerializable
      */
     public function toArray(): array
     {
-        $encrypted = self::encryptAuthToken($this->authKey);
-
         return [
             'processId' => $this->processId ?? null,
             'timestamp' => $this->timestamp ?? null,
             'authKey' => $this->authKey ?? null,
-            'authKeyGenerated' => $encrypted ?? null,
-            'authKeyGeneratedReverse' => self::decryptAuthToken($encrypted) ?? null,
             'familyName' => $this->familyName ?? null,
             'customTextfield' => $this->customTextfield ?? null,
             'customTextfield2' => $this->customTextfield2 ?? null,

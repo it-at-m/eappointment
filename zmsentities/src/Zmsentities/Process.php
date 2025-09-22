@@ -590,7 +590,9 @@ class Process extends Schema\Entity
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
         $queue->wayTime = ($queue->wayTime) ? $queue->wayTime : 0;
         if ($queue->withAppointment) {
-            $queue->number = $this->getDisplayNumber() ?? $this->id;
+            $queue->number = !empty($this->getDisplayNumber())
+                ? $this->getDisplayNumber()
+                : $this->id;
         } else {
             $queue->number = $this->toProperty()->queue->number->get();
         }
