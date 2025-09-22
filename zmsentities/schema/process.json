@@ -322,6 +322,11 @@
   ],
   "additionalProperties": true,
   "properties": {
+    "displayNumber": {
+      "type": ["string", "null"],
+      "description": "Appointment number that should be displayed",
+      "default": ""
+    },
     "amendment": {
       "type": ["string", "null"],
       "description": "additional information for this process from the client",

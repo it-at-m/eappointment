@@ -142,7 +142,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->writeNewProcess($process, $dateTime);
     }
 
-    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, string|int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $datetime = \App::$now;
         $process->setStatus('confirmed');

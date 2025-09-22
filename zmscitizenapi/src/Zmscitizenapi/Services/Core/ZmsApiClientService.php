@@ -23,7 +23,7 @@ class ZmsApiClientService
     {
         $cacheKey = 'source_' . \App::$source_name;
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
-            return $data;
+            //return $data;
         }
 
         $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [

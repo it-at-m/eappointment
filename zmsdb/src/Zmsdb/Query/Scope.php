@@ -24,6 +24,14 @@ class Scope extends Base implements MappingInterface
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
+    public function getQueryLastDisplayNumber()
+    {
+        return '
+            SELECT last_display_number
+            FROM `standort` scope
+            WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
+    }
+
     public function getQueryGivenNumbersInContingent()
     {
         return '
@@ -185,6 +193,7 @@ class Scope extends Base implements MappingInterface
             'preferences__queue__firstNumber' => 'scope.startwartenr',
             'preferences__queue__lastNumber' => 'scope.endwartenr',
             'preferences__queue__maxNumberContingent' => 'scope.wartenummernkontingent',
+            'preferences__queue__displayNumberPrefix' => 'scope.display_number_prefix',
             'preferences__queue__processingTimeAverage' => self::expression(
                 'FLOOR(TIME_TO_SEC(`scope`.`Bearbeitungszeit`) / 60)'
             ),
@@ -212,6 +221,8 @@ class Scope extends Base implements MappingInterface
             'status__queue__ghostWorkstationCount' => 'scope.virtuellesachbearbeiterzahl',
             'status__queue__givenNumberCount' => 'scope.vergebenewartenummern',
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
+            'status__queue__lastDisplayNumber' => 'scope.last_display_number',
+            'status__queue__maxDisplayNumber' => 'scope.max_display_number',
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
             'provider__id' => self::expression(
@@ -334,6 +345,7 @@ class Scope extends Base implements MappingInterface
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
         $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
         $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
+        $data['display_number_prefix'] = strtoupper($entity->getPreference('queue', 'displayNumberPrefix'));
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
         $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
@@ -352,6 +364,8 @@ class Scope extends Base implements MappingInterface
         $data['virtuellesachbearbeiterzahl'] = $entity->getStatus('queue', 'ghostWorkstationCount');
         $data['vergebenewartenummern'] = $entity->getStatus('queue', 'givenNumberCount');
         $data['letztewartenr'] = $entity->getStatus('queue', 'lastGivenNumber');
+        $data['last_display_number'] = $entity->getStatus('queue', 'lastDisplayNumber');
+        $data['max_display_number'] = $entity->getStatus('queue', 'maxDisplayNumber');
         $lastGivenTimestamp = $entity->getStatus('queue', 'lastGivenNumberTimestamp');
         $data['wartenrdatum'] = ($lastGivenTimestamp) ? date('Y-m-d', $lastGivenTimestamp) : null;
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');

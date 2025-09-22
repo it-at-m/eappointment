@@ -45,6 +45,7 @@ export const API_BASE_URL_AUTHENTICATED_EXTENSION =
   "/authenticated/api/citizen";
 
 export function getAPIBaseURL(baseUrl: string | undefined): string {
+  //return "http://localhost:8084/buergeransicht/api/citizen";
   if (baseUrl) {
     return baseUrl;
   }

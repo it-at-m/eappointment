@@ -39,6 +39,7 @@ class Application extends \BO\Slim\Application
     // Captcha config
     public static bool $CAPTCHA_ENABLED;
     public static string $CAPTCHA_TOKEN_SECRET;
+    public static string $AUTH_TOKEN_SECRET_KEY;
     public static int $CAPTCHA_TOKEN_TTL;
     public static string $ALTCHA_CAPTCHA_SITE_KEY;
     public static string $ALTCHA_CAPTCHA_SITE_SECRET;
@@ -67,11 +68,17 @@ class Application extends \BO\Slim\Application
         self::initializeCaptcha();
         self::initializeCache();
         self::initializeMiddleware();
+        self::initializeSecrets();
     }
 
     private static function initializeMaintenanceMode(): void
     {
         self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private static function initializeSecrets(): void
+    {
+        self::$AUTH_TOKEN_SECRET_KEY = getenv('AUTH_TOKEN_SECRET_KEY') ?: 'secret';
     }
 
     /**

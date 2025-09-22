@@ -229,7 +229,7 @@ class ZmsApiFacadeService
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
 
         if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
-            return $cachedData;
+            //return $cachedData;
         }
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
@@ -699,7 +699,6 @@ class ZmsApiFacadeService
 
     public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
     {
-
         $process = ZmsApiClientService::getProcessById($processId, $authKey);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
