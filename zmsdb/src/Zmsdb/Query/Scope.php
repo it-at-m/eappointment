@@ -345,7 +345,9 @@ class Scope extends Base implements MappingInterface
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
         $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
         $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
-        $data['display_number_prefix'] = strtoupper($entity->getPreference('queue', 'displayNumberPrefix'));
+        $data['display_number_prefix'] = $entity->getPreference('queue', 'displayNumberPrefix')
+            ? strtoupper($entity->getPreference('queue', 'displayNumberPrefix'))
+            : '';
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
         $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
