@@ -229,7 +229,7 @@ class ZmsApiFacadeService
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
 
         if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
-            //return $cachedData;
+            return $cachedData;
         }
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
