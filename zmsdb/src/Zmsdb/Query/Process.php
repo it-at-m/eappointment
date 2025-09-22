@@ -308,7 +308,15 @@ class Process extends Base implements MappingInterface
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
             'queue__lastCallTime' => 'process.Timestamp',
-            'displayNumber' => 'process.displayNumber',
+            'displayNumber' => self::expression(
+                'COALESCE(
+                    `process`.`displayNumber`,
+                    IF(`process`.`wartenummer`,
+                        `process`.`wartenummer`,
+                        `process`.`BuergerID`
+                    )
+                )'
+            ),
             'queue__number' => self::expression(
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,

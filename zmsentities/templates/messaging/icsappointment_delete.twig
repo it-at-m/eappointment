@@ -25,12 +25,12 @@ RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:{{ startTime|date("Ymd") }}-{{ process.id }}
+UID:{{ startTime|date("Ymd") }}-{{ process.displayNumber }}
 ORGANIZER;CN="{{ process.scope.provider.displayName }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
 SEQUENCE:0
 LOCATION:{{ process.scope.provider.displayName }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
 GEO:48.85299;2.36885
-SUMMARY:{{ "Terminabsage:"|trans }} {{ process.id }}
+SUMMARY:{{ "Terminabsage:"|trans }} {{ process.displayNumber }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
