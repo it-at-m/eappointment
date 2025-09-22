@@ -143,12 +143,13 @@ class NotificationTest extends EntityCommonTests
         $process = (new \BO\Zmsentities\Process())->getExample();
         $process['queue']['withAppointment'] = 1;
         $process['id'] = 4567;
+        $process['displayNumber'] = 'T4567';
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 
         $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'appointment');
         $this->assertStringContainsString(
-            'Ihr Termin: Vorgangsnr. 4567',
+            'Ihr Termin: Vorgangsnr. T4567',
             $resolvedEntity['message'],
             'resolving entity failed'
         );
