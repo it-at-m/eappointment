@@ -78,7 +78,7 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
   padding-bottom: 16px;
 }
 
-.m-button-group .m-button {
+:deep(.m-intro-vertical__title) {
   margin-bottom: 0 !important;
 }
 </style>
