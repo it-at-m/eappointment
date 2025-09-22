@@ -1,64 +1,62 @@
 <template>
-  <div class="overview-margin">
-    <div class="container">
-      <h2
-        tabindex="0"
-        style="display: flex; align-items: center; margin-bottom: 24px"
+  <div class="container">
+    <h2
+      tabindex="0"
+      style="display: flex; align-items: center; margin-bottom: 24px"
+    >
+      <muc-icon
+        style="width: 32px; height: 32px; margin-right: 8px"
+        icon="calendar"
+      />
+      {{ t("upcomingAppointments") }} ({{ appointments.length }})
+    </h2>
+    <error-alert
+      v-if="loadingError"
+      :message="t('apiErrorLoadingAppointmentsText')"
+      :header="t('apiErrorLoadingAppointmentsHeader')"
+    >
+      <muc-button
+        icon="arrow-right"
+        @onclick="goToOverviewLink"
       >
-        <muc-icon
-          style="width: 32px; height: 32px; margin-right: 8px"
-          icon="calendar"
-        />
-        {{ t("upcomingAppointments") }} ({{ appointments.length }})
-      </h2>
-      <error-alert
-        v-if="loadingError"
-        :message="t('apiErrorLoadingAppointmentsText')"
-        :header="t('apiErrorLoadingAppointmentsHeader')"
+        {{ t("buttonBackToOverview") }}
+      </muc-button>
+    </error-alert>
+    <div v-else>
+      <muc-card-container
+        v-if="loading"
+        class="appointment-card-container"
       >
-        <muc-button
-          icon="arrow-right"
-          @onclick="goToOverviewLink"
+        <skeleton-loader
+          v-for="elem in [1, 2, 3, 4]"
+          :key="elem"
         >
-          {{ t("buttonBackToOverview") }}
-        </muc-button>
-      </error-alert>
-      <div v-else>
-        <muc-card-container
-          v-if="loading"
-          class="appointment-card-container"
+        </skeleton-loader>
+      </muc-card-container>
+      <muc-card-container
+        v-else
+        class="appointment-card-container"
+      >
+        <appointment-card
+          v-for="(appointment, index) in appointments"
+          :key="index"
+          :appointment="appointment"
+          :appointment-detail-url="appointmentDetailUrl"
+          :offices="offices"
+          :t="t"
+          tabindex="0"
         >
-          <skeleton-loader
-            v-for="elem in [1, 2, 3, 4]"
-            :key="elem"
-          >
-          </skeleton-loader>
-        </muc-card-container>
-        <muc-card-container
-          v-else
-          class="appointment-card-container"
+        </appointment-card>
+        <add-appointment-card
+          :title="t('newAppointmentTitle')"
+          :new-appointment-url="newAppointmentUrl"
+          :t="t"
         >
-          <appointment-card
-            v-for="(appointment, index) in appointments"
-            :key="index"
-            :appointment="appointment"
-            :appointment-detail-url="appointmentDetailUrl"
-            :offices="offices"
-            :t="t"
-            tabindex="0"
-          >
-          </appointment-card>
-          <add-appointment-card
-            :title="t('newAppointmentTitle')"
-            :new-appointment-url="newAppointmentUrl"
-            :t="t"
-          >
-            <template #content>
-              <add-appointment-svg />
-            </template>
-          </add-appointment-card>
-        </muc-card-container>
-      </div>
+          <template #content>
+            <add-appointment-svg />
+          </template>
+        </add-appointment-card>
+      </muc-card-container>
     </div>
   </div>
 </template>
@@ -119,11 +117,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Margin on overview page */
-.overview-margin {
-  margin-top: 32px;
-}
-
 .m-button {
   margin-bottom: 0 !important;
 }
@@ -137,10 +130,6 @@ onMounted(() => {
 }
 
 @media (min-width: 768px) {
-  .overview-margin {
-    margin-top: 48px;
-  }
-
   .appointment-card-container {
     grid-template-columns: repeat(auto-fit, 589px);
   }

@@ -70,6 +70,12 @@ registerAuthenticationHook(
 }
 
 main {
-  padding-bottom: 32px;
+  margin: 32px 0;
+}
+
+@media (min-width: 768px) {
+  main {
+    margin: 48px 0;
+  }
 }
 </style>
