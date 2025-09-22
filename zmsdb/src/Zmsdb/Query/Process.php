@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsdb\Scope as ScopeEntity;
+
 /**
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
@@ -306,12 +308,14 @@ class Process extends Base implements MappingInterface
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
             'queue__lastCallTime' => 'process.Timestamp',
-            'queue__number' => self::expression(
-                'IF(`process`.`wartenummer`,
-                    `process`.`wartenummer`,
-                    `process`.`BuergerID`
-                )'
-            ),
+            'queue__number' => 'process.displayNumber',
+            'displayNumber' => 'process.displayNumber',
+                //self::expression(
+                //'IF(`process`.`wartenummer`,
+                //    `process`.`wartenummer`,
+                //    `process`.`BuergerID`
+                //)'
+            //),
             'queue__destination' => self::expression(
                 'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
@@ -759,6 +763,7 @@ class Process extends Base implements MappingInterface
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
+            'displayNumber' => $parentProcess === 0 ? $this->getNewDisplayNumber($process) : null,
             'wartenummer' => $process->queue['number']
         ];
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
@@ -766,6 +771,25 @@ class Process extends Base implements MappingInterface
         }
         $this->addValues($values);
     }
+
+    public function getNewDisplayNumber($process)
+    {
+        if ($process->queue['number']) {
+            return $process->queue['number'];
+        }
+
+        if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
+            return $process->id;
+        }
+
+        return $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
+            (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+
 
     public function addValuesUpdateProcess(
         \BO\Zmsentities\Process $process,

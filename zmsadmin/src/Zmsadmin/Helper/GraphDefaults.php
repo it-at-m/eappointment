@@ -298,6 +298,7 @@ EOS;
     authKey
     priority
     id
+    displayNumber
     status
     createTimestamp
     timeoutTime

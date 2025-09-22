@@ -79,7 +79,7 @@ class Log extends Base
         $data = json_encode(array_filter([
             'Aktion' => $action,
             "Sachbearbeiter*in" => $userAccount ? $userAccount->getId() : '',
-            "Terminnummer" => $process->getId(),
+            "Terminnummer" => $process->getDisplayNumber(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
             "Bürger*in" => $process->getFirstClient()->familyName,
             "Dienstleistung/en" => implode(', ', array_map(function ($request) {

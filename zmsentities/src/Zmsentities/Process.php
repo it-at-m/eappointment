@@ -51,6 +51,7 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
+            'displayNumber' => '',
             'dbstatus' => 'free',
             'lastChange' => time(),
             'wasMissed' => false,
@@ -91,6 +92,11 @@ class Process extends Schema\Entity
     public function getRequestIds()
     {
         return $this->getRequests()->getIds();
+    }
+
+    public function getDisplayNumber()
+    {
+        return $this->displayNumber;
     }
 
     public function getRequestCSV()
@@ -584,7 +590,7 @@ class Process extends Schema\Entity
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
         $queue->wayTime = ($queue->wayTime) ? $queue->wayTime : 0;
         if ($queue->withAppointment) {
-            $queue->number = $this->id;
+            $queue->number = $this->getDisplayNumber() ?? $this->id;
         } else {
             $queue->number = $this->toProperty()->queue->number->get();
         }
@@ -705,7 +711,7 @@ class Process extends Schema\Entity
     public function __toString()
     {
         $string = "process#";
-        $string .= $this->id ?: $this->archiveId;
+        $string .= $this->getDisplayNumber() ?: $this->id ?: $this->archiveId;
         $string .= ":" . $this->authKey;
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');

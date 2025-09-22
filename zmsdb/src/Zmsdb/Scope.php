@@ -262,6 +262,17 @@ class Scope extends Base
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
 
+    public function readDisplayNumberUpdated($scopeId)
+    {
+        $this->perform(
+            (new Query\Scope(Query\Base::SELECT))->getQueryLastDisplayNumber(),
+            ['scope_id' => $scopeId]
+        );
+        $entity = $this->readEntity($scopeId, 0, true)->incrementDisplayNumber();
+        $scope = $this->updateEntity($scopeId, $entity);
+        return $scope->getStatus('queue', 'lastDisplayNumber');
+    }
+
     /**
      * get last given waitingnumer and return updated (+1) waitingnumber
      *
