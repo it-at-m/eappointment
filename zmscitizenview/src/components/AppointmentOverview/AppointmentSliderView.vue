@@ -142,7 +142,7 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* Padding on overview page */
+/* Margin on overview page */
 .overview-margin {
   margin-top: 40px;
   margin-bottom: 48px;
