@@ -95,14 +95,14 @@ class CalculateSlots
         $this->readForceVerbose();
         $this->log("Calculate with time " . $now->format('c'));
         if ($this->readCalculateSkip()) {
-            //$this->log("Skip calculation due to config setting status.calculateSlotsSkip");
-            //return false;
+            $this->log("Skip calculation due to config setting status.calculateSlotsSkip");
+            return false;
         }
         $startTimestamp = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastStart', true);
         $updateTimestamp = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastRun', false);
         if ($startTimestamp > $updateTimestamp && ((strtotime($startTimestamp) + (60 * 15)) > $now->getTimestamp())) {
-            //$this->log("Skip calculation, last start on $startTimestamp is not yet finished, waiting 15 minutes.");
-            //return false;
+            $this->log("Skip calculation, last start on $startTimestamp is not yet finished, waiting 15 minutes.");
+            return false;
         }
         (new \BO\Zmsdb\Config())->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         \BO\Zmsdb\Connection\Select::writeCommit();
