@@ -149,6 +149,7 @@ class MessagingTest extends Base
     protected static function getExampleProcessList()
     {
         $mainProcess = Process::getExample();
+        $mainProcess->displayNumber = '123';
         $process2 = Process::getExample();
         $process2->id = 234567;
         $client = $process2->getFirstClient();
