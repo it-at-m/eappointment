@@ -69,7 +69,7 @@
         "createIP": "127.0.0.1",
         "createTimestamp": "1452163726",
         "id": "82252",
-        "displayNumber": "6",
+        "displayNumber": "82252",
         "archiveId": 0,
         "queue": {
             "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
