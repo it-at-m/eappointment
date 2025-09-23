@@ -51,11 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  MucButton,
-  MucIntro,
-  MucLink,
-} from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucIntro, MucLink } from "@muenchen/muc-patternlab-vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
