@@ -104,7 +104,7 @@ class ReportClientIndex extends BaseController
                 'menuActive' => 'client',
                 'department' => $this->department,
                 'organisation' => $this->organisation,
-                'clientperiod' => $clientPeriod,
+                'clientPeriod' => $clientPeriod,
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
                 'dateRange' => $dateRange,
