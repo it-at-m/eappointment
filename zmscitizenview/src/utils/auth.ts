@@ -1,4 +1,5 @@
 import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
+import AuthorizationEventDetails from "@/types/AuthorizationEventDetails";
 
 const ACCESS_TOKEN_NAME = "appointment-access-token";
 
@@ -29,9 +30,9 @@ export function registerAuthenticationHook(
     loginCallback(currentAccessToken);
   }
   useDBSLoginWebcomponentPlugin(
-    (accessToken: string) => {
-      localStorage.setItem(ACCESS_TOKEN_NAME, accessToken);
-      loginCallback(accessToken);
+    (authEventDetails: AuthorizationEventDetails) => {
+      localStorage.setItem(ACCESS_TOKEN_NAME, authEventDetails.accessToken);
+      loginCallback(authEventDetails.accessToken);
     },
     () => {
       localStorage.removeItem(ACCESS_TOKEN_NAME);
