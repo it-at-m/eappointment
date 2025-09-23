@@ -87,6 +87,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateEntityDisplayNumber(Entity $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process['id']);
+        $query->addConditionAuthKey($process['authKey']);
+
         $process->displayNumber = $query->getNewDisplayNumber($process);
         $query->addValueDisplayNumber($process);
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
