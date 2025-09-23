@@ -59,7 +59,7 @@
           background-color: var(--color-neutrals-blue-xlight);
         "
       >
-        <h4 tabindex="0">{{ formatDay(selectedDay) }}</h4>
+        <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
       </div>
 
       <div
@@ -89,7 +89,7 @@
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
-            <AppointmentLayout
+            <TimeSlotGrid
               v-if="
                 timeslot == currentHour ||
                 providersWithAppointments.length === 1
@@ -104,7 +104,6 @@
               :showLocationTitle="(selectableProviders?.length || 0) > 1"
               :officeNameById="officeNameById"
               :isSlotSelected="isSlotSelected"
-              :formatTime="formatTime"
               @selectTimeSlot="$emit('selectTimeSlot', $event)"
             />
           </template>
@@ -191,7 +190,7 @@
           background-color: var(--color-neutrals-blue-xlight);
         "
       >
-        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+        <b tabindex="0">{{ formatDayFromDate(selectedDay) }}</b>
       </div>
 
       <div
@@ -220,7 +219,7 @@
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
-            <AppointmentLayout
+            <TimeSlotGrid
               v-if="
                 timeslot == currentDayPart ||
                 providersWithAppointments.length === 1
@@ -231,7 +230,6 @@
               :showLocationTitle="(selectableProviders?.length || 0) > 1"
               :officeNameById="officeNameById"
               :isSlotSelected="isSlotSelected"
-              :formatTime="formatTime"
               @selectTimeSlot="$emit('selectTimeSlot', $event)"
             />
           </template>
@@ -282,7 +280,13 @@ import { MucButton, MucCalendar } from "@muenchen/muc-patternlab-vue";
 import { computed, nextTick, ref, watch } from "vue";
 
 import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
-import AppointmentLayout from "./AppointmentLayout.vue";
+import {
+  berlinHourFormatter,
+  convertDateToString,
+  formatDayFromDate,
+  formatTimeFromUnix,
+} from "@/utils/formatAppointmentDateTime";
+import TimeSlotGrid from "./TimeSlotGrid.vue";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -315,8 +319,6 @@ const props = defineProps<{
   availabilityInfoHtml: string | null;
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
-  formatTime: (time: number) => string;
-  formatDay: (date: Date) => string | undefined;
 }>();
 
 const emit = defineEmits<{

@@ -30,7 +30,7 @@
             :variant="isSlotSelected(officeId, time) ? 'primary' : 'secondary'"
             @click="$emit('selectTimeSlot', { officeId, time })"
           >
-            <template #default>{{ formatTime(time) }}</template>
+            <template #default>{{ formatTimeFromUnix(time) }}</template>
           </muc-button>
         </div>
       </div>
@@ -41,6 +41,8 @@
 <script setup lang="ts">
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 
+import { formatTimeFromUnix } from "@/utils/formatAppointmentDateTime";
+
 const props = defineProps<{
   officeId: number | string;
   times: number[];
@@ -48,7 +50,6 @@ const props = defineProps<{
   showLocationTitle: boolean;
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
-  formatTime: (time: number) => string;
 }>();
 
 defineEmits<{

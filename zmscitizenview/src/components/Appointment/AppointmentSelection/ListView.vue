@@ -103,7 +103,7 @@
                       v-for="(hourRow, hIndex) in day.hourRows"
                       :key="hIndex"
                     >
-                      <AppointmentLayout
+                      <TimeSlotGrid
                         v-if="
                           hourRow.hour ===
                             getCurrentHourForDay(day.dateString) ||
@@ -124,7 +124,6 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
-                        :formatTime="formatTime"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
                     </template>
@@ -175,7 +174,7 @@
                       v-for="(partRow, pIndex) in day.dayPartRows"
                       :key="pIndex"
                     >
-                      <AppointmentLayout
+                      <TimeSlotGrid
                         v-if="
                           partRow.part ===
                             getCurrentDayPartForDay(day.dateString) ||
@@ -196,7 +195,6 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
-                        :formatTime="formatTime"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
                     </template>
@@ -271,7 +269,7 @@ import {
   formatterWeekday,
   formatTimeFromUnix,
 } from "@/utils/formatAppointmentDateTime";
-import AppointmentLayout from "./AppointmentLayout.vue";
+import TimeSlotGrid from "./TimeSlotGrid.vue";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -282,7 +280,6 @@ const props = defineProps<{
   providersWithAppointments: OfficeImpl[];
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
-  formatTime: (time: number) => string;
   // New raw data to compute firstFiveAvailableDays inside this component
   availableDays:
     | Array<{ time: string | number; providerIDs: string }>
@@ -312,7 +309,6 @@ const emit = defineEmits<{
 const t = props.t;
 const officeNameById = props.officeNameById;
 const isSlotSelected = props.isSlotSelected;
-const formatTime = props.formatTime as (time: number) => string;
 
 const daysToShow = ref(5);
 const localOpenAccordionDate = ref<string | null>(null);

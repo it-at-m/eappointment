@@ -1,5 +1,5 @@
 <template>
-  <div class="view-toggle-container">
+  <div class="calendar-list-toggle-container">
     <h2 tabindex="0">{{ t("time") }}</h2>
     <div
       class="m-toggle-switch"
@@ -47,7 +47,7 @@ const toggleView = () => {
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
 
-.view-toggle-container {
+.calendar-list-toggle-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -58,7 +58,7 @@ const toggleView = () => {
 
 /* Responsive layout: on larger screens, display toggle to the right of heading */
 @include xs-up {
-  .view-toggle-container {
+  .calendar-list-toggle-container {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;

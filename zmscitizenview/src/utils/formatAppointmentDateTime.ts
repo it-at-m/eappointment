@@ -2,14 +2,14 @@ const formatterDate = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
   weekday: "long",
   year: "numeric",
-  month: "numeric",
-  day: "numeric",
+  month: "2-digit",
+  day: "2-digit",
 });
 
 const formatterTime = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
-  hour: "numeric",
-  minute: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
   hour12: false,
 });
 

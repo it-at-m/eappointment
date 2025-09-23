@@ -21,7 +21,8 @@
           <b>{{ t("time") }}</b>
           <br />
           <p class="m-teaser-contained-contact__detail">
-            {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
+            {{ formatDayFromDate(selectedDay) }},
+            {{ formatTimeFromUnix(selectedTimeslot) }}
             {{ t("clock") }}
             <br />
             {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
@@ -54,6 +55,10 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import {
+  formatDayFromDate,
+  formatTimeFromUnix,
+} from "@/utils/formatAppointmentDateTime";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
@@ -61,8 +66,6 @@ const props = defineProps<{
   selectedProvider: OfficeImpl | null | undefined;
   selectedDay: Date | undefined;
   selectedTimeslot: number;
-  formatDay: (date: Date) => string | undefined;
-  formatTime: (time: number) => string;
   selectedService: any;
 }>();
 

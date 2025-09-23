@@ -154,7 +154,6 @@ import {
 } from "@/utils/Constants";
 import {
   createErrorStates,
-  getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
 

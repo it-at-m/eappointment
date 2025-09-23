@@ -325,7 +325,7 @@ import {
   reserveAppointment,
   updateAppointment,
 } from "@/api/ZMSAppointmentAPI";
-import AppointmentSelectionView from "@/components/Appointment/AppointmentSelectionView.vue";
+import AppointmentSelection from "@/components/Appointment/AppointmentSelection.vue";
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
