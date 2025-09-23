@@ -85,11 +85,11 @@ class ReportRequestService
         try {
             $years = $this->getYearsForDateRange($fromDate, $toDate);
             $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
-            
+
             if (empty($combinedData['data'])) {
                 return null;
             }
-            
+
             $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
 
             if (empty($filteredData)) {
