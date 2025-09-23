@@ -102,7 +102,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $result = $captcha->createChallenge();
 
         $this->assertFalse($result['meta']['success']);
-        $this->assertStringContainsString('Fehler beim Dekodieren', $result['meta']['error']);
+        $this->assertStringContainsString('Error decoding the JSON response', $result['meta']['error']);
         $this->assertNull($result['data']);
     }
 
@@ -129,7 +129,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $result = $captcha->createChallenge();
 
         $this->assertFalse($result['meta']['success']);
-        $this->assertStringContainsString('Challenge-Daten fehlen', $result['meta']['error']);
+        $this->assertStringContainsString('Missing challenge data', $result['meta']['error']);
         $this->assertNull($result['data']);
     }
 

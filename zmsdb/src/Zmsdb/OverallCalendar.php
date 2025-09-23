@@ -190,9 +190,139 @@ class OverallCalendar extends Base
 
     public function unbook(int $scopeId, int $processId): void
     {
-        $this->perform(Calender::UNBOOK_PROCESS, [
-            'scope_id' => $scopeId,
-            'process_id' => $processId,
+        $row = $this->fetchRow('
+        SELECT
+          MIN(time) AS start_ts,
+          MAX(time) AS end_ts,
+          COUNT(*)  AS units
+        FROM gesamtkalender
+        WHERE scope_id=:scope AND process_id=:pid
+    ', ['scope' => $scopeId,'pid' => $processId]);
+
+        if (!$row || !$row['start_ts']) {
+            \App::$log->warning('calendar.unbook.no_rows', [
+                'scope_id' => $scopeId, 'process_id' => $processId
+            ]);
+            return;
+        }
+
+        $start = new \DateTimeImmutable($row['start_ts']);
+        $end   = (new \DateTimeImmutable($row['end_ts']))->modify('+5 minutes');
+        $slotUnits = (int)$row['units'];
+
+        $seatByPid = $this->fetchAll('
+        SELECT seat, COUNT(*) AS cnt
+          FROM gesamtkalender
+         WHERE scope_id=:scope AND process_id=:pid
+         GROUP BY seat ORDER BY seat
+    ', ['scope' => $scopeId,'pid' => $processId]);
+
+        $windowBefore = $this->fetchRow('
+        SELECT
+          SUM(status="free")      AS free_cnt,
+          SUM(status="cancelled") AS cancelled_cnt,
+          SUM(status="termin")    AS termin_cnt
+        FROM gesamtkalender
+        WHERE scope_id=:scope AND time>=:start AND time<:end
+    ', ['scope' => $scopeId,'start' => $start->format('Y-m-d H:i:s'),'end' => $end->format('Y-m-d H:i:s')])
+            ?? ['free_cnt' => 0,'cancelled_cnt' => 0,'termin_cnt' => 0];
+
+        $availabilityDetails = $this->fetchAll('
+        SELECT DISTINCT
+               g.availability_id,
+               a.OeffnungszeitID,
+               a.Startdatum, a.Endedatum,
+               a.Anfangszeit, a.Terminanfangszeit,
+               a.Endzeit, a.Terminendzeit,
+               a.Timeslot,
+               a.Anzahlarbeitsplaetze,
+               a.Anzahlterminarbeitsplaetze
+          FROM gesamtkalender g
+          LEFT JOIN oeffnungszeit a ON a.OeffnungszeitID = g.availability_id
+         WHERE g.scope_id=:scope AND g.process_id=:pid
+    ', ['scope' => $scopeId,'pid' => $processId]);
+
+        $reasonHint = 'freed';
+        foreach ($availabilityDetails as $a) {
+            if ($a['OeffnungszeitID'] === null) {
+                $reasonHint = 'missing_availability';
+                break;
+            }
+            if ($a['Endedatum'] < date('Y-m-d')) {
+                $reasonHint = 'availability_ended';
+                break;
+            }
+        }
+
+        \App::$log->info('calendar.unbook.attempt', [
+            'scope_id'       => $scopeId,
+            'process_id'     => $processId,
+            'window'         => ['from' => $start->format('Y-m-d H:i:s'),'until' => $end->format('Y-m-d H:i:s')],
+            'slot_units'     => $slotUnits,
+            'seat_by_pid'    => $seatByPid,
+            'window_before'  => $windowBefore,
+            'availability'   => $availabilityDetails,
+            'reason_hint'    => $reasonHint,
+        ]);
+
+        $affected = 0;
+        try {
+            $affected = (int)$this->perform(Calender::UNBOOK_PROCESS, [
+                'scope_id'   => $scopeId,
+                'process_id' => $processId,
+            ]);
+        } catch (\PDOException $e) {
+            \App::$log->critical('calendar.unbook.update_failed', [
+                'scope_id' => $scopeId, 'process_id' => $processId, 'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+
+        $windowAfter = $this->fetchRow('
+        SELECT
+          SUM(status="free")      AS free_cnt,
+          SUM(status="cancelled") AS cancelled_cnt,
+          SUM(status="termin")    AS termin_cnt
+        FROM gesamtkalender
+        WHERE scope_id=:scope AND time>=:start AND time<:end
+    ', ['scope' => $scopeId,'start' => $start->format('Y-m-d H:i:s'),'end' => $end->format('Y-m-d H:i:s')])
+            ?? ['free_cnt' => 0,'cancelled_cnt' => 0,'termin_cnt' => 0];
+
+        $statusBySeat = $this->fetchAll('
+        SELECT seat, status, COUNT(*) AS cnt
+          FROM gesamtkalender
+         WHERE scope_id=:scope AND time>=:start AND time<:end
+         GROUP BY seat, status
+         ORDER BY seat, status
+    ', ['scope' => $scopeId,'start' => $start->format('Y-m-d H:i:s'),'end' => $end->format('Y-m-d H:i:s')]);
+
+        $reason = 'freed';
+        $reasonRow = $this->fetchRow('
+        SELECT g.seat, g.availability_id,
+               a.OeffnungszeitID, a.Endedatum, IFNULL(a.Anzahlterminarbeitsplaetze,1) AS cap
+          FROM gesamtkalender g
+          LEFT JOIN oeffnungszeit a ON a.OeffnungszeitID = g.availability_id
+         WHERE g.scope_id=:scope AND g.time>=:start AND g.time<:end
+         LIMIT 1
+    ', ['scope' => $scopeId,'start' => $start->format('Y-m-d H:i:s'),'end' => $end->format('Y-m-d H:i:s')]);
+
+        if ($reasonRow) {
+            if ($reasonRow['OeffnungszeitID'] === null) {
+                $reason = 'missing_availability';
+            } elseif ($reasonRow['Endedatum'] < date('Y-m-d')) {
+                $reason = 'availability_ended';
+            } elseif ($reasonRow['seat'] > (int)$reasonRow['cap']) {
+                $reason = 'seat_over_capacity';
+            }
+        }
+
+        \App::$log->info('calendar.unbook.result', [
+            'scope_id'      => $scopeId,
+            'process_id'    => $processId,
+            'affected'      => $affected,
+            'window_after'  => $windowAfter,
+            'status_by_seat' => $statusBySeat,
+            'reason'        => $reason,
         ]);
     }
 
