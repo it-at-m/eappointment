@@ -44,7 +44,7 @@ $logger = new LoggerService();
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
-//App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSizeLimitMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\IpFilterMiddleware($logger));
