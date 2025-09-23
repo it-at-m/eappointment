@@ -8,6 +8,7 @@
 namespace BO\Zmsstatistic\Service;
 
 use BO\Zmsentities\Day;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use DateTime;
 use Exception;
 
@@ -22,39 +23,6 @@ class ReportClientService
         'missednoappointment',
         'requestscount'
     ];
-
-    /**
-     * Extract selected scope IDs from request parameters
-     */
-    public function extractSelectedScopes(array $scopes): array
-    {
-        if (!empty($scopes)) {
-            $validScopes = array_filter($scopes, function ($scopeId) {
-                return is_numeric($scopeId) && $scopeId > 0;
-            });
-
-            if (!empty($validScopes)) {
-                return array_map('intval', $validScopes);
-            }
-        }
-
-        return [];
-    }
-
-    /**
-     * Extract and validate date range from request parameters
-     */
-    public function extractDateRange(?string $fromDate, ?string $toDate): ?array
-    {
-        if ($fromDate && $toDate && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)) {
-            return [
-                'from' => $fromDate,
-                'to' => $toDate
-            ];
-        }
-
-        return null;
-    }
 
     /**
      * Get exchange client data based on date range or period
@@ -82,7 +50,8 @@ class ReportClientService
         $toDate = $dateRange['to'];
 
         try {
-            $years = $this->getYearsForDateRange($fromDate, $toDate);
+            $reportHelper = new ReportHelper();
+            $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
             $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
 
             if (empty($combinedData['data'])) {
@@ -129,22 +98,6 @@ class ReportClientService
         } catch (Exception $exception) {
             return null;
         }
-    }
-
-    /**
-     * Get all years that need to be fetched for a date range
-     */
-    private function getYearsForDateRange(string $fromDate, string $toDate): array
-    {
-        $fromYear = (int) substr($fromDate, 0, 4);
-        $toYear = (int) substr($toDate, 0, 4);
-
-        $years = [];
-        for ($year = $fromYear; $year <= $toYear; $year++) {
-            $years[] = $year;
-        }
-
-        return $years;
     }
 
     /**
@@ -228,19 +181,6 @@ class ReportClientService
         }
 
         return $exchangeClient->toHashed();
-    }
-
-    /**
-     * Validate if the given string is a valid date format (YYYY-MM-DD)
-     */
-    public function isValidDateFormat(string $date): bool
-    {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-            return false;
-        }
-
-        $dateTime = DateTime::createFromFormat('Y-m-d', $date);
-        return $dateTime && $dateTime->format('Y-m-d') === $date;
     }
 
     /**
