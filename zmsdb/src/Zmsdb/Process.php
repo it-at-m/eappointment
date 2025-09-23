@@ -602,7 +602,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             return false;
         }
 
-        $displayNumberPrefix = $process->getCurrentScope()->getPreference('queue', 'displayNumberPrefix');
+        $displayNumberPrefix = $process->scope->getPreference('queue', 'displayNumberPrefix');
         if (empty($displayNumberPrefix)) {
             return false;
         }
