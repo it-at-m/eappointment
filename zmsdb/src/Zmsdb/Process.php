@@ -93,7 +93,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $this->writeItem($query);
         }
 
-        Log::writeProcessLog("UPDATE (updateEntityDisplayNumber) $process ", Log::ACTION_EDITED, $process, $useraccount);
+        Log::writeProcessLog("UPDATE (updateEntityDisplayNumber) $process ", Log::ACTION_EDITED, $process);
         return $process;
     }
 
