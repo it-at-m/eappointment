@@ -25,19 +25,25 @@ class Service extends Entity implements JsonSerializable
     public ?int $maxQuantity = null;
 /** @var Combinable */
     public ?Combinable $combinable = null;
+    public ?int $parentId = null;
+    public ?int $variantId = null;
 /**
      * Constructor.
      *
      * @param int $id
      * @param string $name
      * @param int|null $maxQuantity
-     */
-    public function __construct(int $id, string $name, ?int $maxQuantity = null, ?Combinable $combinable = null)
+     * @param int|null $parentId
+     * @param int|null $variantId
+ */
+    public function __construct(int $id, string $name, ?int $maxQuantity = null, ?Combinable $combinable = null, ?int $parentId = null, ?int $variantId = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->maxQuantity = $maxQuantity;
         $this->combinable = $combinable;
+        $this->parentId = $parentId;
+        $this->variantId = $variantId;
         $this->ensureValid();
     }
 
@@ -59,7 +65,9 @@ class Service extends Entity implements JsonSerializable
             'id'          => $this->id,
             'name'        => $this->name,
             'maxQuantity' => $this->maxQuantity,
-            'combinable' => $this->combinable
+            'combinable' => $this->combinable,
+            'parent_id'   => $this->parentId,
+            'variant_id'  => $this->variantId
         ];
     }
 

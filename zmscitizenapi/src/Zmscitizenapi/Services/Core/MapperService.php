@@ -34,21 +34,38 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
-    {
-        if (!$scopes) {
-            return new ThinnedScope();
-        }
-
-        $matchingScope = new ThinnedScope();
+    public static function mapScopeForProvider(
+        int $providerId,
+        ThinnedScopeList $scopes,
+        ?string $providerSource = null
+    ): ?ThinnedScope {
         foreach ($scopes->getScopes() as $scope) {
-            if ($scope->provider && $scope->provider->id === $providerId) {
-                $matchingScope = $scope;
-                break;
+            if (!$scope instanceof ThinnedScope) {
+                continue;
+            }
+
+            $prov = $scope->provider ?? null;
+            if (!$prov) {
+                continue;
+            }
+
+            $provId  = is_object($prov) ? ($prov->id   ?? null) : ($prov['id']    ?? null);
+            $provSrc = is_object($prov) ? ($prov->source ?? null) : ($prov['source'] ?? null);
+
+            if ((string)$provId !== (string)$providerId) {
+                continue;
+            }
+
+            if ($providerSource === null || $providerSource === '') {
+                return $scope;
+            }
+
+            if ((string)$provSrc === (string)$providerSource) {
+                return $scope;
             }
         }
 
-        return $matchingScope;
+        return null;
     }
 
     public static function extractReservationDuration(Scope|ThinnedScope|null $scope): ?int
@@ -89,6 +106,7 @@ class MapperService
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract mapping logic into specialized mapper classes for each entity type
+     *
      */
     public static function mapOfficesWithScope(ProviderList $providerList, bool $showUnpublished = false): OfficeList
     {
@@ -99,7 +117,16 @@ class MapperService
         }
 
         foreach ($providerList as $provider) {
-            $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
+            // ✅ Source normalisieren: leerer String -> Fallback auf App::$source_name
+            $providerSource = isset($provider->source) && $provider->source !== ''
+                ? (string)$provider->source
+                : (string)\App::$source_name;
+
+            $providerScope = self::mapScopeForProvider(
+                (int) $provider->id,
+                $scopes,
+                $providerSource
+            );
 
             if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
                 continue;
@@ -144,7 +171,8 @@ class MapperService
                     activationDuration: self::extractActivationDuration($providerScope),
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
-                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
+                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
             );
         }
 
@@ -162,6 +190,7 @@ class MapperService
      * @param RequestList $requestList
      * @param RequestRelationList $relationList
      * @return ServiceList
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function mapServicesWithCombinations(
         RequestList $requestList,
@@ -207,8 +236,12 @@ class MapperService
 
             $combinable = self::mapCombinable($serviceCombinations);
 
+            $extra = $service->getAdditionalData() ?? [];
+            $parentId  = isset($service->parent_id)  ? (int)$service->parent_id  : (isset($extra['parent_id'])  ? (int)$extra['parent_id']  : null);
+            $variantId = isset($service->variant_id) ? (int)$service->variant_id : (isset($extra['variant_id']) ? (int)$extra['variant_id'] : null);
+
             if (!empty($servicesProviderIds[$service->getId()])) {
-                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable());
+                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable(), parentId: $parentId, variantId: $variantId);
             }
         }
 
@@ -407,10 +440,11 @@ class MapperService
     {
         $scope = new Scope();
         if ($thinnedProcess->scope) {
-            $scope->id = $thinnedProcess->scope->id;
-            $scope->source = \App::$source_name;
+            $providerSource = $thinnedProcess->scope->provider->source ?? 'dldb';
 
-            // Set preferences as array structure
+            $scope->id = $thinnedProcess->scope->id;
+            $scope->source = $providerSource;
+
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
@@ -449,7 +483,8 @@ class MapperService
                     $scope->provider->contact->streetNumber = $provider->contact->streetNumber ?? null;
                 }
             }
-            $scope->provider->source = \App::$source_name;
+
+            $scope->provider->source = $thinnedProcess->scope->provider->source ?? null;
         }
 
         return $scope;
@@ -457,6 +492,8 @@ class MapperService
 
     private static function createRequests(ThinnedProcess $thinnedProcess): array
     {
+        $providerSource = $thinnedProcess->scope->provider->source ?? 'dldb';
+
         $requests = [];
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceName = $thinnedProcess->serviceName ?? null;
@@ -466,16 +503,20 @@ class MapperService
             $request = new Request();
             $request->id = $mainServiceId;
             $request->name = $mainServiceName;
-            $request->source = \App::$source_name;
+            $request->source = $providerSource;
             $requests[] = $request;
         }
 
         foreach ($thinnedProcess->subRequestCounts ?? [] as $subRequest) {
-            for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
+            $subId = $subRequest['id'] ?? null;
+            $subName = $subRequest['name'] ?? null;
+            $count = (int)($subRequest['count'] ?? 0);
+
+            for ($i = 0; $i < $count; $i++) {
                 $request = new Request();
-                $request->id = $subRequest['id'];
-                $request->name = $subRequest['name'];
-                $request->source = \App::$source_name;
+                $request->id = $subId;
+                $request->name = $subName;
+                $request->source = $providerSource;
                 $requests[] = $request;
             }
         }

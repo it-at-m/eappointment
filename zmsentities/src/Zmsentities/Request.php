@@ -73,7 +73,7 @@ class Request extends Schema\Entity
 
     public function getVariantId()
     {
-        return $this->toProperty()->variant_id->get();  // ⬅️ neu
+        return $this->toProperty()->variant_id->get();
     }
 
     public function __toString()
