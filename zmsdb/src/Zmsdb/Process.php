@@ -589,15 +589,19 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
 
         /** @var Entity $process */
-        if ($this->shouldUpdateDisplayNumber($process)) {
+        if ($this->shouldUpdateDisplayNumber($process, $status)) {
             $this->updateEntityDisplayNumber($process);
         }
 
         return $process;
     }
 
-    public function shouldUpdateDisplayNumber(Entity $process): bool
+    public function shouldUpdateDisplayNumber(Entity $process, $status): bool
     {
+        if ($status !== 'preconfirmed') {
+            return false;
+        }
+
         $displayNumberPrefix = $process->scope->getPreference('queue', 'displayNumberPrefix');
         if (empty($displayNumberPrefix)) {
             return false;

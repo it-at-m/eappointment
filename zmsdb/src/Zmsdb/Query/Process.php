@@ -770,7 +770,9 @@ class Process extends Base implements MappingInterface
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
-            'displayNumber' => $parentProcess === 0 ? $this->getNewDisplayNumber($process) : null,
+            'displayNumber' => $parentProcess === 0 && empty($process->queue['number'])
+                ? $this->getNewDisplayNumber($process)
+                : null,
             'wartenummer' => $process->queue['number']
         ];
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
@@ -781,10 +783,6 @@ class Process extends Base implements MappingInterface
 
     public function getNewDisplayNumber($process)
     {
-        if ($process->queue['number']) {
-            return $process->queue['number'];
-        }
-
         if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
             return $process->id;
         }
