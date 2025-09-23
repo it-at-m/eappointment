@@ -31,7 +31,13 @@
         <div class="m-component__grid">
           <div class="m-component__column">
             <div class="m-content">
-              <h2 id="timeTitleElement" ref="timeTitleElement" tabindex="0">{{ t("time") }}</h2>
+              <h2
+                id="timeTitleElement"
+                ref="timeTitleElement"
+                tabindex="0"
+              >
+                {{ t("time") }}
+              </h2>
             </div>
             <div
               v-if="appointment"
@@ -52,7 +58,12 @@
               </p>
             </div>
             <div class="m-content">
-              <h2 ref="locationTitleElement" tabindex="0">{{ t("location") }}</h2>
+              <h2
+                ref="locationTitleElement"
+                tabindex="0"
+              >
+                {{ t("location") }}
+              </h2>
             </div>
             <div
               v-if="selectedProvider"
@@ -210,19 +221,24 @@ const goToAppointmentOverviewLink = () => {
 };
 
 const focusTimeTitle = () => {
-  if (timeTitleElement.value){
+  if (timeTitleElement.value) {
     timeTitleElement.value.focus();
-    timeTitleElement.value.scrollIntoView({ behavior: "smooth", block: "start" });
+    timeTitleElement.value.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 };
 
 const focusLocationTitle = () => {
   if (locationTitleElement.value) {
     locationTitleElement.value.focus();
-    locationTitleElement.value.scrollIntoView({ behavior: "smooth", block: "start" });
+    locationTitleElement.value.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 };
-
 
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
