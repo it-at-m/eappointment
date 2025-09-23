@@ -84,7 +84,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function updateEntityDisplayNumber(\BO\Zmsentities\Process $process)
+    public function updateEntityDisplayNumber(Entity $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $process->displayNumber = $query->getNewDisplayNumber($process);
@@ -588,6 +588,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
 
+        /** @var Entity $process */
         if ($this->shouldUpdateDisplayNumber($process, $status)) {
             $this->updateEntityDisplayNumber($process);
         }
@@ -595,7 +596,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function shouldUpdateDisplayNumber(Process $process, $status): bool
+    public function shouldUpdateDisplayNumber(Entity $process, $status): bool
     {
         if ($status !== Entity::STATUS_CONFIRMED) {
             return false;
