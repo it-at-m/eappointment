@@ -10,14 +10,22 @@
         {{ appointment.processId }}
       </p>
       <muc-link
-        :label="formatAppointmentDateTime(appointment.timestamp) + '' + t('timeStampSuffix')"
+        :label="
+          formatAppointmentDateTime(appointment.timestamp) +
+          '' +
+          t('timeStampSuffix')
+        "
         prepend-icon="calendar"
         @click.prevent="focusTime"
       />
       <br />
       <muc-link
         v-if="selectedProvider"
-        :label="selectedProvider.address.street + ' ' + selectedProvider.address.house_number"
+        :label="
+          selectedProvider.address.street +
+          ' ' +
+          selectedProvider.address.house_number
+        "
         prepend-icon="map-pin"
         @click.prevent="focusLocation"
       />
@@ -43,7 +51,12 @@
 </template>
 
 <script setup lang="ts">
-import {MucButton, MucIcon, MucIntro, MucLink} from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucIcon,
+  MucIntro,
+  MucLink,
+} from "@muenchen/muc-patternlab-vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -57,12 +70,15 @@ defineProps<{
 }>();
 
 const emit =
-  defineEmits<(
-    e: "cancelAppointment"
-      | "focusLocation"
-      | "focusTime"
-      | "rescheduleAppointment"
-  ) => void>();
+  defineEmits<
+    (
+      e:
+        | "cancelAppointment"
+        | "focusLocation"
+        | "focusTime"
+        | "rescheduleAppointment"
+    ) => void
+  >();
 
 const cancelAppointment = () => emit("cancelAppointment");
 const focusLocation = () => emit("focusLocation");
@@ -75,7 +91,8 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
   margin-bottom: 16px;
 }
 
-.appointment-data p, a {
+.appointment-data p,
+a {
   padding-bottom: 16px;
 }
 
