@@ -79,8 +79,7 @@ class Base extends \BO\Zmsstatistic\BaseController
                     return null;
                 }
             }
-        }
-        else {
+        } else {
             if (isset($args['organisation'])) {
                 $infoData[] = $args['organisation']['name'] ;
             }
