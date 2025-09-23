@@ -603,7 +603,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             return false;
         }
 
-        if (str_starts_with($process->getQueueNumber(), $displayNumberPrefix)) {
+        if (str_starts_with($process->getDisplayNumber(), $displayNumberPrefix)) {
             return false;
         }
 
