@@ -41,7 +41,7 @@ class RequestReport extends Base
         $this->writeInfoHeader($args, $download->getSpreadSheet());
         foreach ($args['reports'] as $report) {
             if ('month' == $report->period) {
-                $this->writeReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
+                $this->writeReport($report, $download->getSpreadSheet(), 'MMMM');
             } else {
                 $this->writeReport($report, $download->getSpreadSheet());
             }
@@ -53,8 +53,7 @@ class RequestReport extends Base
     public function writeReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        $datePatternCol1 = 'MMMM',
-        $datePatternCol2 = 'dd.MM.yyyy'
+        $datePatternCol = 'dd.MM.yyyy'
     ) {
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -63,13 +62,13 @@ class RequestReport extends Base
         $this->firstDayDate = $this->setDateTime($firstDay);
         $this->lastDayDate = $this->setDateTime($lastDay);
 
-        $this->writeHeader($report, $sheet, $datePatternCol1, $datePatternCol2);
-        $this->writeReportData($report, $sheet, $datePatternCol1, $datePatternCol2);
+        $this->writeHeader($report, $sheet, $datePatternCol);
+        $this->writeReportData($report, $sheet, $datePatternCol);
 
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
+    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol)
     {
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
@@ -77,7 +76,7 @@ class RequestReport extends Base
         $reportHeader[] = 'Summe';
         $dateTime = clone $this->firstDayDate;
         do {
-            $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol2);
+            $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol);
             $dateTime->modify('+1 ' . $report->period);
         } while ($dateTime <= $this->lastDayDate);
         $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
@@ -86,7 +85,7 @@ class RequestReport extends Base
     /**
      * @SuppressWarnings(Unused)
      */
-    public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
+    public function writeReportData(ReportEntity $report, $sheet)
     {
         $reportData = [];
         $rowIndex = $sheet->getHighestRow() + 1;
