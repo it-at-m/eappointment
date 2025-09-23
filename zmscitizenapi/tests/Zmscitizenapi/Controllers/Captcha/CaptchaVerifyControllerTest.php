@@ -61,10 +61,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
     {
         $expectedResponse = [
             'meta' => ['success' => true],
-            'data' => [
-                'meta' => ['success' => true],
-                'data' => ['valid' => true],
-            ],
+            'data' => ['valid' => true],
             'token' => 'eyJpcCI6IjE...UqUoHoUk='
         ];
 
@@ -97,6 +94,94 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
 
     }
 
+    public function testVerifySolutionMissingValidField()
+    {
+        $expectedResponse = [
+            'meta' => ['success' => false, 'error' => 'Response does not contain a "valid" field'],
+            'data' => ['foo' => 'bar']
+        ];
+
+        $mockResponse = new Response(200, [], json_encode($expectedResponse['data']));
+        $mockClient = new Client(['handler' => HandlerStack::create(new MockHandler([$mockResponse]))]);
+
+        $captcha = new class($mockClient) extends CaptchaService {
+            public function __construct($client)
+            {
+                parent::__construct();
+                $this->httpClient = $client;
+            }
+
+            public function verifySolution(?string $payload): array
+            {
+                return parent::verifySolution($payload);
+            }
+        };
+
+        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
+        $result = $captcha->verifySolution($payload);
+
+        $this->assertEquals($expectedResponse['meta'], $result['meta']);
+        $this->assertEquals($expectedResponse['data'], $result['data']);
+    }
+
+    public function testVerifySolutionInvalidCaptcha()
+    {
+        $expectedResponse = [
+            'meta' => ['success' => false, 'error' => 'Captcha verification failed'],
+            'data' => ['valid' => false]
+        ];
+
+        $mockResponse = new Response(200, [], json_encode($expectedResponse['data']));
+        $mockClient = new Client(['handler' => HandlerStack::create(new MockHandler([$mockResponse]))]);
+
+        $captcha = new class($mockClient) extends CaptchaService {
+            public function __construct($client)
+            {
+                parent::__construct();
+                $this->httpClient = $client;
+            }
+
+            public function verifySolution(?string $payload): array
+            {
+                return parent::verifySolution($payload);
+            }
+        };
+
+        $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
+        $result = $captcha->verifySolution($payload);
+
+        $this->assertEquals($expectedResponse['meta'], $result['meta']);
+        $this->assertEquals($expectedResponse['data'], $result['data']);
+    }
+
+    public function testVerifySolutionInvalidBase64()
+    {
+        $expectedResponse = [
+            'meta' => ['success' => false, 'error' => 'Invalid JSON in payload'],
+            'data' => null
+        ];
+
+        $mockClient = new Client();
+        $captcha = new class($mockClient) extends CaptchaService {
+            public function __construct($client)
+            {
+                parent::__construct();
+                $this->httpClient = $client;
+            }
+
+            public function verifySolution(?string $payload): array
+            {
+                return parent::verifySolution($payload);
+            }
+        };
+
+        $payload = '!!not_base64!!';
+        $result = $captcha->verifySolution($payload);
+
+        $this->assertEquals($expectedResponse['meta'], $result['meta']);
+        $this->assertEquals($expectedResponse['data'], $result['data']);
+    }
+
     public function testVerifySolutionInvalidJson()
     {
         $mockResponse = new Response(200, [], 'INVALID_JSON');
@@ -121,7 +206,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $result = $captcha->verifySolution($payload);
 
         $this->assertFalse($result['meta']['success']);
-        $this->assertStringContainsString('Antwort vom Captcha-Service ist kein gültiges JSON', $result['meta']['error']);
+        $this->assertStringContainsString('Response from Captcha service is not valid JSON', $result['meta']['error']);
         $this->assertNull($result['data']);
     }
 
@@ -130,7 +215,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $mockResponse = new Response(400, [], json_encode([
             'meta' => [
                 'success' => false,
-                'error' => 'Keine Payload übergeben'
+                'error' => 'No payload provided'
             ],
             'data' => null
         ]));
@@ -155,7 +240,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $result = $captcha->verifySolution($payload);
 
         $this->assertFalse($result['meta']['success']);
-        $this->assertStringContainsString('Keine Payload übergeben', $result['meta']['error']);
+        $this->assertStringContainsString('No payload provided', $result['meta']['error']);
         $this->assertNull($result['data']);
     }
 
