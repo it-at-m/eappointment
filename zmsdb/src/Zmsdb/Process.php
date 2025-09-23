@@ -598,7 +598,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function shouldUpdateDisplayNumber(Entity $process, $status): bool
     {
-        if ($status !== Entity::STATUS_CONFIRMED || $status !== Entity::STATUS_PRECONFIRMED) {
+        if ($status !== Entity::STATUS_CONFIRMED && $status !== Entity::STATUS_PRECONFIRMED) {
             return false;
         }
 
