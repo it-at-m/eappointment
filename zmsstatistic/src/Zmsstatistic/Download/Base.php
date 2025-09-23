@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic\Download;
 
+use Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Base extends \BO\Zmsstatistic\BaseController
@@ -66,15 +67,31 @@ class Base extends \BO\Zmsstatistic\BaseController
     {
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
-        if (isset($args['organisation'])) {
-            $infoData[] = $args['organisation']['name'] ;
+        // var_dump(json_encode($args['selectedScopes']));
+        if (isset($args['selectedScopes'])) {
+            foreach ($args['selectedScopes'] as $scopeId) {
+                try {
+                    $result = \App::$http
+                    ->readGetResult('/scope/' . $scopeId . '/')
+                    ->getEntity();
+                    $infoData[] = $result->getName() . " " . $result->getShortName();
+                } catch (Exception $exception) {
+                    return null;
+                }
+            }
         }
-        if (isset($args['department'])) {
-            $infoData[] = $args['department']['name'];
+        else {
+            if (isset($args['organisation'])) {
+                $infoData[] = $args['organisation']['name'] ;
+            }
+            if (isset($args['department'])) {
+                $infoData[] = $args['department']['name'];
+            }
+            if (isset($args['scope'])) {
+                $infoData[] = $args['scope']['contact']['name'] . ' ' . $args['scope']['shortName'];
+            }
         }
-        if (isset($args['scope'])) {
-            $infoData[] = $args['scope']['contact']['name'] . ' ' . $args['scope']['shortName'];
-        }
+
         $infoData = array_chunk($infoData, 1);
         $sheet->fromArray($infoData, null, 'A' . $sheet->getHighestRow());
 
