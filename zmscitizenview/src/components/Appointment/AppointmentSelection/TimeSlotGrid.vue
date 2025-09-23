@@ -61,6 +61,7 @@ defineEmits<{
 </script>
 
 <style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
 .wrapper {
   display: grid;
   grid-template-columns: 6rem 1fr;
@@ -81,10 +82,11 @@ defineEmits<{
 .grid {
   display: flex;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
 .grid-item {
-  margin: 8px 8px;
+  margin: 0;
 }
 
 .location-title {
@@ -92,7 +94,13 @@ defineEmits<{
 }
 
 .timeslot {
-  height: 2rem;
+  min-height: 2rem;
+  height: auto;
+}
+
+.timeslot.m-button,
+:deep(.timeslot .m-button) {
+  padding: 4px 12px !important;
 }
 
 .left-text {
@@ -112,18 +120,22 @@ div:has(.left-text) {
 }
 
 /* Mobile adjustments */
-@media (max-width: 576px) {
-  .timeslot.m-button,
-  .timeslot .m-button {
-    padding: 1px 8px !important;
-    min-height: 2.25rem;
+@include xs-down {
+  .wrapper {
+    grid-template-columns: 5.75rem 1fr; /* 5.75rem width of the hour column, 1fr times grid takes all remaining width */
+    padding: 13px 0 11px; /* 13px top padding, 0 left/right, 11px bottom padding */
   }
 
-  .grid-item {
-    margin: 6px 6px;
-  }
   .grid {
-    margin-right: 0px;
+    margin-right: 0;
+    gap: 13px 11px; /* space between buttons */
+  }
+
+  /* Timeslot buttons - smaller padding for mobile */
+  .timeslot.m-button,
+  .timeslot .m-button {
+    padding: 1px 8px !important; /* Even smaller padding for very small screens */
+    min-height: 2.25rem;
   }
 }
 </style>
