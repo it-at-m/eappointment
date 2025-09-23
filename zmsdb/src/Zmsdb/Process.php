@@ -589,9 +589,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
 
         /** @var Entity $process */
-        if ($this->shouldUpdateDisplayNumber($process, $status)) {
-            $this->updateEntityDisplayNumber($process);
-        }
+        $this->updateEntityDisplayNumber($process);
 
         return $process;
     }
