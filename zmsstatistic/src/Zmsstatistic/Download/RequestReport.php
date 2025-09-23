@@ -54,7 +54,7 @@ class RequestReport extends Base
         ReportEntity $report,
         Spreadsheet $spreadsheet,
         $datePatternCol1 = 'MMMM',
-        $datePatternCol2 = 'dd (ccc)'
+        $datePatternCol2 = 'dd.MM.yyyy'
     ) {
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -74,7 +74,7 @@ class RequestReport extends Base
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
         $reportHeader[] = 'Ø Bearbeitungsdauer';
-        $reportHeader[] = $this->getFormatedDates($this->firstDayDate, $datePatternCol1);
+        $reportHeader[] = 'Summe';
         $dateTime = clone $this->firstDayDate;
         do {
             $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol2);
