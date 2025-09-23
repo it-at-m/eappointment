@@ -8,6 +8,7 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use BO\Zmsstatistic\Service\ReportRequestService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,8 +28,9 @@ class ReportRequestIndex extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $reportRequestService = new ReportRequestService();
+        $reportHelper = new ReportHelper();
 
-        $selectedScopes = $reportRequestService->extractSelectedScopes(
+        $selectedScopes = $reportHelper->extractSelectedScopes(
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
@@ -36,7 +38,7 @@ class ReportRequestIndex extends BaseController
 
         $requestPeriod = $reportRequestService->getRequestPeriod($this->workstation->scope['id']);
 
-        $dateRange = $reportRequestService->extractDateRange(
+        $dateRange = $reportHelper->extractDateRange(
             $validator->getParameter('from')->isString()->getValue(),
             $validator->getParameter('to')->isString()->getValue()
         );
@@ -84,8 +86,6 @@ class ReportRequestIndex extends BaseController
 
         $args = $reportRequestService->prepareDownloadArgs($args, $exchangeRequest, $dateRange, $selectedScopes);
 
-        $args['category'] = 'requestscope';
-        $args['reports'][] = $exchangeRequest;
         $args['scope'] = $this->workstation->getScope();
         $args['department'] = $this->department;
         $args['organisation'] = $this->organisation;
