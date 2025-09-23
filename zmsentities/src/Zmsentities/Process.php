@@ -317,6 +317,11 @@ class Process extends Schema\Entity
         return (isset($this['queue']) && isset($this['queue']['number']) && $this['queue']['number']);
     }
 
+    public function getQueueNumber()
+    {
+        return $this['queue']['number'];
+    }
+
     public function addAppointment(Appointment $newappointment)
     {
         $this->appointments[] = $newappointment;

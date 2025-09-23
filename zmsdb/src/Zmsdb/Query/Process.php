@@ -945,6 +945,12 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
+    public function addValueDisplayNumber($process)
+    {
+        $data['displayNumber'] = $process->displayNumber;
+        $this->addValues($data);
+    }
+
     protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
     {
         $data = array();
