@@ -1,7 +1,6 @@
 <template>
   <muc-intro
     v-if="appointment"
-    class="multiline-text"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
   >
@@ -10,19 +9,18 @@
         <b> {{ t("appointmentNumber") }}: </b>
         {{ appointment.processId }}
       </p>
-      <p tabindex="0">
-        <muc-icon icon="calendar" />
-        {{ formatAppointmentDateTime(appointment.timestamp) }}
-        {{ t("timeStampSuffix") }} <br />
-      </p>
-      <p
+      <muc-link
+        :label="formatAppointmentDateTime(appointment.timestamp) + '' + t('timeStampSuffix')"
+        prepend-icon="calendar"
+        @click.prevent="focusTime"
+      />
+      <br />
+      <muc-link
         v-if="selectedProvider"
-        tabindex="0"
-      >
-        <muc-icon icon="map-pin" />
-        {{ selectedProvider.address.street }}
-        {{ selectedProvider.address.house_number }} <br />
-      </p>
+        :label="selectedProvider.address.street + ' ' + selectedProvider.address.house_number"
+        prepend-icon="map-pin"
+        @click.prevent="focusLocation"
+      />
     </div>
     <div class="m-button-group">
       <muc-button
@@ -45,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIcon, MucIntro } from "@muenchen/muc-patternlab-vue";
+import {MucButton, MucIcon, MucIntro, MucLink} from "@muenchen/muc-patternlab-vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -59,26 +57,30 @@ defineProps<{
 }>();
 
 const emit =
-  defineEmits<(e: "cancelAppointment" | "rescheduleAppointment") => void>();
+  defineEmits<(
+    e: "cancelAppointment"
+      | "focusLocation"
+      | "focusTime"
+      | "rescheduleAppointment"
+  ) => void>();
 
 const cancelAppointment = () => emit("cancelAppointment");
+const focusLocation = () => emit("focusLocation");
+const focusTime = () => emit("focusTime");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
 </script>
 <style scoped>
-.multiline-text {
-  white-space: pre-wrap;
-}
-
 .appointment-data {
   margin-top: 32px;
   margin-bottom: 16px;
 }
 
-.appointment-data p {
+.appointment-data p, a {
   padding-bottom: 16px;
 }
 
 :deep(.m-intro-vertical__title) {
   margin-bottom: 0 !important;
+  white-space: pre-wrap;
 }
 </style>
