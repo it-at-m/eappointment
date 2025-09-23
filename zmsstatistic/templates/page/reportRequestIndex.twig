@@ -40,6 +40,7 @@
                 {% set endDate = "%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month) %}
                 {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
             {% endif %}
+            <div class="table-wrapper">
             <table class="table--base">
                 <thead>
                     <tr>
@@ -137,6 +138,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
         {% else %}
             {{ block("board_body_noperiod") }}
         {% endif %}
