@@ -80,6 +80,7 @@ class Log extends Base
             'Aktion' => $action,
             "Sachbearbeiter*in" => $userAccount ? $userAccount->getId() : '',
             "Terminnummer" => $process->getDisplayNumber(),
+            "Wartenummer" => $process->getQueueNumber(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
             "Bürger*in" => $process->getFirstClient()->familyName,
             "Dienstleistung/en" => implode(', ', array_map(function ($request) {

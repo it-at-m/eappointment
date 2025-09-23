@@ -84,6 +84,19 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
+    public function updateEntityDisplayNumber(\BO\Zmsentities\Process $process)
+    {
+        $query = new Query\Process(Query\Base::UPDATE);
+        $process->displayNumber = $query->getNewDisplayNumber($process);
+        $query->addValueDisplayNumber($process);
+        if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
+            $this->writeItem($query);
+        }
+
+        Log::writeProcessLog("UPDATE (updateEntityDisplayNumber) $process ", Log::ACTION_EDITED, $process, $useraccount);
+        return $process;
+    }
+
     /**
      * Update a process with overbooked slots
      *
@@ -574,7 +587,30 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
+
+        if ($this->shouldUpdateDisplayNumber($process, $status)) {
+            $this->updateEntityDisplayNumber($process);
+        }
+
         return $process;
+    }
+
+    public function shouldUpdateDisplayNumber(Process $process, $status): bool
+    {
+        if ($status !== Entity::STATUS_CONFIRMED) {
+            return false;
+        }
+
+        $displayNumberPrefix = $process->getCurrentScope()->getPreference('queue', 'displayNumberPrefix');
+        if (empty($displayNumberPrefix)) {
+            return false;
+        }
+
+        if (str_starts_with($process->getQueueNumber(), $displayNumberPrefix)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
