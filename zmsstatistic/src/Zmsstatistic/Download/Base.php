@@ -67,7 +67,6 @@ class Base extends \BO\Zmsstatistic\BaseController
     {
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
-        // var_dump(json_encode($args['selectedScopes']));
         if (isset($args['selectedScopes'])) {
             foreach ($args['selectedScopes'] as $scopeId) {
                 try {

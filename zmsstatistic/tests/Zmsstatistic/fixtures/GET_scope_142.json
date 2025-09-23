@@ -8,7 +8,7 @@
   },
   "data": {
       "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
-      "id": "141",
+      "id": "142",
       "hint": "Nr. wird zum Termin aufgerufen",
       "shortName": "",
       "contact": {
