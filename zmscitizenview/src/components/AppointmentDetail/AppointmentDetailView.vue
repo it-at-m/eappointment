@@ -22,6 +22,8 @@
       :selected-provider="selectedProvider"
       :t="t"
       @cancel-appointment="cancelAppointment"
+      @focus-location="focusLocationTitle"
+      @focus-time="focusTimeTitle"
       @reschedule-appointment="rescheduleAppointment"
     />
     <div class="m-component m-component-form">
@@ -29,7 +31,7 @@
         <div class="m-component__grid">
           <div class="m-component__column">
             <div class="m-content">
-              <h2 tabindex="0">{{ t("time") }}</h2>
+              <h2 id="timeTitleElement" ref="timeTitleElement" tabindex="0">{{ t("time") }}</h2>
             </div>
             <div
               v-if="appointment"
@@ -50,7 +52,7 @@
               </p>
             </div>
             <div class="m-content">
-              <h2 tabindex="0">{{ t("location") }}</h2>
+              <h2 ref="locationTitleElement" tabindex="0">{{ t("location") }}</h2>
             </div>
             <div
               v-if="selectedProvider"
@@ -180,6 +182,9 @@ const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
 
+const timeTitleElement = ref<HTMLElement | null>(null);
+const locationTitleElement = ref<HTMLElement | null>(null);
+
 /**
  * This function determines the expected duration of the appointment.
  * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
@@ -203,6 +208,21 @@ const cancelAppointment = () => {
 const goToAppointmentOverviewLink = () => {
   location.href = props.appointmentOverviewUrl;
 };
+
+const focusTimeTitle = () => {
+  if (timeTitleElement.value){
+    timeTitleElement.value.focus();
+    timeTitleElement.value.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+const focusLocationTitle = () => {
+  if (locationTitleElement.value) {
+    locationTitleElement.value.focus();
+    locationTitleElement.value.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
 
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
