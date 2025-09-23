@@ -56,7 +56,14 @@ class ReportRequestIndex extends BaseController
             );
         }
 
-        return $this->renderHtmlResponse($response, $args, $requestPeriod, $dateRange, $exchangeRequest, $selectedScopes);
+        return $this->renderHtmlResponse(
+            $response,
+            $args,
+            $requestPeriod,
+            $dateRange,
+            $exchangeRequest,
+            $selectedScopes
+        );
     }
 
     /**
