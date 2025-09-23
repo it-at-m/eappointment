@@ -53,7 +53,6 @@
 <script setup lang="ts">
 import {
   MucButton,
-  MucIcon,
   MucIntro,
   MucLink,
 } from "@muenchen/muc-patternlab-vue";
