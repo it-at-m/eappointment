@@ -90,7 +90,7 @@
             </div>
 
             <div v-if="currentView === 1">
-              <appointment-selection-view
+              <AppointmentSelection
                 :base-url="baseUrl"
                 :is-rebooking="isRebooking"
                 :exclusive-location="exclusiveLocation"
