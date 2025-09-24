@@ -637,3 +637,59 @@ const canLoadMore = computed(() => {
   );
 });
 </script>
+<style lang="scss" scoped>
+.m-button--ghost.disabled,
+.m-button--ghost:disabled {
+  background: #fff;
+  border-color: #fff;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.float-right {
+  margin-left: auto;
+  margin-right: 0 !important;
+}
+
+.m-button-group {
+  margin-bottom: 20px;
+  padding-bottom: 0;
+  padding-top: 30px;
+}
+
+/* Ensure consistent width for earlier/later buttons */
+.m-button-group .muc-button[icon-shown-left],
+.m-button-group .muc-button[icon-shown-right] {
+  min-width: 100px !important;
+}
+
+.m-button-group button .m-button__icon--before,
+.m-button-group button .m-button__icon--after {
+  min-width: 100px !important;
+}
+
+.m-button-group button:has(.m-button__icon--before),
+.m-button-group button:has(.m-button__icon--after) {
+  min-width: 100px !important;
+}
+
+/* Remove focus effects from navigation buttons */
+.m-button-group button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.m-button-group button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.no-top-margin,
+.no-top-margin h3 {
+  margin-top: 0 !important;
+}
+</style>

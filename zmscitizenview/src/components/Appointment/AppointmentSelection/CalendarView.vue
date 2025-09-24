@@ -428,29 +428,27 @@ function onLater(type: "hour" | "dayPart") {
     emit("setSelectedHour", hours[idx + 1]);
 }
 </script>
-
 <style lang="scss" scoped>
-.no-top-margin,
-.no-top-margin h3 {
-  margin-top: 0 !important;
+.m-button--ghost.disabled,
+.m-button--ghost:disabled {
+  background: #fff;
+  border-color: #fff;
 }
 
-.wrapper {
-  display: grid;
-  grid-template-columns: 6rem 1fr;
-  column-gap: 8px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--color-neutrals-blue);
-  align-items: center;
-}
-
-.wrapper > * {
-  margin: 0 8px;
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .float-right {
   margin-left: auto;
   margin-right: 0 !important;
+}
+
+.m-button-group {
+  margin-bottom: 20px;
+  padding-bottom: 0;
+  padding-top: 30px;
 }
 
 /* Ensure consistent width for earlier/later buttons */
@@ -479,5 +477,10 @@ function onLater(type: "hour" | "dayPart") {
 .m-button-group button:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+
+.no-top-margin,
+.no-top-margin h3 {
+  margin-top: 0 !important;
 }
 </style>
