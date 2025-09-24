@@ -601,6 +601,7 @@ class Process extends Schema\Entity
         } else {
             $queue->number = $this->toProperty()->queue->number->get();
         }
+        $queue->displayNumber = $this->getDisplayNumber();
         $queue->arrivalTime = $this->getArrivalTime($dateTime)->getTimestamp();
         $queue->priority = $this->priority;
         return $queue->setProcess($this);
