@@ -756,7 +756,10 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
   ) {
     datesWithoutAppointments.value.clear();
     availableDays.value = days as { time: string; providerIDs: string }[];
-    selectedDay.value = new Date((days[0] as any).time);
+    // Only set selectedDay on first load; otherwise preserve current selection
+    if (!selectedDay.value) {
+      selectedDay.value = new Date((days[0] as any).time);
+    }
     // Keep viewMonth in sync with selectedDay and force calendar to re-render
     viewMonth.value = new Date(
       selectedDay.value.getFullYear(),
@@ -829,34 +832,7 @@ const getAppointmentsOfDay = (date: string) => {
         } else {
           error.value = false;
 
-          // If no appointments on current date but appointments exist on other days,
-          // select the first available date with appointments
-          if (
-            appointmentsCount.value === 0 &&
-            availableDays.value &&
-            availableDays.value.length > 0
-          ) {
-            const firstAvailableDay = availableDays.value.find((day) => {
-              const dayDate = new Date(day.time);
-              return (
-                dayDate > new Date(date) &&
-                day.providerIDs
-                  .split(",")
-                  .some((id) => selectedProviders.value[id])
-              );
-            });
-
-            if (firstAvailableDay) {
-              selectedDay.value = new Date(firstAvailableDay.time);
-              // Sync viewMonth and re-render calendar
-              viewMonth.value = new Date(
-                selectedDay.value.getFullYear(),
-                selectedDay.value.getMonth(),
-                1
-              );
-              calendarKey.value++;
-            }
-          }
+          // Keep selectedDay; provider-change pipeline decides nearest available date
         }
       } else {
         // Track dates without appointments
@@ -867,31 +843,7 @@ const getAppointmentsOfDay = (date: string) => {
           error.value = true;
         } else {
           error.value = false;
-
-          // If no appointments on current date but appointments exist on other days,
-          // select the first available date with appointments
-          if (availableDays.value && availableDays.value.length > 0) {
-            const firstAvailableDay = availableDays.value.find((day) => {
-              const dayDate = new Date(day.time);
-              return (
-                dayDate > new Date(date) &&
-                day.providerIDs
-                  .split(",")
-                  .some((id) => selectedProviders.value[id])
-              );
-            });
-
-            if (firstAvailableDay) {
-              selectedDay.value = new Date(firstAvailableDay.time);
-              // Sync viewMonth and re-render calendar
-              viewMonth.value = new Date(
-                selectedDay.value.getFullYear(),
-                selectedDay.value.getMonth(),
-                1
-              );
-              calendarKey.value++;
-            }
-          }
+          // Keep selectedDay; provider-change pipeline decides nearest available date
         }
       }
       isLoadingAppointments.value = false;
@@ -1056,6 +1008,9 @@ function scheduleRefreshAfterProviderChange() {
   const selectionSnapshot = JSON.stringify(selectedProviders.value);
   if (refetchTimer) clearTimeout(refetchTimer);
   refetchTimer = setTimeout(async () => {
+    const prevSelectedDay = selectedDay.value
+      ? new Date(selectedDay.value)
+      : undefined;
     await refetchAvailableDaysForSelection();
     // Selection changed while awaiting? Abort this cycle.
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
@@ -1063,7 +1018,45 @@ function scheduleRefreshAfterProviderChange() {
     }
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
-    await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+
+    // Choose best selectedDay: keep previous if available; else nearest
+    if (availableDaysForSelectedProviders.length > 0) {
+      const dates = availableDaysForSelectedProviders.map(
+        (d) => new Date(d.time)
+      );
+      const isSameDay = (a: Date, b: Date) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+
+      let target: Date | undefined;
+      if (prevSelectedDay) {
+        const found = dates.find((d) => isSameDay(d, prevSelectedDay));
+        if (found) {
+          target = found;
+        } else {
+          const future = dates
+            .filter((d) => d >= prevSelectedDay)
+            .sort((a, b) => a.getTime() - b.getTime());
+          if (future.length > 0) {
+            target = future[0];
+          } else {
+            const past = dates
+              .filter((d) => d < prevSelectedDay)
+              .sort((a, b) => b.getTime() - a.getTime());
+            if (past.length > 0) target = past[0];
+          }
+        }
+      }
+      if (!target) target = dates[0];
+      selectedDay.value = target;
+      viewMonth.value = new Date(target.getFullYear(), target.getMonth(), 1);
+      calendarKey.value++;
+      await nextTick();
+      await getAppointmentsOfDay(convertDateToString(target));
+    }
+
+    // Snap inside day
     await validateCurrentDateHasAppointments();
     await snapToNearestForCurrentView();
   }, 150);

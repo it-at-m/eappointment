@@ -448,15 +448,25 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders[10470] = true;
       await nextTick();
 
+      // Prepare fetchAvailableDays to return both dates first, then only the next date after provider change
+      (fetchAvailableDays as Mock).mockReset();
+      (fetchAvailableDays as Mock).mockResolvedValueOnce({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+        ]
+      });
+
       // Now show selection for provider (this will fetch available days)
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
 
-      // Mock the availableDays to simulate what would be fetched for selected providers
-      wrapper.vm.availableDays = [
-        { time: '2025-06-16', providerIDs: '10351880,10470' },
-        { time: '2025-06-17', providerIDs: '10351880,10470' },
-      ];
+      // After provider change, only 2025-06-17 should remain available
+      (fetchAvailableDays as Mock).mockResolvedValueOnce({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '10351880' },
+        ]
+      });
 
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
@@ -464,7 +474,7 @@ describe("AppointmentSelection", () => {
       expect(wrapper.vm.allowedDates(new Date('2025-06-17'))).toBe(true);
     });
 
-    it('auto-selects the next available date if the current date has no appointments', async () => {
+    it('auto-selects the next available date on provider change when current date has no appointments', async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
           { time: '2025-06-16', providerIDs: '10351880,10470' },
@@ -504,9 +514,44 @@ describe("AppointmentSelection", () => {
         { time: '2025-06-17', providerIDs: '10351880,10470' },
       ];
 
+      // Set current date explicitly to the one without appointments
+      wrapper.vm.selectedDay = new Date('2025-06-16');
+      await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
-      // Should auto-select 2025-06-17
+
+      // Control subsequent refetches: first refetch returns both days, final refetch returns only 2025-06-17
+      let refetchCall = 0;
+      (fetchAvailableDays as Mock).mockImplementation(() => {
+        refetchCall += 1;
+        if (refetchCall === 1) {
+          return Promise.resolve({
+            availableDays: [
+              { time: '2025-06-16', providerIDs: '10351880,10470' },
+              { time: '2025-06-17', providerIDs: '10351880,10470' }
+            ]
+          });
+        }
+        return Promise.resolve({
+          availableDays: [
+            { time: '2025-06-17', providerIDs: '10351880' }
+          ]
+        });
+      });
+
+      // Simulate provider change to trigger nearest-date selection pipeline with deep change
+      wrapper.vm.selectedProviders = { '10351880': false, '10470': true } as any;
+      await nextTick();
+      await flushPromises();
+      wrapper.vm.selectedProviders = { '10351880': true, '10470': false } as any;
+      await nextTick();
+      await flushPromises();
+      // Wait for debounced pipeline (150ms) + fetch/updates to complete
+      await new Promise(r => setTimeout(r, 900));
+      await nextTick();
+      await flushPromises();
+
+      // Should snap to 2025-06-17 as nearest available date after provider change
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-17'));
     });
 
