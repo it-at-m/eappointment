@@ -4,7 +4,7 @@
     tabindex="0"
   >
     <muc-callout
-      v-if="selectedProvider && selectedDay && selectedTimeslot !== 0"
+      v-if="selectedProvider && selectedDay && typeof selectedTimeslot === 'number' && selectedTimeslot > 0"
       type="info"
     >
       <template #content>
