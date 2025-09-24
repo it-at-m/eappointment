@@ -105,7 +105,7 @@ defineEmits<{
 
 .left-text {
   display: flex;
-  justify-content: left;
+  justify-content: flex-start;
   align-items: center;
   height: 100%;
   width: 100px;
