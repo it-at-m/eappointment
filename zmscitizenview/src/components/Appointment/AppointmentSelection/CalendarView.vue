@@ -96,11 +96,7 @@
               "
               :officeId="officeId"
               :times="times"
-              :timeLabel="
-                firstHour !== null && firstHour > 0
-                  ? `${timeslot}:00-${timeslot}:59`
-                  : ''
-              "
+              :timeLabel="`${timeslot}:00-${timeslot}:59`"
               :showLocationTitle="(selectableProviders?.length || 0) > 1"
               :officeNameById="officeNameById"
               :isSlotSelected="isSlotSelected"
