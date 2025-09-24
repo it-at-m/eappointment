@@ -1,10 +1,16 @@
 <template>
   <div class="calendar-list-toggle-container">
-    <h2 tabindex="0">{{ t("time") }}</h2>
+    <h2
+      id="viewToggleLabel"
+      tabindex="0"
+    >
+      {{ t("time") }}
+    </h2>
     <div
       class="m-toggle-switch"
       role="switch"
-      :aria-checked="isListView"
+      :aria-checked="localIsListView"
+      :aria-labelledby="'viewToggleLabel'"
       tabindex="0"
       @click="toggleView"
       @keydown.enter.prevent="toggleView"
@@ -12,13 +18,13 @@
     >
       <span
         class="m-toggle-switch__label"
-        :class="{ disabled: isListView }"
+        :class="{ disabled: localIsListView }"
         >{{ t("calendarView") }}</span
       >
       <span class="m-toggle-switch__indicator"><span></span></span>
       <span
         class="m-toggle-switch__label"
-        :class="{ disabled: !isListView }"
+        :class="{ disabled: !localIsListView }"
         >{{ t("listView") }}</span
       >
     </div>
@@ -26,21 +32,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch, withDefaults } from "vue";
 
-const props = defineProps<{
-  t: (key: string) => string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    t: (key: string) => string;
+    isListView: boolean;
+  }>(),
+  { isListView: false }
+);
 
 const emit = defineEmits<{
   (e: "update:isListView", value: boolean): void;
 }>();
 
-const isListView = ref(false);
+const localIsListView = ref<boolean>(props.isListView);
+
+watch(
+  () => props.isListView,
+  (v) => {
+    localIsListView.value = v;
+  }
+);
 
 const toggleView = () => {
-  isListView.value = !isListView.value;
-  emit("update:isListView", isListView.value);
+  const next = !localIsListView.value;
+  localIsListView.value = next;
+  emit("update:isListView", next);
 };
 </script>
 

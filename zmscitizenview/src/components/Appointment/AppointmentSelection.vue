@@ -47,6 +47,7 @@
   <div v-else-if="!error && hasSelectedProviderWithAppointments">
     <CalendarListToggle
       :t="t"
+      :isListView="isListView"
       @update:isListView="isListView = $event"
     />
     <CalendarView
