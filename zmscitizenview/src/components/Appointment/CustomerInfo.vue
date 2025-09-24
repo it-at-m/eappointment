@@ -304,8 +304,16 @@ const nextStep = () => {
 const previousStep = () => emit("back");
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
 .m-button-group {
   margin-top: 48px;
+}
+
+@include sm-up {
+  :deep(.m-character-count) {
+    font-size: 0.875rem;
+  }
 }
 </style>
