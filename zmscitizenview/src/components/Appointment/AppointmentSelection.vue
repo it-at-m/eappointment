@@ -564,7 +564,7 @@ const handleDaySelection = async (day: any) => {
       timeSlotsInHoursByOffice.value.values()
     ).flatMap((office) => {
       const hours = Array.from((office as any).appointments.keys());
-      return hours.filter((hour) => typeof hour === "number" && hour > 0);
+      return hours.filter((hour) => typeof hour === "number" && hour >= 0);
     });
     if (allHours.length > 0) {
       selectedHour.value = Math.min(...(allHours as number[]));
@@ -1195,7 +1195,7 @@ watch(appointmentTimestampsByOffice, () => {
       timeSlotsInHoursByOffice.value.values()
     ).flatMap((office) => {
       const hours = Array.from((office as any).appointments.keys());
-      return hours.filter((hour) => typeof hour === "number" && hour > 0);
+      return hours.filter((hour) => typeof hour === "number" && hour >= 0);
     });
     if (allHours.length > 0) {
       selectedHour.value = Math.min(...(allHours as number[]));
