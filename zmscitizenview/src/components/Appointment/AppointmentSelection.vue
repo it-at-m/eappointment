@@ -918,10 +918,15 @@ function getAvailableProviders(
 
     // clean = passport provider
     // restricted = default provider (hidden by passport related services)
-    const [clean, restricted] = [
-      group.find((p) => (p.disabledByServices ?? []).length === 0)!,
-      group.find((p) => (p.disabledByServices ?? []).length > 0)!,
-    ];
+    const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
+    const restricted = group.find(
+      (p) => (p.disabledByServices ?? []).length > 0
+    );
+
+    // Fallbacks if one type is missing
+    if (!clean && !restricted) return group[0];
+    if (!restricted) return clean as OfficeImpl;
+    if (!clean) return restricted as OfficeImpl;
 
     const restrictedDisabled = (restricted.disabledByServices ?? []).map(
       Number
@@ -930,7 +935,7 @@ function getAvailableProviders(
       restrictedDisabled.includes(id)
     );
 
-    return allDisabled ? clean : restricted;
+    return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
   });
 }
 
