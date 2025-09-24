@@ -8,7 +8,6 @@
     @update:selectedProviders="onUpdateSelectedProviders"
     :providerSelectionError="providerSelectionError"
   />
-
   <div
     v-if="
       availableDaysFetched &&
@@ -45,7 +44,6 @@
       </template>
     </muc-callout>
   </div>
-
   <div v-else-if="!error && hasSelectedProviderWithAppointments">
     <CalendarListToggle
       :t="t"
@@ -110,15 +108,15 @@
       "
       @openInfo="openAvailabilityInfoModal"
     />
-
-    <AppointmentPreview
-      ref="summary"
-      :t="t"
-      :selectedProvider="selectedProvider"
-      :selectedDay="selectedDay"
-      :selectedTimeslot="selectedTimeslot"
-      :selectedService="selectedService"
-    />
+    <div ref="summary">
+      <AppointmentPreview
+        :t="t"
+        :selectedProvider="selectedProvider"
+        :selectedDay="selectedDay"
+        :selectedTimeslot="selectedTimeslot"
+        :selectedService="selectedService"
+      />
+    </div>
   </div>
   <div
     v-if="!noProviderSelected && showError && !isSwitchingProvider"
@@ -155,7 +153,6 @@
       </template>
     </muc-callout>
   </div>
-
   <div class="m-button-group">
     <muc-button
       v-if="!isRebooking"
@@ -187,7 +184,6 @@
     @close="closeAvailabilityInfoModal"
   />
 </template>
-
 <script setup lang="ts">
 import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
