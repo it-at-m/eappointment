@@ -71,7 +71,6 @@ const toggleView = () => {
   gap: 16px;
   margin-bottom: 20px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--color-neutrals-blue);
 }
 
 /* Responsive layout: on larger screens, display toggle to the right of heading */

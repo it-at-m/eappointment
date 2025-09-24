@@ -670,6 +670,12 @@ const canLoadMore = computed(() => {
   padding-top: 30px;
 }
 
+.no-bottom-margin,
+.no-bottom-margin.m-button,
+.no-bottom-margin .m-button {
+  margin-bottom: 0 !important;
+}
+
 /* Ensure consistent width for earlier/later buttons */
 .m-button-group .muc-button[icon-shown-left],
 .m-button-group .muc-button[icon-shown-right] {
