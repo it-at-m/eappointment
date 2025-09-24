@@ -403,7 +403,8 @@ const estimatedDuration = () => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
 .border-bottom {
   border-bottom: 1px solid var(--color-neutrals-blue);
 }
@@ -416,7 +417,7 @@ const estimatedDuration = () => {
   margin-bottom: 0;
 }
 
-@media (min-width: 1200px) {
+@include md-up {
   .m-contact .m-content .no-bottom-margin {
     margin-bottom: 0;
   }
