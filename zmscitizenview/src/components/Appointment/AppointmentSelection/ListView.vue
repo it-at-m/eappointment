@@ -326,11 +326,15 @@ const getCurrentDayPartForDay = (
 };
 
 function setCurrentHourForDay(dateString: string, hour: number) {
-  listViewCurrentHour.value.set(dateString, hour);
+  const m = new Map(listViewCurrentHour.value);
+  m.set(dateString, hour);
+  listViewCurrentHour.value = m;
 }
 
 function setCurrentDayPartForDay(dateString: string, part: "am" | "pm") {
-  listViewCurrentDayPart.value.set(dateString, part);
+  const m = new Map(listViewCurrentDayPart.value);
+  m.set(dateString, part);
+  listViewCurrentDayPart.value = m;
 }
 
 function getListDayAvailableHours(day: AccordionDay) {
@@ -425,7 +429,7 @@ async function snapToNearestForCurrentSelection() {
               }
             }
             if (nearest !== currentHour) {
-              listViewCurrentHour.value.set(dateString, nearest);
+              setCurrentHourForDay(dateString, nearest);
             }
           }
         }
@@ -469,7 +473,7 @@ async function snapToNearestForCurrentSelection() {
               newDayPart = availableDayParts[0];
             }
             if (newDayPart !== currentDayPart) {
-              listViewCurrentDayPart.value.set(dateString, newDayPart);
+              setCurrentDayPartForDay(dateString, newDayPart);
             }
           }
         }
@@ -600,7 +604,7 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
         dayPartRows,
       } as AccordionDay);
       if (availableHours.length > 0) {
-        listViewCurrentHour.value.set(dateString, availableHours[0]);
+        setCurrentHourForDay(dateString, availableHours[0]);
       }
     }
 
@@ -610,7 +614,7 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
         dayPartRows,
       } as AccordionDay);
       if (availableDayParts.length > 0) {
-        listViewCurrentDayPart.value.set(dateString, availableDayParts[0]);
+        setCurrentDayPartForDay(dateString, availableDayParts[0]);
       }
     }
 
