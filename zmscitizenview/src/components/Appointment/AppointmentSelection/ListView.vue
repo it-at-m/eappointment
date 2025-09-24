@@ -632,9 +632,15 @@ watch(firstFiveAvailableDays, (newDays) => {
 });
 
 const canLoadMore = computed(() => {
-  return (
-    firstFiveAvailableDays.value.length < (props.availableDays?.length || 0)
+  if (!props.availableDays) return false;
+  const availableForProviders = props.availableDays.filter((day) =>
+    day.providerIDs.split(",").some((id) => props.selectedProviders[id])
   );
+  const trulyAvailableCount = availableForProviders.filter((day) => {
+    const dateStr = convertDateToString(new Date(day.time));
+    return !props.datesWithoutAppointments.has(dateStr);
+  }).length;
+  return firstFiveAvailableDays.value.length < trulyAvailableCount;
 });
 </script>
 <style lang="scss" scoped>
