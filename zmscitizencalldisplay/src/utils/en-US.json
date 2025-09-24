@@ -1,0 +1,21 @@
+{
+  "calldisplay": {
+    "loading": "Loading data...",
+    "error": "Error loading data",
+    "errorHeader": "Sorry, an error has occurred.",
+    "errorContent": "The requested page cannot be displayed at the moment. This may be caused by technical problems that will be resolved shortly.<br/>Please try restarting this device first. If the problem persists, please report the issue at:",
+    "errorSupportLink": "https://it-services.muenchen.de",
+    "config": {
+      "title": "Configuration Required",
+      "description": "This call display requires scope parameters to show data. Please configure the URL with the appropriate scope IDs.",
+      "example": "Example URL:",
+      "urlExample": "?collections[scopelist]=413,416,419,559&template=default_counter"
+    },
+    "table": {
+      "number": "Number",
+      "numberEn": "Number",
+      "counter": "Counter",
+      "counterEn": "Counter"
+    }
+  }
+}
