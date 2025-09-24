@@ -78,4 +78,7 @@ export function getGeneratedAPIBaseURL(
 /**
  * UI thresholds and limits
  */
+// ZMSKVR-110: UX rule for view mode
+// Few appointments → group by am/pm (≤ 18 per day); many appointments → hourly (> 18)
+// Rationale: accessibility and layout density tradeoff documented in the ticket.
 export const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
