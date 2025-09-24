@@ -111,7 +111,7 @@
                         "
                         :officeId="hourRow.officeId"
                         :times="hourRow.times"
-                        :timeLabel="`${hourRow.hour}:00‑${hourRow.hour}:59`"
+                        :timeLabel="`${hourRow.hour}:00-${hourRow.hour}:59`"
                         :showLocationTitle="
                           (selectableProviders?.length || 0) > 1 &&
                           hourRow.hour ===
