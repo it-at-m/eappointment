@@ -63,7 +63,7 @@
       </div>
 
       <div
-        v-if="isLoadingAppointments || isLoadingComplete"
+        v-if="isLoadingAppointments && !isLoadingComplete"
         class="m-content"
         style="
           display: flex;
@@ -194,7 +194,7 @@
       </div>
 
       <div
-        v-if="isLoadingAppointments || isLoadingComplete"
+        v-if="isLoadingAppointments && !isLoadingComplete"
         class="m-content"
         style="
           display: flex;

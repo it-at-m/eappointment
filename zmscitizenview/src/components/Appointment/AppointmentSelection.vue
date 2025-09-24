@@ -898,9 +898,11 @@ const getAppointmentsOfDay = (date: string) => {
         }
       }
       isLoadingAppointments.value = false;
+      isLoadingComplete.value = true;
     })
     .catch(() => {
       isLoadingAppointments.value = false;
+      isLoadingComplete.value = true;
     });
 };
 
