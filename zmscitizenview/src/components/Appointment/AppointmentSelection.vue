@@ -1127,6 +1127,8 @@ onMounted(() => {
       ];
     }
 
+    // Remember first office before sorting (preselected/selected stays first)
+    const firstOfficeToShow = offices[0];
     if (selectableProviders.value) {
       selectableProviders.value = offices.sort((a, b) => {
         const aPriority = a.priority ?? -Infinity;
@@ -1154,7 +1156,7 @@ onMounted(() => {
       ])
     );
 
-    showSelectionForProvider(offices[0]);
+    showSelectionForProvider(firstOfficeToShow ?? offices[0]);
   }
 });
 
