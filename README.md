@@ -168,14 +168,7 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 ### Special Cases (zmsapi zmsdb & zmsclient)
 
-**zmsclient:**
 
-For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
-
-```bash
-cd zmsclient
-docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
-```
 
 #### Traditional DDEV Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
@@ -200,21 +193,31 @@ bin/importTestData --commit
 ```
 
 #### Containerized Testing (Recommended - isolated environment)
-To run isolated, repeatable tests without touching your local database, use Docker Compose:
+To run isolated, repeatable tests without touching your local database, use the provided scripts. They support both Docker and Podman.
 
 **Smart Testing Scripts (Recommended):**
 ```bash
-# For zmsdb
+# zmsdb
 cd zmsdb
-./zmsdb-test                    # Run all tests
-./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
-./zmsdb-test --reset            # Reset all containers and volumes
+./zmsdb-test                        # Run all tests (engine autodetect)
+./zmsdb-test --docker               # Force Docker
+./zmsdb-test --podman               # Force Podman (macOS Apple Silicon: Rosetta shells auto re-exec to arm64)
+./zmsdb-test --filter="StatusTest::testBasic"   # Specific test
+./zmsdb-test --reset                # Reset all containers and volumes
 
-# For zmsapi  
-cd zmsapi
-./zmsapi-test                   # Run all tests
-./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
-./zmsapi-test --reset           # Reset all containers and volumes
+# zmsapi
+cd ../zmsapi
+./zmsapi-test                       # Run all tests (engine autodetect)
+./zmsapi-test --docker              # Force Docker
+./zmsapi-test --podman              # Force Podman (macOS Apple Silicon: Rosetta shells auto re-exec to arm64)
+./zmsapi-test --filter="StatusGetTest::testRendering"
+./zmsapi-test --reset
+
+# zmsclient (mock server test suite)
+cd ../zmsclient
+./zmsclient-test                    # Run all tests (autodetect)
+./zmsclient-test --docker           # Force Docker
+./zmsclient-test --podman           # Force Podman (macOS Apple Silicon: Rosetta shells auto re-exec to arm64)
 ```
 
 **Available PHPUnit Flags:**
@@ -259,10 +262,16 @@ cd zmsapi
 ```
 
 **How the Scripts Work:**
-* **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
-* **Subsequent runs**: Reuses existing setup for fast test execution
-* **Filter support**: Accepts all PHPUnit arguments for flexible test execution
-* **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
+* Engine-aware: `--docker`/`--podman` flags; default autodetect
+* Apple Silicon: Rosetta shells auto re-exec to arm64 for Podman reliability
+* First run: full setup (builds containers, installs dependencies)
+* Subsequent runs: reuses setup (zmsclient always restarts its stack)
+* Filter support: accepts all PHPUnit args
+* DB startup: MariaDB is started automatically
+* Parallel runs: distinct host DB ports per engine to run Docker and Podman in parallel
+  * zmsdb: Docker=3307, Podman=3308 (override via `HOST_DB_PORT`)
+  * zmsapi: Docker=3309, Podman=3310 (override via `HOST_DB_PORT`)
+  * zmsclient mockup: Docker=8082/8083, Podman=18082/18083 (override via `MOCKUP_PORT_HTTP`/`MOCKUP_PORT_ADMIN`)
 
 **Reset Functionality:**
 * **`--reset`**: Completely removes all containers, volumes, and networks for a fresh start
