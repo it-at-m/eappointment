@@ -14,6 +14,7 @@
         :new-appointment-url="newAppointmentUrl"
         :displayed-on-detail-screen="displayOptionDetailScreen"
         :t="t"
+        :access-token="accessToken"
       />
     </div>
   </main>

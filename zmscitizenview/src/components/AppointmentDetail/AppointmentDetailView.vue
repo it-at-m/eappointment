@@ -1,5 +1,10 @@
 <template>
-  <div v-if="loadingError">
+  <no-login-warning
+    v-if="!isAuthenticated()"
+    :appointment-id="appointmentId"
+    :t="t"
+  />
+  <div v-else-if="loadingError">
     <muc-intro
       :tagline="t('appointment')"
       :title="appointmentId ? appointmentId : ''"
@@ -160,12 +165,14 @@ import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getAppointmentDetails } from "@/api/ZMSAppointmentUserAPI";
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
+import NoLoginWarning from "@/components/AppointmentDetail/NoLoginWarning.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
+import { isAuthenticated } from "@/utils/auth";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
@@ -179,6 +186,7 @@ const props = defineProps<{
   appointmentOverviewUrl: string;
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
+  accessToken: string | null;
 }>();
 
 const services = ref<Service[]>([]);
@@ -186,7 +194,7 @@ const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
-const appointmentId = ref<string | null>();
+const appointmentId = ref<string | undefined>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);

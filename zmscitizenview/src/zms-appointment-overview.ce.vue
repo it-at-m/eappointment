@@ -13,6 +13,7 @@
         :new-appointment-url="newAppointmentUrl"
         :overview-url="overviewUrl"
         :t="t"
+        :access-token="accessToken"
       />
     </div>
   </main>

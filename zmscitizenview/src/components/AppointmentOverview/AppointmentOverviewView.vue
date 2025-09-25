@@ -1,5 +1,8 @@
 <template>
-  <div class="container">
+  <div
+    v-if="isAuthenticated()"
+    class="container"
+  >
     <h2
       tabindex="0"
       style="display: flex; align-items: center; margin-bottom: 24px"
@@ -77,6 +80,7 @@ import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentC
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { isAuthenticated } from "@/utils/auth";
 import AppointmentCard from "./AppointmentCard.vue";
 
 const props = defineProps<{
@@ -85,6 +89,7 @@ const props = defineProps<{
   newAppointmentUrl: string;
   overviewUrl: string;
   t: (key: string) => string;
+  accessToken: string | null;
 }>();
 
 const appointments = ref<AppointmentDTO[]>([]);

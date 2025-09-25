@@ -197,6 +197,7 @@
   "loadingAppointmentTimes": "Verfügbare Termine werden geladen",
   "loadingCustomerInfoUpdate": "Kundendaten werden aktualisiert",
   "location": "Ort",
+  "login": "Anmelden",
   "mailAddress": "E-Mail-Adresse",
   "minutes": "Minuten",
   "myAppointments": "Meine Termine",
@@ -212,6 +213,8 @@
   "remarkCompletionInstructions": "Sie möchten uns zu Ihrem Termin noch etwas mitteilen? Geben Sie hier an, wenn Sie Hilfe benötigen, auf Übersetzungen angewiesen sind oder sonstige Anliegen haben.",
   "remarks": "Bemerkungen",
   "remarks2": "Weitere Bemerkungen",
+  "requestLoginModalHeading": "Anmeldung für Ihren Termin",
+  "requestLoginModalText": "Um Ihren Termin einzusehen, melden Sie sich bei dem Konto an, das Sie für die Terminvereinbarung genutzt haben.",
   "rescheduleAppointment": "Termin verschieben",
   "selectedAppointment": "Ausgewählter Termin",
   "service": "Leistung",
@@ -237,5 +240,8 @@
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "newAppointmentsInfoLink": "Wann gibt es neue Termine?",
+  "noLoginButton": "Termin anzeigen",
+  "noLoginInfo": "Sie sind nicht angemeldet.",
+  "noLoginText": "Um Ihren Termin anzusehen, müssen Sie zunächst Ihre Berechtigung nachweisen.",
   "your": "Ihr"
 }

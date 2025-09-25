@@ -1,6 +1,8 @@
 <template>
   <div
-    v-if="appointments.length > 0 || !displayedOnDetailScreen"
+    v-if="
+      isAuthenticated() && (appointments.length > 0 || !displayedOnDetailScreen)
+    "
     :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
   >
     <div class="container">
@@ -81,6 +83,7 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { isAuthenticated } from "@/utils/auth";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
@@ -91,6 +94,7 @@ const props = defineProps<{
   newAppointmentUrl: string;
   displayedOnDetailScreen: boolean;
   t: (key: string) => string;
+  accessToken: string | null;
 }>();
 
 const loading = ref(true);
