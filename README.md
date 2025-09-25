@@ -206,7 +206,7 @@ cd zmsdb
 ./zmsdb-test --reset                # Reset all containers and volumes
 
 # zmsapi
-cd ../zmsapi
+cd zmsapi
 ./zmsapi-test                       # Run all tests (engine autodetect)
 ./zmsapi-test --docker              # Force Docker
 ./zmsapi-test --podman              # Force Podman (macOS Apple Silicon: Rosetta shells auto re-exec to arm64)
@@ -214,7 +214,7 @@ cd ../zmsapi
 ./zmsapi-test --reset
 
 # zmsclient (mock server test suite)
-cd ../zmsclient
+cd zmsclient
 ./zmsclient-test                    # Run all tests (autodetect)
 ./zmsclient-test --docker           # Force Docker
 ./zmsclient-test --podman           # Force Podman (macOS Apple Silicon: Rosetta shells auto re-exec to arm64)
