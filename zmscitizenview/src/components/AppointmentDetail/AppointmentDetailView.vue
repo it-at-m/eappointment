@@ -22,14 +22,86 @@
     </error-alert>
   </div>
   <div v-else-if="!loading">
+    <muc-modal
+      :open="rescheduleModalOpen"
+      @close="rescheduleModalOpen = false"
+      @cancel="rescheduleModalOpen = false"
+    >
+      <template #title>{{ t("rescheduleAppointmentModalHeading") }}</template>
+      <template #body>
+        <p style="margin-bottom: 16px">
+          {{ t("rescheduleAppointmentModalText") }}
+        </p>
+        <p style="margin-bottom: 0">
+          <b>{{ t("affectedAppointment") }}</b>
+          <br />
+          {{ getServiceSummary() }}
+          <br />
+          {{ formatAppointmentDateTime(appointment.timestamp) }}
+          {{ t("timeStampSuffix") }}
+          <br />
+          {{ selectedProvider.name }}
+        </p>
+      </template>
+      <template #buttons>
+        <muc-button
+          icon="arrow-right"
+          @click="rescheduleAppointment"
+        >
+          {{ t("reschedule") }}
+        </muc-button>
+        <muc-button
+          variant="secondary"
+          @click="rescheduleModalOpen = false"
+        >
+          {{ t("cancelButton") }}
+        </muc-button>
+      </template>
+    </muc-modal>
+    <muc-modal
+      :open="cancelModalOpen"
+      @close="cancelModalOpen = false"
+      @cancel="cancelModalOpen = false"
+    >
+      <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
+      <template #body>
+        <p style="margin-bottom: 16px">
+          {{ t("cancleAppointmentModalText") }}
+        </p>
+        <p style="margin-bottom: 0">
+          <b>{{ t("affectedAppointment") }}</b>
+          <br />
+          {{ getServiceSummary() }}
+          <br />
+          {{ formatAppointmentDateTime(appointment.timestamp) }}
+          {{ t("timeStampSuffix") }}
+          <br />
+          {{ selectedProvider.name }}
+        </p>
+      </template>
+      <template #buttons>
+        <muc-button
+          icon="arrow-right"
+          @click="cancelAppointment"
+        >
+          {{ t("cancel") }}
+        </muc-button>
+        <muc-button
+          variant="secondary"
+          @click="cancelModalOpen = false"
+        >
+          {{ t("cancelButton") }}
+        </muc-button>
+      </template>
+    </muc-modal>
     <appointment-detail-header
       :appointment="appointment"
       :selected-provider="selectedProvider"
       :t="t"
-      @cancel-appointment="cancelAppointment"
+      @cancel-appointment="openCancelModal"
       @focus-location="focusLocationTitle"
       @focus-time="focusTimeTitle"
-      @reschedule-appointment="rescheduleAppointment"
+      @reschedule-appointment="openRescheduleModal"
     />
     <div class="m-component m-component-form">
       <div class="container">
@@ -155,7 +227,7 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
 import { onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -204,6 +276,9 @@ const isMobile = ref(false);
 const timeTitleElement = ref<HTMLElement | null>(null);
 const locationTitleElement = ref<HTMLElement | null>(null);
 
+const rescheduleModalOpen = ref(false);
+const cancelModalOpen = ref(false);
+
 /**
  * This function determines the expected duration of the appointment.
  * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
@@ -214,6 +289,10 @@ const estimatedDuration = () => {
     selectedProvider.value
   );
 };
+
+const openRescheduleModal = () => (rescheduleModalOpen.value = true);
+
+const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
   if (appointment.value)
@@ -226,6 +305,21 @@ const cancelAppointment = () => {
 
 const goToAppointmentOverviewLink = () => {
   location.href = props.appointmentOverviewUrl;
+};
+
+const getServiceSummary = () => {
+  if (appointment.value) {
+    const serviceSummary =
+      appointment.value.serviceCount + "x " + appointment.value.serviceName;
+    const subserviceSummary = appointment.value.subRequestCounts
+      .map((subCount) => subCount.count + "x " + subCount.name)
+      .join(", ");
+    return serviceSummary
+      ? serviceSummary + ", " + subserviceSummary
+      : serviceSummary;
+  } else {
+    return "";
+  }
 };
 
 const focusTimeTitle = () => {
