@@ -4,8 +4,8 @@ services:
   mockup:
     image: jordimartin/mmock
     ports:
-      - 8082:8082
-      - 8083:8083
+      - ${MOCKUP_PORT_HTTP:-8082}:8082
+      - ${MOCKUP_PORT_ADMIN:-8083}:8083
     volumes:
       - type: bind
         source: "./tests/mockup/config"

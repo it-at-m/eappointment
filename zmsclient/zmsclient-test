@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# zmsclient-test - Automated testing script for zmsclient module (Docker/Podman)
+
+set -e
+
+# Darwin = macOS. If running under Rosetta on Apple Silicon, re-exec as arm64.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    if command -v sysctl >/dev/null 2>&1; then
+        if [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)" == "1" ]]; then
+            if command -v arch >/dev/null 2>&1; then
+                echo "Switching to arm64 shell for Podman..."
+                exec arch -arm64 /bin/zsh -lc "$0 $*"
+            fi
+        fi
+    fi
+fi
+
+ENGINE=""
+RESET=false
+PHPUNIT_ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        --reset)
+            RESET=true
+            ;;
+        --docker)
+            ENGINE="docker"
+            ;;
+        --podman)
+            ENGINE="podman"
+            ;;
+        *)
+            PHPUNIT_ARGS+=("$arg")
+            ;;
+    esac
+done
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+if [[ "$ENGINE" == "docker" ]]; then
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    else
+        echo "Docker selected but neither 'docker compose' nor 'docker-compose' is available." >&2
+        exit 1
+    fi
+elif [[ "$ENGINE" == "podman" ]]; then
+    if have podman; then
+        COMPOSE="podman compose"
+        if ! podman compose -h >/dev/null 2>&1; then
+            if have podman-compose; then
+                COMPOSE="podman-compose"
+            elif have docker-compose; then
+                COMPOSE="docker-compose"
+                USING_DOCKER_COMPOSE_WITH_PODMAN=1
+            else
+                echo "Podman selected but no compose implementation found (podman compose/podman-compose/docker-compose)." >&2
+                exit 1
+            fi
+        fi
+    else
+        echo "Podman selected but 'podman' binary not found." >&2
+        exit 1
+    fi
+else
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    elif have podman; then
+        COMPOSE="podman compose"
+    else
+        echo "No compatible container engine found. Install Docker or Podman." >&2
+        exit 1
+    fi
+fi
+
+# Ensure Podman machine and env if using Podman
+if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]] && have podman && podman machine list >/dev/null 2>&1; then
+    if ! podman machine list | grep -q "Running"; then
+        echo "Starting Podman machine..."
+        podman machine start >/dev/null || true
+    fi
+    eval "$(podman machine env 2>/dev/null)" || true
+fi
+
+if $RESET; then
+    echo "🧹 Resetting zmsclient test environment..."
+    $COMPOSE down -v
+    echo "✅ Reset complete! All containers and volumes removed."
+    exit 0
+fi
+
+echo "Restarting test stack..."
+MOCKUP_PORT_HTTP=8082
+MOCKUP_PORT_ADMIN=8083
+if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]]; then
+    MOCKUP_PORT_HTTP=18082
+    MOCKUP_PORT_ADMIN=18083
+fi
+MOCKUP_PORT_HTTP="$MOCKUP_PORT_HTTP" MOCKUP_PORT_ADMIN="$MOCKUP_PORT_ADMIN" $COMPOSE down -v --remove-orphans || true
+MOCKUP_PORT_HTTP="$MOCKUP_PORT_HTTP" MOCKUP_PORT_ADMIN="$MOCKUP_PORT_ADMIN" $COMPOSE up -d --build
+
+echo "Running tests in container..."
+$COMPOSE exec -T test bash -lc "\
+set -e && \
+cd /app && \
+if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
+vendor/bin/phpunit ${PHPUNIT_ARGS[*]} \
+"
+
+
