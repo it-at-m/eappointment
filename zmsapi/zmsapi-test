@@ -1,35 +1,122 @@
 #!/bin/bash
 
 # zmsapi-test - Automated testing script for zmsapi module
-# Usage: ./zmsapi-test [PHPUnit arguments...]
-#        ./zmsapi-test --reset (reset all containers and volumes)
+# Usage: ./zmsapi-test [--docker|--podman] [--reset] [PHPUnit args...]
 
 set -e
 
-# Check for reset command
-if [[ $1 == "--reset" ]]; then
+# On macOS Apple Silicon under Rosetta, re-exec under arm64 so Podman works reliably
+# Darwin = macOS. If running under Rosetta on Apple Silicon, re-exec as arm64.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    if command -v sysctl >/dev/null 2>&1; then
+        # sysctl.proc_translated == 1 means running under Rosetta
+        if [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)" == "1" ]]; then
+            if command -v arch >/dev/null 2>&1; then
+                echo "Switching to arm64 shell for Podman..."
+                exec arch -arm64 /bin/zsh -lc "$0 $*"
+            fi
+        fi
+    fi
+fi
+
+# Parse flags and PHPUnit args
+ENGINE=""
+RESET=false
+PHPUNIT_ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        --reset)
+            RESET=true
+            ;;
+        --docker)
+            ENGINE="docker"
+            ;;
+        --podman)
+            ENGINE="podman"
+            ;;
+        *)
+            PHPUNIT_ARGS+=("$arg")
+            ;;
+    esac
+done
+
+have() { command -v "$1" >/dev/null 2>&1; }
+podman_compose_native_available() {
+    have podman && podman compose -h >/dev/null 2>&1
+}
+
+# Determine compose command
+if [[ "$ENGINE" == "docker" ]]; then
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    else
+        echo "Docker selected but neither 'docker compose' nor 'docker-compose' is available." >&2
+        exit 1
+    fi
+elif [[ "$ENGINE" == "podman" ]]; then
+    if have podman; then
+        COMPOSE="podman compose"
+        if ! podman compose -h >/dev/null 2>&1; then
+            if have podman-compose; then
+                COMPOSE="podman-compose"
+            else
+                echo "Podman selected but 'podman compose' is unavailable and 'podman-compose' not found." >&2
+                exit 1
+            fi
+        fi
+    else
+        echo "Podman selected but 'podman' binary not found." >&2
+        exit 1
+    fi
+else
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    elif have podman; then
+        COMPOSE="podman compose"
+    elif have podman-compose; then
+        COMPOSE="podman-compose"
+    else
+        echo "No compatible container engine found. Install Docker or Podman." >&2
+        exit 1
+    fi
+fi
+
+# If using Podman, ensure the Podman machine is running (macOS/Windows)
+if [[ "$COMPOSE" == podman* ]] && have podman && podman machine list >/dev/null 2>&1; then
+    if ! podman machine list | grep -q "Running"; then
+        echo "Starting Podman machine..."
+        podman machine start >/dev/null || true
+    fi
+    # Export Docker compatibility env so compose talks to Podman (covers both podman compose and podman-compose)
+    eval "$(podman machine env 2>/dev/null)" || true
+fi
+
+if $RESET; then
     echo "🧹 Resetting zmsapi test environment..."
-    docker-compose down -v
+    $COMPOSE down -v
     echo "✅ Reset complete! All containers and volumes removed."
     exit 0
 fi
 
-# Parse all PHPUnit arguments
-PHPUNIT_ARGS=""
-if [[ $# -gt 0 ]]; then
-    PHPUNIT_ARGS="$*"
-    echo "Running tests with arguments: $PHPUNIT_ARGS"
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+    echo "Running tests with arguments: ${PHPUNIT_ARGS[*]}"
 fi
 
 # Already in zmsapi directory
 
 # Check if mariadb is running, start if not
-if ! docker-compose ps mariadb | grep -q "Up"; then
+if ! $COMPOSE ps mariadb | grep -q "Up"; then
     echo "Starting mariadb container..."
-    docker-compose up -d mariadb
+    HOST_DB_PORT_VALUE=3309
+    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3310; fi
+    HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     # Wait for mariadb to be healthy
     echo "Waiting for mariadb to be ready..."
-                    until docker-compose exec -T mariadb mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
+    until $COMPOSE exec -T mariadb mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
         sleep 2
     done
     echo "MariaDB is ready!"
@@ -37,18 +124,20 @@ else
     echo "MariaDB is already running"
 fi
 
-# Check if docker-compose services are already running
-if ! docker-compose ps | grep -q "zmsapi"; then
+# Check if services are already running
+if ! $COMPOSE ps | grep -q "zmsapi"; then
     echo "Setting up test environment (first run)..."
-    docker-compose down
-    docker-compose up -d --build
-    docker-compose logs -f test
+    $COMPOSE down
+    HOST_DB_PORT_VALUE=3308
+    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=13308; fi
+    HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d --build
+    $COMPOSE logs -f test
 else
     echo "Test environment already set up, running tests..."
     # Run tests with or without filter
-                    if [ -n "$PHPUNIT_ARGS" ]; then
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit $PHPUNIT_ARGS"
-                else
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit"
-                fi
+    if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+        $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit ${PHPUNIT_ARGS[*]}"
+    else
+        $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit"
+    fi
 fi

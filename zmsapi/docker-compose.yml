@@ -8,7 +8,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     ports:
-      - 3308:3306
+      - ${HOST_DB_PORT:-3308}:3306
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pzmsapi"]
       interval: 10s

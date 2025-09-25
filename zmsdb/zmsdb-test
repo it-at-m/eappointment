@@ -3,24 +3,135 @@
 
 set -e
 
-if [[ $1 == "--reset" ]]; then
+# On macOS Apple Silicon under Rosetta, re-exec under arm64 so Podman works reliably
+# Darwin = macOS. If running under Rosetta on Apple Silicon, re-exec as arm64.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    if command -v sysctl >/dev/null 2>&1; then
+        # sysctl.proc_translated == 1 means running under Rosetta
+        if [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)" == "1" ]]; then
+            if command -v arch >/dev/null 2>&1; then
+                echo "Switching to arm64 shell for Podman..."
+                exec arch -arm64 /bin/zsh -lc "$0 $*"
+            fi
+        fi
+    fi
+fi
+
+# Parse flags: --docker, --podman, --reset; pass the rest to PHPUnit
+ENGINE=""
+RESET=false
+PHPUNIT_ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        --reset)
+            RESET=true
+            ;;
+        --docker)
+            ENGINE="docker"
+            ;;
+        --podman)
+            ENGINE="podman"
+            ;;
+        *)
+            PHPUNIT_ARGS+=("$arg")
+            ;;
+    esac
+done
+
+have() { command -v "$1" >/dev/null 2>&1; }
+podman_compose_native_available() {
+    have podman && podman compose -h >/dev/null 2>&1
+}
+
+# Determine compose command based on engine preference and availability
+if [[ "$ENGINE" == "docker" ]]; then
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    else
+        echo "Docker selected but neither 'docker compose' nor 'docker-compose' is available." >&2
+        exit 1
+    fi
+elif [[ "$ENGINE" == "podman" ]]; then
+    if have podman; then
+        COMPOSE="podman compose"
+        if ! podman compose -h >/dev/null 2>&1; then
+            if have podman-compose; then
+                COMPOSE="podman-compose"
+            elif have docker-compose; then
+                COMPOSE="docker-compose"
+                USING_DOCKER_COMPOSE_WITH_PODMAN=1
+            else
+                echo "Podman selected but no compose implementation found (podman compose/podman-compose/docker-compose)." >&2
+                exit 1
+            fi
+        fi
+    else
+        echo "Podman selected but 'podman' binary not found." >&2
+        exit 1
+    fi
+else
+    if have docker && docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif have docker-compose; then
+        COMPOSE="docker-compose"
+    elif have podman; then
+        COMPOSE="podman compose"
+    elif have podman-compose; then
+        COMPOSE="podman-compose"
+    else
+        echo "No compatible container engine found. Install Docker or Podman." >&2
+        exit 1
+    fi
+fi
+
+# If using Podman, ensure the Podman machine is running (macOS/Windows)
+if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]] && have podman && podman machine list >/dev/null 2>&1; then
+    if ! podman machine list | grep -q "Running"; then
+        echo "Starting Podman machine..."
+        podman machine start >/dev/null || true
+    fi
+    # Export Docker compatibility env so compose talks to Podman (covers both podman compose and podman-compose)
+    eval "$(podman machine env 2>/dev/null)" || true
+fi
+
+# Fallback: if using docker-compose to drive Podman, ensure DOCKER_HOST is set
+if [[ "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]]; then
+    if [[ -z "$DOCKER_HOST" ]]; then
+        # Try to get Podman remote socket path from podman info (preferred)
+        PODMAN_SOCK=$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null || echo "")
+        if [[ -n "$PODMAN_SOCK" && -S "$PODMAN_SOCK" ]]; then
+            export DOCKER_HOST="unix://$PODMAN_SOCK"
+        else
+            # Fallback to common default path
+            DEFAULT_PODMAN_SOCK="$HOME/.local/share/containers/podman/machine/podman-machine-default/podman.sock"
+            if [[ -S "$DEFAULT_PODMAN_SOCK" ]]; then
+                export DOCKER_HOST="unix://$DEFAULT_PODMAN_SOCK"
+            fi
+        fi
+    fi
+    export DOCKER_API_VERSION="${DOCKER_API_VERSION:-1.41}"
+fi
+
+if $RESET; then
     echo "🧹 Resetting zmsdb test environment..."
-    docker-compose down -v
+    $COMPOSE down -v
     echo "✅ Reset complete! All containers and volumes removed."
     exit 0
 fi
 
-PHPUNIT_ARGS=""
-if [[ $# -gt 0 ]]; then
-    PHPUNIT_ARGS="$*"
-    echo "Running tests with arguments: $PHPUNIT_ARGS"
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+    echo "Running tests with arguments: ${PHPUNIT_ARGS[*]}"
 fi
 
-if ! docker-compose ps mariadb | grep -q "Up"; then
+if ! $COMPOSE ps mariadb | grep -q "Up"; then
     echo "Starting mariadb container..."
-    docker-compose up -d mariadb
+    HOST_DB_PORT_VALUE=3307
+    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3308; fi
+    HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     echo "Waiting for mariadb to be ready..."
-    until docker-compose exec -T mariadb mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
+    until $COMPOSE exec -T mariadb mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
         sleep 2
     done
     echo "MariaDB is ready!"
@@ -28,34 +139,38 @@ else
     echo "MariaDB is already running"
 fi
 
-if ! docker-compose ps | grep -q "zmsdb"; then
+if ! $COMPOSE ps | grep -q "zmsdb"; then
     echo "Setting up test environment (first run)..."
-    docker-compose down
-    docker-compose up -d --build
-    docker-compose logs -f test
+    $COMPOSE down
+    HOST_DB_PORT_VALUE=3307
+    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=13307; fi
+    HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d --build
+    $COMPOSE logs -f test
 else
     echo "Test environment already set up, running tests..."
-    if [ -n "$PHPUNIT_ARGS" ]; then
-        docker-compose run --rm --no-deps test bash -lc "\
+    if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+        $COMPOSE run --rm --no-deps test bash -lc "\
 apt update && apt install -y rsync && \
 rsync -a --delete /host/ /tmp/workspace/ && \
 cd /tmp/workspace/zmsdb && \
 php -r 'require \"vendor/autoload.php\"; exit(class_exists(\"BO\\\\Zmsdldb\\\\FileAccess\")?0:42);' || \
 (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o) && \
+if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
 php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} \
     -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
     bin/importTestData --commit && \
 php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} \
     -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
-    vendor/bin/phpunit $PHPUNIT_ARGS \
+    vendor/bin/phpunit ${PHPUNIT_ARGS[*]} \
 "
     else
-        docker-compose run --rm --no-deps test bash -lc "\
+        $COMPOSE run --rm --no-deps test bash -lc "\
 apt update && apt install -y rsync && \
 rsync -a --delete /host/ /tmp/workspace/ && \
 cd /tmp/workspace/zmsdb && \
 php -r 'require \"vendor/autoload.php\"; exit(class_exists(\"BO\\\\Zmsdldb\\\\FileAccess\")?0:42);' || \
 (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o) && \
+if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
 php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} \
     -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
     bin/importTestData --commit && \
