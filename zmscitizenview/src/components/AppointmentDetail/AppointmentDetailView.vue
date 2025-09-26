@@ -32,7 +32,10 @@
         <p style="margin-bottom: 16px">
           {{ t("rescheduleAppointmentModalText") }}
         </p>
-        <p style="margin-bottom: 0">
+        <p
+          v-if="appointment && selectedProvider"
+          style="margin-bottom: 0"
+        >
           <b>{{ t("affectedAppointment") }}</b>
           <br />
           {{ getServiceSummary() }}
@@ -68,7 +71,10 @@
         <p style="margin-bottom: 16px">
           {{ t("cancleAppointmentModalText") }}
         </p>
-        <p style="margin-bottom: 0">
+        <p
+          v-if="appointment && selectedProvider"
+          style="margin-bottom: 0"
+        >
           <b>{{ t("affectedAppointment") }}</b>
           <br />
           {{ getServiceSummary() }}
@@ -258,7 +264,6 @@ const props = defineProps<{
   appointmentOverviewUrl: string;
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
-  accessToken: string | null;
 }>();
 
 const services = ref<Service[]>([]);
