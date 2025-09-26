@@ -1,3 +1,6 @@
+# Ignore QEMU core dumps created during container runs
+qemu_dash_*
+qemu_dash_*.core
 /vendor/
 /vendor.zmsbase/
 tags

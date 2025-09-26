@@ -124,6 +124,10 @@ fi
 if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
     echo "Running tests with arguments: ${PHPUNIT_ARGS[*]}"
 fi
+PHPUNIT_ESCAPED=""
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+    PHPUNIT_ESCAPED="$(printf ' %q' "${PHPUNIT_ARGS[@]}")"
+fi
 
 if ! $COMPOSE ps mariadb | grep -q "Up"; then
     echo "Starting mariadb container..."
@@ -161,7 +165,7 @@ php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} \
     bin/importTestData --commit && \
 php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} \
     -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
-    vendor/bin/phpunit ${PHPUNIT_ARGS[*]} \
+    vendor/bin/phpunit${PHPUNIT_ESCAPED} \
 "
     else
         $COMPOSE run --rm --no-deps test bash -lc "\

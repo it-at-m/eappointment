@@ -121,11 +121,15 @@ MOCKUP_PORT_HTTP="$MOCKUP_PORT_HTTP" MOCKUP_PORT_ADMIN="$MOCKUP_PORT_ADMIN" $COM
 MOCKUP_PORT_HTTP="$MOCKUP_PORT_HTTP" MOCKUP_PORT_ADMIN="$MOCKUP_PORT_ADMIN" $COMPOSE up -d --build
 
 echo "Running tests in container..."
+PHPUNIT_ESCAPED=""
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+    PHPUNIT_ESCAPED="$(printf ' %q' "${PHPUNIT_ARGS[@]}")"
+fi
 $COMPOSE exec -T test bash -lc "\
 set -e && \
 cd /app && \
 if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
-vendor/bin/phpunit ${PHPUNIT_ARGS[*]} \
+vendor/bin/phpunit${PHPUNIT_ESCAPED} \
 "
 
 
