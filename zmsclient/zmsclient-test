@@ -130,6 +130,6 @@ set -e && \
 cd /app && \
 if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
 vendor/bin/phpunit${PHPUNIT_ESCAPED} \
-"
+" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
 
 
