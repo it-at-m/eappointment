@@ -33,7 +33,7 @@ services:
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: zmsdb
       ZMS_CONFIG_SECURE_TOKEN: secure-token
-      PHP_MEMORY_LIMIT: "1G"
+      PHP_MEMORY_LIMIT: "2G"
     working_dir: /tmp/workspace/zmsdb
     deploy:
       resources:
