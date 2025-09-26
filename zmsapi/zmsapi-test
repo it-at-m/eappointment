@@ -147,18 +147,23 @@ if ! $COMPOSE ps mariadb | grep -q "Up"; then
     if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3310; fi
     HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     # Wait for mariadb to be healthy or pingable (whichever comes first)
-    echo "Waiting for mariadb to be healthy..."
-    if [[ "$COMPOSE" == podman* ]]; then ENGINE_BIN=podman; else ENGINE_BIN=docker; fi
-    for _i in $(seq 1 180); do
-        STATUS=$($ENGINE_BIN inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' zmsapi_mariadb_1 2>/dev/null || echo unknown)
-        if [[ "$STATUS" == "healthy" ]]; then
-            break
-        fi
-        if $ENGINE_BIN exec -i zmsapi_mariadb_1 mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; then
-            break
-        fi
-        sleep 1
-    done
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        echo "Waiting for mariadb to be healthy..."
+        if [[ "$COMPOSE" == podman* ]]; then ENGINE_BIN=podman; else ENGINE_BIN=docker; fi
+        for _i in $(seq 1 180); do
+            STATUS=$($ENGINE_BIN inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' zmsapi_mariadb_1 2>/dev/null || echo unknown)
+            if [[ "$STATUS" == "healthy" ]]; then
+                break
+            fi
+            if $ENGINE_BIN exec -i zmsapi_mariadb_1 mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; then
+                break
+            fi
+            sleep 1
+        done
+    else
+        # On Linux/WSL, rely on compose healthcheck and test container wait
+        sleep 2
+    fi
     echo "MariaDB is ready!"
 else
     echo "MariaDB is already running"
