@@ -148,7 +148,7 @@ if ! $COMPOSE ps mariadb | grep -q "Up"; then
     HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     # Wait for mariadb to be healthy
     echo "Waiting for mariadb to be ready..."
-    until $COMPOSE exec -T mariadb mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
+    until $COMPOSE exec -it zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
         sleep 2
     done
     echo "MariaDB is ready!"

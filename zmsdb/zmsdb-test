@@ -144,7 +144,7 @@ if ! $COMPOSE ps mariadb | grep -q "Up"; then
     if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3308; fi
     HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     echo "Waiting for mariadb to be ready..."
-    until $COMPOSE exec -T mariadb mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
+    until $COMPOSE exec -it zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
         sleep 2
     done
     echo "MariaDB is ready!"
