@@ -3,6 +3,7 @@ version: '3.3'
 services:
   mockup:
     image: jordimartin/mmock
+    container_name: zmsclient_mockup_1
     ports:
       - ${MOCKUP_PORT_HTTP:-8082}:8082
       - ${MOCKUP_PORT_ADMIN:-8083}:8083
@@ -15,6 +16,7 @@ services:
     depends_on:
       - mockup
     image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    container_name: zmsclient_test_1
     volumes:
       - type: bind
         source: "."

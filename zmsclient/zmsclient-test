@@ -134,7 +134,7 @@ PHPUNIT_ESCAPED=""
 if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
     PHPUNIT_ESCAPED="$(printf ' %q' "${PHPUNIT_ARGS[@]}")"
 fi
-$COMPOSE exec -T test bash -lc "\
+$COMPOSE exec -T zmsclient_test_1 bash -lc "\
 set -e && \
 cd /app && \
 if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && \
