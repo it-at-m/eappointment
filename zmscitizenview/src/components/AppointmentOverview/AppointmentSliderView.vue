@@ -94,7 +94,6 @@ const props = defineProps<{
   newAppointmentUrl: string;
   displayedOnDetailScreen: boolean;
   t: (key: string) => string;
-  accessToken: string | null;
 }>();
 
 const loading = ref(true);

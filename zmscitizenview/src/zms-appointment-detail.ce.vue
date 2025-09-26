@@ -12,7 +12,6 @@
         :appointment-overview-url="appointmentOverviewUrl"
         :reschedule-appointment-url="rescheduleAppointmentUrl"
         :t="t"
-        :access-token="accessToken"
       />
     </div>
   </main>

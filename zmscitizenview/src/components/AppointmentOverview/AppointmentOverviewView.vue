@@ -89,7 +89,6 @@ const props = defineProps<{
   newAppointmentUrl: string;
   overviewUrl: string;
   t: (key: string) => string;
-  accessToken: string | null;
 }>();
 
 const appointments = ref<AppointmentDTO[]>([]);
