@@ -124,8 +124,8 @@ describe("AppointmentView", () => {
             props: ["baseUrl", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
             emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
-          'calendar-view': {
-            template: "<div data-test='calendar-view'></div>",
+          'AppointmentSelection': {
+            template: "<div data-test='AppointmentSelection'></div>",
             props: ["baseUrl", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
             emits: ["back", "next"],
           },
@@ -178,7 +178,7 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 1;
       await nextTick();
-      expect(wrapper.find('[data-test="calendar-view"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(true);
     });
 
     it("shows customer info after calendar selection", async () => {
@@ -240,7 +240,7 @@ describe("AppointmentView", () => {
       await nextTick();
       wrapper.vm.currentView = 1; // Simulate going back
       await nextTick();
-      expect(wrapper.find('[data-test="calendar-view"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="AppointmentSelection"]').exists()).toBe(true);
     });
 
     it("disables previous steps in stepper when appointment hash is present", async () => {
