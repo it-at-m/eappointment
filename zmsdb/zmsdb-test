@@ -87,13 +87,22 @@ else
 fi
 
 # If using Podman, ensure the Podman machine is running (macOS/Windows)
-if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]] && have podman && podman machine list >/dev/null 2>&1; then
-    if ! podman machine list | grep -q "Running"; then
-        echo "Starting Podman machine..."
-        podman machine start >/dev/null || true
+if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]] && have podman; then
+    # Check if podman machine exists and is running
+    if podman machine list >/dev/null 2>&1; then
+        if ! podman machine list | grep -q "Running"; then
+            echo "Starting Podman machine..."
+            podman machine start >/dev/null || true
+        fi
+        # Export Docker compatibility env so compose talks to Podman (covers both podman compose and podman-compose)
+        eval "$(podman machine env 2>/dev/null)" || true
+    else
+        # No machine exists, create one
+        echo "Creating Podman machine..."
+        podman machine init >/dev/null 2>&1 || true
+        podman machine start >/dev/null 2>&1 || true
+        eval "$(podman machine env 2>/dev/null)" || true
     fi
-    # Export Docker compatibility env so compose talks to Podman (covers both podman compose and podman-compose)
-    eval "$(podman machine env 2>/dev/null)" || true
 fi
 
 # Fallback: if using docker-compose to drive Podman, ensure DOCKER_HOST is set
