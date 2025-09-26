@@ -143,10 +143,25 @@ if ! $COMPOSE ps mariadb | grep -q "Up"; then
     HOST_DB_PORT_VALUE=3307
     if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3308; fi
     HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
-    echo "Waiting for mariadb to be ready..."
-    until $COMPOSE exec -it zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
-        sleep 2
+    echo "Waiting for mariadb to be healthy..."
+    if [[ "$COMPOSE" == podman* ]]; then ENGINE_BIN=podman; else ENGINE_BIN=docker; fi
+    for _i in $(seq 1 120); do
+        STATUS=$($ENGINE_BIN inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' zmsdb_mariadb_1 2>/dev/null || echo unknown)
+        if [[ "$STATUS" == "healthy" ]]; then
+            break
+        fi
+        sleep 1
     done
+    # Final ping to be extra sure
+    if [[ "$COMPOSE" == podman* ]]; then
+        until podman exec -i zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
+            sleep 1
+        done
+    else
+        until docker exec -i zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsdb >/dev/null 2>&1; do
+            sleep 1
+        done
+    fi
     echo "MariaDB is ready!"
 else
     echo "MariaDB is already running"
