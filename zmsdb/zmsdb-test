@@ -11,7 +11,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         if [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)" == "1" ]]; then
             if command -v arch >/dev/null 2>&1; then
                 echo "Switching to arm64 shell for Podman..."
-                exec arch -arm64 /bin/zsh -lc "$0 $*"
+                exec arch -arm64 /bin/zsh -lc 'exec "$@"' -- "$0" "$@"
             fi
         fi
     fi
