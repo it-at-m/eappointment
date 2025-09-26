@@ -1,19 +1,26 @@
 import { describe, it, expect } from "vitest";
-import { formatAppointmentDateTime } from "../../../src/utils/formatAppointmentDateTime";
+import { formatAppointmentDateTime, formatDayFromDate } from "../../../src/utils/formatAppointmentDateTime";
 
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
   weekday: "long",
   year: "numeric",
-  month: "numeric",
-  day: "numeric",
+  month: "2-digit",
+  day: "2-digit",
 });
 
 const formatterTime = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
-  hour: "numeric",
-  minute: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
   hour12: false,
+});
+
+describe("formatDayFromDate", () => {
+  it("formats dates correctly", () => {
+    const date = new Date('2025-05-15');
+    expect(formatDayFromDate(date)).toBe('Donnerstag, 15.05.2025');
+  });
 });
 
 describe("calculateEstimatedDuration", () => {
@@ -22,7 +29,7 @@ describe("calculateEstimatedDuration", () => {
   });
 
   it("returns formated date string if number is a date", () => {
-    expect(formatAppointmentDateTime(1)).toBe("Donnerstag, 1.1.1970, 01:00");
+    expect(formatAppointmentDateTime(1)).toBe("Donnerstag, 01.01.1970, 01:00");
   });
 
   it("returns formated date string of now", () => {
