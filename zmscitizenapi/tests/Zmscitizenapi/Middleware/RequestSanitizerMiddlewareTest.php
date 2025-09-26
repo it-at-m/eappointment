@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Middleware;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 use PHPUnit\Framework\MockObject\MockObject;

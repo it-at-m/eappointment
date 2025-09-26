@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Localization;
+namespace BO\Zmscitizenapi\Helper;
 
 class ErrorMessages
 {

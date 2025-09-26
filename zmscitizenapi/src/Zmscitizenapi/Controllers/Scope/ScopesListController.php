@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers\Scope;
 
 use BO\Zmscitizenapi\BaseController;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use BO\Zmscitizenapi\Services\Scope\ScopesListService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
