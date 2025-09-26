@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.6.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
     container_name: ddev-${DDEV_SITENAME}-refarch-gateway
     ports:
       - "8084:8080"
