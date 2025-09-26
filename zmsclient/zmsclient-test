@@ -87,6 +87,22 @@ if [[ "$COMPOSE" == podman* || "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]] && 
     eval "$(podman machine env 2>/dev/null)" || true
 fi
 
+# Fallback: if using docker-compose to drive Podman, ensure DOCKER_HOST/API_VERSION
+if [[ "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]]; then
+    if [[ -z "$DOCKER_HOST" ]]; then
+        PODMAN_SOCK=$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null || echo "")
+        if [[ -n "$PODMAN_SOCK" && -S "$PODMAN_SOCK" ]]; then
+            export DOCKER_HOST="unix://$PODMAN_SOCK"
+        else
+            DEFAULT_PODMAN_SOCK="$HOME/.local/share/containers/podman/machine/podman-machine-default/podman.sock"
+            if [[ -S "$DEFAULT_PODMAN_SOCK" ]]; then
+                export DOCKER_HOST="unix://$DEFAULT_PODMAN_SOCK"
+            fi
+        fi
+    fi
+    export DOCKER_API_VERSION="${DOCKER_API_VERSION:-1.41}"
+fi
+
 if $RESET; then
     echo "🧹 Resetting zmsclient test environment..."
     $COMPOSE down -v

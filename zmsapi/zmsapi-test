@@ -61,8 +61,11 @@ elif [[ "$ENGINE" == "podman" ]]; then
         if ! podman compose -h >/dev/null 2>&1; then
             if have podman-compose; then
                 COMPOSE="podman-compose"
+            elif have docker-compose; then
+                COMPOSE="docker-compose"
+                USING_DOCKER_COMPOSE_WITH_PODMAN=1
             else
-                echo "Podman selected but 'podman compose' is unavailable and 'podman-compose' not found." >&2
+                echo "Podman selected but no compose implementation found (podman compose/podman-compose/docker-compose)." >&2
                 exit 1
             fi
         fi
@@ -93,6 +96,22 @@ if [[ "$COMPOSE" == podman* ]] && have podman && podman machine list >/dev/null 
     fi
     # Export Docker compatibility env so compose talks to Podman (covers both podman compose and podman-compose)
     eval "$(podman machine env 2>/dev/null)" || true
+fi
+
+# Fallback: if using docker-compose to drive Podman, ensure DOCKER_HOST/API_VERSION
+if [[ "$USING_DOCKER_COMPOSE_WITH_PODMAN" == "1" ]]; then
+    if [[ -z "$DOCKER_HOST" ]]; then
+        PODMAN_SOCK=$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null || echo "")
+        if [[ -n "$PODMAN_SOCK" && -S "$PODMAN_SOCK" ]]; then
+            export DOCKER_HOST="unix://$PODMAN_SOCK"
+        else
+            DEFAULT_PODMAN_SOCK="$HOME/.local/share/containers/podman/machine/podman-machine-default/podman.sock"
+            if [[ -S "$DEFAULT_PODMAN_SOCK" ]]; then
+                export DOCKER_HOST="unix://$DEFAULT_PODMAN_SOCK"
+            fi
+        fi
+    fi
+    export DOCKER_API_VERSION="${DOCKER_API_VERSION:-1.41}"
 fi
 
 if $RESET; then
