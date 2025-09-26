@@ -208,12 +208,4 @@ class ReportClientService
 
         return $args;
     }
-
-    /**
-     * Get the totals array for calculations
-     */
-    public function getTotals(): array
-    {
-        return $this->totals;
-    }
 }
