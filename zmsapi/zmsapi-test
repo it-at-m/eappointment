@@ -151,8 +151,8 @@ fi
 if ! $COMPOSE ps | grep -q "zmsapi"; then
     echo "Setting up test environment (first run)..."
     $COMPOSE down
-    HOST_DB_PORT_VALUE=3308
-    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3308; fi
+    HOST_DB_PORT_VALUE=3309
+    if [[ "$COMPOSE" == podman* ]]; then HOST_DB_PORT_VALUE=3310; fi
     # Run in foreground and propagate test container exit code (preferred)
     if HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up --build --abort-on-container-exit --exit-code-from test; then
         true
