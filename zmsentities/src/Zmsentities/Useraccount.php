@@ -158,6 +158,16 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
+    public function getDepartmentByIds(array $departmentIds)
+    {
+        foreach ($this->departments as $department) {
+            if (in_array($department['id'], $departmentIds)) {
+                return new Department($department);
+            }
+        }
+        return new Department();
+    }
+
     public function testDepartmentById($departmentId)
     {
         $department = $this->getDepartmentById($departmentId);
