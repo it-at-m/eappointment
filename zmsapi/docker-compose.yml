@@ -39,7 +39,7 @@ services:
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: zmsapi
       ZMS_CONFIG_SECURE_TOKEN: secure-token
-      PHP_MEMORY_LIMIT: "1G"
+      PHP_MEMORY_LIMIT: "2G"
     working_dir: /tmp/workspace/zmsapi
     deploy:
       resources:
@@ -76,15 +76,15 @@ services:
           echo 'Vendor already present. Skipping cli+composer.'; \
         fi
         echo 'Setting PHP memory limit...'
-        php -d memory_limit=1G -v
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -v
         echo 'Setting up test fixtures...'
         cd /tmp/workspace/zmsapi
         rm -rf data
         ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data
-        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit
       
         echo 'Running tests...'
-        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit
       "
 volumes:
   zmsapi-workspace:

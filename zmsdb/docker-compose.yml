@@ -91,10 +91,10 @@ services:
         php -d memory_limit=1G -v
 
         echo 'Importing test data...'
-        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php bin/importTestData --commit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php bin/importTestData --commit
 
         echo 'Running tests...'
-        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php vendor/bin/phpunit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php vendor/bin/phpunit
       "
 volumes:
   zmsdb-workspace:
