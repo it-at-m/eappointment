@@ -148,7 +148,7 @@ if ! $COMPOSE ps mariadb | grep -q "Up"; then
     HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d mariadb
     # Wait for mariadb to be healthy
     echo "Waiting for mariadb to be ready..."
-    until $COMPOSE exec -it zmsdb_mariadb_1 mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
+    until $COMPOSE exec zmsapi_mariadb_1 mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
         sleep 2
     done
     echo "MariaDB is ready!"
@@ -157,7 +157,7 @@ else
 fi
 
 # Check if services are already running
-if ! $COMPOSE ps | grep -q "zmsapi"; then
+if ! $COMPOSE ps | grep -q "test"; then
     echo "Setting up test environment (first run)..."
     $COMPOSE down
     HOST_DB_PORT_VALUE=3309
@@ -166,16 +166,24 @@ if ! $COMPOSE ps | grep -q "zmsapi"; then
     if HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up --build --abort-on-container-exit --exit-code-from test; then
         true
     else
-        # Fallback for engines lacking flags: run test container directly
+        # Fallback for engines lacking flags
         HOST_DB_PORT="$HOST_DB_PORT_VALUE" $COMPOSE up -d --build
-        $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
+        if [[ "$COMPOSE" == podman* ]]; then
+            $COMPOSE exec -T test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
+        else
+            $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
+        fi
     fi
 else
     echo "Test environment already set up, running tests..."
     # Run tests with or without filter
-    if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
-        $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}"
+    if [[ "$COMPOSE" == podman* ]]; then
+        $COMPOSE exec -T test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}"
     else
-        $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
+        if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+            $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit${PHPUNIT_ESCAPED}"
+        else
+            $COMPOSE run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && if [ ! -f vendor/bin/phpunit ]; then composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; fi && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit" || { echo "PHPUnit failed. Tips: add --verbose --debug, or --filter=Class::method"; exit 1; }
+        fi
     fi
 fi
