@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

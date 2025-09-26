@@ -6,7 +6,7 @@ namespace BO\Zmscitizenapi\Controllers\Office;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use BO\Zmscitizenapi\Services\Office\OfficesListService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
