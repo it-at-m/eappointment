@@ -6,7 +6,7 @@ namespace BO\Zmscitizenapi\Controllers\Office;
 
 use App;
 use BO\Zmscitizenapi\BaseController;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use BO\Zmscitizenapi\Services\Office\OfficesServicesRelationsService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;

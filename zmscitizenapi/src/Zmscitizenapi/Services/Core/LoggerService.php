@@ -6,7 +6,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

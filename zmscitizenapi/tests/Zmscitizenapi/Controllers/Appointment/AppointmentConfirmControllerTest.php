@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Helper\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class AppointmentConfirmControllerTest extends ControllerTestCase
