@@ -246,7 +246,7 @@
             </muc-button>
           </div>
           <muc-callout
-            v-if="hasConfirmAppointmentError"
+            v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
             :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
@@ -909,6 +909,7 @@ onMounted(() => {
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           confirmAppointmentSuccess.value = true;
+          clearContextErrors(errorStateMap.value);
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
 
