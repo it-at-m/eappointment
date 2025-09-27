@@ -17,7 +17,7 @@
         Uhrzeit: <strong>{{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong>.<br />
         <br>
 
-        Terminnummer: <strong>{{ process.id }}</strong><br />
+        Terminnummer: <strong>{{ process.displayNumber }}</strong><br />
         {% if process.scope.hint %}
         <strong>Wartezone: {{ process.scope.hint }} </strong><br />
         {% endif %}<br />
@@ -71,7 +71,7 @@
 {
   "@context": "http://schema.org",
   "@type": "EventReservation",
-  "reservationNumber": "{{ process.id }}",
+  "reservationNumber": "{{ process.displayNumber }}",
   "reservationStatus": "http://schema.org/Confirmed",
   "modifyReservationUrl": "{{ config.appointments.urlChange }}",
   "modifiedTime": "{{ process.createTimestamp|date('c') }}",

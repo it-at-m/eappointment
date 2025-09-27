@@ -238,14 +238,14 @@
 						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
 						<dt>{{ selectedprocess.appointments[0].date|date("d.m.Y") }} um {{ selectedprocess.appointments[0].date|date("H:i") }} Uhr</dt>
-						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
+						<dt>Termin-Nr. {{ selectedprocess.displayNumber }}</dt>
 					</dl>
 				</div>
 				 <div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
 						<button type="button" class="button btn button-submit button-ok">Ok</button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.queue.number < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.displayNumber < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
 						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id={{ selectedprocess.id }}>Termin erneut bearbeiten</button>
 					</div>
 				</div>
@@ -255,7 +255,7 @@
 		{% block process_changed %}
 			{% set successTitle = "Vorgang wurde geändert." %}
 			{{ block('success_start') }}
-				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich geändert.
+				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich geändert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -265,7 +265,7 @@
 		{% block process_deleted %}
 			{% set successTitle = "Vorgang gelöscht" %}
 			{{ block('success_start') }}
-				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich entfernt.
+				Der Vorgang mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich entfernt.
 				<div class="form-actions">
 					<button type="button" onclick="location.href = '{{ includeUrl() }}/workstation/';" data-action-ok class="button button-ok btn right">OK</button>
 				</div>
@@ -275,7 +275,7 @@
 		{% block process_updated %}
 			{% set successTitle = "Vorgang aktualisiert" %}
 			{{ block('success_start') }}
-				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich aktualisiert.
+				Der Vorgang mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich aktualisiert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -285,7 +285,7 @@
 		{% block process_withoutappointment_updated %}
 			{% set successTitle = "Spontankunde aktualisiert" %}
 			{{ block('success_start') }}
-				Der Spontankunde mit der Wartenummer {{ selectedprocess.queue.number }} wurde erfolgreich aktualisiert.
+				Der Spontankunde mit der Wartenummer {{ selectedprocess.displayNumber }} wurde erfolgreich aktualisiert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -300,7 +300,7 @@
 						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
 						<dt>{{ selectedprocess.appointments[0].date|date("d.m.Y") }}</dt>
-						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
+						<dt>Termin-Nr. {{ selectedprocess.displayNumber }}</dt>
 					</dl>
 				</div>
 				<div class="form-actions">
@@ -316,7 +316,7 @@
 			{% set successTitle = "Erfolgreiche Wiederaufnahme in Warteschlange" %}
 			{{ block('success_start') }}
 					<p>
-						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
+						Der Vorgang mit der Nummer {{ changedprocess.displayNumber }}{% if changedProcess.clients|first.familyName %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
 					</p>
 			{{ block('success_end') }}
 		{% endblock %}

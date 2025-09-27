@@ -62,6 +62,9 @@
                 "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
                 "firstNumber": 300,
                 "lastNumber": 500,
+                "lastDisplayNumber": 150,
+                "maxDisplayNumber": 9999,
+                "displayNumberPrefix": "TT",
                 "publishWaitingTimeEnabled": true,
                 "processingTimeAverage": 12,
                 "statisticsEnabled": true
@@ -815,6 +818,48 @@
                             ],
                             "description": "last possible waiting number for ticket printer",
                             "default": 999
+                        },
+                        "lastDisplayNumber": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$"
+                                }
+                            ],
+                            "description": "last given appointment number"
+                        },
+                        "maxDisplayNumber": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$"
+                                }
+                            ],
+                            "description": "max appointment number",
+                            "default": 9999
+                        },
+                        "displayNumberPrefix": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ],
+                            "description": "appointment number prefix"
                         },
                         "maxNumberContingent": {
                             "oneOf": [

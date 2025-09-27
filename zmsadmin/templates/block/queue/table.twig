@@ -122,16 +122,16 @@
 								<td>
 									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										</a>
 									{% else %}
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>{{ item.clients|first.telephone }}</td>
@@ -337,10 +337,10 @@
 									<td>
 										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-												{{ item.queue.number }}
+												{{ item.displayNumber }}
 											</a>
 										{% else %}
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										{% endif %}
 									</td>
 									<td class="callnextclient">
@@ -449,7 +449,7 @@
 									</td>
 									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" %}
 										<td class="center">
-											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|decodeEntities : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
+											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|decodeEntities : ('Wartenummer ' ~ item.displayNumber) }}" href="#" class="icon process-delete" title="Löschen">
 												<i class="far fa-trash-alt" aria-hidden="true"></i>
 												<span class="aural">Löschen</span>
 											</a>
@@ -529,16 +529,16 @@
 								<td>
 									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										</a>
 									{% else %}
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>{{ item.clients|first.telephone }}</td>

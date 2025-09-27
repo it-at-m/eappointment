@@ -1,7 +1,7 @@
 {% block german %}
 {% if process.scope.preferences.notifications.headsUpContent %}
-{{ process.scope.preferences.notifications.headsUpContent }} {{ process.queue.number }}
+{{ process.scope.preferences.notifications.headsUpContent }} {{ process.displayNumber }}
 {% else %}
-{{ config.notifications.headsUpContent }} {{ process.queue.number }}
+{{ config.notifications.headsUpContent }} {{ process.displayNumber }}
 {% endif %}
 {% endblock %}

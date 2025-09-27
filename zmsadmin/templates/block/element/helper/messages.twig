@@ -234,14 +234,14 @@
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<dl>
-					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					{% if selectedprocess.displayNumber < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.displayNumber }}&nbsp;</dt>
 					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
 					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
 				<div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-ok">Ok</button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.queue.number < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.displayNumber < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
 						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id={{ selectedprocess.id }}>Termin erneut bearbeiten</button>
 					</div>
 				</div>
@@ -251,7 +251,7 @@
 		{% block process_changed %}
 			{% set successTitle = "Vorgang wurde geändert." %}
 			{{ block('success_start') }}
-				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich geändert.
+				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich geändert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -261,7 +261,7 @@
 		{% block process_deleted %}
 			{% set successTitle = "Vorgang gelöscht" %}
 			{{ block('success_start') }}
-				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich entfernt.
+				Der Vorgang mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich entfernt.
                 <div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -271,7 +271,7 @@
 		{% block process_updated %}
 			{% set successTitle = "Vorgang aktualisiert" %}
 			{{ block('success_start') }}
-				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich aktualisiert.
+				Der Vorgang mit der Nummer {{ selectedprocess.displayNumber }} wurde erfolgreich aktualisiert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -281,7 +281,7 @@
 		{% block process_withoutappointment_updated %}
 			{% set successTitle = "Spontankunde aktualisiert" %}
 			{{ block('success_start') }}
-				Der Spontankunde mit der Wartenummer {{ selectedprocess.queue.number }} wurde erfolgreich aktualisiert.
+				Der Spontankunde mit der Wartenummer {{ selectedprocess.displayNumber }} wurde erfolgreich aktualisiert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -292,7 +292,7 @@
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
 				<dl>
-					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.displayNumber }}&nbsp;</dt>
 					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
 					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
@@ -308,7 +308,7 @@
 			{% set successTitle = "Erfolgreiche Wiederaufnahme in Warteschlange" %}
 			{{ block('success_start') }}
 					<p>
-						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName  %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
+						Der Vorgang mit der Nummer {{ changedprocess.displayNumber }}{% if changedProcess.clients|first.familyName  %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
 					</p>
 			{{ block('success_end') }}
 		{% endblock %}

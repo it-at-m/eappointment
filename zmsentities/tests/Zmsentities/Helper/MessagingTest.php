@@ -27,7 +27,7 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'queued'));
         self::assertStringContainsString('hiermit bestätigen wir Ihre Wartenummer', $result);
-        self::assertStringContainsString('Ihre Wartenummer ist die "123"', $result);
+        self::assertStringContainsString('Ihre Wartenummer ist die "123456', $result);
         self::assertStringContainsString('Ort: 001 Unter den Linden 1, 12345 Berlin', $result);
         self::assertStringContainsString('Abmeldung einer Wohnung', $result);
 

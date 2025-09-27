@@ -298,6 +298,7 @@ EOS;
     authKey
     priority
     id
+    displayNumber
     status
     createTimestamp
     timeoutTime
@@ -372,6 +373,7 @@ EOS;
     customTextfield
     customTextfield2
     id
+    displayNumber
     appointments{
         date
     }

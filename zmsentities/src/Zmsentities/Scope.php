@@ -296,6 +296,17 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
+    public function incrementDisplayNumber()
+    {
+        if ($this->getStatus('queue', 'lastDisplayNumber') >= $this->getStatus('queue', 'maxDisplayNumber')) {
+            $this->setStatusQueue('lastDisplayNumber', 1);
+            return $this;
+        }
+
+        $this->setStatusQueue('lastDisplayNumber', $this->getStatus('queue', 'lastDisplayNumber') + 1);
+        return $this;
+    }
+
     public function hasEmailFrom()
     {
         $emailFrom = $this->getPreference('client', 'emailFrom');

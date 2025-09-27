@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsdb\Scope as ScopeEntity;
+
 /**
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
@@ -306,6 +308,15 @@ class Process extends Base implements MappingInterface
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
             'queue__lastCallTime' => 'process.Timestamp',
+            'displayNumber' => self::expression(
+                'COALESCE(
+                    `process`.`displayNumber`,
+                    IF(`process`.`wartenummer`,
+                        `process`.`wartenummer`,
+                        `process`.`BuergerID`
+                    )
+                )'
+            ),
             'queue__number' => self::expression(
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,
@@ -759,6 +770,9 @@ class Process extends Base implements MappingInterface
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
+            'displayNumber' => $parentProcess === 0 && empty($process->queue['number'])
+                ? $this->getNewDisplayNumber($process)
+                : null,
             'wartenummer' => $process->queue['number']
         ];
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
@@ -766,6 +780,21 @@ class Process extends Base implements MappingInterface
         }
         $this->addValues($values);
     }
+
+    public function getNewDisplayNumber($process)
+    {
+        if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
+            return $process->id;
+        }
+
+        return $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
+            (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+
 
     public function addValuesUpdateProcess(
         \BO\Zmsentities\Process $process,
@@ -911,6 +940,12 @@ class Process extends Base implements MappingInterface
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
+        $this->addValues($data);
+    }
+
+    public function addValueDisplayNumber($process)
+    {
+        $data['displayNumber'] = $process->displayNumber;
         $this->addValues($data);
     }
 
