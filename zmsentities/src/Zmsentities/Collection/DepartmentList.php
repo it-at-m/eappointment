@@ -98,4 +98,14 @@ class DepartmentList extends Base implements JsonUnindexed
         }
         return $this;
     }
+
+    public function getIds()
+    {
+        $ids = [];
+        foreach ($this as $department) {
+            $ids[] = $department->id;
+        }
+
+        return $ids;
+    }
 }

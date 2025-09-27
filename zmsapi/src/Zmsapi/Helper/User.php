@@ -6,6 +6,7 @@ use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
 use BO\Zmsdb\Workstation;
 use BO\Zmsapi\Helper\UserAuth;
+use BO\Zmsentities\Collection\DepartmentList;
 
 /**
  *
@@ -121,6 +122,17 @@ class User
             $workstation->getUseraccount()->testRights(func_get_args());
         }
         return $workstation;
+    }
+
+    public static function checkDepartments($departmentIds)
+    {
+        $departments = new DepartmentList();
+
+        foreach ($departmentIds as $departmentId) {
+            $departments->addEntity(self::checkDepartment($departmentId));
+        }
+
+        return $departments;
     }
 
     /**

@@ -190,4 +190,16 @@ class Useraccount extends Base implements MappingInterface
             null;
         return $data;
     }
+
+    public function addConditionDepartmentIds(array $departmentIds)
+    {
+        $this->leftJoin(
+            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+        $this->query->where('useraccount_department.behoerdenid', 'IN', $departmentIds);
+        return $this;
+    }
 }
