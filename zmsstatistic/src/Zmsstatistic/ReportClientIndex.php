@@ -8,6 +8,7 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use BO\Zmsstatistic\Service\ReportClientService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,8 +28,9 @@ class ReportClientIndex extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $reportClientService = new ReportClientService();
+        $reportHelper = new ReportHelper();
 
-        $selectedScopes = $reportClientService->extractSelectedScopes(
+        $selectedScopes = $reportHelper->extractSelectedScopes(
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
@@ -36,7 +38,7 @@ class ReportClientIndex extends BaseController
 
         $clientPeriod = $reportClientService->getClientPeriod($this->workstation->scope['id']);
 
-        $dateRange = $reportClientService->extractDateRange(
+        $dateRange = $reportHelper->extractDateRange(
             $validator->getParameter('from')->isString()->getValue(),
             $validator->getParameter('to')->isString()->getValue()
         );
@@ -104,7 +106,7 @@ class ReportClientIndex extends BaseController
                 'menuActive' => 'client',
                 'department' => $this->department,
                 'organisation' => $this->organisation,
-                'clientperiod' => $clientPeriod,
+                'clientPeriod' => $clientPeriod,
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
                 'dateRange' => $dateRange,

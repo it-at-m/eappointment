@@ -24,13 +24,13 @@ class Overview extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $waitingperiod = \App::$http
+        $waitingPeriod = \App::$http
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $clientperiod = \App::$http
+        $clientPeriod = \App::$http
             ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
-        $requestperiod = \App::$http
+        $requestPeriod = \App::$http
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
 
@@ -42,9 +42,9 @@ class Overview extends BaseController
                 'workstation' => $this->workstation->getArrayCopy(),
                 'department' => $this->department,
                 'organisation' => $this->organisation,
-                'waitingperiod' => $waitingperiod,
-                'clientperiod' => $clientperiod,
-                'requestperiod' => $requestperiod,
+                'waitingPeriod' => $waitingPeriod,
+                'clientPeriod' => $clientPeriod,
+                'requestPeriod' => $requestPeriod,
                 'scopeId' => $this->workstation->scope['id'],
                 'showAll' => 0
             )

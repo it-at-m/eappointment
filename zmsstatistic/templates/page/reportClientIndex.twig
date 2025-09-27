@@ -9,7 +9,7 @@
 {% block content %}
     <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
+            {% embed "block/report/period.twig" with {"source":source, "items": clientPeriod, "selected": period} %}
             {% endembed %}
 
             <form class="form--base panel--heavy">

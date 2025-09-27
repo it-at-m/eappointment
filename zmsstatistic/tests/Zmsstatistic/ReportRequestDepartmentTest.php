@@ -45,14 +45,22 @@ class ReportRequestDepartmentTest extends Base
         $response = $this->render([ ], [ ], [ ]);
         $this->assertStringContainsString('Dienstleistungsstatistik Behörde', (string) $response->getBody());
         $this->assertStringContainsString(
-            '<a class="active" href="/report/request/department/">Bürgeramt</a>',
-            (string) $response->getBody()
-        );
-        $this->assertStringContainsString(
             '<a href="/report/request/department/2016-04/">April</a>',
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<optgroup label="Charlottenburg-Wilmersdorf -&gt; Bürgeramt">',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label>Datumsauswahl</label>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
@@ -95,7 +103,7 @@ class ReportRequestDepartmentTest extends Base
         );
         $response = $this->render(['period' => '2016-04'], [], []);
         $this->assertStringContainsString(
-            '<th class="statistik">Apr</th>',
+            '<th class="statistik">Summe</th>',
             (string) $response->getBody()
         );
         $this->assertStringContainsString(
