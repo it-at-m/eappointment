@@ -68,15 +68,19 @@ class Base extends \BO\Zmsstatistic\BaseController
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
         if (isset($args['selectedScopes'])) {
-            foreach ($args['selectedScopes'] as $scopeId) {
-                try {
-                    $result = \App::$http
-                    ->readGetResult('/scope/' . $scopeId . '/')
-                    ->getEntity();
-                    $infoData[] = $result->getName() . " " . $result->getShortName();
-                } catch (Exception $exception) {
-                    return null;
+            try {
+                $scopesResult = \App::$http->readGetResult('/scope/')->getData();
+                $scopeMap = [];
+                foreach ($scopesResult as $scope) {
+                    $scopeMap[$scope->id] = $scope;
                 }
+                foreach ($args['selectedScopes'] as $scopeId) {
+                    if (isset($scopeMap[$scopeId])) {
+                        $infoData[] = $scopeMap[$scopeId]->provider->name . " " . $scopeMap[$scopeId]->shortName;
+                    }
+                }
+            } catch (Exception $exception) {
+                return null;
             }
         } else {
             if (isset($args['organisation'])) {
