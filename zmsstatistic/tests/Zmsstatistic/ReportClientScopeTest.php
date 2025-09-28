@@ -711,13 +711,8 @@ class ReportClientScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/142/',
-                    'response' => $this->readFixture("GET_scope_142.json")
+                    'url' => '/scope/',
+                    'response' => $this->readFixture("GET_scope_list.json")
                 ],
                 [
                     'function' => 'readGetResult',
