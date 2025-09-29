@@ -49,7 +49,6 @@
                     :href="getServiceBaseURL() + subService.id"
                     target="_blank"
                     class="m-link"
-                    tabindex="0"
                     >{{ subService.name }}</a
                   >
                   <br />
