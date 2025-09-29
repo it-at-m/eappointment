@@ -65,9 +65,9 @@
       id="remarks"
       v-model="customerData.customTextfield"
       :error-msg="errorDisplayCustomTextfield"
-      :label="selectedProvider.scope.customTextfieldLabel"
-      :required="selectedProvider.scope.customTextfieldRequired"
-      maxlength="100"
+      :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
+      :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
+      :maxlength="100"
     />
     <muc-text-area
       v-if="
@@ -78,9 +78,9 @@
       id="remarks2"
       v-model="customerData.customTextfield2"
       :error-msg="errorDisplayCustomTextfield2"
-      :label="selectedProvider.scope.customTextfield2Label"
-      :required="selectedProvider.scope.customTextfield2Required"
-      maxlength="100"
+      :label="selectedProvider.scope.customTextfield2Label ?? undefined"
+      :required="selectedProvider.scope.customTextfield2Required ?? undefined"
+      :maxlength="100"
     />
   </form>
   <div class="m-button-group">
@@ -123,7 +123,9 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
-const props = defineProps<{ t: (key: string) => string }>();
+const props = defineProps<{
+  t: (key: string, params?: Record<string, unknown>) => string;
+}>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();
 
@@ -163,7 +165,7 @@ const errorMessageFirstName = computed(() => {
 });
 
 const maxLengthMessageFirstName = computed(() =>
-  customerData.value.firstName?.length >= 50
+  (customerData.value.firstName ?? "").length >= 50
     ? props.t("errorMessageMaxLength", { max: 50 })
     : undefined
 );
@@ -181,7 +183,7 @@ const errorMessageLastName = computed(() => {
 });
 
 const maxLengthMessageLastName = computed(() =>
-  customerData.value.lastName?.length >= 50
+  (customerData.value.lastName ?? "").length >= 50
     ? props.t("errorMessageMaxLength", { max: 50 })
     : undefined
 );
@@ -202,7 +204,7 @@ const errorMessageMailAddress = computed(() => {
 });
 
 const maxLengthMessageMailAddress = computed(() =>
-  customerData.value.mailAddress?.length >= 50
+  (customerData.value.mailAddress ?? "").length >= 50
     ? props.t("errorMessageMaxLength", { max: 50 })
     : undefined
 );
@@ -229,7 +231,7 @@ const errorMessageTelephoneNumber = computed(() => {
 });
 
 const maxLengthMessageTelephoneNumber = computed(() =>
-  customerData.value.telephoneNumber?.length >= 50
+  (customerData.value.telephoneNumber ?? "").length >= 50
     ? props.t("errorMessageMaxLength", { max: 50 })
     : undefined
 );
@@ -252,7 +254,7 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  customerData.value.customTextfield?.length >= 100
+  (customerData.value.customTextfield ?? "").length >= 100
     ? props.t("errorMessageMaxLength", { max: 100 })
     : undefined
 );
@@ -275,7 +277,7 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  customerData.value.customTextfield2?.length >= 100
+  (customerData.value.customTextfield2 ?? "").length >= 100
     ? props.t("errorMessageMaxLength", { max: 100 })
     : undefined
 );
