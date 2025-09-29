@@ -64,9 +64,7 @@
             class="m-content border-bottom"
           >
             <p tabindex="0">{{ selectedProvider.name }}<br /></p>
-            <p
-              class="no-bottom-margin smaller-front-size"
-            >
+            <p class="no-bottom-margin smaller-front-size">
               <strong>{{ t("address") }}</strong>
               <br />
             </p>

@@ -58,7 +58,6 @@
       <h3>{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
-
         @click="skipSubservices"
       >
         {{ t("skipCombinableServices") }}
