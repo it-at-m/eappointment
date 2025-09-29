@@ -30,7 +30,7 @@ require(APP_PATH . '/config.php');
 //\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
-$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Utils\ErrorHandler());
 
 // Initialize cache for rate limiting
 $cache = new \Symfony\Component\Cache\Psr16Cache(
@@ -42,7 +42,11 @@ $logger = new LoggerService();
 // Security middleware (order is important)
 // Maintenance middleware must be first to intercept all requests
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());
+// Enable request logging only in development environment deplyoment helm charts already have a request logging middleware service
+$zmsEnv = getenv('ZMS_ENV') ?: '';
+if ($zmsEnv === 'dev') {
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
+}
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));

@@ -226,11 +226,11 @@ import {
 import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import AppointmentPreview from "./AppointmentSelection/AppointmentPreview.vue";
+import AvailabilityInfoModal from "./AppointmentSelection/AvailabilityInfoModal.vue";
 import CalendarListToggle from "./AppointmentSelection/CalendarListToggle.vue";
 import CalendarView from "./AppointmentSelection/CalendarView.vue";
 import ListView from "./AppointmentSelection/ListView.vue";
 import ProviderSelection from "./AppointmentSelection/ProviderSelection.vue";
-import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -779,7 +779,7 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
   }
 };
 
-const getAppointmentsOfDay = (date: string) => {
+const getAppointmentsOfDay = async (date: string): Promise<void> => {
   isLoadingAppointments.value = true;
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
@@ -791,12 +791,12 @@ const getAppointmentsOfDay = (date: string) => {
   if (selectedProviderIds.length === 0) {
     // No providers selected, clear appointments
     isLoadingAppointments.value = false;
-    return;
+    return Promise.resolve();
   }
 
   const providerIds = selectedProviderIds.map(Number);
 
-  fetchAvailableTimeSlots(
+  return fetchAvailableTimeSlots(
     date,
     providerIds.map(Number),
     Array.from(props.selectedServiceMap.keys()),
