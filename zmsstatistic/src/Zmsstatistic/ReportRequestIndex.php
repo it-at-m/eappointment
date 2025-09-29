@@ -34,7 +34,7 @@ class ReportRequestIndex extends BaseController
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
-        $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+        $scopeIds = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
 
         $requestPeriod = $reportRequestService->getRequestPeriod($this->workstation->scope['id']);
 
@@ -43,7 +43,7 @@ class ReportRequestIndex extends BaseController
             $validator->getParameter('to')->isString()->getValue()
         );
 
-        $exchangeRequest = $reportRequestService->getExchangeRequestData($scopeId, $dateRange, $args);
+        $exchangeRequest = $reportRequestService->getExchangeRequestData($scopeIds, $dateRange, $args);
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
