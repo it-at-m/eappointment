@@ -138,7 +138,7 @@ onUnmounted(() => {
 :deep(.altcha) {
   background: transparent;
   border: 1px solid #bdd4ea;
-  color: #3a5368;
+  color:#ffffff;
   display: flex;
   flex-direction: column;
   max-width: 260px;
