@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Captcha;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;

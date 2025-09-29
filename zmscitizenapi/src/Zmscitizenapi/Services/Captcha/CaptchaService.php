@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Captcha;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
 use Firebase\JWT\JWT;

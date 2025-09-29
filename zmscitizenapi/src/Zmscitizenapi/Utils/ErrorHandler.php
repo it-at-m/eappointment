@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Helper;
+namespace BO\Zmscitizenapi\Utils;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Services\Core\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
