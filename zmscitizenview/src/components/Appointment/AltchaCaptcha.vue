@@ -139,6 +139,7 @@ onUnmounted(() => {
   background: transparent;
   border: 1px solid #bdd4ea;
   color: #ffffff;
+  border-color: #bdd4ea;
   display: flex;
   flex-direction: column;
   max-width: 260px;
