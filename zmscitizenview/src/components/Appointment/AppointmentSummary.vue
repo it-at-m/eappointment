@@ -298,13 +298,11 @@ import type { Ref } from "vue";
 import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
-import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
-import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { getServiceBaseURL } from "@/utils/Constants";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
@@ -352,7 +350,7 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired, timeLeftString } = useReservationTimer();
+const { isExpired } = useReservationTimer();
 
 const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);

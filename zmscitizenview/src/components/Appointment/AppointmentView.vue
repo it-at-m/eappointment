@@ -302,7 +302,6 @@
 </template>
 
 <script setup lang="ts">
-import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
 import {
