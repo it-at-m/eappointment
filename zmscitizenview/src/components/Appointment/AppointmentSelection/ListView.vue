@@ -406,7 +406,7 @@ async function snapToNearestForCurrentSelection() {
             (hourRow) =>
               hourRow.hour === currentHour &&
               hourRow.times.length > 0 &&
-              props.selectedProviders[hourRow.officeId]
+              props.selectedProviders[String(hourRow.officeId)]
           );
         }
         return false;
@@ -447,7 +447,7 @@ async function snapToNearestForCurrentSelection() {
               (partRow) =>
                 partRow.part === currentDayPart &&
                 partRow.times.length > 0 &&
-                props.selectedProviders[partRow.officeId]
+                props.selectedProviders[String(partRow.officeId)]
             );
           }
           return false;
