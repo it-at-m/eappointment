@@ -18,7 +18,7 @@
             <h2>{{ t("your") }} {{ t("appointment") }}</h2>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("service") }}</h3>
+            <h3>{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
             <p
@@ -58,7 +58,7 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("location") }}</h3>
+            <h3>{{ t("location") }}</h3>
           </div>
           <div
             v-if="selectedProvider"
@@ -90,7 +90,7 @@
           </div>
 
           <div class="m-content">
-            <h3 tabindex="0">{{ t("time") }}</h3>
+            <h3>{{ t("time") }}</h3>
           </div>
           <div
             v-if="appointment"
@@ -111,7 +111,7 @@
             "
           >
             <div class="m-content">
-              <h3 tabindex="0">{{ t("hint") }}</h3>
+              <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
               <div
@@ -121,7 +121,7 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("contact") }}</h3>
+            <h3>{{ t("contact") }}</h3>
           </div>
           <div
             v-if="appointment"
@@ -164,7 +164,7 @@
           </div>
           <div v-if="!rebookOrCancelDialog">
             <div class="m-content">
-              <h3 tabindex="0">{{ t("termsOfUse") }}</h3>
+              <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
               <p
