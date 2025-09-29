@@ -802,17 +802,19 @@ class Process extends Base implements MappingInterface
         }
 
         $newDisplayNumber = $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
-                (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
+            (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
 
-        if ($this->checkIfDisplayNumberOnSameDateExists(
-            $process->scope->id,
-            $newDisplayNumber,
-            \DateTime::createFromFormat('U', (int) $process->getFirstAppointment()->date)
-        )) {
+        if (
+            $this->checkIfDisplayNumberOnSameDateExists(
+                $process->scope->id,
+                $newDisplayNumber,
+                \DateTime::createFromFormat('U', (int) $process->getFirstAppointment()->date)
+            )
+        ) {
             return $this->getNewDisplayNumber($process);
         }
 
