@@ -559,6 +559,12 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
+:deep(.counter-btn--disabled) {
+  background-color: transparent !important;
+  border-color: #7a8d9f !important;
+  color: #7a8d9f !important;
+}
+
 @include xs-down {
   .container {
     padding-left: 24px;
