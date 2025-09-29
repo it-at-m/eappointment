@@ -917,4 +917,19 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         return false;
     }
+
+    public function readProcessWithSameDayAndDisplayNumber($scopeId, $displayNumber, $date)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences(1)
+            ->addConditionScopeId($scopeId)
+            ->addConditionDate($date)
+            ->addConditionDisplayNumber($displayNumber)
+            ->addLimit(1);
+
+        $process = $this->fetchOne($query, new Entity());
+
+        return $this->readResolvedReferences($process, 1);
+    }
 }

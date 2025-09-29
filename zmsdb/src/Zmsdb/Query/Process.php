@@ -3,6 +3,8 @@
 namespace BO\Zmsdb\Query;
 
 use BO\Zmsdb\Scope as ScopeEntity;
+use BO\Zmsdldb\Helper\DateTime;
+use DateTimeImmutable;
 
 /**
  * @SuppressWarnings(Methods)
@@ -145,6 +147,18 @@ class Process extends Base implements MappingInterface
         );
         $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
         return $joinQuery;
+    }
+
+    public function addConditionDate($date)
+    {
+        $this->query->where('process.Datum', '=', $date);
+        return $this;
+    }
+
+    public function addConditionDisplayNumber($displayNumber)
+    {
+        $this->query->where('process.displayNumber', '=', $displayNumber);
+        return $this;
     }
 
     protected function calculateStatus()
@@ -787,14 +801,34 @@ class Process extends Base implements MappingInterface
             return $process->id;
         }
 
-        return $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
-            (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
-            4,
-            '0',
-            STR_PAD_LEFT
-        );
+        $newDisplayNumber = $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
+                (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
+
+        if ($this->checkIfDisplayNumberOnSameDateExists(
+            $process->scope->id,
+            $newDisplayNumber,
+            \DateTime::createFromFormat('U', (int) $process->getFirstAppointment()->date)
+        )) {
+            return $this->getNewDisplayNumber($process);
+        }
+
+        return $newDisplayNumber;
     }
 
+    public function checkIfDisplayNumberOnSameDateExists($scopeId, $displayNumber, $date): bool
+    {
+        $processWithDisplayNumber = (new \BO\Zmsdb\Process())->readProcessWithSameDayAndDisplayNumber(
+            $scopeId,
+            $displayNumber,
+            $date->format('Y-m-d')
+        );
+
+        return !empty($processWithDisplayNumber->getId());
+    }
 
     public function addValuesUpdateProcess(
         \BO\Zmsentities\Process $process,
