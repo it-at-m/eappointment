@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Availability;
 
-use BO\Zmscitizenapi\Helper\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class AvailableDaysListControllerTest extends ControllerTestCase

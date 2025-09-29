@@ -9,7 +9,7 @@ use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Helper\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 abstract class BaseController extends \BO\Slim\Controller
 {

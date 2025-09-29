@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
