@@ -226,11 +226,11 @@ import {
 import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import AppointmentPreview from "./AppointmentSelection/AppointmentPreview.vue";
+import AvailabilityInfoModal from "./AppointmentSelection/AvailabilityInfoModal.vue";
 import CalendarListToggle from "./AppointmentSelection/CalendarListToggle.vue";
 import CalendarView from "./AppointmentSelection/CalendarView.vue";
 import ListView from "./AppointmentSelection/ListView.vue";
 import ProviderSelection from "./AppointmentSelection/ProviderSelection.vue";
-import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
