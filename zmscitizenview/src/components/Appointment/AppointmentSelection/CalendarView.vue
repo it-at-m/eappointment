@@ -57,6 +57,7 @@
         style="
           margin-bottom: 20px;
           background-color: var(--color-neutrals-blue-xlight);
+          padding: 12px 8px;
         "
       >
         <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
@@ -184,9 +185,10 @@
         style="
           margin-bottom: 20px;
           background-color: var(--color-neutrals-blue-xlight);
+          padding: 12px 8px;
         "
       >
-        <b tabindex="0">{{ formatDayFromDate(selectedDay) }}</b>
+        <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
       </div>
 
       <div
@@ -273,15 +275,10 @@
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucButton, MucCalendar } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, ref, watch } from "vue";
+import { nextTick } from "vue";
 
 import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
-import {
-  berlinHourFormatter,
-  convertDateToString,
-  formatDayFromDate,
-  formatTimeFromUnix,
-} from "@/utils/formatAppointmentDateTime";
+import { formatDayFromDate } from "@/utils/formatAppointmentDateTime";
 import TimeSlotGrid from "./TimeSlotGrid.vue";
 
 const props = defineProps<{
