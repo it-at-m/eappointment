@@ -65,7 +65,6 @@
           >
             <p tabindex="0">{{ selectedProvider.name }}<br /></p>
             <p
-              tabindex="0"
               class="no-bottom-margin smaller-front-size"
             >
               <strong>{{ t("address") }}</strong>
