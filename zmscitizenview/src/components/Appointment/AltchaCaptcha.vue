@@ -133,12 +133,13 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /* Custom styling for ALTCHA widget to match UI/UX requirements */
+$color-base: #ffffff;
 :deep(.altcha) {
   background: transparent;
   border: 1px solid #bdd4ea;
-  color: #ffffff;
+  color: $color-base;
   border-color: #bdd4ea;
   display: flex;
   flex-direction: column;
