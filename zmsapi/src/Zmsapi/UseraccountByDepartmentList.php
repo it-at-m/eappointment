@@ -25,11 +25,29 @@ class UseraccountByDepartmentList extends BaseController
         $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
-        Helper\User::checkDepartments(explode(',', $args['ids']));
+        $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
 
         /** @var Useraccount $useraccount */
         $useraccountList = (new Query())->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        foreach ($useraccountList as $userAccount) {
+            foreach ($departments as $department) {
+                if ($resolveReferences < 1 && !$userAccount->getDepartmentByIds($department->getId())) {
+                    $userAccount->getDepartmentList()->addEntity($department);
+                }
+            }
+        }
+
+        $validUserAccounts = [];
+        foreach ($useraccountList as $useraccount) {
+            try {
+                Helper\User::testWorkstationAccessRights($useraccount);
+                $validUserAccounts[] = $useraccount;
+            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+                continue;
+            }
+        }
+        $useraccountList = $validUserAccounts;
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
