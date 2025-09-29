@@ -43,7 +43,7 @@
     >
       <div class="m-component">
         <div class="m-content">
-          <h2 tabindex="0">{{ t("location") }}</h2>
+          <h2>{{ t("location") }}</h2>
         </div>
         <div class="m-teaser-contained m-teaser-contained-contact">
           <div class="m-teaser-contained-contact__body">

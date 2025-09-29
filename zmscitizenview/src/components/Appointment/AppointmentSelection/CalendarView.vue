@@ -59,7 +59,7 @@
           background-color: var(--color-neutrals-blue-xlight);
         "
       >
-        <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
+        <h4>{{ formatDayFromDate(selectedDay) }}</h4>
       </div>
 
       <div
