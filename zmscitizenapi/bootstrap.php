@@ -42,7 +42,11 @@ $logger = new LoggerService();
 // Security middleware (order is important)
 // Maintenance middleware must be first to intercept all requests
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());
+// Enable request logging only in development environment deplyoment helm charts already have a request logging middleware service
+$zmsEnv = getenv('ZMS_ENV') ?: '';
+if ($zmsEnv === 'dev') {
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
+}
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
