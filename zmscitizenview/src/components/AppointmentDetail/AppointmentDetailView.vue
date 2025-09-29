@@ -104,7 +104,7 @@
             >
               <div class="timeBox">
                 <calendar-icon :timestamp="appointment.timestamp" />
-                <p tabindex="0">
+                <p>
                   {{ formatAppointmentDateTime(appointment.timestamp) }}
                   {{ t("timeStampSuffix") }} <br />
                   {{ t("estimatedDuration") }} <br v-if="isMobile" />
@@ -112,7 +112,7 @@
                   {{ t("minutes") }}
                 </p>
               </div>
-              <p tabindex="0">
+              <p>
                 {{ t("detailTimeHint") }}
               </p>
             </div>
@@ -123,11 +123,11 @@
               v-if="selectedProvider"
               class="m-content location-text-margin-top"
             >
-              <p tabindex="0">
+              <p>
                 {{ selectedProvider.organization }}<br />
                 <strong> {{ selectedProvider.name }} </strong><br />
               </p>
-              <p tabindex="0">
+              <p>
                 {{ selectedProvider.address.street }}
                 {{ selectedProvider.address.house_number }}<br />
                 {{ selectedProvider.address.postal_code }}
