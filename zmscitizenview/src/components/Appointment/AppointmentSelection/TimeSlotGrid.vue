@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Location title for multiple providers -->
-    <div
+    <h5
       v-if="showLocationTitle"
       class="ml-4 location-title"
     >
@@ -9,10 +9,9 @@
         aria-hidden="true"
         class="icon icon--before"
       >
-        <use xlink:href="#icon-map-pin"></use>
-      </svg>
-      {{ officeNameById(officeId) }}
-    </div>
+        <use xlink:href="#icon-map-pin"></use></svg
+      >{{ officeNameById(officeId) }}
+    </h5>
 
     <!-- Time slot display -->
     <div class="wrapper">
@@ -90,7 +89,10 @@ defineEmits<{
 }
 
 .location-title {
-  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  font-weight: normal;
 }
 
 .timeslot {
@@ -136,6 +138,12 @@ div:has(.left-text) {
   .timeslot .m-button {
     padding: 1px 8px !important; /* Even smaller padding for very small screens */
     min-height: 2.25rem;
+  }
+}
+
+@include sm-up {
+  .location-title {
+    font-size: 1.125rem;
   }
 }
 </style>
