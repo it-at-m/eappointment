@@ -617,16 +617,16 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								{% set totalMinutes = item.waitingTime %} 
-								{% set hours = (totalMinutes // 60) %} 
-								{% set minutes = (totalMinutes % 60) // 1 %} 
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
-								{% set totalMinutes = item.processingTime %} 
-								{% set hours = (totalMinutes // 60) %} 
-								{% set minutes = (totalMinutes % 60) // 1 %} 
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
+							{% set totalSeconds = (item.waitingTime * 60)|round(0, 'floor') %}
+							{% set hours = (totalSeconds // 3600) %}
+							{% set minutes = ((totalSeconds % 3600) // 60) %}
+							{% set seconds = (totalSeconds % 60) %}
+							<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+							{% set totalSeconds = (item.processingTime * 60)|round(0, 'floor') %}
+							{% set hours = (totalSeconds // 3600) %}
+							{% set minutes = ((totalSeconds % 3600) // 60) %}
+							{% set seconds = (totalSeconds % 60) %}
+							<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
 							</tr>
 						{% endfor %}				
 					</table>
