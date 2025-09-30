@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
-import { getEntity } from '../../lib/schema'
+import {getEntity} from '../../lib/schema'
 
-const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source, parentRequests, onParentChange, canDelete, requestVariants = []) => {
+const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source, parentRequests, onParentChange, requestVariants = []) => {
     const formName = `requests[${index}]`
     const parentValue = request.parent_id == null ? '' : String(request.parent_id);
     const variantValue = request.variant_id == null ? '' : String(request.variant_id);
@@ -14,7 +14,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     name={`${formName}[id]`}
                     placeholder={labels.id}
                     value={request.id}
-                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer" }}
+                    attributes={{"readOnly": "1", "aria-label": "Laufende Nummer"}}
                 />
             </td>
             <td className="request-item__name" width="auto">
@@ -23,7 +23,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     placeholder={labels.name}
                     value={request.name}
                     onChange={onChange}
-                    attributes={{ "aria-label": "Bezeichnung" }}
+                    attributes={{"aria-label": "Bezeichnung"}}
                 />
             </td>
             <td className="request-item__parent" width="auto">
@@ -32,17 +32,17 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     value={parentValue}
                     onChange={(_, v) => onParentChange(index, v)}
                     options={[
-                        { name: '—', value: '' },
-                        ...parentRequests.map(r => ({ name: r.name, value: String(r.id) }))
+                        {name: '—', value: ''},
+                        ...parentRequests.map(r => ({name: r.name, value: String(r.id)}))
                     ]}
-                    attributes={{ "aria-label": labels.parent }}
+                    attributes={{"aria-label": labels.parent}}
                 />
             </td>
             <td className="request-item__link">
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={`${labels.url}`}
-                        attributes={{ "htmlFor": `requestUrl${index}` }}
+                        attributes={{"htmlFor": `requestUrl${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -50,14 +50,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.url}
                             value={request.link}
                             onChange={onChange}
-                            attributes={{ "id": `requestUrl${index}` }}
+                            attributes={{"id": `requestUrl${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.group}
-                        attributes={{ "htmlFor": `requestGroup${index}` }}
+                        attributes={{"htmlFor": `requestGroup${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -65,14 +65,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.group}
                             value={request.group}
                             onChange={onChange}
-                            attributes={{ "id": `requestGroup${index}` }}
+                            attributes={{"id": `requestGroup${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.data}
-                        attributes={{ "htmlFor": `requestData${index}` }}
+                        attributes={{"htmlFor": `requestData${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
@@ -81,11 +81,11 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder='{}'
                             onChange={onChange}
-                            attributes={{ "id": `requestData${index}`, "aria-describedby": `help_requestData${index}` }}
+                            attributes={{"id": `requestData${index}`, "aria-describedby": `help_requestData${index}`}}
                         />
                         <Inputs.Description
                             value={descriptions.data}
-                            attributes={{ "id": `help_requestData${index}` }}
+                            attributes={{"id": `help_requestData${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -98,7 +98,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.variant}
-                        attributes={{ "htmlFor": `requestVariant${index}` }}
+                        attributes={{"htmlFor": `requestVariant${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Select
@@ -108,27 +108,25 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                                 onChange(`${formName}[variant_id]`, v === '' ? null : Number(v))
                             }
                             options={[
-                                { name: '—', value: '' },
-                                ...requestVariants.map(v => ({ name: v.name, value: String(v.id) }))
+                                {name: '—', value: ''},
+                                ...requestVariants.map(v => ({name: v.name, value: String(v.id)}))
                             ]}
-                            attributes={{ id: `requestVariant${index}` }}
+                            attributes={{id: `requestVariant${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
             </td>
-            <td className="request-item__delete" style={{verticalAlign:'middle'}}>
-                {canDelete && (
-                    <button type="button"
-                            className="link button-default request__delete-button"
-                            onClick={() => onDeleteClick(index)}
-                            aria-label="Diesen Datensatz löschen"
-                            style={{ display: 'inline-flex', alignItems: 'center' }}>
-                        <i className="fas fa-trash-alt color-negative" style={{ marginRight: '5px' }}></i>
-                        Löschen
-                    </button>
-                )}
+            <td className="request-item__delete" style={{verticalAlign: 'middle'}}>
+                <button type="button"
+                        className="link button-default request__delete-button"
+                        onClick={() => onDeleteClick(index)}
+                        aria-label="Diesen Datensatz löschen"
+                        style={{display: 'inline-flex', alignItems: 'center'}}>
+                    <i className="fas fa-trash-alt color-negative" style={{marginRight: '5px'}}></i>
+                    Löschen
+                </button>
             </td>
-        </tr >
+        </tr>
     )
 }
 
@@ -156,16 +154,12 @@ class RequestsView extends Component {
 
     getRequestsWithLabels(onChange, onDeleteClick) {
         const list = (this.props.source.requests || []);
-        const moreThanOne = list.length > 1;
-
         return list.map((request, idx) => {
-            const canDelete = moreThanOne && (request.canDelete !== false);
             return renderRequest(
                 request, idx, onChange, onDeleteClick,
                 this.props.labelsrequests, this.props.descriptions,
                 this.props.source.source, this.props.parentrequests,
                 this.onParentChange,
-                canDelete,
                 (this.props.requestvariants || [])
             );
         });
@@ -208,21 +202,23 @@ class RequestsView extends Component {
             <div className="table-responsive-wrapper requests__list" aria-live="polite" id="liveregionRequestList">
                 <table className="table--base">
                     <thead>
-                        <tr>
-                            <th>LfdNr.</th>
-                            <th>Bezeichnung</th>
-                            <th>Hauptdienstleistung</th>
-                            <th>Link und weitere Daten</th>
-                            <th>Variante</th>
-                            <th>Löschen</th>
-                        </tr>
+                    <tr>
+                        <th>LfdNr.</th>
+                        <th>Bezeichnung</th>
+                        <th>Hauptdienstleistung</th>
+                        <th>Link und weitere Daten</th>
+                        <th>Variante</th>
+                        <th>Löschen</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {this.getRequestsWithLabels(onChange, onDeleteClick)}
+                    {this.getRequestsWithLabels(onChange, onDeleteClick)}
                     </tbody>
                 </table>
                 <div className="table-actions">
-                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neue Dienstleistung</button>
+                    <button className="link button-default" onClick={onNewClick}><i
+                        className="fas fa-plus-square color-positive"></i> Neue Dienstleistung
+                    </button>
                 </div>
             </div>
         )
