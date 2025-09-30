@@ -1,14 +1,20 @@
 services:
   mariadb:
     image: mariadb:10.11
+    container_name: zmsapi_mariadb_1
     environment:
       MYSQL_ROOT_PASSWORD: zmsapi
       MYSQL_DATABASE: zmsbo
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --max-allowed-packet=256M
+      - --wait_timeout=28800
+      - --interactive_timeout=28800
+      - --innodb_buffer_pool_size=512M
+      - --innodb_log_file_size=256M
     ports:
-      - 3308:3306
+      - ${HOST_DB_PORT:-3308}:3306
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pzmsapi"]
       interval: 10s
@@ -33,7 +39,7 @@ services:
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: zmsapi
       ZMS_CONFIG_SECURE_TOKEN: secure-token
-      PHP_MEMORY_LIMIT: "1G"
+      PHP_MEMORY_LIMIT: "2G"
     working_dir: /tmp/workspace/zmsapi
     deploy:
       resources:
@@ -70,17 +76,15 @@ services:
           echo 'Vendor already present. Skipping cli+composer.'; \
         fi
         echo 'Setting PHP memory limit...'
-        php -d memory_limit=1G -v
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -v
         echo 'Setting up test fixtures...'
         cd /tmp/workspace/zmsapi
         rm -rf data
         ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data
-        php -d memory_limit=1G \
-            -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php \
-            /tmp/workspace/zmsdb/bin/importTestData --commit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit
       
         echo 'Running tests...'
-        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit
+        php -d memory_limit=${PHP_MEMORY_LIMIT:-2G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit
       "
 volumes:
   zmsapi-workspace:
