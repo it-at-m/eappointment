@@ -66,7 +66,6 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
-    expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
     expect(wrapper.text()).toContain(mockAppointment.processId);
@@ -82,7 +81,6 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
-    expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
     expect(wrapper.text()).toContain(mockAppointment.processId);

@@ -131,6 +131,13 @@ describe("AppointmentOverviewView", () => {
   };
 
   describe("View States", () => {
+    beforeAll(() => {
+      vi.mock('@/utils/auth', () => ({
+        isAuthenticated: () => true,
+        getAccessToken: () => ""
+      }));
+    });
+
     it("shows initial view after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -164,6 +171,13 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display screen Cases", () => {
+    beforeAll(() => {
+      vi.mock('@/utils/auth', () => ({
+        isAuthenticated: () => true,
+        getAccessToken: () => ""
+      }));
+    });
+
     it("shows initial view on overview page after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -185,6 +199,12 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display link Cases", () => {
+    beforeAll(() => {
+      vi.mock('@/utils/auth', () => ({
+        isAuthenticated: () => true,
+        getAccessToken: () => ""
+      }));
+    });
     it("shows link in header", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
