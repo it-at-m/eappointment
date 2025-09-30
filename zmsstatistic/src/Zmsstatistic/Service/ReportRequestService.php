@@ -12,36 +12,37 @@ use BO\Zmsstatistic\Helper\ReportHelper;
 use DateTime;
 use Exception;
 
-class ReportClientService
+class ReportRequestService
 {
-    protected $totals = [
-        'clientscount',
-        'missed',
-        'withappointment',
-        'missedwithappointment',
-        'noappointment',
-        'missednoappointment',
+    protected $totals = ['requestscount'];
+
+    protected $hashset = [
         'requestscount'
     ];
 
+    protected $groupfields = [
+        'name',
+        'date'
+    ];
+
     /**
-     * Get exchange client data based on date range or period
+     * Get exchange request data based on date range or period
      */
-    public function getExchangeClientData(string $scopeId, ?array $dateRange, array $args): mixed
+    public function getExchangeRequestData(string $scopeId, ?array $dateRange, array $args): mixed
     {
         if ($dateRange) {
-            return $this->getExchangeClientForDateRange($scopeId, $dateRange);
+            return $this->getExchangeRequestForDateRange($scopeId, $dateRange);
         } elseif (isset($args['period'])) {
-            return $this->getExchangeClientForPeriod($scopeId, $args['period']);
+            return $this->getExchangeRequestForPeriod($scopeId, $args['period']);
         }
 
         return null;
     }
 
     /**
-     * Get exchange client data for a specific date range
+     * Get exchange request data for a specific date range
      */
-    public function getExchangeClientForDateRange(string $scopeId, array $dateRange): mixed
+    public function getExchangeRequestForDateRange(string $scopeId, array $dateRange): mixed
     {
         if (!isset($dateRange['from']) || !isset($dateRange['to'])) {
             return null;
@@ -64,36 +65,37 @@ class ReportClientService
                 return null;
             }
 
-            return $this->createFilteredExchangeClient($combinedData['entity'], $filteredData, $fromDate, $toDate);
+            return $this->createFilteredExchangeRequest($combinedData['entity'], $filteredData, $fromDate, $toDate);
         } catch (Exception $exception) {
             return null;
         }
     }
 
     /**
-     * Get exchange client data for a specific period (legacy functionality)
+     * Get exchange request data for a specific period (legacy functionality)
      */
-    public function getExchangeClientForPeriod(string $scopeId, string $period): mixed
+    public function getExchangeRequestForPeriod(string $scopeId, string $period): mixed
     {
         try {
             return \App::$http
-                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $period . '/')
+                ->readGetResult('/warehouse/requestscope/' . $scopeId . '/' . $period . '/')
                 ->getEntity()
-                ->withCalculatedTotals($this->totals, 'date')
-                ->toHashed();
+                ->toGrouped($this->groupfields, $this->hashset)
+                ->withRequestsSum()
+                ->withAverage('processingtime');
         } catch (Exception $exception) {
             return null;
         }
     }
 
     /**
-     * Get client period data for the current scope
+     * Get request period data for the current scope
      */
-    public function getClientPeriod(string $scopeId): mixed
+    public function getRequestPeriod(string $scopeId): mixed
     {
         try {
             return \App::$http
-                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
+                ->readGetResult('/warehouse/requestscope/' . $scopeId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
             return null;
@@ -110,30 +112,26 @@ class ReportClientService
 
         foreach ($years as $year) {
             try {
-                $exchangeClient = \App::$http
+                $exchangeRequest = \App::$http
                     ->readGetResult(
-                        '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
+                        '/warehouse/requestscope/' . $scopeId . '/' . $year . '/',
                         ['groupby' => 'day']
                     )
                     ->getEntity();
 
                 // Use the first successfully fetched entity as the base
                 if ($baseEntity === null) {
-                    $baseEntity = $exchangeClient;
+                    $baseEntity = $exchangeRequest;
                 }
 
                 // Combine data from all years
-                if (isset($exchangeClient->data) && is_array($exchangeClient->data)) {
-                    $combinedData = array_merge($combinedData, $exchangeClient->data);
+                if (isset($exchangeRequest->data) && is_array($exchangeRequest->data)) {
+                    $combinedData = array_merge($combinedData, $exchangeRequest->data);
                 }
             } catch (Exception $exception) {
                 // Continue with other years - don't fail completely if one year is missing
             }
         }
-
-        usort($combinedData, static function ($a, $b) {
-            return strcmp($a[1] ?? '', $b[1] ?? '');
-        });
 
         return [
             'entity' => $baseEntity,
@@ -148,7 +146,7 @@ class ReportClientService
     {
         $filteredData = [];
         foreach ($data as $row) {
-            if ($row[1] >= $fromDate && $row[1] <= $toDate) {
+            if ($row[3] >= $fromDate && $row[3] <= $toDate) {
                 $filteredData[] = $row;
             }
         }
@@ -156,43 +154,54 @@ class ReportClientService
     }
 
     /**
-     * Create filtered exchange client with updated properties
+     * Create filtered exchange request with updated properties
      */
-    private function createFilteredExchangeClient(
-        $exchangeClientFull,
+    private function createFilteredExchangeRequest(
+        $exchangeRequestFull,
         array $filteredData,
         string $fromDate,
         string $toDate
     ): mixed {
-        $exchangeClient = clone $exchangeClientFull;
-        $exchangeClient->data = $filteredData;
+        $exchangeRequest = clone $exchangeRequestFull;
+        $exchangeRequest->data = $filteredData;
 
-        if (!isset($exchangeClient->period)) {
-            $exchangeClient->period = 'day';
+        if (!isset($exchangeRequest->period)) {
+            $exchangeRequest->period = 'day';
         }
 
-        $exchangeClient->firstDay = (new Day())->setDateTime(new DateTime($fromDate));
-        $exchangeClient->lastDay = (new Day())->setDateTime(new DateTime($toDate));
+        $exchangeRequest->firstDay = (new Day())->setDateTime(new DateTime($fromDate));
+        $exchangeRequest->lastDay = (new Day())->setDateTime(new DateTime($toDate));
 
         if (!empty($filteredData)) {
-            return $exchangeClient
-                ->withCalculatedTotals($this->totals, 'date')
-                ->toHashed();
+            $exchangeRequest = $exchangeRequest
+                ->toGrouped($this->groupfields, $this->hashset)
+                ->withRequestsSum()
+                ->withAverage('processingtime');
+
+            if (is_array($exchangeRequest->data)) {
+                $locale = \App::$supportedLanguages[\App::$locale]['locale'] ?? 'de_DE';
+                $collator = new \Collator($locale);
+                uksort($exchangeRequest->data, static function ($itemA, $itemB) use ($collator) {
+                    return $collator->compare($itemA, $itemB);
+                });
+            }
+
+            return $exchangeRequest;
         }
 
-        return $exchangeClient->toHashed();
+        return $exchangeRequest->toHashed();
     }
 
     /**
-     * Prepare download arguments for client report
+     * Prepare download arguments for request report
      */
     public function prepareDownloadArgs(
         array $args,
-        mixed $exchangeClient,
+        mixed $exchangeRequest,
         ?array $dateRange,
         array $selectedScopes = []
     ): array {
-        $args['category'] = 'clientscope';
+        $args['category'] = 'requestscope';
 
         if ($dateRange) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
@@ -202,8 +211,8 @@ class ReportClientService
             $args['selectedScopes'] = $selectedScopes;
         }
 
-        if ($exchangeClient && count($exchangeClient->data)) {
-            $args['reports'][] = $exchangeClient;
+        if ($exchangeRequest && count($exchangeRequest->data)) {
+            $args['reports'][] = $exchangeRequest;
         }
 
         return $args;
