@@ -143,12 +143,12 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
+import { isAuthenticated } from "@/utils/auth";
 import {
   createErrorStates,
   getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
-import { isAuthenticated } from "@/utils/auth";
 import AppointmentCard from "./AppointmentCard.vue";
 
 const props = defineProps<{

@@ -50,14 +50,17 @@
       </div>
     </div>
   </div>
-  <div  v-if="
+  <div
+    v-if="
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
       !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
-    ">
+    "
+  >
     <div
       v-if="
-        isAuthenticated() && (appointments.length > 0 || !displayedOnDetailScreen)
+        isAuthenticated() &&
+        (appointments.length > 0 || !displayedOnDetailScreen)
       "
       :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
     >
@@ -79,7 +82,9 @@
 
               <span
                 v-if="
-                  appointments.length && !displayedOnDetailScreen && !loadingError
+                  appointments.length &&
+                  !displayedOnDetailScreen &&
+                  !loadingError
                 "
               >
                 ({{ appointments.length }})</span

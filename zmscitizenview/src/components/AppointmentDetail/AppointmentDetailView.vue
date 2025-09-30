@@ -50,11 +50,13 @@
       </div>
     </div>
   </div>
-  <div v-if="
+  <div
+    v-if="
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
       !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
-    ">
+    "
+  >
     <no-login-warning
       v-if="!isAuthenticated()"
       :appointment-id="appointmentId"
