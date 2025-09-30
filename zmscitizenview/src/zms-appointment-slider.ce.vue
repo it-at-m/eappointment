@@ -22,9 +22,11 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
+import { registerAuthenticationHook } from "./utils/auth";
 
 const props = defineProps({
   baseUrl: {
@@ -55,6 +57,15 @@ const displayOptionDetailScreen =
   props.displayedOnDetailScreen.toLowerCase() === "true";
 
 const { t } = useI18n();
+const accessToken = ref<string | null>(null);
+registerAuthenticationHook(
+  (newAccessToken) => {
+    accessToken.value = newAccessToken;
+  },
+  () => {
+    accessToken.value = null;
+  }
+);
 </script>
 
 <style>
