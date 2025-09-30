@@ -1,229 +1,290 @@
 <template>
-  <no-login-warning
-    v-if="!isAuthenticated()"
-    :appointment-id="appointmentId"
-    :t="t"
-  />
-  <div v-else-if="loadingError">
-    <muc-intro
-      :tagline="t('appointment')"
-      :title="appointmentId ? appointmentId : ''"
-    />
-    <error-alert
-      :message="t('apiErrorLoadingAppointmentsText')"
-      :header="t('apiErrorLoadingSingleAppointmentHeader')"
-    >
-      <muc-button
-        icon="arrow-right"
-        @onclick="goToAppointmentOverviewLink"
-      >
-        {{ t("buttonBackToOverview") }}
-      </muc-button>
-    </error-alert>
+  <!-- Maintenance Page -->
+  <div
+    v-if="isInMaintenanceModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('maintenancePageText')"
+          :header="t('maintenancePageHeader')"
+          type="warning"
+        />
+      </div>
+    </div>
   </div>
-  <div v-else-if="!loading">
-    <muc-modal
-      :open="rescheduleModalOpen"
-      @close="rescheduleModalOpen = false"
-      @cancel="rescheduleModalOpen = false"
-    >
-      <template #title>{{ t("rescheduleAppointmentModalHeading") }}</template>
-      <template #body>
-        <p style="margin-bottom: 16px">
-          {{ t("rescheduleAppointmentModalText") }}
-        </p>
-        <p
-          v-if="appointment && selectedProvider"
-          style="margin-bottom: 0"
-        >
-          <b>{{ t("affectedAppointment") }}</b>
-          <br />
-          {{ getServiceSummary() }}
-          <br />
-          {{ formatAppointmentDateTime(appointment.timestamp) }}
-          {{ t("timeStampSuffix") }}
-          <br />
-          {{ selectedProvider.name }}
-        </p>
-      </template>
-      <template #buttons>
-        <muc-button
-          icon="arrow-right"
-          @click="rescheduleAppointment"
-        >
-          {{ t("reschedule") }}
-        </muc-button>
-        <muc-button
-          variant="secondary"
-          @click="rescheduleModalOpen = false"
-        >
-          {{ t("cancelButton") }}
-        </muc-button>
-      </template>
-    </muc-modal>
-    <muc-modal
-      :open="cancelModalOpen"
-      @close="cancelModalOpen = false"
-      @cancel="cancelModalOpen = false"
-    >
-      <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
-      <template #body>
-        <p style="margin-bottom: 16px">
-          {{ t("cancleAppointmentModalText") }}
-        </p>
-        <p
-          v-if="appointment && selectedProvider"
-          style="margin-bottom: 0"
-        >
-          <b>{{ t("affectedAppointment") }}</b>
-          <br />
-          {{ getServiceSummary() }}
-          <br />
-          {{ formatAppointmentDateTime(appointment.timestamp) }}
-          {{ t("timeStampSuffix") }}
-          <br />
-          {{ selectedProvider.name }}
-        </p>
-      </template>
-      <template #buttons>
-        <muc-button
-          icon="arrow-right"
-          @click="cancelAppointment"
-        >
-          {{ t("cancel") }}
-        </muc-button>
-        <muc-button
-          variant="secondary"
-          @click="cancelModalOpen = false"
-        >
-          {{ t("cancelButton") }}
-        </muc-button>
-      </template>
-    </muc-modal>
-    <appointment-detail-header
-      :appointment="appointment"
-      :selected-provider="selectedProvider"
+
+  <!-- System Failure Page -->
+  <div
+    v-if="isInSystemFailureModeComputed"
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('systemFailurePageText')"
+          :header="t('systemFailurePageHeader')"
+          type="error"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alert (for rate limit, etc.) -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
+    class="container"
+  >
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t(apiErrorTranslation.textKey)"
+          :header="t(apiErrorTranslation.headerKey)"
+          :type="apiErrorTranslation.errorType"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Normal Content -->
+  <div
+    v-if="
+      !isInMaintenanceModeComputed &&
+      !isInSystemFailureModeComputed &&
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
+  >
+    <no-login-warning
+      v-if="!isAuthenticated()"
+      :appointment-id="appointmentId"
       :t="t"
-      @cancel-appointment="openCancelModal"
-      @focus-location="focusLocationTitle"
-      @focus-time="focusTimeTitle"
-      @reschedule-appointment="openRescheduleModal"
     />
-    <div class="m-component m-component-form">
-      <div class="container">
-        <div class="m-component__grid">
-          <div class="m-component__column">
-            <div class="m-content">
-              <h2
-                id="timeTitleElement"
-                ref="timeTitleElement"
-                tabindex="0"
+    <div v-else-if="loadingError">
+      <muc-intro
+        :tagline="t('appointment')"
+        :title="appointmentId ? appointmentId : ''"
+      />
+      <error-alert
+        :message="t('apiErrorLoadingAppointmentsText')"
+        :header="t('apiErrorLoadingSingleAppointmentHeader')"
+      >
+        <muc-button
+          icon="arrow-right"
+          @onclick="goToAppointmentOverviewLink"
+        >
+          {{ t("buttonBackToOverview") }}
+        </muc-button>
+      </error-alert>
+    </div>
+    <div v-else-if="!loading">
+      <muc-modal
+        :open="rescheduleModalOpen"
+        @close="rescheduleModalOpen = false"
+        @cancel="rescheduleModalOpen = false"
+      >
+        <template #title>{{ t("rescheduleAppointmentModalHeading") }}</template>
+        <template #body>
+          <p style="margin-bottom: 16px">
+            {{ t("rescheduleAppointmentModalText") }}
+          </p>
+          <p
+            v-if="appointment && selectedProvider"
+            style="margin-bottom: 0"
+          >
+            <b>{{ t("affectedAppointment") }}</b>
+            <br />
+            {{ getServiceSummary() }}
+            <br />
+            {{ formatAppointmentDateTime(appointment.timestamp) }}
+            {{ t("timeStampSuffix") }}
+            <br />
+            {{ selectedProvider.name }}
+          </p>
+        </template>
+        <template #buttons>
+          <muc-button
+            icon="arrow-right"
+            @click="rescheduleAppointment"
+          >
+            {{ t("reschedule") }}
+          </muc-button>
+          <muc-button
+            variant="secondary"
+            @click="rescheduleModalOpen = false"
+          >
+            {{ t("cancelButton") }}
+          </muc-button>
+        </template>
+      </muc-modal>
+      <muc-modal
+        :open="cancelModalOpen"
+        @close="cancelModalOpen = false"
+        @cancel="cancelModalOpen = false"
+      >
+        <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
+        <template #body>
+          <p style="margin-bottom: 16px">
+            {{ t("cancleAppointmentModalText") }}
+          </p>
+          <p
+            v-if="appointment && selectedProvider"
+            style="margin-bottom: 0"
+          >
+            <b>{{ t("affectedAppointment") }}</b>
+            <br />
+            {{ getServiceSummary() }}
+            <br />
+            {{ formatAppointmentDateTime(appointment.timestamp) }}
+            {{ t("timeStampSuffix") }}
+            <br />
+            {{ selectedProvider.name }}
+          </p>
+        </template>
+        <template #buttons>
+          <muc-button
+            icon="arrow-right"
+            @click="cancelAppointment"
+          >
+            {{ t("cancel") }}
+          </muc-button>
+          <muc-button
+            variant="secondary"
+            @click="cancelModalOpen = false"
+          >
+            {{ t("cancelButton") }}
+          </muc-button>
+        </template>
+      </muc-modal>
+      <appointment-detail-header
+        :appointment="appointment"
+        :selected-provider="selectedProvider"
+        :t="t"
+        @cancel-appointment="openCancelModal"
+        @focus-location="focusLocationTitle"
+        @focus-time="focusTimeTitle"
+        @reschedule-appointment="openRescheduleModal"
+      />
+      <div class="m-component m-component-form">
+        <div class="container">
+          <div class="m-component__grid">
+            <div class="m-component__column">
+              <div class="m-content">
+                <h2
+                  id="timeTitleElement"
+                  ref="timeTitleElement"
+                  tabindex="0"
+                >
+                  {{ t("time") }}
+                </h2>
+              </div>
+              <div
+                v-if="appointment"
+                class="m-content time-container-margin-bottom"
               >
-                {{ t("time") }}
-              </h2>
-            </div>
-            <div
-              v-if="appointment"
-              class="m-content time-container-margin-bottom"
-            >
-              <div class="timeBox">
-                <calendar-icon :timestamp="appointment.timestamp" />
+                <div class="timeBox">
+                  <calendar-icon :timestamp="appointment.timestamp" />
+                  <p tabindex="0">
+                    {{ formatAppointmentDateTime(appointment.timestamp) }}
+                    {{ t("timeStampSuffix") }} <br />
+                    {{ t("estimatedDuration") }} <br v-if="isMobile" />
+                    {{ estimatedDuration() }}
+                    {{ t("minutes") }}
+                  </p>
+                </div>
                 <p tabindex="0">
-                  {{ formatAppointmentDateTime(appointment.timestamp) }}
-                  {{ t("timeStampSuffix") }} <br />
-                  {{ t("estimatedDuration") }} <br v-if="isMobile" />
-                  {{ estimatedDuration() }}
-                  {{ t("minutes") }}
+                  {{ t("detailTimeHint") }}
                 </p>
               </div>
-              <p tabindex="0">
-                {{ t("detailTimeHint") }}
-              </p>
-            </div>
-            <div class="m-content">
-              <h2
-                ref="locationTitleElement"
-                tabindex="0"
+              <div class="m-content">
+                <h2
+                  ref="locationTitleElement"
+                  tabindex="0"
+                >
+                  {{ t("location") }}
+                </h2>
+              </div>
+              <div
+                v-if="selectedProvider"
+                class="m-content location-text-margin-top"
               >
-                {{ t("location") }}
-              </h2>
-            </div>
-            <div
-              v-if="selectedProvider"
-              class="m-content location-text-margin-top"
-            >
-              <p tabindex="0">
-                {{ selectedProvider.organization }}<br />
-                <strong> {{ selectedProvider.name }} </strong><br />
-              </p>
-              <p tabindex="0">
-                {{ selectedProvider.address.street }}
-                {{ selectedProvider.address.house_number }}<br />
-                {{ selectedProvider.address.postal_code }}
-                {{ selectedProvider.address.city }}
-              </p>
+                <p tabindex="0">
+                  {{ selectedProvider.organization }}<br />
+                  <strong> {{ selectedProvider.name }} </strong><br />
+                </p>
+                <p tabindex="0">
+                  {{ selectedProvider.address.street }}
+                  {{ selectedProvider.address.house_number }}<br />
+                  {{ selectedProvider.address.postal_code }}
+                  {{ selectedProvider.address.city }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      v-if="appointment"
-      class="m-component m-component-linklist--boxed"
-    >
-      <div class="container">
-        <div class="m-component__grid">
-          <div class="m-component__column">
-            <h2
-              class="m-component__title"
-              tabindex="0"
-            >
-              {{ t("services") }}
-            </h2>
-            <div class="m-linklist">
-              <ul class="m-linklist__list">
-                <li class="m-linklist__list__item">
-                  <a
-                    class="m-linklist-element m-linklist-element--external"
-                    :href="getServiceBaseURL() + appointment.serviceId"
-                    target="_blank"
-                  >
-                    <div class="m-linklist-element__meta">
-                      <span class="m-linklist-element__title">{{
-                        appointment.serviceName
-                      }}</span>
-                    </div>
-                    <svg
-                      aria-hidden="true"
-                      class="icon"
+      <div
+        v-if="appointment"
+        class="m-component m-component-linklist--boxed"
+      >
+        <div class="container">
+          <div class="m-component__grid">
+            <div class="m-component__column">
+              <h2
+                class="m-component__title"
+                tabindex="0"
+              >
+                {{ t("services") }}
+              </h2>
+              <div class="m-linklist">
+                <ul class="m-linklist__list">
+                  <li class="m-linklist__list__item">
+                    <a
+                      class="m-linklist-element m-linklist-element--external"
+                      :href="getServiceBaseURL() + appointment.serviceId"
+                      target="_blank"
                     >
-                      <use xlink:href="#icon-arrow-right"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li
-                  v-for="(subrequest, index) in appointment.subRequestCounts"
-                  :key="index"
-                  class="m-linklist__list__item"
-                >
-                  <a
-                    class="m-linklist-element m-linklist-element"
-                    :href="getServiceBaseURL() + subrequest.id"
+                      <div class="m-linklist-element__meta">
+                        <span class="m-linklist-element__title">{{
+                          appointment.serviceName
+                        }}</span>
+                      </div>
+                      <svg
+                        aria-hidden="true"
+                        class="icon"
+                      >
+                        <use xlink:href="#icon-arrow-right"></use>
+                      </svg>
+                    </a>
+                  </li>
+                  <li
+                    v-for="(subrequest, index) in appointment.subRequestCounts"
+                    :key="index"
+                    class="m-linklist__list__item"
                   >
-                    <div class="m-linklist-element__meta">
-                      <span class="m-linklist-element__title">{{
-                        subrequest.name
-                      }}</span>
-                    </div>
-                    <svg
-                      aria-hidden="true"
-                      class="icon"
+                    <a
+                      class="m-linklist-element m-linklist-element"
+                      :href="getServiceBaseURL() + subrequest.id"
                     >
-                      <use xlink:href="#icon-arrow-right"></use>
-                    </svg>
-                  </a>
-                </li>
-              </ul>
+                      <div class="m-linklist-element__meta">
+                        <span class="m-linklist-element__title">{{
+                          subrequest.name
+                        }}</span>
+                      </div>
+                      <svg
+                        aria-hidden="true"
+                        class="icon"
+                      >
+                        <use xlink:href="#icon-arrow-right"></use>
+                      </svg>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -234,7 +295,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -250,12 +311,22 @@ import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
+import {
+  handleApiResponseForDownTime,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
 import { isAuthenticated } from "@/utils/auth";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse as handleErrorApiResponse,
+} from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 
@@ -283,6 +354,17 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
+
+// API status state
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+const apiErrorTranslation = computed(() =>
+  getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value)
+);
 
 /**
  * This function determines the expected duration of the appointment.
@@ -363,6 +445,18 @@ onMounted(() => {
     undefined,
     props.baseUrl ?? undefined
   ).then((data) => {
+    // Check if any error state should be activated
+    if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      return;
+    }
+
+    // Handle normal errors (like rate limit)
+    handleErrorApiResponse(
+      data,
+      errorStates.errorStateMap,
+      currentErrorData.value
+    );
+
     services.value = data.services;
     relations.value = data.relations;
     offices.value = data.offices;
