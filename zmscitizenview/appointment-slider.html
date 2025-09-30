@@ -16,7 +16,14 @@
             href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
     />
 
+    <!-- login -->
+    <script
+            src="https://dbs-login-webcomponent-integration-dbs-login.apps.capk.muenchen.de/loader.js"
+            type="text/javascript"
+    ></script>
+
     <!-- built files will be auto injected -->
+    <script src="src/debug.ts"></script>
     <script src="src/zms-appointment-slider-webcomponent.ts" type="module"></script>
 
 </head>
@@ -25,6 +32,15 @@
 <noscript>
     <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
 </noscript>
+
+<dbs-login
+        kc-url="https://ssodev.muenchen.de/auth"
+        kc-realm="A61"
+        kc-client-id="dbs-fragments"
+        overview-link="http://localhost:8082/webcomponents"
+        appointment-link="http://localhost:8082/appointment-overview"
+></dbs-login>
+
 <h1>zms-appointment-slider overview page</h1>
 <zms-appointment-slider-i18n-host>
     <zms-appointment-slider-wrapped

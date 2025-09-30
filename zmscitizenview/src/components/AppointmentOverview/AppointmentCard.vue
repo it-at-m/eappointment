@@ -12,16 +12,16 @@
       />
     </template>
     <template #content>
-      <div class="text-padding">
+      <p class="m-teaser-contained-contact__detail">
         <muc-icon icon="calendar" />
         {{ formatAppointmentDateTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
-      </div>
-      <div class="text-padding">
+      </p>
+      <p class="m-teaser-contained-contact__detail">
         <muc-icon icon="map-pin" />
         {{ selectedProvider?.address.street }}
         {{ selectedProvider?.address.house_number }} <br />
-      </div>
+      </p>
       <b>{{ t("appointmentNumber") }}:</b>
       {{ appointment.processId }}
     </template>
@@ -66,9 +66,5 @@ onMounted(() => {
 <style scoped>
 .multiline-text {
   white-space: pre-wrap;
-}
-
-.text-padding {
-  padding-bottom: 12px;
 }
 </style>
