@@ -18,7 +18,7 @@
             <h2>{{ t("your") }} {{ t("appointment") }}</h2>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("service") }}</h3>
+            <h3>{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
             <p
@@ -49,7 +49,6 @@
                     :href="getServiceBaseURL() + subService.id"
                     target="_blank"
                     class="m-link"
-                    tabindex="0"
                     >{{ subService.name }}</a
                   >
                   <br />
@@ -58,17 +57,14 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("location") }}</h3>
+            <h3>{{ t("location") }}</h3>
           </div>
           <div
             v-if="selectedProvider"
             class="m-content border-bottom"
           >
             <p tabindex="0">{{ selectedProvider.name }}<br /></p>
-            <p
-              tabindex="0"
-              class="no-bottom-margin smaller-front-size"
-            >
+            <p class="no-bottom-margin smaller-front-size">
               <strong>{{ t("address") }}</strong>
               <br />
             </p>
@@ -90,7 +86,7 @@
           </div>
 
           <div class="m-content">
-            <h3 tabindex="0">{{ t("time") }}</h3>
+            <h3>{{ t("time") }}</h3>
           </div>
           <div
             v-if="appointment"
@@ -111,7 +107,7 @@
             "
           >
             <div class="m-content">
-              <h3 tabindex="0">{{ t("hint") }}</h3>
+              <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
               <div
@@ -121,7 +117,7 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("contact") }}</h3>
+            <h3>{{ t("contact") }}</h3>
           </div>
           <div
             v-if="appointment"
@@ -164,7 +160,7 @@
           </div>
           <div v-if="!rebookOrCancelDialog">
             <div class="m-content">
-              <h3 tabindex="0">{{ t("termsOfUse") }}</h3>
+              <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
               <p

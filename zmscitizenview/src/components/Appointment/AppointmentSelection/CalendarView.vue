@@ -60,7 +60,7 @@
           padding: 12px 8px;
         "
       >
-        <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
+        <h4>{{ formatDayFromDate(selectedDay) }}</h4>
       </div>
 
       <div

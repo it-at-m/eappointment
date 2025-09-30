@@ -6,11 +6,11 @@
     :title="formatMultilineTitle(appointment)"
   >
     <div class="appointment-data">
-      <p tabindex="0">
+      <p>
         <b> {{ t("appointmentNumber") }}: </b>
         {{ appointment.processId }}
       </p>
-      <p tabindex="0">
+      <p>
         <muc-icon icon="calendar" />
         {{ formatAppointmentDateTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
