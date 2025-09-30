@@ -50,6 +50,8 @@
       </div>
     </div>
   </div>
+
+  <!-- Normal Content -->
   <div
     v-if="
       !isInMaintenanceModeComputed &&
