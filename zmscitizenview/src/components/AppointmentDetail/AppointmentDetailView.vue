@@ -414,7 +414,7 @@ const focusTimeTitle = () => {
     timeTitleElement.value.focus();
     timeTitleElement.value.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: "center",
     });
   }
 };
@@ -424,7 +424,7 @@ const focusLocationTitle = () => {
     locationTitleElement.value.focus();
     locationTitleElement.value.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: "center",
     });
   }
 };
