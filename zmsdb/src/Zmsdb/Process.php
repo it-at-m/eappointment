@@ -64,7 +64,6 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
-        $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
@@ -81,7 +80,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
             'processID' => $process->getId(),
         ]);
-        Log::writeProcessLog("UPDATE (Process::updateEntity) $process ", Log::ACTION_EDITED, $processEntity, $useraccount);
+        Log::writeProcessLog("UPDATE (Process::updateEntity) $process ", Log::ACTION_EDITED, $process, $useraccount);
         return $process;
     }
 
@@ -118,8 +117,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $appointment->addSlotCount($slotList->count());
+
+        $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
+        $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+
         Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ", Log::ACTION_EDITED, $process, $userAccount);
-        return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
+        return $processEntity;
     }
 
     public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
@@ -151,8 +154,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $datetime);
         $process->addQueue($newQueueNumber, $datetime);
         $process->queue['number'] = $waitingNumber;
-        Log::writeProcessLog("CREATE (Process::redirectToScope) $process ", Log::ACTION_REDIRECTED, $process, $useraccount);
         $process = $this->writeNewProcess($process, $datetime);
+        Log::writeProcessLog("CREATE (Process::redirectToScope) $process ", Log::ACTION_REDIRECTED, $process, $useraccount);
         $this->writeRequestsToDb($process);
         return $process;
     }
@@ -268,6 +271,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         (new Slot())->writeSlotProcessMappingFor($process->id);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
+
         Log::writeProcessLog("CREATE (Process::writeNewProcess) $process $checksum ", Log::ACTION_NEW, $process, $userAccount);
         return $process;
     }

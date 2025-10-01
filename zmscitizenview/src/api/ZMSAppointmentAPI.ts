@@ -83,21 +83,56 @@ export function fetchServicesAndProviders(
   serviceId?: string,
   locationId?: string,
   baseUrl?: string
-): Promise<OfficesAndServicesDTO> {
-  const params: Record<string, string> = {};
+): Promise<OfficesAndServicesDTO | ErrorDTO> {
+  let apiUrl =
+    getGeneratedAPIBaseURL(baseUrl, false) +
+    VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
+
+  const params = new URLSearchParams();
   if (serviceId) {
-    params.serviceId = serviceId;
+    params.append("serviceId", serviceId);
     if (locationId) {
-      params.locationId = locationId;
+      params.append("locationId", locationId);
     }
   }
+  if (params.toString()) {
+    apiUrl += "?" + params.toString();
+  }
 
-  return request({
-    method: "GET",
-    baseUrl,
-    path: VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
-    params,
-  });
+  return fetch(apiUrl)
+    .then((response) => {
+      if (response.status >= 400 && response.status < 600) {
+        return response
+          .json()
+          .catch(() => ({}))
+          .then((data: any) => {
+            if (!data.errors) {
+              data.errors = [
+                {
+                  errorCode:
+                    response.status >= 500 ? "serverError" : "internalError",
+                  errorMessage: `HTTP ${response.status}`,
+                  statusCode: response.status,
+                },
+              ];
+            }
+            return data;
+          });
+      }
+      return response.json();
+    })
+    .catch(() => {
+      return {
+        errors: [
+          {
+            errorCode: "networkError",
+            errorMessage: "Network error or service unavailable",
+            errorType: "error",
+            statusCode: 0,
+          },
+        ],
+      };
+    });
 }
 
 export function fetchAvailableDays(

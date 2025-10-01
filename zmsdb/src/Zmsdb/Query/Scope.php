@@ -456,4 +456,14 @@ class Scope extends Base implements MappingInterface
             }
         }
     }
+
+    public function getQueryCountByInfoDienstleister(): string
+    {
+        return '
+            SELECT COUNT(*) 
+            FROM ' . self::TABLE . ' 
+            WHERE InfoDienstleisterID = :provider_id
+                AND source = :source
+        ';
+    }
 }

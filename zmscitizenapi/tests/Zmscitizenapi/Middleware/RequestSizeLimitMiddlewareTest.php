@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Middleware;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Middleware\RequestSizeLimitMiddleware;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 use Slim\Psr7\Response;

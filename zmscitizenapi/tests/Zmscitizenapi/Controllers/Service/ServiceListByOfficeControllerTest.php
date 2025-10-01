@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Service;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class ServiceListByOfficeControllerTest extends ControllerTestCase
@@ -42,7 +42,9 @@ class ServiceListByOfficeControllerTest extends ControllerTestCase
                     'id' => '1',
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
-                    "combinable" => null
+                    "combinable" => null,
+                    "parent_id" => null,
+                    "variant_id" => null
                 ]
             ]
         ];

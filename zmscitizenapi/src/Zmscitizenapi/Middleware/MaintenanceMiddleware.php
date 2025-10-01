@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -17,12 +17,12 @@ class MaintenanceMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (\App::MAINTENANCE_MODE_ENABLED) {
-            $language = $request->getAttribute('language');
-            $error = ErrorMessages::get(self::ERROR_UNAVAILABLE, $language);
+            $error = ErrorMessages::get(self::ERROR_UNAVAILABLE);
+
             $response = \App::$slim->getResponseFactory()->createResponse();
             $response = $response->withStatus(self::HTTP_UNAVAILABLE)
-                ->withHeader('Content-Type', 'application/json');
-// Write JSON response
+                ->withHeader('Content-Type', 'application/json; charset=utf-8');
+
             $responseBody = json_encode([
                 'errors' => [$error]
             ]);

@@ -110,6 +110,13 @@
                 }
             }
         },
+        "parentId": {
+            "type": [
+                "integer",
+                "null"
+            ],
+            "description": "Parent provider ID (when this is a child provider)"
+        },
         "scope": {
             "$ref": "./thinnedScope.json"
         },
