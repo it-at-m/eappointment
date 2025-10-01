@@ -57,7 +57,7 @@
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
       !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-      isAuthenticated()
+      loggedIn
     "
     class="container"
   >
@@ -138,12 +138,12 @@ import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentC
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { isAuthenticated } from "@/utils/auth";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -163,6 +163,8 @@ const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
 const loading = ref(true);
 const loadingError = ref(false);
+
+const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
