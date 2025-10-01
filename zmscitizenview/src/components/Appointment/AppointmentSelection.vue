@@ -918,6 +918,9 @@ function updateDateRangeForSelectedProviders() {
       );
     }
     calendarKey.value++;
+
+    // Validate that the currently selected date is still available for selected providers
+    validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
   }
   return availableDaysForSelectedProviders;
 }
@@ -1018,41 +1021,9 @@ function scheduleRefreshAfterProviderChange() {
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
 
-    // Choose best selectedDay: keep previous if available; else nearest
+    // Validate and update selected date to ensure it's available for selected providers
     if (availableDaysForSelectedProviders.length > 0) {
-      const dates = availableDaysForSelectedProviders.map(
-        (d) => new Date(d.time)
-      );
-      const isSameDay = (a: Date, b: Date) =>
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate();
-
-      let target: Date | undefined;
-      if (prevSelectedDay) {
-        const found = dates.find((d) => isSameDay(d, prevSelectedDay));
-        if (found) {
-          target = found;
-        } else {
-          const future = dates
-            .filter((d) => d >= prevSelectedDay)
-            .sort((a, b) => a.getTime() - b.getTime());
-          if (future.length > 0) {
-            target = future[0];
-          } else {
-            const past = dates
-              .filter((d) => d < prevSelectedDay)
-              .sort((a, b) => b.getTime() - a.getTime());
-            if (past.length > 0) target = past[0];
-          }
-        }
-      }
-      if (!target) target = dates[0];
-      selectedDay.value = target;
-      viewMonth.value = new Date(target.getFullYear(), target.getMonth(), 1);
-      calendarKey.value++;
-      await nextTick();
-      await getAppointmentsOfDay(convertDateToString(target));
+      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     }
 
     // Snap inside day
