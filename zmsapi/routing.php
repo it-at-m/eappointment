@@ -1540,7 +1540,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/department/{id}/useraccount/":
+ *  "/department/{ids}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a department
  *          x-since: 2.10
@@ -1548,11 +1548,11 @@ use \Psr\Http\Message\ResponseInterface;
  *              - department
  *              - useraccount
  *          parameters:
- *              -   name: id
- *                  description: department number
+ *              -   name: ids
+ *                  description: department numbers
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1582,7 +1582,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "department does not exist"
  */
 \App::$slim->get(
-    '/department/{id:\d{1,11}}/useraccount/',
+    '/department/{ids}/useraccount/',
     '\BO\Zmsapi\UseraccountByDepartmentList'
 )
     ->setName("UseraccountByDepartmentList");

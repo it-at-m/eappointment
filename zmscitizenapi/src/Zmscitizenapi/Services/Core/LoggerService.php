@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Application;
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

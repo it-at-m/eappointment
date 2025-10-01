@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers\Availability;
 
 use BO\Zmscitizenapi\BaseController;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Availability\AvailableAppointmentsListService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;

@@ -143,6 +143,22 @@ class Useraccount extends Base
         return $collection;
     }
 
+    public function readCollectionByDepartmentIds($departmentIds, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentIds($departmentIds)
+            ->addEntityMapping();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($this->readResolvedReferences($entity, $resolveReferences));
+            }
+        }
+        return $collection;
+    }
+
     /**
      * write an useraccount
      *

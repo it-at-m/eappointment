@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class OfficesServicesRelationsControllerTest extends ControllerTestCase
@@ -92,7 +92,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ],
                 [
                     "id" => 9999999,
@@ -149,7 +150,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ]
             ],
             "services" => [
@@ -157,7 +159,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 1,
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
-                    "combinable" => []
+                    "combinable" => [],
+                    "parent_id" => null,
+                    "variant_id" => null
                 ]
             ],
             "relations" => [
@@ -262,7 +266,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ],
                 [
                     "id" => 9999999,
@@ -319,7 +324,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ]
             ],
             "services" => [
@@ -327,7 +333,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 1,
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
-                    "combinable" => []
+                    "combinable" => [],
+                    "parent_id" => null,
+                    "variant_id" => null
                 ],
                 [
                     "id" => 2,
@@ -336,7 +344,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "combinable" => [
                         "1" => ["1" => [9999999]],
                         "2" => ["2" => [9999999]]
-                    ]
+                    ],
+                    "parent_id" => null,
+                    "variant_id" => null
                 ]
             ],
             "relations" => [

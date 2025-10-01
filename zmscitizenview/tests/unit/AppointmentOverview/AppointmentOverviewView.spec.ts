@@ -76,6 +76,12 @@ describe("AppointmentOverviewView", () => {
   };
 
   describe("View States", () => {
+    beforeAll(() => {
+      vi.mock('@/utils/auth', () => ({
+        isAuthenticated: () => true,
+        getAccessToken: () => ""
+      }));
+    });
     it("shows initial view after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -109,6 +115,12 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Edge Cases", () => {
+    beforeAll(() => {
+      vi.mock('@/utils/auth', () => ({
+        isAuthenticated: () => true,
+        getAccessToken: () => ""
+      }));
+    });
     it("shows initial view after loading with 0 appointments", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
