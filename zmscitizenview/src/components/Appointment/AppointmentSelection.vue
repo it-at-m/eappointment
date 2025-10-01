@@ -791,68 +791,67 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
   if (selectedProviderIds.length === 0) {
     // No providers selected, clear appointments
     isLoadingAppointments.value = false;
-    return Promise.resolve();
+    return;
   }
 
   const providerIds = selectedProviderIds.map(Number);
 
-  return fetchAvailableTimeSlots(
-    date,
-    providerIds.map(Number),
-    Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined,
-    props.captchaToken ?? undefined
-  )
-    .then((data) => {
-      if (data && "offices" in data && Array.isArray((data as any).offices)) {
-        appointmentTimestampsByOffice.value = (
-          data as AvailableTimeSlotsByOfficeDTO
-        ).offices;
+  try {
+    const data = await fetchAvailableTimeSlots(
+      date,
+      providerIds.map(Number),
+      Array.from(props.selectedServiceMap.keys()),
+      Array.from(props.selectedServiceMap.values()),
+      props.baseUrl ?? undefined,
+      props.captchaToken ?? undefined
+    );
 
-        appointmentsCount.value = (data as any).offices.reduce(
-          (sum: number, office: any) =>
-            sum + (office.appointments?.length ?? 0),
-          0
-        );
+    if (data && "offices" in data && Array.isArray((data as any).offices)) {
+      appointmentTimestampsByOffice.value = (
+        data as AvailableTimeSlotsByOfficeDTO
+      ).offices;
 
-        // Track dates without appointments
-        if (appointmentsCount.value === 0) {
-          datesWithoutAppointments.value.add(date);
-        } else {
-          datesWithoutAppointments.value.delete(date);
-        }
+      appointmentsCount.value = (data as any).offices.reduce(
+        (sum: number, office: any) => sum + (office.appointments?.length ?? 0),
+        0
+      );
 
-        // Only show error if there are no appointments on any day
-        if (
-          appointmentsCount.value === 0 &&
-          !hasAppointmentsForSelectedProviders()
-        ) {
-          error.value = true;
-        } else {
-          error.value = false;
-
-          // Keep selectedDay; provider-change pipeline decides nearest available date
-        }
-      } else {
-        // Track dates without appointments
+      // Track dates without appointments
+      if (appointmentsCount.value === 0) {
         datesWithoutAppointments.value.add(date);
-
-        // Only show error if there are no appointments on any day
-        if (!hasAppointmentsForSelectedProviders()) {
-          error.value = true;
-        } else {
-          error.value = false;
-          // Keep selectedDay; provider-change pipeline decides nearest available date
-        }
+      } else {
+        datesWithoutAppointments.value.delete(date);
       }
-      isLoadingAppointments.value = false;
-      isLoadingComplete.value = true;
-    })
-    .catch(() => {
-      isLoadingAppointments.value = false;
-      isLoadingComplete.value = true;
-    });
+
+      // Only show error if there are no appointments on any day
+      if (
+        appointmentsCount.value === 0 &&
+        !hasAppointmentsForSelectedProviders()
+      ) {
+        error.value = true;
+      } else {
+        error.value = false;
+
+        // Keep selectedDay; provider-change pipeline decides nearest available date
+      }
+    } else {
+      // Track dates without appointments
+      datesWithoutAppointments.value.add(date);
+
+      // Only show error if there are no appointments on any day
+      if (!hasAppointmentsForSelectedProviders()) {
+        error.value = true;
+      } else {
+        error.value = false;
+        // Keep selectedDay; provider-change pipeline decides nearest available date
+      }
+    }
+  } catch (error) {
+    // Handle any errors from fetchAvailableTimeSlots
+  } finally {
+    isLoadingAppointments.value = false;
+    isLoadingComplete.value = true;
+  }
 };
 
 function getAvailableProviders(
@@ -1167,10 +1166,12 @@ watch(isLoadingAppointments, (loading) => {
   }
 });
 
-watch(selectedDay, (newDate) => {
+watch(selectedDay, async (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
-    getAppointmentsOfDay(convertDateToString(selectedDay.value || new Date()));
+    await getAppointmentsOfDay(
+      convertDateToString(selectedDay.value || new Date())
+    );
   }
 });
 
