@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
-use BO\Zmscitizenapi\Helper\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Core\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

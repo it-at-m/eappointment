@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Middleware;
 
-use BO\Zmscitizenapi\Helper\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Middleware\RateLimitingMiddleware;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 use PHPUnit\Framework\MockObject\MockObject;

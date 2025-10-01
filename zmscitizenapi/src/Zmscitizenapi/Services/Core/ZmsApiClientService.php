@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
