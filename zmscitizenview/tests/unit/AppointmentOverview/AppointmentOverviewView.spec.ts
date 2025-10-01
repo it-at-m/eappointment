@@ -77,9 +77,8 @@ describe("AppointmentOverviewView", () => {
 
   describe("View States", () => {
     beforeAll(() => {
-      vi.mock('@/utils/auth', () => ({
-        isAuthenticated: () => true,
-        getAccessToken: () => ""
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
       }));
     });
     it("shows initial view after loading", async () => {
@@ -116,9 +115,8 @@ describe("AppointmentOverviewView", () => {
 
   describe("Edge Cases", () => {
     beforeAll(() => {
-      vi.mock('@/utils/auth', () => ({
-        isAuthenticated: () => true,
-        getAccessToken: () => ""
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
       }));
     });
     it("shows initial view after loading with 0 appointments", async () => {
