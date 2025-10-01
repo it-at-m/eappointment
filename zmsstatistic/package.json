@@ -31,7 +31,7 @@
   "devDependencies": {
     "@parcel/transformer-sass": "^2.7.0",
     "chart.js": "^2.7.2",
-    "eslint": "^6.8.0",
+    "eslint": "^9.35.0",
     "eslint-plugin-import": "^2.20.1",
     "jquery": "^3.4.1",
     "parcel": "^2.7.0",

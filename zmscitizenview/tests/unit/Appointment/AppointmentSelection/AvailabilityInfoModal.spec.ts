@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 // @ts-expect-error: Vue SFC import for test
-import AvailabilityInfoModal from '@/components/Appointment/AvailabilityInfoModal.vue';
+import AvailabilityInfoModal from '@/components/Appointment/AppointmentSelection/AvailabilityInfoModal.vue';
 
 describe('AvailabilityInfoModal', () => {
   let wrapper: ReturnType<typeof mount>;

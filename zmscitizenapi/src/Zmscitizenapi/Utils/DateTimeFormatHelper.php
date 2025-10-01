@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Helper;
+namespace BO\Zmscitizenapi\Utils;
 
 class DateTimeFormatHelper
 {

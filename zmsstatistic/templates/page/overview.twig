@@ -14,7 +14,7 @@
             <h2>{% trans %}Auswertungen{% endtrans %}</h2>
 
             <h3>{% trans %}Kundenstatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":{"entity":"ClientIndex"}, "items": clientperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"ClientIndex"}, "items": clientPeriod} %}
                 {% block breadcrumb %}
                 <nav class="breadcrumb">
                     <ol>
@@ -34,7 +34,7 @@
             </div>
 
             <h3>{% trans %}Dienstleistungsstatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":{"entity":"RequestIndex"}, "items": requestperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"RequestIndex"}, "items": requestPeriod} %}
                 {% block breadcrumb %}
                 <nav class="breadcrumb">
                     <ol>
@@ -54,7 +54,7 @@
             </div>
 
             <h3>{% trans %}Wartestatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":{"entity":"WaitingIndex"}, "items": waitingperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"WaitingIndex"}, "items": waitingPeriod} %}
                 {% block breadcrumb %}
                 <nav class="breadcrumb">
                     <ol>
