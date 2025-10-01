@@ -60,7 +60,7 @@
     "
   >
     <no-login-warning
-      v-if="!isAuthenticated()"
+      v-if="!loggedIn"
       :appointment-id="appointmentId"
       :t="t"
     />
@@ -307,6 +307,7 @@ import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentD
 import NoLoginWarning from "@/components/AppointmentDetail/NoLoginWarning.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
+import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -316,7 +317,6 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { isAuthenticated } from "@/utils/auth";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
@@ -354,6 +354,8 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
+
+const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());

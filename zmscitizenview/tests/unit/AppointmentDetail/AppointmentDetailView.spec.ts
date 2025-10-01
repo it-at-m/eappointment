@@ -127,9 +127,8 @@ describe("AppointmentDetailView", () => {
 
   describe("View States", () => {
     beforeAll(() => {
-      vi.mock('@/utils/auth', () => ({
-        isAuthenticated: () => true,
-        getAccessToken: () => ""
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
       }));
     });
 
@@ -180,9 +179,8 @@ describe("AppointmentDetailView", () => {
 
   describe("Linklist States", () => {
     beforeAll(() => {
-      vi.mock('@/utils/auth', () => ({
-        isAuthenticated: () => true,
-        getAccessToken: () => ""
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
       }));
     });
 

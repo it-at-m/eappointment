@@ -60,10 +60,7 @@
     "
   >
     <div
-      v-if="
-        isAuthenticated() &&
-        (appointments.length > 0 || !displayedOnDetailScreen)
-      "
+      v-if="loggedIn && (appointments.length > 0 || !displayedOnDetailScreen)"
       :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
     >
       <div class="container">
@@ -81,7 +78,6 @@
                 t("myFurtherAppointments")
               }}</span>
               <span v-else>{{ t("myAppointments") }}</span>
-
               <span
                 v-if="
                   appointments.length &&
@@ -89,7 +85,7 @@
                   !loadingError
                 "
               >
-                ({{ appointments.length }})</span
+                &nbsp;({{ appointments.length }})</span
               >
             </h2>
           </div>
@@ -147,12 +143,12 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { isAuthenticated } from "@/utils/auth";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import {
   createErrorStates,
@@ -176,6 +172,8 @@ const isMobile = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
+
+const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
