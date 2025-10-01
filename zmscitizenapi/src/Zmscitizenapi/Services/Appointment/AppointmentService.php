@@ -29,6 +29,7 @@ abstract class AppointmentService
         } else {
             throw new RuntimeException("Neither authenticated user or auth-key provided");
         }
+
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
@@ -79,7 +80,10 @@ abstract class AppointmentService
             infoForAllAppointments: $scope->getInfoForAllAppointments() ?? null,
             slotsPerAppointment: ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $scope->getAppointmentsPerMail() === '' ? null : (string) $scope->getAppointmentsPerMail()) ?? null,
-            whitelistedMails: ((string) $scope->getWhitelistedMails() === '' ? null : (string) $scope->getWhitelistedMails()) ?? null
+            whitelistedMails: ((string) $scope->getWhitelistedMails() === '' ? null : (string) $scope->getWhitelistedMails()) ?? null,
+            reservationDuration: (int) MapperService::extractReservationDuration($scope),
+            activationDuration: MapperService::extractActivationDuration($scope),
+            hint: ((string) $scope->getScopeHint() === '' ? null : (string) $scope->getScopeHint()) ?? null,
         );
     }
 }
