@@ -30,7 +30,7 @@ require(APP_PATH . '/config.php');
 //\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
-$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Utils\ErrorHandler());
 
 // Initialize cache for rate limiting
 $cache = new \Symfony\Component\Cache\Psr16Cache(

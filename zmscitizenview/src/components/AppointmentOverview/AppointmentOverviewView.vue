@@ -56,7 +56,8 @@
     v-if="
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
-      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+      isAuthenticated()
     "
     class="container"
   >
@@ -138,11 +139,11 @@ import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSv
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import {
-  getApiStatusState,
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
+import { isAuthenticated } from "@/utils/auth";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -164,7 +165,6 @@ const loading = ref(true);
 const loadingError = ref(false);
 
 // API status state
-const apiStatusState = getApiStatusState();
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
 const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
 

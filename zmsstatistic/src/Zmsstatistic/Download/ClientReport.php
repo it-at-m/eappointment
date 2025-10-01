@@ -37,8 +37,6 @@ class ClientReport extends Base
                 }
             }
         }
-        $this->writeLegend($spreadsheet);
-
         return $download->writeDownload($response);
     }
 
@@ -156,18 +154,6 @@ class ClientReport extends Base
         }
 
         $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow() + 1));
-    }
-
-
-
-    protected function writeLegend(Spreadsheet $spreadsheet)
-    {
-        $sheet = $spreadsheet->getActiveSheet();
-        $legendData[] = '** in dieser Spalte sind nicht abschließend bearbeitete Kunden angegeben';
-        $legendData = array_chunk($legendData, 1);
-        $sheet->fromArray($legendData, null, 'A' . ($sheet->getHighestRow() + 1));
-
-        return $spreadsheet;
     }
 
     private function calculateNoAppointment($totals)
