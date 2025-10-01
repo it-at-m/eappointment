@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   build:
@@ -37,7 +38,7 @@ jobs:
           cd zmscitizenapi && bin/configure && composer run-script post-install-cmd && cd ..
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
 

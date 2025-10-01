@@ -7,7 +7,6 @@ class ExchangeUseraccount extends Base
     const QUERY_READ_REPORT = "SELECT IFNULL(o.Organisationsname, 'alle'),
        IFNULL(b.Name, 'alle') AS Behoerdennamen,
        n.Name,
-       n.Email,
        n.lastUpdate,
        -- n.Berechtigung,
   	   IF(n.Berechtigung >= 10, 1, 0) AS 'Nutzung des SMS-Versands',	

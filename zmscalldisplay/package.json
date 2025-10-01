@@ -37,7 +37,7 @@
     "@parcel/transformer-sass": "^2.6.2",
     "core-js": "^3.15.2",
     "cssnano": "^7.0.0",
-    "eslint": "^7.32.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.24.2",
     "jquery": "^3.6.0",
     "js-cookie": "^3.0.0",

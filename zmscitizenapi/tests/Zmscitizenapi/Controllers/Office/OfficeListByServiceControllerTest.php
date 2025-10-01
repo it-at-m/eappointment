@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class OfficeListByServiceControllerTest extends ControllerTestCase
@@ -90,7 +90,8 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ]
             ]
         ];            
@@ -167,7 +168,8 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ],
                 [
                     "id" => 9999999,
@@ -221,7 +223,8 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null
+                    "maxSlotsPerAppointment" => null,
+                    "parentId" => null
                 ]
             ]
         ];

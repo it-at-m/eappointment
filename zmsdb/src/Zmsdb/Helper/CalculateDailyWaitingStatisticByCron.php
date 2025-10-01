@@ -227,7 +227,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
         if (!$anmerkung && !$customText && !$customText2) {
             return null;
         }
-        $pattern = "/'StandortID' => '(\d+)'/";
+        // Match StandortID from var_export-style array: both quoted and unquoted integers
+        $pattern = "/'StandortID'\s*=>\s*'?([0-9]+)'?/";
         foreach ([$anmerkung, $customText, $customText2] as $txt) {
             if (preg_match($pattern, (string)$txt, $matches)) {
                 return (int)$matches[1];

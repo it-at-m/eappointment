@@ -1,6 +1,6 @@
 <?php
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
-define('MAINTENANCE_MODE_ENABLED', in_array(strtolower(getenv('MAINTENANCE_MODE_ENABLED')), ["1", "true", "yes"]));
+define('MAINTENANCE_MODE_ENABLED', filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN));
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscitizenapi');
 define('ZMS_API_PASSWORD_CITIZENAPI', getenv('ZMS_API_PASSWORD_CITIZENAPI'));

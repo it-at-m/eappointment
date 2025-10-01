@@ -1,6 +1,7 @@
 .idea/
 .ddev/.env
 .ddev/.env.template
+.devcontainer/.env
 /local/
 .DS_Store
 .vscode/launch.json

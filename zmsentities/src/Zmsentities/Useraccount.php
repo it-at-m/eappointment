@@ -158,6 +158,16 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
+    public function getDepartmentByIds(array $departmentIds)
+    {
+        foreach ($this->departments as $department) {
+            if (in_array($department['id'], $departmentIds)) {
+                return new Department($department);
+            }
+        }
+        return new Department();
+    }
+
     public function testDepartmentById($departmentId)
     {
         $department = $this->getDepartmentById($departmentId);
@@ -276,10 +286,9 @@ class Useraccount extends Schema\Entity
     {
         $entity = new self();
         $entity->id = $data['username'];
-        $entity->email = $data['email'];
         $department = new Department(['id' => 0]);
         $entity->addDepartment($department);
-        $password = substr(str_shuffle($entity->id . $entity->email), 0, 8);
+        $password = substr(str_shuffle($entity->id . uniqid()), 0, 8);
         $entity->password = $this->getHash($password);
         return $entity;
     }
