@@ -27,6 +27,8 @@ use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
+use BO\Zmsentities\Helper\Messaging;
+use BO\Zmsentities\Config;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -376,6 +378,19 @@ class MapperService
             }
         }
 
+        // Generate ICS content if process has appointments with time
+        $icsContent = null;
+        if (isset($myProcess->appointments[0]) && $myProcess->appointments[0]->hasTime()) {
+            try {
+                $config = new Config();
+                $ics = Messaging::getMailIcs($myProcess, $config, 'appointment');
+                $icsContent = $ics->getContent();
+            } catch (\Exception $e) {
+                // Log error but don't fail the process
+                error_log("Failed to generate ICS content for process {$myProcess->id}: " . $e->getMessage());
+            }
+        }
+
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
@@ -394,7 +409,8 @@ class MapperService
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
-            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
+            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            icsContent: $icsContent
         );
     }
 
