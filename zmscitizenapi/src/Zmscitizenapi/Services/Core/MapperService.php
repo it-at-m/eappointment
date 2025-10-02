@@ -599,7 +599,7 @@ class MapperService
             return $ics->getContent();
         } catch (\Exception $e) {
             // Log error but don't fail the process
-            LoggerService::logError($e, null, [
+            LoggerService::logError($e, null, null, [
                 'processId' => $process->id,
                 'context' => 'ICS generation'
             ]);
