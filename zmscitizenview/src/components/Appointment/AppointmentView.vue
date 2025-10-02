@@ -356,6 +356,7 @@ import {
 } from "@/utils/apiStatusService";
 import { isAuthenticated } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
+import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -917,8 +918,7 @@ const downloadIcsAppointment = () => {
 const viewAppointment = () => {
   // Navigate to appointment detail view for authenticated users
   if (appointment.value?.processId) {
-    const baseUrl = window.location.origin + window.location.pathname;
-    window.location.href = `${baseUrl}?appointment=${appointment.value.processId}&authKey=${appointment.value.authKey}`;
+    window.location.href = `appointment-detail.html?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
   }
 };
 
