@@ -920,7 +920,12 @@ const viewAppointment = () => {
   // Navigate to appointment detail view for authenticated users
   if (appointment.value?.processId) {
     const detailUrl = props.appointmentDetailUrl || "appointment-detail.html";
-    window.location.href = `${detailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
+    const targetUrl = new URL(detailUrl, window.location.href);
+    targetUrl.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_ID,
+      String(appointment.value.processId)
+    );
+    window.location.href = targetUrl.toString();
   }
 };
 
