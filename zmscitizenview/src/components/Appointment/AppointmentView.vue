@@ -377,6 +377,7 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
+  appointmentDetailUrl?: string;
   t: (key: string) => string;
 }>();
 
@@ -918,7 +919,8 @@ const downloadIcsAppointment = () => {
 const viewAppointment = () => {
   // Navigate to appointment detail view for authenticated users
   if (appointment.value?.processId) {
-    window.location.href = `appointment-detail.html?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
+    const detailUrl = props.appointmentDetailUrl || "appointment-detail.html";
+    window.location.href = `${detailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
   }
 };
 
