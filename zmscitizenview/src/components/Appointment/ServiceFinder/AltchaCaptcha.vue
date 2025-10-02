@@ -135,10 +135,12 @@ onUnmounted(() => {
 
 <style scoped>
 /* Custom styling for ALTCHA widget to match UI/UX requirements */
+
 :deep(.altcha) {
   background: transparent;
   border: 1px solid #bdd4ea;
-  color: #3a5368;
+  color: #ffffff;
+  border-color: #bdd4ea;
   display: flex;
   flex-direction: column;
   max-width: 260px;
