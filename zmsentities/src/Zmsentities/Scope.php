@@ -2,6 +2,7 @@
 
 namespace BO\Zmsentities;
 
+use BO\Zmsdb\Process;
 use BO\Zmsentities\Collection\ClosureList;
 use BO\Zmsentities\Collection\DayoffList;
 
@@ -293,6 +294,17 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             $this->setStatusQueue('lastGivenNumber', $this->getPreference('queue', 'firstNumber'));
         }
         $this->setStatusQueue('lastGivenNumberTimestamp', $dateTime->getTimestamp());
+        return $this;
+    }
+
+    public function incrementDisplayNumber()
+    {
+        if ($this->getStatus('queue', 'lastDisplayNumber') >= $this->getStatus('queue', 'maxDisplayNumber')) {
+            $this->setStatusQueue('lastDisplayNumber', 1);
+            return $this;
+        }
+
+        $this->setStatusQueue('lastDisplayNumber', $this->getStatus('queue', 'lastDisplayNumber') + 1);
         return $this;
     }
 
