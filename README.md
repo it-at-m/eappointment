@@ -34,6 +34,20 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 
 [Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
 
+## Projects
+
+### ZMS
+The original project to replace commercial proprietary software with the open source Berlin solution ZMS and went live with each city agency/department. This foundational project established the core appointment management system infrastructure for Munich's municipal services.
+
+### MPDZBS
+The creation of the PHP zmscitizenapi and the replacement of the first open source Vue2 frontend ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) with the Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) citizen frontend, plus the creation of the city's Vue patternlab ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). This project modernized the citizen-facing components and established design system standards.
+
+### ZMSKVR
+To add still needed features and requirements for the city's agencies/departments and improve weaknesses in user experiences. This includes implementing features in zmscitizenview that were not completed by MPDZBS, ensuring comprehensive functionality for all municipal departments.
+
+### MUXDBS
+Builds on MPDZBS following the Reifegradmodell (Maturity Level Model) as an implementation framework for Onlinezugangsgesetz (OZG - Online Access Act) compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) and adds additional components to zmscitizenview which will allow things such as login with BundID, BayernID and Elster for seamless online citizen appointments. This project represents the next maturity level of digital government services following federal implementation guidelines.
+
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
 BerlinOnline Stadtportal GmbH & Co KG Contact: 
@@ -79,6 +93,20 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 * Notruf für Mitarbeiter
 
 [Code-Abdeckung ZMSAPI und ZMSCITIZENAPI Dokumentation](https://it-at-m.github.io/eappointment/)
+
+## Projekte
+
+### ZMS
+Das ursprüngliche Projekt zur Ersetzung kommerzieller proprietärer Software durch die Open-Source-Berlin-Lösung ZMS und ging mit jeder städtischen Behörde/Abteilung live. Dieses grundlegende Projekt etablierte die Kerninfrastruktur des Terminverwaltungssystems für Münchens kommunale Dienstleistungen.
+
+### MPDZBS
+Die Erstellung der PHP zmscitizenapi und der Ersatz des ersten Open-Source Vue2-Frontends ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) durch das Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) Bürger-Frontend, plus die Erstellung des städtischen Vue-Patternlabs ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). Dieses Projekt modernisierte die bürgerseitigen Komponenten und etablierte Design-System-Standards.
+
+### ZMSKVR
+Um noch benötigte Funktionen und Anforderungen für die städtischen Behörden/Abteilungen hinzuzufügen und Schwächen in der Benutzererfahrung zu verbessern. Dies umfasst die Implementierung von Funktionen in zmscitizenview, die von MPDZBS nicht abgeschlossen wurden, um umfassende Funktionalität für alle kommunalen Abteilungen sicherzustellen.
+
+### MUXDBS
+Baut auf MPDZBS auf und folgt dem Reifegradmodell (Reifegradmodell) als Implementierungsrahmen für Onlinezugangsgesetz (OZG) Compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) und fügt zusätzliche Komponenten zu zmscitizenview hinzu, die Dinge wie Login mit BundID, BayernID und Elster für nahtlose Online-Bürgertermine ermöglichen werden. Dieses Projekt repräsentiert das nächste Reifegradniveau digitaler Regierungsdienstleistungen entsprechend den bundesweiten Implementierungsrichtlinien.
 
 ## Kontakt
 BerlinOnline Stadtportal GmbH & Co KG Kontakt: 
@@ -301,6 +329,7 @@ To keep our branch names organized and easily understandable, we follow a specif
    - `zms` for the ZMS project.
    - `zmskvr` for the ZMSKVR project.
    - `mpdzbs` for the MPDZBS project.
+   - `muxdbs`for the MUXDBS project.
 
 3. **issue number**: The ticket or issue number related to this branch (use digits only). This helps track the branch to a specific issue in the project management system.
 
@@ -318,11 +347,12 @@ To keep our branch names organized and easily understandable, we follow a specif
 - **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
 - **Chore Branch**: `chore-zms-2964-composer-update`
 - **Docs Branch**: `docs-zmskvr-0000-update-readme` `docs-zms-release-40-update-changelog`
+- **Feature Branch**: `feature-muxdbs-54321-add-bundid-integration`
 
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
 - **feat(ZMS-123): commit message**
