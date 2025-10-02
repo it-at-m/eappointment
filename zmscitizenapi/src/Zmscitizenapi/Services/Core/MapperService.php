@@ -29,6 +29,7 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Config;
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -387,7 +388,10 @@ class MapperService
                 $icsContent = $ics->getContent();
             } catch (\Exception $e) {
                 // Log error but don't fail the process
-                error_log("Failed to generate ICS content for process {$myProcess->id}: " . $e->getMessage());
+                LoggerService::logError($e, null, [
+                    'processId' => $myProcess->id,
+                    'context' => 'ICS generation'
+                ]);
             }
         }
 
