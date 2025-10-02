@@ -112,6 +112,7 @@
             </div>
             <div v-if="currentView === 2">
               <customer-info
+                :show-login-option="showLoginOption"
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
@@ -370,6 +371,7 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
+  showLoginOption: boolean;
   t: (key: string) => string;
   accessToken: string | null;
 }>();
