@@ -8,34 +8,47 @@
     </muc-callout>
   </div>
   <div v-if="showLoginOption && !isExpired">
-    <muc-callout
+    <!--Can be replaced if MucCallout has been extended with buttons in @muenchen/muc-patternlab-vue https://github.com/it-at-m/muc-patternlab-vue/pull/573 -->
+    <div
       v-if="!loggedIn"
-      type="info"
-      icon="user"
+      class="m-callout m-callout--default"
+      aria-label="Information"
     >
-      <template #content>
-        {{ t("optionalLoginText") }}
-
-        <muc-button
-          :icon="'sing-in'"
-          @click="requestLogin"
-        >
-          <template #default>
-            <span>{{ t("login") }}</span>
-          </template>
-        </muc-button>
-      </template>
-      <template #header>{{ t("optionalLogin") }}</template>
-    </muc-callout>
+      <div class="m-callout__inner">
+        <div class="m-callout__icon">
+          <muc-icon icon="user" />
+        </div>
+        <div class="m-callout__body">
+          <div class="m-callout__body__inner">
+            <h2 class="m-callout__headline">
+              {{ t("optionalLoginHeader") }}
+            </h2>
+            <div class="m-callout__content">
+              <p>
+                {{ t("optionalLoginText") }}
+              </p>
+              <muc-button
+                :icon="'sing-in'"
+                @click="requestLogin"
+              >
+                <template #default>
+                  <span>{{ t("login") }}</span>
+                </template>
+              </muc-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <muc-callout
       v-else
       type="success"
-      icon="user-fill"
     >
       <template #content>
         {{ t("loggedinText") }}
       </template>
       <template #header>{{ t("loggedinHeader") }}</template>
+      <template #icon><muc-icon icon="user-fill" /></template>
     </muc-callout>
   </div>
   <h2
@@ -146,6 +159,7 @@ import type { Ref } from "vue";
 import {
   MucButton,
   MucCallout,
+  MucIcon,
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
