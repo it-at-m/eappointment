@@ -73,7 +73,6 @@ class Application extends \BO\Slim\Application
     {
         self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
     }
-
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract logger initialization logic into a dedicated LoggerInitializer class
