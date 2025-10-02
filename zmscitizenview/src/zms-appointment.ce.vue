@@ -53,7 +53,7 @@ import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { registerAuthenticationHook } from "./utils/auth";
 
-const props = defineProps({
+defineProps({
   baseUrl: {
     type: String,
     required: false,
