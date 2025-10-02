@@ -319,6 +319,7 @@ import {
 } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  APPOINTMENT_ACTION_TYPE,
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
@@ -385,11 +386,20 @@ const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
   if (appointment.value)
-    location.href = `${props.rescheduleAppointmentUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
+    location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
 };
 
 const cancelAppointment = () => {
-  // TODO cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+  location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.CANCEL)}`;
+};
+
+const getEncodedString = (type: APPOINTMENT_ACTION_TYPE) => {
+  const json = {
+    id: appointment.value?.processId,
+    authKey: appointment.value?.authKey,
+    action: type,
+  };
+  return btoa(JSON.stringify(json));
 };
 
 const goToAppointmentOverviewLink = () => {

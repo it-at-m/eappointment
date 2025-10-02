@@ -351,6 +351,7 @@ import {
 } from "@/utils/apiStatusService";
 import { getAccessToken, getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
+import { APPOINTMENT_ACTION_TYPE } from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -799,7 +800,7 @@ const nextCancelAppointment = () => {
         } else {
           cancelAppointmentError.value = true;
         }
-        increaseCurrentView();
+        currentView.value = 4;
       })
       .finally(() => {
         isCancelingAppointment.value = false;
@@ -1049,7 +1050,17 @@ onMounted(() => {
                   }
                 );
               }
-              currentView.value = 3;
+              if (appointmentData.action) {
+                if (
+                  appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+                ) {
+                  nextRescheduleAppointment();
+                } else {
+                  nextCancelAppointment();
+                }
+              } else {
+                currentView.value = 3;
+              }
             }
           } else {
             handleApiError(
