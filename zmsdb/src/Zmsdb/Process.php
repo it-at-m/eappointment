@@ -84,6 +84,22 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
+    public function updateEntityDisplayNumber(Entity $process)
+    {
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process['id']);
+        $query->addConditionAuthKey($process['authKey']);
+
+        $process->displayNumber = $query->getNewDisplayNumber($process);
+        $query->addValueDisplayNumber($process);
+        if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
+            $this->writeItem($query);
+        }
+
+        Log::writeProcessLog("UPDATE (updateEntityDisplayNumber) $process ", Log::ACTION_EDITED, $process);
+        return $process;
+    }
+
     /**
      * Update a process with overbooked slots
      *
@@ -255,6 +271,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
+
+        if (!empty($process->getDisplayNumber())) {
+            $query->addValueDisplayNumber($process);
+        }
         $query->addValuesScopeData($process);
         $query->addValuesAppointmentData($process);
         $query->addValuesUpdateProcess($process, $dateTime, $parentProcess);
@@ -574,7 +594,31 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
+
+        /** @var Entity $process */
+        if ($this->shouldUpdateDisplayNumber($process, $status)) {
+            $this->updateEntityDisplayNumber($process);
+        }
+
         return $process;
+    }
+
+    public function shouldUpdateDisplayNumber(Entity $process, $status): bool
+    {
+        if ($status !== 'preconfirmed') {
+            return false;
+        }
+
+        $displayNumberPrefix = $process->scope->getPreference('queue', 'displayNumberPrefix');
+        if (empty($displayNumberPrefix)) {
+            return false;
+        }
+
+        if (str_starts_with($process->getDisplayNumber(), $displayNumberPrefix)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -872,6 +916,21 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         return false;
+    }
+
+    public function readProcessWithSameDayAndDisplayNumber($scopeId, $displayNumber, $date)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences(1)
+            ->addConditionScopeId($scopeId)
+            ->addConditionDate($date)
+            ->addConditionDisplayNumber($displayNumber)
+            ->addLimit(1);
+
+        $process = $this->fetchOne($query, new Entity());
+
+        return $this->readResolvedReferences($process, 1);
     }
 
     /**
