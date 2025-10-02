@@ -14,6 +14,7 @@
         :exclusive-location="exclusiveLocation"
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
+        :show-login-option="showLoginOption.toLowerCase() === 'true'"
         :t="t"
         :access-token="accessToken"
       />
@@ -52,7 +53,7 @@ import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { registerAuthenticationHook } from "./utils/auth";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -82,6 +83,11 @@ defineProps({
     type: String,
     required: false,
     default: fallbackConfirmAppointmentHash,
+  },
+  showLoginOption: {
+    type: String,
+    required: false,
+    default: "false",
   },
 });
 

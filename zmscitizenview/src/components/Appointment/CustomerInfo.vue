@@ -7,6 +7,37 @@
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
+  <div v-if="showLoginOption && !isExpired">
+    <muc-callout
+      v-if="!loggedIn"
+      type="info"
+      icon="user"
+    >
+      <template #content>
+        {{ t("optionalLoginText") }}
+
+        <muc-button
+          :icon="'sing-in'"
+          @click="requestLogin"
+        >
+          <template #default>
+            <span>{{ t("login") }}</span>
+          </template>
+        </muc-button>
+      </template>
+      <template #header>{{ t("optionalLogin") }}</template>
+    </muc-callout>
+    <muc-callout
+      v-else
+      type="success"
+      icon="user-fill"
+    >
+      <template #content>
+        {{ t("loggedinText") }}
+      </template>
+      <template #header>{{ t("loggedinHeader") }}</template>
+    </muc-callout>
+  </div>
   <h2
     v-if="!isExpired"
     class="m-component-form__title"
@@ -120,10 +151,12 @@ import {
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
+  showLoginOption: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
@@ -148,6 +181,8 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 const { isExpired, timeLeftString } = useReservationTimer();
 
@@ -296,6 +331,17 @@ const validForm = computed(
     !errorMessageCustomTextfield.value &&
     !errorMessageCustomTextfield2.value
 );
+
+const requestLogin = () => {
+  document.dispatchEvent(
+    new CustomEvent("authorization-request", {
+      detail: {
+        loginProvider: undefined,
+        authLevel: undefined,
+      },
+    })
+  );
+};
 
 const nextStep = () => {
   showErrorMessage.value = true;
