@@ -380,20 +380,7 @@ class MapperService
         }
 
         // Generate ICS content if process has appointments with time
-        $icsContent = null;
-        if (isset($myProcess->appointments[0]) && $myProcess->appointments[0]->hasTime()) {
-            try {
-                $config = new Config();
-                $ics = Messaging::getMailIcs($myProcess, $config, 'appointment');
-                $icsContent = $ics->getContent();
-            } catch (\Exception $e) {
-                // Log error but don't fail the process
-                LoggerService::logError($e, null, [
-                    'processId' => $myProcess->id,
-                    'context' => 'ICS generation'
-                ]);
-            }
-        }
+        $icsContent = self::generateIcsContent($myProcess);
 
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
@@ -414,7 +401,7 @@ class MapperService
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
-            icsContent: $icsContent
+            icsContent: isset($icsContent) ? $icsContent : null
         );
     }
 
@@ -592,5 +579,31 @@ class MapperService
             lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
             contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
         );
+    }
+
+    /**
+     * Generate ICS content for a process if it has appointments with time.
+     *
+     * @param Process $process The process to generate ICS content for
+     * @return string|null The ICS content or null if generation fails or not applicable
+     */
+    private static function generateIcsContent(Process $process): ?string
+    {
+        if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
+            return null;
+        }
+
+        try {
+            $config = new Config();
+            $ics = Messaging::getMailIcs($process, $config, 'appointment');
+            return $ics->getContent();
+        } catch (\Exception $e) {
+            // Log error but don't fail the process
+            LoggerService::logError($e, null, [
+                'processId' => $process->id,
+                'context' => 'ICS generation'
+            ]);
+            return null;
+        }
     }
 }
