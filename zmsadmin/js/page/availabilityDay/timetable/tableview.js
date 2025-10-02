@@ -16,7 +16,9 @@ const TableView = (props) => {
         if (a.type === 'appointment' && b.type !== 'appointment') return -1;
         if (a.type !== 'appointment' && b.type === 'appointment') return 1;
 
-        return a.startTime.localeCompare(b.startTime);
+        const aTime = a.startTime || '';
+        const bTime = b.startTime || '';
+        return aTime.localeCompare(bTime);
     });
 
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
