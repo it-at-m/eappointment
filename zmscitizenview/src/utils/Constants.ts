@@ -41,6 +41,11 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
 
+export enum APPOINTMENT_ACTION_TYPE {
+  RESCHEDULE = "reschedule",
+  CANCEL = "cancel",
+}
+
 export const API_BASE_URL_EXTENSION = "/api/citizen";
 export const API_BASE_URL_AUTHENTICATED_EXTENSION =
   "/authenticated/api/citizen";
