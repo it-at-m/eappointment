@@ -422,7 +422,7 @@ const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
 const appointment = ref<AppointmentDTO>();
-const rebookedAppointment = ref<AppointmentImpl>();
+const rebookedAppointment = ref<AppointmentDTO>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
