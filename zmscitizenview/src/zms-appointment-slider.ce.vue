@@ -78,10 +78,6 @@ registerAuthenticationHook(
     sans-serif;
 }
 
-main {
-  padding-bottom: 32px;
-}
-
 /* Background color on details page */
 .details-background {
   background-color: var(--color-neutrals-blue-xlight);

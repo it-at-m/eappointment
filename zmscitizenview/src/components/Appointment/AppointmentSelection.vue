@@ -1026,6 +1026,19 @@ function scheduleRefreshAfterProviderChange() {
       await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     }
 
+    const previousSelectedDateString = prevSelectedDay
+      ? convertDateToString(prevSelectedDay)
+      : null;
+    const currentSelectedDateString = selectedDay.value
+      ? convertDateToString(selectedDay.value)
+      : null;
+    if (
+      currentSelectedDateString &&
+      previousSelectedDateString === currentSelectedDateString
+    ) {
+      await getAppointmentsOfDay(currentSelectedDateString);
+    }
+
     // Snap inside day
     await validateCurrentDateHasAppointments();
     await snapToNearestForCurrentView();
