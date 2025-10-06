@@ -675,6 +675,7 @@ class Process extends Base implements MappingInterface
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
             $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
+            $query->orWith('process.displayNumber', 'LIKE', "%$queryString%");
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
