@@ -202,6 +202,25 @@ onUnmounted(() => {
   padding: 0 0.7rem 0.7rem;
 }
 
+/* Rotating spinner while verifying */
+:deep(.altcha svg) {
+  transform: none;
+  transition: transform 0.3s ease;
+}
+
+:deep(.altcha[data-state="verifying"] svg) {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Screen reader only class */
 .sr-only {
   position: absolute;
