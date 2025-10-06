@@ -2,6 +2,10 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsdb\Scope as ScopeEntity;
+use BO\Zmsdldb\Helper\DateTime;
+use DateTimeImmutable;
+
 /**
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
@@ -143,6 +147,18 @@ class Process extends Base implements MappingInterface
         );
         $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
         return $joinQuery;
+    }
+
+    public function addConditionDate($date)
+    {
+        $this->query->where('process.Datum', '=', $date);
+        return $this;
+    }
+
+    public function addConditionDisplayNumber($displayNumber)
+    {
+        $this->query->where('process.displayNumber', '=', $displayNumber);
+        return $this;
     }
 
     protected function calculateStatus()
@@ -306,6 +322,15 @@ class Process extends Base implements MappingInterface
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
             'queue__lastCallTime' => 'process.Timestamp',
+            'displayNumber' => self::expression(
+                'COALESCE(
+                    `process`.`displayNumber`,
+                    IF(`process`.`wartenummer`,
+                        `process`.`wartenummer`,
+                        `process`.`BuergerID`
+                    )
+                )'
+            ),
             'queue__number' => self::expression(
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,
@@ -649,6 +674,7 @@ class Process extends Base implements MappingInterface
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
             $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
+            $query->orWith('process.displayNumber', 'LIKE', "%$queryString%");
         };
         if ($orWhere) {
             $this->query->orWhere($condition);
@@ -759,12 +785,52 @@ class Process extends Base implements MappingInterface
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
+            'displayNumber' => $parentProcess === 0 && empty($process->queue['number'])
+                ? $this->getNewDisplayNumber($process)
+                : null,
             'wartenummer' => $process->queue['number']
         ];
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
             $values['apiClientID'] = $process->apiclient->apiClientID;
         }
         $this->addValues($values);
+    }
+
+    public function getNewDisplayNumber($process)
+    {
+        if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
+            return $process->id;
+        }
+
+        $newDisplayNumber = $process->scope->getPreference('queue', 'displayNumberPrefix') . str_pad(
+            (new ScopeEntity())->readDisplayNumberUpdated($process->scope->id),
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
+
+        if (
+            $this->checkIfDisplayNumberOnSameDateExists(
+                $process->scope->id,
+                $newDisplayNumber,
+                \DateTime::createFromFormat('U', (int) $process->getFirstAppointment()->date)
+            )
+        ) {
+            return $this->getNewDisplayNumber($process);
+        }
+
+        return $newDisplayNumber;
+    }
+
+    public function checkIfDisplayNumberOnSameDateExists($scopeId, $displayNumber, $date): bool
+    {
+        $processWithDisplayNumber = (new \BO\Zmsdb\Process())->readProcessWithSameDayAndDisplayNumber(
+            $scopeId,
+            $displayNumber,
+            $date->format('Y-m-d')
+        );
+
+        return !empty($processWithDisplayNumber->getId());
     }
 
     public function addValuesUpdateProcess(
@@ -911,6 +977,12 @@ class Process extends Base implements MappingInterface
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
+        $this->addValues($data);
+    }
+
+    public function addValueDisplayNumber($process)
+    {
+        $data['displayNumber'] = $process->displayNumber;
         $this->addValues($data);
     }
 

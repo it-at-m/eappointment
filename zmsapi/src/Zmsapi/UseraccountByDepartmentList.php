@@ -24,15 +24,19 @@ class UseraccountByDepartmentList extends BaseController
     ): ResponseInterface {
         $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $department = Helper\User::checkDepartment($args['id']);
+
+        $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
 
         /** @var Useraccount $useraccount */
-        $useraccountList = new Collection();
-        $useraccountList = (new Query())->readCollectionByDepartmentId($department->id, $resolveReferences);
+        $useraccountList = (new Query())
+            ->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences)
+            ->withLessData();
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
         foreach ($useraccountList as $userAccount) {
-            if ($resolveReferences < 1 && !$userAccount->getDepartmentById($department->id)) {
-                $userAccount->getDepartmentList()->addEntity($department);
+            foreach ($departments as $department) {
+                if ($resolveReferences < 1 && !$userAccount->getDepartmentByIds($department->getId())) {
+                    $userAccount->getDepartmentList()->addEntity($department);
+                }
             }
         }
 

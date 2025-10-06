@@ -17,7 +17,7 @@ class UseraccountTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -44,12 +44,6 @@ class UseraccountTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_workstation_with_process.json")
-                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',

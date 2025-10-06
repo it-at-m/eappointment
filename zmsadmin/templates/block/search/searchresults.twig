@@ -27,11 +27,11 @@
                         <td>
                             {% if process.status == "pickup" or process.status == "pending" %}
                                 <a tabindex="1" href="{{ urlGet("pickup", {}, {}) }}">
-                                    {{process.clients.0.familyName}} ({{process.id}})
+                                    {{process.clients.0.familyName}} ({{process.displayNumber}})
                                 </a>
                             {% else %}
                                 <a tabindex="1" href="{{ urlGet("counter", {}, {'selectedprocess': process.id, 'date': process.appointments.0.date|date('Y-m-d'), 'selectedscope': process.scope.id }) }}">
-                                    {{process.clients.0.familyName}} ({{process.id}})
+                                    {{process.clients.0.familyName}} ({{process.displayNumber}})
                                 </a>
                             {% endif %}
                         </td>
@@ -45,7 +45,7 @@
                 {% for process in processListOther %}
                     <tr>
                         <td>
-                            {{process.clients.0.familyName}} ({{process.id}})
+                            {{process.clients.0.familyName}} ({{process.displayNumber}})
                         </td>
                         <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
                         <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>

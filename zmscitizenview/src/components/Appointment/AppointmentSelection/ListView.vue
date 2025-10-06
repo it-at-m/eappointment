@@ -45,11 +45,12 @@
               >
                 <button
                   class="m-accordion__section-button"
+                  style="padding: 12px 8px"
                   type="button"
                   data-bs-toggle="collapse"
                   :data-bs-target="'#listContent-' + index"
                   :aria-expanded="day.dateString === localOpenAccordionDate"
-                  :aria-controls="'listContent-' + index"
+                  :aria-controls="'#listContent-' + index"
                   @click="onToggleDay(day)"
                 >
                   {{ day.label }}
@@ -406,7 +407,7 @@ async function snapToNearestForCurrentSelection() {
             (hourRow) =>
               hourRow.hour === currentHour &&
               hourRow.times.length > 0 &&
-              props.selectedProviders[hourRow.officeId]
+              props.selectedProviders[String(hourRow.officeId)]
           );
         }
         return false;
@@ -447,7 +448,7 @@ async function snapToNearestForCurrentSelection() {
               (partRow) =>
                 partRow.part === currentDayPart &&
                 partRow.times.length > 0 &&
-                props.selectedProviders[partRow.officeId]
+                props.selectedProviders[String(partRow.officeId)]
             );
           }
           return false;

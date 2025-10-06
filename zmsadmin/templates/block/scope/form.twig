@@ -923,6 +923,19 @@
                     ) }}
 
 					{{ formgroup(
+						{"label": "Terminnummmern-Präfix:", "description": "Bitte geben Sie ein bis zwei Großbuchstaben ein, die vor die vierstelligen Terminnummer gesetzt werden. Bleibt das Feld leer, wird eine sechsstellige Terminnummer vergeben"},
+						[{
+							"type":"input",
+							"parameter": {
+								"name": "preferences[queue][displayNumberPrefix]",
+								"value": scope.preferences.queue.displayNumberPrefix,
+								"maxlength": 2,
+								"width": 1
+							}
+						}]
+					) }}
+
+					{{ formgroup(
                         {"label": "Durchschnittliche Bearbeitungszeit:", "description": "In Minuten. Wird nur für die Wartezeitberechnung verwendet (1-59). Empfehlenswert ist eine Bearbeitungszeit kleiner als die durchschnittliche Dauer eines Termins, prozentual reduziert um die Quote der Nichtkommer."},
                         [{
                             "type":"input",
