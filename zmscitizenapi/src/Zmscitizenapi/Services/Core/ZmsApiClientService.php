@@ -443,7 +443,8 @@ class ZmsApiClientService
             if (!is_null($status)) {
                 $params['status'] = $status;
             }
-            $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserId}/", $params);
+            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserIdUrlEncoded}/", $params);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {
                 return new ProcessList();
