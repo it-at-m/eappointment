@@ -210,7 +210,7 @@ onUnmounted(() => {
 
 :deep(.altcha[data-state="verifying"] svg) {
   animation: spin 1s linear infinite;
-  color: #005A9F;
+  color: #005a9f;
 }
 
 @keyframes spin {
