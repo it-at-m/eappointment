@@ -39,6 +39,7 @@ class ProcessRedirect extends BaseController
         $process = (new Query())->updateEntity($process, \App::$now, 0, 'processing', $workstation->getUseraccount());
         (new Workstation())->writeRemovedProcess($workstation);
         $processStatusArchived->writeEntityFinished($process, \App::$now, false);
+        $newProcess->displayNumber = $process->displayNumber;
         $newProcess = (new \BO\Zmsdb\Process())->redirectToScope($newProcess, $process->scope, $process->queue['number'] ?? $process->id, $workstation->getUseraccount());
         $message = Response\Message::create($request);
         $message->data = $newProcess;

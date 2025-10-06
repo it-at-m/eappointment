@@ -9,7 +9,7 @@
         {% if deleteList %}
             <p>Alle Termine wurden erfolgreich aus der Liste entfernt.</p>
         {% else %}
-            <p>Der Abholer mit der Wartenummer {{ process.queue.number }} wurde erfolgreich aus der Liste entfernt.</p>
+            <p>Der Abholer mit der Wartenummer {{ process.displayNumber }} wurde erfolgreich aus der Liste entfernt.</p>
         {% endif %}
         <div class="form-actions">
             <a data-action-abort class="button-ok btn right" href="#">OK</a>
