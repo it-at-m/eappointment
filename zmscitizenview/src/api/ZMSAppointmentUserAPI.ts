@@ -1,8 +1,5 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import {
-  getAPIBaseURL,
-  VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
-} from "@/utils/Constants";
+import { VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT } from "@/utils/Constants";
 import { request } from "./ZMSAppointmentAPI";
 
 export function getMyAppointments(baseUrl?: string): Promise<AppointmentDTO[]> {
