@@ -28,6 +28,7 @@ class AuthenticatedUser implements JsonSerializable
 
     public static function fromJwtPayload(?string $token): ?self
     {
+        // Token is validated in API gateway
         if (is_null($token)) {
             return null;
         }
