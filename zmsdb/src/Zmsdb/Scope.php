@@ -262,6 +262,17 @@ class Scope extends Base
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
 
+    public function readDisplayNumberUpdated($scopeId)
+    {
+        $this->perform(
+            (new Query\Scope(Query\Base::SELECT))->getQueryLastDisplayNumber(),
+            ['scope_id' => $scopeId]
+        );
+        $entity = $this->readEntity($scopeId, 0, true)->incrementDisplayNumber();
+        $scope = $this->updateEntity($scopeId, $entity);
+        return $scope->getStatus('queue', 'lastDisplayNumber');
+    }
+
     /**
      * get last given waitingnumer and return updated (+1) waitingnumber
      *
@@ -561,20 +572,5 @@ class Scope extends Base
                 $preferenceQuery->deleteProperty($entityName, $entityId, $groupName, $name);
             }
         }
-    }
-
-    public function countByInfoDienstleister($providerId, string $source): int
-    {
-        $query = new Query\Scope(Query\Base::SELECT);
-
-        $sql = $query->getQueryCountByInfoDienstleister();
-
-        return (int) $this->getReader()->fetchValue(
-            $sql,
-            [
-                'provider_id' => $providerId,
-                'source'      => $source,
-            ]
-        );
     }
 }

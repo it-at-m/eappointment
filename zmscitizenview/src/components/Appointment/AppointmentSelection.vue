@@ -791,68 +791,67 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
   if (selectedProviderIds.length === 0) {
     // No providers selected, clear appointments
     isLoadingAppointments.value = false;
-    return Promise.resolve();
+    return;
   }
 
   const providerIds = selectedProviderIds.map(Number);
 
-  return fetchAvailableTimeSlots(
-    date,
-    providerIds.map(Number),
-    Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined,
-    props.captchaToken ?? undefined
-  )
-    .then((data) => {
-      if (data && "offices" in data && Array.isArray((data as any).offices)) {
-        appointmentTimestampsByOffice.value = (
-          data as AvailableTimeSlotsByOfficeDTO
-        ).offices;
+  try {
+    const data = await fetchAvailableTimeSlots(
+      date,
+      providerIds.map(Number),
+      Array.from(props.selectedServiceMap.keys()),
+      Array.from(props.selectedServiceMap.values()),
+      props.baseUrl ?? undefined,
+      props.captchaToken ?? undefined
+    );
 
-        appointmentsCount.value = (data as any).offices.reduce(
-          (sum: number, office: any) =>
-            sum + (office.appointments?.length ?? 0),
-          0
-        );
+    if (data && "offices" in data && Array.isArray((data as any).offices)) {
+      appointmentTimestampsByOffice.value = (
+        data as AvailableTimeSlotsByOfficeDTO
+      ).offices;
 
-        // Track dates without appointments
-        if (appointmentsCount.value === 0) {
-          datesWithoutAppointments.value.add(date);
-        } else {
-          datesWithoutAppointments.value.delete(date);
-        }
+      appointmentsCount.value = (data as any).offices.reduce(
+        (sum: number, office: any) => sum + (office.appointments?.length ?? 0),
+        0
+      );
 
-        // Only show error if there are no appointments on any day
-        if (
-          appointmentsCount.value === 0 &&
-          !hasAppointmentsForSelectedProviders()
-        ) {
-          error.value = true;
-        } else {
-          error.value = false;
-
-          // Keep selectedDay; provider-change pipeline decides nearest available date
-        }
-      } else {
-        // Track dates without appointments
+      // Track dates without appointments
+      if (appointmentsCount.value === 0) {
         datesWithoutAppointments.value.add(date);
-
-        // Only show error if there are no appointments on any day
-        if (!hasAppointmentsForSelectedProviders()) {
-          error.value = true;
-        } else {
-          error.value = false;
-          // Keep selectedDay; provider-change pipeline decides nearest available date
-        }
+      } else {
+        datesWithoutAppointments.value.delete(date);
       }
-      isLoadingAppointments.value = false;
-      isLoadingComplete.value = true;
-    })
-    .catch(() => {
-      isLoadingAppointments.value = false;
-      isLoadingComplete.value = true;
-    });
+
+      // Only show error if there are no appointments on any day
+      if (
+        appointmentsCount.value === 0 &&
+        !hasAppointmentsForSelectedProviders()
+      ) {
+        error.value = true;
+      } else {
+        error.value = false;
+
+        // Keep selectedDay; provider-change pipeline decides nearest available date
+      }
+    } else {
+      // Track dates without appointments
+      datesWithoutAppointments.value.add(date);
+
+      // Only show error if there are no appointments on any day
+      if (!hasAppointmentsForSelectedProviders()) {
+        error.value = true;
+      } else {
+        error.value = false;
+        // Keep selectedDay; provider-change pipeline decides nearest available date
+      }
+    }
+  } catch (error) {
+    // Handle any errors from fetchAvailableTimeSlots
+  } finally {
+    isLoadingAppointments.value = false;
+    isLoadingComplete.value = true;
+  }
 };
 
 function getAvailableProviders(
@@ -919,6 +918,9 @@ function updateDateRangeForSelectedProviders() {
       );
     }
     calendarKey.value++;
+
+    // Validate that the currently selected date is still available for selected providers
+    validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
   }
   return availableDaysForSelectedProviders;
 }
@@ -1019,41 +1021,22 @@ function scheduleRefreshAfterProviderChange() {
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
 
-    // Choose best selectedDay: keep previous if available; else nearest
+    // Validate and update selected date to ensure it's available for selected providers
     if (availableDaysForSelectedProviders.length > 0) {
-      const dates = availableDaysForSelectedProviders.map(
-        (d) => new Date(d.time)
-      );
-      const isSameDay = (a: Date, b: Date) =>
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate();
+      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    }
 
-      let target: Date | undefined;
-      if (prevSelectedDay) {
-        const found = dates.find((d) => isSameDay(d, prevSelectedDay));
-        if (found) {
-          target = found;
-        } else {
-          const future = dates
-            .filter((d) => d >= prevSelectedDay)
-            .sort((a, b) => a.getTime() - b.getTime());
-          if (future.length > 0) {
-            target = future[0];
-          } else {
-            const past = dates
-              .filter((d) => d < prevSelectedDay)
-              .sort((a, b) => b.getTime() - a.getTime());
-            if (past.length > 0) target = past[0];
-          }
-        }
-      }
-      if (!target) target = dates[0];
-      selectedDay.value = target;
-      viewMonth.value = new Date(target.getFullYear(), target.getMonth(), 1);
-      calendarKey.value++;
-      await nextTick();
-      await getAppointmentsOfDay(convertDateToString(target));
+    const previousSelectedDateString = prevSelectedDay
+      ? convertDateToString(prevSelectedDay)
+      : null;
+    const currentSelectedDateString = selectedDay.value
+      ? convertDateToString(selectedDay.value)
+      : null;
+    if (
+      currentSelectedDateString &&
+      previousSelectedDateString === currentSelectedDateString
+    ) {
+      await getAppointmentsOfDay(currentSelectedDateString);
     }
 
     // Snap inside day
@@ -1167,10 +1150,12 @@ watch(isLoadingAppointments, (loading) => {
   }
 });
 
-watch(selectedDay, (newDate) => {
+watch(selectedDay, async (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
-    getAppointmentsOfDay(convertDateToString(selectedDay.value || new Date()));
+    await getAppointmentsOfDay(
+      convertDateToString(selectedDay.value || new Date())
+    );
   }
 });
 

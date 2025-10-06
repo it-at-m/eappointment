@@ -11,7 +11,7 @@ Ihr Termin am <strong>{{ (date|default(getNow))|format_date(locale="de", pattern
 {
   "@context": "http://schema.org",
   "@type": "EventReservation",
-  "reservationNumber": "{{ process.id }}",
+  "reservationNumber": "{{ process.displayNumber }}",
   "reservationStatus": "http://schema.org/Cancelled",
   "modifyReservationUrl": "{{ config.appointments.urlChange }}",
   "underName": {

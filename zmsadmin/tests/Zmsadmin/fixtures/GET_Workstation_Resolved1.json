@@ -83,6 +83,7 @@
             "firstNumber": "1",
             "lastNumber": "499",
             "maxNumberContingent": "0",
+            "displayNumberPrefix": "",
             "processingTimeAverage": "15",
             "publishWaitingTimeEnabled": "1",
             "statisticsEnabled": "1"

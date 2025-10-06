@@ -10,7 +10,7 @@ hiermit bestätigen wir Ihre Wartenummer für den
 {% if process.scope.hint %}
 ({{ process.scope.hint }})<br />
 {% endif %}<br />
-Ihre Wartenummer ist die <strong>"{{ process.queue.number }}"</strong><br /><br />
+Ihre Wartenummer ist die <strong>"{{ process.displayNumber }}"</strong><br /><br />
 {% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
 Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% endif %}

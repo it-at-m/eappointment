@@ -131,6 +131,12 @@ describe("AppointmentOverviewView", () => {
   };
 
   describe("View States", () => {
+    beforeAll(() => {
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
+      }));
+    });
+
     it("shows initial view after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -164,13 +170,22 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display screen Cases", () => {
+    beforeAll(() => {
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
+      }));
+    });
+
     it("shows initial view on overview page after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
       wrapper.vm.appointments = mockAppointments;
       await nextTick();
 
-      expect(wrapper.text()).toContain(de.myAppointments + " (" + mockAppointments.length + ")");
+      expect(wrapper.text()).toContain(de.myAppointments);
+      expect(wrapper.text()).toContain("(" + mockAppointments.length + ")");
+      const headerElement = wrapper.find('.header');
+      expect(headerElement.element.innerHTML).toContain('&nbsp;');
     });
 
     it("shows initial view on detail page after loading", async () => {
@@ -185,6 +200,11 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display link Cases", () => {
+    beforeAll(() => {
+      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
+        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
+      }));
+    });
     it("shows link in header", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;

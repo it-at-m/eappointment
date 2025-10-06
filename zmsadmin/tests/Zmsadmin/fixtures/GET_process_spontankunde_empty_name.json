@@ -36,6 +36,7 @@
         "createIP": "",
         "createTimestamp": "1459461600",
         "id": "100632",
+        "displayNumber": "1",
         "archiveId": 0,
         "queue": {
             "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
