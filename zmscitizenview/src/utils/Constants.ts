@@ -50,7 +50,7 @@ export const API_BASE_URL_EXTENSION = "/api/citizen";
 export const API_BASE_URL_AUTHENTICATED_EXTENSION =
   "/authenticated/api/citizen";
 
-export function getAPIBaseURL(baseUrl: string | undefined): string {
+function getRawApiBaseURL(baseUrl: string | undefined): string {
   if (baseUrl) {
     return baseUrl;
   }
@@ -61,11 +61,11 @@ export function getAPIBaseURL(baseUrl: string | undefined): string {
   }
 }
 
-export function getGeneratedAPIBaseURL(
+export function getAPIBaseURL(
   baseUrl: string | undefined,
   authenticated: boolean
 ): string {
-  let url = getAPIBaseURL(baseUrl);
+  let url = getRawApiBaseURL(baseUrl);
 
   // Can be deleted if the configurations have been adjusted on all environments.
   if (url.endsWith("/api/citizen")) {

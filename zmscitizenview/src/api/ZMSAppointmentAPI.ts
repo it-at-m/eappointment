@@ -7,7 +7,7 @@ import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { getAccessToken, isAuthenticated } from "@/utils/auth";
 import {
-  getGeneratedAPIBaseURL,
+  getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
@@ -27,12 +27,12 @@ const MAXDATE = new Date(
   TODAY.getDate()
 );
 
-type Request = {
+interface Request {
   baseUrl: string | undefined;
   path: string;
   params?: string[][] | Record<string, string>;
   forceAuth?: boolean;
-};
+}
 
 type GetRequest = Request & {
   method: "GET";
@@ -58,7 +58,7 @@ export function request<TResponse>(
   if (authenticated) {
     headers["Authorization"] = `Bearer ${getAccessToken()}`;
   }
-  let requestInit: RequestInit = {
+  const requestInit: RequestInit = {
     method: request.method,
   };
   if (request.method === "POST") {
@@ -67,7 +67,7 @@ export function request<TResponse>(
   }
   requestInit.headers = headers;
   return fetch(
-    getGeneratedAPIBaseURL(
+    getAPIBaseURL(
       request.baseUrl,
       authenticated || request.forceAuth || false
     ) +
@@ -85,7 +85,7 @@ export function fetchServicesAndProviders(
   baseUrl?: string
 ): Promise<OfficesAndServicesDTO | ErrorDTO> {
   let apiUrl =
-    getGeneratedAPIBaseURL(baseUrl, false) +
+    getAPIBaseURL(baseUrl, false) +
     VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
 
   const params = new URLSearchParams();
