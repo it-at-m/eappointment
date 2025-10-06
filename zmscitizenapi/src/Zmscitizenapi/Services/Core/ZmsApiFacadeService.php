@@ -905,8 +905,8 @@ class ZmsApiFacadeService
         return $clientUpdateResult;
     }
 
-    public static function getAppointmentsByExternalUserId(string $externalUserId, ?int $filterId = null): ProcessList
+    public static function getAppointmentsByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
     {
-        return ZmsApiClientService::getProcessesByExternalUserId($externalUserId, $filterId);
+        return ZmsApiClientService::getProcessesByExternalUserId($externalUserId, $filterId, $status);
     }
 }

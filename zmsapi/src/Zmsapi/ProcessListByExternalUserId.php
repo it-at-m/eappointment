@@ -21,14 +21,14 @@ class ProcessListByExternalUserId extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        // TODO filter by status confirmed
         $workstation = (new Helper\User($request, 2))->checkRights();
-        $externalUserId = $args['externalUserId'];
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $externalUserId = Validator::param('externalUserId')->isString()->getValue();
+        $status = Validator::param('externalUserId')->isString()->getValue();
         $filterId = Validator::param('filterId')->isNumber()->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
 
-        $processList = (new Process())->readProcessListByExternalUserId($externalUserId, $filterId, $resolveReferences, $limit);
+        $processList = (new Process())->readProcessListByExternalUserId($externalUserId, $filterId, $status, $resolveReferences, $limit);
 
         $message = Response\Message::create($request);
         $message->data = $processList->withAccess($workstation->getUseraccount());

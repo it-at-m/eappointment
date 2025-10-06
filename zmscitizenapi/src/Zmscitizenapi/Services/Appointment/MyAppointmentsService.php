@@ -13,7 +13,7 @@ class MyAppointmentsService
     public function getAppointmentsForUser(AuthenticatedUser $user, ?int $filterId = null): array
     {
         $externalUserId = $user->getExternalUserId();
-        $processList = ZmsApiFacadeService::getAppointmentsByExternalUserId($externalUserId, $filterId);
+        $processList = ZmsApiFacadeService::getAppointmentsByExternalUserId($externalUserId, $filterId, "confirmed");
         $thinnedProcessList = [];
         foreach ($processList as $process) {
             $thinnedProcessList[] = MapperService::processToThinnedProcess($process);

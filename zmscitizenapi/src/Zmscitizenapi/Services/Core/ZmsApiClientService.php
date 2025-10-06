@@ -431,7 +431,7 @@ class ZmsApiClientService
         return $out ?: ['dldb'];
     }
 
-    public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null): ProcessList
+    public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
     {
         try {
             $params = [
@@ -439,6 +439,9 @@ class ZmsApiClientService
             ];
             if (!is_null($filterId)) {
                 $params['filterId'] = $filterId;
+            }
+            if (!is_null($status)) {
+                $params['status'] = $status;
             }
             $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserId}/", $params);
             $collection = $result?->getCollection();

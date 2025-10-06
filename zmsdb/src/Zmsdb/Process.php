@@ -938,7 +938,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, $resolveReferences = 0, $limit = 1000): Collection
+    public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
@@ -947,6 +947,9 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionExternalUserId($externalUserId);
         if (!is_null($filterId)) {
             $query->addConditionProcessId($filterId);
+        }
+        if (!is_null($status)) {
+            $query->addConditionStatus($status);
         }
         $query
             ->addLimit($limit);
