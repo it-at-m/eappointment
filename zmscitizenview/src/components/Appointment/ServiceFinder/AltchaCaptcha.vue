@@ -135,12 +135,9 @@ onUnmounted(() => {
 
 <style scoped>
 /* Custom styling for ALTCHA widget to match UI/UX requirements */
-
 :deep(.altcha) {
   background: transparent;
   border: 1px solid #bdd4ea;
-  color: #ffffff;
-  border-color: #bdd4ea;
   display: flex;
   flex-direction: column;
   max-width: 260px;
@@ -152,30 +149,34 @@ onUnmounted(() => {
 :deep(.altcha-main) {
   align-items: center;
   display: flex;
-  gap: 0.4rem;
-  padding: 0.7rem;
+  gap: 0.7rem;
+  padding: 0.7rem 1rem;
 }
 
 :deep(.altcha-checkbox) {
   display: flex;
   align-items: center;
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
 }
 
 :deep(.altcha-checkbox input) {
-  width: 18px;
-  height: 18px;
+  border: 2px solid #337bb2;
+  appearance: none;
+  width: 20px;
+  height: 20px;
   margin: 0;
 }
 
 :deep(.altcha-label) {
   flex-grow: 1;
+  display: flex;
 }
 
 :deep(.altcha-label label) {
   cursor: pointer;
   margin: 0;
+  padding-bottom: 3px;
   color: #3a5368;
 }
 
