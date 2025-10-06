@@ -25,9 +25,6 @@ class Request extends Base
         if (! $request->hasId()) {
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
-//        $inUseByRel = (new RequestRelation())->countByRequestId($requestId, $source) > 0;
-//        $inUseByBa  = $this->countInBuergeranliegen($requestId) > 0;
-        $request['canDelete'] = false;
         return $request;
     }
 
@@ -39,14 +36,8 @@ class Request extends Base
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
-//        $requestRelation = new RequestRelation();
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $request = new Entity($query->postProcessJoins($requestData));
-//            $source = $request->getSource();
-//            $id     = $request->getId();
-//            $inUseByRel = $requestRelation->countByRequestId($id, $source) > 0;
-//            $inUseByBa  = $this->countInBuergeranliegen($id) > 0;
-            $request['canDelete'] = false;
             $requestList->addEntity($request);
         }
         return $requestList;
@@ -190,18 +181,6 @@ class Request extends Base
         return $this->deleteItem($query);
     }
 
-
-    public function deleteEntitySafe(string $source, string $requestId): void
-    {
-        $countInRel = (new \BO\Zmsdb\RequestRelation())->countByRequestId($requestId);
-        $countInBa  = $this->countInBuergeranliegen($requestId);
-
-        if ($countInRel > 0 || $countInBa > 0) {
-            throw new Exception\Request\RequestInUse();
-        }
-        $this->writeDeleteEntity($requestId, $source);
-    }
-
     public function writeDeleteListBySource($source)
     {
         $query = new Query\Request(Query\Base::DELETE);
@@ -214,11 +193,5 @@ class Request extends Base
         if (! (new Source())->readEntity($source)) {
             throw new Exception\Source\UnknownDataSource();
         }
-    }
-
-    public function countInBuergeranliegen(string $requestId): int
-    {
-        $sql = (new Query\Request(Query\Base::SELECT))->getQueryCountInBuergeranliegen();
-        return (int) $this->getReader()->fetchValue($sql, ['request_id' => $requestId]);
     }
 }
