@@ -5,10 +5,7 @@
     >
       <div class="m-component slider-no-margin">
         <div class="m-content">
-          <h2
-            tabindex="0"
-            style="margin-bottom: 0"
-          >
+          <h2 style="margin-bottom: 0">
             {{ t("location") }}
           </h2>
         </div>
