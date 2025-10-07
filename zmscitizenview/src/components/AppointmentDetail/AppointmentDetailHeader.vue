@@ -6,7 +6,7 @@
   >
     <div class="appointment-data">
       <p tabindex="0">
-        <b> {{ t("appointmentNumber") }}: </b>
+        <strong> {{ t("appointmentNumber") }}: </strong>
         {{ appointment.processId }}
       </p>
       <muc-link
