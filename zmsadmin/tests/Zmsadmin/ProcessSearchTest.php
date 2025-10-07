@@ -34,6 +34,10 @@ class ProcessSearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/log/process/Test%2520BO/',
+                    'parameters' => [
+                        'page' => 1,
+                        'perPage' => 100
+                    ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
@@ -65,12 +69,18 @@ class ProcessSearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/log/process/100005/',
+                    'parameters' => [
+                        'page' => 2,
+                        'perPage' => 20
+                    ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, [
-            'query' => '100005'
+            'query' => '100005',
+            'page' => 2,
+            'perPage' => 20
         ], []);
         $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
@@ -98,6 +108,10 @@ class ProcessSearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/log/process/Test%2520BO/',
+                    'parameters' => [
+                        'page' => 1,
+                        'perPage' => 100
+                    ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]

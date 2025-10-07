@@ -80,6 +80,44 @@
                 </tbody>
             </table>
         </div>
+        <div>
+
+            {% set currentPage = page %}
+            {% set currentPerPage = perPage %}
+
+            <form method="get" action="">
+                <input type="hidden" name="query" value="{{ searchProcessQuery }}">
+                <label for="perPage">Pro Seite</label>
+                <input
+                        type="number"
+                        id="perPage"
+                        name="perPage"
+                        value="{{ currentPerPage }}"
+                        min="1"
+                        style="width: 70px;"
+                        onchange="this.form.submit()"
+                >
+            </form>
+
+            <div class="pagination">
+                {% set prevParams = (queryParams ?? {})|merge({'query': searchProcessQuery, 'page': currentPage - 1, 'perPage': currentPerPage}) %}
+                {% set nextParams = (queryParams ?? {})|merge({'query': searchProcessQuery, 'page': currentPage + 1, 'perPage': currentPerPage}) %}
+
+                {% if currentPage > 1 %}
+                    <a href="?{{ prevParams|url_encode }}">&lt; Vorherige Seite</a>
+                {% endif %}
+
+                Seite: {{ currentPage }}
+
+                {% if currentPage < 100 %}
+                    <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
+                {% endif %}
+            </div>
+
+
+
+
+        </div>
     {% endblock %}
 
 
