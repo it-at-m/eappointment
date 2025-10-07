@@ -55,7 +55,7 @@
       v-model="customerData.telephoneNumber"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
-      :required="selectedProvider.scope.telephoneRequired" 
+      :required="selectedProvider.scope.telephoneRequired"
       :aria-required="selectedProvider.scope.telephoneRequired"
       max="50"
       placeholder="+491511234567"
