@@ -14,7 +14,7 @@
     >
       <template #content>
         <div v-if="selectedProvider">
-          <b>{{ t("location") }}</b>
+          <strong>{{ t("location") }}</strong>
           <p class="m-teaser-contained-contact__summary">
             {{ selectedProvider.name }}
             <br />
@@ -23,7 +23,7 @@
           </p>
         </div>
         <div v-if="selectedDay">
-          <b>{{ t("time") }}</b>
+          <strong>{{ t("time") }}</strong>
           <br />
           <p class="m-teaser-contained-contact__detail">
             {{ formatDayFromDate(selectedDay) }},
@@ -39,7 +39,7 @@
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
-          <b>{{ t("hint") }}</b>
+          <strong>{{ t("hint") }}</strong>
           <br />
           <div
             v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
