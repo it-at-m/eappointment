@@ -32,10 +32,7 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3
-          class="no-top-margin"
-          tabindex="0"
-        >
+        <h3 class="no-top-margin">
           {{ t("availableTimes") }}
         </h3>
       </div>
@@ -160,10 +157,7 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3
-          class="no-top-margin"
-          tabindex="0"
-        >
+        <h3 class="no-top-margin">
           {{ t("availableTimes") }}
         </h3>
       </div>
@@ -188,7 +182,7 @@
           padding: 12px 8px;
         "
       >
-        <h4 tabindex="0">{{ formatDayFromDate(selectedDay) }}</h4>
+        <h4>{{ formatDayFromDate(selectedDay) }}</h4>
       </div>
 
       <div

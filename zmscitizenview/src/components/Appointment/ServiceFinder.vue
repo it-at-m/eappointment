@@ -105,10 +105,7 @@
     <div class="m-component">
       <div class="wrapper">
         <clock-svg />
-        <div
-          ref="durationInfo"
-          tabindex="0"
-        >
+        <div ref="durationInfo">
           <b>{{ t("estimatedDuration") }}</b>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
