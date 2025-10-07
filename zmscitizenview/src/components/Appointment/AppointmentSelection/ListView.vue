@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="m-content">
-      <h3
-        class="no-top-margin"
-        tabindex="0"
-      >
+      <h3 class="no-top-margin">
         {{ t("availableTimes") }}
       </h3>
       <div

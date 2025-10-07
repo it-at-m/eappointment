@@ -1,8 +1,5 @@
 <template>
-  <div
-    ref="summary"
-    tabindex="0"
-  >
+  <div ref="summary">
     <muc-callout
       v-if="
         selectedProvider &&

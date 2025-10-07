@@ -177,7 +177,6 @@
                 <h2
                   id="timeTitleElement"
                   ref="timeTitleElement"
-                  tabindex="0"
                 >
                   {{ t("time") }}
                 </h2>
@@ -188,7 +187,7 @@
               >
                 <div class="timeBox">
                   <calendar-icon :timestamp="appointment.timestamp" />
-                  <p tabindex="0">
+                  <p>
                     {{ formatAppointmentDateTime(appointment.timestamp) }}
                     {{ t("timeStampSuffix") }} <br />
                     {{ t("estimatedDuration") }} <br v-if="isMobile" />
@@ -196,15 +195,12 @@
                     {{ t("minutes") }}
                   </p>
                 </div>
-                <p tabindex="0">
+                <p>
                   {{ t("detailTimeHint") }}
                 </p>
               </div>
               <div class="m-content">
-                <h2
-                  ref="locationTitleElement"
-                  tabindex="0"
-                >
+                <h2 ref="locationTitleElement">
                   {{ t("location") }}
                 </h2>
               </div>
@@ -212,11 +208,11 @@
                 v-if="selectedProvider"
                 class="m-content location-text-margin-top"
               >
-                <p tabindex="0">
+                <p>
                   {{ selectedProvider.organization }}<br />
                   <strong> {{ selectedProvider.name }} </strong><br />
                 </p>
-                <p tabindex="0">
+                <p>
                   {{ selectedProvider.address.street }}
                   {{ selectedProvider.address.house_number }}<br />
                   {{ selectedProvider.address.postal_code }}
@@ -234,10 +230,7 @@
         <div class="container">
           <div class="m-component__grid">
             <div class="m-component__column">
-              <h2
-                class="m-component__title"
-                tabindex="0"
-              >
+              <h2 class="m-component__title">
                 {{ t("services") }}
               </h2>
               <div class="m-linklist">
