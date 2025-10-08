@@ -4,125 +4,210 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsdb\OverallCalendar as CalendarQuery;
+use BO\Zmsdb\OverviewCalendar as BookingQuery;
+use BO\Zmsdb\Availability as AvailabilityQuery;
+use BO\Zmsdb\Scope as ScopeQuery;
 use DateTimeImmutable;
-use DateTimeInterface;
 
 class OverallCalendarRead extends BaseController
 {
-    private function buildCalendar(array $rows, int $defaultSeats = 1): array
-    {
-        $calendar = [];
-        $lastSlotInfo = [];
-
-        foreach ($rows as $row) {
-            $dateKey  = (new DateTimeImmutable($row['time']))->format('Y-m-d');
-            $timeKey  = (new DateTimeImmutable($row['time']))->format('H:i');
-            $scopeKey = (int)$row['scope_id'];
-            $seatNo   = (int)$row['seat'];
-
-            $day   =& $calendar[$dateKey];
-            $scope =& $day['scopes'][$scopeKey];
-            $time  =& $scope['times'][$timeKey]['seats'];
-
-            $day['date']        = (new DateTimeImmutable($dateKey))->getTimestamp();
-            $scope['id']        = $scopeKey;
-            $scope['name']      = $row['scope_name'];
-            $scope['shortName'] = $row['scope_short'];
-            $scope['maxSeats']  = max($scope['maxSeats'] ?? 0, $seatNo, $defaultSeats);
-
-            if ($row['status'] === 'termin') {
-                if ($row['slots'] !== null) {
-                    $time[$seatNo] = [
-                        'seatNo'   => $seatNo,
-                        'status'   => 'termin',
-                        'processId' => (int) $row['process_id'],
-                        'slots'    => (int) $row['slots'],
-                    ];
-                    $lastSlotInfo["$scopeKey|$seatNo"] = [
-                        'processId' => (int) $row['process_id'],
-                        'openSlots' => (int) $row['slots'] - 1,
-                    ];
-                } else {
-                    $time[$seatNo] = [
-                        'seatNo' => $seatNo,
-                        'status' => 'skip'
-                    ];
-                    $info = $lastSlotInfo["$scopeKey|$seatNo"] ?? null;
-                    if ($info && --$info['openSlots'] <= 0) {
-                        unset($lastSlotInfo["$scopeKey|$seatNo"]);
-                    } else {
-                        $lastSlotInfo["$scopeKey|$seatNo"] = $info;
-                    }
-                }
-            } elseif ($row['status'] === 'cancelled') {
-                $time[$seatNo] = [
-                    'seatNo' => $seatNo,
-                    'status' => 'cancelled'
-                ];
-                unset($lastSlotInfo["$scopeKey|$seatNo"]);
-            } else {
-                $time[$seatNo] = [
-                    'seatNo' => $seatNo,
-                    'status' => 'open'
-                ];
-            }
-        }
-
-        foreach ($calendar as &$day) {
-            foreach ($day['scopes'] as &$scope) {
-                foreach ($scope['times'] as $timeKey => $slotInfo) {
-                    ksort($slotInfo['seats']);
-                    $scope['times'][$timeKey] = [
-                        'name'  => $timeKey,
-                        'seats' => array_values($slotInfo['seats']),
-                    ];
-                }
-                $scope['times'] = array_values($scope['times']);
-            }
-            $day['scopes'] = array_values($day['scopes']);
-        }
-        uksort($calendar, fn($a, $b) => strcmp($a, $b));
-
-        return ['days' => array_values($calendar)];
-    }
-
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\RequestInterface  $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array $args
-    ) {
+        array                               $args
+    )
+    {
         (new Helper\User($request))->checkRights('useraccount');
-        $scopeIdCsv = Validator::param('scopeIds')
-            ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
-        $scopeIds   = array_map('intval', explode(',', $scopeIdCsv));
 
-        $dateFrom   = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
-        $dateUntil  = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+        $scopeIdCsv = Validator::param('scopeIds')->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
+        $scopeIds = array_map('intval', explode(',', $scopeIdCsv));
+        $dateFrom = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
+        $dateUntil = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
         $updateAfter = Validator::param('updateAfter')->isDatetime()->setDefault(null)->getValue();
 
-        $flatRows = (new CalendarQuery())->readSlots(
-            $scopeIds,
-            $dateFrom,
-            $dateUntil,
-            $updateAfter
+        if (empty($scopeIds)) {
+            return Render::withJson($response, Response\Message::create($request)->setUpdatedMetaData(), 200);
+        }
+        $untilExclusive = (new DateTimeImmutable($dateUntil))->modify('+1 day')->format('Y-m-d');
+        $bookingDb = new BookingQuery();
+        $bookings = $updateAfter === null
+            ? $bookingDb->readRange($scopeIds, $dateFrom, $untilExclusive)
+            : $bookingDb->readRangeUpdated($scopeIds, $dateFrom, $untilExclusive, $updateAfter);
+
+        $tombstones = [];
+        if ($updateAfter !== null) {
+            $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter) ?? [];
+            $pidsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
+            $tombstones   = array_values(array_diff($changedPids, $pidsInWindow));
+        }
+
+        $availByDayAndScope = $this->buildAvailabilityMap($scopeIds, $dateFrom, $dateUntil);
+
+        $scopeMeta = $this->readScopeMeta($scopeIds);
+
+        [$days, $globalMin, $globalMax] = $this->buildDaysPayload(
+            $dateFrom, $dateUntil, $scopeIds, $availByDayAndScope, $bookings
         );
 
-        $structured = $this->buildCalendar($flatRows);
+        $maxUpdatedWindow = $bookingDb->readMaxUpdated($scopeIds, $dateFrom, $untilExclusive);
+        $maxUpdatedGlobal = $bookingDb->readMaxUpdatedGlobal($scopeIds);
+        $maxUpdated = $maxUpdatedGlobal ?? $maxUpdatedWindow ?? (new DateTimeImmutable())->format('Y-m-d H:i:s');
 
-        $msg           = Response\Message::create($request);
-        $msg->data     = $structured;
-        $msg->meta->rows = count($flatRows);
+        $payload = [
+            'meta' => [
+                'axis'   => ['start' => $globalMin, 'end' => $globalMax],
+                'scopes' => $scopeMeta,
+            ],
+            'days'         => array_values($days),
+            'delta'        => $updateAfter !== null,
+            'maxUpdatedAt' => $maxUpdated,
+            'tombstones'   => $tombstones,
+        ];
 
-        $response = Render::withLastModified(
-            $response,
-            (new DateTimeImmutable())->getTimestamp(),
-            '0'
-        );
-        return Render::withJson(
-            $response,
-            $msg->setUpdatedMetaData(),
-            $msg->getStatuscode()
-        );
+        $msg       = Response\Message::create($request);
+        $msg->data = $payload;
+
+        $response = Render::withLastModified($response, (new DateTimeImmutable($maxUpdated))->getTimestamp(), '0');
+        return Render::withJson($response, $msg->setUpdatedMetaData(), 200);
+    }
+
+    private function buildAvailabilityMap(array $scopeIds, string $dateFrom, string $dateUntil): array
+    {
+        $map = [];
+        $from = new \DateTimeImmutable($dateFrom);
+        $until = new \DateTimeImmutable($dateUntil);
+        $avail = new \BO\Zmsdb\Availability();
+
+        foreach ($scopeIds as $scopeId) {
+            $list = $avail->readList($scopeId, 2, $from, $until);
+
+            for ($day = $from; $day <= $until; $day = $day->modify('+1 day')) {
+                $dateKey = $day->format('Y-m-d');
+
+                $availForDay = $list->withDateTime($day);
+                if (!$availForDay->count()) {
+                    continue;
+                }
+
+                $intervals = [];
+
+                foreach ($availForDay as $a) {
+                    $start = substr((string)$a->startTime, 0, 5);
+                    $end = substr((string)$a->endTime, 0, 5);
+                    if (!$start || !$end || $start >= $end) {
+                        continue;
+                    }
+
+                    $capacity = array_key_exists('intern', $a->workstationCount)
+                        ? (int)$a->workstationCount['intern']
+                        : null;
+
+                    $intervals[] = [
+                        'start' => $start,
+                        'end' => $end,
+                        'capacity' => $capacity,
+                    ];
+                }
+
+                if ($intervals) {
+                    usort($intervals, fn($x, $y) => strcmp($x['start'], $y['start']));
+
+                    $map[$dateKey][$scopeId] = [
+                        'intervals' => $intervals
+                    ];
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    private function readScopeMeta(array $scopeIds): array
+    {
+        $meta = [];
+        $scopeDb = new ScopeQuery();
+        foreach ($scopeIds as $id) {
+            $scope = $scopeDb->readEntity($id, 1);
+            $meta[$id] = [
+                'name' => $scope?->getName() ?? '',
+                'shortName' => $scope?->getShortName() ?? '',
+            ];
+        }
+        return $meta;
+    }
+
+    private function buildDaysPayload(
+        string $dateFrom,
+        string $dateUntil,
+        array  $scopeIds,
+        array  $availByDayAndScope,
+        array  $bookingRows
+    ): array
+    {
+        $days = [];
+        $globalMin = null;
+        $globalMax = null;
+
+        for ($cursor = new \DateTimeImmutable($dateFrom);
+             $cursor <= new \DateTimeImmutable($dateUntil);
+             $cursor = $cursor->modify('+1 day')) {
+
+            $ymd = $cursor->format('Y-m-d');
+            $days[$ymd] = ['date' => $ymd, 'scopes' => []];
+
+            foreach ($scopeIds as $sid) {
+                $intervals = $availByDayAndScope[$ymd][$sid]['intervals'] ?? [];
+
+                if ($intervals) {
+                    foreach ($intervals as $iv) {
+                        $globalMin = $this->minHHMM($globalMin, $iv['start']);
+                        $globalMax = $this->maxHHMM($globalMax, $iv['end']);
+                    }
+                }
+
+                $days[$ymd]['scopes'][$sid] = [
+                    'id' => $sid,
+                    'intervals' => $intervals,
+                    'events' => [],
+                ];
+            }
+        }
+
+        foreach ($bookingRows as $r) {
+            $dKey = (new \DateTimeImmutable($r['starts_at']))->format('Y-m-d');
+
+            $sid = (int)$r['scope_id'];
+            $start = substr($r['starts_at'], 11, 5);
+            $end = substr($r['ends_at'], 11, 5);
+
+            $days[$dKey]['scopes'][$sid]['events'][] = [
+                'processId' => (int)$r['process_id'],
+                'start' => $start,
+                'end' => $end,
+                'status' => $r['status'],
+                'updatedAt' => (string)$r['updated_at'],
+            ];
+
+            $globalMin = $this->minHHMM($globalMin, $start);
+            $globalMax = $this->maxHHMM($globalMax, $end);
+        }
+
+        foreach ($days as &$day) {
+            $day['scopes'] = array_values($day['scopes']);
+        }
+
+        return [$days, $globalMin, $globalMax];
+    }
+
+    private function minHHMM(?string $a, string $b): string
+    {
+        if ($a === null) return $b;
+        return ($a <= $b) ? $a : $b;
+    }
+
+    private function maxHHMM(?string $a, string $b): string
+    {
+        if ($a === null) return $b;
+        return ($a >= $b) ? $a : $b;
     }
 }
