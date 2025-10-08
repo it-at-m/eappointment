@@ -1,28 +1,31 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { GlobalState } from "@/types/GlobalState";
 import { VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT } from "@/utils/Constants";
 import { request } from "./ZMSAppointmentAPI";
 
-export function getMyAppointments(baseUrl?: string): Promise<AppointmentDTO[]> {
+export function getMyAppointments(
+  globalState: GlobalState
+): Promise<AppointmentDTO[]> {
   // return new Promise((resolve) => setTimeout(() => resolve(DUMMYDATA), 1000));
   return request({
+    globalState,
     method: "GET",
-    baseUrl,
     path: VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
     forceAuth: true,
   });
 }
 
 export async function getAppointmentDetails(
-  processId: string,
-  baseUrl?: string
+  globalState: GlobalState,
+  processId: string
 ): Promise<AppointmentDTO> {
   // return new Promise((resolve) => {
   //   const data = DUMMYDATA.find((data) => data.processId == processId);
   //   setTimeout(() => resolve(data ? data : DUMMYDATA[0]), 1000);
   // });
   const responseData: AppointmentDTO[] = await request({
+    globalState,
     method: "GET",
-    baseUrl,
     path: VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
     params: {
       filterId: processId,

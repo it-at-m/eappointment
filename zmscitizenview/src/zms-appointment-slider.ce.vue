@@ -8,7 +8,7 @@
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-slider-view
-        :base-url="baseUrl"
+        :global-state="globalState"
         :appointment-detail-url="appointmentDetailUrl"
         :appointment-overview-url="appointmentOverviewUrl"
         :new-appointment-url="newAppointmentUrl"
@@ -22,11 +22,10 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
-import { registerAuthenticationHook } from "./utils/auth";
+import { useGlobalState } from "./utils/useGlobalState";
 
 const props = defineProps({
   baseUrl: {
@@ -57,15 +56,7 @@ const displayOptionDetailScreen =
   props.displayedOnDetailScreen.toLowerCase() === "true";
 
 const { t } = useI18n();
-const accessToken = ref<string | null>(null);
-registerAuthenticationHook(
-  (newAccessToken) => {
-    accessToken.value = newAccessToken;
-  },
-  () => {
-    accessToken.value = null;
-  }
-);
+const globalState = useGlobalState(props);
 </script>
 
 <style>

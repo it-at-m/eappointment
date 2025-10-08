@@ -8,7 +8,7 @@
       <div v-html="sanitizeHtml(mucIconsSprite)"></div>
       <div v-html="sanitizeHtml(customIconsSprit)"></div>
       <appointment-view
-        :base-url="baseUrl"
+        :global-state="globalState"
         :service-id="serviceId"
         :location-id="locationId"
         :exclusive-location="exclusiveLocation"
@@ -16,7 +16,6 @@
         :confirm-appointment-hash="confirmAppointmentHash"
         :show-login-option="showLoginOption.toLowerCase() === 'true'"
         :t="t"
-        :access-token="accessToken"
       />
     </div>
   </main>
@@ -46,14 +45,13 @@ export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
-import { registerAuthenticationHook } from "./utils/auth";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -92,15 +90,7 @@ defineProps({
 });
 
 const { t } = useI18n();
-const accessToken = ref<string | null>(null);
-registerAuthenticationHook(
-  (newAccessToken) => {
-    accessToken.value = newAccessToken;
-  },
-  () => {
-    accessToken.value = null;
-  }
-);
+const globalState = useGlobalState(props);
 </script>
 
 <style>
