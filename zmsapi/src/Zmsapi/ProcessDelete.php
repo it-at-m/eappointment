@@ -23,10 +23,11 @@ class ProcessDelete extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\RequestInterface  $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array $args
-    ) {
+        array                               $args
+    )
+    {
         $workstation = (new Helper\User($request))->readWorkstation();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
@@ -37,8 +38,7 @@ class ProcessDelete extends BaseController
             }
             $processDeleted = $process;
         } else {
-            $scopeId = (int) $process->scope->id;
-            (new \BO\Zmsdb\OverallCalendar())->unbook($scopeId, $process->id);
+            $this->cancelOverviewCalendarBooking($process);
 
             $processDeleted = (new Process())->writeCanceledEntity(
                 $args['id'],
@@ -46,7 +46,7 @@ class ProcessDelete extends BaseController
                 null,
                 $workstation->getUseraccount()
             );
-            if (! $processDeleted || ! $processDeleted->hasId()) {
+            if (!$processDeleted || !$processDeleted->hasId()) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }
         }
@@ -70,20 +70,25 @@ class ProcessDelete extends BaseController
                 ->getValue();
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())
-                    ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
-                    ->toResolvedEntity($process, $config, 'deleted', $initiator);
+                ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
+                ->toResolvedEntity($process, $config, 'deleted', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }
 
     protected function testProcessData($process, $authKey)
     {
-        if (! $process) {
+        if (!$process) {
             throw new Exception\Process\ProcessNotFound();
         }
         $authName = $process->getFirstClient()['familyName'];
         if ($process['authKey'] != $authKey && $authName != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
+    }
+
+    private function cancelOverviewCalendarBooking(\BO\Zmsentities\Process $process): void
+    {
+        (new \BO\Zmsdb\OverviewCalendar())->cancelByProcess((int)$process->id);
     }
 }

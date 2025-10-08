@@ -41,7 +41,7 @@ class ProcessConfirm extends BaseController
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
 
-        $this->updateOverallCalendar($process);
+        $this->updateOverviewCalendar($process);
 
         $process = (new Process())->updateProcessStatus(
             $process,
@@ -75,37 +75,28 @@ class ProcessConfirm extends BaseController
         }
     }
 
-    private function updateOverallCalendar(\BO\Zmsentities\Process $process): void
+    private function updateOverviewCalendar(\BO\Zmsentities\Process $process): void
     {
         $appointment = $process->getFirstAppointment();
-        if (!$appointment || !$appointment->date || !$appointment->scope) {
-             \App::$log->warning('process.confirm.skipped_no_appointment', [
-                 'process_id' => $process->id,
-             ]);
-            return;
-        }
-
         $scopeId = (int) $appointment->scope->id;
 
-        $time = (new \DateTimeImmutable('@' . $appointment->date))
-            ->setTimezone(new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone))
-            ->format('Y-m-d H:i:00');
+        $timezone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
+        $startsAt = (new \DateTimeImmutable('@' . $appointment->date))->setTimezone($timezone);
 
-        $duration = 0;
-        foreach ($process->requests as $req) {
-            if (!empty($req['data']['duration'])) {
-                $duration += (int) $req['data']['duration'];
-            }
-        }
+        $durationMinutes = null;
 
-        $duration = $duration ?: 5;
-        $slotUnits = (int) ceil($duration / 5);
+        $slotCount = (int)($appointment->slotCount ?? 0);
+        $slotTimeInMinutes = (int)($appointment->availability->slotTimeInMinutes ?? 0);
+        $durationMinutes   = $slotCount * $slotTimeInMinutes;
 
-        (new \BO\Zmsdb\OverallCalendar())->book(
-            $scopeId,
-            $time,
-            $process->id,
-            $slotUnits
+        $endsAt = $startsAt->modify('+' . $durationMinutes . ' minutes');
+
+        (new \BO\Zmsdb\OverviewCalendar())->insert(
+            (int) $appointment->scope->id,
+            (int) $process->id,
+            'confirmed',
+            $startsAt->format('Y-m-d H:i:s'),
+            $endsAt->format('Y-m-d H:i:s')
         );
     }
 
