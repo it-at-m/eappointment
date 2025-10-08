@@ -19,7 +19,7 @@
 		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
 		</span>
 			<div class="nummernanzeige">
-				{{ process.displayNumber }}
+				{{ process.queue.number }}
 			</div>
 			<span>
         	{% if waitingClients >= 1 %}
