@@ -29,8 +29,7 @@ class UseraccountByDepartmentList extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = (new Query())
-            ->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences)
-            ->withLessData();
+            ->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
         foreach ($useraccountList as $userAccount) {
             foreach ($departments as $department) {
