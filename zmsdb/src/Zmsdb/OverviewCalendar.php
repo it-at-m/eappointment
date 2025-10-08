@@ -17,13 +17,12 @@ class OverviewCalendar extends Base
     }
 
     public function insert(
-        int                       $scopeId,
-        int                       $processId,
-        string                    $status,
+        int $scopeId,
+        int $processId,
+        string $status,
         \DateTimeInterface|string $startsAt,
         \DateTimeInterface|string $endsAt
-    ): void
-    {
+    ): void {
         $this->perform(Calender::INSERT_ONE, [
             'scope_id' => $scopeId,
             'process_id' => $processId,
@@ -41,12 +40,11 @@ class OverviewCalendar extends Base
     }
 
     public function updateByProcess(
-        int                       $processId,
-        int                       $scopeId,
+        int $processId,
+        int $scopeId,
         \DateTimeInterface|string $startsAt,
         \DateTimeInterface|string $endsAt
-    ): bool
-    {
+    ): bool {
         return (bool)$this->perform(\BO\Zmsdb\Query\OverviewCalendar::UPDATE_BY_PROCESS, [
             'process_id' => $processId,
             'scope_id' => $scopeId,
@@ -73,7 +71,9 @@ class OverviewCalendar extends Base
 
     public function readMaxUpdatedGlobal(array $scopeIds): ?string
     {
-        if (empty($scopeIds)) return null;
+        if (empty($scopeIds)) {
+            return null;
+        }
         $in = implode(',', array_map('intval', $scopeIds));
         $sql = sprintf(Calender::SELECT_MAX_UPDATED_GLOBAL, $in);
         $val = $this->fetchValue($sql, []);
@@ -109,8 +109,11 @@ class OverviewCalendar extends Base
         ]);
     }
 
-    public function readChangedProcessIdsSince(array $scopeIds, string $updatedAfter): array {
-        if (empty($scopeIds)) return [];
+    public function readChangedProcessIdsSince(array $scopeIds, string $updatedAfter): array
+    {
+        if (empty($scopeIds)) {
+            return [];
+        }
         $in  = implode(',', array_map('intval', $scopeIds));
         $sql = sprintf(Calender::SELECT_CHANGED_PIDS_SINCE, $in);
         $rows = $this->fetchAll($sql, ['updatedAfter' => $updatedAfter]);
