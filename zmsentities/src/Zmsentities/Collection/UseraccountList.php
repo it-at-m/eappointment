@@ -11,7 +11,7 @@ class UseraccountList extends Base
         $collection = new static();
         foreach ($this as $useraccount) {
             if ($useraccount->hasRights($requiredRights)) {
-                $collection[] = clone $useraccount;
+                $collection[] = $useraccount;
             }
         }
         return $collection;
@@ -22,7 +22,7 @@ class UseraccountList extends Base
         $collection = new self();
         foreach ($this as $useraccount) {
             if (! $collection->hasEntity($useraccount->getId())) {
-                $collection->addEntity(clone $useraccount);
+                $collection->addEntity($useraccount);
             }
         }
         return $collection;
@@ -42,7 +42,7 @@ class UseraccountList extends Base
             }
 
             if ($accessedList->count()) {
-                $collection->addEntity(clone $useraccount);
+                $collection->addEntity($useraccount);
             }
         }
         return $collection;
