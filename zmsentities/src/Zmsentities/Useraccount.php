@@ -277,6 +277,15 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    public function withLessData()
+    {
+        $entity = clone $this;
+
+        unset($entity['departments']);
+
+        return $entity;
+    }
+
     /**
      * create useraccount from open id input data with random password
      *

@@ -44,7 +44,7 @@ class UseraccountByDepartmentList extends BaseController
         foreach ($useraccountList as $useraccount) {
             try {
                 Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount;
+                $validUserAccounts[] = $useraccount->withLessData();
             } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
                 continue;
             }
