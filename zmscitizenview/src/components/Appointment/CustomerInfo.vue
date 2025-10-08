@@ -10,7 +10,7 @@
   <div v-if="showLoginOption && !isExpired">
     <!--Can be replaced if MucCallout has been extended with buttons in @muenchen/muc-patternlab-vue https://github.com/it-at-m/muc-patternlab-vue/pull/573 -->
     <div
-      v-if="!loggedIn"
+      v-if="!globalState?.isLoggedIn"
       class="m-callout m-callout--default"
       aria-label="Information"
     >
@@ -165,11 +165,12 @@ import {
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
+import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
+  globalState: GlobalState;
   showLoginOption: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
@@ -195,8 +196,6 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 const { isExpired, timeLeftString } = useReservationTimer();
 

@@ -60,7 +60,10 @@
     "
   >
     <div
-      v-if="loggedIn && (appointments.length > 0 || !displayedOnDetailScreen)"
+      v-if="
+        globalState.isLoggedIn &&
+        (appointments.length > 0 || !displayedOnDetailScreen)
+      "
       :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
     >
       <div class="container">
@@ -143,7 +146,7 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
+import { GlobalState } from "@/types/GlobalState";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
@@ -158,7 +161,7 @@ import {
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentDetailUrl: string;
   appointmentOverviewUrl: string;
   newAppointmentUrl: string;
@@ -172,8 +175,6 @@ const isMobile = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -195,10 +196,14 @@ onMounted(() => {
   checksMobile();
   window.addEventListener("resize", checksMobile);
 
-  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+  fetchServicesAndProviders(
+    undefined,
+    undefined,
+    props.globalState.baseUrl ?? undefined
+  )
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -210,7 +215,7 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      getMyAppointments("user").then((data) => {
+      getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
