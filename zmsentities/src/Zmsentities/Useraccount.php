@@ -279,11 +279,9 @@ class Useraccount extends Schema\Entity
 
     public function withLessData()
     {
-        $entity = clone $this;
+        unset($this->departments);
 
-        unset($entity['departments']);
-
-        return $entity;
+        return $this;
     }
 
     /**
