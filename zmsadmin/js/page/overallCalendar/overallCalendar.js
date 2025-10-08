@@ -1,16 +1,18 @@
 let calendarCache = [];
+let calendarMeta = null;
 let lastUpdateAfter = null;
 let autoRefreshTimer = null;
 let currentRequest = null;
 let SCOPE_COLORS = {};
 let CLOSURES = new Set();
+const STEP_MIN = 5;
 
 function buildScopeColorMap(days) {
     const ids = [...new Set(days.flatMap(d => d.scopes.map(s => s.id)))];
     const map = Object.create(null);
     ids.forEach((id, idx) => {
         const hue = Math.round((idx * 137.508) % 360);
-        map[id]= `hsl(${hue} 60% 85%)`;
+        map[id] = `hsl(${hue} 60% 85%)`;
     });
     return map;
 }
@@ -26,20 +28,14 @@ function toMysql(date) {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function isSameRequest(a, b) {
-    if (!a || !b) return false;
-    if (a.dateFrom !== b.dateFrom || a.dateUntil !== b.dateUntil) return false;
-    return [...a.scopeIds].sort().join(',') === [...b.scopeIds].sort().join(',');
-}
-
-async function fetchClosures({scopeIds, dateFrom, dateUntil, fullReload = true}) {
+async function fetchClosures({scopeIds, dateFrom, dateUntil}) {
     const res = await fetch(`closureData/?${new URLSearchParams({
         scopeIds: scopeIds.join(','),
         dateFrom,
         dateUntil
     })}`);
     if (!res.ok) throw new Error('Fehler beim Laden der Closures');
-    const { data } = await res.json();
+    const {data} = await res.json();
     const set = new Set();
     for (const it of (data?.items || [])) {
         set.add(`${it.date}|${it.scopeId}`);
@@ -73,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const {scopeIds, dateFrom, dateUntil} = currentRequest;
             try {
                 await Promise.all([
-                    fetchCalendar({ scopeIds, dateFrom, dateUntil, fullReload: false }),
-                    fetchClosures({ scopeIds, dateFrom, dateUntil })
+                    fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload: false}),
+                    fetchClosures({scopeIds, dateFrom, dateUntil})
                 ]);
                 renderMultiDayCalendar(calendarCache);
             } catch (e) {
@@ -105,7 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setUntilLimits() {
-        if (!fromInput.value) { untilInput.min = untilInput.max = ''; return; }
+        if (!fromInput.value) {
+            untilInput.min = untilInput.max = '';
+            return;
+        }
         const fromDate = new Date(fromInput.value);
         const maxDate = new Date(fromDate);
         let workdays = 0;
@@ -122,22 +121,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}) {
-    const incremental = !fullReload && isSameRequest({scopeIds, dateFrom, dateUntil}, currentRequest);
     const paramsObj = {scopeIds: scopeIds.join(','), dateFrom, dateUntil};
-    if (incremental && lastUpdateAfter) {
+    if (!fullReload && lastUpdateAfter) {
         paramsObj.updateAfter = lastUpdateAfter;
     }
-    const params = new URLSearchParams(paramsObj);
 
-    const res = await fetch(`overallcalendarData/?${params}`);
+    const res = await fetch(`overallcalendarData/?${new URLSearchParams(paramsObj)}`);
     if (!res.ok) throw new Error('Fehler beim Laden des Kalenders');
     const json = await res.json();
-    const serverTs = toMysql(res.headers.get('Last-Modified') || new Date());
+    calendarMeta = json.data.meta || calendarMeta;
+    const serverTs = json.data.maxUpdatedAt || toMysql(new Date());
 
-    if (incremental) {
-        mergeDelta(json.data.days);
-    } else {
+    if (fullReload) {
         calendarCache = json.data.days;
+    } else {
+        mergeDelta(json.data.days, json.data.tombstones || []);
     }
 
     currentRequest = {scopeIds, dateFrom, dateUntil};
@@ -176,13 +174,13 @@ async function handleSubmit(event) {
 
     try {
         await Promise.all([
-            fetchCalendar({ scopeIds, dateFrom, dateUntil, fullReload: true }),
-            fetchClosures({ scopeIds, dateFrom, dateUntil })
+            fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload: true}),
+            fetchClosures({scopeIds, dateFrom, dateUntil})
         ]);
         renderMultiDayCalendar(calendarCache);
         startAutoRefresh();
     } catch (e) {
-        alert(e.message);
+        alert('Fehler beim Laden' + e.message);
     }
 }
 
@@ -199,102 +197,202 @@ function startAutoRefresh() {
 
 async function fetchIncrementalUpdate() {
     if (!currentRequest || !lastUpdateAfter) return;
-    const { scopeIds, dateFrom, dateUntil } = currentRequest;
+    const {scopeIds, dateFrom, dateUntil} = currentRequest;
 
     const res = await fetch(`overallcalendarData/?${new URLSearchParams({
-        scopeIds: scopeIds.join(','),
-        dateFrom,
-        dateUntil,
-        updateAfter: lastUpdateAfter
+        scopeIds: scopeIds.join(','), dateFrom, dateUntil, updateAfter: lastUpdateAfter
     })}`);
     if (res.ok) {
-        lastUpdateAfter = toMysql(res.headers.get('Last-Modified') || new Date());
         const json = await res.json();
-        mergeDelta(json.data.days);
+        calendarMeta = json.data.meta || calendarMeta;
+        lastUpdateAfter = json.data.maxUpdatedAt || toMysql(new Date());
+        mergeDelta(json.data.days, json.data.tombstones || []);
     }
 
-    await fetchClosures({ scopeIds, dateFrom, dateUntil });
+    await fetchClosures({scopeIds, dateFrom, dateUntil});
     renderMultiDayCalendar(calendarCache);
 }
 
-function mergeDelta(deltaDays) {
-    if (!deltaDays?.length) return;
-    deltaDays.forEach(dDay => {
+function mergeDelta(deltaDays, tombstones = []) {
+    if (Array.isArray(tombstones) && tombstones.length) {
+        const dead = new Set(tombstones.map(Number));
+        for (const day of calendarCache) {
+            for (const scope of day.scopes) {
+                if (!Array.isArray(scope.events)) continue;
+                scope.events = scope.events.filter(e => !dead.has(e.processId));
+            }
+        }
+    }
+    if (!deltaDays?.length) {
+        sortCalendarCache();
+        return;
+    }
+
+    for (const dDay of deltaDays) {
         let fullDay = calendarCache.find(cd => cd.date === dDay.date);
         if (!fullDay) {
-            calendarCache.push(structuredClone(dDay));
-            return;
+            fullDay = {date: dDay.date, scopes: []};
+            calendarCache.push(fullDay);
         }
-        dDay.scopes.forEach(dScope => {
+
+        for (const dScope of (dDay.scopes || [])) {
             let fullScope = fullDay.scopes.find(s => s.id === dScope.id);
             if (!fullScope) {
-                fullDay.scopes.push(structuredClone(dScope));
-                return;
+                fullScope = {id: dScope.id, intervals: [], events: []};
+                fullDay.scopes.push(fullScope);
             }
-            fullScope.maxSeats = Math.max(fullScope.maxSeats || 1, dScope.maxSeats || 1);
-            dScope.times.forEach(dTime => {
-                let fullTime = fullScope.times.find(t => t.name === dTime.name);
-                if (!fullTime) {
-                    fullScope.times.push(structuredClone(dTime));
-                    return;
+            if (Array.isArray(dScope.intervals)) {
+                fullScope.intervals = dScope.intervals.map(iv => ({...iv}));
+            }
+        }
+    }
+
+    const latestByPid = new Map();
+    for (const dDay of deltaDays) {
+        for (const dScope of (dDay.scopes || [])) {
+            for (const event of (dScope.events || [])) {
+                if (!event || typeof event !== 'object') continue;
+                const key = event.processId;
+                const cand = {...event, __day: dDay.date, __scope: dScope.id};
+                const prev = latestByPid.get(key);
+                if (!prev || (event.updatedAt && event.updatedAt >= prev.updatedAt)) {
+                    latestByPid.set(key, cand);
                 }
-                dTime.seats.forEach(seatDelta => {
-                    if (!seatDelta || typeof seatDelta !== 'object') return;
-                    const idx = (seatDelta.seatNo ?? 1) - 1;
-                    fullTime.seats[idx] = structuredClone(seatDelta);
-                    if (fullTime.seats.length <= idx) fullTime.seats.length = idx + 1;
-                });
-            });
+            }
+        }
+    }
+
+    if (!latestByPid.size) {
+        sortCalendarCache();
+        return;
+    }
+
+    const affected = new Set(latestByPid.keys());
+    for (const day of calendarCache) {
+        for (const scope of day.scopes) {
+            if (!Array.isArray(scope.events)) continue;
+            scope.events = scope.events.filter(e => !affected.has(e.processId));
+        }
+    }
+
+    for (const ev of latestByPid.values()) {
+        if (ev.status !== 'confirmed') continue;
+
+        let day = calendarCache.find(d => d.date === ev.__day);
+        if (!day) {
+            day = {date: ev.__day, scopes: []};
+            calendarCache.push(day);
+        }
+
+        let scope = day.scopes.find(s => s.id === ev.__scope);
+        if (!scope) {
+            scope = {id: ev.__scope, intervals: [], events: []};
+            day.scopes.push(scope);
+        }
+
+        if (!Array.isArray(scope.events)) scope.events = [];
+        scope.events.push({
+            processId: ev.processId, start: ev.start, end: ev.end,
+            status: 'confirmed', updatedAt: ev.updatedAt
         });
-    });
+    }
+
+    sortCalendarCache();
 }
 
-function structuredClone(obj) {
-    return window.structuredClone
-        ? window.structuredClone(obj)
-        : JSON.parse(JSON.stringify(obj));
+function sortCalendarCache() {
+    calendarCache.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+    for (const day of calendarCache) {
+        day.scopes.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+        for (const scope of day.scopes) {
+            if (!Array.isArray(scope.events)) continue;
+            scope.events.sort(
+                (a, b) =>
+                    String(a.start).localeCompare(String(b.start)) ||
+                    (a.processId - b.processId)
+            );
+        }
+    }
 }
 
 function renderMultiDayCalendar(days) {
     const container = document.getElementById('overall-calendar');
-    container.innerHTML = '';
-    if (!days.length) {
-        container.innerHTML = '<p>Keine Daten verfügbar.</p>';
+
+    const noData =
+        !Array.isArray(days) ||
+        days.length === 0 ||
+        !calendarMeta ||
+        !calendarMeta.axis ||
+        typeof calendarMeta.axis.start !== 'string' ||
+        typeof calendarMeta.axis.end !== 'string';
+
+    if (noData) {
+        const parent = container.parentNode;
+        const next = container.cloneNode(false);
+        const oldId = container.id;
+
+        next.removeAttribute('id');
+        const p = document.createElement('p');
+        p.textContent = 'Keine Daten verfügbar.';
+        next.appendChild(p);
+
+        parent.insertBefore(next, container);
+
+        container.id = oldId + '__old__' + Date.now();
+        next.id = oldId;
+
+        container.style.display = 'none';
+        deferredRemove(container);
         return;
     }
 
-    const ymdLocalFromUnix = (ts) => new Date(ts * 1000).toLocaleDateString('sv-SE');
 
+    const axis = calendarMeta.axis;
+    const allTimes = buildTimeAxis(axis);
     SCOPE_COLORS = buildScopeColorMap(days);
-    const allTimes = [...new Set(
-        days.flatMap(day =>
-            day.scopes.flatMap(scope => scope.times.map(t => t.name))
-        )
-    )].sort();
+    const frag = document.createDocumentFragment();
 
+    const laneCache = new Map();
+    for (const day of days) {
+        for (const scope of day.scopes) {
+            const capacityPeak = maxCapacity(scope.intervals, allTimes);
+            const eventPeak = maxConcurrentEvents(scope.events || []);
+            const lanes = Math.max(1, capacityPeak, eventPeak);
+            laneCache.set(`${day.date}_${scope.id}`, lanes);
+        }
+    }
+    const getLanes = (dateIso, scopeId) => laneCache.get(`${dateIso}_${scopeId}`) || 1;
+
+    const eventsIndex = new Map();
+    for (const day of days) {
+        for (const scope of day.scopes) {
+            const key = `${day.date}_${scope.id}`;
+            eventsIndex.set(key, indexEventsByStart(scope.events || []));
+        }
+    }
     const templateCols = ['max-content'];
     days.forEach((day, dayIdx) => {
         day.scopes.forEach((scope, scopeIdx) => {
-            templateCols.push(`repeat(${scope.maxSeats}, minmax(32px, 1fr))`);
+            const lanes = getLanes(day.date, scope.id);
+            templateCols.push(`repeat(${lanes}, minmax(120px,1fr))`);
             if (scopeIdx < day.scopes.length - 1) templateCols.push('2px');
         });
         if (dayIdx < days.length - 1) templateCols.push('4px');
     });
-
     container.style.display = 'grid';
     container.style.gridTemplateColumns = templateCols.join(' ');
     container.style.minWidth = 'fit-content';
 
     const addCell = ({text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null}) => {
         const div = document.createElement('div');
-        div.textContent = text;
+        if (text) div.textContent = text;
         div.className = className;
         div.style.gridRow = `${row} / span ${rowSpan}`;
         div.style.gridColumn = `${col} / span ${colSpan}`;
         if (id) div.id = id;
         if (dataStatus) div.dataset.status = dataStatus;
-        div.dataset.row = row;
-        container.appendChild(div);
+        frag.appendChild(div);
         return div;
     };
 
@@ -306,14 +404,19 @@ function renderMultiDayCalendar(days) {
 
     let colCursor = 2, totalRows = allTimes.length + 2;
     days.forEach((day, dayIdx) => {
-        const seatsInDay = day.scopes.reduce((sum, s) => sum + s.maxSeats, 0);
-        const separators = Math.max(0, day.scopes.length - 1);
-        const daySpan = seatsInDay + separators;
-        const dateObj = new Date(day.date * 1000);
-        const dayLabel = dateObj.toLocaleDateString('de-DE', {weekday: 'short', day: '2-digit', month: '2-digit'});
+        const daySpan = day.scopes.reduce((totalCols, scope, scopeIndex) => {
+            const laneCount = getLanes(day.date, scope.id);
+            const hasNextScope = scopeIndex < day.scopes.length - 1;
+            return totalCols + laneCount + (hasNextScope ? 1 : 0);
+        }, 0);
+        const label = new Date(day.date).toLocaleDateString('de-DE', {
+            weekday: 'short',
+            day: '2-digit',
+            month: '2-digit'
+        });
 
         addCell({
-            text: dayLabel,
+            text: label,
             className: 'overall-calendar-head overall-calendar-day-header overall-calendar-stick-top',
             row: 1, col: colCursor, colSpan: daySpan
         });
@@ -330,92 +433,118 @@ function renderMultiDayCalendar(days) {
 
     colCursor = 2;
     days.forEach((day, dayIdx) => {
-        const dateIsoForDay = new Date(day.date * 1000).toLocaleDateString('sv-SE');
+        const dateIso = day.date;
         day.scopes.forEach((scope, scopeIdx) => {
+            const meta = calendarMeta.scopes?.[scope.id] || {};
+            const lanes = getLanes(day.date, scope.id);
             const head = addCell({
-                text: scope.shortName || scope.name || `Scope ${scope.id}`,
+                text: meta.shortName || meta.name || `Scope ${scope.id}`,
                 className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-top',
-                row: 2, col: colCursor, colSpan: scope.maxSeats
+                row: 2, col: colCursor, colSpan: lanes
             });
             head.style.background = SCOPE_COLORS[scope.id];
-            if (isScopeClosed(dateIsoForDay, scope.id)) {
-                head.classList.add('is-closed');
-            }
-            colCursor += scope.maxSeats;
+            if (isScopeClosed(dateIso, scope.id)) head.classList.add('is-closed');
+
+            colCursor += lanes;
             if (scopeIdx < day.scopes.length - 1) {
-                addCell({
-                    className: 'overall-calendar-separator',
-                    row: 2, col: colCursor, rowSpan: totalRows - 1
-                });
+                addCell({className: 'overall-calendar-separator', row: 2, col: colCursor, rowSpan: totalRows - 1});
                 colCursor++;
             }
         });
         if (dayIdx < days.length - 1) {
-            addCell({
-                className: 'overall-calendar-day-separator',
-                row: 1, col: colCursor, rowSpan: totalRows
-            });
+            addCell({className: 'overall-calendar-day-separator', row: 1, col: colCursor, rowSpan: totalRows});
             colCursor++;
         }
     });
 
     const occupied = new Set();
+    const toKey = (r, c) => `${r}-${c}`;
 
-    allTimes.forEach((time, timeIdx) => {
-        const gridRow = timeIdx + 3;
+    allTimes.forEach((time, tIdx) => {
+        const row = tIdx + 3;
 
         addCell({
             text: time,
             className: 'overall-calendar-time overall-calendar-stick-left',
-            row: gridRow,
-            col: 1
+            row, col: 1
         });
 
         let col = 2;
         days.forEach((day, dayIdx) => {
-            const dateKey = ymdLocalFromUnix(day.date);
+            const dateIso = day.date;
+
             day.scopes.forEach((scope, scopeIdx) => {
-                const timeObj = scope.times.find(t => t.name === time) || {seats: []};
-                const closed = isScopeClosed(dateKey, scope.id);
-                for (let seatIdx = 0; seatIdx < scope.maxSeats; seatIdx++) {
-                    if (occupied.has(`${gridRow}-${col}`)) { col++; continue; }
+                const lanes = getLanes(day.date, scope.id);
+                const idxKey = `${day.date}_${scope.id}`;
+                const byStart = eventsIndex.get(idxKey) || new Map();
+                const startingNow = byStart.get(time) || [];
 
-                    const seat= timeObj.seats[seatIdx] || {};
-                    const status= seat.status ?? 'empty';
-                    const cellId= `cell-${dateKey}-${time}-${scope.id}-${seatIdx + 1}`;
+                for (const ev of startingNow) {
+                    const spanMin = Math.max(1, timeToMin(ev.end) - timeToMin(ev.start));
+                    const spanRows = Math.max(1, Math.ceil(spanMin / STEP_MIN));
 
-                    if (status === 'termin') {
-                        const span = seat.slots || 1;
+                    for (let ln = 0; ln < lanes; ln++) {
+                        const laneCol = col + ln;
+                        if (occupied.has(toKey(row, laneCol))) continue;
+
                         const cell = addCell({
-                            text: seat.processId ?? '',
+                            text: ev.processId ?? '',
                             className: 'overall-calendar-seat overall-calendar-termin',
-                            row: gridRow,
-                            col,
-                            rowSpan: span,
-                            id: cellId,
-                            dataStatus: 'termin'
+                            row, col: laneCol, rowSpan: spanRows,
+                            dataStatus: ev.status
                         });
                         cell.style.background = SCOPE_COLORS[scope.id];
-                        for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
-                    } else if (status !== 'skip') {
-                        addCell({
-                            className: `overall-calendar-seat overall-calendar-${status}${closed ? ' overall-calendar-closed' : ''}`,
-                            row: gridRow,
-                            col,
-                            id: cellId,
-                            dataStatus: status
-                        });
+                        if (ev.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
+
+                        for (let i = 0; i < spanRows; i++) occupied.add(toKey(row + i, laneCol));
+                        break;
                     }
-                    col++;
                 }
+
+                const capNow = capacityAt(scope.intervals, time);
+                const closed = isScopeClosed(dateIso, scope.id);
+                const maxOpenLanes = Math.min(lanes, capNow);
+                // for (let ln = 0; ln < lanes; ln++) {
+                // somit werden keine Leere Zellen erstellt (empty)
+                for (let ln = 0; ln < maxOpenLanes; ln++) {
+                    const laneCol = col + ln;
+                    if (occupied.has(toKey(row, laneCol))) continue;
+
+                    const isOpenLane = ln < capNow;
+                    addCell({
+                        className: `overall-calendar-seat overall-calendar-${isOpenLane ? 'open' : 'empty'}${closed ? ' overall-calendar-closed' : ''}`,
+                        row, col: laneCol
+                    });
+                }
+
+                col += lanes;
                 if (scopeIdx < day.scopes.length - 1) col++;
             });
+
             if (dayIdx < days.length - 1) col++;
         });
     });
 
+    const parent = container.parentNode;
+    const next = container.cloneNode(false);
+    const oldId = container.id;
+
+    next.removeAttribute('id');
+    next.style.display = 'grid';
+    next.style.gridTemplateColumns = templateCols.join(' ');
+    next.style.minWidth = 'fit-content';
+    next.appendChild(frag);
+
+    parent.insertBefore(next, container);
+
+    container.id = oldId + '__old__' + Date.now();
+    next.id = oldId;
+
+    container.style.display = 'none';
+    deferredRemove(container);
+
     const fsBtn = document.getElementById('calendar-fullscreen');
-    if (fsBtn && container.children.length) fsBtn.style.display = 'inline-block';
+    if (fsBtn && next.children.length) fsBtn.style.display = 'inline-block';
 }
 
 function togglePageScroll(disable) {
@@ -426,3 +555,84 @@ function togglePageScroll(disable) {
 function isScopeClosed(dateIso, scopeId) {
     return CLOSURES.has(`${dateIso}|${scopeId}`);
 }
+
+function buildTimeAxis(axis) {
+    const toHHMM = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    const start = timeToMin(axis.start);
+    const end = timeToMin(axis.end);
+
+    const output = [];
+    for (let t = start; t < end; t += STEP_MIN) output.push(toHHMM(t));
+    return output;
+}
+
+function capacityAt(intervals, hhmm) {
+    if (!Array.isArray(intervals)) return 0;
+    let sum = 0;
+    for (const interval of intervals) {
+        const capacity = Number.isFinite(interval?.capacity) ? interval.capacity : 0;
+        if (hhmm >= interval.start && hhmm < interval.end) sum += capacity;
+    }
+    return sum;
+}
+
+function maxCapacity(intervals, allTimes) {
+    let max = 1;
+    for (const time of allTimes) {
+        max = Math.max(max, capacityAt(intervals, time));
+    }
+    return max;
+}
+
+function maxConcurrentEvents(events = []) {
+    const timeline = [];
+
+    for (const event of events) {
+        const startMin = timeToMin(event.start);
+        const endMin = timeToMin(event.end);
+
+        if (Number.isFinite(startMin) && Number.isFinite(endMin) && endMin > startMin) {
+            timeline.push([startMin, +1]);
+            timeline.push([endMin, -1]);
+        }
+    }
+
+    timeline.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+
+    let activeCount = 0;
+    let maxConcurrent = 0;
+
+    for (const [, change] of timeline) {
+        activeCount += change;
+        if (activeCount > maxConcurrent) {
+            maxConcurrent = activeCount;
+        }
+    }
+
+    return Math.max(1, maxConcurrent);
+}
+
+function indexEventsByStart(events = []) {
+    const map = new Map();
+    for (const ev of events) {
+        const key = ev.start;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(ev);
+    }
+    return map;
+}
+
+function timeToMin(hhmm) {
+    return parseInt(hhmm.slice(0, 2), 10) * 60 + parseInt(hhmm.slice(3, 5), 10);
+}
+
+function deferredRemove(node) {
+    const remove = () => { node.remove(); };
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(remove);
+    } else {
+        setTimeout(remove, 0);
+    }
+}
+
+
