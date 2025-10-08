@@ -92,7 +92,7 @@ class ProcessConfirm extends BaseController
         $endsAt = $startsAt->modify('+' . $durationMinutes . ' minutes');
 
         (new \BO\Zmsdb\OverviewCalendar())->insert(
-            (int) $appointment->scope->id,
+            $scopeId,
             (int) $process->id,
             'confirmed',
             $startsAt->format('Y-m-d H:i:s'),
