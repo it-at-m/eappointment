@@ -12,7 +12,7 @@ class OverallCalendarReadTest extends Base
     protected $classname = "OverallCalendarRead";
 
     private const VALID_PARAMS = [
-        'scopeIds'  => '2001',
+        'scopeIds'  => '2102',
         'dateFrom'  => '2025-05-14',
         'dateUntil' => '2025-05-14',
     ];
@@ -89,4 +89,30 @@ class OverallCalendarReadTest extends Base
         $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
     }
 
+    public function testDeltaBranchIncludesCancelledAndHasTombstonesField(): void
+    {
+        $this->initializeSuperUserWorkstation();
+
+        $params = [
+            'scopeIds'    => '102',
+            'dateFrom'    => '2025-05-14',
+            'dateUntil'   => '2025-05-14',
+            'updateAfter' => '2000-01-01 00:00:00',
+        ];
+        $response = $this->render([], $params);
+        $json = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($json['data']['delta']);
+        $this->assertArrayHasKey('tombstones', $json['data']);
+        $this->assertIsArray($json['data']['tombstones']);
+
+        $this->assertNotEmpty($json['data']['days']);
+        $day = $json['data']['days'][0];
+        $this->assertArrayHasKey('scopes', $day);
+        $this->assertIsArray($day['scopes']);
+
+        $anyEvents = array_merge(...array_map(fn($s) => $s['events'] ?? [], $day['scopes']));
+        $this->assertIsArray($anyEvents);
+    }
 }
