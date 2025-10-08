@@ -12,11 +12,10 @@ use DateTimeImmutable;
 class OverallCalendarRead extends BaseController
 {
     public function readResponse(
-        \Psr\Http\Message\RequestInterface  $request,
+        \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array                               $args
-    )
-    {
+        array $args
+    ) {
         (new Helper\User($request))->checkRights('useraccount');
 
         $scopeIdCsv = Validator::param('scopeIds')->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
@@ -46,7 +45,11 @@ class OverallCalendarRead extends BaseController
         $scopeMeta = $this->readScopeMeta($scopeIds);
 
         [$days, $globalMin, $globalMax] = $this->buildDaysPayload(
-            $dateFrom, $dateUntil, $scopeIds, $availByDayAndScope, $bookings
+            $dateFrom,
+            $dateUntil,
+            $scopeIds,
+            $availByDayAndScope,
+            $bookings
         );
 
         $maxUpdatedWindow = $bookingDb->readMaxUpdated($scopeIds, $dateFrom, $untilExclusive);
@@ -139,19 +142,19 @@ class OverallCalendarRead extends BaseController
     private function buildDaysPayload(
         string $dateFrom,
         string $dateUntil,
-        array  $scopeIds,
-        array  $availByDayAndScope,
-        array  $bookingRows
-    ): array
-    {
+        array $scopeIds,
+        array $availByDayAndScope,
+        array $bookingRows
+    ): array {
         $days = [];
         $globalMin = null;
         $globalMax = null;
 
-        for ($cursor = new \DateTimeImmutable($dateFrom);
+        for (
+            $cursor = new \DateTimeImmutable($dateFrom);
              $cursor <= new \DateTimeImmutable($dateUntil);
-             $cursor = $cursor->modify('+1 day')) {
-
+             $cursor = $cursor->modify('+1 day')
+        ) {
             $ymd = $cursor->format('Y-m-d');
             $days[$ymd] = ['date' => $ymd, 'scopes' => []];
 
@@ -201,13 +204,17 @@ class OverallCalendarRead extends BaseController
 
     private function minHHMM(?string $a, string $b): string
     {
-        if ($a === null) return $b;
+        if ($a === null) {
+            return $b;
+        }
         return ($a <= $b) ? $a : $b;
     }
 
     private function maxHHMM(?string $a, string $b): string
     {
-        if ($a === null) return $b;
+        if ($a === null) {
+            return $b;
+        }
         return ($a >= $b) ? $a : $b;
     }
 }
