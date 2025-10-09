@@ -115,14 +115,10 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "serviceId" => 0,
             "serviceName" => null,
             "serviceCount" => 0,
-            "slotCount" => 4,
+            "slotCount" => 4
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertArrayHasKey('icsContent', $responseBody);
-        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
-        unset($responseBody['icsContent']);
-        unset($expectedResponse['icsContent']);
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

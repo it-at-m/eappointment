@@ -230,20 +230,14 @@
             v-if="confirmAppointmentSuccess"
             class="m-button-group"
           >
-            <muc-button
-              v-if="!isAuthenticated() && appointment?.icsContent"
-              icon="download"
-              @click="downloadIcsAppointment"
-            >
-              {{ t("downloadAppointment") }}
-            </muc-button>
-            <muc-button
-              v-if="isAuthenticated()"
-              icon="arrow-right"
-              @click="viewAppointment"
-            >
-              {{ t("viewAppointment") }}
-            </muc-button>
+            <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
+                <muc-button
+                  icon="download"
+                  @click="downloadIcsAppointment"
+                >
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                bis hierhin. -->
             <muc-button
               @click="redirectToAppointmentStart"
               variant="secondary"
@@ -354,9 +348,7 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { isAuthenticated } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
-import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -377,7 +369,6 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
-  appointmentDetailUrl?: string;
   t: (key: string) => string;
 }>();
 
@@ -421,8 +412,8 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
-const appointment = ref<AppointmentDTO>();
-const rebookedAppointment = ref<AppointmentDTO>();
+const appointment = ref<AppointmentImpl>();
+const rebookedAppointment = ref<AppointmentImpl>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -900,35 +891,6 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
-const downloadIcsAppointment = () => {
-  if (appointment.value?.icsContent) {
-    const blob = new Blob([appointment.value.icsContent], {
-      type: "text/calendar;charset=utf-8",
-    });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Termin-${appointment.value.processId}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  }
-};
-
-const viewAppointment = () => {
-  // Navigate to appointment detail view for authenticated users
-  if (appointment.value?.processId) {
-    const detailUrl = props.appointmentDetailUrl || "appointment-detail.html";
-    const targetUrl = new URL(detailUrl, window.location.href);
-    targetUrl.searchParams.set(
-      QUERY_PARAM_APPOINTMENT_ID,
-      String(appointment.value.processId)
-    );
-    window.location.href = targetUrl.toString();
-  }
-};
-
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -946,7 +908,6 @@ onMounted(() => {
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           confirmAppointmentSuccess.value = true;
-          appointment.value = data as AppointmentDTO;
           clearContextErrors(errorStateMap.value);
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";

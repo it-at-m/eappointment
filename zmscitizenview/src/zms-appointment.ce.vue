@@ -14,7 +14,6 @@
         :exclusive-location="exclusiveLocation"
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
-        :appointment-detail-url="appointmentDetailUrl"
         :t="t"
       />
     </div>
@@ -80,11 +79,6 @@ defineProps({
     type: String,
     required: false,
     default: fallbackConfirmAppointmentHash,
-  },
-  appointmentDetailUrl: {
-    type: String,
-    required: false,
-    default: "appointment-detail.html",
   },
 });
 

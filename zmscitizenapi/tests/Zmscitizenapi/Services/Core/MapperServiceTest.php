@@ -167,11 +167,9 @@ class MapperServiceTest extends TestCase
         $process = new Process();
         $process->id = 1;
         $process->authKey = 'test-key';
-        $appointment = new class {
-            public $date = '1724907600';
-            public function hasTime() { return true; }
-        };
-        $process->appointments = [$appointment];
+        $process->appointments = [
+            (object) ['date' => '1724907600']
+        ];
         $process->clients = [
             (object) [
                 'familyName' => 'Doe',
