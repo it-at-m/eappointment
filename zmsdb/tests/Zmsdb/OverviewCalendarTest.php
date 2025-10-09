@@ -7,8 +7,8 @@ use DateTimeImmutable;
 
 class OverviewCalendarTest extends Base
 {
-    private const SCOPE1 = 101;
-    private const SCOPE2 = 102;
+    private const SCOPE1 = 65001;
+    private const SCOPE2 = 65002;
 
     private function fetchByPid(int $pid): ?array
     {
@@ -46,7 +46,7 @@ class OverviewCalendarTest extends Base
         $this->assertCount(1, $res, 'exactly one confirmed booking visible in range');
         $this->assertSame($pid, (int)$res[0]['process_id']);
         $this->assertSame('confirmed', $res[0]['status']);
-        $this->assertSame('T101', $res[0]['scope_short']);
+        $this->assertSame('T65001', $res[0]['scope_short']);
     }
 
     public function testCancelByProcessIdempotent(): void

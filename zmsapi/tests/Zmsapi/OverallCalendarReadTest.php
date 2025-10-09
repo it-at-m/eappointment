@@ -12,7 +12,7 @@ class OverallCalendarReadTest extends Base
     protected $classname = "OverallCalendarRead";
 
     private const VALID_PARAMS = [
-        'scopeIds'  => '2102',
+        'scopeIds'  => '65202',
         'dateFrom'  => '2025-05-14',
         'dateUntil' => '2025-05-14',
     ];
@@ -94,7 +94,7 @@ class OverallCalendarReadTest extends Base
         $this->initializeSuperUserWorkstation();
 
         $params = [
-            'scopeIds'    => '102',
+            'scopeIds'    => '65202',
             'dateFrom'    => '2025-05-14',
             'dateUntil'   => '2025-05-14',
             'updateAfter' => '2000-01-01 00:00:00',
