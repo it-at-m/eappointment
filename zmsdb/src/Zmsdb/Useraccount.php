@@ -37,8 +37,10 @@ class Useraccount extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
     {
         if (0 < $resolveReferences && $useraccount->toProperty()->id->get()) {
-            // TODO subtract -1 from resolveReference, but check calling functions!
-            $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
+            $useraccount->departments = $this->readAssignedDepartmentList(
+                $useraccount,
+                $resolveReferences - 1
+            );
         }
         return $useraccount;
     }
