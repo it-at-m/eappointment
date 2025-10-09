@@ -115,7 +115,7 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
     services:
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:12.0
         env:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_DATABASE: zmsbo
@@ -182,7 +182,7 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
     services:
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:12.0
         env:
           MYSQL_ROOT_PASSWORD: zmsdb
           MYSQL_DATABASE: zmsbo
