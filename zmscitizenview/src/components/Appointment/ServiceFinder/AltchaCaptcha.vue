@@ -161,11 +161,32 @@ onUnmounted(() => {
 }
 
 :deep(.altcha-checkbox input) {
-  border: 2px solid #337bb2;
   appearance: none;
   width: 20px;
   height: 20px;
-  margin: 0;
+  border: 2px solid #337bb2;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+:deep(.altcha-checkbox input:checked) {
+  background-color: #337bb2;
+  border-color: #337bb2;
+}
+
+:deep(.altcha-checkbox input:checked::after) {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1.5px;
+  width: 6px;
+  height: 11px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
 }
 
 :deep(.altcha-label) {
