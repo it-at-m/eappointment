@@ -152,13 +152,6 @@
         "null"
       ],
       "description": "Count of slots in the process"
-    },
-    "icsContent": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "description": "ICS calendar file content for the appointment"
     }
   },
   "required": [

@@ -33,8 +33,6 @@ export class AppointmentImpl implements AppointmentDTO {
 
   serviceCount: number;
 
-  icsContent?: string;
-
   constructor(
     processId: string,
     timestamp: number,
@@ -50,8 +48,7 @@ export class AppointmentImpl implements AppointmentDTO {
     subRequestCounts: any[],
     serviceId: string,
     serviceName: string,
-    serviceCount: number,
-    icsContent?: string
+    serviceCount: number
   ) {
     this.processId = processId;
     this.timestamp = timestamp;
@@ -68,6 +65,5 @@ export class AppointmentImpl implements AppointmentDTO {
     this.serviceId = serviceId;
     this.serviceName = serviceName;
     this.serviceCount = serviceCount;
-    this.icsContent = icsContent;
   }
 }

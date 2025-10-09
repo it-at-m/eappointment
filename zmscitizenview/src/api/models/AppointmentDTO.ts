@@ -91,10 +91,4 @@ export interface AppointmentDTO {
    * @memberof AppointmentDTO
    */
   serviceCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof AppointmentDTO
-   */
-  icsContent?: string;
 }

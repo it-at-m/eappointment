@@ -1,6 +1,6 @@
 import { Ref } from "vue";
 
-import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -20,5 +20,5 @@ export interface CustomerDataProvider {
 }
 
 export interface SelectedAppointmentProvider {
-  appointment: Ref<AppointmentDTO | undefined>;
+  appointment: Ref<AppointmentImpl | undefined>;
 }
