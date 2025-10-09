@@ -56,7 +56,7 @@
                         {{ process.appointments|first.date|date("H:i") }} {% if process.appointments|first.slotCount > 1 %}<small>({{ process.appointments|first.slotCount }})</small>{% endif %}
                     </td>
                     <td width="120" valign="top" style="{{ style }}">
-                        {{ process.id }}
+                        {{ process.displayNumber }}
                     </td>
                     <td valign="top" width="280" style="{{ style }}">
                         {{ process.clients|first.familyName }}

@@ -151,9 +151,9 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
-import ClockSvg from "@/components/Appointment/ClockSvg.vue";
-import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
+import AltchaCaptcha from "@/components/Appointment/ServiceFinder/AltchaCaptcha.vue";
+import ClockSvg from "@/components/Appointment/ServiceFinder/ClockSvg.vue";
+import SubserviceListItem from "@/components/Appointment/ServiceFinder/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -166,7 +166,6 @@ import {
 } from "@/utils/Constants";
 import {
   createErrorStates,
-  getApiErrorTranslation,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
 
@@ -545,7 +544,9 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
 .wrapper {
   display: flex;
 }
@@ -556,5 +557,18 @@ onMounted(() => {
 
 .m-button-group--secondary {
   margin-top: 1rem;
+}
+
+:deep(.counter-btn--disabled) {
+  background-color: transparent !important;
+  border-color: #7a8d9f !important;
+  color: #7a8d9f !important;
+}
+
+@include xs-down {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 </style>

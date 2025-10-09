@@ -41,7 +41,7 @@ services:
       - db
 
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.6.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"

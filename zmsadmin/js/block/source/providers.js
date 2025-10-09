@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
-import { getEntity } from '../../lib/schema'
+import {getEntity} from '../../lib/schema'
 
-const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source, parentProviders, onParentChange, canDelete) => {
+const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source, parentProviders, onParentChange) => {
     const formName = `providers[${index}]`
     const parentValue = provider.parent_id == null ? '' : String(provider.parent_id);
     return (
@@ -13,7 +13,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     name={`${formName}[id]`}
                     placeholder={labels.id}
                     value={provider.id}
-                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer" }}
+                    attributes={{"readOnly": "1", "aria-label": "Laufende Nummer"}}
                 />
             </td>
             <td className="provider-item__name" width="auto">
@@ -22,7 +22,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     placeholder={labels.name}
                     value={provider.name}
                     onChange={onChange}
-                    attributes={{ "aria-label": "Bezeichnung" }}
+                    attributes={{"aria-label": "Bezeichnung"}}
                 />
             </td>
             <td className="provider-item__parent" width="auto">
@@ -31,17 +31,17 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     value={parentValue}
                     onChange={(_, value) => onParentChange(index, value)}
                     options={[
-                        { name: '—', value: '' },
-                        ...parentProviders.map(p => ({ name: p.name, value: String(p.id) }))
+                        {name: '—', value: ''},
+                        ...parentProviders.map(p => ({name: p.name, value: String(p.id)}))
                     ]}
-                    attributes={{ "aria-label": labels.parent }}
+                    attributes={{"aria-label": labels.parent}}
                 />
             </td>
             <td className="provider-item__link">
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={`${labels.url}`}
-                        attributes={{ "htmlFor": `providersUrl${index}` }}
+                        attributes={{"htmlFor": `providersUrl${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -49,14 +49,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.url}
                             value={provider.link}
                             onChange={onChange}
-                            attributes={{ "id": `providersUrl${index}` }}
+                            attributes={{"id": `providersUrl${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.street}
-                        attributes={{ "htmlFor": `providersStreet${index}` }}
+                        attributes={{"htmlFor": `providersStreet${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -64,14 +64,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.street}
                             value={provider.contact.street}
                             onChange={onChange}
-                            attributes={{ "id": `providersStreet${index}` }}
+                            attributes={{"id": `providersStreet${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.streetNumber}
-                        attributes={{ "htmlFor": `providersStreetnumber${index}` }}
+                        attributes={{"htmlFor": `providersStreetnumber${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -79,14 +79,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.streetNumber}
                             value={provider.contact.streetNumber}
                             onChange={onChange}
-                            attributes={{ "id": `providersStreetnumber${index}` }}
+                            attributes={{"id": `providersStreetnumber${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.postalCode}
-                        attributes={{ "htmlFor": `providersPostalcode${index}` }}
+                        attributes={{"htmlFor": `providersPostalcode${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -94,14 +94,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.postalCode}
                             value={provider.contact.postalCode}
                             onChange={onChange}
-                            attributes={{ "id": `providersPostalcode${index}` }}
+                            attributes={{"id": `providersPostalcode${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.city}
-                        attributes={{ "htmlFor": `providersCity${index}` }}
+                        attributes={{"htmlFor": `providersCity${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -109,14 +109,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.city}
                             value={provider.contact.city}
                             onChange={onChange}
-                            attributes={{ "id": `providersCity${index}` }}
+                            attributes={{"id": `providersCity${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
                         value={labels.data}
-                        attributes={{ "htmlFor": `providersData${index}` }}
+                        attributes={{"htmlFor": `providersData${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
@@ -125,11 +125,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             value={(provider.data) ? JSON.stringify(provider.data) : ''}
                             placeholder='{}'
                             onChange={onChange}
-                            attributes={{ "id": `providersData${index}`, "aria-describedby": `help_providersData${index}` }}
+                            attributes={{
+                                "id": `providersData${index}`,
+                                "aria-describedby": `help_providersData${index}`
+                            }}
                         />
                         <Inputs.Description
                             value={descriptions.data}
-                            attributes={{ "id": `help_providersData${index}` }}
+                            attributes={{"id": `help_providersData${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -138,19 +141,17 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     value={source}
                 />
             </td>
-            <td className="provider-item__delete" style={{ verticalAlign: 'middle' }}>
-                {canDelete && (
-                    <button type="button"
-                            className="link button-default provider__delete-button"
-                            onClick={() => onDeleteClick(index)}
-                            aria-label="Diesen Datensatz löschen"
-                            style={{ display: 'inline-flex', alignItems: 'center' }}>
-                        <i className="fas fa-trash-alt color-negative" style={{ marginRight: '5px' }}></i>
-                        Löschen
-                    </button>
-                )}
+            <td className="provider-item__delete" style={{verticalAlign: 'middle'}}>
+                <button type="button"
+                        className="link button-default provider__delete-button"
+                        onClick={() => onDeleteClick(index)}
+                        aria-label="Diesen Datensatz löschen"
+                        style={{display: 'inline-flex', alignItems: 'center'}}>
+                    <i className="fas fa-trash-alt color-negative" style={{marginRight: '5px'}}></i>
+                    Löschen
+                </button>
             </td>
-        </tr >
+        </tr>
     )
 }
 
@@ -173,28 +174,32 @@ class ProvidersView extends Component {
 
         this.props.changeHandler(`providers[${rowIndex}][parent_id]`, parent_id);
         this.props.changeHandler(`providers[${rowIndex}][link]`, parent?.link || '');
-        this.props.changeHandler(`providers[${rowIndex}][contact]`, parent?.contact ? { ...parent.contact } : { street:'', streetNumber:'', postalCode:'', city:'' });
+        this.props.changeHandler(`providers[${rowIndex}][contact]`, parent?.contact ? {...parent.contact} : {
+            street: '',
+            streetNumber: '',
+            postalCode: '',
+            city: ''
+        });
         this.props.changeHandler(`providers[${rowIndex}][data]`, parent?.data || {});
     };
 
     getProvidersWithLabels(onChange, onDeleteClick) {
         const list = (this.props.source && this.props.source.providers) || [];
-        const moreThanOne = list.length > 1;
         return list.map((provider, index) => {
-            const canDelete = moreThanOne && (provider.canDelete !== false);
             return renderProvider(
                 provider, index, onChange, onDeleteClick,
                 this.props.labelsproviders, this.props.descriptions,
                 this.props.source.source, this.props.parentproviders,
                 this.onParentChange,
-                canDelete
             );
         });
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+    }
 
-    componentDidUpdate() {}
+    componentDidUpdate() {
+    }
 
     render() {
         const onNewClick = ev => {
@@ -225,23 +230,26 @@ class ProvidersView extends Component {
         }
 
         return (
-            <div className="table-responsive-wrapper department-providers__list" aria-live="polite" id="liveregionProvidersList">
+            <div className="table-responsive-wrapper department-providers__list" aria-live="polite"
+                 id="liveregionProvidersList">
                 <table className="table--base">
                     <thead>
-                        <tr>
-                            <th>LfdNr.</th>
-                            <th>Bezeichnung</th>
-                            <th>Hauptdienstleister</th>
-                            <th>Link und weitere Daten</th>
-                            <th>Löschen</th>
-                        </tr>
+                    <tr>
+                        <th>LfdNr.</th>
+                        <th>Bezeichnung</th>
+                        <th>Hauptdienstleister</th>
+                        <th>Link und weitere Daten</th>
+                        <th>Löschen</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {this.getProvidersWithLabels(onChange, onDeleteClick)}
+                    {this.getProvidersWithLabels(onChange, onDeleteClick)}
                     </tbody>
                 </table>
                 <div className="table-actions">
-                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neuer Dienstleister</button>
+                    <button className="link button-default" onClick={onNewClick}><i
+                        className="fas fa-plus-square color-positive"></i> Neuer Dienstleister
+                    </button>
                 </div>
             </div>
         )

@@ -97,7 +97,6 @@
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 								{% endif %}
-								<th>Wartezeit</th>
 								<th>Aktion</th>
 							</tr>
 						</thead>
@@ -122,16 +121,16 @@
 								<td>
 									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										</a>
 									{% else %}
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>{{ item.clients|first.telephone }}</td>
@@ -164,13 +163,6 @@
 										{{ item.customTextfield2|decodeEntities }}
 									</td>
 								{% endif %}
-								<td class="nowrap">
-									{% if item.queue.withAppointment %}
-										Termin
-									{% else %}
-										Spontankunde
-									{% endif %}
-								</td>
 								<td>
 									<p>
                                         {% if workstation.name %}
@@ -293,7 +285,7 @@
 							{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 								<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 							{% endif %}
-							<th>Wartezeit</th>
+						<th>Termindauer</th>
 							<th></th>
 							<th></th>
 						</tr>
@@ -337,10 +329,10 @@
 									<td>
 										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-												{{ item.queue.number }}
+												{{ item.displayNumber }}
 											</a>
 										{% else %}
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										{% endif %}
 									</td>
 									<td class="callnextclient">
@@ -432,24 +424,15 @@
 											{{ item.customTextfield2|decodeEntities }}
 										</td>
 									{% endif %}
-									<td class="nowrap">
-										{% if item.queue.withAppointment %}
-											Termin
-										{% else %}
-											Spontankunde
-										{% endif %}
-										{% if item.queue.withAppointment %}
-											{% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
-											({{ duration }}
-											min)
-										{% endif %}
-										{% if (item.queue.waitingTimeEstimate != item.queue.waitingTimeOptimistic) and isToday %}
-											<p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
-										{% endif %}
-									</td>
+							<td class="nowrap">
+								{% if item.queue.withAppointment %}
+									{% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
+									{{ duration }}&nbsp;Min.
+								{% endif %}
+							</td>
 									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" %}
 										<td class="center">
-											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|decodeEntities : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
+											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|decodeEntities : ('Wartenummer ' ~ item.displayNumber) }}" href="#" class="icon process-delete" title="Löschen">
 												<i class="far fa-trash-alt" aria-hidden="true"></i>
 												<span class="aural">Löschen</span>
 											</a>
@@ -504,7 +487,6 @@
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 								{% endif %}
-								<th>Wartezeit</th>
 								<th>Aktion</th>
 							</tr>
 						</thead>
@@ -529,16 +511,16 @@
 								<td>
 									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
-											{{ item.queue.number }}
+											{{ item.displayNumber }}
 										</a>
 									{% else %}
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
-										{{ item.queue.number }}
+										{{ item.displayNumber }}
 									{% endif %}
 								</td>
 								<td>{{ item.clients|first.telephone }}</td>
@@ -571,13 +553,6 @@
 										{{ item.customTextfield2|decodeEntities }}
 									</td>
 								{% endif %}
-								<td class="nowrap">
-									{% if item.queue.withAppointment %}
-										Termin
-									{% else %}
-										Spontankunde
-									{% endif %}
-								</td>
 								<td>
 									<p>
                                         {% if workstation.name %}
@@ -642,16 +617,16 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								{% set totalMinutes = item.waitingTime %} 
-								{% set hours = (totalMinutes // 60) %} 
-								{% set minutes = (totalMinutes % 60) // 1 %} 
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
-								{% set totalMinutes = item.processingTime %} 
-								{% set hours = (totalMinutes // 60) %} 
-								{% set minutes = (totalMinutes % 60) // 1 %} 
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
+							{% set totalSeconds = (item.waitingTime * 60)|round(0, 'floor') %}
+							{% set hours = (totalSeconds // 3600) %}
+							{% set minutes = ((totalSeconds % 3600) // 60) %}
+							{% set seconds = (totalSeconds % 60) %}
+							<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+							{% set totalSeconds = (item.processingTime * 60)|round(0, 'floor') %}
+							{% set hours = (totalSeconds // 3600) %}
+							{% set minutes = ((totalSeconds % 3600) // 60) %}
+							{% set seconds = (totalSeconds % 60) %}
+							<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
 							</tr>
 						{% endfor %}				
 					</table>

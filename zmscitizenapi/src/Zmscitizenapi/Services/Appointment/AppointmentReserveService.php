@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
 
-use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;

@@ -101,9 +101,4 @@ class Provider extends Schema\Entity
     {
         return $this->toProperty()->parent_id->get();
     }
-
-    public function isDeletable(): bool
-    {
-        return (bool) ($this['canDelete'] ?? false);
-    }
 }

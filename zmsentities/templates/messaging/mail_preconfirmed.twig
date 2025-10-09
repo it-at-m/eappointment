@@ -15,7 +15,7 @@ Nach Aktivierung des Termins erhalten Sie eine Bestätigung mit der Terminnummer
 {
   "@context": "http://schema.org",
   "@type": "EventReservation",
-  "reservationNumber": "{{ process.id }}",
+  "reservationNumber": "{{ process.displayNumber }}",
   "reservationStatus": "http://schema.org/Confirmed",
   "modifyReservationUrl": "{{ config.appointments.urlAppointments }}",
   "modifiedTime": "{{ process.createTimestamp|date('c') }}",
