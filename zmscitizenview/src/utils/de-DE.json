@@ -1,15 +1,15 @@
 {
   "address": "Adresse",
   "altcha": {
-    "error": "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
-    "expired": "Verifizierung abgelaufen. Versuche es erneut.",
+    "error": "Die Prüfung ist fehlgeschlagen. Versuchen Sie es später erneut.",
+    "expired": "Die Zeit ist abgelaufen. Versuchen Sie es erneut.",
     "footer": "Geschützt durch ALTCHA",
     "invalidCaptchaHeader": "Das hat leider nicht geklappt.",
     "invalidCaptchaText": "Bitte aktualisieren Sie diese Seite.",
     "label": "Ich bin kein Bot.",
     "loadError": "Das Widget konnte nicht geladen werden.",
-    "verified": "Erfolgreich verifiziert!",
-    "verifying": "Überprüfe...",
+    "verified": "Erfolgreich überprüft.",
+    "verifying": "Überprüfung läuft...",
     "waitAlert": "Überprüfung läuft... bitte warten.",
     "ariaLabel": "Sicherheitsüberprüfung - Ich bin kein Bot",
     "screenReaderDescription": "Diese Sicherheitsüberprüfung stellt sicher, dass Sie ein Mensch sind und kein automatisiertes Programm. Aktivieren Sie das Kontrollkästchen, um zu bestätigen, dass Sie kein Bot sind."
