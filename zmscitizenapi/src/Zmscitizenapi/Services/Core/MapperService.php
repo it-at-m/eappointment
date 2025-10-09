@@ -27,9 +27,6 @@ use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
-use BO\Zmsentities\Helper\Messaging;
-use BO\Zmsentities\Config;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -379,9 +376,6 @@ class MapperService
             }
         }
 
-        // Generate ICS content if process has appointments with time
-        $icsContent = self::generateIcsContent($myProcess);
-
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
@@ -400,8 +394,7 @@ class MapperService
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
-            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
-            icsContent: isset($icsContent) ? $icsContent : null
+            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
         );
     }
 
@@ -579,31 +572,5 @@ class MapperService
             lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
             contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
         );
-    }
-
-    /**
-     * Generate ICS content for a process if it has appointments with time.
-     *
-     * @param Process $process The process to generate ICS content for
-     * @return string|null The ICS content or null if generation fails or not applicable
-     */
-    private static function generateIcsContent(Process $process): ?string
-    {
-        if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
-            return null;
-        }
-
-        try {
-            $config = new Config();
-            $ics = Messaging::getMailIcs($process, $config, 'appointment');
-            return $ics->getContent();
-        } catch (\Exception $e) {
-            // Log error but don't fail the process
-            LoggerService::logError($e, null, null, [
-                'processId' => $process->id,
-                'context' => 'ICS generation'
-            ]);
-            return null;
-        }
     }
 }

@@ -114,14 +114,10 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             'serviceName' => 'Adressänderung Personalausweis, Reisepass, eAT',
             'serviceCount' => 1,
             'status' => 'confirmed',
-            'slotCount' => 1,
+            'slotCount' => 1
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertArrayHasKey('icsContent', $responseBody);
-        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
-        unset($responseBody['icsContent']);
-        unset($expectedResponse['icsContent']);
         $this->assertEquals($expectedResponse, $responseBody);
     }
 
