@@ -71,7 +71,7 @@ VALUES
   (65202,'UT Scope 65202 (API)','T65202','', '');
 
 UPDATE `standort`
-SET `InfoDienstleisterID` = 9999998
+SET `InfoDienstleisterID` = 9999999
 WHERE `StandortID` IN (65001, 65002, 65202)
   AND ( `InfoDienstleisterID` = 0 OR `InfoDienstleisterID` IS NULL );
 
