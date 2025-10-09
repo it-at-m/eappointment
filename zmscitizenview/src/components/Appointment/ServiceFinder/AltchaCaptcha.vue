@@ -178,7 +178,7 @@ onUnmounted(() => {
 }
 
 :deep(.altcha-checkbox input:checked::after) {
-  content: '';
+  content: "";
   position: absolute;
   left: 5px;
   top: 1.5px;
