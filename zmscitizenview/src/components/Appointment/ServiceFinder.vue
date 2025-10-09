@@ -105,7 +105,10 @@
     </div>
     <div class="m-component">
       <div class="wrapper">
-        <clock-svg />
+        <clock-svg
+          aria-hidden="true"
+          focusable="false"
+        />
         <div
           ref="durationInfo"
           tabindex="0"
