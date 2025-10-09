@@ -32,7 +32,7 @@ Sie haben keine Dienstleistungen ausgewählt.
 <strong>Hinweis: </strong>({{ process.scope.hint }})<br />
 {% endif %}
 {% if isQueued %}
-<strong>Wartenummer:</strong> {{ plannedProcess.queue.number }}
+<strong>Wartenummer:</strong> {{ plannedprocess.displayNumber }}
 {% else %}
 <strong>Vorgangsnummer:</strong> {{ plannedProcess.id }}<br />
 <strong>Absage-Code:</strong> {{ plannedProcess.authKey }}<br />

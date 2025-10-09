@@ -12,7 +12,7 @@
                     Name
                 </dt>
                 <dd>
-                    {{ process.clients|first.familyName }} <br>(Wartenr. {{ process.queue.number }})
+                    {{ process.clients|first.familyName }} <br>(Wartenr. {{ process.displayNumber }})
                 </dd>
                 {% if process.requests %}
                 <dt>

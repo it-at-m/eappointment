@@ -55,24 +55,4 @@ class RequestRelation extends Base implements MappingInterface
         $this->query->where(self::TABLE . '.source', '=', $sourceName);
         return $this;
     }
-
-    public function getQueryCountByProvider(): string
-    {
-        return '
-            SELECT COUNT(*)
-            FROM ' . self::TABLE . '
-            WHERE provider__id = :provider_id
-              AND source        = :source
-        ';
-    }
-
-    public function getQueryCountByRequest(): string
-    {
-        return '
-            SELECT COUNT(*)
-            FROM ' . self::TABLE . '
-            WHERE request__id = :request_id
-              AND source       = :source
-        ';
-    }
 }

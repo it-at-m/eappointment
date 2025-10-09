@@ -57,6 +57,13 @@
             ],
             "description": "number to display on a call display"
         },
+        "displayNumber": {
+            "type": [
+                "string",
+                "number"
+            ],
+            "description": "number to display on a call display"
+        },
         "waitingTime": {
             "oneOf": [
                 {

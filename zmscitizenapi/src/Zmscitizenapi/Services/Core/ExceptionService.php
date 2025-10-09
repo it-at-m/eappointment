@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 class ExceptionService
 {

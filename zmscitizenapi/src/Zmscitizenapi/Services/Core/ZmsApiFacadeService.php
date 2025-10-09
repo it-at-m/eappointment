@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
@@ -793,7 +793,6 @@ class ZmsApiFacadeService
 
     public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
     {
-
         $process = ZmsApiClientService::getProcessById($processId, $authKey);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {

@@ -24,7 +24,7 @@ class Useraccount extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -32,15 +32,14 @@ class Useraccount extends BaseController
         if ($workstation->hasSuperUseraccount()) {
             $useraccountList = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
         } else {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-            $departmentList = $workstation->getUseraccount()->getDepartmentList();
-            foreach ($departmentList as $accountDepartment) {
-                $departmentUseraccountList = \App::$http
-                    ->readGetResult("/department/$accountDepartment->id/useraccount/")
-                    ->getCollection();
-                if ($departmentUseraccountList) {
-                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
-                }
+            $departmentListIds = $workstation->getUseraccount()->getDepartmentList()->getIds();
+
+            $departmentUseraccountList = \App::$http
+                ->readGetResult('/department/' . implode(',', $departmentListIds) . '/useraccount/')
+                ->getCollection();
+
+            if (! empty($departmentUseraccountList)) {
+                $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
             }
         }
 

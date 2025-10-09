@@ -104,13 +104,4 @@ class Request extends Base
 
         return $this;
     }
-
-    public function getQueryCountInBuergeranliegen(): string
-    {
-        return '
-        SELECT COUNT(*)
-        FROM ' . self::BATABLE . '
-        WHERE AnliegenID = :request_id
-    ';
-    }
 }
