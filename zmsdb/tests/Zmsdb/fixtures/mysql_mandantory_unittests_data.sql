@@ -56,84 +56,57 @@ INSERT INTO `request_variant` (`id`, `name`) VALUES
 
 UNLOCK TABLES;
 
+
 /* ------------------------------------------------------------------
-   Test-Daten für OverviewCalendar
-   - Minimal: Standorte + initiale Buchungen
+   Test-Daten OverviewCalendarTest, OverallCalendarRead
 -------------------------------------------------------------------*/
-LOCK TABLES
-    `standort` WRITE,
-    `overview_calendar` WRITE;
 
-INSERT INTO `standort`
-(`StandortID`, `Bezeichnung`, `standortkuerzel`, `wartenrhinweis`, `aufrufanzeigetext`, `source`)
+LOCK TABLES `standort` WRITE, `oeffnungszeit` WRITE, `overview_calendar` WRITE;
+
+INSERT IGNORE INTO `standort`
+  (`StandortID`,`Bezeichnung`,`standortkuerzel`,`wartenrhinweis`,`aufrufanzeigetext`)
 VALUES
-    (101, 'Teststelle 101', 'T101', '', '', 'zms'),
-    (102, 'Teststelle 102', 'T102', '', '', 'zms'),
-    (1301, 'Teststelle 1301', 'T1301', '', '', 'zms')
-    ON DUPLICATE KEY UPDATE
-                         `Bezeichnung`     = VALUES(`Bezeichnung`),
-                         `standortkuerzel` = VALUES(`standortkuerzel`);
+  (65001,'UT Scope 65001','T65001','', ''),
+  (65002,'UT Scope 65002','T65002','', ''),
+  (65202,'UT Scope 65202 (API)','T65202','', '');
 
-DELETE FROM `overview_calendar`
-WHERE `scope_id` IN (101,102,1301);
+UPDATE `standort`
+SET `InfoDienstleisterID` = 9999998
+WHERE `StandortID` IN (65001, 65002, 65202)
+  AND ( `InfoDienstleisterID` = 0 OR `InfoDienstleisterID` IS NULL );
+
+DELETE FROM `oeffnungszeit`     WHERE `StandortID` IN (65202);
+DELETE FROM `overview_calendar` WHERE `scope_id`   IN (65001,65002,65202);
 
 INSERT INTO `overview_calendar`
-(`scope_id`, `process_id`, `status`, `starts_at`, `ends_at`, `updated_at`)
+(`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)
 VALUES
-    (102, 900100, 'confirmed', '2025-05-14 09:00:00', '2025-05-14 09:05:00', '2025-05-05 00:00:00'),
-    (102, 900101, 'confirmed', '2025-05-14 10:00:00', '2025-05-14 10:05:00', '2025-05-05 00:00:00'),
-    (102, 900102, 'cancelled', '2025-05-14 11:00:00', '2025-05-14 11:05:00', '2025-05-05 00:00:00');
-UNLOCK TABLES;
-
-/* ---------------------------------------------------------------
-   Seeds für OverallCalendarRead
-   - Standort 2102
-   - Öffnungszeiten (Availability) für 2025-05-14
-   - Buchungen (overview_calendar) für 2025-05-14
----------------------------------------------------------------- */
-
-LOCK TABLES
-  `standort` WRITE,
-  `oeffnungszeit` WRITE,
-  `overview_calendar` WRITE;
-
-INSERT INTO `standort`
-(`StandortID`, `Bezeichnung`,           `standortkuerzel`, `wartenrhinweis`, `aufrufanzeigetext`, `source`)
-VALUES
-    (2102,        'Teststelle 2102 (API)', 'T2102',           '',               '',                  'zms')
-    ON DUPLICATE KEY UPDATE
-                         `Bezeichnung`     = VALUES(`Bezeichnung`),
-                         `standortkuerzel` = VALUES(`standortkuerzel`);
-
-DELETE FROM `oeffnungszeit`     WHERE `StandortID` = 2102;
-DELETE FROM `overview_calendar` WHERE `scope_id`   = 2102;
+    (65002, 965001, 'confirmed', '2025-05-14 09:00:00', '2025-05-14 09:05:00', '2025-05-05 00:00:00'),
+    (65002, 965002, 'confirmed', '2025-05-14 10:00:00', '2025-05-14 10:05:00', '2025-05-05 00:00:00'),
+    (65002, 965003, 'cancelled', '2025-05-14 11:00:00', '2025-05-14 11:05:00', '2025-05-05 00:00:00');
 
 INSERT INTO `oeffnungszeit`
-(`OeffnungszeitID`, `StandortID`, `Startdatum`,   `Endedatum`,
- `allexWochen`, `jedexteWoche`, `Wochentag`,
- `Anfangszeit`, `Terminanfangszeit`, `Endzeit`,   `Terminendzeit`,
+(`OeffnungszeitID`,`StandortID`,`Startdatum`,`Endedatum`,
+ `allexWochen`,`jedexteWoche`,`Wochentag`,
+ `Anfangszeit`,`Terminanfangszeit`,`Endzeit`,`Terminendzeit`,
  `Timeslot`,
- `Anzahlarbeitsplaetze`, `Anzahlterminarbeitsplaetze`,
- `kommentar`,                 `reduktionTermineImInternet`, `erlaubemehrfachslots`,
- `reduktionTermineCallcenter`, `Offen_ab`, `Offen_bis`, `updateTimestamp`)
+ `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
+ `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
+ `reduktionTermineCallcenter`,`Offen_ab`,`Offen_bis`,`updateTimestamp`)
 VALUES
-    (92102,
-     2102,
-     '2025-05-14', '2025-05-14',
-     0, 1, 32,
-     '09:00:00', '09:00:00', '11:00:00', '11:00:00',
+    (965202, 65202, '2025-05-14','2025-05-14',
+     0,1,32,
+     '09:00:00','09:00:00','11:00:00','11:00:00',
      '00:05:00',
-     3, 3,
-     'Unit-Test Availability 2102',
-     0, 1,
-     0, 0, 0,
-     '2025-05-05 00:00:00');
+     3,3,
+     'UT Availability 65202', 0,1, 0,0,0, '2025-05-05 00:00:00');
 
 INSERT INTO `overview_calendar`
-(`scope_id`, `process_id`, `status`,     `starts_at`,              `ends_at`,                `updated_at`)
+(`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)
 VALUES
-    (2102,       220001,       'confirmed',  '2025-05-14 09:30:00',    '2025-05-14 09:45:00',    '2025-05-05 00:00:00'),
-    (2102,       220002,       'confirmed',  '2025-05-14 10:15:00',    '2025-05-14 10:30:00',    '2025-05-05 00:00:00'),
-    (2102,       220003,       'cancelled',  '2025-05-14 10:45:00',    '2025-05-14 11:00:00',    '2025-05-05 00:00:00');
+    (65202, 972201, 'confirmed', '2025-05-14 09:30:00', '2025-05-14 09:45:00', '2025-05-05 00:00:00'),
+    (65202, 972202, 'confirmed', '2025-05-14 10:15:00', '2025-05-14 10:30:00', '2025-05-05 00:00:00'),
+    (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
 
 UNLOCK TABLES;
+
