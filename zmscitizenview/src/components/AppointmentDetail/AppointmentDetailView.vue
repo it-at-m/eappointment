@@ -96,7 +96,7 @@
             v-if="appointment && selectedProvider"
             style="margin-bottom: 0"
           >
-            <b>{{ t("affectedAppointment") }}</b>
+            <strong>{{ t("affectedAppointment") }}</strong>
             <br />
             {{ getServiceSummary() }}
             <br />
@@ -135,7 +135,7 @@
             v-if="appointment && selectedProvider"
             style="margin-bottom: 0"
           >
-            <b>{{ t("affectedAppointment") }}</b>
+            <strong>{{ t("affectedAppointment") }}</strong>
             <br />
             {{ getServiceSummary() }}
             <br />
