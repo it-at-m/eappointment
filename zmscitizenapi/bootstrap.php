@@ -27,6 +27,9 @@ require(APP_PATH . '/config.php');
 \App::$slim->addBodyParsingMiddleware();
 
 \App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
+if (\App::$httpPassword !== false) {
+    \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
+}
 //\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');

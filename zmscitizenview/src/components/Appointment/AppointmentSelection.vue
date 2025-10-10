@@ -208,6 +208,7 @@ import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
 } from "@/api/ZMSAppointmentAPI";
+import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   SelectedServiceProvider,
@@ -233,7 +234,7 @@ import ListView from "./AppointmentSelection/ListView.vue";
 import ProviderSelection from "./AppointmentSelection/ProviderSelection.vue";
 
 const props = defineProps<{
-  baseUrl: string | undefined;
+  globalState: GlobalState;
   isRebooking: boolean;
   exclusiveLocation: string | undefined;
   preselectedOfficeId: string | undefined;
@@ -738,10 +739,10 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
   const providerIdsToQuery = selectedProviderIds.map(Number);
 
   const data = await fetchAvailableDays(
+    props.globalState,
     providerIdsToQuery,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   );
 
@@ -798,11 +799,11 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
 
   try {
     const data = await fetchAvailableTimeSlots(
+      props.globalState,
       date,
       providerIds.map(Number),
       Array.from(props.selectedServiceMap.keys()),
       Array.from(props.selectedServiceMap.values()),
-      props.baseUrl ?? undefined,
       props.captchaToken ?? undefined
     );
 

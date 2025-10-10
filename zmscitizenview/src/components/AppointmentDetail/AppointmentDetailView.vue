@@ -60,7 +60,7 @@
     "
   >
     <no-login-warning
-      v-if="!loggedIn"
+      v-if="!globalState.isLoggedIn"
       :appointment-id="appointmentId"
       :t="t"
     />
@@ -307,8 +307,8 @@ import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentD
 import NoLoginWarning from "@/components/AppointmentDetail/NoLoginWarning.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
+import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
@@ -319,6 +319,7 @@ import {
 } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  APPOINTMENT_ACTION_TYPE,
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
@@ -331,7 +332,7 @@ import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentOverviewUrl: string;
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
@@ -354,8 +355,6 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -385,11 +384,20 @@ const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
   if (appointment.value)
-    location.href = `${props.rescheduleAppointmentUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
+    location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
 };
 
 const cancelAppointment = () => {
-  // TODO cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+  location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.CANCEL)}`;
+};
+
+const getEncodedString = (type: APPOINTMENT_ACTION_TYPE) => {
+  const json = {
+    id: appointment.value?.processId,
+    authKey: appointment.value?.authKey,
+    action: type,
+  };
+  return btoa(JSON.stringify(json));
 };
 
 const goToAppointmentOverviewLink = () => {
@@ -445,10 +453,10 @@ onMounted(() => {
   fetchServicesAndProviders(
     undefined,
     undefined,
-    props.baseUrl ?? undefined
+    props.globalState.baseUrl ?? undefined
   ).then((data) => {
     // Check if any error state should be activated
-    if (handleApiResponseForDownTime(data, props.baseUrl)) {
+    if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
       return;
     }
 
@@ -464,8 +472,11 @@ onMounted(() => {
     offices.value = data.offices;
 
     if (appointmentId.value) {
-      getAppointmentDetails(appointmentId.value).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
+      getAppointmentDetails(
+        appointmentId.value,
+        props.globalState.baseUrl
+      ).then((data) => {
+        if ((data as AppointmentDTO)?.processId !== undefined) {
           appointment.value = data;
 
           selectedService.value = services.value.find(

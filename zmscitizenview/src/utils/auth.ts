@@ -1,15 +1,7 @@
+import { ref } from "vue";
+
 import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import AuthorizationEventDetails from "@/types/AuthorizationEventDetails";
-
-const ACCESS_TOKEN_NAME = "appointment-access-token";
-
-export function isAuthenticated(): boolean {
-  return localStorage.getItem(ACCESS_TOKEN_NAME) !== null;
-}
-
-export function getAccessToken(): string | null {
-  return localStorage.getItem(ACCESS_TOKEN_NAME);
-}
 
 export function getTokenData(accessToken: string): {
   email: string;
@@ -21,22 +13,19 @@ export function getTokenData(accessToken: string): {
   return JSON.parse(atob(accessTokenParts[1]));
 }
 
-export function registerAuthenticationHook(
-  loginCallback: (accessToken: string) => void = () => {},
-  logoutCallback: () => void = () => {}
-): void {
-  const currentAccessToken = localStorage.getItem(ACCESS_TOKEN_NAME);
-  if (currentAccessToken) {
-    loginCallback(currentAccessToken);
-  }
-  useDBSLoginWebcomponentPlugin(
+export function useLogin() {
+  const accessToken = ref<string | null>(null);
+  const { loggedIn, loading } = useDBSLoginWebcomponentPlugin(
     (authEventDetails: AuthorizationEventDetails) => {
-      localStorage.setItem(ACCESS_TOKEN_NAME, authEventDetails.accessToken);
-      loginCallback(authEventDetails.accessToken);
+      accessToken.value = authEventDetails.accessToken;
     },
     () => {
-      localStorage.removeItem(ACCESS_TOKEN_NAME);
-      logoutCallback();
+      accessToken.value = null;
     }
   );
+  return {
+    isLoggedIn: loggedIn,
+    isLoadingAuthentication: loading,
+    accessToken,
+  };
 }

@@ -13,7 +13,9 @@ import {
 const t = vi.fn((key: string) => key);
 
 const baseProps = {
-  baseUrl: "http://test.url",
+  globalState: {
+    baseUrl: "http://test.url",
+  },
   isRebooking: false,
   exclusiveLocation: undefined,
   preselectedOfficeId: undefined,
@@ -407,11 +409,13 @@ describe("AppointmentSelection", () => {
 
     expect(wrapper.vm.selectedDay).toEqual(new Date('2025-05-15'));
     expect(fetchAvailableTimeSlots).toHaveBeenCalledWith(
+      {
+        baseUrl: "http://test.url"
+      },
       '2025-05-15',
       expect.any(Array),
       expect.any(Array),
       expect.any(Array),
-      expect.any(String),
       expect.any(String)
     );
     });
@@ -425,7 +429,7 @@ describe("AppointmentSelection", () => {
           { time: '2025-06-17', providerIDs: '10351880,10470' },
         ]
       });
-      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+      (fetchAvailableTimeSlots as Mock).mockImplementation((_, date) => {
         if (date === '2025-06-16') {
           return Promise.resolve({ offices: [] });
         }

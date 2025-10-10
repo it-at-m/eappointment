@@ -19,7 +19,6 @@ use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
-use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
@@ -904,5 +903,10 @@ class ZmsApiFacadeService
             return $clientUpdateResult;
         }
         return $clientUpdateResult;
+    }
+
+    public static function getAppointmentsByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
+    {
+        return ZmsApiClientService::getProcessesByExternalUserId($externalUserId, $filterId, $status);
     }
 }

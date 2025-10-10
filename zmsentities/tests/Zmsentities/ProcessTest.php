@@ -750,4 +750,12 @@ class ProcessTest extends EntityCommonTests
         $this->assertEntityList($this->entityclass, $collection);
     }
     */
+
+    public function testExternalUserIdGetterSetter()
+    {
+        $entity = $this->getExample();
+        $this->assertNull($entity->getExternalUserId());
+        $entity->setExternalUserId('external-abc');
+        $this->assertEquals('external-abc', $entity->getExternalUserId());
+    }
 }

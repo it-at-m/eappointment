@@ -8,7 +8,7 @@
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-detail-view
-        :base-url="baseUrl"
+        :global-state="globalState"
         :appointment-overview-url="appointmentOverviewUrl"
         :reschedule-appointment-url="rescheduleAppointmentUrl"
         :t="t"
@@ -20,13 +20,12 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
-import { registerAuthenticationHook } from "./utils/auth";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -43,15 +42,7 @@ defineProps({
 });
 
 const { t } = useI18n();
-const accessToken = ref<string | null>(null);
-registerAuthenticationHook(
-  (newAccessToken) => {
-    accessToken.value = newAccessToken;
-  },
-  () => {
-    accessToken.value = null;
-  }
-);
+const globalState = useGlobalState(props);
 </script>
 
 <style>

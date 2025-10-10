@@ -379,7 +379,12 @@ class ErrorMessages
             'statusCode' => self::HTTP_FORBIDDEN,
             'errorMessage' => 'Security policy violation.',
             'errorType' => 'error'
-        ]
+        ],
+        'unauthorized' => [
+            'errorCode' => 'unauthorized',
+            'errorMessage' => 'You are not authorized to access this resource.',
+            'statusCode' => self::HTTP_FORBIDDEN,
+        ],
     ];
 
     /**

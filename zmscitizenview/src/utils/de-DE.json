@@ -204,6 +204,8 @@
   "loadingAppointmentTimes": "Verfügbare Termine werden geladen",
   "loadingCustomerInfoUpdate": "Kundendaten werden aktualisiert",
   "location": "Ort",
+  "loggedinHeader": "Sie sind angemeldet.",
+  "loggedinText": "Ihre Kontaktdaten wurden aus Ihrem Konto übernommen.",
   "login": "Anmelden",
   "mailAddress": "E-Mail-Adresse",
   "minutes": "Minuten",

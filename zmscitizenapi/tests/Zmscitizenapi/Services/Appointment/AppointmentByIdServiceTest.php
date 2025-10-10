@@ -95,7 +95,7 @@ class AppointmentByIdServiceTest extends MiddlewareTestCase
             'authKey' => ''
         ];
 
-        $result = $this->service->getAppointmentById($queryParams);
+        $result = $this->service->getAppointmentById($queryParams, null);
 
         $this->assertArrayHasKey('errors', $result);
     }

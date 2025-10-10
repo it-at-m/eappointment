@@ -668,6 +668,36 @@
 \App::$slim->post('/cancel-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
 \App::$slim->post('/cancel-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
 
+/**
+ * @swagger
+ * /my-appointments/:
+ *   get:
+ *     summary: Get all appointments for the currently logged-in user
+ *     tags:
+ *       - appointments
+ *     parameters:
+ *       - name: filterId
+ *         description: "Get a certain process for a given user"
+ *         in: query
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: List of appointments
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               type: array
+ *               items:
+ *                 $ref: "schema/citizenapi/thinnedProcess.json"
+ *       401:
+ *         description: Unauthorized (if no user header is present)
+ */
+\App::$slim->get('/my-appointments/', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
+\App::$slim->get('/my-appointments', '\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController')->setName("MyAppointmentsController");
+
 // Catch-all route for 404 errors
 \App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {
     $error = \BO\Zmscitizenapi\Localization\ErrorMessages::get('notFound');

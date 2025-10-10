@@ -268,7 +268,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 'customTextfield2' => 'Custom Info 2'
             ];
     
-            $result = $this->invokePrivateMethod('validateClientData', [$data]);
+            $result = $this->invokePrivateMethod('validateClientData', [$data, null]);
             $this->assertEquals(['errors' => []], $result);
         } finally {
             \App::$http = $originalHttp;
@@ -287,7 +287,7 @@ class AppointmentUpdateServiceTest extends TestCase
             'customTextfield2' => null
         ];
 
-        $result = $this->invokePrivateMethod('validateClientData', [$data]);
+        $result = $this->invokePrivateMethod('validateClientData', [$data, null]);
 
         $this->assertArrayHasKey('errors', $result);
     }
@@ -322,7 +322,7 @@ class AppointmentUpdateServiceTest extends TestCase
             'authKey' => ''
         ];
 
-        $result = $this->service->processUpdate($body);
+        $result = $this->service->processUpdate($body, null);
 
         $this->assertArrayHasKey('errors', $result);
     }

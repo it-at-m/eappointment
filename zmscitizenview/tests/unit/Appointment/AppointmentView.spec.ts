@@ -75,7 +75,9 @@ describe("AppointmentView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentView, {
       props: {
-        baseUrl: mockBaseUrl,
+        globalState: {
+          baseUrl: mockBaseUrl,
+        },
         serviceId: mockServiceId,
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
@@ -121,12 +123,12 @@ describe("AppointmentView", () => {
         stubs: {
           'service-finder': {
             template: "<div data-test='service-finder'></div>",
-            props: ["baseUrl", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
+            props: ["globalState", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
             emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
           'AppointmentSelection': {
             template: "<div data-test='AppointmentSelection'></div>",
-            props: ["baseUrl", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
+            props: ["globalState", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
             emits: ["back", "next"],
           },
           'customer-info': {
@@ -1131,11 +1133,13 @@ describe("AppointmentView", () => {
 
       expect(mockConfirmAppointment).toHaveBeenCalledWith(
         {
+          baseUrl: "https://www.muenchen.de",
+        },
+        {
           id: "test-id",
           authKey: "test-auth-key",
           scope: {}
         },
-        "https://www.muenchen.de"
       );
 
       expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
@@ -1178,11 +1182,13 @@ describe("AppointmentView", () => {
 
     expect(mockConfirmAppointment).toHaveBeenLastCalledWith(
       {
+        baseUrl: "https://www.muenchen.de",
+      },
+      {
         id: "not-found-id",
         authKey: "test-auth-key",
         scope: {}
       },
-      "https://www.muenchen.de"
     );
 
     expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
@@ -1225,11 +1231,13 @@ describe("AppointmentView", () => {
 
     expect(mockConfirmAppointment).toHaveBeenCalledWith(
       {
+        baseUrl: "https://www.muenchen.de",
+      },
+      {
         id: "other-error-id",
         authKey: "test-auth-key",
         scope: {}
       },
-      "https://www.muenchen.de"
     );
 
     expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
