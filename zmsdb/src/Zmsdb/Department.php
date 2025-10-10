@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Department as Entity;
 use BO\Zmsentities\Collection\DepartmentList as Collection;
 
@@ -20,10 +21,18 @@ class Department extends Base
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        $cacheKey = "$departmentId-$resolveReferences";
+        $cacheKey = "department-$departmentId-$resolveReferences";
         if (! $disableCache && array_key_exists($cacheKey, self::$departmentCache)) {
             return clone self::$departmentCache[$cacheKey];
         }
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $query = new Query\Department(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
@@ -33,6 +42,7 @@ class Department extends Base
             $department = $this->readResolvedReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$cacheKey] = $department;
+            App::$cache->set($cacheKey, self::$departmentCache[$cacheKey]);
             return clone self::$departmentCache[$cacheKey];
         }
         return null;

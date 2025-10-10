@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Dayoff as Entity;
 use BO\Zmsentities\Collection\DayoffList as Collection;
 
@@ -66,6 +67,13 @@ class DayOff extends Base
 
     public function readByScopeId($scopeId = 0)
     {
+        $cacheKey = "dayOffsByScope-$scopeId";
+
+        $data = App::$cache->get($cacheKey);
+        if (App::$cache && !empty($data)) {
+            return $data;
+        }
+
         $dayOffList = $this->readCommon();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -78,6 +86,9 @@ class DayOff extends Base
                 }
             }
         }
+
+        App::$cache->set($cacheKey, $dayOffList);
+
         return $dayOffList;
     }
 

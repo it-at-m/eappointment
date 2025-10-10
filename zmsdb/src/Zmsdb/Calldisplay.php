@@ -85,8 +85,8 @@ class Calldisplay extends Base
                 ->getQueryImage(), ['name' => "logo.png"]);
         }
 
-        $mime = pathinfo($image['name'], PATHINFO_EXTENSION);
-        $image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
+        //$mime = pathinfo($image['name'], PATHINFO_EXTENSION);
+        //$image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
         return $image;
     }
 
