@@ -110,7 +110,7 @@
           ref="durationInfo"
           tabindex="0"
         >
-          <b>{{ t("estimatedDuration") }}</b>
+          <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
         </div>
