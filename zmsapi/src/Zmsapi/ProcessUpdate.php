@@ -53,6 +53,7 @@ class ProcessUpdate extends BaseController
                 $workstation->getUseraccount()
             );
             Helper\Matching::testCurrentScopeHasRequest($process);
+            $this->syncOverviewCalendarFromProcess($entity, $process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
@@ -81,6 +82,7 @@ class ProcessUpdate extends BaseController
                 $process,
                 $workstation->getUseraccount()
             );
+            $this->syncOverviewCalendarFromProcess($entity, $process);
         }
 
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
@@ -112,5 +114,30 @@ class ProcessUpdate extends BaseController
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
+    }
+
+    private function syncOverviewCalendarFromProcess(
+        \BO\Zmsentities\Process $entity,
+        \BO\Zmsentities\Process $process
+    ): void {
+        $appointment        = $entity->getFirstAppointment();
+        $connectionTimezone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
+
+        $startsAt = (new \DateTimeImmutable('@' . $appointment->date))
+            ->setTimezone($connectionTimezone);
+
+        $slotCount = (int) $appointment->slotCount;
+        $scopeId   = (int) $appointment->scope->id;
+
+        $slotTimeInMinutes = (int) $process->getFirstAppointment()->availability->slotTimeInMinutes;
+
+        $endsAt = $startsAt->modify('+' . ($slotCount * $slotTimeInMinutes) . ' minutes');
+
+        (new \BO\Zmsdb\OverviewCalendar())->updateByProcess(
+            (int) $entity->id,
+            $scopeId,
+            $startsAt,
+            $endsAt
+        );
     }
 }

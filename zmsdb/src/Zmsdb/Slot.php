@@ -7,7 +7,6 @@ use BO\Zmsentities\Slot as Entity;
 use BO\Zmsentities\Collection\SlotList as Collection;
 use BO\Zmsentities\Availability as AvailabilityEntity;
 use BO\Zmsentities\Scope as ScopeEntity;
-use BO\Zmsdb\OverallCalendar as Calendar;
 
 /**
  * @SuppressWarnings(Public)
@@ -202,12 +201,6 @@ class Slot extends Base
                 'availabilityID' => $availability->id,
             ]);
 
-            $calendar = new Calendar();
-            $calendar->cancelAvailability(
-                $availability->scope->id,
-                $availability->id
-            );
-
             if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
                 $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
                 return ($cancelledSlots > 0) ? true : false;
@@ -261,15 +254,6 @@ class Slot extends Base
         $ancestors = [];
         $hasAddedSlots = false;
 
-        $calendar       = new OverallCalendar();
-        $scopeId        = $availability->scope->id;
-        $availabilityId = $availability->id;
-        $maxSeat        = (int)($availability->workstationCount['intern'] ?? 1);
-        if ($maxSeat < 1) {
-            $maxSeat = 1;
-        }
-        $timeZone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
-
         foreach ($slotlist as $slot) {
             $slot = clone $slot;
             $slotID = $this->readByAvailability($slot, $availability, $time);
@@ -292,25 +276,6 @@ class Slot extends Base
             // TODO: Check if slot changed before writing ancestor IDs
             $this->writeAncestorIDs($slotID, $ancestors);
             $status = $writeStatus ? $writeStatus : $status;
-
-            if ($writeStatus) {
-                $slotStart = new \DateTimeImmutable(
-                    $time->format('Y-m-d') . ' ' . $slot->getTimeString(),
-                    $timeZone
-                );
-                $slotDurationMinutes = (int) $availability->getSlotTimeInMinutes();
-                $slotEnd = $slotStart->modify('+' . $slotDurationMinutes . ' minutes');
-
-                $bulkRows = [];
-                for ($seat = 1; $seat <= $maxSeat; $seat++) {
-                    $cursor = clone $slotStart;
-                    while ($cursor < $slotEnd) {
-                        $bulkRows[] = [$scopeId, $availabilityId, $cursor, $seat, 'free'];
-                        $cursor = $cursor->modify('+5 minutes');
-                    }
-                }
-                $calendar->insertSlotsBulk($bulkRows);
-            }
         }
         if ($hasAddedSlots) {
             $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
@@ -446,9 +411,6 @@ class Slot extends Base
             'dateString' => $dateTime->format('Y-m-d'),
             'scopeID' => $scope->id,
         ]);
-
-        $calendar = new \BO\Zmsdb\OverallCalendar();
-            $calendar->purgeMissingAvailabilityByScope($dateTime, $scope->id);
 
         return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD_BY_SCOPE, [
             'year' => $dateTime->format('Y'),
