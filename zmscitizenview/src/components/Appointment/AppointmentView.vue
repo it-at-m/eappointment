@@ -744,30 +744,43 @@ const nextBookAppointment = () => {
   if (appointment.value) {
     isBookingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    currentContext.value = "preconfirm";
-    preconfirmAppointment(props.globalState, appointment.value)
-      .then((data) => {
-        if ((data as any)?.errors?.length > 0) {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-          return;
-        }
-
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
-          if (isRebooking.value && rebookedAppointment.value) {
-            currentContext.value = "cancel";
-            cancelAppointment(props.globalState, rebookedAppointment.value);
+    if (props.globalState.isLoggedIn) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      window.location.href =
+        baseUrl +
+        "/#/appointment/confirm/" +
+        btoa(
+          JSON.stringify({
+            id: appointment.value.processId,
+            authKey: appointment.value.authKey,
+          })
+        );
+    } else {
+      currentContext.value = "preconfirm";
+      preconfirmAppointment(props.globalState, appointment.value)
+        .then((data) => {
+          if ((data as any)?.errors?.length > 0) {
+            handleErrorApiResponse(
+              data,
+              errorStates.errorStateMap,
+              currentErrorData.value
+            );
+            return;
           }
-          increaseCurrentView();
-        }
-      })
-      .finally(() => {
-        isBookingAppointment.value = false;
-      });
+
+          if ((data as AppointmentDTO).processId != undefined) {
+            appointment.value = data as AppointmentDTO;
+            if (isRebooking.value && rebookedAppointment.value) {
+              currentContext.value = "cancel";
+              cancelAppointment(props.globalState, rebookedAppointment.value);
+            }
+            increaseCurrentView();
+          }
+        })
+        .finally(() => {
+          isBookingAppointment.value = false;
+        });
+    }
   }
 };
 
