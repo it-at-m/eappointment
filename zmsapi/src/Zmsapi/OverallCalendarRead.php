@@ -127,12 +127,13 @@ class OverallCalendarRead extends BaseController
 
     private function readScopeMeta(array $scopeIds): array
     {
-        $meta = [];
         $scopeDb = new ScopeQuery();
+        $byId = $scopeDb->readEntitiesByIds($scopeIds, 0);
+        $meta = [];
         foreach ($scopeIds as $id) {
-            $scope = $scopeDb->readEntity($id, 1);
+            $scope = $byId[$id] ?? null;
             $meta[$id] = [
-                'name' => $scope?->getName() ?? '',
+                'name'      => $scope?->getName() ?? '',
                 'shortName' => $scope?->getShortName() ?? '',
             ];
         }
