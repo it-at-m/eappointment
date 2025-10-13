@@ -573,19 +573,4 @@ class Scope extends Base
             }
         }
     }
-
-    public function countByInfoDienstleister($providerId, string $source): int
-    {
-        $query = new Query\Scope(Query\Base::SELECT);
-
-        $sql = $query->getQueryCountByInfoDienstleister();
-
-        return (int) $this->getReader()->fetchValue(
-            $sql,
-            [
-                'provider_id' => $providerId,
-                'source'      => $source,
-            ]
-        );
-    }
 }

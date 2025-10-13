@@ -559,7 +559,7 @@ class AvailabilityPage extends Component {
                         )
                     })
                     if (data.conflictIdList.length > 0) {
-                        this.errorElement.scrollIntoView()
+                        this.errorElement && this.errorElement.scrollIntoView()
                     }
                 },
                 (err) => {
