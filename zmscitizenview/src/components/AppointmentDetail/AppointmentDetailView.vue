@@ -473,8 +473,8 @@ onMounted(() => {
 
     if (appointmentId.value) {
       getAppointmentDetails(
+        props.globalState,
         appointmentId.value,
-        props.globalState.baseUrl
       ).then((data) => {
         if ((data as AppointmentDTO)?.processId !== undefined) {
           appointment.value = data;
