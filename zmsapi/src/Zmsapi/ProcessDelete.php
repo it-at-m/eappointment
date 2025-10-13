@@ -37,7 +37,10 @@ class ProcessDelete extends BaseController
             }
             $processDeleted = $process;
         } else {
-            $this->cancelOverviewCalendarBooking($process);
+            (new \BO\Zmsdb\OverviewCalendar())->perform(
+                \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+                ['process_id' => (int)$process->id]
+            );
 
             $processDeleted = (new Process())->writeCanceledEntity(
                 $args['id'],
@@ -84,10 +87,5 @@ class ProcessDelete extends BaseController
         if ($process['authKey'] != $authKey && $authName != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
-    }
-
-    private function cancelOverviewCalendarBooking(\BO\Zmsentities\Process $process): void
-    {
-        (new \BO\Zmsdb\OverviewCalendar())->cancelByProcess((int)$process->id);
     }
 }

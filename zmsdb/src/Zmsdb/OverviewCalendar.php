@@ -32,13 +32,6 @@ class OverviewCalendar extends Base
         ]);
     }
 
-    public function cancelByProcess(int $processId): bool
-    {
-        return (bool)$this->perform(\BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS, [
-            'process_id' => $processId,
-        ]);
-    }
-
     public function updateByProcess(
         int $processId,
         int $scopeId,
