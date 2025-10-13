@@ -4,7 +4,6 @@ namespace BO\Zmsdb;
 
 use BO\Zmsentities\Provider as Entity;
 use BO\Zmsentities\Collection\ProviderList as Collection;
-use BO\Zmsdb\Scope as Scope;
 
 class Provider extends Base
 {
@@ -19,9 +18,6 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-//        $inUseByScope = (new Scope())->countByInfoDienstleister($providerId, $source) > 0;
-//        $inUseByRel   = (new RequestRelation())->countByProviderId($providerId, $source) > 0;
-        $provider['canDelete'] = false;
         return $provider;
     }
 
@@ -35,11 +31,6 @@ class Provider extends Base
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($providerData));
-//            $source = $entity->getSource();
-//            $id     = $entity->getId();
-//            $inUseByScope = (new Scope())->countByInfoDienstleister($id, $source) > 0;
-//            $inUseByRel   = (new RequestRelation())->countByProviderId($id, $source) > 0;
-            $entity['canDelete'] = false;
             $providerList->addEntity($entity);
         }
         return $providerList;
@@ -147,17 +138,6 @@ class Provider extends Base
         $query->addConditionProviderId($providerId);
         $query->addConditionProviderSource($source);
         return $this->deleteItem($query);
-    }
-
-    public function deleteEntitySafe(string $source, string $providerId): void
-    {
-        $scopeCount  = (new Scope())->countByInfoDienstleister($providerId, $source);
-        $rrCount     = (new RequestRelation())->countByProviderId($providerId, $source);
-
-        if ($scopeCount > 0 || $rrCount > 0) {
-            throw new Exception\Provider\ProviderInUse();
-        }
-        $this->writeDeleteEntity($providerId, $source);
     }
 
     public function writeDeleteListBySource($source)

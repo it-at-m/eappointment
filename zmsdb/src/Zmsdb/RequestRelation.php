@@ -140,24 +140,4 @@ class RequestRelation extends Base
         $query->addConditionSource($source);
         return $this->deleteItem($query);
     }
-
-    public function countByProviderId(string $providerId, string $source): int
-    {
-        $sql = (new Query\RequestRelation(Query\Base::SELECT))
-            ->getQueryCountByProvider();
-        return (int) $this->getReader()->fetchValue(
-            $sql,
-            ['provider_id' => $providerId, 'source' => $source]
-        );
-    }
-
-    public function countByRequestId(string $requestId, string $source): int
-    {
-        $sql = (new Query\RequestRelation(Query\Base::SELECT))
-            ->getQueryCountByRequest();
-        return (int) $this->getReader()->fetchValue(
-            $sql,
-            ['request_id' => $requestId, 'source'    => $source]
-        );
-    }
 }

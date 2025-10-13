@@ -138,7 +138,6 @@ onUnmounted(() => {
 :deep(.altcha) {
   background: transparent;
   border: 1px solid #bdd4ea;
-  color: #3a5368;
   display: flex;
   flex-direction: column;
   max-width: 260px;
@@ -150,30 +149,55 @@ onUnmounted(() => {
 :deep(.altcha-main) {
   align-items: center;
   display: flex;
-  gap: 0.4rem;
-  padding: 0.7rem;
+  gap: 0.7rem;
+  padding: 0.7rem 1rem;
 }
 
 :deep(.altcha-checkbox) {
   display: flex;
   align-items: center;
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
 }
 
 :deep(.altcha-checkbox input) {
-  width: 18px;
-  height: 18px;
-  margin: 0;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #337bb2;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+:deep(.altcha-checkbox input:checked) {
+  background-color: #337bb2;
+  border-color: #337bb2;
+}
+
+:deep(.altcha-checkbox input:checked::after) {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1.5px;
+  width: 6px;
+  height: 11px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
 }
 
 :deep(.altcha-label) {
   flex-grow: 1;
+  display: flex;
 }
 
 :deep(.altcha-label label) {
   cursor: pointer;
   margin: 0;
+  padding-bottom: 3px;
   color: #3a5368;
 }
 
@@ -197,6 +221,26 @@ onUnmounted(() => {
   font-size: 0.85rem;
   gap: 0.3rem;
   padding: 0 0.7rem 0.7rem;
+}
+
+/* Rotating spinner while verifying */
+:deep(.altcha svg) {
+  transform: none;
+  transition: transform 0.3s ease;
+}
+
+:deep(.altcha[data-state="verifying"] svg) {
+  animation: spin 1s linear infinite;
+  color: #005a9f;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Screen reader only class */
