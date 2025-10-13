@@ -472,66 +472,67 @@ onMounted(() => {
     offices.value = data.offices;
 
     if (appointmentId.value) {
-      getAppointmentDetails(
-        props.globalState,
-        appointmentId.value,
-      ).then((data) => {
-        if ((data as AppointmentDTO)?.processId !== undefined) {
-          appointment.value = data;
+      getAppointmentDetails(props.globalState, appointmentId.value).then(
+        (data) => {
+          if ((data as AppointmentDTO)?.processId !== undefined) {
+            appointment.value = data;
 
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-
-            selectedService.value.providers = getProviders(
-              selectedService.value?.id,
-              null,
-              relations.value,
-              offices.value
+            selectedService.value = services.value.find(
+              (service) => service.id == appointment.value?.serviceId
             );
+            if (selectedService.value) {
+              selectedService.value.count = appointment.value.serviceCount;
 
-            const foundOffice = selectedService.value.providers.find(
-              (office) => office.id == appointment.value?.officeId
-            );
+              selectedService.value.providers = getProviders(
+                selectedService.value?.id,
+                null,
+                relations.value,
+                offices.value
+              );
 
-            if (foundOffice) {
-              selectedProvider.value = foundOffice;
-            }
+              const foundOffice = selectedService.value.providers.find(
+                (office) => office.id == appointment.value?.officeId
+              );
 
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(
-                    subRequest.id,
-                    null,
-                    relations.value,
-                    offices.value
-                  ),
-                  subRequestCount.count
+              if (foundOffice) {
+                selectedProvider.value = foundOffice;
+              }
+
+              if (appointment.value.subRequestCounts.length > 0) {
+                appointment.value.subRequestCounts.forEach(
+                  (subRequestCount) => {
+                    const subRequest = services.value.find(
+                      (service) => service.id == subRequestCount.id
+                    ) as Service;
+                    const subService = new SubService(
+                      subRequest.id,
+                      subRequest.name,
+                      subRequest.maxQuantity,
+                      getProviders(
+                        subRequest.id,
+                        null,
+                        relations.value,
+                        offices.value
+                      ),
+                      subRequestCount.count
+                    );
+                    if (
+                      selectedService.value &&
+                      !selectedService.value.subServices
+                    ) {
+                      selectedService.value.subServices = [];
+                    }
+                    selectedService.value?.subServices?.push(subService);
+                  }
                 );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
+              }
             }
+            loading.value = false;
+          } else {
+            loadingError.value = true;
           }
-          loading.value = false;
-        } else {
-          loadingError.value = true;
         }
-      });
+      );
     }
   });
 });
