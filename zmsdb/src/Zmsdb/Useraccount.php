@@ -153,7 +153,10 @@ class Useraccount extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 < $resolveReferences && $entity->toProperty()->id->get()) {
-                    $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
+                    $entity->departments = $this->readAssignedDepartmentList(
+                        $entity,
+                        $resolveReferences - 1
+                    );
                 }
                 $collection->addEntity($entity);
             }
