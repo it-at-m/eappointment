@@ -32,7 +32,10 @@ class ProcessDeleteQuick extends ProcessDelete
         $this->testProcess($workstation, $process);
 
         if ($process->hasId() && $process->scope && $process->status == 'confirmed') {
-            $this->cancelOverviewCalendarBooking($process);
+            (new \BO\Zmsdb\OverviewCalendar())->perform(
+                \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+                ['process_id' => (int)$process->id]
+            );
         }
         $process->status = 'blocked';
         $this->writeMails($request, $process);
@@ -67,10 +70,5 @@ class ProcessDeleteQuick extends ProcessDelete
             throw new Exception\Process\ProcessAlreadyCalled();
         }
         $process->testValid();
-    }
-
-    private function cancelOverviewCalendarBooking(\BO\Zmsentities\Process $process): void
-    {
-        (new \BO\Zmsdb\OverviewCalendar())->cancelByProcess((int)$process->id);
     }
 }
