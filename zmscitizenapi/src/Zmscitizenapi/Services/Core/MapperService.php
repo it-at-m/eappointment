@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
@@ -17,6 +16,9 @@ use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\MailTemplateHelper;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
@@ -29,7 +31,6 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Config;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -585,9 +586,10 @@ class MapperService
      * Generate ICS content for a process if it has appointments with time.
      *
      * @param Process $process The process to generate ICS content for
+     * @param mixed $templateProvider Optional template provider for database templates
      * @return string|null The ICS content or null if generation fails or not applicable
      */
-    private static function generateIcsContent(Process $process): ?string
+    private static function generateIcsContent(Process $process, $templateProvider = null): ?string
     {
         if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
             return null;
@@ -595,7 +597,16 @@ class MapperService
 
         try {
             $config = new Config();
-            $ics = Messaging::getMailIcs($process, $config, 'appointment');
+
+            if ($templateProvider === null && isset($process->scope) && isset($process->scope->provider)) {
+                $templateProvider = new MailTemplateHelper($process);
+                $templates = $templateProvider->getTemplates();
+                if (empty($templates)) {
+                    $templateProvider = null;
+                }
+            }
+
+            $ics = Messaging::getMailIcs($process, $config, 'appointment', null, false, $templateProvider);
             return $ics->getContent();
         } catch (\Exception $e) {
             // Log error but don't fail the process

@@ -4,6 +4,10 @@ define('MAINTENANCE_MODE_ENABLED', filter_var(getenv('MAINTENANCE_ENABLED'), FIL
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscitizenapi');
 
+// Security token for accessing mail template endpoints
+// This should be the same token used by other ZMS modules
+define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN') ?: 'your-secure-token-here');
+
 class App extends \BO\Zmscitizenapi\Application
 {
     /**
