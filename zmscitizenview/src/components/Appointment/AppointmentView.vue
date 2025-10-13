@@ -745,16 +745,10 @@ const nextBookAppointment = () => {
     isBookingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
     if (props.globalState.isLoggedIn) {
-      const baseUrl = window.location.origin + window.location.pathname;
-      window.location.href =
-        baseUrl +
-        "/#/appointment/confirm/" +
-        btoa(
-          JSON.stringify({
-            id: appointment.value.processId,
-            authKey: appointment.value.authKey,
-          })
-        );
+      nextConfirmAppointment({
+        id: appointment.value.processId,
+        authKey: appointment.value.authKey,
+      });
     } else {
       currentContext.value = "preconfirm";
       preconfirmAppointment(props.globalState, appointment.value)
@@ -921,6 +915,36 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
+function nextConfirmAppointment(appointmentData: AppointmentHash) {
+  confirmAppointment(props.globalState, appointmentData).then((data) => {
+    currentView.value = 5;
+
+    if ((data as AppointmentDTO).processId != undefined) {
+      confirmAppointmentSuccess.value = true;
+      clearContextErrors(errorStateMap.value);
+    } else {
+      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+
+      if (
+        firstErrorCode === "processNotPreconfirmedAnymore" ||
+        firstErrorCode === "appointmentNotFound"
+      ) {
+        handleApiError(
+          "preconfirmationExpired",
+          errorStateMap.value,
+          currentErrorData.value
+        );
+      } else {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+      }
+    }
+  });
+}
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -934,31 +958,7 @@ onMounted(() => {
       return;
     }
 
-    confirmAppointment(props.globalState, appointmentData).then((data) => {
-      if ((data as AppointmentDTO).processId != undefined) {
-        confirmAppointmentSuccess.value = true;
-        clearContextErrors(errorStateMap.value);
-      } else {
-        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-        if (
-          firstErrorCode === "processNotPreconfirmedAnymore" ||
-          firstErrorCode === "appointmentNotFound"
-        ) {
-          handleApiError(
-            "preconfirmationExpired",
-            errorStateMap.value,
-            currentErrorData.value
-          );
-        } else {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-        }
-      }
-    });
+    nextConfirmAppointment(appointmentData);
   }
 
   if (props.appointmentHash) {
