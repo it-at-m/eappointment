@@ -135,7 +135,7 @@ async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}
     if (fullReload) {
         calendarCache = json.data.days;
     } else {
-        mergeDelta(json.data.days, json.data.tombstones || []);
+        mergeDelta(json.data.days, json.data.deletedProcessIds || []);
     }
 
     currentRequest = {scopeIds, dateFrom, dateUntil};
@@ -206,16 +206,16 @@ async function fetchIncrementalUpdate() {
         const json = await res.json();
         calendarMeta = json.data.meta || calendarMeta;
         lastUpdateAfter = json.data.maxUpdatedAt || toMysql(new Date());
-        mergeDelta(json.data.days, json.data.tombstones || []);
+        mergeDelta(json.data.days, json.data.deletedProcessIds || []);
     }
 
     await fetchClosures({scopeIds, dateFrom, dateUntil});
     renderMultiDayCalendar(calendarCache);
 }
 
-function mergeDelta(deltaDays, tombstones = []) {
-    if (Array.isArray(tombstones) && tombstones.length) {
-        const dead = new Set(tombstones.map(Number));
+function mergeDelta(deltaDays, deletedProcessIds = []) {
+    if (Array.isArray(deletedProcessIds) && deletedProcessIds.length) {
+        const dead = new Set(deletedProcessIds.map(Number));
         for (const day of calendarCache) {
             for (const scope of day.scopes) {
                 if (!Array.isArray(scope.events)) continue;
