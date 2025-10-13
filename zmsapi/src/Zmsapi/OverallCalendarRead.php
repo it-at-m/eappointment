@@ -33,11 +33,11 @@ class OverallCalendarRead extends BaseController
             ? $bookingDb->readRange($scopeIds, $dateFrom, $untilExclusive)
             : $bookingDb->readRangeUpdated($scopeIds, $dateFrom, $untilExclusive, $updateAfter);
 
-        $tombstones = [];
+        $deletedProcessIds = [];
         if ($updateAfter !== null) {
             $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter) ?? [];
             $pidsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
-            $tombstones   = array_values(array_diff($changedPids, $pidsInWindow));
+            $deletedProcessIds   = array_values(array_diff($changedPids, $pidsInWindow));
         }
 
         $availByDayAndScope = $this->buildAvailabilityMap($scopeIds, $dateFrom, $dateUntil);
@@ -64,7 +64,7 @@ class OverallCalendarRead extends BaseController
             'days'         => array_values($days),
             'delta'        => $updateAfter !== null,
             'maxUpdatedAt' => $maxUpdated,
-            'tombstones'   => $tombstones,
+            'deletedProcessIds'   => $deletedProcessIds,
         ];
 
         $msg       = Response\Message::create($request);
