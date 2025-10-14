@@ -95,8 +95,8 @@ class ProcessConfirm extends BaseController
             $scopeId,
             (int) $process->id,
             'confirmed',
-            $startsAt->format('Y-m-d H:i:s'),
-            $endsAt->format('Y-m-d H:i:s')
+            $startsAt,
+            $endsAt
         );
     }
 
