@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Source as Entity;
 use BO\Zmsentities\Collection\SourceList as Collection;
@@ -21,8 +22,17 @@ class Source extends Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function readEntity($sourceName, $resolveReferences = 0)
+    public function readEntity($sourceName, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "source-$sourceName-$resolveReferences";
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $query = new Query\Source(Query\Base::SELECT);
         $query
             ->addEntityMapping()
@@ -33,6 +43,8 @@ class Source extends Base
             return null;
         }
         $entity = $this->readResolvedReferences($entity, $resolveReferences);
+
+        App::$cache->set($cacheKey, $entity);
         return $entity;
     }
 

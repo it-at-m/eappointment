@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Config as Entity;
 
 class Config extends Base
@@ -10,15 +11,28 @@ class Config extends Base
      *
      * @return \BO\Zmsentities\Config
      */
-    public function readEntity()
+    public function readEntity($disableCache = false)
     {
+        $cacheKey = "config";
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $query = Query\Config::QUERY_SELECT;
         $config = $this->fetchData($query);
+
+        App::$cache->set($cacheKey, $config);
+
         return $config;
     }
 
     public function updateEntity(Entity $config)
     {
+        App::$cache->delete('config');
+
         $compareEntity = $this->readEntity();
         $result = false;
         $query = new Query\Config(Query\Base::REPLACE);

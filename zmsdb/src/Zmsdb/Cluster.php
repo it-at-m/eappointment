@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Cluster as Entity;
 use BO\Zmsentities\Collection\ClusterList as Collection;
 
@@ -23,8 +24,16 @@ class Cluster extends Base
     *
     * @return Resource Entity
     */
-    public function readEntity($itemId, $resolveReferences = 0)
+    public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "cluster-$itemId-$resolveReferences";
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $query = new Query\Cluster(Query\Base::SELECT);
         $query
             ->addEntityMapping()
@@ -34,7 +43,11 @@ class Cluster extends Base
         if (! $cluster->hasId()) {
             return null;
         }
-        return $this->readResolvedReferences($cluster, $resolveReferences);
+
+        $cluster = $this->readResolvedReferences($cluster, $resolveReferences);
+        App::$cache->set($cacheKey, $cluster);
+
+        return $cluster;
     }
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)

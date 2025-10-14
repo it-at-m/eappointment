@@ -2,13 +2,23 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Provider as Entity;
 use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId, $resolveReferences = 0)
+    public function readEntity($source, $providerId, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "provider-$source-$providerId-$resolveReferences";
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query
@@ -18,6 +28,7 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
+        App::$cache->set($cacheKey, $provider);
         return $provider;
     }
 

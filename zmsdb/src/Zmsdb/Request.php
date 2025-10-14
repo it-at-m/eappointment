@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Request as Entity;
 use BO\Zmsentities\Collection\RequestList as Collection;
 
@@ -11,8 +12,17 @@ use BO\Zmsentities\Collection\RequestList as Collection;
  */
 class Request extends Base
 {
-    public function readEntity($source, $requestId, $resolveReferences = 0)
+    public function readEntity($source, $requestId, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "request-$source-$requestId-$resolveReferences";
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
@@ -25,6 +35,9 @@ class Request extends Base
         if (! $request->hasId()) {
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
+
+        App::$cache->set($cacheKey, $request);
+
         return $request;
     }
 
