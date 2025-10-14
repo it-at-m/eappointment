@@ -33,7 +33,7 @@ class Config extends Base
     {
         App::$cache->delete('config');
 
-        $compareEntity = $this->readEntity();
+        $compareEntity = $this->readEntity(true);
         $result = false;
         $query = new Query\Config(Query\Base::REPLACE);
         foreach ($config as $key => $item) {
@@ -57,7 +57,7 @@ class Config extends Base
                 $result = $this->writeItem($query);
             }
         }
-        return ($result) ? $this->readEntity() : null;
+        return ($result) ? $this->readEntity(true) : null;
     }
 
     public function readProperty($property, $forUpdate = false)

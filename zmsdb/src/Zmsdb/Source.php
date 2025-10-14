@@ -117,7 +117,7 @@ class Source extends Base
         if ($this->writeItem($query)) {
             $this->writeInsertRelations($entity);
         }
-        return $this->readEntity($entity->getSource(), $resolveReferences);
+        return $this->readEntity($entity->getSource(), $resolveReferences, true);
     }
 
     /**

@@ -490,7 +490,7 @@ class Scope extends Base
         $values = $query->setEmergencyEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($scopeId);
+        return $this->readEntity($scopeId, 0, true);
     }
 
     /**
