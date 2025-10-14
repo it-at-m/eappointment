@@ -25,7 +25,6 @@
       :label="t('firstName')"
       max="50"
       required
-      :aria-required="true"
     />
     <muc-input
       id="lastname"
@@ -34,7 +33,6 @@
       :label="t('lastName')"
       max="50"
       required
-      :aria-required="true"
     />
     <muc-input
       id="mailaddress"
@@ -43,7 +41,6 @@
       :label="t('mailAddress')"
       max="50"
       required
-      :aria-required="true"
     />
     <muc-input
       v-if="
@@ -56,7 +53,6 @@
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
-      :aria-required="selectedProvider.scope.telephoneRequired"
       max="50"
       placeholder="+491511234567"
     />
@@ -71,7 +67,6 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :aria-required="selectedProvider.scope.customTextfieldRequired"
       :maxlength="100"
     />
     <muc-text-area
@@ -85,7 +80,6 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :aria-required="selectedProvider.scope.customTextfield2Required"
       :maxlength="100"
     />
   </form>
