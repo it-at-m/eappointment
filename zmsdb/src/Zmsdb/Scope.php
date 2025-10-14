@@ -436,7 +436,7 @@ class Scope extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->replacePreferences($entity);
-        return $this->readEntity($scopeId, $resolveReferences);
+        return $this->readEntity($scopeId, $resolveReferences, true);
     }
 
     public function replacePreferences(\BO\Zmsentities\Scope $entity)
