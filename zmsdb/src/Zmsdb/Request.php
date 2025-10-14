@@ -183,7 +183,7 @@ class Request extends Base
             'data' => json_encode($request)
         ]);
         $this->writeItem($query);
-        return $this->readEntity($source, $request['id']);
+        return $this->readEntity($source, $request['id'], 0, true);
     }
 
     public function writeDeleteEntity($requestId, $source)

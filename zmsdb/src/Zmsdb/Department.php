@@ -213,7 +213,7 @@ class Department extends Base
             );
         }
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
-        return $this->readEntity($departmentId);
+        return $this->readEntity($departmentId, 0, true);
     }
 
     /**

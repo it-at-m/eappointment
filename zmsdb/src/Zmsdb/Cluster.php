@@ -364,7 +364,7 @@ class Cluster extends Base
         if ($entity->toProperty()->scopes->isAvailable()) {
             $this->writeAssignedScopes($lastInsertId, $entity->scopes);
         }
-        return $this->readEntity($lastInsertId, 1);
+        return $this->readEntity($lastInsertId, 1, 1);
     }
 
     /**
@@ -385,7 +385,7 @@ class Cluster extends Base
         if ($entity->toProperty()->scopes->isAvailable()) {
             $this->writeAssignedScopes($clusterId, $entity->scopes);
         }
-        return $this->readEntity($clusterId, 1);
+        return $this->readEntity($clusterId, 1, 1);
     }
 
     /**

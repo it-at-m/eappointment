@@ -119,7 +119,7 @@ class ScopeTest extends Base
         $entity = $query->readEntity(141, 1);
         $entity->status['emergency']['acceptedByWorkstation'] = '123';
         $entity = $query->updateEmergency(141, $entity);
-        $entity = $query->readEntity(141, 1);
+        $entity = $query->readEntity(141, 1, true);
         $this->assertEquals($entity->status['emergency']['acceptedByWorkstation'], '123');
     }
 
