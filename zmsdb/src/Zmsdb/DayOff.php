@@ -65,16 +65,17 @@ class DayOff extends Base
         return clone static::$commonList;
     }
 
-    public function readByScopeId($scopeId = 0)
+    public function readByScopeId($scopeId = 0, $disableCache = false)
     {
         $cacheKey = "dayOffsByScope-$scopeId";
 
         $dayOffListCommon = $this->readCommon();
 
-        $data = App::$cache->get($cacheKey);
-
-        if (!empty($data)) {
-            return $dayOffListCommon->addList($data);
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $dayOffListCommon->addList($data);
+            }
         }
 
         $dayOffList = new Collection();

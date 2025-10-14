@@ -27,9 +27,9 @@ class Cluster extends Base
     public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
-        if (!$disableCache) {
+        if (!$disableCache && App::$cache) {
             $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
+            if (!empty($data)) {
                 return $data;
             }
         }
@@ -44,15 +44,18 @@ class Cluster extends Base
             return null;
         }
 
-        $cluster = $this->readResolvedReferences($cluster, $resolveReferences);
+        $cluster = $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
         App::$cache->set($cacheKey, $cluster);
 
         return $cluster;
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
-    {
-        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences,
+        $disableCache = false
+    ) {
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences, $disableCache);
         return $entity;
     }
 

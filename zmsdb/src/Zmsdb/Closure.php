@@ -9,13 +9,15 @@ use DateTime;
 
 class Closure extends Base
 {
-    public function readByScopeId($scopeId = 0)
+    public function readByScopeId($scopeId = 0, $disableCache = false)
     {
         $cacheKey = "closuresByScope-$scopeId";
 
-        $data = App::$cache->get($cacheKey);
-        if (App::$cache && !empty($data)) {
-            return $data;
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
         }
 
         $closureList = new Collection();
