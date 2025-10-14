@@ -8,7 +8,6 @@
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-detail-view
-        v-if="globalState.isLoggedIn"
         :global-state="globalState"
         :appointment-overview-url="appointmentOverviewUrl"
         :reschedule-appointment-url="rescheduleAppointmentUrl"

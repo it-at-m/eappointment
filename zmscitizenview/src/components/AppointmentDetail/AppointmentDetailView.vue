@@ -295,7 +295,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -443,11 +443,7 @@ const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
 
-onMounted(() => {
-  loading.value = true;
-  checksMobile();
-  window.addEventListener("resize", checksMobile);
-
+const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
   appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
   fetchServicesAndProviders(
@@ -535,6 +531,20 @@ onMounted(() => {
       );
     }
   });
+};
+
+watch(
+  () => props.globalState.accessToken,
+  () => {
+    loadAppointment();
+  }
+);
+
+onMounted(() => {
+  loading.value = true;
+  checksMobile();
+  window.addEventListener("resize", checksMobile);
+  loadAppointment();
 });
 </script>
 
