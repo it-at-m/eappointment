@@ -69,12 +69,15 @@ class DayOff extends Base
     {
         $cacheKey = "dayOffsByScope-$scopeId";
 
+        $dayOffListCommon = $this->readCommon();
+
         $data = App::$cache->get($cacheKey);
-        if (App::$cache && !empty($data)) {
-            return $data;
+
+        if (!empty($data)) {
+            return $dayOffListCommon->addList($data);
         }
 
-        $dayOffList = $this->readCommon();
+        $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionScopeId($scopeId);
@@ -89,7 +92,7 @@ class DayOff extends Base
 
         App::$cache->set($cacheKey, $dayOffList);
 
-        return $dayOffList;
+        return $dayOffListCommon->addList($dayOffList);
     }
 
     public function readByYear($year)
