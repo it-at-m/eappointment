@@ -104,8 +104,8 @@ class OverallCalendarReadTest extends Base
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($json['data']['delta']);
-        $this->assertArrayHasKey('tombstones', $json['data']);
-        $this->assertIsArray($json['data']['tombstones']);
+        $this->assertArrayHasKey('deletedProcessIds', $json['data']);
+        $this->assertIsArray($json['data']['deletedProcessIds']);
 
         $this->assertNotEmpty($json['data']['days']);
         $day = $json['data']['days'][0];
