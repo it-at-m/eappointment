@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS `overview_calendar` (
     KEY `idx_updated`       (`updated_at`),
     KEY `idx_status`        (`status`),
     KEY `idx_process`       (process_id),
+    KEY `idx_scope_status_time` (`scope_id`, `status`, `starts_at`, `ends_at`),
+    KEY `idx_scope_time` (`scope_id`, `starts_at`, `ends_at`),
+    KEY `idx_scope_updated` (`scope_id`, `updated_at`),
+    KEY `idx_ends_at` (`ends_at`),
 
     CONSTRAINT `fk_ocb_scope`
     FOREIGN KEY (`scope_id`)
