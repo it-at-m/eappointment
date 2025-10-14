@@ -9,14 +9,12 @@ use Psr\SimpleCache\CacheInterface;
 class ProcessListByClusterAndDateTest extends Base
 {
     protected $classname = "ProcessListByClusterAndDate";
-    protected CacheInterface $cacheMock;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->cacheMock = $this->createMock(CacheInterface::class);
-        \App::$cache = $this->cacheMock;
+        \App::$cache = null;
     }
 
     public function testRendering()
