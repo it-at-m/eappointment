@@ -22,17 +22,24 @@ class Availability extends Base implements Interfaces\ResolveReferences
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
-            $availability = $this->readResolvedReferences($availability, $resolveReferences);
+            $availability = $this->readResolvedReferences($availability, $resolveReferences, $preferCache);
             self::$cache[$cacheKey] = $availability;
         }
         return clone self::$cache[$cacheKey];
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
-    {
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences,
+        $preferCache = false
+    ) {
         if (1 <= $resolveReferences && $entity->hasId()) {
             if (isset($entity->scope['id'])) {
-                $entity['scope'] = (new Scope())->readEntity($entity->scope['id'], $resolveReferences - 1);
+                $entity['scope'] = (new Scope())->readEntity(
+                    $entity->scope['id'],
+                    $resolveReferences - 1,
+                    !$preferCache
+                );
             }
         }
         return $entity;

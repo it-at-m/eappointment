@@ -160,6 +160,7 @@ class DayOff extends Base
             );
             $this->writeItem($query);
         }
+
         return ($year) ? $this->readCommonByYear($year) : $dayoffList;
     }
 
