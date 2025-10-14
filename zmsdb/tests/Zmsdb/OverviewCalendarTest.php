@@ -33,7 +33,7 @@ class OverviewCalendarTest extends Base
         $start = '2016-05-27 09:30:00';
         $end   = '2016-05-27 09:35:00';
 
-        $calendar->insert(self::SCOPE1, $pid, 'confirmed', $start, $end);
+        $calendar->insert(self::SCOPE1, $pid, 'confirmed', new DateTimeImmutable($start), new DateTimeImmutable($end));
 
         $row = $this->fetchByPid($pid);
         $this->assertNotNull($row, 'Row must exist after insert');
@@ -57,15 +57,21 @@ class OverviewCalendarTest extends Base
         $start = '2016-05-27 09:35:00';
         $end   = '2016-05-27 09:40:00';
 
-        $calendar->insert(self::SCOPE1, $pid, 'confirmed', $start, $end);
+        $calendar->insert(self::SCOPE1, $pid, 'confirmed', new DateTimeImmutable($start), new DateTimeImmutable($end));
 
-        $ok1 = $calendar->cancelByProcess($pid);
+        $ok1 = (bool)$calendar->perform(
+            \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+            ['process_id' => $pid]
+        );
         $this->assertTrue($ok1, 'first cancel should update 1+ row(s)');
 
         $row = $this->fetchByPid($pid);
         $this->assertSame('cancelled', $row['status']);
 
-        $ok2 = $calendar->cancelByProcess($pid);
+        $ok2 = (bool)$calendar->perform(
+            \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+            ['process_id' => $pid]
+        );
         $this->assertIsBool($ok2);
         $row2 = $this->fetchByPid($pid);
         $this->assertSame('cancelled', $row2['status'], 'status remains cancelled');
@@ -83,18 +89,37 @@ class OverviewCalendarTest extends Base
         $startC  = '2025-05-14 10:00:00';
         $endC    = '2025-05-14 10:30:00';
 
-        $calendar->insert(self::SCOPE2, $pid, 'confirmed', $startA, $endA);
+        $calendar->insert(
+            self::SCOPE2,
+            $pid,
+            'confirmed',
+            new DateTimeImmutable($startA),
+            new DateTimeImmutable($endA)
+        );
 
-        $calendar->updateByProcess($pid, self::SCOPE2, $startB, $endB);
+        $calendar->updateByProcess(
+            $pid,
+            self::SCOPE2,
+            new DateTimeImmutable($startB),
+            new DateTimeImmutable($endB)
+        );
 
         $row = $this->fetchByPid($pid);
         $this->assertSame($startB, $row['starts_at']);
         $this->assertSame($endB,   $row['ends_at']);
         $this->assertSame('confirmed', $row['status']);
 
-        $calendar->cancelByProcess($pid);
+        $calendar->perform(
+            \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+            ['process_id' => $pid]
+        );
 
-        $calendar->updateByProcess($pid, self::SCOPE2, $startC, $endC);
+        $calendar->updateByProcess(
+            $pid,
+            self::SCOPE2,
+            new DateTimeImmutable($startC),
+            new DateTimeImmutable($endC)
+        );
 
         $row2 = $this->fetchByPid($pid);
         $this->assertSame($startB, $row2['starts_at']);
@@ -120,8 +145,20 @@ class OverviewCalendarTest extends Base
         $pidA = 910001;
         $pidB = 910002;
 
-        $calendar->insert(self::SCOPE2, $pidA, 'confirmed', '2025-05-14 09:10:00', '2025-05-14 09:20:00');
-        $calendar->insert(self::SCOPE2, $pidB, 'confirmed', '2025-05-14 09:15:00', '2025-05-14 09:25:00');
+        $calendar->insert(
+            self::SCOPE2,
+            $pidA,
+            'confirmed',
+            new DateTimeImmutable('2025-05-14 09:10:00'),
+            new DateTimeImmutable('2025-05-14 09:20:00')
+        );
+        $calendar->insert(
+            self::SCOPE2,
+            $pidB,
+            'confirmed',
+            new DateTimeImmutable('2025-05-14 09:15:00'),
+            new DateTimeImmutable('2025-05-14 09:25:00')
+        );
 
         $updatedAfter = '2000-01-01 00:00:00';
         $range = $calendar->readRangeUpdated(
@@ -135,7 +172,10 @@ class OverviewCalendarTest extends Base
         $this->assertContains($pidA, $pids);
         $this->assertContains($pidB, $pids);
 
-        $calendar->cancelByProcess($pidA);
+        $calendar->perform(
+            \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+            ['process_id' => $pidA]
+        );
 
         $changed = $calendar->readChangedProcessIdsSince([self::SCOPE2], $updatedAfter);
         $this->assertContains($pidA, $changed);
@@ -160,7 +200,13 @@ class OverviewCalendarTest extends Base
         $cal = new OverviewCalendar();
 
         $pid = 990001;
-        $cal->insert(self::SCOPE1, $pid, 'confirmed', '2010-01-01 00:00:00', '2010-01-01 00:05:00');
+        $cal->insert(
+            self::SCOPE1,
+            $pid,
+            'confirmed',
+            new DateTimeImmutable('2010-01-01 00:00:00'),
+            new DateTimeImmutable('2010-01-01 00:05:00')
+        );
 
         $cntBefore = $this->fetchCount('WHERE process_id = ?', [$pid]);
         $this->assertSame(1, $cntBefore, 'row exists before delete');
