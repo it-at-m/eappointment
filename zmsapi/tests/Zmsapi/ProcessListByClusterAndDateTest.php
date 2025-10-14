@@ -10,7 +10,7 @@ class ProcessListByClusterAndDateTest extends Base
 {
     protected $classname = "ProcessListByClusterAndDate";
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
