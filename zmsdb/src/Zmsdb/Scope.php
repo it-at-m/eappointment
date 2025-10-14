@@ -46,18 +46,20 @@ class Scope extends Base
 
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $scope,
-        $resolveReferences
+        $resolveReferences,
+        $disableCache = false
     ) {
         if (0 < $resolveReferences) {
-            $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
-            $scope['closure'] = (new Closure())->readByScopeId($scope->id);
+            $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id, $disableCache);
+            $scope['closure'] = (new Closure())->readByScopeId($scope->id, $disableCache);
         }
         return $scope;
     }
 
     public function readByClusterId(
         $clusterId,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        $disableCache = false
     ) {
         $scopeList = new Collection();
         if ($resolveReferences > 0) {
@@ -83,7 +85,11 @@ class Scope extends Base
                     );
                     $scopeList->addEntity($entity);
                 } else {
-                    $scopeList->addEntity($this->readResolvedReferences($entity, $resolveReferences - 1));
+                    $scopeList->addEntity($this->readResolvedReferences(
+                        $entity,
+                        $resolveReferences - 1,
+                        $disableCache
+                    ));
                 }
             }
         }
@@ -119,7 +125,11 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
+                        $entity = $this->readResolvedReferences(
+                            $entity,
+                            $resolveReferences - 1,
+                            $disableCache
+                        );
                         $scopeList->addEntity($entity);
                     }
                 }
