@@ -36,8 +36,8 @@ class OverallCalendarRead extends BaseController
         $deletedProcessIds = [];
         if ($updateAfter !== null) {
             $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter) ?? [];
-            $pidsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
-            $deletedProcessIds   = array_values(array_diff($changedPids, $pidsInWindow));
+            $processIdsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
+            $deletedProcessIds   = array_values(array_diff($changedPids, $processIdsInWindow));
         }
 
         $availByDayAndScope = $this->buildAvailabilityMap($scopeIds, $dateFrom, $dateUntil);
@@ -94,15 +94,15 @@ class OverallCalendarRead extends BaseController
 
                 $intervals = [];
 
-                foreach ($availForDay as $a) {
-                    $start = substr((string)$a->startTime, 0, 5);
-                    $end = substr((string)$a->endTime, 0, 5);
+                foreach ($availForDay as $availabilityDay) {
+                    $start = substr((string)$availabilityDay->startTime, 0, 5);
+                    $end = substr((string)$availabilityDay->endTime, 0, 5);
                     if (!$start || !$end || $start >= $end) {
                         continue;
                     }
 
-                    $capacity = array_key_exists('intern', $a->workstationCount)
-                        ? (int)$a->workstationCount['intern']
+                    $capacity = array_key_exists('intern', $availabilityDay->workstationCount)
+                        ? (int)$availabilityDay->workstationCount['intern']
                         : null;
 
                     $intervals[] = [
@@ -159,37 +159,37 @@ class OverallCalendarRead extends BaseController
             $ymd = $cursor->format('Y-m-d');
             $days[$ymd] = ['date' => $ymd, 'scopes' => []];
 
-            foreach ($scopeIds as $sid) {
-                $intervals = $availByDayAndScope[$ymd][$sid]['intervals'] ?? [];
+            foreach ($scopeIds as $scopeId) {
+                $intervals = $availByDayAndScope[$ymd][$scopeId]['intervals'] ?? [];
 
                 if ($intervals) {
-                    foreach ($intervals as $iv) {
-                        $globalMin = $this->minHHMM($globalMin, $iv['start']);
-                        $globalMax = $this->maxHHMM($globalMax, $iv['end']);
+                    foreach ($intervals as $interval) {
+                        $globalMin = $this->minHHMM($globalMin, $interval['start']);
+                        $globalMax = $this->maxHHMM($globalMax, $interval['end']);
                     }
                 }
 
-                $days[$ymd]['scopes'][$sid] = [
-                    'id' => $sid,
+                $days[$ymd]['scopes'][$scopeId] = [
+                    'id' => $scopeId,
                     'intervals' => $intervals,
                     'events' => [],
                 ];
             }
         }
 
-        foreach ($bookingRows as $r) {
-            $dKey = (new \DateTimeImmutable($r['starts_at']))->format('Y-m-d');
+        foreach ($bookingRows as $bookingRow) {
+            $dKey = (new \DateTimeImmutable($bookingRow['starts_at']))->format('Y-m-d');
 
-            $sid = (int)$r['scope_id'];
-            $start = substr($r['starts_at'], 11, 5);
-            $end = substr($r['ends_at'], 11, 5);
+            $sid = (int)$bookingRow['scope_id'];
+            $start = substr($bookingRow['starts_at'], 11, 5);
+            $end = substr($bookingRow['ends_at'], 11, 5);
 
             $days[$dKey]['scopes'][$sid]['events'][] = [
-                'processId' => (int)$r['process_id'],
+                'processId' => (int)$bookingRow['process_id'],
                 'start' => $start,
                 'end' => $end,
-                'status' => $r['status'],
-                'updatedAt' => (string)$r['updated_at'],
+                'status' => $bookingRow['status'],
+                'updatedAt' => (string)$bookingRow['updated_at'],
             ];
 
             $globalMin = $this->minHHMM($globalMin, $start);

@@ -43,12 +43,12 @@ class Scope extends Base
 
         $result  = [];
         $missing = [];
-        foreach ($scopeIds as $id) {
-            $cacheKey = "{$id}-{$resolveReferences}";
+        foreach ($scopeIds as $scopeId) {
+            $cacheKey = "{$scopeId}-{$resolveReferences}";
             if (!$disableCache && array_key_exists($cacheKey, self::$cache)) {
-                $result[$id] = self::$cache[$cacheKey];
+                $result[$scopeId] = self::$cache[$cacheKey];
             } else {
-                $missing[] = $id;
+                $missing[] = $scopeId;
             }
         }
 
@@ -64,9 +64,9 @@ class Scope extends Base
                 if (!$entity->hasId()) {
                     continue;
                 }
-                $e = $this->readResolvedReferences($entity, $resolveReferences);
-                $result[$entity->id] = $e;
-                self::$cache["{$entity->id}-{$resolveReferences}"] = $e;
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $result[$entity->id] = $entity;
+                self::$cache["{$entity->id}-{$resolveReferences}"] = $entity;
             }
         }
 
