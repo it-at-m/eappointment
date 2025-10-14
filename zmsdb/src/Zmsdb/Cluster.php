@@ -27,11 +27,9 @@ class Cluster extends Base
     public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
-        if (!$disableCache && App::$cache) {
-            $data = App::$cache->get($cacheKey);
-            if (!empty($data)) {
-                return $data;
-            }
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $query = new Query\Cluster(Query\Base::SELECT);
@@ -45,7 +43,10 @@ class Cluster extends Base
         }
 
         $cluster = $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
-        App::$cache->set($cacheKey, $cluster);
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $cluster);
+        }
 
         return $cluster;
     }

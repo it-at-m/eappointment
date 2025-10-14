@@ -26,11 +26,8 @@ class Source extends Base
     {
         $cacheKey = "source-$sourceName-$resolveReferences";
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $query = new Query\Source(Query\Base::SELECT);
@@ -44,7 +41,10 @@ class Source extends Base
         }
         $entity = $this->readResolvedReferences($entity, $resolveReferences);
 
-        App::$cache->set($cacheKey, $entity);
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $entity);
+        }
+
         return $entity;
     }
 

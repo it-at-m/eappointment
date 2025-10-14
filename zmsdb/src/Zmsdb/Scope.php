@@ -22,11 +22,8 @@ class Scope extends Base
     {
         $cacheKey = "scope-$scopeId-$resolveReferences";
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         if ($disableCache || ! array_key_exists($cacheKey, self::$cache)) {
@@ -39,7 +36,10 @@ class Scope extends Base
                 return null;
             }
             self::$cache[$cacheKey] = $this->readResolvedReferences($scope, $resolveReferences);
-            App::$cache->set($cacheKey, self::$cache[$cacheKey]);
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, self::$cache[$cacheKey]);
+            }
         }
         return self::$cache[$cacheKey];
     }
@@ -100,11 +100,8 @@ class Scope extends Base
     {
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $scopeList = new Collection();
@@ -136,7 +133,9 @@ class Scope extends Base
             }
         }
 
-        App::$cache->set($cacheKey, $scopeList);
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $scopeList);
+        }
 
         return $scopeList;
     }

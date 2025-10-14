@@ -26,11 +26,8 @@ class Department extends Base
             return clone self::$departmentCache[$cacheKey];
         }
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $query = new Query\Department(Query\Base::SELECT);
@@ -42,7 +39,11 @@ class Department extends Base
             $department = $this->readResolvedReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$cacheKey] = $department;
-            App::$cache->set($cacheKey, self::$departmentCache[$cacheKey]);
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, self::$departmentCache[$cacheKey]);
+            }
+
             return clone self::$departmentCache[$cacheKey];
         }
         return null;

@@ -14,17 +14,17 @@ class Config extends Base
     public function readEntity($disableCache = false)
     {
         $cacheKey = "config";
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $query = Query\Config::QUERY_SELECT;
         $config = $this->fetchData($query);
 
-        App::$cache->set($cacheKey, $config);
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $config);
+        }
 
         return $config;
     }
