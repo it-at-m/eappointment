@@ -12,11 +12,8 @@ class Provider extends Base
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $this->testSource($source);
@@ -28,7 +25,11 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-        App::$cache->set($cacheKey, $provider);
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $provider);
+        }
+
         return $provider;
     }
 

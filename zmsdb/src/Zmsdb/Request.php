@@ -16,11 +16,8 @@ class Request extends Base
     {
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
-        if (!$disableCache) {
-            $data = App::$cache->get($cacheKey);
-            if (App::$cache && !empty($data)) {
-                return $data;
-            }
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
         }
 
         $this->testSource($source);
@@ -36,7 +33,9 @@ class Request extends Base
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
 
-        App::$cache->set($cacheKey, $request);
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $request);
+        }
 
         return $request;
     }
