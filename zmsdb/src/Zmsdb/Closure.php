@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Closure as Entity;
 use BO\Zmsentities\Collection\ClosureList as Collection;
 use DateTime;
@@ -10,6 +11,13 @@ class Closure extends Base
 {
     public function readByScopeId($scopeId = 0)
     {
+        $cacheKey = "closuresByScope-$scopeId";
+
+        $data = App::$cache->get($cacheKey);
+        if (App::$cache && !empty($data)) {
+            return $data;
+        }
+
         $closureList = new Collection();
         $query = new Query\Closure(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -22,6 +30,9 @@ class Closure extends Base
                 }
             }
         }
+
+        App::$cache->set($cacheKey, $closureList);
+
         return $closureList;
     }
 

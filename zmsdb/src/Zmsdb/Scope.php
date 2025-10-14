@@ -4,6 +4,7 @@ namespace BO\Zmsdb;
 
 use BO\Zmsentities\Scope as Entity;
 use BO\Zmsentities\Collection\ScopeList as Collection;
+use BO\Zmsdb\Application as App;
 
 /**
  *
@@ -19,7 +20,15 @@ class Scope extends Base
 
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
-        $cacheKey = "$scopeId-$resolveReferences";
+        $cacheKey = "scope-$scopeId-$resolveReferences";
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         if ($disableCache || ! array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
@@ -30,6 +39,7 @@ class Scope extends Base
                 return null;
             }
             self::$cache[$cacheKey] = $this->readResolvedReferences($scope, $resolveReferences);
+            App::$cache->set($cacheKey, self::$cache[$cacheKey]);
         }
         return self::$cache[$cacheKey];
     }
@@ -80,8 +90,17 @@ class Scope extends Base
         return $scopeList;
     }
 
-    public function readByProviderId($providerId, $resolveReferences = 0)
+    public function readByProviderId($providerId, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
+
+        if (!$disableCache) {
+            $data = App::$cache->get($cacheKey);
+            if (App::$cache && !empty($data)) {
+                return $data;
+            }
+        }
+
         $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -106,6 +125,9 @@ class Scope extends Base
                 }
             }
         }
+
+        App::$cache->set($cacheKey, $scopeList);
+
         return $scopeList;
     }
 
