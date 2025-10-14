@@ -9,7 +9,7 @@ use DateTimeInterface;
 
 class OverviewCalendar extends Base
 {
-    private function fmtDateTime(\DateTimeInterface|string $dt): string
+    private function formatDateTime(\DateTimeInterface|string $dt): string
     {
         return ($dt instanceof \DateTimeInterface)
             ? $dt->format('Y-m-d H:i:s')
@@ -27,8 +27,8 @@ class OverviewCalendar extends Base
             'scope_id' => $scopeId,
             'process_id' => $processId,
             'status' => $status,
-            'starts_at' => $this->fmtDateTime($startsAt),
-            'ends_at' => $this->fmtDateTime($endsAt),
+            'starts_at' => $this->formatDateTime($startsAt),
+            'ends_at' => $this->formatDateTime($endsAt),
         ]);
     }
 
@@ -41,8 +41,8 @@ class OverviewCalendar extends Base
         return (bool)$this->perform(\BO\Zmsdb\Query\OverviewCalendar::UPDATE_BY_PROCESS, [
             'process_id' => $processId,
             'scope_id' => $scopeId,
-            'starts_at' => $this->fmtDateTime($startsAt),
-            'ends_at' => $this->fmtDateTime($endsAt),
+            'starts_at' => $this->formatDateTime($startsAt),
+            'ends_at' => $this->formatDateTime($endsAt),
         ]);
     }
 
@@ -116,7 +116,7 @@ class OverviewCalendar extends Base
     public function deleteOlderThan(\DateTimeInterface|string $threshold): bool
     {
         return (bool)$this->perform(Calender::DELETE_ALL_BEFORE_END, [
-            'threshold' => $this->fmtDateTime($threshold),
+            'threshold' => $this->formatDateTime($threshold),
         ]);
     }
 }
