@@ -20,8 +20,8 @@ class OverviewCalendar extends Base
         int $scopeId,
         int $processId,
         string $status,
-        \DateTimeInterface|string $startsAt,
-        \DateTimeInterface|string $endsAt
+        \DateTimeInterface $startsAt,
+        \DateTimeInterface $endsAt
     ): void {
         $this->perform(Calender::INSERT_ONE, [
             'scope_id' => $scopeId,
@@ -35,8 +35,8 @@ class OverviewCalendar extends Base
     public function updateByProcess(
         int $processId,
         int $scopeId,
-        \DateTimeInterface|string $startsAt,
-        \DateTimeInterface|string $endsAt
+        \DateTimeInterface $startsAt,
+        \DateTimeInterface $endsAt
     ): bool {
         return (bool)$this->perform(\BO\Zmsdb\Query\OverviewCalendar::UPDATE_BY_PROCESS, [
             'process_id' => $processId,
