@@ -238,7 +238,7 @@ class Scope extends Base
         return $requestList;
     }
 
-    public function readList($resolveReferences = 0, $disableCache)
+    public function readList($resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "scopeReadList-$resolveReferences";
 
