@@ -99,7 +99,7 @@ class Provider extends Base
 
         $this->removeCache($entity);
 
-        return $this->readEntity($entity->getSource(), $entity->getId());
+        return $this->readEntity($entity->getSource(), $entity->getId(), 0, true);
     }
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
