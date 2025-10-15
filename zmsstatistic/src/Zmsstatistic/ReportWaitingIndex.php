@@ -37,7 +37,7 @@ class ReportWaitingIndex extends BaseController
         $scopeIds = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
 
         $waitingPeriod = $reportWaitingService->getWaitingPeriod($this->workstation->scope['id']);
-        
+
         $dateRange = $reportHelper->extractDateRange(
             $validator->getParameter('from')->isString()->getValue(),
             $validator->getParameter('to')->isString()->getValue()
