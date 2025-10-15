@@ -651,7 +651,7 @@ class ReportWaitingScopeTest extends Base
         $response = $this->render(['period' => '2016'], ['type' => 'csv'], []);
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString('"2016";"Januar";"Februar";"März"', (string) $response->getBody());
+        $this->assertStringContainsString('"Max.";"Januar";"Februar";"März"', (string) $response->getBody());
         $this->assertStringContainsString('Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"384:00";"506:00";"532:00"', (string) $response->getBody());
     }
 }
