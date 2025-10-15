@@ -174,7 +174,7 @@ class Provider extends Base
 
     public function removeCache(Entity $provider)
     {
-        if (!App::$cache) {
+        if (!App::$cache || !isset($department->id)) {
             return;
         }
 

@@ -412,7 +412,7 @@ class Department extends Base
 
     public function removeCache($department)
     {
-        if (!App::$cache) {
+        if (!App::$cache || !isset($department->id)) {
             return;
         }
 
