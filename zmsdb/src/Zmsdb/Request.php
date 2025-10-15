@@ -203,13 +203,9 @@ class Request extends Base
 
     public function writeDeleteEntity($requestId, $source)
     {
-        $request = $this->readEntity($source, $requestId);
-
         $query = new Query\Request(Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
         $query->addConditionRequestSource($source);
-
-        $this->removeCache($request);
 
         return $this->deleteItem($query);
     }
