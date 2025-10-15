@@ -27,25 +27,26 @@ class Source extends Base
         $cacheKey = "source-$sourceName-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            return App::$cache->get($cacheKey);
+            $entity = App::$cache->get($cacheKey);
         }
 
-        $query = new Query\Source(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionSource($sourceName);
-        $entity = $this->fetchOne($query, new Entity());
-        if (! $entity->hasId()) {
-            return null;
-        }
-        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+        if (empty($entity)) {
+            $query = new Query\Source(Query\Base::SELECT);
+            $query
+                ->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionSource($sourceName);
+            $entity = $this->fetchOne($query, new Entity());
+            if (! $entity->hasId()) {
+                return null;
+            }
 
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $entity);
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $entity);
+            }
         }
 
-        return $entity;
+        return $this->readResolvedReferences($entity, $resolveReferences, $disableCache);
     }
 
     /**
@@ -78,18 +79,24 @@ class Source extends Base
      */
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences
+        $resolveReferences,
+        $disableCache = false
     ) {
         if (0 < $resolveReferences) {
             $entity['providers'] = (new ProviderList())
                 ->addList((new Provider())->readListBySource($entity->source, $resolveReferences - 1));
             $entity['requests'] = (new RequestList())
-                ->addList((new Request())->readListBySource($entity->source, $resolveReferences - 1));
+                ->addList((new Request())->readListBySource(
+                    $entity->source,
+                    $resolveReferences - 1,
+                    $disableCache
+                ));
             $entity['requestrelation'] = (new RequestRelationList())
                 ->addList((new RequestRelation())->readListBySource($entity->source));
             $entity['scopes'] = (new ScopeList())
-                ->addList((new Scope())->readList());
+                ->addList((new Scope())->readList($disableCache));
         }
+
         return $entity;
     }
 
@@ -117,6 +124,9 @@ class Source extends Base
         if ($this->writeItem($query)) {
             $this->writeInsertRelations($entity);
         }
+
+        $this->removeCache($entity->getSource());
+
         return $this->readEntity($entity->getSource(), $resolveReferences, true);
     }
 
@@ -142,6 +152,9 @@ class Source extends Base
         $query = new Query\Source(Query\Base::DELETE);
         $query->addConditionSource($sourceName);
         $this->writeDeleteRelations($sourceName);
+
+        $this->removeCache($sourceName);
+
         return ($this->deleteItem($query)) ? $entity : null;
     }
 
@@ -154,5 +167,24 @@ class Source extends Base
         (new Provider())->writeDeleteListBySource($sourceName);
         (new Request())->writeDeleteListBySource($sourceName);
         (new RequestRelation())->writeDeleteListBySource($sourceName);
+    }
+
+    public function removeCache($sourceName)
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        if (App::$cache->has("source-$sourceName-0")) {
+            App::$cache->delete("source-$sourceName-0");
+        }
+
+        if (App::$cache->has("source-$sourceName-1")) {
+            App::$cache->delete("source-$sourceName-1");
+        }
+
+        if (App::$cache->has("source-$sourceName-2")) {
+            App::$cache->delete("source-$sourceName-2");
+        }
     }
 }

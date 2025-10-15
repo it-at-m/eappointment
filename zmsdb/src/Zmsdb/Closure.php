@@ -72,10 +72,15 @@ class Closure extends Base
         return $result ;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($closure)
     {
         $query = new Query\Closure(Query\Base::DELETE);
-        $query->addConditionId($itemId);
+        $query->addConditionId($closure->getId());
+
+        if (App::$cache) {
+            App::$cache->delete('closuresByScope-' . $closure->scopeId);
+        }
+
         return ($this->deleteItem($query));
     }
 
@@ -90,6 +95,11 @@ class Closure extends Base
                 'day' => (int) $date->format('d')
             )
         );
+
+        if (App::$cache) {
+            App::$cache->delete('closuresByScope-' . $scopeId);
+        }
+
         $this->writeItem($query);
         $id = $this->getWriter()->lastInsertId();
 

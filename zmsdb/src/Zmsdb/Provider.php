@@ -48,7 +48,7 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $requestIdCsv = null)
+    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $providerIdCsv = null)
     {
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
@@ -59,8 +59,8 @@ class Provider extends Base
         if (null !== $isAssigned) {
             $query->addConditionIsAssigned($isAssigned);
         }
-        if (null !== $requestIdCsv) {
-            $query->addConditionRequestCsv($requestIdCsv, $source);
+        if (null !== $providerIdCsv) {
+            $query->addConditionRequestCsv($providerIdCsv, $source);
         }
         $providerList = $this->readCollection($query);
         return ($providerList->count()) ? $providerList->sortById() : $providerList;
@@ -96,6 +96,9 @@ class Provider extends Base
             'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : '{}'
         ]);
         $this->writeItem($query);
+
+        $this->removeCache($entity);
+
         return $this->readEntity($entity->getSource(), $entity->getId());
     }
 
@@ -104,6 +107,7 @@ class Provider extends Base
         $this->writeDeleteListBySource($source->getSource());
         foreach ($source->getProviderList() as $provider) {
             $this->writeEntity($provider);
+            $this->removeCache($provider);
         }
         return $this->readListBySource($source->getSource());
     }
@@ -112,6 +116,7 @@ class Provider extends Base
     {
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
+            $this->removeCache($provider);
         }
         return $this->readListBySource($source, 1);
     }
@@ -139,16 +144,18 @@ class Provider extends Base
                 'data' => json_encode($provider)
             ]);
             $this->writeItem($query);
-            $provider = $this->readEntity($source, $provider['id']);
+            $provider = $this->readEntity($source, $provider['id'], 0, true);
         }
         return $provider;
     }
 
     public function writeDeleteEntity($providerId, $source)
     {
+        $provider = $this->readEntity($source, $providerId);
         $query = new Query\Provider(Query\Base::DELETE);
         $query->addConditionProviderId($providerId);
         $query->addConditionProviderSource($source);
+        $this->removeCache($provider);
         return $this->deleteItem($query);
     }
 
@@ -163,6 +170,28 @@ class Provider extends Base
     {
         if (! (new Source())->readEntity($source)) {
             throw new Exception\Source\UnknownDataSource();
+        }
+    }
+
+    public function removeCache(Entity $provider)
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        $source = $provider->getSource();
+        $providerId = $provider->getId();
+
+        if (App::$cache->has("request-$source-$providerId-0")) {
+            App::$cache->delete("request-$source-$providerId-0");
+        }
+
+        if (App::$cache->has("request-$source-$providerId-1")) {
+            App::$cache->delete("request-$source-$providerId-1");
+        }
+
+        if (App::$cache->has("request-$source-$providerId-2")) {
+            App::$cache->delete("request-$source-$providerId-2");
         }
     }
 }

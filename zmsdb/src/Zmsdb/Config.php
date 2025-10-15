@@ -31,8 +31,6 @@ class Config extends Base
 
     public function updateEntity(Entity $config)
     {
-        App::$cache->delete('config');
-
         $compareEntity = $this->readEntity(true);
         $result = false;
         $query = new Query\Config(Query\Base::REPLACE);
@@ -57,6 +55,11 @@ class Config extends Base
                 $result = $this->writeItem($query);
             }
         }
+
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
         return ($result) ? $this->readEntity(true) : null;
     }
 
@@ -71,6 +74,10 @@ class Config extends Base
 
     public function replaceProperty($property, $value)
     {
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
         return $this->perform(Query\Config::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
             'value' => $value,
@@ -87,6 +94,11 @@ class Config extends Base
     {
         $query = new Query\Config(Query\Base::DELETE);
         $query->addConditionName($property);
+
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
         return $this->deleteItem($query);
     }
 

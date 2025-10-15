@@ -108,15 +108,27 @@ class Request extends Base
         return $requestList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0)
+    public function readListBySource($source, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "requestReadListBySource-$source-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query);
-        return ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
+        $requestList = ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $requestList);
+        }
+
+        return $requestList;
     }
 
     public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
@@ -156,6 +168,9 @@ class Request extends Base
             'variant_id' => $entity->getVariantId()
         ]);
         $this->writeItem($query);
+
+        $this->removeCache($entity);
+
         return $this->readEntity($entity->getSource(), $entity->getId());
     }
 
@@ -164,6 +179,7 @@ class Request extends Base
         $this->writeDeleteListBySource($source->getSource());
         foreach ($source->getRequestList() as $request) {
             $this->writeEntity($request);
+            $this->removeCache($request);
         }
         return $this->readListBySource($source->getSource());
     }
@@ -187,9 +203,14 @@ class Request extends Base
 
     public function writeDeleteEntity($requestId, $source)
     {
+        $request = $this->readEntity($source, $requestId);
+
         $query = new Query\Request(Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
         $query->addConditionRequestSource($source);
+
+        $this->removeCache($request);
+
         return $this->deleteItem($query);
     }
 
@@ -204,6 +225,40 @@ class Request extends Base
     {
         if (! (new Source())->readEntity($source)) {
             throw new Exception\Source\UnknownDataSource();
+        }
+    }
+
+    public function removeCache(Entity $request)
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        $source = $request->getSource();
+        $requestId = $request->getId();
+
+        if (App::$cache->has("request-$source-$requestId-0")) {
+            App::$cache->delete("request-$source-$requestId-0");
+        }
+
+        if (App::$cache->has("request-$source-$requestId-1")) {
+            App::$cache->delete("request-$source-$requestId-1");
+        }
+
+        if (App::$cache->has("request-$source-$requestId-2")) {
+            App::$cache->delete("request-$source-$requestId-2");
+        }
+
+        if (App::$cache->has("requestReadListBySource-$source-0")) {
+            App::$cache->delete("requestReadListBySource-$source-0");
+        }
+
+        if (App::$cache->has("requestReadListBySource-$source-1")) {
+            App::$cache->delete("requestReadListBySource-$source-1");
+        }
+
+        if (App::$cache->has("requestReadListBySource-$source-2")) {
+            App::$cache->delete("requestReadListBySource-$source-2");
         }
     }
 }
