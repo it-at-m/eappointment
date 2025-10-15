@@ -809,7 +809,7 @@ class ZmsApiFacadeService
         }
     }
 
-    public static function getThinnedProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         $process = self::getProcessById($processId, $authKey, $user);
         $errors = ValidationService::validateGetProcessNotFound($process);
