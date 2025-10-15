@@ -792,21 +792,26 @@ class ZmsApiFacadeService
         return MapperService::processToThinnedProcess($process);
     }
 
-    public static function getThinnedProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    public static function getProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): Process
     {
         // AuthKey check needs to be first
         if (!is_null($authKey)) {
-            $process = ZmsApiClientService::getProcessById($processId, $authKey);
+            return ZmsApiClientService::getProcessById($processId, $authKey);
         } elseif (!is_null($user)) {
             $externalUserId = $user->getExternalUserId();
             $process = ZmsApiClientService::getProcessByIdAuthenticated($processId);
             if ($externalUserId !== $process->getExternalUserId()) {
                 throw new UnauthorizedException();
             }
+            return $process;
         } else {
             throw new UnauthorizedException();
         }
+    }
 
+    public static function getThinnedProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        $process = self::getProcessById($processId, $authKey, $user);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
