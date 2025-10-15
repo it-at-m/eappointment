@@ -22,30 +22,28 @@ class Department extends Base
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "department-$departmentId-$resolveReferences";
-        if (! $disableCache && array_key_exists($cacheKey, self::$departmentCache)) {
-            return clone self::$departmentCache[$cacheKey];
-        }
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            return App::$cache->get($cacheKey);
+            $department = App::$cache->get($cacheKey);
         }
 
-        $query = new Query\Department(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionDepartmentId($departmentId);
-        $department = $this->fetchOne($query, new Entity());
-        if (isset($department['id']) && $department['id']) {
-            $department = $this->readResolvedReferences($department, $resolveReferences);
-            $department = $department->withOutClusterDuplicates();
-            self::$departmentCache[$cacheKey] = $department;
+        if (empty($department)) {
+            $query = new Query\Department(Query\Base::SELECT);
+            $query->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionDepartmentId($departmentId);
+            $department = $this->fetchOne($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, self::$departmentCache[$cacheKey]);
+                App::$cache->set($cacheKey, $department);
             }
-
-            return clone self::$departmentCache[$cacheKey];
         }
+
+        if (isset($department['id']) && $department['id']) {
+            $department = $this->readResolvedReferences($department, $resolveReferences);
+            return $department->withOutClusterDuplicates();
+        }
+
         return null;
     }
 
@@ -141,6 +139,9 @@ class Department extends Base
                 $departmentId
             ));
         }
+
+        $this->removeCache($entity);
+
         return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
@@ -180,6 +181,9 @@ class Department extends Base
         if ($entity->getNotificationPreferences()) {
             $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         }
+
+        $this->removeCache($entity);
+
         return $this->readEntity($lastInsertId);
     }
 
@@ -214,6 +218,7 @@ class Department extends Base
             );
         }
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
+        $this->removeCache($entity);
         return $this->readEntity($departmentId, 0, true);
     }
 
@@ -403,5 +408,24 @@ class Department extends Base
             }
         }
         return $queueList;
+    }
+
+    public function removeCache($department)
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        if (App::$cache->has("department-$department->id-0")) {
+            App::$cache->delete("department-$department->id-0");
+        }
+
+        if (App::$cache->has("department-$department->id-1")) {
+            App::$cache->delete("department-$department->id-1");
+        }
+
+        if (App::$cache->has("department-$department->id-2")) {
+            App::$cache->delete("department-$department->id-2");
+        }
     }
 }

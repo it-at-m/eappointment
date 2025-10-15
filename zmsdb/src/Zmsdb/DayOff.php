@@ -45,24 +45,35 @@ class DayOff extends Base
         return $dayOffList;
     }
 
-    public function readCommon()
+    public function readCommon($disableCache = false)
     {
-        if (static::$commonList === null) {
-            $dayOffList = new Collection();
-            $query = new Query\DayOff(Query\Base::SELECT);
-            $query->addEntityMapping()
-                ->addConditionCommon();
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
-                    if ($entity instanceof Entity) {
-                        $dayOffList->addEntity($entity);
-                    }
+        $cacheKey = "dayOffs";
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
+        $dayOffList = new Collection();
+        $query = new Query\DayOff(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionCommon();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
                 }
             }
-            static::$commonList = $dayOffList;
         }
-        return clone static::$commonList;
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
+
+        return $dayOffList;
     }
 
     public function readByScopeId($scopeId = 0, $disableCache = false)
@@ -91,7 +102,9 @@ class DayOff extends Base
             }
         }
 
-        App::$cache->set($cacheKey, $dayOffList);
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
 
         return $dayOffListCommon->addList($dayOffList);
     }
@@ -165,6 +178,8 @@ class DayOff extends Base
             $this->writeItem($query);
         }
 
+        $this->removeCache();
+
         return ($year) ? $this->readCommonByYear($year) : $dayoffList;
     }
 
@@ -195,12 +210,28 @@ class DayOff extends Base
                 $this->deleteItem($deleteQuery);
             }
         }
+
+        $this->removeCache();
     }
 
     public function deleteEntity($itemId)
     {
         $query = new Query\DayOff(Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);
+
+        $this->removeCache();
+
         return ($this->deleteItem($query));
+    }
+
+    public function removeCache()
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        if (App::$cache->has("dayOffs")) {
+            App::$cache->delete("dayOffs");
+        }
     }
 }
