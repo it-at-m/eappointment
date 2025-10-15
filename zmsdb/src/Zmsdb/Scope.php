@@ -658,7 +658,7 @@ class Scope extends Base
             return;
         }
 
-        if (isset($scope->provider)) {
+        if (isset($scope->provider) && isset($this->provider->id)) {
             if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-0')) {
                 App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-0');
             }
