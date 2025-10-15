@@ -922,6 +922,10 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
     if ((data as AppointmentDTO).processId != undefined) {
       confirmAppointmentSuccess.value = true;
       clearContextErrors(errorStateMap.value);
+      if (isRebooking.value && rebookedAppointment.value) {
+        currentContext.value = "cancel";
+        cancelAppointment(props.globalState, rebookedAppointment.value);
+      }
     } else {
       const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
 
