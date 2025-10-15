@@ -658,16 +658,18 @@ class Scope extends Base
             return;
         }
 
-        if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-0')) {
-            App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-0');
-        }
+        if (isset($scope->provider)) {
+            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-0')) {
+                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-0');
+            }
 
-        if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-1')) {
-            App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-1');
-        }
+            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-1')) {
+                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-1');
+            }
 
-        if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-2')) {
-            App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-2');
+            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-2')) {
+                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-2');
+            }
         }
 
         if (App::$cache->has("scope-$scope->id-0")) {
