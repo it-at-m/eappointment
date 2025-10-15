@@ -20,7 +20,7 @@ class AppointmentPreconfirmService
             return $errors;
         }
 
-        $reservedProcess = AppointmentService::getThinnedProcessById($clientData->processId, $clientData->authKey, $authenticatedUser);
+        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -55,6 +55,11 @@ class AppointmentPreconfirmService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
+    }
+
+    private function getReservedProcess(int $processId, string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
 
     private function preconfirmProcess(ThinnedProcess $process): ThinnedProcess|array

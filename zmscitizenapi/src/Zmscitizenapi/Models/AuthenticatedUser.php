@@ -26,6 +26,16 @@ class AuthenticatedUser implements JsonSerializable
         $this->familyName = $familyName;
     }
 
+    private static function base64UrlDecode(string $data): string
+    {
+        $replaced = strtr($data, '-_', '+/');
+        $pad = strlen($replaced) % 4;
+        if ($pad) {
+            $replaced .= str_repeat('=', 4 - $pad);
+        }
+        return base64_decode($replaced) ?: '';
+    }
+
     public static function fromJwtPayload(?string $token): ?self
     {
         // Token is validated in API gateway
@@ -36,7 +46,7 @@ class AuthenticatedUser implements JsonSerializable
         if (count($tokenParts) !== 3) {
             throw new InvalidAuthTokenException('authKeyMismatch', 'Invalid JWT payload.');
         }
-        $payload = json_decode(base64_decode($tokenParts[1]), true);
+        $payload = json_decode(self::base64UrlDecode($tokenParts[1]), true);
 
         $instance = new self();
         if (empty($payload['lhmExtID'])) {

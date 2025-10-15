@@ -384,6 +384,7 @@ class ErrorMessages
             'errorCode' => 'unauthorized',
             'errorMessage' => 'You are not authorized to access this resource.',
             'statusCode' => self::HTTP_FORBIDDEN,
+            'errorType' => 'error'
         ],
     ];
 
