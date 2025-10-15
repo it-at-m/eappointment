@@ -81,7 +81,7 @@ class Scope extends Base
                 );
             }
 
-            if (App::$cache) {
+            if (App::$cache && !($result instanceof \PDOStatement)) {
                 App::$cache->set($cacheKey, $result);
             }
         }
