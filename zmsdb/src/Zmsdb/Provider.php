@@ -116,7 +116,6 @@ class Provider extends Base
     {
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
-            $this->removeCache($provider);
         }
         return $this->readListBySource($source, 1);
     }
