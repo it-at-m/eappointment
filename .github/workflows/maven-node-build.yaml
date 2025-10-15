@@ -17,6 +17,7 @@ jobs:
       matrix:
         include: # hier müssen die Pfade angegeben werden
           - app-path: zmscitizenview
+          - app-path: zmscitizencalldisplay
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@691ffa2542ed7cc1c53c416d22ace9a153d5152f # v1.0.21
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
