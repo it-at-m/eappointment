@@ -220,7 +220,9 @@ onMounted(() => {
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
           if (props.displayedOnDetailScreen) {
             const urlParams = new URLSearchParams(window.location.search);
             const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
