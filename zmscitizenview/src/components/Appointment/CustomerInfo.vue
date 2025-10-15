@@ -28,7 +28,7 @@
                 {{ t("optionalLoginText") }}
               </p>
               <muc-button
-                :icon="'sing-in'"
+                :icon="'sign-in'"
                 @click="requestLogin"
               >
                 <template #default>

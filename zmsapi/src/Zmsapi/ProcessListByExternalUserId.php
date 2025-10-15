@@ -23,8 +23,8 @@ class ProcessListByExternalUserId extends BaseController
     ) {
         $workstation = (new Helper\User($request, 2))->checkRights();
         $externalUserId = $args['externalUserId']; // present and validated because of URL argument
-        $status = Validator::param('status')->isString()->getValue();
-        $filterId = Validator::param('filterId')->isNumber()->getValue();
+        $status = Validator::param('status')->isString()->setDefault(null)->getValue();
+        $filterId = Validator::param('filterId')->isNumber()->setDefault(null)->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
 

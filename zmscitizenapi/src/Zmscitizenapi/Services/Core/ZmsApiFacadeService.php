@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
+use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
+use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
@@ -790,9 +792,21 @@ class ZmsApiFacadeService
         return MapperService::processToThinnedProcess($process);
     }
 
-    public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
+    public static function getThinnedProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
-        $process = ZmsApiClientService::getProcessById($processId, $authKey);
+        // AuthKey check needs to be first
+        if (!is_null($authKey)) {
+            $process = ZmsApiClientService::getProcessById($processId, $authKey);
+        } elseif (!is_null($user)) {
+            $externalUserId = $user->getExternalUserId();
+            $process = ZmsApiClientService::getProcessByIdAuthenticated($processId);
+            if ($externalUserId !== $process->getExternalUserId()) {
+                throw new UnauthorizedException();
+            }
+        } else {
+            throw new UnauthorizedException();
+        }
+
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;

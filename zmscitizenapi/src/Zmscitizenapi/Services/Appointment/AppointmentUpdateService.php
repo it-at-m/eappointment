@@ -21,7 +21,7 @@ class AppointmentUpdateService
             return $errors;
         }
 
-        $reservedProcess = AppointmentService::getThinnedProcessById($clientData->processId, $clientData->authKey, $authenticatedUser);
+        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
 
         $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
         return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
@@ -34,7 +34,7 @@ class AppointmentUpdateService
             return $authErrors;
         }
 
-        $reservedProcess = AppointmentService::getThinnedProcessById($data->processId, $data->authKey, $authenticatedUser);
+        $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey, $authenticatedUser);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -69,6 +69,11 @@ class AppointmentUpdateService
             'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
             'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? (string) $body['customTextfield2'] : null,
         ];
+    }
+
+    private function getReservedProcess(int $processId, string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
 
     private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess

@@ -20,7 +20,7 @@ class AppointmentCancelService
             return $errors;
         }
 
-        $process = AppointmentService::getThinnedProcessById($clientData->processId, $clientData->authKey, $authenticatedUser);
+        $process = $this->getProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
 
         if (is_array($process) && !empty($process['errors'])) {
             return $process;
@@ -58,6 +58,11 @@ class AppointmentCancelService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
+    }
+
+    private function getProcess(int $processId, string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
 
     private function canBeCancelled(ThinnedProcess $process): bool
