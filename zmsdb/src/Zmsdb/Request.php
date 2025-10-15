@@ -232,7 +232,7 @@ class Request extends Base
 
         $source = $request->getSource();
 
-        if (isset($department->id)) {
+        if (isset($request->id)) {
             $requestId = $request->getId();
             if (App::$cache->has("request-$source-$requestId-0")) {
                 App::$cache->delete("request-$source-$requestId-0");
