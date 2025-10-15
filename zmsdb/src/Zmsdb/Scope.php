@@ -672,16 +672,18 @@ class Scope extends Base
             }
         }
 
-        if (App::$cache->has("scope-$scope->id-0")) {
-            App::$cache->delete("scope-$scope->id-0");
-        }
+        if (isset($scope->id)) {
+            if (App::$cache->has("scope-$scope->id-0")) {
+                App::$cache->delete("scope-$scope->id-0");
+            }
 
-        if (App::$cache->has("scope-$scope->id-1")) {
-            App::$cache->delete("scope-$scope->id-1");
-        }
+            if (App::$cache->has("scope-$scope->id-1")) {
+                App::$cache->delete("scope-$scope->id-1");
+            }
 
-        if (App::$cache->has("scope-$scope->id-2")) {
-            App::$cache->delete("scope-$scope->id-2");
+            if (App::$cache->has("scope-$scope->id-2")) {
+                App::$cache->delete("scope-$scope->id-2");
+            }
         }
     }
 }

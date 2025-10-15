@@ -231,18 +231,20 @@ class Request extends Base
         }
 
         $source = $request->getSource();
-        $requestId = $request->getId();
 
-        if (App::$cache->has("request-$source-$requestId-0")) {
-            App::$cache->delete("request-$source-$requestId-0");
-        }
+        if (isset($department->id)) {
+            $requestId = $request->getId();
+            if (App::$cache->has("request-$source-$requestId-0")) {
+                App::$cache->delete("request-$source-$requestId-0");
+            }
 
-        if (App::$cache->has("request-$source-$requestId-1")) {
-            App::$cache->delete("request-$source-$requestId-1");
-        }
+            if (App::$cache->has("request-$source-$requestId-1")) {
+                App::$cache->delete("request-$source-$requestId-1");
+            }
 
-        if (App::$cache->has("request-$source-$requestId-2")) {
-            App::$cache->delete("request-$source-$requestId-2");
+            if (App::$cache->has("request-$source-$requestId-2")) {
+                App::$cache->delete("request-$source-$requestId-2");
+            }
         }
 
         if (App::$cache->has("requestReadListBySource-$source-0")) {

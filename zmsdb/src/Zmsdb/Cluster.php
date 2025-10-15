@@ -437,7 +437,7 @@ class Cluster extends Base
 
     public function removeCache($cluster)
     {
-        if (!App::$cache) {
+        if (!App::$cache || !isset($cluster->id)) {
             return;
         }
 
