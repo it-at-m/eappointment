@@ -71,7 +71,7 @@ class AppointmentUpdateService
         ];
     }
 
-    private function getReservedProcess(int $processId, string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }

@@ -122,7 +122,7 @@
     >
       <AltchaCaptcha
         :t="t"
-        :base-url="globalState?.baseUrl"
+        :base-url="globalState.baseUrl"
         @validationResult="(valid: boolean) => (isCaptchaValid = valid)"
         @tokenChanged="
           (token: string | null) => emit('captchaTokenChanged', token)

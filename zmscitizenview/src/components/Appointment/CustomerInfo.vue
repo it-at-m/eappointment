@@ -10,7 +10,7 @@
   <div v-if="showLoginOption && !isExpired">
     <!--Can be replaced if MucCallout has been extended with buttons in @muenchen/muc-patternlab-vue https://github.com/it-at-m/muc-patternlab-vue/pull/573 -->
     <div
-      v-if="!globalState?.isLoggedIn"
+      v-if="!globalState.isLoggedIn"
       class="m-callout m-callout--default"
       aria-label="Information"
     >

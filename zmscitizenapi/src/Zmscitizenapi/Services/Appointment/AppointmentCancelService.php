@@ -60,7 +60,7 @@ class AppointmentCancelService
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
-    private function getProcess(int $processId, string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    private function getProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
