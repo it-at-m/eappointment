@@ -28,8 +28,17 @@ class DayOff extends Base
         return $dayOffList;
     }
 
-    public function readOnlyByDepartmentId($departmentId = 0)
+    public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
     {
+        $cacheKey = "dayOffsReadOnlyByDepartmentId-$departmentId";
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -42,6 +51,11 @@ class DayOff extends Base
                 }
             }
         }
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
+
         return $dayOffList;
     }
 

@@ -113,7 +113,7 @@ class Cluster extends Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false)
     {
         $clusterList = new Collection();
         $query = new Query\Cluster(Query\Base::SELECT);
@@ -125,7 +125,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences, $disableCache);
                     $clusterList->addEntity($entity);
                 }
             }

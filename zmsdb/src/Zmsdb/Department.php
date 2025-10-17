@@ -40,22 +40,29 @@ class Department extends Base
         }
 
         if (isset($department['id']) && $department['id']) {
-            $department = $this->readResolvedReferences($department, $resolveReferences);
+            $department = $this->readResolvedReferences($department, $resolveReferences, $disableCache);
             return $department->withOutClusterDuplicates();
         }
 
         return null;
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
-    {
-        $entity['links'] = (new Link())->readByDepartmentId($entity->id);
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences,
+        $disableCache = false
+    ) {
+        $entity['links'] = (new Link())->readByDepartmentId($entity->id, $disableCache);
         $entity['scopes'] = (new Scope())
-            ->readByDepartmentId($entity->id, $resolveReferences - 1)
+            ->readByDepartmentId($entity->id, $resolveReferences - 1, $disableCache)
             ->sortByContactName();
         if (0 < $resolveReferences) {
-            $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
-            $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id);
+            $entity['clusters'] = (new Cluster())->readByDepartmentId(
+                $entity->id,
+                $resolveReferences - 1,
+                $disableCache
+            );
+            $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id, $disableCache);
         }
         return $entity;
     }

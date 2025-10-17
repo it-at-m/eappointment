@@ -173,21 +173,35 @@ class Scope extends Base
         return $scopeList->withUniqueScopes();
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        $scopeList = new Collection();
-        if ($resolveReferences > 0) {
-            $query = new Query\Scope(Query\Base::SELECT);
-            $query->addEntityMapping()
-                ->addResolvedReferences($resolveReferences)
-                ->addConditionDepartmentId($departmentId);
-            $result = $this->fetchList($query, new Entity());
-        } else {
-            $result = $this->getReader()->perform(
-                (new Query\Scope(Query\Base::SELECT))->getQuerySimpleDepartmentMatch(),
-                [$departmentId]
-            );
+        $cacheKey = "scopeReadByDepartmentId-$departmentId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $result = App::$cache->get($cacheKey);
         }
+
+        $scopeList = new Collection();
+
+        if (empty($result)) {
+            if ($resolveReferences > 0) {
+                $query = new Query\Scope(Query\Base::SELECT);
+                $query->addEntityMapping()
+                    ->addResolvedReferences($resolveReferences)
+                    ->addConditionDepartmentId($departmentId);
+                $result = $this->fetchList($query, new Entity());
+
+                if (App::$cache) {
+                    App::$cache->set($cacheKey, $result);
+                }
+            } else {
+                $result = $this->getReader()->perform(
+                    (new Query\Scope(Query\Base::SELECT))->getQuerySimpleDepartmentMatch(),
+                    [$departmentId]
+                );
+            }
+        }
+
         if ($result) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
@@ -201,12 +215,13 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences, $disableCache);
                         $scopeList->addEntity($entity);
                     }
                 }
             }
         }
+
         return $scopeList;
     }
     public function readListBySource($source, $resolveReferences = 0)
