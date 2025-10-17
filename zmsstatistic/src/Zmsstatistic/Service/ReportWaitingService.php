@@ -37,11 +37,11 @@ class ReportWaitingService
     {
         if ($dateRange) {
             return $this->getExchangeWaitingForDateRange($scopeId, $dateRange);
-        } elseif (isset($args['period'])) {
-            return $this->getExchangeWaitingForPeriod($scopeId, $args['period']);
         }
 
-        return null;
+        return isset($args['period'])
+            ? $this->getExchangeWaitingForPeriod($scopeId, $args['period'])
+            : null;
     }
 
     /**
