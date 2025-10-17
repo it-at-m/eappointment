@@ -39,6 +39,12 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ]
             ]
         );

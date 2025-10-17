@@ -41,6 +41,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("POST_confirm_appointment.json")
@@ -209,6 +215,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',
@@ -384,6 +396,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/confirmed/',
                 'exception' => $exception
@@ -425,6 +443,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',
@@ -470,6 +494,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/confirmed/',
                 'exception' => $exception
@@ -513,6 +543,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/confirmed/',
                 'exception' => $exception
@@ -554,6 +590,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',

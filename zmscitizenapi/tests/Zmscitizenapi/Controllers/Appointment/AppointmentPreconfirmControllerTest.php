@@ -41,6 +41,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/preconfirmed/',
                     'response' => $this->readFixture("POST_preconfirm_appointment.json")
@@ -209,6 +215,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/preconfirmed/',
                 'response' => json_encode($processData)
@@ -259,6 +271,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',
@@ -363,6 +381,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/preconfirmed/',
                 'exception' => $exception
@@ -404,6 +428,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',
@@ -449,6 +479,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/status/preconfirmed/',
                 'exception' => $exception
@@ -490,6 +526,12 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
                 'function' => 'readPostResult',

@@ -42,6 +42,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
                     'response' => $this->readFixture("POST_update_appointment.json")
@@ -164,6 +170,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
         
@@ -211,6 +223,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -256,6 +274,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -301,6 +325,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -344,6 +374,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -389,6 +425,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -432,6 +474,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -475,6 +523,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -516,6 +570,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -561,6 +621,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -604,6 +670,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -647,6 +719,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -688,6 +766,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -731,6 +815,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -772,6 +862,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
 
@@ -818,6 +914,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -983,6 +1085,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
                     'exception' => $exception
@@ -1032,6 +1140,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -1084,6 +1198,12 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ],
                 [
                     'function' => 'readPostResult',

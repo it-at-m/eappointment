@@ -45,6 +45,12 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/merged-mailtemplates/102522/',
+                    'xtoken' => 'hash',
+                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/delete/mail/',
                     'response' => $this->readFixture("POST_cancel_appointment.json")
@@ -150,6 +156,12 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => json_encode($processJson)
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/102522/',
+                'xtoken' => 'hash',
+                'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ]
         ]);
     
