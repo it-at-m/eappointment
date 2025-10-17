@@ -76,6 +76,14 @@ trait Where
         return $this;
     }
 
+    public function whereIn(string $field, array $values)
+    {
+        if (empty($values)) {
+            throw new \InvalidArgumentException('whereIn() requires a non-empty $values array.');
+        }
+        return $this->where($field, 'IN', array_values($values));
+    }
+
     /**
      * Returns the SQL string for the WHERE portion of the query
      *
