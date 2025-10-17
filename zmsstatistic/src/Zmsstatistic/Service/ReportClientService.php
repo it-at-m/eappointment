@@ -31,11 +31,11 @@ class ReportClientService
     {
         if ($dateRange) {
             return $this->getExchangeClientForDateRange($scopeId, $dateRange);
-        } elseif (isset($args['period'])) {
-            return $this->getExchangeClientForPeriod($scopeId, $args['period']);
         }
 
-        return null;
+        return isset($args['period'])
+            ? $this->getExchangeClientForPeriod($scopeId, $args['period'])
+            : null;
     }
 
     /**
