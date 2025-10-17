@@ -48,7 +48,7 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $providerIdCsv = null)
+    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
@@ -59,8 +59,8 @@ class Provider extends Base
         if (null !== $isAssigned) {
             $query->addConditionIsAssigned($isAssigned);
         }
-        if (null !== $providerIdCsv) {
-            $query->addConditionRequestCsv($providerIdCsv, $source);
+        if (null !== $requestIdCsv) {
+            $query->addConditionRequestCsv($requestIdCsv, $source);
         }
         $providerList = $this->readCollection($query);
         return ($providerList->count()) ? $providerList->sortById() : $providerList;
