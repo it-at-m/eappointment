@@ -34,6 +34,52 @@ class Scope extends Base
         return self::$cache[$cacheKey];
     }
 
+    public function readEntitiesByIds(array $scopeIds, int $resolveReferences = 0, bool $disableCache = false): array
+    {
+        $scopeIds = array_values(array_unique(array_filter(array_map('intval', $scopeIds))));
+        if (!$scopeIds) {
+            return [];
+        }
+
+        $result  = [];
+        $missing = [];
+        foreach ($scopeIds as $scopeId) {
+            $cacheKey = "{$scopeId}-{$resolveReferences}";
+            if (!$disableCache && array_key_exists($cacheKey, self::$cache)) {
+                $result[$scopeId] = self::$cache[$cacheKey];
+            } else {
+                $missing[] = $scopeId;
+            }
+        }
+
+        if ($missing) {
+            $query = new Query\Scope(Query\Base::SELECT);
+            $query
+                ->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionScopeIds($missing);
+
+            $fetched = $this->fetchList($query, new Entity());
+            foreach ($fetched as $entity) {
+                if (!$entity->hasId()) {
+                    continue;
+                }
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $result[$entity->id] = $entity;
+                self::$cache["{$entity->id}-{$resolveReferences}"] = $entity;
+            }
+        }
+
+        $ordered = [];
+        foreach ($scopeIds as $id) {
+            if (isset($result[$id])) {
+                $ordered[$id] = $result[$id];
+            }
+        }
+
+        return $ordered;
+    }
+
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $scope,
         $resolveReferences
