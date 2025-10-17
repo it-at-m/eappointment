@@ -117,6 +117,7 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
+                Pdo::ATTR_PERSISTENT => true
                 ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
