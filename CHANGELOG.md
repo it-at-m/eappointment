@@ -1,3 +1,68 @@
+## Release Muc-32 (08.10.2025)  
+                   
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-748'>ZMSKVR-748</a>] -         Fachlicher Admin: Menüpunkt &quot;Nutzer*innen&quot;öffnet sich erst nach Minuten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-750'>ZMSKVR-750</a>] -         Wartezeitstatistik fehlt an bestimmten Tagen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-887'>ZMSKVR-887</a>] -         Anlegen einer zusätzlichen Terminkunden-Öffnungszeit (Chrome)
+</li>
+</ul>
+                                                    
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-763'>ZMSKVR-763</a>] -         E-Mail Bestätigung kann umgangen werden
+</li>
+</ul>
+                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-311'>ZMSKVR-311</a>] -         Verbesserung der Terminnummern durch Einführung einer Kombination aus Buchstaben und Zahlen zur Reduzierung von Verwirrungen bei Bürger*innen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-489'>ZMSKVR-489</a>] -         Spalte Wartezeit in ZMS Admin überarbeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-495'>ZMSKVR-495</a>] -         Terminvarianten API anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-504'>ZMSKVR-504</a>] -         Schritt 0: Leistungssuche – Padding Leistungen-Suchbox verringern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-509'>ZMSKVR-509</a>] -         Schritt 2: Termin – Abstände Uhrzeit-Buttons korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-511'>ZMSKVR-511</a>] -         Schritt 2: Termin – Datumsüberschrift Padding einfügen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-514'>ZMSKVR-514</a>] -         Schritt 1: Leistung – Kombinierbare Leistungen einklappen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-521'>ZMSKVR-521</a>] -         Schritt 4: Übersicht – Formatierung Labels korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-529'>ZMSKVR-529</a>] -         Schritt 1: Leistung – Darstellung inaktive Plus-/Minus-Buttons anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-530'>ZMSKVR-530</a>] -         Schritt 2: Termin – Padding linker Pfeil in Kalender vergrößern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-608'>ZMSKVR-608</a>] -         Schritt 2: Termin – Formatierung Standort-Titel bei Zeitauswahl
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-663'>ZMSKVR-663</a>] -         Statistiküberarbeitung 2: Dienstleistungsstatistik - Frontend dynamische Datenübersicht MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-716'>ZMSKVR-716</a>] -         Schritt 3: Kontakt – Counter-Schriftgröße
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-718'>ZMSKVR-718</a>] -         Schritt 3 (2): Kontakt – Counter Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-753'>ZMSKVR-753</a>] -         ZMS Admin Maske anpassen DL zuerst 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-782'>ZMSKVR-782</a>] -         Anpassung der Excel-Kundenstatistik für Terminadmin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-795'>ZMSKVR-795</a>] -         Refactoring CalendarView: ListView-Komponente extrahieren und gemeinsame Utils erstellen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-860'>ZMSKVR-860</a>] -          Anpassung der Excel-Dienstleistungstatistik
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-886'>ZMSKVR-886</a>] -         Erweitertes Logging für die Gesamtübersicht beim Löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-891'>ZMSKVR-891</a>] -         Löschen von Providern und Requests
+</li>
+</ul>
+
 ## Release Muc-31 (12.09.2025) 
 
 <h2>        Bug
