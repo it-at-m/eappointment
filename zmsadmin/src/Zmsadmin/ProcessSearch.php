@@ -30,6 +30,14 @@ class ProcessSearch extends BaseController
         $queryString = $validator->getParameter('query')
             ->isString()
             ->getValue();
+        $page = $validator->getParameter('page')
+            ->isNumber()
+            ->setDefault(1)
+            ->getValue();
+        $perPage = $validator->getParameter('perPage')
+            ->isNumber()
+            ->setDefault(100)
+            ->getValue();
         $processList = \App::$http->readGetResult('/process/search/', [
             'query' => $queryString,
             'resolveReferences' => 1,
@@ -43,7 +51,12 @@ class ProcessSearch extends BaseController
         $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         if ($workstation->hasAuditAccount()) {
             $queryString = urlencode($queryString);
-            $logList = \App::$http->readGetResult("/log/process/$queryString/")->getCollection();
+            $logList = \App::$http
+                ->readGetResult("/log/process/$queryString/", [
+                        'page' => $page,
+                        'perPage' => $perPage
+                    ])
+                ->getCollection();
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
         }
 
@@ -57,6 +70,8 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
+                'page' => $page,
+                'perPage' => $perPage,
                 'workstation' => $workstation,
                 'processList' => $processList,
                 'processListOther' => $processListOther,

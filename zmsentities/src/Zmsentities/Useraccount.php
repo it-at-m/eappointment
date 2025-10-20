@@ -277,6 +277,13 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    public function withLessData()
+    {
+        unset($this->departments);
+
+        return $this;
+    }
+
     /**
      * create useraccount from open id input data with random password
      *

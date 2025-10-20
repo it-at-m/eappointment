@@ -32,92 +32,6 @@ UNLOCK TABLES;
 
 UPDATE `buerger` SET `bestaetigt` = 1 WHERE `BuergerID` IN (10118, 10114, 10030);
 
-/* ------------------------------------------------------------------
-   Test‑Daten OverallCalendar
--------------------------------------------------------------------*/
-LOCK TABLES
-  	`gesamtkalender` WRITE,
-  	`oeffnungszeit`  WRITE;
-
-
-/* --- Scope 1300 ---------------------------------------------------*/
-DELETE FROM `gesamtkalender` WHERE scope_id = 101;
-INSERT INTO `gesamtkalender` (scope_id, time,`availability_id`, seat, status) VALUES
-  (101, '2016-05-27 09:30:00', 1550, 1, 'free'),
-  (101, '2016-05-27 09:35:00', 1550, 1, 'free');
-
-/* --- Scope 1301 – Availability‑Test ------------------------------*/
-DELETE FROM `gesamtkalender` WHERE scope_id = 1301;
-DELETE FROM `oeffnungszeit`   WHERE OeffnungszeitID = 999;  /* optional */
-
-INSERT INTO `oeffnungszeit`
-  (`OeffnungszeitID`, `StandortID`, `Startdatum`, `Endedatum`,
-   `allexWochen`, `jedexteWoche`, `Wochentag`,
-   `Anfangszeit`, `Terminanfangszeit`, `Endzeit`, `Terminendzeit`,
-   `Timeslot`,
-   `Anzahlarbeitsplaetze`, `Anzahlterminarbeitsplaetze`,
-   `kommentar`, `reduktionTermineImInternet`, `erlaubemehrfachslots`,
-   `reduktionTermineCallcenter`, `Offen_ab`, `Offen_bis`, `updateTimestamp`)
-VALUES
-  (999,               
-   1301,
-   '2016-05-27','2016-05-27',
-   0,1,32,
-   '09:00:00','09:00:00','10:00:00','10:00:00',
-   '00:05:00',
-   2,2,
-   'Unit‑Test Availability',
-   0,1,0,
-   0,0,
-   '2025-05-05 00:00:00');
-
-UNLOCK TABLES;
-
-
-/* ------------------------------------------------------------------
-   Test‑Daten NUR für OverallCalendarRead‑Controller‑Tests
-   (verwendet Scope‑IDs > 2000, Availability‑IDs > 9000)
--------------------------------------------------------------------*/
-LOCK TABLES
-  	`gesamtkalender` WRITE;
-
-/* ---------- Scope 2001  (5‑Min‑Raster, 3 Seats) ------------------*/
-DELETE FROM `gesamtkalender` WHERE scope_id = 2001;
-
-INSERT INTO `gesamtkalender` (`scope_id`, `availability_id`, `time`, `seat`, `status`, `process_id`, `slots`)
-VALUES
-  (102, 9001, '2025-05-14 09:00:00', 1, 'termin', 100001, 3),
-  (102, 9001, '2025-05-14 09:05:00', 1, 'termin', 100001, null),
-  (102, 9001, '2025-05-14 09:10:00', 1, 'termin', 100001, null),
-  (102, 9001, '2025-05-14 09:00:00', 2, 'free', null, null),
-  (102, 9001, '2025-05-14 09:05:00', 2, 'free', null, null),
-  (102, 9001, '2025-05-14 09:10:00', 2, 'free', null, null);
-
-UNLOCK TABLES;
-
-LOCK TABLES
-  	`buerger` WRITE;
-
-UPDATE buerger
-SET `status` = CASE
-    WHEN `Name` = '(abgesagt)' THEN 'deleted'
-    WHEN `StandortID` = 0 AND `AbholortID` = 0 THEN 'blocked'
-    WHEN `vorlaeufigeBuchung` = 1 AND `bestaetigt` = 0 THEN 'reserved'
-    WHEN `nicht_erschienen` != 0 THEN 'missed'
-    WHEN `parked` != 0 THEN 'parked'
-    WHEN `Abholer` != 0 AND `AbholortID` != 0 AND `NutzerID` = 0 THEN 'pending'
-    WHEN `AbholortID` != 0 AND `NutzerID` != 0 THEN 'pickup'
-    WHEN `AbholortID` = 0 AND `aufruferfolgreich` != 0 AND `NutzerID` != 0 THEN 'processing'
-    WHEN `aufrufzeit` != '00:00:00' AND `NutzerID` != 0 AND `AbholortID` = 0 THEN 'called'
-    WHEN `Uhrzeit` = '00:00:00' THEN 'queued'
-    WHEN `vorlaeufigeBuchung` = 0 AND `bestaetigt` = 0 THEN 'preconfirmed'
-    WHEN `vorlaeufigeBuchung` = 0 AND `bestaetigt` = 1 THEN 'confirmed'
-    ELSE 'free'
-END
-WHERE status IS NULL;
-
-UNLOCK TABLES;
-
 LOCK TABLES `closures` WRITE;
 
 DELETE FROM closures WHERE (StandortID IN (58,59) AND year=2025 AND month=9 AND day IN (3,4));
@@ -141,3 +55,58 @@ INSERT INTO `request_variant` (`id`, `name`) VALUES
   (3, 'C – Änderungsmeldung');
 
 UNLOCK TABLES;
+
+
+/* ------------------------------------------------------------------
+   Test-Daten OverviewCalendarTest, OverallCalendarRead
+-------------------------------------------------------------------*/
+
+LOCK TABLES `standort` WRITE, `oeffnungszeit` WRITE, `overview_calendar` WRITE;
+
+INSERT IGNORE INTO `standort`
+  (`StandortID`,`Bezeichnung`,`standortkuerzel`,`wartenrhinweis`,`aufrufanzeigetext`)
+VALUES
+  (65001,'UT Scope 65001','T65001','', ''),
+  (65002,'UT Scope 65002','T65002','', ''),
+  (65202,'UT Scope 65202 (API)','T65202','', '');
+
+UPDATE `standort`
+SET `InfoDienstleisterID` = 9999999
+WHERE `StandortID` IN (65001, 65002, 65202)
+  AND ( `InfoDienstleisterID` = 0 OR `InfoDienstleisterID` IS NULL );
+
+DELETE FROM `oeffnungszeit`     WHERE `StandortID` IN (65202);
+DELETE FROM `overview_calendar` WHERE `scope_id`   IN (65001,65002,65202);
+
+INSERT INTO `overview_calendar`
+(`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)
+VALUES
+    (65002, 965001, 'confirmed', '2025-05-14 09:00:00', '2025-05-14 09:05:00', '2025-05-05 00:00:00'),
+    (65002, 965002, 'confirmed', '2025-05-14 10:00:00', '2025-05-14 10:05:00', '2025-05-05 00:00:00'),
+    (65002, 965003, 'cancelled', '2025-05-14 11:00:00', '2025-05-14 11:05:00', '2025-05-05 00:00:00');
+
+INSERT INTO `oeffnungszeit`
+(`OeffnungszeitID`,`StandortID`,`Startdatum`,`Endedatum`,
+ `allexWochen`,`jedexteWoche`,`Wochentag`,
+ `Anfangszeit`,`Terminanfangszeit`,`Endzeit`,`Terminendzeit`,
+ `Timeslot`,
+ `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
+ `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
+ `reduktionTermineCallcenter`,`Offen_ab`,`Offen_bis`,`updateTimestamp`)
+VALUES
+    (965202, 65202, '2025-05-14','2025-05-14',
+     0,1,32,
+     '09:00:00','09:00:00','11:00:00','11:00:00',
+     '00:05:00',
+     3,3,
+     'UT Availability 65202', 0,1, 0,0,0, '2025-05-05 00:00:00');
+
+INSERT INTO `overview_calendar`
+(`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)
+VALUES
+    (65202, 972201, 'confirmed', '2025-05-14 09:30:00', '2025-05-14 09:45:00', '2025-05-05 00:00:00'),
+    (65202, 972202, 'confirmed', '2025-05-14 10:15:00', '2025-05-14 10:30:00', '2025-05-05 00:00:00'),
+    (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
+
+UNLOCK TABLES;
+

@@ -42,6 +42,7 @@
         "bin/archiveStatisticData",
         "bin/anonymizeStatisticData",
         "bin/calculateDailyWaitingStatistic",
+        "bin/cleanupOverviewCalendar",
         "bin/calculateSlots",
         "bin/calculateDayOffList",
         "bin/deallocateAppointmentData",
