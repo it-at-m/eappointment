@@ -171,6 +171,7 @@
                     name="checkbox-privacy-policy"
                     type="checkbox"
                     @click="clickPrivacyPolicy"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"
@@ -195,6 +196,7 @@
                     name="checkbox-electronic-communication"
                     type="checkbox"
                     @click="clickElectronicCommunication"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"
