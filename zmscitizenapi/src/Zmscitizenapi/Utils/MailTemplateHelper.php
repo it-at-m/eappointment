@@ -14,7 +14,7 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
  */
 class MailTemplateHelper
 {
-    protected $templates = false;
+    protected $templates = null;
     protected $process;
 
     public function __construct(Process $process)
@@ -30,7 +30,7 @@ class MailTemplateHelper
      */
     public function getTemplate(string $templateName): ?string
     {
-        if (!$this->templates) {
+        if ($this->templates === null) {
             $this->loadTemplates();
         }
         return $this->templates[$templateName] ?? null;
@@ -43,7 +43,7 @@ class MailTemplateHelper
      */
     public function getTemplates(): array
     {
-        if (!$this->templates) {
+        if ($this->templates === null) {
             $this->loadTemplates();
         }
         return $this->templates ?? [];
