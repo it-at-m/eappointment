@@ -5,7 +5,7 @@
     :title="formatMultilineTitle(appointment)"
   >
     <div class="appointment-data">
-      <p tabindex="0">
+      <p>
         <strong> {{ t("appointmentNumber") }}: </strong>
         {{ appointment.processId }}
       </p>

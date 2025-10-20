@@ -2,111 +2,124 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "$schema": {
-      "type": "string",
-      "format": "uri"
-    },
+    "$schema": { "type": "string", "format": "uri" },
+
     "meta": {
       "type": "object",
       "properties": {
-        "$schema": {
-          "type": "string",
-          "format": "uri"
-        },
-        "error": {
-          "type": "boolean"
-        },
-        "generated": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "server": {
-          "type": "string"
-        },
-        "rows": {
-          "type": "integer",
-          "minimum": 0
-        }
+        "$schema": { "type": "string", "format": "uri" },
+        "error":   { "type": "boolean" },
+        "generated": { "type": "string", "format": "date-time" },
+        "server":  { "type": "string" }
       },
-      "required": ["error", "generated", "server", "rows"],
+      "required": ["error", "generated", "server"],
       "additionalProperties": false
     },
+
     "data": {
       "type": "object",
       "properties": {
+        "meta": {
+          "type": "object",
+          "properties": {
+            "axis": {
+              "type": "object",
+              "properties": {
+                "start": { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
+                "end":   { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" }
+              },
+              "required": ["start", "end"],
+              "additionalProperties": false
+            },
+            "scopes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "name":      { "type": "string" },
+                  "shortName": { "type": "string" }
+                },
+                "required": ["name", "shortName"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["axis", "scopes"],
+          "additionalProperties": false
+        },
+
         "days": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "date": {
-                "type": "integer"
-              },
+              "date":   { "type": "string", "format": "date" },
               "scopes": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "maxSeats": {
-                      "type": "integer",
-                      "minimum": 1
-                    },
-                    "times": {
+                    "id": { "type": "integer" },
+                    "intervals": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "name": {
-                            "type": "string",
-                            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
-                          },
-                          "seats": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "status": {
-                                  "type": "string",
-                                  "enum": ["open", "termin", "skip"]
-                                },
-                                "processId": {
-                                  "type": "integer"
-                                },
-                                "slots": {
-                                  "type": "integer",
-                                  "minimum": 1
-                                }
-                              },
-                              "required": ["status"],
-                              "additionalProperties": false
-                            }
+                          "start":    { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
+                          "end":      { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
+                          "capacity": { "type": ["integer","null"], "minimum": 0 }
+                        },
+                        "required": ["start", "end"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "processId": { "type": "integer" },
+                          "start":     { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
+                          "end":       { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
+                          "status":    { "type": "string", "enum": ["confirmed","cancelled"] },
+                          "updatedAt": {
+                            "anyOf": [
+                              { "type": "string", "format": "date-time" },
+                              { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$" }
+                            ]
                           }
                         },
-                        "required": ["name", "seats"],
+                        "required": ["processId","start","end","status","updatedAt"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": ["id", "name", "maxSeats", "times"],
+                  "required": ["id","intervals","events"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": ["date", "scopes"],
+            "required": ["date","scopes"],
             "additionalProperties": false
           }
+        },
+
+        "delta": { "type": "boolean" },
+        "maxUpdatedAt": {
+          "anyOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$" }
+          ]
+        },
+        "deletedProcessIds": {
+          "type": "array",
+          "items": { "type": "integer" }
         }
       },
-      "required": ["days"],
+      "required": ["meta","days","delta","maxUpdatedAt","deletedProcessIds"],
       "additionalProperties": false
     }
   },
-  "required": ["meta", "data"],
+  "required": ["meta","data"],
   "additionalProperties": false
 }
