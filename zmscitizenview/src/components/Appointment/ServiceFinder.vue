@@ -53,7 +53,10 @@
         :max="maxValueOfService"
         :min="1"
       />
-      <div v-if="variantServices.length > 1" class="m-component">
+      <div
+        v-if="variantServices.length > 1"
+        class="m-component"
+      >
         <muc-radio-button-group
           v-model="selectedVariant"
           :heading="t('appointmentType')"
@@ -119,10 +122,10 @@
     </div>
     <div class="m-component">
       <div class="wrapper">
-        <clock-svg/>
+        <clock-svg />
         <div ref="durationInfo">
           <b>{{ t("estimatedDuration") }}</b>
-          <br/>
+          <br />
           {{ estimatedDuration }} {{ t("minutes") }}
         </div>
       </div>
@@ -154,22 +157,28 @@
 </template>
 
 <script setup lang="ts">
-import {MucButton, MucCounter, MucSelect, MucRadioButton, MucRadioButtonGroup} from "@muenchen/muc-patternlab-vue";
-import {computed, inject, onMounted, ref, watch} from "vue";
+import {
+  MucButton,
+  MucCounter,
+  MucRadioButton,
+  MucRadioButtonGroup,
+  MucSelect,
+} from "@muenchen/muc-patternlab-vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 
-import {Combinable} from "@/api/models/Combinable";
-import {Office} from "@/api/models/Office";
-import {Relation} from "@/api/models/Relation";
-import {Service} from "@/api/models/Service";
-import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
+import { Combinable } from "@/api/models/Combinable";
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
+import { Service } from "@/api/models/Service";
+import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import AltchaCaptcha from "@/components/Appointment/ServiceFinder/AltchaCaptcha.vue";
 import ClockSvg from "@/components/Appointment/ServiceFinder/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/ServiceFinder/SubserviceListItem.vue";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {SelectedServiceProvider} from "@/types/ProvideInjectTypes";
-import {ServiceImpl} from "@/types/ServiceImpl";
-import {handleApiResponseForDownTime} from "@/utils/apiStatusService";
-import {calculateEstimatedDuration} from "@/utils/calculateEstimatedDuration";
+import { OfficeImpl } from "@/types/OfficeImpl";
+import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import { ServiceImpl } from "@/types/ServiceImpl";
+import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   MAX_SLOTS,
@@ -215,7 +224,7 @@ const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
-const {selectedService, updateSelectedService} =
+const { selectedService, updateSelectedService } =
   inject<SelectedServiceProvider>(
     "selectedServiceProvider"
   ) as SelectedServiceProvider;
@@ -585,7 +594,7 @@ onMounted(() => {
 });
 
 const servicesWithoutParent = computed(() => {
-  return services.value.filter(service => service.parent_id === null);
+  return services.value.filter((service) => service.parent_id === null);
 });
 
 const variantServices = computed(() => {
@@ -615,15 +624,19 @@ watch(selectedVariant, (variantId) => {
   if (!variantId) return;
   if (variantServices.value.length <= 1) return;
 
-  const pick = variantId === "1"
-    ? variantServices.value.find(v => v.variant_id === 1)
-    : services.value.find(s => s.parent_id === baseServiceId.value && s.variant_id === Number(variantId));
+  const pick =
+    variantId === "1"
+      ? variantServices.value.find((v) => v.variant_id === 1)
+      : services.value.find(
+          (s) =>
+            s.parent_id === baseServiceId.value &&
+            s.variant_id === Number(variantId)
+        );
 
   if (pick) {
     service.value = pick as any;
   }
 });
-
 
 const showSubservices = computed(() => {
   const s = service.value;
@@ -632,7 +645,8 @@ const showSubservices = computed(() => {
   const hasSub = Array.isArray(s.subServices) && s.subServices.length > 0;
   if (!hasSub) return false;
   if (s.parent_id != null && (s as any).variant_id !== 1) return false;
-  if (variantServices.value.length > 1 && selectedVariant.value !== "1") return false;
+  if (variantServices.value.length > 1 && selectedVariant.value !== "1")
+    return false;
 
   return true;
 });
