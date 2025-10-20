@@ -53,16 +53,22 @@
           <div class="m-content">
             <h3>{{ t("location") }}</h3>
           </div>
-          <div v-if="selectedProvider" class="m-content border-bottom">
+          <div
+            v-if="selectedProvider"
+            class="m-content border-bottom"
+          >
             <p>{{ selectedProvider.name }}<br /></p>
 
             <template v-if="!variantId || variantId === 1">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("address") }}</strong><br />
+                <strong>{{ t("address") }}</strong
+                ><br />
               </p>
               <p>
-                {{ selectedProvider.address.street }} {{ selectedProvider.address.house_number }}<br />
-                {{ selectedProvider.address.postal_code }} {{ selectedProvider.address.city }}<br /><br />
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
                 <span
                   v-if="selectedProvider?.scope?.hint"
                   v-html="sanitizeHtml(selectedProvider.scope.hint)"
@@ -70,7 +76,8 @@
               </p>
 
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("appointmentTypes.1") }}</strong><br />
+                <strong>{{ t("appointmentTypes.1") }}</strong
+                ><br />
               </p>
               <p>{{ t("locationVariantText.1") }}</p>
             </template>
