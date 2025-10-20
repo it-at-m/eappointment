@@ -527,7 +527,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status, $scopeId = 0)
+    public function addConditionStatus($status)
     {
         $this->query->where('process.status', '=', $status);
         return $this;
