@@ -61,10 +61,7 @@ class MailTemplateHelper
             return;
         }
 
-        $templates = ZmsApiClientService::getMergedMailTemplates($providerId);
-        if ($templates) {
-            $this->templates = $templates;
-        }
+        $this->templates = ZmsApiClientService::getMergedMailTemplates($providerId);
     }
 
     /**
