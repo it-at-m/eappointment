@@ -61,10 +61,7 @@
     "
     class="container"
   >
-    <h2
-      tabindex="0"
-      style="display: flex; align-items: center; margin-bottom: 24px"
-    >
+    <h2 style="display: flex; align-items: center; margin-bottom: 24px">
       <muc-icon
         style="width: 32px; height: 32px; margin-right: 8px"
         icon="calendar"

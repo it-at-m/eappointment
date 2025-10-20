@@ -22,7 +22,7 @@
         {{ selectedProvider?.address.street }}
         {{ selectedProvider?.address.house_number }} <br />
       </p>
-      <b>{{ t("appointmentNumber") }}:</b>
+      <strong>{{ t("appointmentNumber") }}:</strong>
       {{ appointment.processId }}
     </template>
   </muc-card>
