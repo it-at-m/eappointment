@@ -55,7 +55,6 @@ class ZmsApiClientService
     {
         try {
             $url = "/process/{$processId}/{$authKey}/ics/";
-            // Status parameter is optional in API; default is 'appointment'
             $result = \App::$http->readGetResult($url);
             $entity = $result?->getEntity();
             if ($entity instanceof \BO\Zmsentities\Ics) {

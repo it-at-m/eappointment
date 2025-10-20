@@ -591,7 +591,6 @@ class MapperService
             return null;
         }
 
-        // Delegate ICS generation to zmsapi endpoint; return null on failure to hide button
         $content = ZmsApiClientService::getIcsContent((int)($process->id ?? 0), (string)($process->authKey ?? ''));
         return $content ?: null;
     }
