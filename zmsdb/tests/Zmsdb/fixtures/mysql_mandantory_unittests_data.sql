@@ -141,3 +141,5 @@ INSERT INTO `request_variant` (`id`, `name`) VALUES
   (3, 'C – Änderungsmeldung');
 
 UNLOCK TABLES;
+
+UPDATE `buerger` SET `status` = 'confirmed' WHERE `BuergerID` IN (10118, 10114, 10030);
