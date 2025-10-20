@@ -20,6 +20,10 @@ class ZmsApiClientService
     public static function getMergedMailTemplates(int $providerId): array
     {
         try {
+            $cacheKey = 'merged_mailtemplates_' . $providerId;
+            if (\App::$cache && ($cached = \App::$cache->get($cacheKey))) {
+                return is_array($cached) ? $cached : [];
+            }
             $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/');
             $templates = $result?->getCollection();
             if (!is_iterable($templates)) {
@@ -32,6 +36,14 @@ class ZmsApiClientService
                 if ($name !== null && $value !== null) {
                     $out[(string)$name] = (string)$value;
                 }
+            }
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $out, \App::$SOURCE_CACHE_TTL);
+                LoggerService::logInfo('Cache set', [
+                    'key' => $cacheKey,
+                    'ttl' => \App::$SOURCE_CACHE_TTL,
+                    'entity_type' => 'merged_mail_templates'
+                ]);
             }
             return $out;
         } catch (\Exception $e) {
