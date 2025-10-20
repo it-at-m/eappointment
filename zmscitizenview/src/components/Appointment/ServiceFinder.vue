@@ -1,6 +1,6 @@
 <template>
   <div class="m-content">
-    <h2 tabindex="0">{{ t("service") }}</h2>
+    <h2>{{ t("service") }}</h2>
   </div>
 
   <div
@@ -55,7 +55,7 @@
       />
     </div>
     <div v-if="service?.subServices && service.subServices.length > 0">
-      <h3 tabindex="0">{{ t("combinableServices") }}</h3>
+      <h3>{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
         tabindex="0"
@@ -109,10 +109,7 @@
           aria-hidden="true"
           focusable="false"
         />
-        <div
-          ref="durationInfo"
-          tabindex="0"
-        >
+        <div ref="durationInfo">
           <b>{{ t("estimatedDuration") }}</b>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}

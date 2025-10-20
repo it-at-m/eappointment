@@ -31,16 +31,16 @@ class ProcessDeleteQuick extends ProcessDelete
 
         $this->testProcess($workstation, $process);
 
-        $process->status = 'blocked';
-        if ($process->hasId() && $process->scope && $process->status !== 'cancelled') {
-            (new \BO\Zmsdb\OverallCalendar())->unbook(
-                (int) $process->scope->id,
-                (int) $process->id
+        if ($process->hasId() && $process->scope && $process->status == 'confirmed') {
+            (new \BO\Zmsdb\OverviewCalendar())->perform(
+                \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+                ['process_id' => (int)$process->id]
             );
         }
+        $process->status = 'blocked';
         $this->writeMails($request, $process);
         $status = (new Process())->writeBlockedEntity($process, false, $workstation->getUseraccount());
-        if (! $status) {
+        if (!$status) {
             throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
         }
         $message = Response\Message::create($request);
@@ -58,7 +58,7 @@ class ProcessDeleteQuick extends ProcessDelete
         }
 
         if (
-            ! in_array(
+            !in_array(
                 $process->getCurrentScope()->getId(),
                 $workstation->getScopeListFromAssignedDepartments()->getIds()
             )

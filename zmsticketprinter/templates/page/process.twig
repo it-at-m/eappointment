@@ -19,7 +19,7 @@
 		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
 		</span>
 			<div class="nummernanzeige">
-				{{ process.displayNumber }}
+				{{ process.queue.number }}
 			</div>
 			<span>
         	{% if waitingClients >= 1 %}
@@ -61,7 +61,7 @@
         </span>
 
 				<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
-					{{ hiddenfield({ "name": "waitingNumber", "value": process.displayNumber }) }}
+					{{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
 					{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
 					{{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
 				</form>

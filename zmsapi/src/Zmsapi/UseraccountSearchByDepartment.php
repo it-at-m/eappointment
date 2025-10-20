@@ -33,7 +33,7 @@ class UseraccountSearchByDepartment extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readSearchByDepartmentId($department->id, $parameters, $resolveReferences)->withLessData();
+        $useraccountList = (new Useraccount())->readSearchByDepartmentId($department->id, $parameters, $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
 
         $validUserAccounts = [];
