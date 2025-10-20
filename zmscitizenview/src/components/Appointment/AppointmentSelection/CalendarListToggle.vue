@@ -1,9 +1,6 @@
 <template>
   <div class="calendar-list-toggle-container">
-    <h2
-      id="viewToggleLabel"
-      tabindex="0"
-    >
+    <h2 id="viewToggleLabel">
       {{ t("time") }}
     </h2>
     <div

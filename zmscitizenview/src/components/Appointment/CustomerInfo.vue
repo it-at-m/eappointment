@@ -54,7 +54,6 @@
   <h2
     v-if="!isExpired"
     class="m-component-form__title"
-    tabindex="0"
   >
     {{ t("contactDetails") }}
   </h2>
