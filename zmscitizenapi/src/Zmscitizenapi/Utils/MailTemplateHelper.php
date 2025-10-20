@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Utils;
 
 use BO\Zmsentities\Process;
 use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 
 /**
  * Mail template helper that fetches custom mail templates via API calls.
@@ -66,7 +67,7 @@ class MailTemplateHelper
                 $this->templates = $templates;
             }
         } catch (\Exception $e) {
-            \BO\Zmscitizenapi\Services\Core\LoggerService::logError($e, null, null, [
+            LoggerService::logError($e, null, null, [
                 'providerId' => $providerId,
                 'context' => 'Template loading via API',
                 'reason' => 'Failed to fetch custom templates from database'
