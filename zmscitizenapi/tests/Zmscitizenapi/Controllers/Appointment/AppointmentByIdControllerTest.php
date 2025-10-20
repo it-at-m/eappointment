@@ -43,7 +43,6 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 [
                     'function' => 'readGetResult',
                     'url' => '/merged-mailtemplates/102522/',
-                    'xtoken' => 'hash',
                     'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ]
             ]

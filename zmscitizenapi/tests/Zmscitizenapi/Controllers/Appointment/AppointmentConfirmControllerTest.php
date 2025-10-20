@@ -42,8 +42,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/merged-mailtemplates/102522/',
-                    'xtoken' => 'hash',
+                    'url' => '/merged-mailtemplates/102522/',                    
                     'response' => $this->readFixture("GET_merged_mailtemplates.json")
                 ],
                 [
@@ -218,8 +217,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
+                'url' => '/merged-mailtemplates/102522/',                
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
@@ -398,7 +396,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
@@ -447,7 +444,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
@@ -495,8 +491,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
+                'url' => '/merged-mailtemplates/102522/',                
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
@@ -545,7 +540,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [
@@ -594,7 +588,6 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             [
                 'function' => 'readGetResult',
                 'url' => '/merged-mailtemplates/102522/',
-                'xtoken' => 'hash',
                 'response' => $this->readFixture("GET_merged_mailtemplates.json")
             ],
             [

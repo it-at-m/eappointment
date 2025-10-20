@@ -17,6 +17,27 @@ use BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
+    public static function getMergedMailTemplates(int $providerId): array
+    {
+        try {
+            $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/');
+            $templates = $result?->getCollection();
+            if (!is_iterable($templates)) {
+                return [];
+            }
+            $out = [];
+            foreach ($templates as $template) {
+                $name = is_array($template) ? ($template['name'] ?? null) : ($template->name ?? null);
+                $value = is_array($template) ? ($template['value'] ?? null) : ($template->value ?? null);
+                if ($name !== null && $value !== null) {
+                    $out[(string)$name] = (string)$value;
+                }
+            }
+            return $out;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
     public static function getOffices(): ProviderList
     {
         try {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Utils;
 
 use BO\Zmsentities\Process;
+use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 
 /**
  * Mail template helper that fetches custom mail templates via API calls.
@@ -60,19 +61,9 @@ class MailTemplateHelper
         }
 
         try {
-            $result = \App::$http->readGetResult(
-                '/merged-mailtemplates/' . $providerId . '/',
-                null,
-                \App::$SECURE_TOKEN
-            );
-            $templates = $result?->getCollection();
-
+            $templates = ZmsApiClientService::getMergedMailTemplates($providerId);
             if ($templates) {
-                foreach ($templates as $template) {
-                    if (isset($template['name']) && isset($template['value'])) {
-                        $this->templates[$template['name']] = $template['value'];
-                    }
-                }
+                $this->templates = $templates;
             }
         } catch (\Exception $e) {
             \BO\Zmscitizenapi\Services\Core\LoggerService::logError($e, null, null, [

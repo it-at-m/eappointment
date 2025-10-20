@@ -60,15 +60,9 @@ class Application extends \BO\Slim\Application
 
     public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
 
-    /**
-     * Security Token for API Access
-     */
-    public static string $SECURE_TOKEN;
-
     public static function initialize(): void
     {
         self::initializeMaintenanceMode();
-        self::initializeSecureToken();
         self::initializeLogger();
         self::initializeCaptcha();
         self::initializeCache();
@@ -80,14 +74,6 @@ class Application extends \BO\Slim\Application
         self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
     }
 
-    private static function initializeSecureToken(): void
-    {
-        $token = getenv('ZMS_CONFIG_SECURE_TOKEN');
-        if ($token === false || $token === '') {
-            throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
-        }
-        self::$SECURE_TOKEN = $token;
-    }
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract logger initialization logic into a dedicated LoggerInitializer class
