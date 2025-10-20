@@ -61,17 +61,9 @@ class MailTemplateHelper
             return;
         }
 
-        try {
-            $templates = ZmsApiClientService::getMergedMailTemplates($providerId);
-            if ($templates) {
-                $this->templates = $templates;
-            }
-        } catch (\Exception $e) {
-            LoggerService::logError($e, null, null, [
-                'providerId' => $providerId,
-                'context' => 'Template loading via API',
-                'reason' => 'Failed to fetch custom templates from database'
-            ]);
+        $templates = ZmsApiClientService::getMergedMailTemplates($providerId);
+        if ($templates) {
+            $this->templates = $templates;
         }
     }
 

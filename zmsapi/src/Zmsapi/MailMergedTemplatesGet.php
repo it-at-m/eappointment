@@ -8,9 +8,7 @@
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
-use BO\Mellon\Validator;
 use BO\Zmsdb\MailTemplates as MailTemplatesQuery;
-use BO\Zmsapi\Helper\User;
 
 class MailMergedTemplatesGet extends BaseController
 {
