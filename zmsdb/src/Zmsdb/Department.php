@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Department as Entity;
 use BO\Zmsentities\Collection\DepartmentList as Collection;
 
@@ -20,33 +21,48 @@ class Department extends Base
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        $cacheKey = "$departmentId-$resolveReferences";
-        if (! $disableCache && array_key_exists($cacheKey, self::$departmentCache)) {
-            return clone self::$departmentCache[$cacheKey];
+        $cacheKey = "department-$departmentId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $department = App::$cache->get($cacheKey);
         }
-        $query = new Query\Department(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionDepartmentId($departmentId);
-        $department = $this->fetchOne($query, new Entity());
+
+        if (empty($department)) {
+            $query = new Query\Department(Query\Base::SELECT);
+            $query->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionDepartmentId($departmentId);
+            $department = $this->fetchOne($query, new Entity());
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $department);
+            }
+        }
+
         if (isset($department['id']) && $department['id']) {
-            $department = $this->readResolvedReferences($department, $resolveReferences);
-            $department = $department->withOutClusterDuplicates();
-            self::$departmentCache[$cacheKey] = $department;
-            return clone self::$departmentCache[$cacheKey];
+            $department = $this->readResolvedReferences($department, $resolveReferences, $disableCache);
+            return $department->withOutClusterDuplicates();
         }
+
         return null;
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
-    {
-        $entity['links'] = (new Link())->readByDepartmentId($entity->id);
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences,
+        $disableCache = false
+    ) {
+        $entity['links'] = (new Link())->readByDepartmentId($entity->id, $disableCache);
         $entity['scopes'] = (new Scope())
-            ->readByDepartmentId($entity->id, $resolveReferences - 1)
+            ->readByDepartmentId($entity->id, $resolveReferences - 1, $disableCache)
             ->sortByContactName();
         if (0 < $resolveReferences) {
-            $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
-            $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id);
+            $entity['clusters'] = (new Cluster())->readByDepartmentId(
+                $entity->id,
+                $resolveReferences - 1,
+                $disableCache
+            );
+            $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id, $disableCache);
         }
         return $entity;
     }
@@ -130,6 +146,9 @@ class Department extends Base
                 $departmentId
             ));
         }
+
+        $this->removeCache($entity);
+
         return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
@@ -169,6 +188,9 @@ class Department extends Base
         if ($entity->getNotificationPreferences()) {
             $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         }
+
+        $this->removeCache($entity);
+
         return $this->readEntity($lastInsertId);
     }
 
@@ -203,7 +225,8 @@ class Department extends Base
             );
         }
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
-        return $this->readEntity($departmentId);
+        $this->removeCache($entity);
+        return $this->readEntity($departmentId, 0, true);
     }
 
     /**
@@ -392,5 +415,24 @@ class Department extends Base
             }
         }
         return $queueList;
+    }
+
+    public function removeCache($department)
+    {
+        if (!App::$cache || !isset($department->id)) {
+            return;
+        }
+
+        if (App::$cache->has("department-$department->id-0")) {
+            App::$cache->delete("department-$department->id-0");
+        }
+
+        if (App::$cache->has("department-$department->id-1")) {
+            App::$cache->delete("department-$department->id-1");
+        }
+
+        if (App::$cache->has("department-$department->id-2")) {
+            App::$cache->delete("department-$department->id-2");
+        }
     }
 }

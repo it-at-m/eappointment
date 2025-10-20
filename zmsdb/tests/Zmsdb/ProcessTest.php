@@ -657,7 +657,7 @@ class ProcessTest extends Base
     {
         $process = new Process();
         $process->id = 123;
-        $scope = (new ScopeQuery())->readEntity(140);
+        $scope = (new ScopeQuery())->readEntity(140, 0, true);
 
         $process->scope = $scope;
         $client = new Client();
@@ -671,7 +671,7 @@ class ProcessTest extends Base
     public function testAppointmentIsAllowedBecauseProcessWithSameIdAndMailExists()
     {
         $process = new Process();
-        $scope = (new ScopeQuery())->readEntity(140);
+        $scope = (new ScopeQuery())->readEntity(140, 0, true);
 
         $process->scope = $scope;
         $client = new Client();
@@ -685,7 +685,7 @@ class ProcessTest extends Base
     public function testAppointmentIsAllowedBecauseEMailIsWhitelisted()
     {
         $process = new Process();
-        $scope = (new ScopeQuery())->readEntity(140);
+        $scope = (new ScopeQuery())->readEntity(140, 0, true);
 
         $process->scope = $scope;
         $client = new Client();

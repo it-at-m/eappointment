@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Dayoff as Entity;
 use BO\Zmsentities\Collection\DayoffList as Collection;
 
@@ -27,8 +28,17 @@ class DayOff extends Base
         return $dayOffList;
     }
 
-    public function readOnlyByDepartmentId($departmentId = 0)
+    public function readOnlyByDepartmentId($departmentId = 0, $disableCache = false)
     {
+        $cacheKey = "dayOffsReadOnlyByDepartmentId-$departmentId";
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -41,32 +51,59 @@ class DayOff extends Base
                 }
             }
         }
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
+
         return $dayOffList;
     }
 
-    public function readCommon()
+    public function readCommon($disableCache = false)
     {
-        if (static::$commonList === null) {
-            $dayOffList = new Collection();
-            $query = new Query\DayOff(Query\Base::SELECT);
-            $query->addEntityMapping()
-                ->addConditionCommon();
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
-                    if ($entity instanceof Entity) {
-                        $dayOffList->addEntity($entity);
-                    }
+        $cacheKey = "dayOffs";
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
+        $dayOffList = new Collection();
+        $query = new Query\DayOff(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionCommon();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
                 }
             }
-            static::$commonList = $dayOffList;
         }
-        return clone static::$commonList;
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
+
+        return $dayOffList;
     }
 
-    public function readByScopeId($scopeId = 0)
+    public function readByScopeId($scopeId = 0, $disableCache = false)
     {
-        $dayOffList = $this->readCommon();
+        $cacheKey = "dayOffsByScope-$scopeId";
+
+        $dayOffListCommon = $this->readCommon();
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $dayOffListCommon->addList($data);
+            }
+        }
+
+        $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionScopeId($scopeId);
@@ -78,7 +115,12 @@ class DayOff extends Base
                 }
             }
         }
-        return $dayOffList;
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $dayOffList);
+        }
+
+        return $dayOffListCommon->addList($dayOffList);
     }
 
     public function readByYear($year)
@@ -149,6 +191,9 @@ class DayOff extends Base
             );
             $this->writeItem($query);
         }
+
+        $this->removeCache();
+
         return ($year) ? $this->readCommonByYear($year) : $dayoffList;
     }
 
@@ -179,12 +224,28 @@ class DayOff extends Base
                 $this->deleteItem($deleteQuery);
             }
         }
+
+        $this->removeCache();
     }
 
     public function deleteEntity($itemId)
     {
         $query = new Query\DayOff(Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);
+
+        $this->removeCache();
+
         return ($this->deleteItem($query));
+    }
+
+    public function removeCache()
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        if (App::$cache->has("dayOffs")) {
+            App::$cache->delete("dayOffs");
+        }
     }
 }

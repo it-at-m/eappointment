@@ -3,10 +3,19 @@
 namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
+use BO\Zmsclient\Http;
+use Psr\SimpleCache\CacheInterface;
 
 class ProcessListByClusterAndDateTest extends Base
 {
     protected $classname = "ProcessListByClusterAndDate";
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        \App::$cache = null;
+    }
 
     public function testRendering()
     {
