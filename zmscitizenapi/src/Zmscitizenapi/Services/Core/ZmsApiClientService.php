@@ -51,7 +51,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function getIcsContent(int $processId, string $authKey, string $status = 'appointment'): ?string
+    public static function getIcsContent(int $processId, string $authKey): ?string
     {
         try {
             $url = "/process/{$processId}/{$authKey}/ics/";

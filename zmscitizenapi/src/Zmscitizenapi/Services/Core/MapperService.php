@@ -582,10 +582,9 @@ class MapperService
      * Generate ICS content for a process if it has appointments with time.
      *
      * @param Process $process The process to generate ICS content for
-     * @param mixed $templateProvider Optional template provider for database templates
      * @return string|null The ICS content or null if generation fails or not applicable
      */
-    private static function generateIcsContent(Process $process, $templateProvider = null): ?string
+    private static function generateIcsContent(Process $process): ?string
     {
         if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
             return null;
