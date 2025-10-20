@@ -5,7 +5,7 @@
     divider
   >
     <p style="margin-top: 32px; padding-bottom: 8px">
-      <b>{{ t("noLoginInfo") }}</b>
+      <strong>{{ t("noLoginInfo") }}</strong>
     </p>
     <p style="padding-bottom: 32px">
       {{ t("noLoginText") }}

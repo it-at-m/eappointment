@@ -107,7 +107,7 @@
       <div class="wrapper">
         <clock-svg />
         <div ref="durationInfo">
-          <b>{{ t("estimatedDuration") }}</b>
+          <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
         </div>
