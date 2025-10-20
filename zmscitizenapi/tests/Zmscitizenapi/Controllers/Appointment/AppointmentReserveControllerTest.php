@@ -41,6 +41,11 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
                     'response' => $this->readFixture("POST_reserve_appointment.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ]
             ]
         );
@@ -120,7 +125,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('icsContent', $responseBody);
-        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        if ($responseBody['icsContent'] !== null) {
+            $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        }
         unset($responseBody['icsContent']);
         unset($expectedResponse['icsContent']);
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

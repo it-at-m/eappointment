@@ -46,8 +46,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/merged-mailtemplates/102522/',
-                    'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -158,8 +158,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/merged-mailtemplates/102522/',
-                'response' => $this->readFixture("GET_merged_mailtemplates.json")
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
     

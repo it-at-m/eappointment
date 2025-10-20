@@ -16,9 +16,7 @@ use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
-use BO\Zmscitizenapi\Utils\MailTemplateHelper;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
@@ -29,8 +27,6 @@ use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
-use BO\Zmsentities\Helper\Messaging;
-use BO\Zmsentities\Config;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -595,26 +591,8 @@ class MapperService
             return null;
         }
 
-        try {
-            $config = new Config();
-
-            if ($templateProvider === null && isset($process->scope) && isset($process->scope->provider)) {
-                $templateProvider = new MailTemplateHelper($process);
-                $templates = $templateProvider->getTemplates();
-                if (empty($templates)) {
-                    $templateProvider = null;
-                }
-            }
-
-            $ics = Messaging::getMailIcs($process, $config, 'appointment', null, false, $templateProvider);
-            return $ics->getContent();
-        } catch (\Exception $e) {
-            // Log error but don't fail the process
-            LoggerService::logError($e, null, null, [
-                'processId' => $process->id,
-                'context' => 'ICS generation'
-            ]);
-            return null;
-        }
+        // Delegate ICS generation to zmsapi endpoint; return null on failure to hide button
+        $content = ZmsApiClientService::getIcsContent((int)($process->id ?? 0), (string)($process->authKey ?? ''));
+        return $content ?: null;
     }
 }

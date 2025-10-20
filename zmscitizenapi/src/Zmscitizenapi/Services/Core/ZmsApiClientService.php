@@ -50,6 +50,27 @@ class ZmsApiClientService
             ExceptionService::handleException($e);
         }
     }
+
+    public static function getIcsContent(int $processId, string $authKey, string $status = 'appointment'): ?string
+    {
+        try {
+            $url = "/process/{$processId}/{$authKey}/ics/";
+            // Status parameter is optional in API; default is 'appointment'
+            $result = \App::$http->readGetResult($url);
+            $entity = $result?->getEntity();
+            if ($entity instanceof \BO\Zmsentities\Ics) {
+                return $entity->getContent() ?? null;
+            }
+            return null;
+        } catch (\Exception $e) {
+            // Do not fail the user flow if ICS is unavailable; just log and return null
+            LoggerService::logError($e, null, null, [
+                'processId' => $processId,
+                'context' => 'ICS fetch via API'
+            ]);
+            return null;
+        }
+    }
     public static function getOffices(): ProviderList
     {
         try {
