@@ -180,7 +180,7 @@ class Organisation extends Base
         if ($entity->toProperty()->ticketprinters->isAvailable()) {
             $this->updateOrganisationTicketprinters($entity->ticketprinters, $organisationId);
         }
-        return $this->readEntity($organisationId, 1);
+        return $this->readEntity($organisationId, 1, true);
     }
 
     /**
