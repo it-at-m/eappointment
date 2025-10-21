@@ -131,7 +131,6 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-        error_log(json_encode($responseBody));
         $expectedResponse = [
             [
                 'processId' => 101002,
