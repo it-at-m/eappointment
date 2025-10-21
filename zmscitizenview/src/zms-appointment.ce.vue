@@ -8,13 +8,14 @@
       <div v-html="sanitizeHtml(mucIconsSprite)"></div>
       <div v-html="sanitizeHtml(customIconsSprit)"></div>
       <appointment-view
-        :base-url="baseUrl"
+        :global-state="globalState"
         :service-id="serviceId"
         :location-id="locationId"
         :exclusive-location="exclusiveLocation"
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
         :appointment-detail-url="appointmentDetailUrl"
+        :show-login-option="showLoginOption.toLowerCase() === 'true'"
         :t="t"
       />
     </div>
@@ -49,8 +50,9 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -85,10 +87,15 @@ defineProps({
     type: String,
     required: false,
     default: "appointment-detail.html",
-  },
+  showLoginOption: {
+    type: String,
+    required: false,
+    default: "false",
+  }
 });
 
 const { t } = useI18n();
+const globalState = useGlobalState(props);
 </script>
 
 <style>

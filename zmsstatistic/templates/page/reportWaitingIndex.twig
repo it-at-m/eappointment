@@ -8,302 +8,155 @@
 
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}">
-        <div class="report-index">
-            {% embed "block/report/period.twig" with {"source":source, "items": waitingPeriod, "selected": period} %}
-                {% block breadcrumb %}
-                <nav class="breadcrumb">
-                    <ol>
-                    {% set arguments = {} %}
-                    {% if period %}
-                        {% set arguments = {"period": period} %}
-                    {% endif %}
-                    <li class="report-period--subject">{{ title|trans }}</li>
-                    {% if organisation %}
-                        <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportWaitingOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
-                    {% endif %}
-                    {% if department %}
-                        <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportWaitingDepartment", arguments, {}) }}">{{ department.name }}</a></li>
-                    {% endif %}
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportWaitingIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
-                    </ol>
-                </nav>
-                {% endblock %}
-            {% endembed %}
+    <div class="report-index">
+        {% embed "block/report/period.twig" with {"source":source, "items": waitingPeriod, "selected": period} %}
+        {% endembed %}
 
-            <h2>Spontankunden</h2>
+        <form class="form--base panel--heavy">
+        {% embed "block/report/reportFilter.twig" %}
+        {% endembed %}
+        </form>
+
+        {% set reportSections = [
+            {'title': 'Spontankunden', 'suffix': ''},
+            {'title': 'Terminkunden', 'suffix': '_termin'}
+        ] %}
+
+        {% for section in reportSections %}
+            <h2>{{ section.title }}</h2>
+
             {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
-                {% import "element/helper/snippets.twig" as timeutils %}
-                {% block board_body %}
-                {% if selected %}
-                    {% if exchangeWaiting.period == "day" %}
-                        {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
-                        {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
-                        {% set month = exchangeWaiting.firstDay.month %} 
-                        {% set year = exchangeWaiting.firstDay.year %}
-                        {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
-                    {% elseif exchangeWaiting.period == "month" %}
-                        {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
-                        {% set endDate = "%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month) %}
-                        {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
-                    {% endif %}
-                    <table class="table--base">
-                        <thead>
-                            <tr>
-                                <th class="statistik" style="width: 1%; white-space: nowrap;">
-                                    <span class="keinumbruch">
-                                        {% trans %}Zeitabschnitte{% endtrans %}
-                                    </span>
-                                </th>
-                                {% if exchangeWaiting.period == "day" %}
-                                <th class="statistik">{{ startDate|format_date(pattern="LLL") }} </th>
-                                {% elseif exchangeWaiting.period == "month" %}
+            {% import "element/helper/snippets.twig" as timeutils %}
+            {% block board_body %}
+            {% if selected or dateRange %}
+                {% if exchangeWaiting.period == "day" %}
+                    {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
+                    {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
+                    {% set start = date(startDate) %}
+                    {% set end = date(endDate) %}
+                    {% set dateRange = [] %}
+                    {% for i in range(0, (end.timestamp - start.timestamp) // 86400) %}
+                        {% set fullDate = (start.timestamp + (i * 86400)) | date('Y-m-d') %}
+                        {% set dateRange = dateRange|merge([fullDate]) %}
+                    {% endfor %}
+                {% elseif exchangeWaiting.period == "month" %}
+                    {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
+                    {% set endDate = "%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month) %}
+                    {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
+                {% endif %}
+
+                <div class="table-wrapper">
+                <table class="table--base">
+                    <thead>
+                        <tr>
+                            <th class="statistik" style="width: 1%; white-space: nowrap;">
+                                <span class="keinumbruch">
+                                    {% trans %}Zeitabschnitte{% endtrans %}
+                                </span>
+                            </th>
+                            {% if exchangeWaiting.period == "day" %}
+                                <th class="statistik">Max.</th>
+                            {% elseif exchangeWaiting.period == "month" %}
                                 <th class="statistik">{{ startDate|date('Y') }}</th>
+                            {% endif %}
+                            {% for date in dateRange %}
+                                {% if exchangeWaiting.period == "day" %}
+                                    <th class="statistik">{{ date|date('d.m.') }}</th>
+                                {% elseif exchangeWaiting.period == "month" %}
+                                    <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
                                 {% endif %}
-                                {% for date in dateRange %}
-                                    {% if exchangeWaiting.period == "day" %}
-                                        <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
-                                    {% elseif exchangeWaiting.period == "month" %}
-                                        <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
-                                    {% endif %}
-                                {% endfor %}
-                                </tr>
-                            </thead>
-                        <tbody>
-                            <tr>
-                                <th class="statistik">
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesmaximum der<br>Wartezeit in Min.{% endtrans %}</p><br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wartezeit in Min.{% endtrans %}</p><br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wegezeit in Min.{% endtrans %}</p>
-                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="statistik">
+                                <p>{% trans %}Tagesmaximum der Wartezeit (Min.){% endtrans %}</p>
+                                <p>{% trans %}Tagesdurchschnitt der Wartezeit (Min.){% endtrans %}</p>
+                                <p>{% trans %}Tagesdurchschnitt der Wegezeit (Min.){% endtrans %}</p>
+                            </th>
+                            <td class="statistik" style="text-align: right;">
+                                <span class="{% if not exchangeWaiting.data.max['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['max_waitingtime' ~ section.suffix]) }}
+                                </span><br><br>
+                                <span class="{% if not exchangeWaiting.data.max['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waitingtime' ~ section.suffix]) }}
+                                </span><br><br>
+                                <span class="{% if not exchangeWaiting.data.max['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waytime' ~ section.suffix]) }}
+                                </span>
+                            </td>
+                            {% for date in dateRange %}
+                                {% set formattedDate = exchangeWaiting.period == "day"
+                                    ? date
+                                    : startDate|date('Y') ~ "-" ~ "%02d"|format(date)
+                                %}
                                 <td class="statistik" style="text-align: right;">
-                                    <br>
-                                    <span class="{% if not exchangeWaiting.data.max.max_waitingtime %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.max_waitingtime) }}
-                                    </span>
-                                    <br><br><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average_waitingtime %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.average_waitingtime) }}
-                                    </span>
-                                    <br><br><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average_waytime %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.average_waytime) }}
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix]) }}
+                                    </span><br><br>
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix]) }}
+                                    </span><br><br>
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix]) }}
                                     </span>
                                 </td>
+                            {% endfor %}
+                        </tr>
+
+                        {% for hour in 6..21 %}
+                            <tr>
+                                <th>
+                                    {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}<br>
+                                    {% trans %}Anzahl der Wartenden{% endtrans %}<br>
+                                    {% trans %}Durchschnittliche Wartezeit (Min.){% endtrans %}<br>
+                                    {% trans %}Durchschnittliche Wegezeit (Min.){% endtrans %}
+                                </th>
+                                <td class="statistik" style="text-align: right;">
+                                    <span class="{% if not exchangeWaiting.data.max[hour]['waitingcount' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ exchangeWaiting.data.max[hour]['waitingcount' ~ section.suffix]|default(0) }}
+                                    </span><br>
+                                    <span class="{% if not exchangeWaiting.data.max[hour]['waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour]['waitingtime' ~ section.suffix]) }}
+                                    </span><br>
+                                    <span class="{% if not exchangeWaiting.data.max[hour]['waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour]['waytime' ~ section.suffix]) }}
+                                    </span>
+                                </td>
+
                                 {% for date in dateRange %}
-                                    {% if exchangeWaiting.period == "day" %}
-                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
-                                    {% elseif exchangeWaiting.period == "month" %}
-                                        {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
-                                    {% endif %}
+                                    {% set formattedDate = exchangeWaiting.period == "day"
+                                        ? date
+                                        : startDate|date('Y') ~ "-" ~ "%02d"|format(date)
+                                    %}
                                     <td class="statistik" style="text-align: right;">
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].max_waitingtime) }}
-                                        </span>
-                                        <br><br><br>
-                                        <span class="{% if not exchangeWaiting.data[date].average_waitingtime %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].average_waitingtime) }}
-                                        </span>
-                                        <br><br><br>
-                                        <span class="{% if not exchangeWaiting.data[date].average_waytime %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].average_waytime) }}
+                                        <span class="{% if not exchangeWaiting.data[formattedDate][hour]['waitingcount' ~ section.suffix] %}ausgegraut{% endif %}">
+                                            {{ exchangeWaiting.data[formattedDate][hour]['waitingcount' ~ section.suffix]|default(0) }}
+                                        </span><br>
+                                        <span class="{% if not exchangeWaiting.data[formattedDate][hour]['waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate][hour]['waitingtime' ~ section.suffix]) }}
+                                        </span><br>
+                                        <span class="{% if not exchangeWaiting.data[formattedDate][hour]['waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate][hour]['waytime' ~ section.suffix]) }}
                                         </span>
                                     </td>
                                 {% endfor %}
                             </tr>
-                            {% for hour in 6..21 %}
-                                <tr>
-                                    <th>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Durchschnittliche Wartezeit in Min.{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Durchschnittliche Wegezeit in Min.{% endtrans %}</p>
-                                    </th>
-                                    <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}" style="text-align: right;">
-                                        <br />
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingcount %}ausgegraut{% endif %}">
-                                            {{ exchangeWaiting.data.max[hour].waitingcount|default(0)|number_format(0, '', '') }}
-                                        </span>
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingtime %}ausgegraut{% endif %}">
-                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour].waitingtime) }}
-                                        </span>
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waytime %}ausgegraut{% endif %}">
-                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour].waytime) }}
-                                        </span>
-                                    </td>
-                                    {% for date in dateRange %}
-                                        {% if exchangeWaiting.period == "day" %}
-                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
-                                        {% elseif exchangeWaiting.period == "month" %}
-                                            {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
-                                        {% endif %}
-                                        <td class="statistik" style="text-align: right;">
-                                            <br />
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingcount %}ausgegraut{% endif %}">
-                                                {{ exchangeWaiting.data[date][hour].waitingcount|default(0)|number_format(0, '', '') }}
-                                            </span>
-                                            <br>
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingtime %}ausgegraut{% endif %}">
-                                                {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date][hour].waitingtime) }}
-                                            </span>
-                                            <br>
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waytime %}ausgegraut{% endif %}">
-                                                {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date][hour].waytime) }}
-                                            </span>
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                        {{ block("board_body_noperiod") }}
-                    {% endif %}
-                {% endblock %}
-            {% endembed %}
-
-            <h2>Terminkunden</h2>
-
-            {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
-                {% import "element/helper/snippets.twig" as timeutils %}
-                {% block board_body %}
-                {% if selected %}
-                    {% if exchangeWaiting.period == "day" %}
-                        {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
-                        {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
-                        {% set month = exchangeWaiting.firstDay.month %}
-                        {% set year = exchangeWaiting.firstDay.year %}
-                        {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
-                    {% elseif exchangeWaiting.period == "month" %}
-                        {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
-                        {% set endDate = "%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month) %}
-                        {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
-                    {% endif %}
-                    <table class="table--base">
-                        <thead>
-                            <tr>
-                                <th class="statistik" style="width: 1%; white-space: nowrap;">
-                                    <span class="keinumbruch">
-                                        {% trans %}Zeitabschnitte{% endtrans %}
-                                    </span>
-                                </th>
-                                {% if exchangeWaiting.period == "day" %}
-                                <th class="statistik">{{ startDate|format_date(pattern="LLL") }} (Max.)</th>
-                                {% elseif exchangeWaiting.period == "month" %}
-                                <th class="statistik">{{ startDate|date('Y') }}</th>
-                                {% endif %}
-                                {% for date in dateRange %}
-                                    {% if exchangeWaiting.period == "day" %}
-                                        <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
-                                    {% elseif exchangeWaiting.period == "month" %}
-                                        <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
-                                    {% endif %}
-                                {% endfor %}
-                                </tr>
-                            </thead>
-                        <tbody>
-                            <tr>
-                                <th class="statistik">
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesmaximum der<br>Wartezeit in Min.{% endtrans %}</p>
-                                    <br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wartezeit in Min.{% endtrans %}</p>
-                                    <br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wegezeit in Min.{% endtrans %}</p>
-                                </th>
-                                <td class="statistik" style="text-align: right;">
-                                    <br>
-                                    <span class="{% if not exchangeWaiting.data.max.max_waitingtime_termin %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.max_waitingtime_termin) }}
-                                    </span>
-                                    <br><br><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average_waitingtime_termin %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.average_waitingtime_termin) }}
-                                    </span>
-                                    <br><br><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average_waytime_termin %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max.average_waytime_termin) }}
-                                    </span>
-                                </td>
-                                {% for date in dateRange %}
-                                    {% if exchangeWaiting.period == "day" %}
-                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
-                                    {% elseif exchangeWaiting.period == "month" %}
-                                        {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
-                                    {% endif %}
-                                    <td class="statistik" style="text-align: right;">
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime_termin %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].max_waitingtime_termin) }}
-                                        </span>
-                                        <br><br><br>
-                                        <span class="{% if not exchangeWaiting.data[date].average_waitingtime_termin %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].average_waitingtime_termin) }}
-                                        </span>
-                                        <br><br><br>
-                                        <span class="{% if not exchangeWaiting.data[date].average_waytime_termin %}ausgegraut{% endif %}">
-                                          {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date].average_waytime_termin) }}
-                                        </span>
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            {% for hour in 6..21 %}
-                                <tr>
-                                    <th>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Durchschnittliche Wartezeit in Min.{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Durchschnittliche Wegezeit in Min.{% endtrans %}</p>
-                                    </th>
-                                    <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}" style="text-align: right;">
-                                        <br />
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingcount_termin %}ausgegraut{% endif %}">
-                                            {{ exchangeWaiting.data.max[hour].waitingcount_termin|default(0)|number_format(0, '', '') }}
-                                        </span>
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingtime_termin %}ausgegraut{% endif %}">
-                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour].waitingtime_termin) }}
-                                        </span>
-                                        <br>
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waytime_termin %}ausgegraut{% endif %}">
-                                            {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max[hour].waytime_termin) }}
-                                        </span>
-                                    </td>
-                                    {% for date in dateRange %}
-                                        {% if exchangeWaiting.period == "day" %}
-                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
-                                        {% elseif exchangeWaiting.period == "month" %}
-                                            {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
-                                        {% endif %}
-                                        <td class="statistik" style="text-align: right;">
-                                            <br />
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingcount_termin %}ausgegraut{% endif %}">
-                                                {{ exchangeWaiting.data[date][hour].waitingcount_termin|default(0)|number_format(0, '', '') }}
-                                            </span>
-                                            <br>
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingtime_termin %}ausgegraut{% endif %}">
-                                                {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date][hour].waitingtime_termin) }}
-                                            </span>
-                                            <br>
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waytime_termin %}ausgegraut{% endif %}">
-                                                {{ timeutils.formatMinutesToTime(exchangeWaiting.data[date][hour].waytime_termin) }}
-                                            </span>
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                        {{ block("board_body_noperiod") }}
-                    {% endif %}
-                {% endblock %}
-            {% endembed %}
-
-            {% if period %}
-            {{ block("advancedInfoWaiting") }}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            {% else %}
+                {{ block("board_body_noperiod") }}
             {% endif %}
-        </div>
+            {% endblock %}
+            {% endembed %}
+        {% endfor %}
+
+        {% if period %}
+            {{ block("advancedInfoWaiting") }}
+        {% endif %}
     </div>
+</div>
 {% endblock %}

@@ -77,7 +77,7 @@
           <div class="m-component__column">
             <div v-if="currentView === 0 && !appointmentHash">
               <service-finder
-                :base-url="baseUrl"
+                :global-state="globalState"
                 :preselected-service-id="serviceId"
                 :preselected-office-id="locationId"
                 :exclusive-location="exclusiveLocation"
@@ -91,7 +91,7 @@
 
             <div v-if="currentView === 1">
               <AppointmentSelection
-                :base-url="baseUrl"
+                :global-state="globalState"
                 :is-rebooking="isRebooking"
                 :exclusive-location="exclusiveLocation"
                 :preselected-office-id="preselectedLocationId"
@@ -112,6 +112,8 @@
             </div>
             <div v-if="currentView === 2">
               <customer-info
+                :global-state="globalState"
+                :show-login-option="showLoginOption"
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
@@ -338,6 +340,7 @@ import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
+import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -354,9 +357,9 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { isAuthenticated } from "@/utils/auth";
+import { getTokenData, isAuthenticated } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
-import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
+import { APPOINTMENT_ACTION_TYPE } from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -371,13 +374,14 @@ import {
 } from "@/utils/errorHandler";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   serviceId?: string;
   locationId?: string;
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
   appointmentDetailUrl?: string;
+  showLoginOption: boolean;
   t: (key: string) => string;
 }>();
 
@@ -421,6 +425,22 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
+
+watch(
+  () => props.globalState.accessToken,
+  (newAccessToken) => {
+    if (!newAccessToken) return;
+    const tokenData = getTokenData(newAccessToken);
+    customerData.value.firstName =
+      customerData.value.firstName || tokenData.given_name;
+    customerData.value.lastName =
+      customerData.value.lastName || tokenData.family_name;
+    customerData.value.mailAddress =
+      customerData.value.mailAddress || tokenData.email;
+  },
+  { immediate: true }
+);
+
 const appointment = ref<AppointmentDTO>();
 const rebookedAppointment = ref<AppointmentDTO>();
 
@@ -623,20 +643,18 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield2;
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
-    updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
-      (data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
-        } else {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-        }
-        currentView.value = 3;
+    updateAppointment(props.globalState, appointment.value).then((data) => {
+      if ((data as AppointmentDTO).processId != undefined) {
+        appointment.value = data as AppointmentDTO;
+      } else {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
       }
-    );
+      currentView.value = 3;
+    });
   }
 };
 
@@ -651,18 +669,18 @@ const nextReserveAppointment = () => {
   rebookOrCanelDialog.value = false;
 
   reserveAppointment(
+    props.globalState,
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
     selectedProvider.value?.id ?? "",
-    props.baseUrl ?? undefined,
     captchaToken.value ?? undefined
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         if (appointment.value && !isRebooking.value) {
           currentContext.value = "cancel";
-          cancelAppointment(appointment.value, props.baseUrl ?? undefined);
+          cancelAppointment(props.globalState, appointment.value);
         }
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
@@ -706,7 +724,7 @@ const nextUpdateAppointment = () => {
       : undefined;
 
     currentContext.value = "update";
-    updateAppointment(appointment.value, props.baseUrl ?? undefined)
+    updateAppointment(props.globalState, appointment.value)
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
@@ -733,33 +751,37 @@ const nextBookAppointment = () => {
   if (appointment.value) {
     isBookingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    currentContext.value = "preconfirm";
-    preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
-      .then((data) => {
-        if ((data as any)?.errors?.length > 0) {
-          handleErrorApiResponse(
-            data,
-            errorStates.errorStateMap,
-            currentErrorData.value
-          );
-          return;
-        }
-
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
-          if (isRebooking.value && rebookedAppointment.value) {
-            currentContext.value = "cancel";
-            cancelAppointment(
-              rebookedAppointment.value,
-              props.baseUrl ?? undefined
-            );
-          }
-          increaseCurrentView();
-        }
-      })
-      .finally(() => {
-        isBookingAppointment.value = false;
+    if (props.globalState.isLoggedIn) {
+      nextConfirmAppointment({
+        id: appointment.value.processId,
+        authKey: appointment.value.authKey,
       });
+    } else {
+      currentContext.value = "preconfirm";
+      preconfirmAppointment(props.globalState, appointment.value)
+        .then((data) => {
+          if ((data as any)?.errors?.length > 0) {
+            handleErrorApiResponse(
+              data,
+              errorStates.errorStateMap,
+              currentErrorData.value
+            );
+            return;
+          }
+
+          if ((data as AppointmentDTO).processId != undefined) {
+            appointment.value = data as AppointmentDTO;
+            if (isRebooking.value && rebookedAppointment.value) {
+              currentContext.value = "cancel";
+              cancelAppointment(props.globalState, rebookedAppointment.value);
+            }
+            increaseCurrentView();
+          }
+        })
+        .finally(() => {
+          isBookingAppointment.value = false;
+        });
+    }
   }
 };
 
@@ -772,7 +794,7 @@ const nextCancelAppointment = () => {
     isCancelingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
     currentContext.value = "cancel";
-    cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+    cancelAppointment(props.globalState, appointment.value)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
           handleErrorApiResponse(
@@ -788,7 +810,7 @@ const nextCancelAppointment = () => {
         } else {
           cancelAppointmentError.value = true;
         }
-        increaseCurrentView();
+        currentView.value = 4;
       })
       .finally(() => {
         isCancelingAppointment.value = false;
@@ -929,6 +951,37 @@ const viewAppointment = () => {
   }
 };
 
+function nextConfirmAppointment(appointmentData: AppointmentHash) {
+  confirmAppointment(props.globalState, appointmentData).then((data) => {
+    currentView.value = 5;
+
+    if ((data as AppointmentDTO).processId != undefined) {
+      confirmAppointmentSuccess.value = true;
+      appointment.value = data as AppointmentDTO;
+      clearContextErrors(errorStateMap.value);
+    } else {
+      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+
+      if (
+        firstErrorCode === "processNotPreconfirmedAnymore" ||
+        firstErrorCode === "appointmentNotFound"
+      ) {
+        handleApiError(
+          "preconfirmationExpired",
+          errorStateMap.value,
+          currentErrorData.value
+        );
+      } else {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+      }
+    }
+  });
+}
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -941,35 +994,7 @@ onMounted(() => {
       );
       return;
     }
-
-    confirmAppointment(appointmentData, props.baseUrl ?? undefined).then(
-      (data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          confirmAppointmentSuccess.value = true;
-          appointment.value = data as AppointmentDTO;
-          clearContextErrors(errorStateMap.value);
-        } else {
-          const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-          if (
-            firstErrorCode === "processNotPreconfirmedAnymore" ||
-            firstErrorCode === "appointmentNotFound"
-          ) {
-            handleApiError(
-              "preconfirmationExpired",
-              errorStateMap.value,
-              currentErrorData.value
-            );
-          } else {
-            handleErrorApiResponse(
-              data,
-              errorStates.errorStateMap,
-              currentErrorData.value
-            );
-          }
-        }
-      }
-    );
+    nextConfirmAppointment(appointmentData);
   }
 
   if (props.appointmentHash) {
@@ -978,7 +1003,7 @@ onMounted(() => {
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
-      props.baseUrl ?? undefined
+      props.globalState?.baseUrl ?? undefined
     ).then((data) => {
       // Handle normal errors (like rate limit) first
       handleErrorApiResponse(
@@ -988,7 +1013,7 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
         return;
       }
 
@@ -1006,79 +1031,85 @@ onMounted(() => {
         return;
       }
 
-      fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
-        (data) => {
-          if ((data as AppointmentDTO).processId != undefined) {
-            if ("captchaToken" in data && data.captchaToken) {
-              captchaToken.value = data.captchaToken as string;
-            }
-            appointment.value = data as AppointmentDTO;
-            selectedService.value = services.value.find(
-              (service) => service.id == appointment.value?.serviceId
+      fetchAppointment(props.globalState, appointmentData).then((data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          if ("captchaToken" in data && data.captchaToken) {
+            captchaToken.value = data.captchaToken as string;
+          }
+          appointment.value = data as AppointmentDTO;
+          selectedService.value = services.value.find(
+            (service) => service.id == appointment.value?.serviceId
+          );
+          if (selectedService.value) {
+            selectedService.value.count = appointment.value.serviceCount;
+            selectedService.value.providers = getProviders(
+              selectedService.value.id,
+              null
             );
-            if (selectedService.value) {
-              selectedService.value.count = appointment.value.serviceCount;
-              selectedService.value.providers = getProviders(
-                selectedService.value.id,
-                null
-              );
 
-              preselectedLocationId.value = appointment.value.officeId;
-              const foundOffice = offices.value.find(
-                (office) => office.id == appointment.value?.officeId
+            preselectedLocationId.value = appointment.value.officeId;
+            const foundOffice = offices.value.find(
+              (office) => office.id == appointment.value?.officeId
+            );
+            if (foundOffice) {
+              selectedProvider.value = new OfficeImpl(
+                foundOffice.id,
+                foundOffice.name,
+                foundOffice.address,
+                foundOffice.showAlternativeLocations,
+                foundOffice.displayNameAlternatives,
+                foundOffice.organization,
+                foundOffice.organizationUnit,
+                foundOffice.slotTimeInMinutes,
+                undefined, // disabledByServices
+                foundOffice.scope,
+                foundOffice.maxSlotsPerAppointment,
+                undefined, // slots
+                foundOffice.priority || 1
               );
-              if (foundOffice) {
-                selectedProvider.value = new OfficeImpl(
-                  foundOffice.id,
-                  foundOffice.name,
-                  foundOffice.address,
-                  foundOffice.showAlternativeLocations,
-                  foundOffice.displayNameAlternatives,
-                  foundOffice.organization,
-                  foundOffice.organizationUnit,
-                  foundOffice.slotTimeInMinutes,
-                  undefined, // disabledByServices
-                  foundOffice.scope,
-                  foundOffice.maxSlotsPerAppointment,
-                  undefined, // slots
-                  foundOffice.priority || 1
-                );
-              }
+            }
 
-              if (appointment.value.subRequestCounts.length > 0) {
-                appointment.value.subRequestCounts.forEach(
-                  (subRequestCount) => {
-                    const subRequest = services.value.find(
-                      (service) => service.id == subRequestCount.id
-                    ) as Service;
-                    const subService = new SubService(
-                      subRequest.id,
-                      subRequest.name,
-                      subRequest.maxQuantity,
-                      getProviders(subRequest.id, null),
-                      subRequestCount.count
-                    );
-                    if (
-                      selectedService.value &&
-                      !selectedService.value.subServices
-                    ) {
-                      selectedService.value.subServices = [];
-                    }
-                    selectedService.value?.subServices?.push(subService);
-                  }
+            if (appointment.value.subRequestCounts.length > 0) {
+              appointment.value.subRequestCounts.forEach((subRequestCount) => {
+                const subRequest = services.value.find(
+                  (service) => service.id == subRequestCount.id
+                ) as Service;
+                const subService = new SubService(
+                  subRequest.id,
+                  subRequest.name,
+                  subRequest.maxQuantity,
+                  getProviders(subRequest.id, null),
+                  subRequestCount.count
                 );
+                if (
+                  selectedService.value &&
+                  !selectedService.value.subServices
+                ) {
+                  selectedService.value.subServices = [];
+                }
+                selectedService.value?.subServices?.push(subService);
+              });
+            }
+            if (appointmentData.action) {
+              if (
+                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+              ) {
+                nextRescheduleAppointment();
+              } else {
+                nextCancelAppointment();
               }
+            } else {
               currentView.value = 3;
             }
-          } else {
-            handleApiError(
-              "appointmentNotFound",
-              errorStateMap.value,
-              currentErrorData.value
-            );
           }
+        } else {
+          handleApiError(
+            "appointmentNotFound",
+            errorStateMap.value,
+            currentErrorData.value
+          );
         }
-      );
+      });
     });
   }
 });
