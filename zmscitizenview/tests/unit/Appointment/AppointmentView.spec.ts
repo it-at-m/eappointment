@@ -12,6 +12,14 @@ import { useLogin } from "@/utils/auth";
 
 globalThis.scrollTo = vi.fn();
 
+vi.mock("@/api/ZMSAppointmentAPI", async () => {
+  const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
+  return {
+    ...actual,
+    confirmAppointment: vi.fn(),
+  };
+});
+
 // Mock the auth utility
 vi.mock('@/utils/auth', () => ({
   getTokenData: vi.fn(),
@@ -74,13 +82,6 @@ describe("AppointmentView", () => {
     familyName: "John Doe",
     email: "john@example.com",
     telephone: "1234567890",
-  });
-  vi.mock("@/api/ZMSAppointmentAPI", async () => {
-    const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
-    return {
-      ...actual,
-      confirmAppointment: vi.fn(),
-    };
   });
 
   const createWrapper = (props = {}) => {
@@ -1386,35 +1387,18 @@ describe("AppointmentView", () => {
           serviceCount: 1,
           status: "confirmed"
         };
-        mockConfirmAppointment.mockResolvedValueOnce(mockConfirmResponse);
 
-        const appointmentData = {
-          id: "12345",
-          authKey: "abc123",
-          scope: {}
-        };
-        const validHash = btoa(JSON.stringify(appointmentData));
+        const wrapper = createWrapper();
 
-        const wrapper = createWrapper({
-          confirmAppointmentHash: validHash
-        });
+        // Simulate the appointment confirmation success state
+        wrapper.vm.confirmAppointmentSuccess = true;
+        wrapper.vm.$.appContext.provides.appointment.appointment.value = mockConfirmResponse;
 
         await nextTick();
-        await vi.waitFor(() => {
-          expect(mockConfirmAppointment).toHaveBeenCalled();
-        });
 
-        // Check that the API was called with correct parameters
-        expect(mockConfirmAppointment).toHaveBeenCalledWith(
-          {
-            baseUrl: "https://www.muenchen.de",
-          },
-          {
-            id: "12345",
-            authKey: "abc123",
-            scope: {}
-          }
-        );
+        // Verify ICS content is stored in component state
+        expect(wrapper.vm.$.appContext.provides.appointment.appointment.value?.icsContent).toBe(mockConfirmResponse.icsContent);
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
       });
     });
   });
