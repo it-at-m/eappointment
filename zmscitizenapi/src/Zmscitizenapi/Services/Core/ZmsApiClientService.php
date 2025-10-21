@@ -15,6 +15,9 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Collection\ScopeList;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class ZmsApiClientService
 {
     public static function getMergedMailTemplates(int $providerId): array
