@@ -1242,9 +1242,9 @@ onMounted(() => {
       }
     }
   }
-  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-  }
+  // if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+  //   localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+  // }
 });
 </script>
 <style lang="scss" scoped>
