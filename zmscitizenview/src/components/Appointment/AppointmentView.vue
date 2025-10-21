@@ -870,10 +870,15 @@ const requestLogin = () => {
 
 const saveAppointmentToLocalstorage = () => {
   if (appointment.value) {
+    const appointmentInfo: AppointmentHash = {
+      id: appointment.value.processId,
+      authKey: appointment.value.authKey,
+    };
+
     const saveData: LocalStorageAppointmentData = {
       timestamp: Date.now(),
       currentView: currentView.value,
-      appointment: appointment.value,
+      appointmentInfo: btoa(JSON.stringify(appointmentInfo)),
       captchaToken: captchaToken.value,
     };
     localStorage.setItem(
@@ -945,7 +950,7 @@ const parseLocalStorageAppointmentData = (
     if (
       localstorageData.timestamp == undefined ||
       localstorageData.currentView == undefined ||
-      localstorageData.appointment == undefined
+      localstorageData.appointmentInfo == undefined
     ) {
       return null;
     }
@@ -1178,73 +1183,96 @@ onMounted(() => {
           relations.value = (data as any).relations;
           offices.value = (data as any).offices;
 
-          appointment.value = localStorageData.appointment;
-
-          if (localStorageData.captchaToken) {
-            captchaToken.value = localStorageData.captchaToken;
+          const appointmentData = parseAppointmentHash(
+            localStorageData.appointmentInfo
+          );
+          if (!appointmentData) {
+            handleApiError(
+              "appointmentNotFound",
+              errorStateMap.value,
+              currentErrorData.value
+            );
+            return;
           }
 
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
+          fetchAppointment(props.globalState, appointmentData).then((data) => {
+            if ((data as AppointmentDTO).processId != undefined) {
+              if (localStorageData.captchaToken) {
+                captchaToken.value = localStorageData.captchaToken;
+              }
+              appointment.value = data as AppointmentDTO;
+              selectedService.value = services.value.find(
+                (service) => service.id == appointment.value?.serviceId
+              );
+              if (selectedService.value) {
+                selectedService.value.count = appointment.value.serviceCount;
+                selectedService.value.providers = getProviders(
+                  selectedService.value.id,
+                  null
+                );
 
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined, // disabledByServices
-                foundOffice.scope,
-                foundOffice.maxSlotsPerAppointment,
-                undefined, // slots
-                foundOffice.priority || 1
+                preselectedLocationId.value = appointment.value.officeId;
+                const foundOffice = offices.value.find(
+                  (office) => office.id == appointment.value?.officeId
+                );
+                if (foundOffice) {
+                  selectedProvider.value = new OfficeImpl(
+                    foundOffice.id,
+                    foundOffice.name,
+                    foundOffice.address,
+                    foundOffice.showAlternativeLocations,
+                    foundOffice.displayNameAlternatives,
+                    foundOffice.organization,
+                    foundOffice.organizationUnit,
+                    foundOffice.slotTimeInMinutes,
+                    undefined, // disabledByServices
+                    foundOffice.scope,
+                    foundOffice.maxSlotsPerAppointment,
+                    undefined, // slots
+                    foundOffice.priority || 1
+                  );
+                }
+
+                if (appointment.value.subRequestCounts.length > 0) {
+                  appointment.value.subRequestCounts.forEach(
+                    (subRequestCount) => {
+                      const subRequest = services.value.find(
+                        (service) => service.id == subRequestCount.id
+                      ) as Service;
+                      const subService = new SubService(
+                        subRequest.id,
+                        subRequest.name,
+                        subRequest.maxQuantity,
+                        getProviders(subRequest.id, null),
+                        subRequestCount.count
+                      );
+                      if (
+                        selectedService.value &&
+                        !selectedService.value.subServices
+                      ) {
+                        selectedService.value.subServices = [];
+                      }
+                      selectedService.value?.subServices?.push(subService);
+                    }
+                  );
+                }
+                currentView.value = localStorageData.currentView;
+              }
+            } else {
+              handleApiError(
+                "appointmentNotFound",
+                errorStateMap.value,
+                currentErrorData.value
               );
             }
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
-            }
-            currentView.value = localStorageData.currentView;
-          }
+          });
         });
       }
     }
   }
-  // if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
-  //   localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
-  // }
+  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
+  }
 });
 </script>
 <style lang="scss" scoped>
