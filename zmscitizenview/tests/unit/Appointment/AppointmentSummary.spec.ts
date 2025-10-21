@@ -338,7 +338,7 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Location variants", () => {
-    it("zeigt Adresse/Hint und Basistexte, wenn keine Variante gesetzt ist (variantId null)", () => {
+    it("should show address/hint and base text when no variant is set (variantId null)", () => {
       const wrapper = createWrapper();
 
       expect(wrapper.text()).toContain("Test Street 123");
@@ -348,7 +348,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("locationVariantText.1");
     });
 
-    it("zeigt Adresse/Hint und Basistexte bei Variante 1", async () => {
+    it("should show address/hint and base text for variant 1", async () => {
       mockSelectedService.value.variant_id = 1;
       const wrapper = createWrapper();
       await nextTick();
@@ -361,7 +361,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("locationVariantText.1");
     });
 
-    it("versteckt Adresse/Hint und zeigt Variantentexte bei Variante 2", async () => {
+    it("should hide address/hint and show variant text for variant 2", async () => {
       mockSelectedService.value.variant_id = 2;
       const wrapper = createWrapper();
       await nextTick();

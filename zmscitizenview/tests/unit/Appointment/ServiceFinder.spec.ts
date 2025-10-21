@@ -802,7 +802,7 @@ describe("ServiceFinder", () => {
       return { base, variant2 };
     };
 
-    it("computed variantServices enthält synthetische Variante 1 (id 10) + echte Variante 2 (id 12) und ist sortiert", async () => {
+    it("should include synthetic variant 1 (id 10) and real variant 2 (id 12) in sorted order", async () => {
       const { base, variant2 } = makeBaseAndVariants();
       const wrapper = createWrapper(base);
       wrapper.vm.services = [variant2, base];
@@ -816,7 +816,7 @@ describe("ServiceFinder", () => {
       expect(vs[1].id).toBe("12");
     });
 
-    it("wechselt service korrekt beim Ändern von selectedVariant (2 -> 1)", async () => {
+    it("should switch service correctly when changing selectedVariant (2 -> 1)", async () => {
       const { base, variant2 } = makeBaseAndVariants();
       const wrapper = createWrapper(base);
       wrapper.vm.services = [base, variant2];
@@ -833,7 +833,7 @@ describe("ServiceFinder", () => {
       expect(wrapper.vm.service.id).toBe("10");
     });
 
-    it("zeigt Subservices nur bei Variante 1 (Basis) und versteckt sie bei Variante 2", async () => {
+    it("should show subservices only for variant 1 (base) and hide them for variant 2", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
         json: async () => ({ services: [], offices: [], relations: [] }),
