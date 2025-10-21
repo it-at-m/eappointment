@@ -7,15 +7,19 @@ import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
 import de from '@/utils/de-DE.json';
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
-// @ts-expect-error: Vue SFC import for test
-import { isAuthenticated } from "@/utils/auth";
+import { useLogin } from "@/utils/auth";
 // beforeEach is already imported from vitest on line 2
 
 globalThis.scrollTo = vi.fn();
 
 // Mock the auth utility
 vi.mock('@/utils/auth', () => ({
-  isAuthenticated: vi.fn()
+  getTokenData: vi.fn(),
+  useLogin: vi.fn(() => ({
+    isLoggedIn: ref(false),
+    isLoadingAuthentication: ref(false),
+    accessToken: ref(null)
+  }))
 }));
 
 describe("AppointmentView", () => {
@@ -1290,7 +1294,6 @@ describe("AppointmentView", () => {
     const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
 
     beforeEach(() => {
-      vi.mocked(isAuthenticated).mockReturnValue(false);
       mockConfirmAppointment.mockClear();
     });
 
@@ -1308,7 +1311,14 @@ describe("AppointmentView", () => {
       });
 
       it("should render view button when user is authenticated", async () => {
-        vi.mocked(isAuthenticated).mockReturnValue(true);
+        // Mock useLogin to return authenticated state
+        const mockUseLogin = vi.mocked(useLogin);
+        mockUseLogin.mockReturnValue({
+          isLoggedIn: ref(true),
+          isLoadingAuthentication: ref(false),
+          accessToken: ref("test-token")
+        });
+        
         const wrapper = createWrapper();
         wrapper.vm.confirmAppointmentSuccess = true;
         await nextTick();
@@ -1321,7 +1331,14 @@ describe("AppointmentView", () => {
       });
 
       it("should hide view button when user is not authenticated", async () => {
-        vi.mocked(isAuthenticated).mockReturnValue(false);
+        // Mock useLogin to return unauthenticated state
+        const mockUseLogin = vi.mocked(useLogin);
+        mockUseLogin.mockReturnValue({
+          isLoggedIn: ref(false),
+          isLoadingAuthentication: ref(false),
+          accessToken: ref(null)
+        });
+        
         const wrapper = createWrapper();
         wrapper.vm.confirmAppointmentSuccess = true;
         await nextTick();

@@ -87,11 +87,12 @@ const props = defineProps({
     type: String,
     required: false,
     default: "appointment-detail.html",
+  },
   showLoginOption: {
     type: String,
     required: false,
     default: "false",
-  }
+  },
 });
 
 const { t } = useI18n();

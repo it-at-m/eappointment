@@ -357,9 +357,12 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { getTokenData, isAuthenticated } from "@/utils/auth";
+import { getTokenData, useLogin } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
-import { APPOINTMENT_ACTION_TYPE } from "@/utils/Constants";
+import {
+  APPOINTMENT_ACTION_TYPE,
+  QUERY_PARAM_APPOINTMENT_ID,
+} from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -411,6 +414,10 @@ const STEPPER_ITEMS: StepperItem[] = [
 const activeStep = ref<string>("0");
 
 const currentView = ref<number>(0);
+
+// Authentication state
+const { isLoggedIn } = useLogin();
+const isAuthenticated = () => isLoggedIn.value;
 
 const selectedService = ref<ServiceImpl>();
 const updateSelectedService = (newService: ServiceImpl): void => {
