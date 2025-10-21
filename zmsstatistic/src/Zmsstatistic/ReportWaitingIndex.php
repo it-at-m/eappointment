@@ -8,27 +8,14 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsstatistic\Helper\ReportHelper;
+use BO\Zmsstatistic\Service\ReportWaitingService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmsstatistic\Helper\ReportHelper;
 
 class ReportWaitingIndex extends BaseController
 {
-    protected $hashset = [
-        'waitingcount',
-        'waitingtime',
-        'waitingcalculated',
-        'waitingcount_termin',
-        'waitingtime_termin',
-        'waitingcalculated_termin',
-        'waytime',
-        'waytime_termin',
-    ];
-
-    protected $groupfields = [
-        'date',
-        'hour'
-    ];
+    protected $resolveLevel = 3;
 
     /**
      * @SuppressWarnings(Param)
@@ -40,50 +27,101 @@ class ReportWaitingIndex extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $waitingPeriod = \App::$http
-          ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
-          ->getEntity();
-        $exchangeWaiting = null;
-        if (isset($args['period'])) {
-            $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/' . $args['period'] . '/')
-            ->getEntity()
-            ->toGrouped($this->groupfields, $this->hashset)
-            ->withMaxByHour($this->hashset)
-            ->withMaxAndAverageFromWaitingTime();
+        $reportWaitingService = new ReportWaitingService();
+        $reportHelper = new ReportHelper();
 
-            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime');
-            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');
-            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime');
-            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');
-        }
+        $selectedScopes = $reportHelper->extractSelectedScopes(
+            $validator->getParameter('scopes')->isArray()->getValue() ?? []
+        );
+
+        $scopeIds = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+
+        $waitingPeriod = $reportWaitingService->getWaitingPeriod($this->workstation->scope['id']);
+
+        $dateRange = $reportHelper->extractDateRange(
+            $validator->getParameter('from')->isString()->getValue(),
+            $validator->getParameter('to')->isString()->getValue()
+        );
+
+        $exchangeWaiting = $reportWaitingService->getExchangeWaitingData($scopeIds, $dateRange, $args);
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            $args['category'] = 'waitingscope';
-            $args['reports'][] = $exchangeWaiting;
-            $args['scope'] = $this->workstation->scope;
-            $args['department'] = $this->department;
-            $args['organisation'] = $this->organisation;
-            return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            return $this->handleDownloadRequest(
+                $request,
+                $response,
+                $args,
+                $exchangeWaiting,
+                $dateRange,
+                $selectedScopes,
+                $reportWaitingService
+            );
         }
 
+        return $this->renderHtmlResponse(
+            $response,
+            $args,
+            $waitingPeriod,
+            $dateRange,
+            $exchangeWaiting,
+            $selectedScopes
+        );
+    }
+
+    /**
+     * Handle download request and return Excel file
+     */
+    private function handleDownloadRequest(
+        $request,
+        $response,
+        $args,
+        $exchangeWaiting,
+        $dateRange,
+        $selectedScopes = [],
+        $reportWaitingService = null
+    ): ResponseInterface {
+        if ($reportWaitingService === null) {
+            $reportWaitingService = new ReportWaitingService();
+        }
+
+        $args = $reportWaitingService->prepareDownloadArgs($args, $exchangeWaiting, $dateRange, $selectedScopes);
+
+        $args['scope'] = $this->workstation->getScope();
+        $args['department'] = $this->department;
+        $args['organisation'] = $this->organisation;
+
+        return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+    }
+
+    /**
+     * Render HTML response for the waiting report page
+     */
+    private function renderHtmlResponse(
+        $response,
+        $args,
+        $waitingPeriod,
+        $dateRange,
+        $exchangeWaiting,
+        $selectedScopes = []
+    ): ResponseInterface {
         return Render::withHtml(
             $response,
             'page/reportWaitingIndex.twig',
-            array(
-              'title' => 'Wartestatistik Standort',
-              'activeScope' => 'active',
-              'menuActive' => 'waiting',
-              'department' => $this->department,
-              'organisation' => $this->organisation,
-              'waitingPeriod' => $waitingPeriod,
-              'showAll' => 1,
-              'period' => (isset($args['period'])) ? $args['period'] : null,
-              'exchangeWaiting' => $exchangeWaiting,
-              'source' => ['entity' => 'WaitingIndex'],
-              'workstation' => $this->workstation->getArrayCopy()
-            )
+            [
+                'title' => 'Wartestatistik Standort',
+                'activeScope' => 'active',
+                'menuActive' => 'waiting',
+                'department' => $this->department,
+                'organisation' => $this->organisation,
+                'waitingPeriod' => $waitingPeriod,
+                'showAll' => 1,
+                'period' => isset($args['period']) ? $args['period'] : null,
+                'dateRange' => $dateRange,
+                'exchangeWaiting' => $exchangeWaiting,
+                'source' => ['entity' => 'WaitingIndex'],
+                'selectedScopeIds' => $selectedScopes,
+                'workstation' => $this->workstation->getArrayCopy()
+            ]
         );
     }
 }
