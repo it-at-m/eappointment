@@ -154,6 +154,10 @@ class ExceptionService
                 $error = self::getError('invalidSchema');
 
                 break;
+            case 'BO\\Zmsapi\\Exception\\Useraccount\\InvalidCredentials':
+                $error = self::getError('invalidCredentials');
+
+                break;            
 
             // Use original message for unmapped exceptions
             default:
