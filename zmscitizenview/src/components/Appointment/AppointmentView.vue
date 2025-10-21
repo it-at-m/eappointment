@@ -234,7 +234,7 @@
           >
             <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
               <muc-button
-                icon="download"
+                icon="arrow-right"
                 @click="goToAppointmentDetails"
               >
                 {{ t("viewAppointment") }}
