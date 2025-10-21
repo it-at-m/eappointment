@@ -5,8 +5,8 @@
     :title="formatMultilineTitle(appointment)"
   >
     <div class="appointment-data">
-      <p tabindex="0">
-        <b> {{ t("appointmentNumber") }}: </b>
+      <p>
+        <strong> {{ t("appointmentNumber") }}: </strong>
         {{ appointment.processId }}
       </p>
       <muc-link

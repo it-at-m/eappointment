@@ -17,7 +17,7 @@
     "
     class="m-component"
   >
-    <h2 tabindex="0">{{ t("time") }}</h2>
+    <h2>{{ t("time") }}</h2>
     <muc-callout type="info">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
@@ -123,7 +123,7 @@
     v-if="!noProviderSelected && showError && !isSwitchingProvider"
     class="m-component"
   >
-    <h2 tabindex="0">{{ t("time") }}</h2>
+    <h2>{{ t("time") }}</h2>
     <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
       <template #header>
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
