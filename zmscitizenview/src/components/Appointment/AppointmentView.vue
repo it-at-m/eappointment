@@ -232,14 +232,20 @@
             v-if="confirmAppointmentSuccess"
             class="m-button-group"
           >
-            <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
-                <muc-button
-                  icon="download"
-                  @click="downloadIcsAppointment"
-                >
-                  {{ t("downloadAppointment") }}
-                </muc-button>
-                bis hierhin. -->
+            <muc-button
+              v-if="!isAuthenticated() && appointment?.icsContent"
+              icon="download"
+              @click="downloadIcsAppointment"
+            >
+              {{ t("downloadAppointment") }}
+            </muc-button>
+            <muc-button
+              v-if="isAuthenticated()"
+              icon="arrow-right"
+              @click="viewAppointment"
+            >
+              {{ t("viewAppointment") }}
+            </muc-button>
             <muc-button
               @click="redirectToAppointmentStart"
               variant="secondary"
@@ -351,9 +357,12 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { getTokenData } from "@/utils/auth";
+import { getTokenData, useLogin } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
-import { APPOINTMENT_ACTION_TYPE } from "@/utils/Constants";
+import {
+  APPOINTMENT_ACTION_TYPE,
+  QUERY_PARAM_APPOINTMENT_ID,
+} from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -374,6 +383,7 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
+  appointmentDetailUrl?: string;
   showLoginOption: boolean;
   t: (key: string) => string;
 }>();
@@ -405,6 +415,10 @@ const activeStep = ref<string>("0");
 
 const currentView = ref<number>(0);
 
+// Authentication state
+const { isLoggedIn } = useLogin();
+const isAuthenticated = () => isLoggedIn.value;
+
 const selectedService = ref<ServiceImpl>();
 const updateSelectedService = (newService: ServiceImpl): void => {
   selectedService.value = newService;
@@ -434,8 +448,8 @@ watch(
   { immediate: true }
 );
 
-const appointment = ref<AppointmentImpl>();
-const rebookedAppointment = ref<AppointmentImpl>();
+const appointment = ref<AppointmentDTO>();
+const rebookedAppointment = ref<AppointmentDTO>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -915,12 +929,42 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
+const downloadIcsAppointment = () => {
+  if (appointment.value?.icsContent) {
+    const blob = new Blob([appointment.value.icsContent], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Termin.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+};
+
+const viewAppointment = () => {
+  // Navigate to appointment detail view for authenticated users
+  if (appointment.value?.processId) {
+    const detailUrl = props.appointmentDetailUrl || "appointment-detail.html";
+    const targetUrl = new URL(detailUrl, window.location.href);
+    targetUrl.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_ID,
+      String(appointment.value.processId)
+    );
+    window.location.href = targetUrl.toString();
+  }
+};
+
 function nextConfirmAppointment(appointmentData: AppointmentHash) {
   confirmAppointment(props.globalState, appointmentData).then((data) => {
     currentView.value = 5;
 
     if ((data as AppointmentDTO).processId != undefined) {
       confirmAppointmentSuccess.value = true;
+      appointment.value = data as AppointmentDTO;
       clearContextErrors(errorStateMap.value);
     } else {
       const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
@@ -957,7 +1001,6 @@ onMounted(() => {
       );
       return;
     }
-
     nextConfirmAppointment(appointmentData);
   }
 

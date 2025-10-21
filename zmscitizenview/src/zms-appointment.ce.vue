@@ -14,6 +14,7 @@
         :exclusive-location="exclusiveLocation"
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
+        :appointment-detail-url="appointmentDetailUrl"
         :show-login-option="showLoginOption.toLowerCase() === 'true'"
         :t="t"
       />
@@ -81,6 +82,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: fallbackConfirmAppointmentHash,
+  },
+  appointmentDetailUrl: {
+    type: String,
+    required: false,
+    default: "appointment-detail.html",
   },
   showLoginOption: {
     type: String,
