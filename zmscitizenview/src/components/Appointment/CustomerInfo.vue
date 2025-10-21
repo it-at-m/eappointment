@@ -28,8 +28,8 @@
                 {{ t("optionalLoginText") }}
               </p>
               <muc-button
-                :icon="'sign-in'"
-                @click="requestLogin"
+                :icon="'sing-in'"
+                @click="login"
               >
                 <template #default>
                   <span>{{ t("login") }}</span>
@@ -175,7 +175,7 @@ const props = defineProps<{
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back") => void>();
+const emit = defineEmits<(e: "next" | "back" | "login") => void>();
 
 const { customerData } = inject<CustomerDataProvider>(
   "customerData"
@@ -345,15 +345,8 @@ const validForm = computed(
     !errorMessageCustomTextfield2.value
 );
 
-const requestLogin = () => {
-  document.dispatchEvent(
-    new CustomEvent("authorization-request", {
-      detail: {
-        loginProvider: undefined,
-        authLevel: undefined,
-      },
-    })
-  );
+const login = () => {
+  emit("login");
 };
 
 const nextStep = () => {

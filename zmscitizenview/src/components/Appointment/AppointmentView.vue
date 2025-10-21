@@ -117,6 +117,7 @@
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
+                @login="requestLogin"
               />
             </div>
             <div v-if="currentView === 3">
@@ -343,6 +344,7 @@ import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
 import { GlobalState } from "@/types/GlobalState";
+import { LocalStorageAppointmentData } from "@/types/LocalStorageAppointmentData";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
@@ -363,6 +365,7 @@ import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
+  LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -853,6 +856,33 @@ const goToTop = async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 };
 
+const requestLogin = () => {
+  saveAppointmentToLocalstorage();
+  document.dispatchEvent(
+    new CustomEvent("authorization-request", {
+      detail: {
+        loginProvider: undefined,
+        authLevel: undefined,
+      },
+    })
+  );
+};
+
+const saveAppointmentToLocalstorage = () => {
+  if (appointment.value) {
+    const saveData: LocalStorageAppointmentData = {
+      timestamp: Date.now(),
+      currentView: currentView.value,
+      appointment: appointment.value,
+      captchaToken: captchaToken.value,
+    };
+    localStorage.setItem(
+      LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+      JSON.stringify(saveData)
+    );
+  }
+};
+
 const goToAppointmentDetails = () => {
   location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
 };
@@ -902,6 +932,24 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
       return null;
     }
     return appointmentData;
+  } catch {
+    return null;
+  }
+};
+
+const parseLocalStorageAppointmentData = (
+  data: string
+): LocalStorageAppointmentData | null => {
+  try {
+    const localstorageData: LocalStorageAppointmentData = JSON.parse(data);
+    if (
+      localstorageData.timestamp == undefined ||
+      localstorageData.currentView == undefined ||
+      localstorageData.appointment == undefined
+    ) {
+      return null;
+    }
+    return localstorageData;
   } catch {
     return null;
   }
@@ -1095,6 +1143,107 @@ onMounted(() => {
         }
       });
     });
+  } else {
+    const localStorageAppointment = localStorage.getItem(
+      LOCALSTORAGE_PARAM_APPOINTMENT_DATA
+    );
+    if (localStorageAppointment) {
+      const localStorageData = parseLocalStorageAppointmentData(
+        localStorageAppointment
+      );
+      if (
+        localStorageData &&
+        Date.now() - localStorageData.timestamp < 30 * 60 * 1000
+      ) {
+        clearContextErrors(errorStateMap.value);
+
+        fetchServicesAndProviders(
+          props.serviceId ?? undefined,
+          props.locationId ?? undefined,
+          props.globalState?.baseUrl ?? undefined
+        ).then((data) => {
+          // Handle normal errors (like rate limit) first
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+
+          // Check if any error state should be activated (maintenance/system failure)
+          if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+            return;
+          }
+
+          services.value = (data as any).services;
+          relations.value = (data as any).relations;
+          offices.value = (data as any).offices;
+
+          appointment.value = localStorageData.appointment;
+
+          if (localStorageData.captchaToken) {
+            captchaToken.value = localStorageData.captchaToken;
+          }
+
+          selectedService.value = services.value.find(
+            (service) => service.id == appointment.value?.serviceId
+          );
+          if (selectedService.value) {
+            selectedService.value.count = appointment.value.serviceCount;
+            selectedService.value.providers = getProviders(
+              selectedService.value.id,
+              null
+            );
+
+            preselectedLocationId.value = appointment.value.officeId;
+            const foundOffice = offices.value.find(
+              (office) => office.id == appointment.value?.officeId
+            );
+            if (foundOffice) {
+              selectedProvider.value = new OfficeImpl(
+                foundOffice.id,
+                foundOffice.name,
+                foundOffice.address,
+                foundOffice.showAlternativeLocations,
+                foundOffice.displayNameAlternatives,
+                foundOffice.organization,
+                foundOffice.organizationUnit,
+                foundOffice.slotTimeInMinutes,
+                undefined, // disabledByServices
+                foundOffice.scope,
+                foundOffice.maxSlotsPerAppointment,
+                undefined, // slots
+                foundOffice.priority || 1
+              );
+            }
+            if (appointment.value.subRequestCounts.length > 0) {
+              appointment.value.subRequestCounts.forEach((subRequestCount) => {
+                const subRequest = services.value.find(
+                  (service) => service.id == subRequestCount.id
+                ) as Service;
+                const subService = new SubService(
+                  subRequest.id,
+                  subRequest.name,
+                  subRequest.maxQuantity,
+                  getProviders(subRequest.id, null),
+                  subRequestCount.count
+                );
+                if (
+                  selectedService.value &&
+                  !selectedService.value.subServices
+                ) {
+                  selectedService.value.subServices = [];
+                }
+                selectedService.value?.subServices?.push(subService);
+              });
+            }
+            currentView.value = localStorageData.currentView;
+          }
+        });
+      }
+    }
+  }
+  if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
+    localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
 });
 </script>
