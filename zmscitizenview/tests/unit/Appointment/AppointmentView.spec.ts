@@ -1390,11 +1390,13 @@ describe("AppointmentView", () => {
         // Check that the API was called with correct parameters
         expect(mockConfirmAppointment).toHaveBeenCalledWith(
           {
+            baseUrl: "https://www.muenchen.de",
+          },
+          {
             id: "12345",
             authKey: "abc123",
             scope: {}
-          },
-          "https://www.muenchen.de"
+          }
         );
       });
     });
