@@ -620,21 +620,14 @@ const variantServices = computed(() => {
 });
 
 watch(selectedVariant, (variantId) => {
-  if (!service.value || !baseServiceId.value) return;
-  if (!variantId) return;
-  if (variantServices.value.length <= 1) return;
+  if (!variantId || !baseServiceId.value) return;
 
-  const pick =
-    variantId === "1"
-      ? variantServices.value.find((v) => v.variant_id === 1)
-      : services.value.find(
-          (s) =>
-            s.parent_id === baseServiceId.value &&
-            s.variant_id === Number(variantId)
-        );
+  const selectedServiceVariant = variantServices.value.find(
+    v => String(v.variant_id) === String(variantId)
+  );
 
-  if (pick) {
-    service.value = pick as any;
+  if (selectedServiceVariant) {
+    service.value = selectedServiceVariant as any;
   }
 });
 
