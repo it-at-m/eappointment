@@ -232,6 +232,14 @@
             v-if="confirmAppointmentSuccess"
             class="m-button-group"
           >
+            <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
+              <muc-button
+                icon="download"
+                @click="goToAppointmentDetails"
+              >
+                {{ t("viewAppointment") }}
+              </muc-button>
+            </div>
             <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
                 <muc-button
                   icon="download"
@@ -353,7 +361,10 @@ import {
 } from "@/utils/apiStatusService";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
-import { APPOINTMENT_ACTION_TYPE } from "@/utils/Constants";
+import {
+  APPOINTMENT_ACTION_TYPE,
+  QUERY_PARAM_APPOINTMENT_ID,
+} from "@/utils/Constants";
 import {
   clearContextErrors,
   createErrorStates,
@@ -374,6 +385,7 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
+  appointmentDetailUrl?: string;
   showLoginOption: boolean;
   t: (key: string) => string;
 }>();
@@ -839,6 +851,10 @@ watch(currentView, (newCurrentView) => {
 const goToTop = async () => {
   await nextTick();
   window.scrollTo({ top: 0, behavior: "instant" });
+};
+
+const goToAppointmentDetails = () => {
+  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
