@@ -571,4 +571,13 @@ onMounted(() => {
     padding-right: 24px;
   }
 }
+.grid {
+  grid-template-columns: minmax(150px, auto) 1fr !important;
+}
+
+@include sm-down {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+}
 </style>
