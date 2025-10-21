@@ -20,6 +20,7 @@ export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
 export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT = "/captcha-details/";
 export const VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT = "/captcha-challenge/";
 export const VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT = "/captcha-verify/";
+export const VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT = "/my-appointments/";
 
 export function getServiceBaseURL(): string {
   return import.meta.env.VITE_VUE_APP_SERVICE_BASE_URL;
@@ -40,11 +41,16 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
 
+export enum APPOINTMENT_ACTION_TYPE {
+  RESCHEDULE = "reschedule",
+  CANCEL = "cancel",
+}
+
 export const API_BASE_URL_EXTENSION = "/api/citizen";
 export const API_BASE_URL_AUTHENTICATED_EXTENSION =
   "/authenticated/api/citizen";
 
-export function getAPIBaseURL(baseUrl: string | undefined): string {
+function getRawApiBaseURL(baseUrl: string | undefined): string {
   if (baseUrl) {
     return baseUrl;
   }
@@ -55,11 +61,11 @@ export function getAPIBaseURL(baseUrl: string | undefined): string {
   }
 }
 
-export function getGeneratedAPIBaseURL(
+export function getAPIBaseURL(
   baseUrl: string | undefined,
   authenticated: boolean
 ): string {
-  let url = getAPIBaseURL(baseUrl);
+  let url = getRawApiBaseURL(baseUrl);
 
   // Can be deleted if the configurations have been adjusted on all environments.
   if (url.endsWith("/api/citizen")) {

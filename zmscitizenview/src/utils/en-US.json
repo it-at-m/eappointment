@@ -192,6 +192,8 @@
   "loadingAppointmentTimes": "Loading available appointments",
   "loadingCustomerInfoUpdate": "Updating customer information",
   "location": "Location",
+  "loggedinHeader": "You are logged in.",
+  "loggedinText": "Your contact details have been copied from your account.",
   "login": "Login",
   "mailAddress": "e-mail address",
   "minutes": "minutes",

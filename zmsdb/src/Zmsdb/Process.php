@@ -932,4 +932,29 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         return $this->readResolvedReferences($process, 1);
     }
+
+    /**
+     * Read processList by external user id
+     *
+     * @return Collection processList
+     */
+    public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionExternalUserId($externalUserId);
+        if (!is_null($filterId)) {
+            $query->addConditionProcessId($filterId);
+        }
+        if (!is_null($status)) {
+            $query->addConditionStatus($status);
+        }
+        $query
+            ->addLimit($limit);
+
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
+    }
 }
