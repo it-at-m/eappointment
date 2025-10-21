@@ -45,14 +45,22 @@ class ReportWaitingOrganisationTest extends Base
         $response = $this->render([ ], [ ], [ ]);
         $this->assertStringContainsString('Wartestatistik Bezirk', (string) $response->getBody());
         $this->assertStringContainsString(
-            '<a class="active" href="/report/waiting/organisation/">Charlottenburg-Wilmersdorf</a>',
-            (string) $response->getBody()
-        );
-        $this->assertStringContainsString(
             '<a href="/report/waiting/organisation/2016-03/">März</a>',
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<optgroup label="Charlottenburg-Wilmersdorf -&gt; Bürgeramt">',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label>Datumsauswahl</label>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
@@ -94,7 +102,7 @@ class ReportWaitingOrganisationTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-03'], [], []);
-        $this->assertStringContainsString('<th class="statistik">Mär (Max.)</th>', (string) $response->getBody());
+        $this->assertStringContainsString('<th class="statistik">Max.</th>', (string) $response->getBody());
         $this->assertStringContainsString(
             'Auswertung für Charlottenburg-Wilmersdorf im Zeitraum März 2016',
             (string) $response->getBody()
