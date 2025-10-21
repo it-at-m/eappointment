@@ -57,7 +57,7 @@
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
       !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-      loggedIn
+      globalState.isLoggedIn
     "
     class="container"
   >
@@ -130,12 +130,12 @@ import { computed, onMounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
+import { GlobalState } from "@/types/GlobalState";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
@@ -149,7 +149,7 @@ import {
 import AppointmentCard from "./AppointmentCard.vue";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentDetailUrl: string;
   newAppointmentUrl: string;
   overviewUrl: string;
@@ -160,8 +160,6 @@ const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
 const loading = ref(true);
 const loadingError = ref(false);
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -180,10 +178,14 @@ const goToOverviewLink = () => {
 
 onMounted(() => {
   loading.value = true;
-  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+  fetchServicesAndProviders(
+    undefined,
+    undefined,
+    props.globalState.baseUrl ?? undefined
+  )
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -195,7 +197,7 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)

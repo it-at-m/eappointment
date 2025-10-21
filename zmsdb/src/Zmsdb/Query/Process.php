@@ -354,7 +354,8 @@ class Process extends Base implements MappingInterface
             ),
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt',
             '__clientsCount' => 'process.AnzahlPersonen',
-            'wasMissed' => 'process.wasMissed'
+            'wasMissed' => 'process.wasMissed',
+            'externalUserId' => 'process.external_user_id',
         ];
     }
 
@@ -853,6 +854,7 @@ class Process extends Base implements MappingInterface
         $this->addValuesWasMissed($process);
         $this->addValuesPriority($process);
         $this->addValuesStatusData($process, $dateTime);
+        $this->addValuesExternalUserId($process);
     }
 
     public function addValuesIPAdress($process)
@@ -1154,6 +1156,16 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    protected function addValuesExternalUserId($process)
+    {
+        $data = [
+            'external_user_id' => $process->external_user_id,
+        ];
+
+        $this->addValues($data);
+        return $this;
+    }
+
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointments__0__date")] =
@@ -1219,5 +1231,11 @@ class Process extends Base implements MappingInterface
             '=',
             'processscope.StandortID'
         );
+    }
+
+    public function addConditionExternalUserId(string $externalUserId)
+    {
+        $this->query->where('process.external_user_id', '=', $externalUserId);
+        return $this;
     }
 }

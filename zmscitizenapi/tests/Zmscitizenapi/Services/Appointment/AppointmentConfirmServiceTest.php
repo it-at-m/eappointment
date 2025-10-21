@@ -100,7 +100,7 @@ class AppointmentConfirmServiceTest extends MiddlewareTestCase
             'authKey' => ''
         ];
 
-        $result = $this->service->processConfirm($body);
+        $result = $this->service->processConfirm($body, null);
 
         $this->assertArrayHasKey('errors', $result);
     }
