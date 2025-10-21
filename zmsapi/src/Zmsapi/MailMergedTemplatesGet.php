@@ -8,9 +8,7 @@
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
-use BO\Mellon\Validator;
 use BO\Zmsdb\MailTemplates as MailTemplatesQuery;
-use BO\Zmsapi\Helper\User;
 
 class MailMergedTemplatesGet extends BaseController
 {
@@ -23,14 +21,6 @@ class MailMergedTemplatesGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        try {
-            (new Helper\User($request))->checkRights('basic');
-        } catch (\Exception $exception) {
-            $token = $request->getHeader('X-Token');
-            if (\App::SECURE_TOKEN != current($token)) {
-                throw new Exception\Config\ConfigAuthentificationFailed();
-            }
-        }
 
         $providerId = $args['providerId'];
 

@@ -149,10 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  SelectedAppointmentProvider,
-  SelectedTimeslotProvider,
-} from "@/types/ProvideInjectTypes";
+import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {

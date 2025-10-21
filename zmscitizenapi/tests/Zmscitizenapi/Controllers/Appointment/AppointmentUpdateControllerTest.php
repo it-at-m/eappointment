@@ -42,6 +42,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
                     'response' => $this->readFixture("POST_update_appointment.json")
@@ -113,10 +118,14 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             "serviceId" => 10242339,
             "serviceName" => "Adressänderung Personalausweis, Reisepass, eAT",
             "serviceCount" => 1,
-            "slotCount" => 1
+            "slotCount" => 1,
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('icsContent', $responseBody);
+        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        unset($responseBody['icsContent']);
+        unset($expectedResponse['icsContent']);
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -160,6 +169,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
         
@@ -207,6 +221,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -252,6 +271,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -297,6 +321,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -340,6 +369,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -385,6 +419,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -428,6 +467,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -471,6 +515,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -512,6 +561,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -557,6 +611,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -600,6 +659,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -643,6 +707,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -684,6 +753,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -727,6 +801,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -768,6 +847,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
 
@@ -814,6 +898,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -979,6 +1068,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
                     'exception' => $exception
@@ -1028,6 +1122,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -1080,6 +1179,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
                 [
                     'function' => 'readPostResult',

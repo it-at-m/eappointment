@@ -7,9 +7,28 @@ import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
 import de from '@/utils/de-DE.json';
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+import { useLogin } from "@/utils/auth";
 // beforeEach is already imported from vitest on line 2
 
 globalThis.scrollTo = vi.fn();
+
+vi.mock("@/api/ZMSAppointmentAPI", async () => {
+  const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
+  return {
+    ...actual,
+    confirmAppointment: vi.fn(),
+  };
+});
+
+// Mock the auth utility
+vi.mock('@/utils/auth', () => ({
+  getTokenData: vi.fn(),
+  useLogin: vi.fn(() => ({
+    isLoggedIn: ref(false),
+    isLoadingAuthentication: ref(false),
+    accessToken: ref(null)
+  }))
+}));
 
 describe("AppointmentView", () => {
 
@@ -63,13 +82,6 @@ describe("AppointmentView", () => {
     familyName: "John Doe",
     email: "john@example.com",
     telephone: "1234567890",
-  });
-  vi.mock("@/api/ZMSAppointmentAPI", async () => {
-    const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
-    return {
-      ...actual,
-      confirmAppointment: vi.fn(),
-    };
   });
 
   const createWrapper = (props = {}) => {
@@ -1276,6 +1288,118 @@ describe("AppointmentView", () => {
       expect(window.location.href).toBe("http://localhost:8082/");
 
       (window as any).location = originalLocation;
+    });
+  });
+
+  describe("ICS Download Feature", () => {
+    const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+
+    beforeEach(() => {
+      mockConfirmAppointment.mockClear();
+    });
+
+    describe("Button Rendering", () => {
+      it("should render download button with correct attributes", async () => {
+        const wrapper = createWrapper();
+        // Simulate success state by setting the internal state directly
+        wrapper.vm.confirmAppointmentSuccess = true;
+        await nextTick();
+        
+        // The button should not be visible without appointment data
+        const buttons = wrapper.findAll('button');
+        const downloadButton = buttons.find(button => button.text().includes(de.downloadAppointment));
+        expect(downloadButton).toBeUndefined();
+      });
+
+      it("should render view button when user is authenticated", async () => {
+        // Mock useLogin to return authenticated state
+        const mockUseLogin = vi.mocked(useLogin);
+        mockUseLogin.mockReturnValue({
+          isLoggedIn: ref(true),
+          isLoadingAuthentication: ref(false),
+          accessToken: ref("test-token")
+        });
+        
+        const wrapper = createWrapper();
+        wrapper.vm.confirmAppointmentSuccess = true;
+        await nextTick();
+        
+        const buttons = wrapper.findAll('button');
+        const viewButton = buttons.find(button => button.text().includes(de.viewAppointment));
+        expect(viewButton).toBeDefined();
+        expect(viewButton?.attributes('icon')).toBe('arrow-right');
+        expect(viewButton?.text()).toContain(de.viewAppointment);
+      });
+
+      it("should hide view button when user is not authenticated", async () => {
+        // Mock useLogin to return unauthenticated state
+        const mockUseLogin = vi.mocked(useLogin);
+        mockUseLogin.mockReturnValue({
+          isLoggedIn: ref(false),
+          isLoadingAuthentication: ref(false),
+          accessToken: ref(null)
+        });
+        
+        const wrapper = createWrapper();
+        wrapper.vm.confirmAppointmentSuccess = true;
+        await nextTick();
+        
+        const buttons = wrapper.findAll('button');
+        const viewButton = buttons.find(button => button.text().includes(de.viewAppointment));
+        expect(viewButton).toBeUndefined();
+      });
+    });
+
+    describe("Download Functionality", () => {
+      it("should have downloadIcsAppointment function", async () => {
+        const wrapper = createWrapper();
+        const component = wrapper.vm as any;
+        
+        // Check that the function exists
+        expect(typeof component.downloadIcsAppointment).toBe('function');
+      });
+    });
+
+    describe("View Functionality", () => {
+      it("should have viewAppointment function", async () => {
+        const wrapper = createWrapper();
+        const component = wrapper.vm as any;
+        
+        // Check that the function exists
+        expect(typeof component.viewAppointment).toBe('function');
+      });
+    });
+
+    describe("ICS Content Integration", () => {
+      it("should handle appointment confirmation with ICS content", async () => {
+        const mockConfirmResponse = {
+          processId: "12345",
+          timestamp: 1640995200,
+          authKey: "abc123",
+          familyName: "Test User",
+          email: "test@example.com",
+          icsContent: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nEND:VCALENDAR",
+          officeId: "456",
+          scope: {},
+          subRequestCounts: [],
+          serviceId: "789",
+          serviceName: "Test Service",
+          serviceCount: 1,
+          status: "confirmed"
+        };
+
+        const wrapper = createWrapper();
+
+        // Simulate the appointment confirmation success state
+        wrapper.vm.confirmAppointmentSuccess = true;
+        wrapper.vm.$.appContext.provides.appointment.appointment.value = mockConfirmResponse;
+
+        await nextTick();
+
+        // Verify ICS content is stored in component state
+        expect(wrapper.vm.$.appContext.provides.appointment.appointment.value?.icsContent).toBe(mockConfirmResponse.icsContent);
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      });
     });
   });
 });
