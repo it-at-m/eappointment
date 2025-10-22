@@ -166,25 +166,30 @@ jobs:
                           column_type = self.get_column_type(column)
                           # Clean up the column type for better readability
                           clean_type = column_type.replace(' NOT NULL', '').replace(' PK', '').replace(' FK', '').replace(' UK', '')
-                          # Simplify type names for Mermaid
+                          # Simplify type names for Mermaid and keep them short
                           if 'varchar' in clean_type:
-                              clean_type = 'string'
+                              clean_type = 'str'
                           elif 'int' in clean_type or 'tinyint' in clean_type or 'smallint' in clean_type or 'bigint' in clean_type:
                               clean_type = 'int'
                           elif 'float' in clean_type or 'double' in clean_type or 'decimal' in clean_type:
                               clean_type = 'float'
                           elif 'date' in clean_type or 'time' in clean_type or 'timestamp' in clean_type or 'datetime' in clean_type:
-                              clean_type = 'datetime'
+                              clean_type = 'date'
                           elif 'text' in clean_type or 'longtext' in clean_type:
                               clean_type = 'text'
                           elif 'enum' in clean_type:
                               clean_type = 'enum'
                           elif 'char' in clean_type:
-                              clean_type = 'string'
+                              clean_type = 'str'
                           else:
-                              clean_type = 'string'
+                              clean_type = 'str'
                           
-                          mermaid_lines.append(f'        {clean_type} {column_name}')
+                          # Truncate very long column names to prevent overflow
+                          display_name = column_name
+                          if len(column_name) > 25:
+                              display_name = column_name[:22] + '...'
+                          
+                          mermaid_lines.append(f'        {clean_type} {display_name}')
                       
                       mermaid_lines.append('    }')
                   
@@ -233,14 +238,16 @@ jobs:
                           maxTextSize: 900000,
                           theme: 'default',
                           er: {
-                              padding: 20,
-                              useMaxWidth: true,
-                              labelSpacing: 10,
+                              padding: 30,
+                              useMaxWidth: false,
+                              labelSpacing: 15,
                               defaultRenderer: 'dagre',
                               curve: 'basis',
-                              nodeSpacing: 50,
-                              rankSpacing: 50,
-                              fontSize: 10
+                              nodeSpacing: 100,
+                              rankSpacing: 100,
+                              fontSize: 12,
+                              minEntityWidth: 200,
+                              minEntityHeight: 100
                           }
                       });
                   </script>
@@ -313,18 +320,25 @@ jobs:
                           fill: #f6f8fa;
                           stroke: #d0d7de;
                           stroke-width: 2px;
+                          min-width: 200px;
                       }
                       .mermaid .er .entityLabel {
                           font-weight: bold;
                           font-size: 14px;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
                       }
                       .mermaid .er .attributeBox {
                           fill: #ffffff;
                           stroke: #d0d7de;
                           stroke-width: 1px;
+                          min-width: 150px;
                       }
                       .mermaid .er .attributeLabel {
                           font-size: 11px;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                          overflow: hidden;
                       }
                       .mermaid .er .relationshipLine {
                           stroke: #0366d6;
@@ -333,6 +347,16 @@ jobs:
                       .mermaid .er .relationshipLabel {
                           font-size: 10px;
                           fill: #0366d6;
+                      }
+                      .mermaid .er .node rect {
+                          min-width: 200px;
+                          min-height: 50px;
+                      }
+                      .mermaid .er .node .label {
+                          width: auto;
+                          min-width: 180px;
+                          text-align: left;
+                          padding: 8px;
                       }
                   </style>
               </head>
