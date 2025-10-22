@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [feat-zmskvr-686-setup-api-test-automation-module-with-rest-assured]
+    branches: [next]
 
 permissions:
   contents: read
