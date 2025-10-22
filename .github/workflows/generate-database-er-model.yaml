@@ -354,6 +354,9 @@ jobs:
                       .mermaid .er .nodeLabel p {
                           font-size: 12px !important;
                       }
+                      .mermaid .class .nodeLabel p {
+                          font-size: 12px !important;
+                      }
                       .mermaid .er .node rect {
                           min-width: 800px;
                           min-height: 100px;
