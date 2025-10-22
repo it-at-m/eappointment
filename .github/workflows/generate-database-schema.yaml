@@ -40,13 +40,9 @@ jobs:
       - name: Create public directory
         run: mkdir -p public/diagrams
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
       - name: Install dependencies
         run: |
+          apt-get update && apt-get install -y python3-pip
           python3 -m pip install --upgrade pip
           python3 -m pip install pymysql jinja2
 
