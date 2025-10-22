@@ -143,21 +143,10 @@ jobs:
                   
                   return f"{field_type}{null_info}{key_info}"
 
-              def generate_mermaid_er_diagram(self, simplified=False) -> str:
+              def generate_mermaid_er_diagram(self) -> str:
                   """Generate a Mermaid ER diagram for all tables."""
                   tables = self.get_all_tables()
                   table_structures = {}
-                  
-                  # Core tables to include in simplified version
-                  core_tables = {
-                      'buerger', 'standort', 'behoerde', 'organisation', 'kunde',
-                      'nutzer', 'slot', 'oeffnungszeit', 'anliegen', 'provider',
-                      'request', 'request_provider', 'config', 'email', 'sms'
-                  }
-                  
-                  # Filter tables for simplified version
-                  if simplified:
-                      tables = [t for t in tables if t in core_tables]
                   
                   # Get structure for all tables
                   for table in tables:
@@ -201,7 +190,7 @@ jobs:
                   
                   # Add relationships (limit to avoid too many connections)
                   relationship_count = 0
-                  max_relationships = 15 if simplified else 25
+                  max_relationships = 30
                   
                   for table_name, structure in table_structures.items():
                       if relationship_count >= max_relationships:
@@ -352,8 +341,7 @@ jobs:
                   <div class="nav">
                       <a href="zmsapi.html">ZMS API Schema</a>
                       <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
-                      <a href="database-schema.html">Database ER Schema (All Tables)</a>
-                      <a href="database-schema-core.html">Database ER Schema (Core Tables)</a>
+                      <a href="database-schema.html">Database ER Schema</a>
                   </div>
                   
                   <div class="controls">
@@ -460,27 +448,17 @@ jobs:
               # Generate schema
               generator = DatabaseSchemaGenerator()
               try:
-                  # Generate full version first (all tables)
-                  mermaid_er_full = generator.generate_mermaid_er_diagram(simplified=False)
+                  # Generate ER diagram with all tables
+                  mermaid_er = generator.generate_mermaid_er_diagram()
                   
-                  # Create HTML page for full version
-                  html_content_full = generator.create_diagram_page('ZMS Database ER Schema (All Tables)', mermaid_er_full)
+                  # Create HTML page
+                  html_content = generator.create_diagram_page('ZMS Database ER Schema', mermaid_er)
                   
-                  # Write full version to file
-                  diagrams_dir.joinpath('database-schema.html').write_text(html_content_full)
+                  # Write to file
+                  diagrams_dir.joinpath('database-schema.html').write_text(html_content)
                   
                   print("Database schema generation complete")
-                  print(f"Generated full diagram with {len(generator.get_all_tables())} tables")
-                  
-                  # Try to generate simplified version as well
-                  try:
-                      mermaid_er_simple = generator.generate_mermaid_er_diagram(simplified=True)
-                      html_content_simple = generator.create_diagram_page('ZMS Database ER Schema (Core Tables)', mermaid_er_simple)
-                      diagrams_dir.joinpath('database-schema-core.html').write_text(html_content_simple)
-                      print(f"Generated simplified diagram with core tables")
-                  except Exception as e:
-                      print(f"Simplified diagram generation failed: {e}")
-                      print("Using full version only")
+                  print(f"Generated diagram with {len(generator.get_all_tables())} tables")
                   
               finally:
                   generator.close_connection()
