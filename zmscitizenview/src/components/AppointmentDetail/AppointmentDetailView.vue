@@ -223,9 +223,32 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
+                <p
+                  v-if="
+                    selectedProvider &&
+                    selectedProvider.scope &&
+                    selectedProvider.scope.hint
+                  "
+                >
+                  <strong> {{ selectedProvider.scope.hint }} </strong>
+                </p>
               </div>
             </div>
           </div>
+          <muc-callout
+            v-if="
+              appointment &&
+              appointment.scope &&
+              appointment.scope.infoForAppointment
+            "
+            type="info"
+          >
+            <template #content>
+              {{ appointment.scope.infoForAppointment }}
+            </template>
+
+            <template #header>{{ t("appointmentHintHeader") }}</template>
+          </muc-callout>
         </div>
       </div>
       <div
@@ -292,7 +315,12 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucIntro,
+  MucModal,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";

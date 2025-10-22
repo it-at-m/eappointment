@@ -146,6 +146,7 @@
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen",
+  "appointmentHintHeader": "Hinweis zu Ihrem Termin",
   "appointmentNumber": "Terminnummer",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde gebucht.",
   "appointmentSuccessfullyBookedText": "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.",

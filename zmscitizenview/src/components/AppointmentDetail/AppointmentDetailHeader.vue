@@ -30,6 +30,16 @@
         prepend-icon="map-pin"
         @click.prevent="focusLocation"
       />
+      <br />
+      <p
+        v-if="
+          selectedProvider &&
+          selectedProvider.scope &&
+          selectedProvider.scope.hint
+        "
+      >
+        {{ selectedProvider.scope.hint }}
+      </p>
     </div>
     <div class="m-button-group">
       <muc-button
