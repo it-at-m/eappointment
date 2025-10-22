@@ -156,8 +156,8 @@ jobs:
                   for table in tables:
                       table_structures[table] = self.get_table_structure(table)
                   
-                  # Generate Mermaid class diagram (better column width control)
-                  mermaid_lines = ['classDiagram']
+                  # Generate Mermaid ER diagram
+                  mermaid_lines = ['erDiagram']
                   
                   # Add all tables with their columns
                   for table_name, structure in table_structures.items():
@@ -237,7 +237,7 @@ jobs:
                           logLevel: 'error',
                           maxTextSize: 900000,
                           theme: 'default',
-                          class: {
+                          er: {
                               padding: 50,
                               useMaxWidth: false,
                               labelSpacing: 20,
@@ -246,8 +246,8 @@ jobs:
                               nodeSpacing: 300,
                               rankSpacing: 200,
                               fontSize: 14,
-                              minWidth: 800,
-                              minHeight: 200
+                              minEntityWidth: 800,
+                              minEntityHeight: 200
                           }
                       });
                   </script>
@@ -316,38 +316,50 @@ jobs:
                           font-size: 12px;
                           line-height: 1.6;
                       }
-                      .mermaid .class .node rect {
+                      .mermaid .er .entityBox {
                           fill: #f6f8fa;
                           stroke: #d0d7de;
                           stroke-width: 2px;
                           min-width: 800px;
-                          min-height: 100px;
+                          min-height: 150px;
                       }
-                      .mermaid .class .node .label {
+                      .mermaid .er .entityLabel {
                           font-weight: bold;
                           font-size: 16px;
                           text-align: center;
                           padding: 10px;
                       }
-                      .mermaid .class .node .label-container {
-                          min-width: 780px;
-                          padding: 15px;
+                      .mermaid .er .attributeBox {
+                          fill: #ffffff;
+                          stroke: #d0d7de;
+                          stroke-width: 1px;
+                          min-width: 750px;
                       }
-                      .mermaid .class .node .label div {
+                      .mermaid .er .attributeLabel {
                           font-size: 12px;
                           line-height: 1.8;
                           text-align: left;
                           white-space: nowrap;
                           overflow: visible;
-                          min-width: 750px;
+                          min-width: 700px;
                       }
-                      .mermaid .class .edgePath .path {
+                      .mermaid .er .relationshipLine {
                           stroke: #0366d6;
                           stroke-width: 2px;
                       }
-                      .mermaid .class .edgeLabel {
+                      .mermaid .er .relationshipLabel {
                           font-size: 10px;
                           fill: #0366d6;
+                      }
+                      .mermaid .er .node rect {
+                          min-width: 800px;
+                          min-height: 100px;
+                      }
+                      .mermaid .er .node .label {
+                          width: auto;
+                          min-width: 780px;
+                          text-align: left;
+                          padding: 15px;
                       }
                   </style>
               </head>
