@@ -869,16 +869,20 @@ const requestLogin = () => {
 };
 
 const saveAppointmentToLocalstorage = () => {
-  if (appointment.value) {
-    const appointmentInfo: AppointmentHash = {
-      id: appointment.value.processId,
-      authKey: appointment.value.authKey,
-    };
+  if (selectedService.value && selectedProvider.value && appointment.value) {
+    const selectedServiceMapObject = Object.fromEntries(
+      selectedServiceMap.value
+    );
 
     const saveData: LocalStorageAppointmentData = {
       timestamp: Date.now(),
       currentView: currentView.value,
-      appointmentInfo: btoa(JSON.stringify(appointmentInfo)),
+      selectedService: selectedService.value,
+      selectedServiceMap: selectedServiceMapObject,
+      selectedProvider: selectedProvider.value,
+      selectedTimeslot: selectedTimeslot.value,
+      customerData: customerData.value,
+      appointment: appointment.value,
       captchaToken: captchaToken.value,
     };
     localStorage.setItem(
@@ -950,7 +954,9 @@ const parseLocalStorageAppointmentData = (
     if (
       localstorageData.timestamp == undefined ||
       localstorageData.currentView == undefined ||
-      localstorageData.appointmentInfo == undefined
+      localstorageData.selectedService == undefined ||
+      localstorageData.selectedProvider == undefined ||
+      localstorageData.appointment == undefined
     ) {
       return null;
     }
@@ -1156,6 +1162,16 @@ onMounted(() => {
       const localStorageData = parseLocalStorageAppointmentData(
         localStorageAppointment
       );
+
+      if (!localStorageData) {
+        handleApiError(
+          "appointmentNotFound",
+          errorStateMap.value,
+          currentErrorData.value
+        );
+        return;
+      }
+
       if (
         localStorageData &&
         Date.now() - localStorageData.timestamp < 30 * 60 * 1000
@@ -1183,89 +1199,17 @@ onMounted(() => {
           relations.value = (data as any).relations;
           offices.value = (data as any).offices;
 
-          const appointmentData = parseAppointmentHash(
-            localStorageData.appointmentInfo
+          selectedService.value = localStorageData.selectedService;
+          selectedServiceMap.value = new Map(
+            Object.entries(localStorageData.selectedServiceMap)
           );
-          if (!appointmentData) {
-            handleApiError(
-              "appointmentNotFound",
-              errorStateMap.value,
-              currentErrorData.value
-            );
-            return;
-          }
+          selectedProvider.value = localStorageData.selectedProvider;
+          selectedTimeslot.value = localStorageData.selectedTimeslot;
+          customerData.value = localStorageData.customerData;
+          appointment.value = localStorageData.appointment;
+          captchaToken.value = localStorageData.captchaToken;
 
-          fetchAppointment(props.globalState, appointmentData).then((data) => {
-            if ((data as AppointmentDTO).processId != undefined) {
-              if (localStorageData.captchaToken) {
-                captchaToken.value = localStorageData.captchaToken;
-              }
-              appointment.value = data as AppointmentDTO;
-              selectedService.value = services.value.find(
-                (service) => service.id == appointment.value?.serviceId
-              );
-              if (selectedService.value) {
-                selectedService.value.count = appointment.value.serviceCount;
-                selectedService.value.providers = getProviders(
-                  selectedService.value.id,
-                  null
-                );
-
-                preselectedLocationId.value = appointment.value.officeId;
-                const foundOffice = offices.value.find(
-                  (office) => office.id == appointment.value?.officeId
-                );
-                if (foundOffice) {
-                  selectedProvider.value = new OfficeImpl(
-                    foundOffice.id,
-                    foundOffice.name,
-                    foundOffice.address,
-                    foundOffice.showAlternativeLocations,
-                    foundOffice.displayNameAlternatives,
-                    foundOffice.organization,
-                    foundOffice.organizationUnit,
-                    foundOffice.slotTimeInMinutes,
-                    undefined, // disabledByServices
-                    foundOffice.scope,
-                    foundOffice.maxSlotsPerAppointment,
-                    undefined, // slots
-                    foundOffice.priority || 1
-                  );
-                }
-
-                if (appointment.value.subRequestCounts.length > 0) {
-                  appointment.value.subRequestCounts.forEach(
-                    (subRequestCount) => {
-                      const subRequest = services.value.find(
-                        (service) => service.id == subRequestCount.id
-                      ) as Service;
-                      const subService = new SubService(
-                        subRequest.id,
-                        subRequest.name,
-                        subRequest.maxQuantity,
-                        getProviders(subRequest.id, null),
-                        subRequestCount.count
-                      );
-                      if (
-                        selectedService.value &&
-                        !selectedService.value.subServices
-                      ) {
-                        selectedService.value.subServices = [];
-                      }
-                      selectedService.value?.subServices?.push(subService);
-                    }
-                  );
-                }
-                currentView.value = localStorageData.currentView;
-              }
-            } else {
-              handleApiError(
-                "appointmentNotFound",
-                errorStateMap.value,
-                currentErrorData.value
-              );
-            }
-          });
+          currentView.value = localStorageData.currentView;
         });
       }
     }
