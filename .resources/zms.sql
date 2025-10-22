@@ -532,13 +532,6 @@ CREATE TABLE `log` (
   `user_id` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `log`
---
-
-INSERT INTO `log` (`log_id`, `type`, `reference_id`, `ts`, `message`, `scope_id`, `data`, `user_id`) VALUES
-(1, 'buerger', 0, '2025-10-22 14:02:53', 'LOGIN (WorkstattionLogin::getLoggedInWorkstation) superuser [zms.ddev.site:80@zms-web] (WorkstationLogin)', 0, NULL, 'superuser');
-
 -- --------------------------------------------------------
 
 --
