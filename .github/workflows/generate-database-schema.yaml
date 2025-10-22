@@ -43,11 +43,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          pip install pymysql jinja2
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pymysql jinja2
 
       - name: Install Composer Dependencies
         run: |
@@ -436,7 +437,7 @@ jobs:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsdb
-        run: python generate_schema.py
+        run: python3 generate_schema.py
 
       - name: Upload database schema diagrams artifact
         uses: actions/upload-artifact@v4
