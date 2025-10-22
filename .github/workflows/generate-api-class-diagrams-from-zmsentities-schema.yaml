@@ -175,16 +175,35 @@ jobs:
                               padding: 20
                           },
                           class: {
-                              padding: 20,
-                              useMaxWidth: true,
-                              labelSpacing: 10,
+                              padding: 50,
+                              useMaxWidth: false,
+                              labelSpacing: 20,
                               defaultRenderer: 'dagre',
                               curve: 'basis',
-                              nodeSpacing: 100,
-                              rankSpacing: 100,
-                              fontSize: 14
+                              nodeSpacing: 300,
+                              rankSpacing: 200,
+                              fontSize: 20,
+                              minWidth: 800,
+                              minHeight: 200
                           }
                       });
+                      
+                      // Adjust font size to 16px after diagram is rendered
+                      function adjustFontSize() {
+                          const diagrams = document.querySelectorAll('[id^="mermaid-"]');
+                          diagrams.forEach(diagram => {
+                              diagram.style.fontSize = '16px';
+                              const allElements = diagram.querySelectorAll('*');
+                              allElements.forEach(el => {
+                                  if (el.style.fontSize) {
+                                      el.style.fontSize = '16px';
+                                  }
+                              });
+                          });
+                      }
+                      
+                      // Run adjustment after Mermaid renders
+                      setTimeout(adjustFontSize, 1000);
                   </script>
                   <style>
                       body {

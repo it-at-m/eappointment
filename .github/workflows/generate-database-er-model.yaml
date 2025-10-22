@@ -245,21 +245,33 @@ jobs:
                               curve: 'basis',
                               nodeSpacing: 300,
                               rankSpacing: 200,
-                              fontSize: 16,
+                              fontSize: 20,
                               minEntityWidth: 800,
                               minEntityHeight: 200
+                          },
+                          class: {
+                              padding: 50,
+                              useMaxWidth: false,
+                              labelSpacing: 20,
+                              defaultRenderer: 'dagre',
+                              curve: 'basis',
+                              nodeSpacing: 300,
+                              rankSpacing: 200,
+                              fontSize: 20,
+                              minWidth: 800,
+                              minHeight: 200
                           }
                       });
                       
-                      // Adjust font size to 12px after diagram is rendered
+                      // Adjust font size to 16px after diagram is rendered
                       function adjustFontSize() {
                           const diagrams = document.querySelectorAll('[id^="mermaid-"]');
                           diagrams.forEach(diagram => {
-                              diagram.style.fontSize = '12px';
+                              diagram.style.fontSize = '16px';
                               const allElements = diagram.querySelectorAll('*');
                               allElements.forEach(el => {
                                   if (el.style.fontSize) {
-                                      el.style.fontSize = '12px';
+                                      el.style.fontSize = '16px';
                                   }
                               });
                           });
