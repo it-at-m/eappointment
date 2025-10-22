@@ -177,7 +177,8 @@ jobs:
                       
                       for column in structure['columns']:
                           if columns_shown >= max_columns:
-                              mermaid_lines.append(f'        ... {len(structure['columns']) - max_columns} more columns')
+                              remaining = len(structure['columns']) - max_columns
+                              mermaid_lines.append(f'        ... {remaining} more columns')
                               break
                               
                           column_name = column['Field']
