@@ -175,16 +175,14 @@ jobs:
                               padding: 20
                           },
                           class: {
-                              padding: 50,
-                              useMaxWidth: false,
-                              labelSpacing: 20,
+                              padding: 20,
+                              useMaxWidth: true,
+                              labelSpacing: 10,
                               defaultRenderer: 'dagre',
                               curve: 'basis',
-                              nodeSpacing: 300,
-                              rankSpacing: 200,
-                              fontSize: 16,
-                              minWidth: 800,
-                              minHeight: 200
+                              nodeSpacing: 100,
+                              rankSpacing: 100,
+                              fontSize: 16
                           }
                       });
                       
