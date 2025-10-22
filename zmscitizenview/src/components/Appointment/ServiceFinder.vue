@@ -165,7 +165,7 @@ import {
   MucSelect,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
-
+import type { ServiceVariant } from "@/api/models/ServiceVariant";
 import { Combinable } from "@/api/models/Combinable";
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
@@ -507,8 +507,7 @@ onMounted(() => {
     if (service.value.subServices) {
       service.value.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
-          slots +=
-            getMinSlotOfProvider(subservice.providers) * subservice.count;
+          slots += getMinSlotOfProvider(subservice.providers) * subservice.count;
         }
       });
     }
