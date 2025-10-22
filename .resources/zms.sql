@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db:3306
--- Generation Time: Oct 22, 2025 at 01:58 PM
+-- Generation Time: Oct 22, 2025 at 02:04 PM
 -- Server version: 10.4.34-MariaDB-1:10.4.34+maria~ubu2004-log
 -- PHP Version: 8.2.29
 
@@ -532,6 +532,13 @@ CREATE TABLE `log` (
   `user_id` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Dumping data for table `log`
+--
+
+INSERT INTO `log` (`log_id`, `type`, `reference_id`, `ts`, `message`, `scope_id`, `data`, `user_id`) VALUES
+(1, 'buerger', 0, '2025-10-22 14:02:53', 'LOGIN (WorkstattionLogin::getLoggedInWorkstation) superuser [zms.ddev.site:80@zms-web] (WorkstationLogin)', 0, NULL, 'superuser');
+
 -- --------------------------------------------------------
 
 --
@@ -811,7 +818,7 @@ INSERT INTO `nutzer` (`NutzerID`, `Name`, `Passworthash`, `Frage`, `Antworthash`
 (1, 'vorschau', '128196aca512b2989d1d442455a57629', '', '', 0, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2019-08-23 15:22:22', NULL),
 (136, 'testadmin', '$2y$10$C2szb/GeBKp9EdyuI0KiaO1.GHS3A6DzQRP2rJlGa.un63MepwJzu', '', '', 70, 0, 74, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '2022-03-16 15:01:46', NULL),
 (137, 'testuser', '128196aca512b2989d1d442455a57629', '', '', 10, 0, 0, '', 0, '', '0000-00-00', 0, 0, '', '', '', '2020-03-02 13:10:32', NULL),
-(138, 'superuser', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '2022-04-14 05:10:10', NULL),
+(138, 'superuser', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, 'd3da7d4d6c275f93c1fcdf4df496ac98562892c0a320aa227498db54ebdbcac0', 0, '', '2025-10-22', 0, 0, '0', '0', '', '2025-10-22 14:02:53', '2025-10-23 00:02:53'),
 (5118, '_system_messenger', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:18', NULL),
 (5119, '_system_soap', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:20', NULL),
 (5120, '_system_115', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:23', NULL),
@@ -991,6 +998,13 @@ CREATE TABLE `provider` (
   `parent_id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `provider`
+--
+
+INSERT INTO `provider` (`source`, `id`, `name`, `contact__city`, `contact__country`, `contact__lat`, `contact__lon`, `contact__postalCode`, `contact__region`, `contact__street`, `contact__streetNumber`, `link`, `data`, `display_name`, `parent_id`) VALUES
+('zms', '1', '', '', '', 0, 0, 0, '', '', '', '', '{}', '', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -1009,6 +1023,13 @@ CREATE TABLE `request` (
   `variant_id` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `request`
+--
+
+INSERT INTO `request` (`source`, `id`, `name`, `link`, `group`, `data`, `parent_id`, `variant_id`) VALUES
+('zms', '1', '', '', '', '{}', NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -1025,6 +1046,13 @@ CREATE TABLE `request_provider` (
   `max_quantity` tinyint(4) DEFAULT NULL,
   `public_visibility` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `request_provider`
+--
+
+INSERT INTO `request_provider` (`source`, `request__id`, `provider__id`, `slots`, `bookable`, `max_quantity`, `public_visibility`) VALUES
+('zms', '1', '1', 0, 1, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -1165,7 +1193,8 @@ CREATE TABLE `source` (
 
 INSERT INTO `source` (`source`, `label`, `editable`, `contact__name`, `contact__email`, `lastChange`) VALUES
 ('dldb', 'Dienstleistungsdatenbank', 0, 'Dienstleistungsdatenbank', 'noreply@muenchen.de', '2022-04-14 05:27:15'),
-('unittest', 'Unittest Source', 1, 'Testfirma', 'noreply@muenchen.de', '2022-04-14 05:26:51');
+('unittest', 'Unittest Source', 1, 'Testfirma', 'noreply@muenchen.de', '2022-04-14 05:26:51'),
+('zms', 'Varianten', 1, '', '', '2025-10-22 14:04:10');
 
 -- --------------------------------------------------------
 
@@ -1975,7 +2004,7 @@ ALTER TABLE `kundenlinks`
 -- AUTO_INCREMENT for table `log`
 --
 ALTER TABLE `log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `mailpart`
