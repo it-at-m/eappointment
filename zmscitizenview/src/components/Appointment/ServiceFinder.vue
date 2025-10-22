@@ -631,12 +631,11 @@ const variantServices = computed<ServiceVariant[]>(() => {
   return variants;
 });
 
-
 watch(selectedVariant, (variantId) => {
   if (!variantId || !baseServiceId.value) return;
 
   const selectedServiceVariant = variantServices.value.find(
-    v => String(v.variant_id) === String(variantId)
+    (v) => String(v.variant_id) === String(variantId)
   );
 
   if (selectedServiceVariant) {
