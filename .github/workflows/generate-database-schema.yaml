@@ -143,10 +143,21 @@ jobs:
                   
                   return f"{field_type}{null_info}{key_info}"
 
-              def generate_mermaid_er_diagram(self) -> str:
+              def generate_mermaid_er_diagram(self, simplified=False) -> str:
                   """Generate a Mermaid ER diagram for all tables."""
                   tables = self.get_all_tables()
                   table_structures = {}
+                  
+                  # Core tables to include in simplified version
+                  core_tables = {
+                      'buerger', 'standort', 'behoerde', 'organisation', 'kunde',
+                      'nutzer', 'slot', 'oeffnungszeit', 'anliegen', 'provider',
+                      'request', 'request_provider', 'config', 'email', 'sms'
+                  }
+                  
+                  # Filter tables for simplified version
+                  if simplified:
+                      tables = [t for t in tables if t in core_tables]
                   
                   # Get structure for all tables
                   for table in tables:
@@ -155,31 +166,59 @@ jobs:
                   # Generate Mermaid ER diagram
                   mermaid_lines = ['erDiagram']
                   
-                  # Add all tables with their columns
+                  # Add all tables with their columns (limit columns for readability)
                   for table_name, structure in table_structures.items():
                       sanitized_table = self.sanitize_name(table_name)
                       mermaid_lines.append(f'    {sanitized_table} {{')
                       
+                      # Limit number of columns shown for readability
+                      max_columns = 10 if simplified else 15
+                      columns_shown = 0
+                      
                       for column in structure['columns']:
+                          if columns_shown >= max_columns:
+                              mermaid_lines.append(f'        ... {len(structure['columns']) - max_columns} more columns')
+                              break
+                              
                           column_name = column['Field']
                           column_type = self.get_column_type(column)
-                          mermaid_lines.append(f'        {column_type} {column_name}')
+                          # Clean up the column type for better readability
+                          clean_type = column_type.replace(' NOT NULL', '').replace(' PK', '').replace(' FK', '').replace(' UK', '')
+                          # Truncate long type names
+                          if len(clean_type) > 20:
+                              clean_type = clean_type[:17] + '...'
+                          mermaid_lines.append(f'        {clean_type} {column_name}')
+                          columns_shown += 1
                       
                       mermaid_lines.append('    }')
                   
-                  # Add relationships
+                  # Add relationships (limit to avoid too many connections)
+                  relationship_count = 0
+                  max_relationships = 20 if simplified else 30
+                  
                   for table_name, structure in table_structures.items():
+                      if relationship_count >= max_relationships:
+                          break
+                          
                       sanitized_table = self.sanitize_name(table_name)
                       
                       for fk in structure['foreign_keys']:
+                          if relationship_count >= max_relationships:
+                              break
+                              
                           ref_table = fk['REFERENCED_TABLE_NAME']
                           ref_column = fk['REFERENCED_COLUMN_NAME']
                           column_name = fk['COLUMN_NAME']
                           
+                          # Skip if referenced table doesn't exist in our tables
+                          if ref_table not in table_structures:
+                              continue
+                              
                           sanitized_ref_table = self.sanitize_name(ref_table)
                           
                           # Determine relationship type (simplified - assume many-to-one)
                           mermaid_lines.append(f'    {sanitized_table} ||--o{{ {sanitized_ref_table} : "{column_name}"')
+                          relationship_count += 1
                   
                   return '\n'.join(mermaid_lines)
 
@@ -194,7 +233,7 @@ jobs:
                       mermaid.initialize({
                           startOnLoad: true,
                           securityLevel: 'loose',
-                          logLevel: 'debug',
+                          logLevel: 'error',
                           maxTextSize: 900000,
                           theme: 'default',
                           er: {
@@ -203,9 +242,9 @@ jobs:
                               labelSpacing: 10,
                               defaultRenderer: 'dagre',
                               curve: 'basis',
-                              nodeSpacing: 100,
-                              rankSpacing: 100,
-                              fontSize: 12
+                              nodeSpacing: 50,
+                              rankSpacing: 50,
+                              fontSize: 10
                           }
                       });
                   </script>
@@ -413,16 +452,27 @@ jobs:
               # Generate schema
               generator = DatabaseSchemaGenerator()
               try:
-                  mermaid_er = generator.generate_mermaid_er_diagram()
+                  # Generate simplified version first (more likely to work)
+                  mermaid_er_simple = generator.generate_mermaid_er_diagram(simplified=True)
                   
-                  # Create HTML page
-                  html_content = generator.create_diagram_page('ZMS Database ER Schema', mermaid_er)
+                  # Create HTML page for simplified version
+                  html_content_simple = generator.create_diagram_page('ZMS Database ER Schema (Core Tables)', mermaid_er_simple)
                   
-                  # Write to file
-                  diagrams_dir.joinpath('database-schema.html').write_text(html_content)
+                  # Write simplified version to file
+                  diagrams_dir.joinpath('database-schema.html').write_text(html_content_simple)
                   
                   print("Database schema generation complete")
-                  print(f"Generated diagram with {len(generator.get_all_tables())} tables")
+                  print(f"Generated simplified diagram with core tables")
+                  
+                  # Try to generate full version as well
+                  try:
+                      mermaid_er_full = generator.generate_mermaid_er_diagram(simplified=False)
+                      html_content_full = generator.create_diagram_page('ZMS Database ER Schema (All Tables)', mermaid_er_full)
+                      diagrams_dir.joinpath('database-schema-full.html').write_text(html_content_full)
+                      print(f"Generated full diagram with {len(generator.get_all_tables())} tables")
+                  except Exception as e:
+                      print(f"Full diagram generation failed: {e}")
+                      print("Using simplified version only")
                   
               finally:
                   generator.close_connection()
