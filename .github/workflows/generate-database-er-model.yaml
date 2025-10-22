@@ -357,6 +357,18 @@ jobs:
                       .mermaid .class .nodeLabel p {
                           font-size: 12px !important;
                       }
+                      .mermaid[id^="mermaid-"] {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .er .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .class .nodeLabel p {
+                          font-size: 12px !important;
+                      }
                       .mermaid .er .node rect {
                           min-width: 800px;
                           min-height: 100px;
