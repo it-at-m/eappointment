@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [next]
+    branches: [feat-zmskvr-686-setup-api-test-automation-module-with-rest-assured]
 
 permissions:
   contents: read
@@ -86,14 +86,18 @@ jobs:
     uses: ./.github/workflows/build-api-docs.yaml
 
   generate-schema-diagrams:
-    uses: ./.github/workflows/generate-schema-diagrams.yaml
+    uses: ./.github/workflows/generate-class-diagrams.yaml
+
+  generate-database-schema:
+    uses: ./.github/workflows/generate-database-schema.yaml
 
   deploy-to-pages:
-    needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams]
+    needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams, generate-database-schema]
     if: |
       needs.call-build-api-docs.result == 'success' &&
       needs.aggregate-reports.result == 'success' &&
-      needs.generate-schema-diagrams.result == 'success'
+      needs.generate-schema-diagrams.result == 'success' &&
+      needs.generate-database-schema.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
       coverage_artifact: aggregated-reports
