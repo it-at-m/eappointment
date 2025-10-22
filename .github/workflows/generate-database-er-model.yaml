@@ -369,6 +369,13 @@ jobs:
                       .mermaid[id^="mermaid-"] .class .nodeLabel p {
                           font-size: 12px !important;
                       }
+                      /* Override any Mermaid diagram font size */
+                      [id^="mermaid-"] {
+                          font-size: 12px !important;
+                      }
+                      [id^="mermaid-"] * {
+                          font-size: 12px !important;
+                      }
                       .mermaid .er .node rect {
                           min-width: 800px;
                           min-height: 100px;
