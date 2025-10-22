@@ -186,7 +186,10 @@
                 class="m-content time-container-margin-bottom"
               >
                 <div class="timeBox">
-                  <calendar-icon :timestamp="appointment.timestamp" />
+                  <calendar-icon
+                    :timestamp="appointment.timestamp"
+                    aria-hidden="true"
+                  />
                   <p>
                     {{ formatAppointmentDateTime(appointment.timestamp) }}
                     {{ t("timeStampSuffix") }} <br />
