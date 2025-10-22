@@ -97,12 +97,15 @@ jobs:
 
               def get_table_structure(self, table_name: str) -> Dict[str, Any]:
                   """Get detailed table structure including columns, keys, and constraints."""
+                  # Escape table name to prevent SQL injection
+                  escaped_table_name = table_name.replace('`', '``')
+                  
                   # Get column information
-                  self.cursor.execute("DESCRIBE %s", (table_name,))
+                  self.cursor.execute(f"DESCRIBE `{escaped_table_name}`")
                   columns = self.cursor.fetchall()
                   
                   # Get index information
-                  self.cursor.execute("SHOW INDEX FROM %s", (table_name,))
+                  self.cursor.execute(f"SHOW INDEX FROM `{escaped_table_name}`")
                   indexes = self.cursor.fetchall()
                   
                   # Get foreign key information
