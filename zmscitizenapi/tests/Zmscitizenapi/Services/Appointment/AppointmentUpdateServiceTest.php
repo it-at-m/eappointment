@@ -227,6 +227,16 @@ class AppointmentUpdateServiceTest extends TestCase
                 ]
             ]
         ];
+        $mailTemplatesJson = [
+            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
+            'meta' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
+                'error' => false,
+                'generated' => '2025-10-13T10:13:41+02:00',
+                'server' => 'zms'
+            ],
+            'data' => []
+        ];
     
         $processResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $processResponse->method('getBody')
@@ -239,16 +249,25 @@ class AppointmentUpdateServiceTest extends TestCase
             ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($sourceJson)));
         $sourceResponse->method('getStatusCode')
             ->willReturn(200);
+        
+        $mailTemplatesResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $mailTemplatesResponse->method('getBody')
+            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($mailTemplatesJson)));
+        $mailTemplatesResponse->method('getStatusCode')
+            ->willReturn(200);
 
         $mockHttpClient = $this->createMock(\BO\Zmsclient\Http::class);
-        $mockHttpClient->expects($this->exactly(2))
+        $mockHttpClient->expects($this->exactly(3))
             ->method('readGetResult')
-            ->willReturnCallback(function($url, $params) use ($processResponse, $sourceResponse) {
+            ->willReturnCallback(function($url, $params) use ($processResponse, $sourceResponse, $mailTemplatesResponse) {
                 if (strpos($url, '/process/101002/fb43/') !== false) {
                     return new \BO\Zmsclient\Result($processResponse);
                 }
                 if (strpos($url, '/source/unittest/') !== false) {
                     return new \BO\Zmsclient\Result($sourceResponse);
+                }
+                if (strpos($url, '/merged-mailtemplates/') !== false) {
+                    return new \BO\Zmsclient\Result($mailTemplatesResponse);
                 }
                 throw new \RuntimeException("Unexpected URL: " . $url);
             });

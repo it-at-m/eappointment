@@ -2,14 +2,24 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Closure as Entity;
 use BO\Zmsentities\Collection\ClosureList as Collection;
 use DateTime;
 
 class Closure extends Base
 {
-    public function readByScopeId($scopeId = 0)
+    public function readByScopeId($scopeId = 0, $disableCache = false)
     {
+        $cacheKey = "closuresByScope-$scopeId";
+
+        if (!$disableCache && App::$cache) {
+            $data = App::$cache->get($cacheKey);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         $closureList = new Collection();
         $query = new Query\Closure(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -22,6 +32,11 @@ class Closure extends Base
                 }
             }
         }
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $closureList);
+        }
+
         return $closureList;
     }
 
@@ -59,10 +74,15 @@ class Closure extends Base
         return $result ;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($closure)
     {
         $query = new Query\Closure(Query\Base::DELETE);
-        $query->addConditionId($itemId);
+        $query->addConditionId($closure->getId());
+
+        if (App::$cache) {
+            App::$cache->delete('closuresByScope-' . $closure->scopeId);
+        }
+
         return ($this->deleteItem($query));
     }
 
@@ -77,6 +97,11 @@ class Closure extends Base
                 'day' => (int) $date->format('d')
             )
         );
+
+        if (App::$cache) {
+            App::$cache->delete('closuresByScope-' . $scopeId);
+        }
+
         $this->writeItem($query);
         $id = $this->getWriter()->lastInsertId();
 

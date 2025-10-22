@@ -12,7 +12,7 @@ class DepartmentTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input, 75);
-        $entity = $query->readEntity($entity->id, 2);
+        $entity = $query->readEntity($entity->id, 2, true);
 
         $this->assertNotEmpty($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);

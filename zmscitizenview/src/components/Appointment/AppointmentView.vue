@@ -241,14 +241,13 @@
                 {{ t("viewAppointment") }}
               </muc-button>
             </div>
-            <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
-                <muc-button
-                  icon="download"
-                  @click="downloadIcsAppointment"
-                >
-                  {{ t("downloadAppointment") }}
-                </muc-button>
-                bis hierhin. -->
+            <muc-button
+              v-if="!globalState.isLoggedIn && appointment?.icsContent"
+              icon="download"
+              @click="downloadIcsAppointment"
+            >
+              {{ t("downloadAppointment") }}
+            </muc-button>
             <muc-button
               @click="redirectToAppointmentStart"
               variant="secondary"
@@ -449,8 +448,8 @@ watch(
   { immediate: true }
 );
 
-const appointment = ref<AppointmentImpl>();
-const rebookedAppointment = ref<AppointmentImpl>();
+const appointment = ref<AppointmentDTO>();
+const rebookedAppointment = ref<AppointmentDTO>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -990,12 +989,29 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
+const downloadIcsAppointment = () => {
+  if (appointment.value?.icsContent) {
+    const blob = new Blob([appointment.value.icsContent], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Termin.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+};
+
 function nextConfirmAppointment(appointmentData: AppointmentHash) {
   confirmAppointment(props.globalState, appointmentData).then((data) => {
     currentView.value = 5;
 
     if ((data as AppointmentDTO).processId != undefined) {
       confirmAppointmentSuccess.value = true;
+      appointment.value = data as AppointmentDTO;
       clearContextErrors(errorStateMap.value);
       if (isRebooking.value && rebookedAppointment.value) {
         currentContext.value = "cancel";
@@ -1036,7 +1052,6 @@ onMounted(() => {
       );
       return;
     }
-
     nextConfirmAppointment(appointmentData);
   }
 

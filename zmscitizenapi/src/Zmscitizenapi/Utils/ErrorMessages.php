@@ -330,6 +330,12 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
             'errorType' => 'warning'
         ],
+        'invalidCredentials' => [
+            'errorCode' => 'invalidCredentials',
+            'errorMessage' => 'Invalid credentials.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorType' => 'warning'
+        ],
         'noAppointmentForThisScope' => [
             'errorCode' => 'noAppointmentForThisScope',
             'errorMessage' => 'Please try again at a later time.',
