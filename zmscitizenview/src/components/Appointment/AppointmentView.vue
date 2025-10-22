@@ -1162,16 +1162,6 @@ onMounted(() => {
       const localStorageData = parseLocalStorageAppointmentData(
         localStorageAppointment
       );
-
-      if (!localStorageData) {
-        handleApiError(
-          "appointmentNotFound",
-          errorStateMap.value,
-          currentErrorData.value
-        );
-        return;
-      }
-
       if (
         localStorageData &&
         Date.now() - localStorageData.timestamp < 30 * 60 * 1000
