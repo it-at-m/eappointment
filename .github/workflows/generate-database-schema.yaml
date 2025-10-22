@@ -363,8 +363,6 @@ jobs:
               <body>
                   <h1>{{ title }}</h1>
                   <div class="nav">
-                      <a href="zmsapi.html">ZMS API Schema</a>
-                      <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
                       <a href="database-schema.html">Database ER Schema</a>
                   </div>
                   
