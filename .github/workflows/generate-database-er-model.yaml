@@ -98,15 +98,15 @@ jobs:
               def get_table_structure(self, table_name: str) -> Dict[str, Any]:
                   """Get detailed table structure including columns, keys, and constraints."""
                   # Get column information
-                  self.cursor.execute(f"DESCRIBE `{table_name}`")
+                  self.cursor.execute("DESCRIBE `%s`", (table_name,))
                   columns = self.cursor.fetchall()
                   
                   # Get index information
-                  self.cursor.execute(f"SHOW INDEX FROM `{table_name}`")
+                  self.cursor.execute("SHOW INDEX FROM `%s`", (table_name,))
                   indexes = self.cursor.fetchall()
                   
                   # Get foreign key information
-                  self.cursor.execute(f"""
+                  self.cursor.execute("""
                       SELECT 
                           COLUMN_NAME,
                           REFERENCED_TABLE_NAME,
@@ -116,9 +116,9 @@ jobs:
                           INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
                       WHERE 
                           TABLE_SCHEMA = DATABASE() 
-                          AND TABLE_NAME = '{table_name}' 
+                          AND TABLE_NAME = %s 
                           AND REFERENCED_TABLE_NAME IS NOT NULL
-                  """)
+                  """, (table_name,))
                   foreign_keys = self.cursor.fetchall()
                   
                   return {
