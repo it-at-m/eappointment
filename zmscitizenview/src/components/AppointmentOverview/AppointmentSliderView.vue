@@ -185,7 +185,7 @@ const apiErrorTranslation = computed(() =>
 );
 
 const checksMobile = () => {
-  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+  isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
 };
 
 onMounted(() => {
