@@ -52,7 +52,7 @@ jobs:
           (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
         shell: bash
 
-      - name: Setup Database and Run Migrations
+      - name: Setup Database and Import Schema
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
@@ -60,8 +60,11 @@ jobs:
         run: |
           set -e
           cd zmsdb
-          echo "Setting up database and running migrations..."
-          bin/importTestData --commit --withoutcalculation
+          echo "Setting up database and importing schema from .resources/zms.sql..."
+          # Create database
+          mysql -h mariadb -u root -pzmsdb -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
+          # Import schema from .resources/zms.sql
+          mysql -h mariadb -u root -pzmsdb zmsbo < ../.resources/zms.sql
 
       - name: Create database schema generator script
         run: |
