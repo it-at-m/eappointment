@@ -166,21 +166,13 @@ jobs:
                   # Generate Mermaid ER diagram
                   mermaid_lines = ['erDiagram']
                   
-                  # Add all tables with their columns (limit columns for readability)
+                  # Add all tables with their columns
                   for table_name, structure in table_structures.items():
                       sanitized_table = self.sanitize_name(table_name)
                       mermaid_lines.append(f'    {sanitized_table} {{')
                       
-                      # Limit number of columns shown for readability
-                      max_columns = 8 if simplified else 12
-                      columns_shown = 0
-                      
+                      # Show all columns for each table
                       for column in structure['columns']:
-                          if columns_shown >= max_columns:
-                              remaining = len(structure['columns']) - max_columns
-                              mermaid_lines.append(f'        string "... {remaining} more"')
-                              break
-                              
                           column_name = column['Field']
                           column_type = self.get_column_type(column)
                           # Clean up the column type for better readability
@@ -204,7 +196,6 @@ jobs:
                               clean_type = 'string'
                           
                           mermaid_lines.append(f'        {clean_type} {column_name}')
-                          columns_shown += 1
                       
                       mermaid_lines.append('    }')
                   
