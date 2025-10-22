@@ -184,12 +184,8 @@ jobs:
                           else:
                               clean_type = 'str'
                           
-                          # Truncate very long column names to prevent overflow
-                          display_name = column_name
-                          if len(column_name) > 25:
-                              display_name = column_name[:22] + '...'
-                          
-                          mermaid_lines.append(f'        {clean_type} {display_name}')
+                          # Use full column names - no truncation
+                          mermaid_lines.append(f'        {clean_type} {column_name}')
                       
                       mermaid_lines.append('    }')
                   
@@ -246,8 +242,8 @@ jobs:
                               nodeSpacing: 100,
                               rankSpacing: 100,
                               fontSize: 12,
-                              minEntityWidth: 200,
-                              minEntityHeight: 100
+                              minEntityWidth: 300,
+                              minEntityHeight: 120
                           }
                       });
                   </script>
@@ -320,7 +316,7 @@ jobs:
                           fill: #f6f8fa;
                           stroke: #d0d7de;
                           stroke-width: 2px;
-                          min-width: 200px;
+                          min-width: 300px;
                       }
                       .mermaid .er .entityLabel {
                           font-weight: bold;
@@ -332,7 +328,7 @@ jobs:
                           fill: #ffffff;
                           stroke: #d0d7de;
                           stroke-width: 1px;
-                          min-width: 150px;
+                          min-width: 250px;
                       }
                       .mermaid .er .attributeLabel {
                           font-size: 11px;
@@ -349,14 +345,14 @@ jobs:
                           fill: #0366d6;
                       }
                       .mermaid .er .node rect {
-                          min-width: 200px;
-                          min-height: 50px;
+                          min-width: 300px;
+                          min-height: 60px;
                       }
                       .mermaid .er .node .label {
                           width: auto;
-                          min-width: 180px;
+                          min-width: 280px;
                           text-align: left;
-                          padding: 8px;
+                          padding: 10px;
                       }
                   </style>
               </head>
