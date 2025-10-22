@@ -243,11 +243,11 @@ jobs:
                               labelSpacing: 15,
                               defaultRenderer: 'dagre',
                               curve: 'basis',
-                              nodeSpacing: 100,
-                              rankSpacing: 100,
+                              nodeSpacing: 200,
+                              rankSpacing: 150,
                               fontSize: 12,
-                              minEntityWidth: 300,
-                              minEntityHeight: 120
+                              minEntityWidth: 500,
+                              minEntityHeight: 150
                           }
                       });
                   </script>
@@ -320,7 +320,7 @@ jobs:
                           fill: #f6f8fa;
                           stroke: #d0d7de;
                           stroke-width: 2px;
-                          min-width: 300px;
+                          min-width: 500px;
                       }
                       .mermaid .er .entityLabel {
                           font-weight: bold;
@@ -332,7 +332,7 @@ jobs:
                           fill: #ffffff;
                           stroke: #d0d7de;
                           stroke-width: 1px;
-                          min-width: 250px;
+                          min-width: 450px;
                       }
                       .mermaid .er .attributeLabel {
                           font-size: 11px;
@@ -349,14 +349,14 @@ jobs:
                           fill: #0366d6;
                       }
                       .mermaid .er .node rect {
-                          min-width: 300px;
-                          min-height: 60px;
+                          min-width: 500px;
+                          min-height: 80px;
                       }
                       .mermaid .er .node .label {
                           width: auto;
-                          min-width: 280px;
+                          min-width: 480px;
                           text-align: left;
-                          padding: 10px;
+                          padding: 15px;
                       }
                   </style>
               </head>
