@@ -41,38 +41,10 @@ export const fallbackAppointmentHash = appointmentHashMatch?.[1];
 
 export const fallbackServiceId = hashMatch?.[1] || pathMatch?.[1];
 export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
-
-const element = document.getElementsByTagName("zms-appointment-wrapped")[0];
-const urlElements = window.location.hash.split("/");
-const url = new URL(window.location.href);
-const params = new URLSearchParams(url.search);
-
-if (urlElements.length >= 3 && urlElements[1] === "services") {
-  element.setAttribute("service-id", urlElements[2]);
-}
-
-if (urlElements.length >= 5 && urlElements[3] === "locations") {
-  element.setAttribute("location-id", urlElements[4]);
-}
-
-if (
-  urlElements.length === 4 &&
-  urlElements[1] === "appointment" &&
-  urlElements[2] === "confirm"
-) {
-  element.setAttribute("confirm-appointment-hash", urlElements[3]);
-}
-
-if (urlElements.length === 3 && urlElements[1] === "appointment") {
-  element.setAttribute("appointment-hash", urlElements[2]);
-}
-
-if (params.get("exclusiveLocation")) {
-  element.setAttribute("exclusive-location", "1");
-}
 </script>
 
 <script lang="ts" setup>
+import { onMounted } from "vue";
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
 import { useI18n } from "vue-i18n";
@@ -80,6 +52,39 @@ import { useI18n } from "vue-i18n";
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useGlobalState } from "./utils/useGlobalState";
+
+onMounted(() => {
+  const element = document.getElementsByTagName("zms-appointment-wrapped")[0];
+  if (!element) return;
+
+  const urlElements = window.location.hash.split("/");
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams(url.search);
+
+  if (urlElements.length >= 3 && urlElements[1] === "services") {
+    element.setAttribute("service-id", urlElements[2]);
+  }
+
+  if (urlElements.length >= 5 && urlElements[3] === "locations") {
+    element.setAttribute("location-id", urlElements[4]);
+  }
+
+  if (
+    urlElements.length === 4 &&
+    urlElements[1] === "appointment" &&
+    urlElements[2] === "confirm"
+  ) {
+    element.setAttribute("confirm-appointment-hash", urlElements[3]);
+  }
+
+  if (urlElements.length === 3 && urlElements[1] === "appointment") {
+    element.setAttribute("appointment-hash", urlElements[2]);
+  }
+
+  if (params.get("exclusiveLocation")) {
+    element.setAttribute("exclusive-location", "1");
+  }
+});
 
 const props = defineProps({
   baseUrl: {
