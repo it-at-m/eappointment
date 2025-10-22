@@ -59,8 +59,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsdb
         run: |
           set -e
-          echo "Installing MySQL client..."
-          apt-get update && apt-get install -y mysql-client
+          echo "Installing MariaDB client..."
+          apt-get update && apt-get install -y mariadb-client
           echo "Setting up database and importing schema from .resources/zms.sql..."
           # Create database
           mysql -h mariadb -u root -pzmsdb -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
