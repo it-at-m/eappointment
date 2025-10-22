@@ -182,9 +182,26 @@ jobs:
                               curve: 'basis',
                               nodeSpacing: 100,
                               rankSpacing: 100,
-                              fontSize: 14
+                              fontSize: 16
                           }
                       });
+                      
+                      // Adjust font size to 12px after diagram is rendered
+                      function adjustFontSize() {
+                          const diagrams = document.querySelectorAll('[id^="mermaid-"]');
+                          diagrams.forEach(diagram => {
+                              diagram.style.fontSize = '12px';
+                              const allElements = diagram.querySelectorAll('*');
+                              allElements.forEach(el => {
+                                  if (el.style.fontSize) {
+                                      el.style.fontSize = '12px';
+                                  }
+                              });
+                          });
+                      }
+                      
+                      // Run adjustment after Mermaid renders
+                      setTimeout(adjustFontSize, 1000);
                   </script>
                   <style>
                       body {
