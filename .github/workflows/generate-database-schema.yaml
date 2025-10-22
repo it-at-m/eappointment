@@ -352,7 +352,8 @@ jobs:
                   <div class="nav">
                       <a href="zmsapi.html">ZMS API Schema</a>
                       <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
-                      <a href="database-schema.html">Database ER Schema</a>
+                      <a href="database-schema.html">Database ER Schema (All Tables)</a>
+                      <a href="database-schema-core.html">Database ER Schema (Core Tables)</a>
                   </div>
                   
                   <div class="controls">
@@ -459,27 +460,27 @@ jobs:
               # Generate schema
               generator = DatabaseSchemaGenerator()
               try:
-                  # Generate simplified version first (more likely to work)
-                  mermaid_er_simple = generator.generate_mermaid_er_diagram(simplified=True)
+                  # Generate full version first (all tables)
+                  mermaid_er_full = generator.generate_mermaid_er_diagram(simplified=False)
                   
-                  # Create HTML page for simplified version
-                  html_content_simple = generator.create_diagram_page('ZMS Database ER Schema (Core Tables)', mermaid_er_simple)
+                  # Create HTML page for full version
+                  html_content_full = generator.create_diagram_page('ZMS Database ER Schema (All Tables)', mermaid_er_full)
                   
-                  # Write simplified version to file
-                  diagrams_dir.joinpath('database-schema.html').write_text(html_content_simple)
+                  # Write full version to file
+                  diagrams_dir.joinpath('database-schema.html').write_text(html_content_full)
                   
                   print("Database schema generation complete")
-                  print(f"Generated simplified diagram with core tables")
+                  print(f"Generated full diagram with {len(generator.get_all_tables())} tables")
                   
-                  # Try to generate full version as well
+                  # Try to generate simplified version as well
                   try:
-                      mermaid_er_full = generator.generate_mermaid_er_diagram(simplified=False)
-                      html_content_full = generator.create_diagram_page('ZMS Database ER Schema (All Tables)', mermaid_er_full)
-                      diagrams_dir.joinpath('database-schema-full.html').write_text(html_content_full)
-                      print(f"Generated full diagram with {len(generator.get_all_tables())} tables")
+                      mermaid_er_simple = generator.generate_mermaid_er_diagram(simplified=True)
+                      html_content_simple = generator.create_diagram_page('ZMS Database ER Schema (Core Tables)', mermaid_er_simple)
+                      diagrams_dir.joinpath('database-schema-core.html').write_text(html_content_simple)
+                      print(f"Generated simplified diagram with core tables")
                   except Exception as e:
-                      print(f"Full diagram generation failed: {e}")
-                      print("Using simplified version only")
+                      print(f"Simplified diagram generation failed: {e}")
+                      print("Using full version only")
                   
               finally:
                   generator.close_connection()
