@@ -421,7 +421,7 @@ jobs:
                       <button onclick="zoomIn()">Zoom In</button>
                       <button onclick="zoomOut()">Zoom Out</button>
                       <button onclick="resetZoom()">Reset</button>
-                      <span id="zoom-level">80%</span>
+                      <span id="zoom-level">33%</span>
                   </div>
                   
                   <div class="diagram-container">
@@ -431,7 +431,7 @@ jobs:
                   </div>
 
                   <script>
-                      let zoom = 0.8;
+                      let zoom = 0.33;
                       let offsetX = 0;
                       let offsetY = 0;
                       let isDragging = false;
@@ -458,7 +458,7 @@ jobs:
                       }
                       
                       function resetZoom() {
-                          zoom = 0.8;
+                          zoom = 0.33;
                           offsetX = 0;
                           offsetY = 0;
                           updateTransform();
