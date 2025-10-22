@@ -189,33 +189,8 @@ jobs:
                       
                       mermaid_lines.append('    }')
                   
-                  # Add relationships (limit to avoid too many connections)
-                  relationship_count = 0
-                  max_relationships = 30
-                  
-                  for table_name, structure in table_structures.items():
-                      if relationship_count >= max_relationships:
-                          break
-                          
-                      sanitized_table = self.sanitize_name(table_name)
-                      
-                      for fk in structure['foreign_keys']:
-                          if relationship_count >= max_relationships:
-                              break
-                              
-                          ref_table = fk['REFERENCED_TABLE_NAME']
-                          ref_column = fk['REFERENCED_COLUMN_NAME']
-                          column_name = fk['COLUMN_NAME']
-                          
-                          # Skip if referenced table doesn't exist in our tables
-                          if ref_table not in table_structures:
-                              continue
-                              
-                          sanitized_ref_table = self.sanitize_name(ref_table)
-                          
-                          # Use proper Mermaid ER relationship syntax
-                          mermaid_lines.append(f'    {sanitized_table} ||--o{{ {sanitized_ref_table} : "{column_name}"')
-                          relationship_count += 1
+                  # Skip relationships for now due to Mermaid syntax issues
+                  # Relationships can be added later once we verify the basic diagram works
                   
                   return '\n'.join(mermaid_lines)
 
