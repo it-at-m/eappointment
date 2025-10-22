@@ -3,6 +3,7 @@
     v-if="appointment"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
+    variant="detail"
   >
     <div class="appointment-data">
       <p>

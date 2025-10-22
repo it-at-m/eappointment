@@ -3,6 +3,7 @@
     :title="appointmentId ? appointmentId : ''"
     :tagline="t('appointment')"
     divider
+    variant="detail"
   >
     <p style="margin-top: 32px; padding-bottom: 8px">
       <strong>{{ t("noLoginInfo") }}</strong>
