@@ -172,22 +172,37 @@ jobs:
                       mermaid_lines.append(f'    {sanitized_table} {{')
                       
                       # Limit number of columns shown for readability
-                      max_columns = 10 if simplified else 15
+                      max_columns = 8 if simplified else 12
                       columns_shown = 0
                       
                       for column in structure['columns']:
                           if columns_shown >= max_columns:
                               remaining = len(structure['columns']) - max_columns
-                              mermaid_lines.append(f'        ... {remaining} more columns')
+                              mermaid_lines.append(f'        string "... {remaining} more"')
                               break
                               
                           column_name = column['Field']
                           column_type = self.get_column_type(column)
                           # Clean up the column type for better readability
                           clean_type = column_type.replace(' NOT NULL', '').replace(' PK', '').replace(' FK', '').replace(' UK', '')
-                          # Truncate long type names
-                          if len(clean_type) > 20:
-                              clean_type = clean_type[:17] + '...'
+                          # Simplify type names for Mermaid
+                          if 'varchar' in clean_type:
+                              clean_type = 'string'
+                          elif 'int' in clean_type or 'tinyint' in clean_type or 'smallint' in clean_type or 'bigint' in clean_type:
+                              clean_type = 'int'
+                          elif 'float' in clean_type or 'double' in clean_type or 'decimal' in clean_type:
+                              clean_type = 'float'
+                          elif 'date' in clean_type or 'time' in clean_type or 'timestamp' in clean_type or 'datetime' in clean_type:
+                              clean_type = 'datetime'
+                          elif 'text' in clean_type or 'longtext' in clean_type:
+                              clean_type = 'text'
+                          elif 'enum' in clean_type:
+                              clean_type = 'enum'
+                          elif 'char' in clean_type:
+                              clean_type = 'string'
+                          else:
+                              clean_type = 'string'
+                          
                           mermaid_lines.append(f'        {clean_type} {column_name}')
                           columns_shown += 1
                       
@@ -195,7 +210,7 @@ jobs:
                   
                   # Add relationships (limit to avoid too many connections)
                   relationship_count = 0
-                  max_relationships = 20 if simplified else 30
+                  max_relationships = 15 if simplified else 25
                   
                   for table_name, structure in table_structures.items():
                       if relationship_count >= max_relationships:
@@ -217,7 +232,7 @@ jobs:
                               
                           sanitized_ref_table = self.sanitize_name(ref_table)
                           
-                          # Determine relationship type (simplified - assume many-to-one)
+                          # Use proper Mermaid ER relationship syntax
                           mermaid_lines.append(f'    {sanitized_table} ||--o{{ {sanitized_ref_table} : "{column_name}"')
                           relationship_count += 1
                   
