@@ -92,7 +92,7 @@
           <muc-link
             v-if="!loadingError && appointments.length > 3 && !isMobile"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
@@ -122,7 +122,7 @@
             v-if="!loadingError && appointments.length > 3 && isMobile"
             class="mobile-link"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
