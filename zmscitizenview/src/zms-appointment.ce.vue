@@ -44,9 +44,9 @@ export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
 </script>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
+import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
