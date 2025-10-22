@@ -98,11 +98,11 @@ jobs:
               def get_table_structure(self, table_name: str) -> Dict[str, Any]:
                   """Get detailed table structure including columns, keys, and constraints."""
                   # Get column information
-                  self.cursor.execute("DESCRIBE `%s`", (table_name,))
+                  self.cursor.execute("DESCRIBE %s", (table_name,))
                   columns = self.cursor.fetchall()
                   
                   # Get index information
-                  self.cursor.execute("SHOW INDEX FROM `%s`", (table_name,))
+                  self.cursor.execute("SHOW INDEX FROM %s", (table_name,))
                   indexes = self.cursor.fetchall()
                   
                   # Get foreign key information
