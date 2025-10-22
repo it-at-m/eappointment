@@ -52,6 +52,12 @@ jobs:
           name: schema-diagrams
           path: public/diagrams
 
+      - name: Download database schema diagrams
+        uses: actions/download-artifact@v5
+        with:
+          name: database-schema-diagrams
+          path: public/diagrams
+
       - name: Download coverage reports
         uses: actions/download-artifact@v5
         with:
@@ -142,8 +148,9 @@ jobs:
                   <ul>
                     <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
-                    <li><a href="diagrams/zmscitizenapi.html">Zmscitizenapi Schema</a></li>
-                    <li><a href="diagrams/zmsapi.html">Zmsapi Schema</a></li>
+                    <li><a href="diagrams/zmscitizenapi.html">Zmscitizenapi Class Diagram Schema</a></li>
+                    <li><a href="diagrams/zmsapi.html">Zmsapi Class Diagram Schema</a></li>
+                    <li><a href="diagrams/database-er-model.html">Database ER Model</a></li>
                   </ul>
                 </div>
 

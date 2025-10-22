@@ -1,0 +1,552 @@
+name: Generate Database Schema Diagrams
+
+on:
+  workflow_call:
+    outputs:
+      diagrams_artifact:
+        description: 'Name of the generated database diagrams artifact'
+        value: 'database-schema-diagrams'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+          --memory=1g
+          --cpus=1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Create public directory
+        run: mkdir -p public/diagrams
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3-pip
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pymysql jinja2
+
+      - name: Install Composer Dependencies
+        run: |
+          echo "Installing Composer dependencies for zmsdb"
+          (cd zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader)
+        shell: bash
+
+      - name: Setup Database and Import Schema
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsdb
+        run: |
+          set -e
+          echo "Installing MariaDB client..."
+          apt-get update && apt-get install -y mariadb-client
+          echo "Setting up database and importing schema from .resources/zms.sql..."
+          # Create database
+          mysql -h mariadb -u root -pzmsdb -e "CREATE DATABASE IF NOT EXISTS zmsbo;"
+          # Import schema from .resources/zms.sql
+          mysql -h mariadb -u root -pzmsdb zmsbo < .resources/zms.sql
+
+      - name: Create database schema generator script
+        run: |
+          cat > generate_schema.py <<'EOL'
+          import pymysql
+          import json
+          import os
+          from pathlib import Path
+          from typing import Dict, Any, List, Tuple, Optional
+          from jinja2 import Template
+          import re
+
+          class DatabaseSchemaGenerator:
+              def __init__(self, host='mariadb', port=3306, user='root', password='zmsdb', database='zmsbo'):
+                  self.connection = pymysql.connect(
+                      host=host,
+                      port=port,
+                      user=user,
+                      password=password,
+                      database=database,
+                      charset='utf8mb4'
+                  )
+                  self.cursor = self.connection.cursor(pymysql.cursors.DictCursor)
+
+              def get_all_tables(self) -> List[str]:
+                  """Get all table names from the database."""
+                  self.cursor.execute("SHOW TABLES")
+                  return [list(row.values())[0] for row in self.cursor.fetchall()]
+
+              def get_table_structure(self, table_name: str) -> Dict[str, Any]:
+                  """Get detailed table structure including columns, keys, and constraints."""
+                  # Get column information
+                  self.cursor.execute("DESCRIBE `%s`", (table_name,))
+                  columns = self.cursor.fetchall()
+                  
+                  # Get index information
+                  self.cursor.execute("SHOW INDEX FROM `%s`", (table_name,))
+                  indexes = self.cursor.fetchall()
+                  
+                  # Get foreign key information
+                  self.cursor.execute("""
+                      SELECT 
+                          COLUMN_NAME,
+                          REFERENCED_TABLE_NAME,
+                          REFERENCED_COLUMN_NAME,
+                          CONSTRAINT_NAME
+                      FROM 
+                          INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+                      WHERE 
+                          TABLE_SCHEMA = DATABASE() 
+                          AND TABLE_NAME = %s 
+                          AND REFERENCED_TABLE_NAME IS NOT NULL
+                  """, (table_name,))
+                  foreign_keys = self.cursor.fetchall()
+                  
+                  return {
+                      'name': table_name,
+                      'columns': columns,
+                      'indexes': indexes,
+                      'foreign_keys': foreign_keys
+                  }
+
+              def sanitize_name(self, name: str) -> str:
+                  """Sanitize table/column names for Mermaid compatibility."""
+                  return name.replace('-', '_').replace(' ', '_').replace('.', '_')
+
+              def get_column_type(self, column_info: Dict[str, Any]) -> str:
+                  """Extract and format column type information."""
+                  field_type = column_info['Type']
+                  null_info = ' NOT NULL' if column_info['Null'] == 'NO' else ''
+                  key_info = ''
+                  
+                  if column_info['Key'] == 'PRI':
+                      key_info = ' PK'
+                  elif column_info['Key'] == 'UNI':
+                      key_info = ' UK'
+                  elif column_info['Key'] == 'MUL':
+                      key_info = ' FK'
+                  
+                  return f"{field_type}{null_info}{key_info}"
+
+              def generate_mermaid_er_diagram(self) -> str:
+                  """Generate a Mermaid ER diagram for all tables."""
+                  tables = self.get_all_tables()
+                  table_structures = {}
+                  
+                  # Get structure for all tables
+                  for table in tables:
+                      table_structures[table] = self.get_table_structure(table)
+                  
+                  # Generate Mermaid ER diagram
+                  mermaid_lines = ['erDiagram']
+                  
+                  # Add all tables with their columns
+                  for table_name, structure in table_structures.items():
+                      sanitized_table = self.sanitize_name(table_name)
+                      mermaid_lines.append(f'    {sanitized_table} {{')
+                      
+                      # Show all columns for each table
+                      for column in structure['columns']:
+                          column_name = column['Field']
+                          column_type = self.get_column_type(column)
+                          # Clean up the column type for better readability
+                          clean_type = column_type.replace(' NOT NULL', '').replace(' PK', '').replace(' FK', '').replace(' UK', '')
+                          # Simplify type names for Mermaid and keep them short
+                          if 'varchar' in clean_type:
+                              clean_type = 'str'
+                          elif 'int' in clean_type or 'tinyint' in clean_type or 'smallint' in clean_type or 'bigint' in clean_type:
+                              clean_type = 'int'
+                          elif 'float' in clean_type or 'double' in clean_type or 'decimal' in clean_type:
+                              clean_type = 'float'
+                          elif 'date' in clean_type or 'time' in clean_type or 'timestamp' in clean_type or 'datetime' in clean_type:
+                              clean_type = 'date'
+                          elif 'text' in clean_type or 'longtext' in clean_type:
+                              clean_type = 'text'
+                          elif 'enum' in clean_type:
+                              clean_type = 'enum'
+                          elif 'char' in clean_type:
+                              clean_type = 'str'
+                          else:
+                              clean_type = 'str'
+                          
+                          # Use full column names - no truncation
+                          mermaid_lines.append(f'        {clean_type} {column_name}')
+                      
+                      mermaid_lines.append('    }')
+                  
+                  # Add relationships (limit to avoid too many connections)
+                  relationship_count = 0
+                  max_relationships = 30
+                  
+                  for table_name, structure in table_structures.items():
+                      if relationship_count >= max_relationships:
+                          break
+                          
+                      sanitized_table = self.sanitize_name(table_name)
+                      
+                      for fk in structure['foreign_keys']:
+                          if relationship_count >= max_relationships:
+                              break
+                              
+                          ref_table = fk['REFERENCED_TABLE_NAME']
+                          ref_column = fk['REFERENCED_COLUMN_NAME']
+                          column_name = fk['COLUMN_NAME']
+                          
+                          # Skip if referenced table doesn't exist in our tables
+                          if ref_table not in table_structures:
+                              continue
+                              
+                          sanitized_ref_table = self.sanitize_name(ref_table)
+                          
+                          # Use proper Mermaid ER relationship syntax
+                          mermaid_lines.append(f'    {sanitized_table} ||--o{{ {sanitized_ref_table} : "{column_name}"')
+                          relationship_count += 1
+                  
+                  return '\n'.join(mermaid_lines)
+
+              def create_diagram_page(self, title: str, mermaid: str) -> str:
+                  """Create HTML page with the ER diagram."""
+                  template = Template("""<!DOCTYPE html>
+          <html>
+              <head>
+                  <title>{{ title }}</title>
+                  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                  <script>
+                      mermaid.initialize({
+                          startOnLoad: true,
+                          securityLevel: 'loose',
+                          logLevel: 'error',
+                          maxTextSize: 900000,
+                          theme: 'default',
+                          er: {
+                              padding: 50,
+                              useMaxWidth: false,
+                              labelSpacing: 20,
+                              defaultRenderer: 'dagre',
+                              curve: 'basis',
+                              nodeSpacing: 300,
+                              rankSpacing: 200,
+                              fontSize: 16,
+                              minEntityWidth: 800,
+                              minEntityHeight: 200
+                          },
+                          class: {
+                              padding: 50,
+                              useMaxWidth: false,
+                              labelSpacing: 20,
+                              defaultRenderer: 'dagre',
+                              curve: 'basis',
+                              nodeSpacing: 300,
+                              rankSpacing: 200,
+                              fontSize: 16,
+                              minWidth: 800,
+                              minHeight: 200
+                          }
+                      });
+                      
+                      // Adjust font size to 12px after diagram is rendered
+                      function adjustFontSize() {
+                          const diagrams = document.querySelectorAll('[id^="mermaid-"]');
+                          diagrams.forEach(diagram => {
+                              diagram.style.fontSize = '12px';
+                              const allElements = diagram.querySelectorAll('*');
+                              allElements.forEach(el => {
+                                  if (el.style.fontSize) {
+                                      el.style.fontSize = '12px';
+                                  }
+                              });
+                          });
+                      }
+                      
+                      // Run adjustment after Mermaid renders
+                      setTimeout(adjustFontSize, 1000);
+                  </script>
+                  <style>
+                      body {
+                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                          line-height: 1.6;
+                          margin: 0;
+                          padding: 0;
+                          height: 100vh;
+                          display: flex;
+                          flex-direction: column;
+                      }
+                      h1 {
+                          margin: 0;
+                          padding: 1rem;
+                          background: #f6f8fa;
+                          border-bottom: 1px solid #eaecef;
+                      }
+                      .diagram-container {
+                          flex: 1;
+                          position: relative;
+                          overflow: hidden;
+                      }
+                      .diagram {
+                          position: absolute;
+                          top: 50%;
+                          left: 50%;
+                          transform: translate(-50%, -50%) scale(0.8);
+                          transform-origin: center center;
+                          cursor: grab;
+                          min-width: 100%;
+                          min-height: 100%;
+                      }
+                      .diagram:active {
+                          cursor: grabbing;
+                      }
+                      .controls {
+                          position: fixed;
+                          top: 1rem;
+                          right: 1rem;
+                          background: white;
+                          padding: 1rem;
+                          border: 1px solid #eaecef;
+                          border-radius: 6px;
+                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                          z-index: 1000;
+                      }
+                      #zoom-level {
+                          margin-left: 1rem;
+                      }
+                      .nav {
+                          padding: 0.5rem 1rem;
+                          background: #f6f8fa;
+                          border-bottom: 1px solid #eaecef;
+                      }
+                      .nav a {
+                          margin-right: 1rem;
+                          color: #0366d6;
+                          text-decoration: none;
+                      }
+                      .nav a:hover {
+                          text-decoration: underline;
+                      }
+                      .mermaid {
+                          font-size: 12px;
+                          line-height: 1.6;
+                      }
+                      .mermaid .er .entityBox {
+                          fill: #f6f8fa;
+                          stroke: #d0d7de;
+                          stroke-width: 2px;
+                          min-width: 800px;
+                          min-height: 150px;
+                      }
+                      .mermaid .er .entityLabel {
+                          font-weight: bold;
+                          font-size: 16px;
+                          text-align: center;
+                          padding: 10px;
+                      }
+                      .mermaid .er .attributeBox {
+                          fill: #ffffff;
+                          stroke: #d0d7de;
+                          stroke-width: 1px;
+                          min-width: 750px;
+                      }
+                      .mermaid .er .attributeLabel {
+                          font-size: 12px;
+                          line-height: 1.8;
+                          text-align: left;
+                          white-space: nowrap;
+                          overflow: visible;
+                          min-width: 700px;
+                      }
+                      .mermaid .er .relationshipLine {
+                          stroke: #0366d6;
+                          stroke-width: 2px;
+                      }
+                      .mermaid .er .relationshipLabel {
+                          font-size: 10px;
+                          fill: #0366d6;
+                      }
+                      .mermaid .er .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid .class .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .er .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      .mermaid[id^="mermaid-"] .class .nodeLabel p {
+                          font-size: 12px !important;
+                      }
+                      /* Let Mermaid generate with 16px for wider columns, then JS will adjust to 12px */
+                      .mermaid .er .node rect {
+                          min-width: 800px;
+                          min-height: 100px;
+                      }
+                      .mermaid .er .node .label {
+                          width: auto;
+                          min-width: 780px;
+                          text-align: left;
+                          padding: 15px;
+                      }
+                  </style>
+              </head>
+              <body>
+                  <h1>{{ title }}</h1>
+                  <div class="nav">
+                      <a href="database-er-model.html">Database ER Schema</a>
+                  </div>
+                  
+                  <div class="controls">
+                      <button onclick="zoomIn()">Zoom In</button>
+                      <button onclick="zoomOut()">Zoom Out</button>
+                      <button onclick="resetZoom()">Reset</button>
+                      <span id="zoom-level">11%</span>
+                  </div>
+                  
+                  <div class="diagram-container">
+                      <div class="diagram">
+                          <pre class="mermaid">{{ mermaid }}</pre>
+                      </div>
+                  </div>
+
+                  <script>
+                      let zoom = 0.11;
+                      let offsetX = 0;
+                      let offsetY = 0;
+                      let isDragging = false;
+                      let startX = 0;
+                      let startY = 0;
+                      
+                      const container = document.querySelector('.diagram-container');
+                      const diagram = document.querySelector('.diagram');
+                      const zoomLevel = document.getElementById('zoom-level');
+                      
+                      function updateTransform() {
+                          diagram.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`;
+                          zoomLevel.textContent = Math.round(zoom * 100) + '%';
+                      }
+                      
+                      function zoomIn() {
+                          zoom *= 1.2;
+                          updateTransform();
+                      }
+                      
+                      function zoomOut() {
+                          zoom = Math.max(0.1, zoom / 1.2);
+                          updateTransform();
+                      }
+                      
+                      function resetZoom() {
+                          zoom = 0.11;
+                          offsetX = 0;
+                          offsetY = 0;
+                          updateTransform();
+                      }
+                      
+                      diagram.addEventListener('mousedown', (e) => {
+                          isDragging = true;
+                          startX = e.clientX - offsetX;
+                          startY = e.clientY - offsetY;
+                          diagram.style.cursor = 'grabbing';
+                      });
+                      
+                      document.addEventListener('mousemove', (e) => {
+                          if (!isDragging) return;
+                          offsetX = e.clientX - startX;
+                          offsetY = e.clientY - startY;
+                          updateTransform();
+                      });
+                      
+                      document.addEventListener('mouseup', () => {
+                          isDragging = false;
+                          diagram.style.cursor = 'grab';
+                      });
+                      
+                      container.addEventListener('wheel', (e) => {
+                          e.preventDefault();
+                          const rect = container.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+                          
+                          const mouseX = (x - offsetX) / zoom;
+                          const mouseY = (y - offsetY) / zoom;
+                          
+                          if (e.deltaY < 0) {
+                              zoom *= 1.1;
+                          } else {
+                              zoom = Math.max(0.1, zoom / 1.1);
+                          }
+                          
+                          offsetX = x - mouseX * zoom;
+                          offsetY = y - mouseY * zoom;
+                          
+                          updateTransform();
+                      });
+                  </script>
+              </body>
+          </html>""")
+                  return template.render(title=title, mermaid=mermaid)
+
+              def close_connection(self):
+                  """Close database connection."""
+                  if self.connection:
+                      self.connection.close()
+
+          if __name__ == '__main__':
+              print("Starting database schema generation...")
+              diagrams_dir = Path('public/diagrams')
+              diagrams_dir.mkdir(parents=True, exist_ok=True)
+              
+              # Generate schema
+              generator = DatabaseSchemaGenerator()
+              try:
+                  # Generate ER diagram with all tables
+                  mermaid_er = generator.generate_mermaid_er_diagram()
+                  
+                  # Create HTML page
+                  html_content = generator.create_diagram_page('ZMS Database ER Schema', mermaid_er)
+                  
+                  # Write to file
+                  diagrams_dir.joinpath('database-er-model.html').write_text(html_content)
+                  
+                  print("Database schema generation complete")
+                  print(f"Generated diagram with {len(generator.get_all_tables())} tables")
+                  
+              finally:
+                  generator.close_connection()
+          EOL
+
+      - name: Generate database schema diagram
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsdb
+        run: python3 generate_schema.py
+
+      - name: Upload database schema diagrams artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-schema-diagrams
+          path: public/diagrams/database-er-model.html
+          retention-days: 1
