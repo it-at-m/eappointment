@@ -245,11 +245,28 @@ jobs:
                               curve: 'basis',
                               nodeSpacing: 300,
                               rankSpacing: 200,
-                              fontSize: 14,
+                              fontSize: 16,
                               minEntityWidth: 800,
                               minEntityHeight: 200
                           }
                       });
+                      
+                      // Adjust font size to 12px after diagram is rendered
+                      function adjustFontSize() {
+                          const diagrams = document.querySelectorAll('[id^="mermaid-"]');
+                          diagrams.forEach(diagram => {
+                              diagram.style.fontSize = '12px';
+                              const allElements = diagram.querySelectorAll('*');
+                              allElements.forEach(el => {
+                                  if (el.style.fontSize) {
+                                      el.style.fontSize = '12px';
+                                  }
+                              });
+                          });
+                      }
+                      
+                      // Run adjustment after Mermaid renders
+                      setTimeout(adjustFontSize, 1000);
                   </script>
                   <style>
                       body {
@@ -369,13 +386,7 @@ jobs:
                       .mermaid[id^="mermaid-"] .class .nodeLabel p {
                           font-size: 12px !important;
                       }
-                      /* Override any Mermaid diagram font size */
-                      [id^="mermaid-"] {
-                          font-size: 12px !important;
-                      }
-                      [id^="mermaid-"] * {
-                          font-size: 12px !important;
-                      }
+                      /* Let Mermaid generate with 16px for wider columns, then JS will adjust to 12px */
                       .mermaid .er .node rect {
                           min-width: 800px;
                           min-height: 100px;
