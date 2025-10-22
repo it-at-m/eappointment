@@ -271,9 +271,9 @@ watch(service, (newService) => {
 
   baseServiceId.value = newService.parent_id ?? newService.id;
 
-  const vid = (newService as any)?.variant_id;
-  if (typeof vid === "number" && Number.isFinite(vid)) {
-    const next = String(vid);
+  const variantId = (newService as any)?.variant_id;
+  if (typeof variantId === "number" && Number.isFinite(variantId)) {
+    const next = String(variantId);
     if (selectedVariant.value !== next) selectedVariant.value = next;
   }
   setServiceData(newService);
@@ -597,27 +597,40 @@ const servicesWithoutParent = computed(() => {
   return services.value.filter((service) => service.parent_id === null);
 });
 
-const variantServices = computed(() => {
+const variantServices = computed<ServiceVariant[]>(() => {
   if (!baseServiceId.value) return [];
-  const variants = services.value
-    .filter((s: any) => s.parent_id === baseServiceId.value)
-    .filter((s: any) => typeof s.variant_id === "number");
 
-  const baseRaw = services.value.find((s: any) => s.id === baseServiceId.value);
-  if (baseRaw && !variants.some((v: any) => v.variant_id === 1)) {
+  const variants: ServiceVariant[] = services.value
+    .filter((service) => service.parent_id === baseServiceId.value)
+    .filter((service) => typeof service.variant_id === "number")
+    .map((service) => ({
+      id: service.id,
+      name: service.name,
+      maxQuantity: service.maxQuantity,
+      combinable: service.combinable,
+      parent_id: service.parent_id ?? null,
+      variant_id: service.variant_id,
+    }));
+
+  const baseService = services.value.find(
+    (service) => service.id === baseServiceId.value
+  );
+
+  if (baseService && !variants.some((variant) => variant.variant_id === 1)) {
     variants.unshift({
-      id: baseRaw.id,
-      name: baseRaw.name,
-      maxQuantity: baseRaw.maxQuantity ?? 1,
-      combinable: baseRaw.combinable ?? {},
-      parent_id: baseRaw.id,
+      id: baseService.id,
+      name: baseService.name,
+      maxQuantity: baseService.maxQuantity ?? 1,
+      combinable: baseService.combinable ?? {},
+      parent_id: null,
       variant_id: 1,
     });
   }
 
-  variants.sort((a: any, b: any) => a.variant_id - b.variant_id);
-  return variants as any[];
+  variants.sort((a, b) => a.variant_id - b.variant_id);
+  return variants;
 });
+
 
 watch(selectedVariant, (variantId) => {
   if (!variantId || !baseServiceId.value) return;
