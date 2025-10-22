@@ -86,10 +86,10 @@ jobs:
     uses: ./.github/workflows/build-api-docs.yaml
 
   generate-schema-diagrams:
-    uses: ./.github/workflows/generate-class-diagrams.yaml
+    uses: ./.github/workflows/generate-api-class-diagrams-from-zmsentities-schema.yaml
 
   generate-database-schema:
-    uses: ./.github/workflows/generate-database-schema.yaml
+    uses: ./.github/workflows/generate-database-er-model.yaml
 
   deploy-to-pages:
     needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams, generate-database-schema]

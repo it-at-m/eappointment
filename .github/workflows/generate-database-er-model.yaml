@@ -363,7 +363,7 @@ jobs:
               <body>
                   <h1>{{ title }}</h1>
                   <div class="nav">
-                      <a href="database-schema.html">Database ER Schema</a>
+                      <a href="database-er-model.html">Database ER Schema</a>
                   </div>
                   
                   <div class="controls">
@@ -477,7 +477,7 @@ jobs:
                   html_content = generator.create_diagram_page('ZMS Database ER Schema', mermaid_er)
                   
                   # Write to file
-                  diagrams_dir.joinpath('database-schema.html').write_text(html_content)
+                  diagrams_dir.joinpath('database-er-model.html').write_text(html_content)
                   
                   print("Database schema generation complete")
                   print(f"Generated diagram with {len(generator.get_all_tables())} tables")
@@ -497,5 +497,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: database-schema-diagrams
-          path: public/diagrams/database-schema.html
+          path: public/diagrams/database-er-model.html
           retention-days: 1
