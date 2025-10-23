@@ -18,7 +18,7 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ]
             ]
         );
@@ -53,12 +53,12 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ]
             ]
         );
@@ -80,12 +80,12 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ]
             ]
         );
@@ -131,12 +131,12 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation_with_process_resolved3.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_resolved2.json")
                 ]
             ]
         );
