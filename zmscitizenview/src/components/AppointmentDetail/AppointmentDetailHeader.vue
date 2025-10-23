@@ -107,10 +107,4 @@ a {
   margin-bottom: 0 !important;
   white-space: pre-wrap !important;
 }
-
-@media all and (max-width: 576px) {
-  :deep([role="dialog"]) {
-    min-width: 300px !important;
-  }
-}
 </style>
