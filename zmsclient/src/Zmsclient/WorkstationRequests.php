@@ -78,7 +78,8 @@ class WorkstationRequests
                     '/cluster/' . $this->readCluster()->id . '/process/' . $selectedDate->format('Y-m-d') . '/',
                     [
                         'resolveReferences' => 2,
-                        'gql' => $gql
+                        'gql' => $gql,
+                        'skipArchive' => 1
                     ]
                 )
                 ->getCollection();

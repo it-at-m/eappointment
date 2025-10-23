@@ -28,6 +28,7 @@ class ProcessListByClusterAndDate extends BaseController
         (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
+        $skipArchive = Validator::param('skipArchive')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
         $dates = [$dateTime];
@@ -66,15 +67,19 @@ class ProcessListByClusterAndDate extends BaseController
         }
 
         $allArchivedProcesses = new ProcessListCollection();
-        $scopeIds = $cluster->scopes->getIds();
 
-        $archivedProcesses =
-            (new ProcessStatusArchived())->readListByScopesAndDates($scopeIds, $dates);
+        // Only query archive table if skipArchive is not set (default behavior for zmsadmin)
+        if (!$skipArchive) {
+            $scopeIds = $cluster->scopes->getIds();
 
-        if ($archivedProcesses instanceof ProcessListCollection) {
-            $allArchivedProcesses = $archivedProcesses;
-        } else {
-            error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+            $archivedProcesses =
+                (new ProcessStatusArchived())->readListByScopesAndDates($scopeIds, $dates);
+
+            if ($archivedProcesses instanceof ProcessListCollection) {
+                $allArchivedProcesses = $archivedProcesses;
+            } else {
+                error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+            }
         }
 
         $message = Response\Message::create($request);

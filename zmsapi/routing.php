@@ -1009,6 +1009,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: skipArchive
+ *                  description: "Skip querying the archive table for better performance when archived processes are not needed (e.g., for calldisplay and ticketprinter)"
+ *                  in: query
+ *                  type: integer
+ *                  default: 0
  *          responses:
  *              200:
  *                  description: "success, also if process list is empty"
