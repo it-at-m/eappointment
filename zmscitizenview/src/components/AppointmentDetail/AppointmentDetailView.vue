@@ -622,8 +622,8 @@ onMounted(() => {
   margin-bottom: 0 !important;
 }
 
-@media all and (max-width: 576px) {
-  :deep([role="dialog"]) {
+@media all and (max-width: 767px) {
+  :deep([ref="dialogRef"]) {
     min-width: 300px !important;
   }
 }
