@@ -26,7 +26,7 @@ class ProcessList extends Base
             if ($format) {
                 $formattedDate = $appointment->toDateTime()->format($format);
             }
-            $list[$formattedDate][] = clone $process;
+            $list[$formattedDate][] = $process;
         }
         return $list;
     }
@@ -36,7 +36,7 @@ class ProcessList extends Base
         $list = new self();
         foreach ($this as $process) {
             if ($process->requests->hasEntity($requestId)) {
-                $list->addEntity(clone $process);
+                $list->addEntity($process);
             }
         }
         return $list;
@@ -125,7 +125,7 @@ class ProcessList extends Base
     public function toConflictListByDay()
     {
         $list = [];
-        $oldList = clone $this;
+        $oldList = $this;
         foreach ($oldList as $process) {
             $appointmentList = [];
             if (!isset($list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')])) {
@@ -190,7 +190,7 @@ class ProcessList extends Base
         $appointment = (new \BO\Zmsentities\Appointment())->addDate($dateTime->getTimestamp())->addScope($scopeId);
         foreach ($this as $process) {
             if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && !$addedAppointment) {
-                $entity = clone $process;
+                $entity = $process;
                 $this->addEntity($entity);
                 $addedAppointment = true;
             }
@@ -219,7 +219,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($availability->hasAppointment($process->getFirstAppointment())) {
-                $processList[] = clone $process;
+                $processList[] = $process;
             }
         }
         return $processList;
@@ -231,7 +231,7 @@ class ProcessList extends Base
         $slotList = $availability->getSlotList();
         foreach ($this as $process) {
             if ($slotList->removeAppointment($process->getFirstAppointment())) {
-                $processList[] = clone $process;
+                $processList[] = $process;
             }
         }
         return $processList;
@@ -242,7 +242,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($process->scope->hasNotificationReminderEnabled()) {
-                $entity = clone $process;
+                $entity = $process;
                 $processList->addEntity($entity);
             }
         }
@@ -254,7 +254,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($process->scope->hasEmailFrom()) {
-                $entity = clone $process;
+                $entity = $process;
                 $processList->addEntity($entity);
             }
         }
@@ -288,11 +288,11 @@ class ProcessList extends Base
                     $slotList->withSlotsForAppointment($process->getFirstAppointment());
                     if (!$slotList->removeAppointment($process->getFirstAppointment())) {
                         $process->amendment = "";
-                        $processList[] = clone $process;
+                        $processList[] = $process;
                     }
                 } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList $exception) {
                     $process->amendment = "";
-                    $processList[] = clone $process;
+                    $processList[] = $process;
                 }
             }
         }
@@ -311,7 +311,7 @@ class ProcessList extends Base
                 $scopeKey .= $process->getFirstAppointment()->toDateTime()->format('H:i');
             }
             if (!in_array($scopeKey, $scopeKeyList)) {
-                $processList[] = clone $process;
+                $processList[] = $process;
                 $scopeKeyList[] = $scopeKey;
             }
         }
@@ -322,7 +322,7 @@ class ProcessList extends Base
     {
         $list = new static();
         foreach ($this as $process) {
-            $process = clone $process;
+            $process = $process;
             if ($process->getCurrentScope()->hasAccess($useraccount)) {
                 $list[] = $process;
             }
@@ -335,7 +335,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($scopeId == $process->scope['id']) {
-                $processList[] = clone $process;
+                $processList[] = $process;
             }
         }
         return $processList;
@@ -346,7 +346,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($scopeId != $process->scope['id']) {
-                $processList[] = clone $process;
+                $processList[] = $process;
             }
         }
         return $processList;
@@ -357,7 +357,7 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this as $process) {
             if ($processId != $process->getId()) {
-                $processList[] = clone $process;
+                $processList[] = $process;
             }
         }
         return $processList;
@@ -368,7 +368,7 @@ class ProcessList extends Base
         $conflictList = new self();
         foreach ($this as $process) {
             if ($process->getFirstAppointment()->date > $now->getTimestamp()) {
-                $conflictList->addEntity(clone $process);
+                $conflictList->addEntity($process);
             }
         }
         return $conflictList;
@@ -379,7 +379,7 @@ class ProcessList extends Base
         $processList = new self();
         foreach ($this as $process) {
             if ($process->getFirstAppointment()->toDateTime()->format('Y-m-d') == $now->format('Y-m-d')) {
-                $processList->addEntity(clone $process);
+                $processList->addEntity($process);
             }
         }
         return $processList;
@@ -390,7 +390,7 @@ class ProcessList extends Base
         $collection = new self();
         foreach ($this as $conflict) {
             if (! $collection->getAppointmentList()->hasAppointment($conflict->getFirstAppointment())) {
-                $collection->addEntity(clone $conflict);
+                $collection->addEntity($conflict);
             }
         }
         return $collection;
@@ -410,7 +410,7 @@ class ProcessList extends Base
 
     public function withoutProcessByStatus($process, $status)
     {
-        $collection = clone $this;
+        $collection = $this;
         $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?
             $collection->withOutProcessId($process->getId()) :
             $collection;
@@ -429,7 +429,7 @@ class ProcessList extends Base
                     $appointment->getEndTime() > $process->getFirstAppointment()->getStartTime() &&
                     $appointment->getStartTime() < $process->getFirstAppointment()->getEndTime()
                 ) {
-                    $processList->addEntity(clone $process);
+                    $processList->addEntity($process);
                 }
             }
         }
