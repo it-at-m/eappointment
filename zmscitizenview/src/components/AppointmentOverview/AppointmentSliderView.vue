@@ -112,6 +112,7 @@
           <appointment-card-viewer
             :all-appointments="appointments"
             :is-mobile="isMobile"
+            :resize-slider-content="resizeSliderContent"
             :new-appointment-url="newAppointmentUrl"
             :appointment-detail-url="appointmentDetailUrl"
             :displayed-on-detail-screen="displayedOnDetailScreen"
@@ -169,6 +170,7 @@ const props = defineProps<{
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+const resizeSliderContent = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
@@ -186,6 +188,7 @@ const apiErrorTranslation = computed(() =>
 
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
+  resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
 };
 
 onMounted(() => {

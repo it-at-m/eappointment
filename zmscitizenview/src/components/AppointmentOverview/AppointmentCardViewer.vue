@@ -13,7 +13,7 @@
   <div v-else-if="isMobile">
     <muc-slider
       v-if="allAppointments.length < 3"
-      class="slider-content"
+      :class="resizeSliderContent ? 'slider-content-resized' : 'slider-content'"
     >
       <muc-slider-item
         v-for="(appointment, index) in allAppointments"
@@ -44,7 +44,7 @@
     </muc-slider>
     <muc-slider
       v-else
-      class="slider-content"
+      :class="resizeSliderContent ? 'slider-content-resized' : 'slider-content'"
     >
       <muc-slider-item
         v-for="(appointment, index) in allAppointments.slice(0, 3)"
@@ -116,6 +116,7 @@ import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vu
 defineProps<{
   allAppointments: AppointmentDTO[];
   isMobile: boolean;
+  resizeSliderContent: boolean;
   newAppointmentUrl: string;
   appointmentDetailUrl: string;
   displayedOnDetailScreen: boolean;
@@ -132,6 +133,11 @@ defineProps<{
 
 /* Content of the slider extends to the edge of the screen */
 .slider-content {
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+}
+
+.slider-content-resized {
   margin-left: -3rem;
   margin-right: -3rem;
 }
