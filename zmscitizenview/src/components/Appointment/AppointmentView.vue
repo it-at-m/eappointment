@@ -236,7 +236,7 @@
             <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
               <muc-button
                 icon="arrow-right"
-                @click="goToAppointmentDetails"
+                @click="viewAppointment"
               >
                 {{ t("viewAppointment") }}
               </muc-button>
@@ -891,7 +891,7 @@ const saveAppointmentToLocalstorage = () => {
   }
 };
 
-const goToAppointmentDetails = () => {
+const viewAppointment = () => {
   location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
 };
 
