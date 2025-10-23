@@ -189,7 +189,7 @@ abstract class Base
     {
         $statement = $this->fetchStatement($query);
         while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $dataEntity = clone $entity;
+            $dataEntity = $entity;
             $dataEntity->exchangeArray($query->postProcessJoins($data));
             $dataEntity->setResolveLevel($query->getResolveLevel());
             $resultList[] = $dataEntity;
