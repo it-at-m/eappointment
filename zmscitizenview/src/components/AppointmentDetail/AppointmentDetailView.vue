@@ -478,6 +478,20 @@ const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
 
+function setBreadcrumbAndTitle(appointmentId: string) {
+  const element = document.querySelector(
+    '[data-fragment-placeholder="breadcrumb-label"]'
+  );
+  if (element) {
+    element.innerHTML = appointmentId;
+  }
+  const titleSeperator = "–";
+  const splittedTitle = document.title.split(titleSeperator);
+  splittedTitle[0] =
+    splittedTitle[0].split(":")[0] + ": " + appointmentId + " ";
+  document.title = splittedTitle.join(titleSeperator);
+}
+
 const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
   appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
@@ -507,6 +521,8 @@ const loadAppointment = () => {
         (data) => {
           if ((data as AppointmentDTO)?.processId !== undefined) {
             appointment.value = data;
+
+            setBreadcrumbAndTitle(appointment.value.processId);
 
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value?.serviceId
