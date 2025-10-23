@@ -156,7 +156,7 @@
         </template>
         <template #buttons>
           <muc-button
-            icon="arrow-right"
+            icon="trash"
             @click="cancelAppointment"
           >
             {{ t("cancel") }}
