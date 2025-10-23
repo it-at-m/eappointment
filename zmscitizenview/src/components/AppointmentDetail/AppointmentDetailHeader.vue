@@ -1,6 +1,7 @@
 <template>
   <muc-intro
     v-if="appointment"
+    class="multiline-text"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
     variant="detail"
@@ -93,6 +94,10 @@ const focusTime = () => emit("focusTime");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
 </script>
 <style scoped>
+.multiline-text {
+  white-space: pre-wrap;
+}
+
 .appointment-data {
   margin-top: 32px;
   margin-bottom: 16px;
