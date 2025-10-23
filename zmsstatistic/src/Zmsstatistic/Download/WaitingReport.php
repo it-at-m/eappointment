@@ -47,7 +47,7 @@ class WaitingReport extends Base
         $spreadsheet->setActiveSheetIndexByName('Terminkunden');
         $this->writeInfoHeader($args, $spreadsheet);
         foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ true,'dd.MM.yyyy');
+            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ true, 'dd.MM.yyyy');
         }
 
         // Blatt 2: Spontankunden
@@ -73,7 +73,7 @@ class WaitingReport extends Base
         $sheet = $spreadsheet->getActiveSheet();
         $this->writeHeader($report, $sheet, $datePatternCol);
         $this->writeTotals($report, $sheet, $isTermin);
-        if($isTermin) {
+        if ($isTermin) {
             $parts = $this->reportPartsTermin;
         } else {
             $parts = $this->reportPartsSpontan;
