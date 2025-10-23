@@ -54,13 +54,18 @@ class ProcessStatusArchived extends Process
 
     public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
     {
-        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query = new Query\ProcessStatusArchivedToday(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionScopeIds($scopeIds)
             ->addResolvedReferences($resolveReferences)
             ->addConditionTimes($dateTimes);
 
         return $this->readResolvedList($query, $resolveReferences);
+    }
+
+    public function deleteAllToday(): bool
+    {
+        return (bool)$this->perform(Query\ProcessStatusArchivedToday::DELETE_ALL);
     }
 
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
@@ -177,9 +182,14 @@ class ProcessStatusArchived extends Process
         $resolveReferences = 0,
         bool $calculateStatistic = false
     ) {
+        $query = new Query\ProcessStatusArchivedToday(Query\Base::INSERT);
+        $query->addValuesNewArchive($process, $now);
+        $this->writeItem($query);
+
         $query = new Query\ProcessStatusArchived(Query\Base::INSERT);
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
+
         $archiveId = $this->getWriter()->lastInsertId();
         Log::writeProcessLog(
             "ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
