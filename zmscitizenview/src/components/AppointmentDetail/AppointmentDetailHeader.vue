@@ -103,7 +103,7 @@ a {
   padding-bottom: 16px;
 }
 
-:deep(.m-intro-vertical__title) {
+:deep(.m-intro-vertical h1) {
   margin-bottom: 0 !important;
   white-space: pre-wrap !important;
 }
