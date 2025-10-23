@@ -605,7 +605,7 @@ class ReportWaitingScopeTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            'Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"414:00";"280:00";"160:00";"256:00";"437:00";"455:00";"202:00";"532:00";"359:00";"384:00";"417:00";"148:00";"375:00";"343:00";',
+            'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.";"532:00";"414:00";"280:00";"160:00";"256:00";"437:00";"455:00";"202:00";"532:00";"359:00";"384:00";"417:00";"148:00";"375:00";"343:00";',
             (string) $response->getBody()
         );
     }
@@ -651,7 +651,7 @@ class ReportWaitingScopeTest extends Base
         $response = $this->render(['period' => '2016'], ['type' => 'csv'], []);
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString('"Max.";"Januar";"Februar";"März"', (string) $response->getBody());
-        $this->assertStringContainsString('Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"384:00";"506:00";"532:00"', (string) $response->getBody());
+        $this->assertStringContainsString('"Max.";"01.01.2016";"01.02.2016";"01.03.2016"', (string) $response->getBody());
+        $this->assertStringContainsString('Stunden-Max (Spaltenmaximum) der Wartezeit in Min.";"532:00";"384:00";"506:00";"532:00"', (string) $response->getBody());
     }
 }
