@@ -182,11 +182,11 @@ class ProcessStatusArchived extends Process
         $resolveReferences = 0,
         bool $calculateStatistic = false
     ) {
-        $query = new Query\ProcessStatusArchived(Query\Base::INSERT);
+        $query = new Query\ProcessStatusArchivedToday(Query\Base::INSERT);
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
 
-        $query = new Query\ProcessStatusArchivedToday(Query\Base::INSERT);
+        $query = new Query\ProcessStatusArchived(Query\Base::INSERT);
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
 
