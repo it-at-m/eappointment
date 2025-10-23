@@ -223,32 +223,34 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
-                <p
-                  v-if="
-                    selectedProvider &&
-                    selectedProvider.scope &&
-                    selectedProvider.scope.hint
-                  "
-                >
-                  <strong> {{ selectedProvider.scope.hint }} </strong>
-                </p>
+                <!--                Used after the content of hint has been checked-->
+                <!--                <p-->
+                <!--                  v-if="-->
+                <!--                    selectedProvider &&-->
+                <!--                    selectedProvider.scope &&-->
+                <!--                    selectedProvider.scope.hint-->
+                <!--                  "-->
+                <!--                >-->
+                <!--                  <strong> {{ selectedProvider.scope.hint }} </strong>-->
+                <!--                </p>-->
               </div>
             </div>
           </div>
-          <muc-callout
-            v-if="
-              appointment &&
-              appointment.scope &&
-              appointment.scope.infoForAppointment
-            "
-            type="info"
-          >
-            <template #content>
-              {{ appointment.scope.infoForAppointment }}
-            </template>
+          <!--          Used after the content of infoForAppointment has been checked-->
+          <!--          <muc-callout-->
+          <!--            v-if="-->
+          <!--              appointment &&-->
+          <!--              appointment.scope &&-->
+          <!--              appointment.scope.infoForAppointment-->
+          <!--            "-->
+          <!--            type="info"-->
+          <!--          >-->
+          <!--            <template #content>-->
+          <!--              {{ appointment.scope.infoForAppointment }}-->
+          <!--            </template>-->
 
-            <template #header>{{ t("appointmentHintHeader") }}</template>
-          </muc-callout>
+          <!--            <template #header>{{ t("appointmentHintHeader") }}</template>-->
+          <!--          </muc-callout>-->
         </div>
       </div>
       <div
