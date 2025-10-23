@@ -1210,7 +1210,7 @@ onMounted(() => {
           );
           selectedProvider.value = localStorageData.selectedProvider;
           selectedTimeslot.value = localStorageData.selectedTimeslot;
-          customerData.value = localStorageData.customerData;
+          // customerData.value = localStorageData.customerData;
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
