@@ -70,20 +70,22 @@
         :title="appointmentId ? appointmentId : ''"
         variant="detail"
       />
-      <div class="container">
-        <div class="m-component__grid">
-          <div class="m-component__column">
-            <error-alert
-              :message="t('apiErrorLoadingAppointmentsText')"
-              :header="t('apiErrorLoadingSingleAppointmentHeader')"
-            >
-              <muc-button
-                icon="arrow-right"
-                @onclick="goToAppointmentOverviewLink"
+      <div class="m-component m-component-form">
+        <div class="container">
+          <div class="m-component__grid">
+            <div class="m-component__column">
+              <error-alert
+                :message="t('apiErrorLoadingAppointmentsText')"
+                :header="t('apiErrorLoadingSingleAppointmentHeader')"
               >
-                {{ t("buttonBackToOverview") }}
-              </muc-button>
-            </error-alert>
+                <muc-button
+                  icon="arrow-right"
+                  @onclick="goToAppointmentOverviewLink"
+                >
+                  {{ t("buttonBackToOverview") }}
+                </muc-button>
+              </error-alert>
+            </div>
           </div>
         </div>
       </div>
