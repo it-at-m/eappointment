@@ -102,8 +102,9 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
 a {
   padding-bottom: 16px;
 }
-
-:deep(.m-intro-vertical h1) {
+</style>
+<style>
+.m-intro-vertical__title {
   margin-bottom: 0 !important;
   white-space: pre-wrap !important;
 }

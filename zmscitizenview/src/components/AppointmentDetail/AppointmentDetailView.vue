@@ -623,7 +623,7 @@ onMounted(() => {
 }
 
 @media all and (max-width: 767px) {
-  :deep([ref="dialogRef"]) {
+  :deep(dialog) {
     min-width: 300px !important;
   }
 }
