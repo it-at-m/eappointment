@@ -1,5 +1,11 @@
--- minimal DB data - 27-05-2022
-
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: db:3306
+-- Generation Time: Oct 22, 2025 at 02:04 PM
+-- Server version: 10.4.34-MariaDB-1:10.4.34+maria~ubu2004-log
+-- PHP Version: 8.2.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -11,38 +17,42 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-
+--
+-- Database: `db`
+--
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `abrechnung`
+-- Table structure for table `abrechnung`
 --
 
+DROP TABLE IF EXISTS `abrechnung`;
 CREATE TABLE `abrechnung` (
   `AbrechnungsID` int(9) UNSIGNED NOT NULL,
   `StandortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `Telefonnummer` varchar(50) DEFAULT NULL,
   `Datum` date NOT NULL DEFAULT '0000-00-00',
   `gesendet` int(5) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `apiclient`
+-- Table structure for table `apiclient`
 --
 
+DROP TABLE IF EXISTS `apiclient`;
 CREATE TABLE `apiclient` (
   `apiClientID` int(5) UNSIGNED NOT NULL,
-  `clientKey` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `shortname` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `accesslevel` enum('public','callcenter','intern','blocked') COLLATE utf8mb3_unicode_ci DEFAULT 'public',
+  `clientKey` varchar(32) NOT NULL,
+  `shortname` varchar(32) NOT NULL,
+  `accesslevel` enum('public','callcenter','intern','blocked') DEFAULT 'public',
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Daten für Tabelle `apiclient`
+-- Dumping data for table `apiclient`
 --
 
 INSERT INTO `apiclient` (`apiClientID`, `clientKey`, `shortname`, `accesslevel`, `updateTimestamp`) VALUES
@@ -52,37 +62,40 @@ INSERT INTO `apiclient` (`apiClientID`, `clientKey`, `shortname`, `accesslevel`,
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `apikey`
+-- Table structure for table `apikey`
 --
 
+DROP TABLE IF EXISTS `apikey`;
 CREATE TABLE `apikey` (
-  `key` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `createIP` varchar(40) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `key` varchar(100) NOT NULL,
+  `createIP` varchar(40) NOT NULL,
   `ts` bigint(20) NOT NULL,
   `apiClientID` int(5) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `apiquota`
+-- Table structure for table `apiquota`
 --
 
+DROP TABLE IF EXISTS `apiquota`;
 CREATE TABLE `apiquota` (
   `quotaid` int(5) UNSIGNED NOT NULL,
-  `key` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `route` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `period` enum('minute','hour','day','week','month') COLLATE utf8mb3_unicode_ci NOT NULL,
+  `key` varchar(100) NOT NULL,
+  `route` varchar(100) NOT NULL,
+  `period` enum('minute','hour','day','week','month') NOT NULL,
   `requests` int(3) NOT NULL,
   `ts` bigint(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `behoerde`
+-- Table structure for table `behoerde`
 --
 
+DROP TABLE IF EXISTS `behoerde`;
 CREATE TABLE `behoerde` (
   `BehoerdenID` int(5) UNSIGNED NOT NULL,
   `OrganisationsID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -91,10 +104,10 @@ CREATE TABLE `behoerde` (
   `Adresse` varchar(200) NOT NULL DEFAULT '',
   `Ansprechpartner` varchar(50) NOT NULL DEFAULT '',
   `IPProtectZeit` int(5) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `behoerde`
+-- Dumping data for table `behoerde`
 --
 
 INSERT INTO `behoerde` (`BehoerdenID`, `OrganisationsID`, `KundenID`, `Name`, `Adresse`, `Ansprechpartner`, `IPProtectZeit`) VALUES
@@ -103,15 +116,16 @@ INSERT INTO `behoerde` (`BehoerdenID`, `OrganisationsID`, `KundenID`, `Name`, `A
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `buerger`
+-- Table structure for table `buerger`
 --
 
+DROP TABLE IF EXISTS `buerger`;
 CREATE TABLE `buerger` (
   `BuergerID` int(5) UNSIGNED NOT NULL,
   `StandortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `Datum` date NOT NULL DEFAULT '0000-00-00',
   `Uhrzeit` time NOT NULL DEFAULT '00:00:00',
-  `Name` varchar(50) NOT NULL DEFAULT '',
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `Anmerkung` text DEFAULT NULL,
   `Telefonnummer` varchar(50) NOT NULL DEFAULT '',
   `EMail` varchar(200) NOT NULL DEFAULT '',
@@ -126,7 +140,6 @@ CREATE TABLE `buerger` (
   `aufruferfolgreich` tinyint(1) NOT NULL DEFAULT 0,
   `wsm_aufnahmezeit` time NOT NULL DEFAULT '00:00:00',
   `aufrufzeit` time NOT NULL DEFAULT '00:00:00',
-  `wartezeit` int(5) UNSIGNED DEFAULT NULL,
   `nicht_erschienen` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `Abholer` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `AbholortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -139,29 +152,46 @@ CREATE TABLE `buerger` (
   `absagecode` varchar(10) DEFAULT NULL,
   `AnzahlPersonen` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `apiClientID` int(5) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `apiClientID` int(5) UNSIGNED DEFAULT 1,
+  `custom_text_field` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `showUpTime` time DEFAULT NULL,
+  `finishTime` time DEFAULT NULL,
+  `timeoutTime` datetime DEFAULT NULL,
+  `wegezeit` int(5) UNSIGNED DEFAULT NULL,
+  `parked` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `processingTime` time DEFAULT NULL,
+  `bestaetigt` tinyint(1) NOT NULL DEFAULT 0,
+  `wartezeit` time DEFAULT NULL,
+  `wasMissed` tinyint(1) DEFAULT 0,
+  `custom_text_field2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `priority` int(1) DEFAULT NULL,
+  `external_user_id` varchar(255) DEFAULT NULL,
+  `displayNumber` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `buergeranliegen`
+-- Table structure for table `buergeranliegen`
 --
 
+DROP TABLE IF EXISTS `buergeranliegen`;
 CREATE TABLE `buergeranliegen` (
   `BuergeranliegenID` int(9) UNSIGNED NOT NULL,
   `BuergerID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `BuergerarchivID` int(9) UNSIGNED NOT NULL DEFAULT 0,
   `AnliegenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `source` char(10) CHARACTER SET ascii COLLATE ascii_bin DEFAULT 'dldb'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `buergerarchiv`
+-- Table structure for table `buergerarchiv`
 --
 
+DROP TABLE IF EXISTS `buergerarchiv`;
 CREATE TABLE `buergerarchiv` (
   `BuergerarchivID` int(9) UNSIGNED NOT NULL,
   `StandortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -169,51 +199,88 @@ CREATE TABLE `buergerarchiv` (
   `mitTermin` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `nicht_erschienen` int(2) UNSIGNED NOT NULL DEFAULT 0,
   `Timestamp` time NOT NULL DEFAULT '00:00:00',
-  `wartezeit` int(5) UNSIGNED DEFAULT NULL,
-  `AnzahlPersonen` tinyint(3) UNSIGNED NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `wartezeit` double DEFAULT 0,
+  `AnzahlPersonen` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
+  `bearbeitungszeit` double DEFAULT 0,
+  `name` varchar(255) DEFAULT NULL,
+  `dienstleistungen` varchar(1000) DEFAULT NULL,
+  `wegezeit` int(5) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `clusterzuordnung`
+-- Table structure for table `closures`
 --
 
+DROP TABLE IF EXISTS `closures`;
+CREATE TABLE `closures` (
+  `id` int(5) UNSIGNED NOT NULL,
+  `year` smallint(5) DEFAULT NULL,
+  `month` tinyint(5) DEFAULT NULL,
+  `day` tinyint(5) DEFAULT NULL,
+  `StandortID` int(5) UNSIGNED DEFAULT NULL,
+  `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `clusterzuordnung`
+--
+
+DROP TABLE IF EXISTS `clusterzuordnung`;
 CREATE TABLE `clusterzuordnung` (
   `clusterID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `standortID` int(5) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `config`
+-- Table structure for table `config`
 --
 
+DROP TABLE IF EXISTS `config`;
 CREATE TABLE `config` (
-  `name` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `value` varchar(250) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `value` varchar(250) NOT NULL,
   `changeTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Daten für Tabelle `config`
+-- Dumping data for table `config`
 --
 
 INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
+('appointments__enableEmptyCalendar', 'prod,stage,dev', '2025-10-22 13:57:26'),
+('appointments__enableNextAppointmentView', 'none', '2025-10-22 13:57:26'),
+('appointments__enableSummaryByMail', 'stage,dev', '2025-10-22 13:57:26'),
+('appointments__enableTakenCountdown', 'none', '2025-10-22 13:57:26'),
+('appointments__enableTakenStatistic', 'none', '2025-10-22 13:57:26'),
+('appointments__setTakenCountdownLength', '60', '2025-10-22 13:57:26'),
 ('appointments__urlAppointments', 'https://service.berlin.de/terminvereinbarung/', '2019-08-23 17:22:23'),
 ('appointments__urlChange', 'https://service.berlin.de/terminvereinbarung/termin/manage/', '2019-08-23 17:22:23'),
+('availability__calculateSlotsOnDemand', 'none', '2025-10-22 13:57:26'),
+('availability__calculateSlotsOnSave', 'none', '2025-10-22 13:57:26'),
+('buergerarchiv__setRetentionPeriodDays', '90', '2024-02-19 23:00:00'),
 ('calldisplay__baseUrl', '/terminvereinbarung/calldisplay/', '2019-08-23 17:22:23'),
+('cron__anonymizeStatisticData', 'prod,stage,dev,test', '2024-02-19 23:00:00'),
 ('cron__archiveStatisticData', 'stage,dev', '2019-08-23 15:22:12'),
+('cron__calculateDailyWaitingStatistic', 'stage,dev,test,load,prod', '2025-10-22 13:57:27'),
 ('cron__calculateDayOffList', 'prod,stage,dev', '2022-03-15 11:55:17'),
 ('cron__calculateSlots', 'prod,stage,dev', '2019-08-23 15:22:12'),
+('cron__cleanupOverviewCalendar', 'stage,dev,test,load,prod', '2025-10-22 13:57:27'),
 ('cron__deallocateAppointmentData', 'stage,dev', '2019-08-23 15:22:22'),
 ('cron__deleteAppointmentData', 'stage,dev', '2019-08-23 15:22:12'),
 ('cron__deleteBlacklistedMail', 'stage,dev', '2020-02-07 12:56:28'),
 ('cron__deleteDayoffData', 'prod,stage,dev', '2019-08-23 15:22:12'),
 ('cron__deleteOldAvailabilityData', 'stage,dev', '2019-08-23 15:22:22'),
+('cron__deleteOldEventLogEntries', 'none', '2025-10-22 13:57:27'),
+('cron__deleteOldLogs', 'prod,stage,dev', '2025-10-22 13:57:27'),
 ('cron__deleteReservedData', 'stage,dev', '2019-08-23 15:22:12'),
 ('cron__deleteSessionData', 'prod,stage,dev', '2019-08-23 15:22:12'),
+('cron__deleteUnconfirmedAppointmentData', 'prod,stage,dev', '2025-10-22 13:57:26'),
 ('cron__migrate', 'stage,dev', '2019-08-23 15:22:12'),
 ('cron__resetApiQuota', 'prod,stage,dev', '2019-08-23 15:22:12'),
 ('cron__resetGhostWorkstationCount', 'prod,stage,dev', '2019-08-23 15:22:12'),
@@ -222,7 +289,13 @@ INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
 ('cron__sendNotificationReminder', 'none', '2019-08-23 15:22:12'),
 ('cron__sendProcessListToScopeAdmin', 'none', '2019-08-23 15:22:12'),
 ('cron__updateDldbData', 'prod,stage,dev', '2019-08-23 15:22:12'),
+('dldbBackup__setRetentionPeriodDays', '7', '2024-02-19 23:00:00'),
+('dldbBackup__setRollbackDay', 'none', '2024-02-19 23:00:00'),
 ('emergency__refreshInterval', '5', '2019-08-23 17:22:23'),
+('log__deleteOlderThanDays', '90', '2025-10-22 13:57:27'),
+('mailings__noReplyDepartmentId', '0', '2025-10-22 13:57:27'),
+('mailings__sqlBatchSize', '100', '2025-10-22 13:57:27'),
+('mailings__sqlMaxLimit', '1000', '2025-10-22 13:57:27'),
 ('notifications__absage', '0', '2019-08-23 17:22:23'),
 ('notifications__benachrichtigungsfrist', '10', '2019-08-23 17:22:23'),
 ('notifications__blacklistedAddressList', 'test@muenchen.de', '2022-04-14 05:18:03'),
@@ -237,20 +310,26 @@ INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
 ('notifications__kommandoAbsage', 'Storno', '2019-08-23 17:22:23'),
 ('notifications__noAttachmentDomains', 'outlook.,live.,hotmail.', '2019-08-23 15:22:22'),
 ('notifications__number', '0174-0000', '2022-04-14 05:17:28'),
+('notifications__sqlBatchSize', '100', '2025-10-22 13:57:27'),
+('notifications__sqlMaxLimit', '500', '2025-10-22 13:57:27'),
+('oidc__onlyVerifiedMail', '1', '2025-10-22 13:57:27'),
+('oidc__provider', '', '2025-10-22 13:57:27'),
 ('setting__wsrepsync', '7', '2019-08-23 15:22:23'),
 ('sources_dldb_last', '2022-04-12T13:22:45+02:00', '2022-04-12 11:22:45'),
 ('status__calculateSlotsLastRun', '2016-04-01 00:00:00', '2019-08-23 15:24:23'),
 ('status__calculateSlotsLastStart', '2016-04-01 00:00:00', '2019-08-23 15:22:24'),
 ('support__eMail', 'l-zms@muenchen.de', '2022-04-14 05:16:29'),
 ('support__telephone', '0123', '2022-04-14 05:17:01'),
-('ticketprinter__baseUrl', '/terminvereinbarung/ticketprinter/', '2019-08-23 17:22:23');
+('ticketprinter__baseUrl', '/terminvereinbarung/ticketprinter/', '2019-08-23 17:22:23'),
+('webcalldisplay__baseUrl', '/terminvereinbarung/aufruf/', '2025-10-22 13:57:26');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `email`
+-- Table structure for table `email`
 --
 
+DROP TABLE IF EXISTS `email`;
 CREATE TABLE `email` (
   `emailID` int(5) UNSIGNED NOT NULL,
   `BehoerdenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -259,80 +338,103 @@ CREATE TABLE `email` (
   `username` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(50) NOT NULL DEFAULT '',
   `ssl_coding` int(3) NOT NULL DEFAULT 0,
-  `absenderadresse` varchar(50) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `absenderadresse` varchar(50) NOT NULL DEFAULT '',
+  `send_reminder` tinyint(1) DEFAULT 1,
+  `send_reminder_minutes_before` int(5) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `email`
+-- Dumping data for table `email`
 --
 
-INSERT INTO `email` (`emailID`, `BehoerdenID`, `serveradresse`, `authentication`, `username`, `password`, `ssl_coding`, `absenderadresse`) VALUES
-(1, 1, 'localhost', '0', '', '', 0, 'zms-l@muenchen.de');
+INSERT INTO `email` (`emailID`, `BehoerdenID`, `serveradresse`, `authentication`, `username`, `password`, `ssl_coding`, `absenderadresse`, `send_reminder`, `send_reminder_minutes_before`) VALUES
+(1, 1, 'localhost', '0', '', '', 0, 'zms-l@muenchen.de', 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `feiertage`
+-- Table structure for table `eventlog`
 --
 
+DROP TABLE IF EXISTS `eventlog`;
+CREATE TABLE `eventlog` (
+  `eventId` int(10) UNSIGNED NOT NULL,
+  `eventName` char(80) NOT NULL,
+  `origin` varchar(50) NOT NULL,
+  `referenceType` char(80) NOT NULL,
+  `reference` varchar(128) DEFAULT NULL,
+  `sessionid` varchar(64) DEFAULT NULL,
+  `contextjson` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`contextjson`)),
+  `creationDateTime` datetime NOT NULL DEFAULT current_timestamp(),
+  `expirationDateTime` datetime NOT NULL DEFAULT '9999-12-23 00:00:00'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feiertage`
+--
+
+DROP TABLE IF EXISTS `feiertage`;
 CREATE TABLE `feiertage` (
   `FeiertagID` int(5) UNSIGNED NOT NULL,
   `Datum` date NOT NULL DEFAULT '0000-00-00',
   `Feiertag` text NOT NULL,
   `BehoerdenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `feiertage`
+--
+
+INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES
+(1, '2022-01-01', 'Neujahr', 0, '2022-04-19 08:27:05'),
+(2, '2022-01-06', 'Hl-Drei-König', 0, '2022-04-19 08:27:05'),
+(3, '2022-04-15', 'Karfreitag', 0, '2022-04-19 08:27:05'),
+(4, '2022-04-18', 'Ostermontag', 0, '2022-04-19 08:27:05'),
+(5, '2022-05-01', '1.Mai', 0, '2022-04-19 08:27:05'),
+(6, '2022-05-26', 'ChristiHimmelfahrt', 0, '2022-04-19 08:27:05'),
+(7, '2022-06-06', 'Pfingstmontag', 0, '2022-04-19 08:27:05'),
+(8, '2022-06-26', 'Fronleichnam', 0, '2022-04-19 08:27:05'),
+(9, '2022-08-15', 'MariaHimmelfahrt', 0, '2022-04-19 08:27:05'),
+(10, '2022-10-03', 'Tag d.Dt.Einheit', 0, '2022-04-19 08:27:05'),
+(11, '2022-11-01', 'Allerheiligen', 0, '2022-04-19 08:27:05'),
+(12, '2022-12-24', 'Heiligabend', 0, '2022-04-19 08:27:05'),
+(13, '2022-12-25', '1.Weihnachtstag', 0, '2022-04-19 08:27:05'),
+(14, '2022-12-26', '2.Weihnachtstag', 0, '2022-04-19 08:27:05'),
+(15, '2022-12-31', 'Sylvester', 0, '2022-04-19 08:27:05'),
+(16, '2023-01-01', 'Neujahr', 0, '2022-04-19 08:27:05'),
+(17, '2023-01-06', 'Hl-Drei-König', 0, '2022-04-19 08:27:05'),
+(18, '2023-04-07', 'Karfreitag', 0, '2022-04-19 08:27:05'),
+(19, '2023-04-10', 'Ostermontag', 0, '2022-04-19 08:27:05'),
+(20, '2023-05-01', '1.Mai', 0, '2022-04-19 08:27:05'),
+(21, '2023-05-18', 'ChristiHimmelfahrt', 0, '2022-04-19 08:27:05'),
+(22, '2023-05-29', 'Pfingstmontag', 0, '2022-04-19 08:27:05'),
+(23, '2023-06-08', 'Fronleichnam', 0, '2022-04-19 08:27:05'),
+(24, '2023-08-15', 'MariaHimmelfahrt', 0, '2022-04-19 08:27:05'),
+(25, '2023-10-03', 'Tag d.Dt.Einheit', 0, '2022-04-19 08:27:05'),
+(26, '2023-11-01', 'Allerheiligen', 0, '2022-04-19 08:27:05'),
+(27, '2023-12-24', 'Heiligabend', 0, '2022-04-19 08:27:05'),
+(28, '2023-12-25', '1.Weihnachtstag', 0, '2022-04-19 08:27:05'),
+(29, '2023-12-26', '2.Weihnachtstag', 0, '2022-04-19 08:27:05'),
+(30, '2023-12-31', 'Sylvester', 0, '2022-04-19 08:27:05');
 
 -- --------------------------------------------------------
--- 2022
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (1, '2022-01-01', 'Neujahr', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (2, '2022-01-06', 'Hl-Drei-König', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (3, '2022-04-15', 'Karfreitag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (4, '2022-04-18', 'Ostermontag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (5, '2022-05-01', '1.Mai', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (6, '2022-05-26', 'ChristiHimmelfahrt', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (7, '2022-06-06', 'Pfingstmontag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (8, '2022-06-26', 'Fronleichnam', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (9, '2022-08-15', 'MariaHimmelfahrt', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (10, '2022-10-03', 'Tag d.Dt.Einheit', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (11, '2022-11-01', 'Allerheiligen', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (12, '2022-12-24', 'Heiligabend', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (13, '2022-12-25', '1.Weihnachtstag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (14, '2022-12-26', '2.Weihnachtstag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (15, '2022-12-31', 'Sylvester', 0, '2022-04-19 08:27:05');
--- 2023
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (16, '2023-01-01', 'Neujahr', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (17, '2023-01-06', 'Hl-Drei-König', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (18, '2023-04-07', 'Karfreitag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (19, '2023-04-10', 'Ostermontag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (20, '2023-05-01', '1.Mai', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (21, '2023-05-18', 'ChristiHimmelfahrt', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (22, '2023-05-29', 'Pfingstmontag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (23, '2023-06-08', 'Fronleichnam', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (24, '2023-08-15', 'MariaHimmelfahrt', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (25, '2023-10-03', 'Tag d.Dt.Einheit', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (26, '2023-11-01', 'Allerheiligen', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (27, '2023-12-24', 'Heiligabend', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (28, '2023-12-25', '1.Weihnachtstag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (29, '2023-12-26', '2.Weihnachtstag', 0, '2022-04-19 08:27:05');
-INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES (30, '2023-12-31', 'Sylvester', 0, '2022-04-19 08:27:05');
-
-
-
-
 
 --
--- Tabellenstruktur für Tabelle `imagedata`
+-- Table structure for table `imagedata`
 --
 
+DROP TABLE IF EXISTS `imagedata`;
 CREATE TABLE `imagedata` (
   `imagename` varchar(100) NOT NULL,
   `imagecontent` text DEFAULT NULL,
   `ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `imagedata`
+-- Dumping data for table `imagedata`
 --
 
 INSERT INTO `imagedata` (`imagename`, `imagecontent`, `ts`) VALUES
@@ -343,21 +445,23 @@ INSERT INTO `imagedata` (`imagename`, `imagecontent`, `ts`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `ipausnahmen`
+-- Table structure for table `ipausnahmen`
 --
 
+DROP TABLE IF EXISTS `ipausnahmen`;
 CREATE TABLE `ipausnahmen` (
   `IPID` int(5) UNSIGNED NOT NULL,
   `BehoerdenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `IPAdresse` varchar(20) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `kiosk`
+-- Table structure for table `kiosk`
 --
 
+DROP TABLE IF EXISTS `kiosk`;
 CREATE TABLE `kiosk` (
   `kioskid` int(5) UNSIGNED NOT NULL,
   `kundenid` int(5) NOT NULL DEFAULT 0,
@@ -366,14 +470,15 @@ CREATE TABLE `kiosk` (
   `cookiecode` varchar(50) NOT NULL DEFAULT '',
   `name` varchar(50) NOT NULL DEFAULT '',
   `zugelassen` int(2) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `kunde`
+-- Table structure for table `kunde`
 --
 
+DROP TABLE IF EXISTS `kunde`;
 CREATE TABLE `kunde` (
   `KundenID` int(5) UNSIGNED NOT NULL,
   `Kundenname` varchar(50) NOT NULL DEFAULT '',
@@ -382,10 +487,10 @@ CREATE TABLE `kunde` (
   `Startkennung` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `Anzahlkennungen` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `TerminURL` varchar(200) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `kunde`
+-- Dumping data for table `kunde`
 --
 
 INSERT INTO `kunde` (`KundenID`, `Kundenname`, `Anschrift`, `Module`, `Startkennung`, `Anzahlkennungen`, `TerminURL`) VALUES
@@ -394,9 +499,10 @@ INSERT INTO `kunde` (`KundenID`, `Kundenname`, `Anschrift`, `Module`, `Startkenn
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `kundenlinks`
+-- Table structure for table `kundenlinks`
 --
 
+DROP TABLE IF EXISTS `kundenlinks`;
 CREATE TABLE `kundenlinks` (
   `linkid` int(5) UNSIGNED NOT NULL,
   `kundenid` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -406,75 +512,150 @@ CREATE TABLE `kundenlinks` (
   `link` varchar(200) NOT NULL DEFAULT '',
   `oeffentlich` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `neuerFrame` int(5) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `log`
+-- Table structure for table `log`
 --
 
+DROP TABLE IF EXISTS `log`;
 CREATE TABLE `log` (
   `log_id` int(11) NOT NULL,
   `type` enum('migration','buerger','error','') DEFAULT NULL,
   `reference_id` int(11) DEFAULT NULL,
   `ts` timestamp NOT NULL DEFAULT current_timestamp(),
-  `message` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `message` text DEFAULT NULL,
+  `scope_id` int(5) UNSIGNED DEFAULT NULL,
+  `data` text DEFAULT NULL,
+  `user_id` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `mailpart`
+-- Table structure for table `mailpart`
 --
 
+DROP TABLE IF EXISTS `mailpart`;
 CREATE TABLE `mailpart` (
   `id` int(5) UNSIGNED NOT NULL,
   `queueId` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `mime` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `content` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `mime` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `content` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `base64` int(1) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `mailqueue`
+-- Table structure for table `mailqueue`
 --
 
+DROP TABLE IF EXISTS `mailqueue`;
 CREATE TABLE `mailqueue` (
   `id` int(5) UNSIGNED NOT NULL,
   `processID` int(5) NOT NULL DEFAULT 0,
   `departmentID` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `createIP` varchar(40) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `createIP` varchar(40) NOT NULL,
   `createTimestamp` bigint(20) NOT NULL DEFAULT 0,
-  `subject` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `clientFamilyName` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `clientEmail` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `subject` varchar(150) NOT NULL,
+  `clientFamilyName` varchar(150) NOT NULL,
+  `clientEmail` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `migrations`
+-- Table structure for table `mailtemplate`
 --
 
-CREATE TABLE `migrations` (
-  `filename` varchar(250) COLLATE utf8mb3_unicode_ci NOT NULL,
+DROP TABLE IF EXISTS `mailtemplate`;
+CREATE TABLE `mailtemplate` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `value` longtext DEFAULT NULL,
+  `provider` varchar(250) DEFAULT NULL,
   `changeTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Daten für Tabelle `migrations`
+-- Dumping data for table `mailtemplate`
+--
+
+INSERT INTO `mailtemplate` (`id`, `name`, `value`, `provider`, `changeTimestamp`) VALUES
+(1, 'icsappointment_delete.twig', '{% block content %}\r\nBEGIN:VCALENDAR\r\nX-LOTUS-CHARSET:UTF-8\r\nCALSCALE:GREGORIAN\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nMETHOD:REQUEST\r\nX-WR-TIMEZONE:Europe/Berlin\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nX-LIC-LOCATION:Europe/Berlin\r\nBEGIN:DAYLIGHT\r\nTZOFFSETFROM:+0100\r\nTZOFFSETTO:+0200\r\nTZNAME:CEST\r\nDTSTART:19700329T020000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3\r\nEND:DAYLIGHT\r\nBEGIN:STANDARD\r\nTZOFFSETFROM:+0200\r\nTZOFFSETTO:+0100\r\nTZNAME:CET\r\nDTSTART:19701025T030000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:{{ startTime|date(\"Ymd\") }}-{{ process.displayNumber }}\r\nORGANIZER;CN=\"{{ process.scope.provider.displayName }}\":MAILTO:{{ process.scope.preferences.client.emailFrom }}\r\nSEQUENCE:0\r\nLOCATION:{{ process.scope.provider.displayName }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}\r\nGEO:48.85299;2.36885\r\nSUMMARY:{{ \"Terminabsage:\"|trans }} {{ process.displayNumber }}\r\nDESCRIPTION:{{ message }}\r\nCLASS:PUBLIC\r\nDTSTART;TZID=Europe/Berlin:{{ startTime|date(\"Ymd\") }}T{{ startTime|date(\"His\") }}\r\nDTEND;TZID=Europe/Berlin:{{ endTime|date(\"Ymd\") }}T{{ endTime|date(\"His\") }}\r\nDTSTAMP:{{ timestamp|date(\"Ymd\") }}T{{ timestamp|date(\"His\") }}\r\nSTATUS:CANCELLED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(2, 'icsappointment.twig', '{% block content %}\r\nBEGIN:VCALENDAR\r\nX-LOTUS-CHARSET:UTF-8\r\nCALSCALE:GREGORIAN\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nMETHOD:REQUEST\r\nX-WR-TIMEZONE:Europe/Berlin\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nX-LIC-LOCATION:Europe/Berlin\r\nBEGIN:DAYLIGHT\r\nTZOFFSETFROM:+0100\r\nTZOFFSETTO:+0200\r\nTZNAME:CEST\r\nDTSTART:19700329T020000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3\r\nEND:DAYLIGHT\r\nBEGIN:STANDARD\r\nTZOFFSETFROM:+0200\r\nTZOFFSETTO:+0100\r\nTZNAME:CET\r\nDTSTART:19701025T030000\r\nRRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:{{ startTime|date(\"Ymd\") }}-{{ process.displayNumber }}\r\nORGANIZER;CN=\"{{ process.scope.provider.displayName }}\":MAILTO:{{ process.scope.preferences.client.emailFrom }}\r\nSEQUENCE:0\r\nLOCATION:{{ process.scope.provider.displayName }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}\r\nGEO:48.85299;2.36885\r\nSUMMARY:{{ \"München-Termin:\"|trans }} {{ process.displayNumber }}\r\nDESCRIPTION:{{ message }}\r\nCLASS:PUBLIC\r\nDTSTART;TZID=Europe/Berlin:{{ startTime|date(\"Ymd\") }}T{{ startTime|date(\"His\") }}\r\nDTEND;TZID=Europe/Berlin:{{ endTime|date(\"Ymd\") }}T{{ endTime|date(\"His\") }}\r\nDTSTAMP:{{ timestamp|date(\"Ymd\") }}T{{ timestamp|date(\"His\") }}\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:{{ \"München-Termin:\"|trans }} {{ process.displayNumber }}\r\nTRIGGER:-P1D\r\nEND:VALARM\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(3, 'mail_admin_delete.twig', '{% block german %}\r\n{% if process.queue.withAppointment %}\r\nAbgesagt wurde der Termin von {{ process.clients|first.familyName }}\r\nam {{ process.appointments|first.date|format_date(pattern=\"EE dd. MMMM y\") }} um {{ process.appointments|first.date|date(\"H:i\") }} Uhr\r\n{% else %}\r\nEinem Spontankunden mit der Wartenummer {{ process.displayNumber }} wurde am {{ now|format_date(pattern=\"EE dd. MMMM y\") }} abgesagt\r\n{% endif %} für den Standort {{ process.scope.contact.name }}{% if process.scope.shortName %} {{ process.scope.shortName }}{% endif %}, {{ process.scope.contact.street }}{% if process.scope.shortName %} {{ process.scope.contact.streetNumber }}{% endif %}.\r\n<br /><br />\r\nDie Vorgangsnummer {{ process.displayNumber }} ist nun wieder freigegeben.\r\n<br />\r\nDie Terminabsage wurde initiiert via \"{{ initiator }}\".\r\n<br /><br />\r\nDies ist ein Service Ihres ZMS.\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(4, 'mail_admin_update.twig', '{% block german %}\r\n{% if process.queue.withAppointment %}\r\nGeändert wurde der Termin von {{ process.clients|first.familyName }} (Vorgangsnummer: {{ process.displayNumber }})\r\nam {{ process.appointments|first.date|format_date(pattern=\"EE dd. MMMM y\") }} um {{ process.appointments|first.date|date(\"H:i\") }} Uhr\r\n{% else %}\r\nEinem Spontankunden mit der Wartenummer {{ process.displayNumber }} wurde am {{ now|format_date(pattern=\"EE dd. MMMM y\") }} der Termin geändert\r\n{% endif %} für den Standort {{ process.scope.contact.name }}{% if process.scope.shortName %} {{ process.scope.shortName }}{% endif %}, {{ process.scope.contact.street }}{% if process.scope.shortName %} {{ process.scope.contact.streetNumber }}{% endif %}.\r\n<br /><br />\r\nDie Terminänderung wurde initiiert via \"{{ initiator }}\".\r\n<br /><br />\r\nDies ist ein Service Ihres ZMS.\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(5, 'mail_confirmation.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n    <div style=\"color: #000000; background: #ffffff;\">\r\n        {{ block(\"autogenerated_top_german\") }}\r\n        {{ block(\"salutation_german_neutral\") }}\r\n        wir bestätigen Ihren Termin im <strong>{{ process.scope.provider.displayName }}</strong>.\r\n        <br><br>\r\n        {#{{ process.scope.hint }}\r\n        {{ process.scope.shortName }} Die Variablen können für die Behördenspezifishe Texte verwendent verden  #} \r\n        {#\r\n         ~ \", \" ~ process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber ~\", \" ~ process.scope.provider.contact.postalCode ~ \" \" ~ process.scope.provider.contact.city }}<br />\r\n        {% if process.scope.hint %}\r\n        ({{ process.scope.hint }})<br />\r\n        {% endif %}<br />\r\n        #}\r\n        Datum:<strong> {{ (date|default(getNow))|format_date(locale=\"de\", pattern=\"EEEE, dd. MMMM y\") }} </strong><br>\r\n        Uhrzeit: <strong>{{ (date|default(getNow))|date(\"H:i\") }} {% trans %}Uhr{% endtrans %}</strong>.<br />\r\n        <br>\r\n        <b>Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin.</b>\r\n        <br><br>\r\n        {#Ihre Vorgangsnummer ist die <strong>\"{{ process.displayNumber }}\"</strong><br />\r\n        <br />#}\r\n        \r\n        {#{% if config.appointments.sms.telephone %}\r\n            Oder schicken Sie eine SMS mit dem Inhalt \"{{ config.appointments.sms.textCancel }}\\{{ process.displayNumber }}\" an die Rufnummer {{ config.appointments.sms.telephone }}.\r\n            \"Hierbei ist die Groß- und Kleinschreibung von \"{{ config.appointments.sms.textCancel }}\" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br />\r\n            <br />\r\n        {% endif %}\r\n        #}\r\n        {#{% if process.scope.provider.source == \"dldb\" and process.scope.provider.data.payment %}\r\n            Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />\r\n        {% endif %}#}\r\n        {% if process.requests|length > 1 %}\r\n            {% set requestalias = \"Dienstleistungen sind\" %}\r\n        {% else %}\r\n            {% set requestalias = \"Dienstleistung ist\" %}\r\n        {% endif %}\r\n        {% if process.requests|length == 0 %}\r\n            Sie haben keine Dienstleistungen ausgewählt.\r\n        {% else %}\r\n            Folgende {{ requestalias }} für diesen Termin gebucht:\r\n            <br/><br />\r\n            {% for requestGroup in requestGroups %}\r\n                <strong><a href=\"http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ requestGroup[\'request\'].id }}/\">{{ requestGroup[\'request\'].name }} {#am Standort {{ process.scope.provider.displayName }}#}</a></strong><br/>\r\n                \r\n                Anzahl: {{ requestGroup[\'count\'] }}\r\n                \r\n                {% if requestGroups|length > 1 and not loop.last %}\r\n                    <br /><br />\r\n                    ----------------------\r\n                    <br /><br />\r\n                {% endif %}\r\n            {% endfor %}\r\n        {% endif %}\r\n        <br><br>\r\n        Bitte informieren Sie sich vorab über oben genannte/n Link/s, welche Unterlagen Sie benötigen. \r\n        <br> <br>\r\n        Hinweis:<br>\r\n        Ein Einlass ins Gebäude ist <strong>frühestens 10 Minuten </strong> vor Ihrem Termin möglich. Bitte erscheinen Sie rechtzeitig zu Ihrem Termin. \r\n        <br><br>\r\n        Falls Sie diesen Termin nicht benötigen oder wahrnehmen können, stornieren Sie bitte <b>umgehend</b> Ihren Termin und reservieren einen neuen Termin.\r\n        <a href=\"{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}\">Termin ändern/stornieren</a><br />\r\n        <br /><br />\r\n\r\n        {{ block(\"sendoff_german\") }}\r\n    </div>\r\n    <script type=\"application/ld+json\">\r\n{\r\n  \"@context\": \"http://schema.org\",\r\n  \"@type\": \"EventReservation\",\r\n  \"reservationNumber\": \"{{ process.displayNumber }}\",\r\n  \"reservationStatus\": \"http://schema.org/Confirmed\",\r\n  \"modifyReservationUrl\": \"{{ config.appointments.urlChange }}\",\r\n  \"modifiedTime\": \"{{ process.createTimestamp|date(\'c\') }}\",\r\n  \"underName\": {\r\n    \"@type\": \"Person\",\r\n    \"name\": \"{{ client.familyName }}\"\r\n  },\r\n  \"reservationFor\": {\r\n    \"@type\": \"Event\",\r\n    \"name\": \"{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}\",\r\n    \"startDate\": \"{{ date|date(\'c\') }}\",\r\n    \"location\": {\r\n      \"@type\": \"Place\",\r\n      \"name\": \"{{ process.scope.provider.displayName }}\",\r\n      \"url\": \"{{process.scope.provider.link}}\",\r\n      \"geo\": {\r\n        \"@type\": \"GeoCoordinates\",\r\n        \"latitude\": \"{{process.scope.provider.contact.lat}}\",\r\n        \"longitude\": \"{{process.scope.provider.contact.lon}}\"\r\n      },\r\n      \"address\": {\r\n        \"@type\": \"PostalAddress\",\r\n        \"streetAddress\": \"{{process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber}}\",\r\n        \"addressLocality\": \"{{process.scope.provider.contact.city}}\",\r\n        \"addressRegion\": \"{{process.scope.provider.contact.city}}\",\r\n        \"postalCode\": \"{{process.scope.provider.contact.postalCode}}\",\r\n        \"addressCountry\": \"DE\"\r\n      }\r\n    }\r\n  }\r\n}\r\n</script>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(6, 'mail_delete.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n<div style=\"color: #000000; background: #ffffff;\">\r\n{{ block(\"autogenerated_top_german\") }}\r\n{{ block(\"salutation_german_neutral\") }}\r\nIhr Termin am <strong>{{ (date|default(getNow))|format_date(locale=\"de\", pattern=\"EEEE, dd. MMMM y\") }} </strong> {% trans %}um{% endtrans %} {{ (date|default(getNow))|date(\"H:i\") }} {% trans %}Uhr{% endtrans %}  wurde gelöscht.<br />\r\n<br />\r\n{{ block(\"sendoff_german\") }}\r\n</div>\r\n<script type=\"application/ld+json\">\r\n{\r\n  \"@context\": \"http://schema.org\",\r\n  \"@type\": \"EventReservation\",\r\n  \"reservationNumber\": \"{{ process.displayNumber }}\",\r\n  \"reservationStatus\": \"http://schema.org/Cancelled\",\r\n  \"modifyReservationUrl\": \"{{ config.appointments.urlChange }}\",\r\n  \"underName\": {\r\n    \"@type\": \"Person\",\r\n    \"name\": \"{{ client.familyName }}\"\r\n  },\r\n  \"reservationFor\": {\r\n    \"@type\": \"Event\",\r\n    \"name\": \"{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}\",\r\n    \"startDate\": \"{{ date|date(\'c\') }}\",\r\n    \"location\": {\r\n      \"@type\": \"Place\",\r\n      \"name\": \"{{ process.scope.provider.displayName }}\",\r\n      \"geo\": {\r\n        \"@type\": \"GeoCoordinates\",\r\n        \"latitude\": \"{{process.scope.provider.contact.lat}}\",\r\n        \"longitude\": \"{{process.scope.provider.contact.lon}}\"\r\n      },\r\n      \"address\": {\r\n        \"@type\": \"PostalAddress\",\r\n        \"streetAddress\": \"{{process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber}}\",\r\n        \"addressLocality\": \"{{process.scope.provider.contact.city}}\",\r\n        \"addressRegion\": \"{{process.scope.provider.contact.city}}\",\r\n        \"postalCode\": \"{{process.scope.provider.contact.postalCode}}\",\r\n        \"addressCountry\": \"DE\"\r\n      }\r\n    }\r\n  }\r\n}\r\n</script>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(7, 'mail_pickup.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n    {{ block(\"autogenerated_top_german\") }}\r\n    {{ block(\"salutation_german\") }}\r\n    {% for request in process.requests %}\r\n    Ihr Dokument {% if request.name %}({{ request.name }}){% endif %} ist fertig und liegt zur Abholung bereit.<br />\r\n    {% endfor %}\r\n    <br />\r\n    Die Adresse lautet: {{ process.scope.provider.displayName ~ \" \" ~ process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber ~\", \" ~ process.scope.provider.contact.postalCode ~ \" \" ~ process.scope.provider.contact.city }}.\r\n    <br /><br />\r\n    {{ block(\"sendoff_german\") }}\r\n{% endblock %}\r\n', '', '2024-05-23 08:45:16'),
+(8, 'mail_preconfirmed.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n<div style=\"color: #000000; background: #ffffff;\">\r\n{{ block(\"autogenerated_top_german\") }}\r\n{{ block(\"salutation_german_neutral\") }}\r\n{% set confirmLink = config.appointments.urlAppointments ~ \'#/appointment/confirm/\' ~ appointmentLink  %}\r\nvielen Dank für die Terminanfrage.<br /><br />\r\nKlicken Sie bitte auf den unten stehenden Link, um den Termin am {{ (date|default(getNow))|format_date(locale=\"de\", pattern=\"EEEE, dd. MMMM y\") }}{% if not isQueued %} um {{ (date|default(getNow))|date(\"H:i\") }} Uhr{% endif %} verbindlich zu reservieren.<br /><br />\r\n<strong><a href=\"{{ confirmLink }}\" target=\"_blank\">Termin bestätigen</a></strong>  <br /><br />\r\n<strong>Bitte beachten Sie, dass Ihre Terminanfrage ohne eine Bestätigung nach Ablauf von einer Stunde gelöscht wird.</strong><br /><br />\r\nNach Aktivierung des Termins erhalten Sie eine Bestätigung mit der Terminnummer und weiteren Einzelheiten, die Sie für Ihre Vorsprache benötigen.<br /><br />\r\n{{ block(\"sendoff_german\") }}\r\n</div>\r\n<script type=\"application/ld+json\">\r\n{\r\n  \"@context\": \"http://schema.org\",\r\n  \"@type\": \"EventReservation\",\r\n  \"reservationNumber\": \"{{ process.displayNumber }}\",\r\n  \"reservationStatus\": \"http://schema.org/Confirmed\",\r\n  \"modifyReservationUrl\": \"{{ config.appointments.urlAppointments }}\",\r\n  \"modifiedTime\": \"{{ process.createTimestamp|date(\'c\') }}\",\r\n  \"underName\": {\r\n    \"@type\": \"Person\",\r\n    \"name\": \"{{ client.familyName }}\"\r\n  },\r\n  \"reservationFor\": {\r\n    \"@type\": \"Event\",\r\n    \"name\": \"{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}\",\r\n    \"startDate\": \"{{ date|date(\'c\') }}\",\r\n    \"location\": {\r\n      \"@type\": \"Place\",\r\n      \"name\": \"{{ process.scope.provider.name }}\",\r\n      \"url\": \"{{process.scope.provider.link}}\",\r\n      \"geo\": {\r\n        \"@type\": \"GeoCoordinates\",\r\n        \"latitude\": \"{{process.scope.provider.contact.lat}}\",\r\n        \"longitude\": \"{{process.scope.provider.contact.lon}}\"\r\n      },\r\n      \"address\": {\r\n        \"@type\": \"PostalAddress\",\r\n        \"streetAddress\": \"{{process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber}}\",\r\n        \"addressLocality\": \"{{process.scope.provider.contact.city}}\",\r\n        \"addressRegion\": \"{{process.scope.provider.contact.city}}\",\r\n        \"postalCode\": \"{{process.scope.provider.contact.postalCode}}\",\r\n        \"addressCountry\": \"DE\"\r\n      }\r\n    }\r\n  }\r\n}\r\n</script>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(9, 'mail_queued.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n<div style=\"color: #000000; background: #ffffff;\">\r\n{{ block(\"autogenerated_top_german\") }}\r\n{{ block(\"salutation_german\") }}\r\nhiermit bestätigen wir Ihre Wartenummer für den \r\n{{ (date|default(getNow))|format_date(locale=\"de\", pattern=\"EEEE, dd. MMMM y\") }}\r\n<br /><br />\r\n<strong>Ort:</strong> {{ process.scope.provider.displayName ~ \" \" ~ process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber ~\", \" ~ process.scope.provider.contact.postalCode ~ \" \" ~ process.scope.provider.contact.city }}<br />\r\n{% if process.scope.hint %}\r\n({{ process.scope.hint }})<br />\r\n{% endif %}<br />\r\nIhre Wartenummer ist die <strong>\"{{ process.displayNumber }}\"</strong><br /><br />\r\n{% if process.scope.provider.source == \"dldb\" and process.scope.provider.data.payment %}\r\nZahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />\r\n{% endif %}\r\n{% if process.requests|length > 1 %}\r\n{% set requestalias = \"Dienstleistungen\" %}\r\n{% else %}\r\n{% set requestalias = \"Dienstleistung\" %}\r\n{% endif %}\r\n{% if process.requests|length == 0 %}\r\nSie haben keine Dienstleistungen ausgewählt.\r\n{% else %}\r\nSie haben folgende {{ requestalias }} ausgewählt:\r\n<br/><br />\r\n    {% for request in process.requests %}\r\n    <strong><a href=\"https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/\">{{ request.name }} am Standort {{ process.scope.provider.displayName }}</a></strong><br/>\r\n    {% if request.source == \"dldb\" and request.data %}\r\n    <div style=\"border-left: 1em solid #ffffff; background: #ffffff;\">\r\n    {% include \"@zmsentities/detail/service_detail_prerequisites.twig\" with {\"service\":request.data, \"headerlevel\":\"h4\"} %}\r\n\r\n    {% include \"@zmsentities/detail/service_detail_requirements.twig\" with {\"service\":request.data, \"headerlevel\":\"h4\"} %}\r\n\r\n    {% include \"@zmsentities/detail/service_detail_fees.twig\" with {\"service\":request.data, \"headerlevel\":\"h4\"} %}\r\n    </div>\r\n    {% endif %}\r\n    {% if process.requests|length > 1 and not loop.last %}\r\n    <br /><br />\r\n    ----------------------\r\n    <br /><br />\r\n    {% endif %}\r\n    {% endfor %}\r\n{% endif %}\r\n<br /><br /><br />\r\n{{ block(\"sendoff_german\") }}\r\n</div>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(10, 'mail_reminder.twig', '{% use \"snippets.twig\" %}\r\n{% block german %}\r\n<div style=\"color: #000000; background: #ffffff;\">\r\n{{ block(\"autogenerated_top_german\") }}\r\n{{ block(\"salutation_german_neutral\") }}\r\nwir erinnern Sie an Ihren Termin  <strong>am {{ (date|default(getNow))|format_date(locale=\"de\", pattern=\"EEEE, dd. MMMM y\") }} {% trans %}um{% endtrans %} {{ (date|default(getNow))|date(\"H:i\") }} {% trans %}Uhr{% endtrans %}</strong>. <br>\r\nTerminnummer: <strong>{{ process.displayNumber }}</strong><br />\r\n{% if process.scope.hint %}\r\n<strong>Wartezone: {{ process.scope.hint }} </strong><br />\r\n{% endif %}<br />\r\nBitte gehen Sie rechtzeitig zur <strong>\"{{ process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber }}\"</strong><br />\r\n<br>\r\nDer Einlass ins Gebäude ist <b>frühestens 10 Minuten</b> vor Ihrem Termin möglich. Bitte erscheinen Sie rechtzeitig zu Ihrem Termin und zeigen diese Terminerinnerung beim Einlass vor. \r\n<br /><br />\r\nIhre Terminnummer wird im oben genannten Bereich auf dem Bildschirm bei Aufruf angezeigt. \r\n<br /><br />\r\n {% if process.requests|length > 1 %}\r\n            {% set requestalias = \"Dienstleistungen sind\" %}\r\n        {% else %}\r\n            {% set requestalias = \"Dienstleistung ist\" %}\r\n        {% endif %}\r\n        {% if process.requests|length == 0 %}\r\n            Sie haben keine Dienstleistungen ausgewählt.\r\n        {% else %}\r\n            Folgende {{ requestalias }} für diesen Termin gebucht:\r\n            <br/><br />\r\n            {% for requestGroup in requestGroups %}\r\n                <strong><a href=\"http://www.muenchen.de/dienstleistungsfinder/muenchen/{{ requestGroup[\'request\'].id }}/\">{{ requestGroup[\'request\'].name }} {#am Standort {{ process.scope.provider.displayName }}#}</a></strong><br/>\r\n                \r\n                Anzahl: {{ requestGroup[\'count\'] }}\r\n                \r\n                {% if requestGroups|length > 1 and not loop.last %}\r\n                    <br /><br />\r\n                    ----------------------\r\n                    <br /><br />\r\n                {% endif %}\r\n            {% endfor %}\r\n        {% endif %}\r\n        <br><br>\r\n        Bitte vergewissern Sie sich über oben genannte/n Link/s, welche Unterlagen Sie benötigen und halten Sie diese für Ihren Termin bereit. \r\n        <br><br>\r\n        Hinweise: \r\n        <br><br>\r\n        Bei erhöhtem Kundenaufkommen können wir leider nicht ausschließen, dass Sie trotz Termins mit einer geringen Wartezeit rechnen müssen. Wir bitten Sie hierfür um Verständnis.\r\n        <br><br>\r\n        Falls Sie diesen Termin nicht benötigen oder wahrnehmen können, stornieren Sie bitte <b>umgehend</b> Ihren Termin und reservieren einen neuen Termin.\r\n        <a href=\"{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}\">Termin ändern/stornieren</a><br />\r\n        <br /><br />\r\n{{ block(\"sendoff_german\") }}\r\n</div>\r\n<script type=\"application/ld+json\">\r\n{\r\n  \"@context\": \"http://schema.org\",\r\n  \"@type\": \"EventReservation\",\r\n  \"reservationNumber\": \"{{ process.displayNumber }}\",\r\n  \"reservationStatus\": \"http://schema.org/Confirmed\",\r\n  \"modifyReservationUrl\": \"{{ config.appointments.urlChange }}\",\r\n  \"modifiedTime\": \"{{ process.createTimestamp|date(\'c\') }}\",\r\n  \"underName\": {\r\n    \"@type\": \"Person\",\r\n    \"name\": \"{{ client.familyName }}\"\r\n  },\r\n  \"reservationFor\": {\r\n    \"@type\": \"Event\",\r\n    \"name\": \"{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}\",\r\n    \"startDate\": \"{{ date|date(\'c\') }}\",\r\n    \"location\": {\r\n      \"@type\": \"Place\",\r\n      \"name\": \"{{ process.scope.provider.displayName }}\",\r\n      \"url\": \"{{process.scope.provider.link}}\",\r\n      \"geo\": {\r\n        \"@type\": \"GeoCoordinates\",\r\n        \"latitude\": \"{{process.scope.provider.contact.lat}}\",\r\n        \"longitude\": \"{{process.scope.provider.contact.lon}}\"\r\n      },\r\n      \"address\": {\r\n        \"@type\": \"PostalAddress\",\r\n        \"streetAddress\": \"{{process.scope.provider.contact.street ~ \" \"  ~ process.scope.provider.contact.streetNumber}}\",\r\n        \"addressLocality\": \"{{process.scope.provider.contact.city}}\",\r\n        \"addressRegion\": \"{{process.scope.provider.contact.city}}\",\r\n        \"postalCode\": \"{{process.scope.provider.contact.postalCode}}\",\r\n        \"addressCountry\": \"DE\"\r\n      }\r\n    }\r\n  }\r\n}\r\n</script>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(11, 'mail_scopeadmin_processlist.twig', '{% block content %}\r\n<table cellpadding=\"0\" cellspacing=\"0\" width=\"1000\">\r\n    <tr>\r\n        <td valign=\"top\">\r\n            <h1>{{ scope.provider.displayName }}</h1>\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td valign=\"top\" style=\"padding:2px 0px;\">\r\n            Standortanschrift: {{ scope.contact.street }} {{ scope.contact.streetNumber }}\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td valign=\"top\" style=\"padding:2px 0px;\">\r\n            Standortbeschreibung: {{ scope.contact.name|default(\'-\') }}\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td valign=\"top\" style=\"padding:2px 0px;\">\r\n            Standortk&uuml;rzel: {{ scope.contact.shortName|default(\'-\') }}\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td valign=\"top\" style=\"padding:2px 0px;\">\r\n            Email Standortadmin: {{ scope.contact.email }}\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td>&nbsp;</td>\r\n    </tr>\r\n\r\n    <tr>\r\n        <td>\r\n            <strong>Termine am {{ dateTime|date(\"Y-m-d\") }} ({{ processList|length }} gesamt)</strong>\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td>&nbsp;</td>\r\n    </tr>\r\n    <tr>\r\n        <td>\r\n            <table>\r\n                <tr>\r\n                    <td bgcolor=\"#dedede\" style=\"padding:3px 10px;\">Uhrzeit</td>\r\n                    <td bgcolor=\"#dedede\" style=\"padding:3px 10px;\">Vorgangsnummer</td>\r\n                    <td bgcolor=\"#dedede\" style=\"padding:3px 10px;\">Name des Kunden</td>\r\n                    <td bgcolor=\"#dedede\" style=\"padding:3px 10px;\">Dienstleistung</td>\r\n                </tr>\r\n                {% for key, process in processList %}\r\n                {% set style = \"padding:3px 10px; background-color:#efefef; border-bottom:1px solid #e2e2e2;\" %}\r\n                {% if loop.index0 is odd %}\r\n                {% set style = \"padding:3px 10px;\" %}\r\n                {% endif %}\r\n                <tr>\r\n                    <td width=\"70\" valign=\"top\" style=\"{{ style }}\">\r\n                        {{ process.appointments|first.date|date(\"H:i\") }} {% if process.appointments|first.slotCount > 1 %}<small>({{ process.appointments|first.slotCount }})</small>{% endif %}\r\n                    </td>\r\n                    <td width=\"120\" valign=\"top\" style=\"{{ style }}\">\r\n                        {{ process.displayNumber }}\r\n                    </td>\r\n                    <td valign=\"top\" width=\"280\" style=\"{{ style }}\">\r\n                        {{ process.clients|first.familyName }}\r\n                    </td>\r\n                    <td valign=\"top\" width=\"430\" style=\"{{ style }}\">\r\n                        {{ process.requests|first.name }}\r\n                    </td>\r\n                </tr>\r\n                {% endfor %}\r\n            </table>\r\n        </td>\r\n    </tr>\r\n</table>\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(12, 'notification_appointment.twig', '{% block german %}\r\nIhr Termin: Vorgangsnr. {{ process.displayNumber }} am {{ process.appointments.0.date|date(\'d.m.y\') }} um {{ process.appointments.0.date|date(\'H:i\') }} Uhr, {{ process.scope.provider.contact.name }}, {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}, {{ process.scope.provider.contact.postalCode }}  {{ process.scope.provider.contact.city }} {% if process.scope.hint %}({{ process.scope.hint }}){% endif %}\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(13, 'notification_confirmation.twig', '{% block german %}\r\n{% if process.scope.preferences.notifications.confirmationContent %}\r\n{{ process.scope.preferences.notifications.confirmationContent }} {{ process.displayNumber }}\r\n{% else %}\r\n{{ config.notifications.confirmationContent }} {{ process.displayNumber }}\r\n{% endif %}\r\n{% endblock %}', '', '2025-10-22 13:57:27'),
+(14, 'notification_deleted.twig', '{% block german %}\r\nIhr Termin: Vorgangsnr. {{ process.displayNumber }} am {{ process.appointments.0.date|date(\'d.m.y\') }} um {{ process.appointments.0.date|date(\'H:i\') }} Uhr, wurde abgesagt.\r\n{% endblock %}\r\n', '', '2025-10-22 13:57:27'),
+(15, 'notification_headsup.twig', '{% block german %}\r\n{% if process.scope.preferences.notifications.headsUpContent %}\r\n{{ process.scope.preferences.notifications.headsUpContent }} {{ process.displayNumber }}\r\n{% else %}\r\n{{ config.notifications.headsUpContent }} {{ process.displayNumber }}\r\n{% endif %}\r\n{% endblock %}', '', '2025-10-22 13:57:27'),
+(16, 'notification_pickup.twig', '{% block german %}\r\nIhr Dokument ist fertig und liegt zur Abholung bereit, am Standort {{ process.scope.provider.contact.name }}\r\n{% endblock %}\r\n', '', '2024-05-23 08:45:16'),
+(17, 'snippets.twig', '{% block autogenerated_top_german %}\r\n<div style=\"background: #eeeeee; border: 1px solid #aaaaaa; padding:10px;\">\r\nAchtung! Dies ist eine automatisch erstellte E-Mail. Bitte antworten Sie nicht auf diese Mail, sie kann nicht bearbeitet werden.\r\n</div><br />\r\n{% endblock %}\r\n\r\n{% block salutation_german %}\r\nSehr geehrte*r {{ client.familyName }},<br /><br />\r\n{% endblock %}\r\n\r\n{% block salutation_german_neutral %}\r\nGuten Tag {{ client.familyName }},<br /><br />\r\n{% endblock %}\r\n\r\n{% block sendoff_german %}\r\nMit freundlichen Grüßen<br />\r\nIhr {{ process.scope.provider.displayName }} \r\n<br /><br />\r\n{# <a href=\"{{ config.appointments.urlAppointments }}\">{{ config.appointments.urlAppointments }}</a> #}\r\n{% endblock %}', '', '2024-05-23 08:45:16'),
+(18, 'subjects.twig', '{% block german %}\r\n    {% if status == \'confirmed\' or status == \'appointment\' %}\r\n    Terminbestätigung\r\n    {% elseif status == \'preconfirmed\' %}\r\n    Aktivierungslink für Ihren Termin\r\n    {% elseif status == \'reminder\' %}\r\n    Terminerinnerung\r\n    {% elseif (status == \'deleted\' or status == \'blocked\') and not initiator %}\r\n    Terminabsage\r\n    {% elseif (status == \'deleted\' or status == \'blocked\') and initiator %}\r\n    Information Terminabsage\r\n    {% elseif status == \'updated\' and initiator %}\r\n    Information Terminänderung\r\n    {% elseif status == \'queued\' %}\r\n    Wartenummerbestaetigung\r\n    {% elseif status == \'pickup\' %}\r\n    Ihr Dokument {% if process.requests|first.name %}({{ process.requests|first.name }}) {% endif %}ist fertig und liegt zur Abholung bereit.\r\n    {% elseif status == \'survey\' and process.clients|first.surveyAccepted %}\r\n    Kundenbefragung des Standorts {{ process.scope.contact.name }}\r\n    {% else %}\r\n    Terminerinnerung\r\n    {% endif %}\r\n{% endblock %}\r\n', '', '2024-05-23 08:45:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+DROP TABLE IF EXISTS `migrations`;
+CREATE TABLE `migrations` (
+  `filename` varchar(250) NOT NULL,
+  `changeTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `migrations`
 --
 
 INSERT INTO `migrations` (`filename`, `changeTimestamp`) VALUES
+('16032023-add-config-for-cronjob-preconfirmed.sql', '2025-10-22 13:57:26'),
+('16032025-config-recalculate-slots.sql', '2025-10-22 13:57:26'),
+('1692265243-add-primary-key-clusterzuordnung.sql', '2025-10-22 13:57:26'),
+('1697187247-add-standort-custom-text-field.sql', '2025-10-22 13:57:26'),
+('1697550153-add-showup-and-finish-time.sql', '2025-10-22 13:57:26'),
+('1697631607-add-processing-time-field.sql', '2025-10-22 13:57:26'),
+('1697703533-add-bearbeitungszeit-field-in-buergerarchiv.sql', '2025-10-22 13:57:26'),
+('1700040125-add-name-and-services-fields-in-buergerarchiv.sql', '2025-10-22 13:57:26'),
+('1700484515-add-recall-time-for-process-queue.sql', '2025-10-22 13:57:26'),
+('1700484516-rename-queuedtime-to-timeouttime-for-process-queue.sql', '2025-10-22 13:57:26'),
+('1706712003-admin-mails-for-delete-and-confirm-process.sql', '2025-10-22 13:57:26'),
+('1706712004-admin-mails-for-updated-process.sql', '2025-10-22 13:57:26'),
+('1706712005-admin-mails-for-mail_sent.sql', '2025-10-22 13:57:26'),
+('1707993858-add-appointments-per-mail.sql', '2025-10-22 13:57:26'),
+('1708439929-add-anonymize-statistic-data-cronjob-to-config-table.sql', '2025-10-22 13:57:26'),
+('1708595875-add-whitelisted-mails.sql', '2025-10-22 13:57:26'),
+('1709201288-add-waytime-statistic-data.sql', '2025-10-22 13:57:26'),
+('1709201289-add-wegezeit-to-wartenrstatistik.sql', '2025-10-22 13:57:26'),
+('1709201290-alter-wegezeit-to-double.sql', '2025-10-22 13:57:26'),
+('1711097317-add-mail-index-in-buerger.sql', '2025-10-22 13:57:26'),
+('1711619112-add-cronjob-maintenance-to-config.sql', '2025-10-22 13:57:26'),
+('1712835415-add-parked-and-processingtime-columns-to-buerger.sql', '2025-10-22 13:57:26'),
+('1713252763-update-arbeitsplatznmr-length.sql', '2025-10-22 13:57:26'),
+('1714158135-convert-processingtime-int-columns-to-double.sql', '2025-10-22 13:57:26'),
+('1715068256-add-slots-per-appointment.sql', '2025-10-22 13:57:26'),
+('1715615643-add-mail-templates-table.sql', '2025-10-22 13:57:26'),
+('1721283150-add-info-for-appointment.sql', '2025-10-22 13:57:26'),
+('20230912-wartenrstatistik-zms1389-add-terminkunden.sql', '2025-10-22 13:57:26'),
 ('260417-messenger-superuser.sql', '2019-08-23 15:22:12'),
 ('27465-create-mail-tables.sql', '2019-08-23 15:22:12'),
 ('27500-migration-system.sql', '2016-06-03 12:06:35'),
 ('28300-create-config-table.sql', '2019-08-23 15:22:12'),
 ('28301-create-notification-table.sql', '2019-08-23 15:22:12'),
 ('28736-create-datasource-tables.sql', '2019-08-23 15:22:12'),
+('29082023-standortkuerzel40.sql', '2025-10-22 13:57:26'),
 ('29407-workstation-name-length-to-varchar-5.sql', '2019-08-23 15:22:12'),
 ('31466-statistik-wartezeit-index.sql', '2019-08-23 15:22:12'),
 ('31523-soap-superuser.sql', '2019-08-23 15:22:12'),
@@ -495,6 +676,8 @@ INSERT INTO `migrations` (`filename`, `changeTimestamp`) VALUES
 ('34628-create-source-table.sql', '2019-08-23 15:22:22'),
 ('35550-deallocateAppointmentData.sql', '2019-08-23 15:22:22'),
 ('35726-column-source-with-default.sql', '2019-08-23 15:22:22'),
+('357261-add-email-reminder-columns-in-email-table.sql', '2025-10-22 13:57:26'),
+('357262-add-display-name-in-provider-table.sql', '2025-10-22 13:57:26'),
 ('36114-add-scopeid-notificationqueue.sql', '2019-08-23 15:22:22'),
 ('36114-modify-telephone-varchar-size.sql', '2022-03-15 11:55:16'),
 ('36380-config-mail-attachment.sql', '2019-08-23 15:22:22'),
@@ -506,34 +689,98 @@ INSERT INTO `migrations` (`filename`, `changeTimestamp`) VALUES
 ('37117-slotTimeInMinutes-modify.sql', '2020-02-07 12:56:31'),
 ('44884-mailpart-index.sql', '2022-03-15 11:55:17'),
 ('45305-request-provider-alter.sql', '2022-03-15 11:55:17'),
+('457262-add-aktivierungsdauer-in-standort-table.sql', '2025-10-22 13:57:26'),
 ('46962-calculateDayOffList.sql', '2022-03-15 11:55:17'),
 ('47486-primary-key-clusterzuordnung-source.sql', '2022-03-15 11:55:17'),
-('50845-userid-unique.sql', '2022-03-15 11:55:17');
+('50845-userid-unique.sql', '2022-03-15 11:55:17'),
+('54692-config-webcalldisplay-baseurl.sql', '2025-10-22 13:57:26'),
+('55116-config-appointment-features.sql', '2025-10-22 13:57:26'),
+('55118-create-eventlog-table.sql', '2025-10-22 13:57:26'),
+('55118-deleteOldEventLogEntries.sql', '2025-10-22 13:57:27'),
+('55127-config-mailings-no-reply.sql', '2025-10-22 13:57:27'),
+('55398-config-oidc-settings.sql', '2025-10-22 13:57:27'),
+('55627-config-reminder-mail-limits.sql', '2025-10-22 13:57:27'),
+('56398-add-column-bestaetigt-to-buerger.sql', '2025-10-22 13:57:27'),
+('91714158137-convert-waitingtime-int-columns-to-double.sql', '2025-10-22 13:57:27'),
+('91718631358-add-captcha-required-column-to-location.sql', '2025-10-22 13:57:27'),
+('91719828310-create-universal-ticketprinter-session-in-kiosk.sql', '2025-10-22 13:57:27'),
+('91723101511-add-mail-confirmation-activated.sql', '2025-10-22 13:57:27'),
+('91723201436-add-scope-id-in-log-table.sql', '2025-10-22 13:57:27'),
+('91724830692-edit-info-for-appointment.sql', '2025-10-22 13:57:27'),
+('91725521646-add-data-and-user-id-in-log-table.sql', '2025-10-22 13:57:27'),
+('91725883078-config-log-deletion.sql', '2025-10-22 13:57:27'),
+('91727254906-edit-type-emergency-fields.sql', '2025-10-22 13:57:27'),
+('91728292453-add-default-label-for-custom-text-field.sql', '2025-10-22 13:57:27'),
+('91728935757-add-config-for-cronjob-delete-old-logs.sql', '2025-10-22 13:57:27'),
+('91729672394-add-session-duration-to-nutzer-table.sql', '2025-10-22 13:57:27'),
+('91732870750-custom-textfiled-label.sql', '2025-10-22 13:57:27'),
+('91733411822-reserve-default-label-2.sql', '2025-10-22 13:57:27'),
+('91737550001-add-indexes.sql', '2025-10-22 13:57:27'),
+('91738315597-add-column-wasMissed-buerger.sql', '2025-10-22 13:57:27'),
+('91740151321-set-email-required-for-all-locations.sql', '2025-10-22 13:57:27'),
+('91740644959-calculateDailyWaitingStatistic.sql', '2025-10-22 13:57:27'),
+('91740751372-create-closures-table.sql', '2025-10-22 13:57:27'),
+('91744196033-add-max-quantity-in-request-provider-table.sql', '2025-10-22 13:57:27'),
+('91744196033-add-public-visibility-in-request-provider-table.sql', '2025-10-22 13:57:27'),
+('91744880189-add-standort-custom-text-field2.sql', '2025-10-22 13:57:27'),
+('91745403318-create-gesamtkalender-table.sql', '2025-10-22 13:57:27'),
+('91748346637-add-status-field.sql', '2025-10-22 13:57:27'),
+('91749547833-hash-session-ids.sql', '2025-10-22 13:57:27'),
+('91749547834-add-performance-indexes.sql', '2025-10-22 13:57:27'),
+('91750411988-gesamtkalender-backfill.sql', '2025-10-22 13:57:27'),
+('91750948148-add-performance-indexes-to-calendar.sql', '2025-10-22 13:57:27'),
+('91751012116-add-indexes-on-status.sql', '2025-10-22 13:57:27'),
+('91751284657-populate-status-field.sql', '2025-10-22 13:57:27'),
+('91751560058-add-priority-field.sql', '2025-10-22 13:57:27'),
+('91751970181-add-external-user-id-to-buerger.sql', '2025-10-22 13:57:27'),
+('91752499005-change-varchar-of-buerger-name.sql', '2025-10-22 13:57:27'),
+('91752567095-gesamtkalender-availability-nullable.sql', '2025-10-22 13:57:27'),
+('91753098498-gesamtkalender-backfill.sql', '2025-10-22 13:57:27'),
+('91754036689-parent-id-for-request-and-provider.sql', '2025-10-22 13:57:27'),
+('91754036943-create-request-variant -table.sql', '2025-10-22 13:57:27'),
+('91754038943-add-variant-id-to-request.sql', '2025-10-22 13:57:27'),
+('91754461763-add-index-to-standort-on-InfoDienstleisterID.sql', '2025-10-22 13:57:27'),
+('91754916616-add-zmscitizenapi-user-to-nutzer.sql', '2025-10-22 13:57:27'),
+('91756123046-add-info-for-no-appointments.sql', '2025-10-22 13:57:27'),
+('91756123047-update-existing-locations-info-for-appointments.sql', '2025-10-22 13:57:27'),
+('91756123049-delete-fks.sql', '2025-10-22 13:57:27'),
+('91756201517-delete-mail-from-user-table.sql', '2025-10-22 13:57:27'),
+('91757926126-restore-waiting-statistics-from-archive-table-since-2025-07-31.sql', '2025-10-22 13:57:27'),
+('91757926129-create-table-overview-calendar.sql', '2025-10-22 13:57:27'),
+('91757926139-add-config-for-cronjob-clean-overview-calendar.sql', '2025-10-22 13:57:27'),
+('91757926159-backfill-overview-calendar.sql', '2025-10-22 13:57:27'),
+('91757926169-drop-gesamtkalender.sql', '2025-10-22 13:57:27'),
+('91757929283-add-displayNumber-in-buerger-table.sql', '2025-10-22 13:57:27'),
+('91758025620-add-columns-for-display-number-in-stanodrt-table.sql', '2025-10-22 13:57:27'),
+('91758552677-update-mails-use-displayNumber-field.sql', '2025-10-22 13:57:27'),
+('91761041330-create-more-indexes-on-nutzer-table.sql', '2025-10-22 13:57:27');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `notificationqueue`
+-- Table structure for table `notificationqueue`
 --
 
+DROP TABLE IF EXISTS `notificationqueue`;
 CREATE TABLE `notificationqueue` (
   `id` int(5) UNSIGNED NOT NULL,
   `processID` int(5) NOT NULL DEFAULT 0,
   `departmentID` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `createIP` varchar(40) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `createIP` varchar(40) NOT NULL,
   `createTimestamp` bigint(20) NOT NULL DEFAULT 0,
-  `message` varchar(350) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `clientFamilyName` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `clientTelephone` varchar(50) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `message` varchar(350) NOT NULL,
+  `clientFamilyName` varchar(150) NOT NULL,
+  `clientTelephone` varchar(50) NOT NULL,
   `scopeID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `nutzer`
+-- Table structure for table `nutzer`
 --
 
+DROP TABLE IF EXISTS `nutzer`;
 CREATE TABLE `nutzer` (
   `NutzerID` int(5) UNSIGNED NOT NULL,
   `Name` varchar(50) NOT NULL DEFAULT '',
@@ -543,45 +790,47 @@ CREATE TABLE `nutzer` (
   `Berechtigung` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `KundenID` int(5) NOT NULL DEFAULT 0,
   `BehoerdenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `SessionID` varchar(200) NOT NULL DEFAULT '',
+  `SessionID` varchar(64) NOT NULL DEFAULT '',
   `StandortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `Arbeitsplatznr` varchar(5) NOT NULL DEFAULT '',
+  `Arbeitsplatznr` varchar(8) NOT NULL DEFAULT '''',
   `Datum` date NOT NULL DEFAULT '0000-00-00',
   `Kalenderansicht` int(2) UNSIGNED NOT NULL DEFAULT 0,
   `clusteransicht` int(2) NOT NULL DEFAULT 0,
-  `notrufinitiierung` varchar(4) NOT NULL,
-  `notrufantwort` varchar(4) NOT NULL,
+  `notrufinitiierung` varchar(8) NOT NULL,
+  `notrufantwort` varchar(8) NOT NULL,
   `aufrufzusatz` varchar(250) DEFAULT NULL,
-  `email` varchar(100) NOT NULL DEFAULT '',
-  `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `sessionExpiry` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `nutzer`
+-- Dumping data for table `nutzer`
 --
 
-INSERT INTO `nutzer` (`NutzerID`, `Name`, `Passworthash`, `Frage`, `Antworthash`, `Berechtigung`, `KundenID`, `BehoerdenID`, `SessionID`, `StandortID`, `Arbeitsplatznr`, `Datum`, `Kalenderansicht`, `clusteransicht`, `notrufinitiierung`, `notrufantwort`, `aufrufzusatz`, `email`, `lastUpdate`) VALUES
-(1, 'vorschau', '128196aca512b2989d1d442455a57629', '', '', 0, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '', '2019-08-23 15:22:22'),
-(136, 'testadmin', '$2y$10$C2szb/GeBKp9EdyuI0KiaO1.GHS3A6DzQRP2rJlGa.un63MepwJzu', '', '', 70, 0, 74, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '', '2022-03-16 15:01:46'),
-(137, 'testuser', '128196aca512b2989d1d442455a57629', '', '', 10, 0, 0, '', 0, '', '0000-00-00', 0, 0, '', '', '', '', '2020-03-02 13:10:32'),
-(138, 'superuser', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '', '2022-04-14 05:10:10'),
-(5118, '_system_messenger', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '', '2020-03-02 13:10:18'),
-(5119, '_system_soap', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '', '2020-03-02 13:10:20'),
-(5120, '_system_115', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '', '2020-03-02 13:10:23');
+INSERT INTO `nutzer` (`NutzerID`, `Name`, `Passworthash`, `Frage`, `Antworthash`, `Berechtigung`, `KundenID`, `BehoerdenID`, `SessionID`, `StandortID`, `Arbeitsplatznr`, `Datum`, `Kalenderansicht`, `clusteransicht`, `notrufinitiierung`, `notrufantwort`, `aufrufzusatz`, `lastUpdate`, `sessionExpiry`) VALUES
+(1, 'vorschau', '128196aca512b2989d1d442455a57629', '', '', 0, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2019-08-23 15:22:22', NULL),
+(136, 'testadmin', '$2y$10$C2szb/GeBKp9EdyuI0KiaO1.GHS3A6DzQRP2rJlGa.un63MepwJzu', '', '', 70, 0, 74, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '2022-03-16 15:01:46', NULL),
+(137, 'testuser', '128196aca512b2989d1d442455a57629', '', '', 10, 0, 0, '', 0, '', '0000-00-00', 0, 0, '', '', '', '2020-03-02 13:10:32', NULL),
+(138, 'superuser', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, 'd3da7d4d6c275f93c1fcdf4df496ac98562892c0a320aa227498db54ebdbcac0', 0, '', '2025-10-22', 0, 0, '0', '0', '', '2025-10-22 14:02:53', '2025-10-23 00:02:53'),
+(5118, '_system_messenger', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:18', NULL),
+(5119, '_system_soap', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:20', NULL),
+(5120, '_system_115', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:23', NULL),
+(5126, '_system_citizenapi', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '\'', '0000-00-00', 0, 0, '0', '0', NULL, '2025-10-22 13:57:27', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `nutzerzuordnung`
+-- Table structure for table `nutzerzuordnung`
 --
 
+DROP TABLE IF EXISTS `nutzerzuordnung`;
 CREATE TABLE `nutzerzuordnung` (
   `nutzerid` int(5) NOT NULL,
   `behoerdenid` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Daten für Tabelle `nutzerzuordnung`
+-- Dumping data for table `nutzerzuordnung`
 --
 
 INSERT INTO `nutzerzuordnung` (`nutzerid`, `behoerdenid`) VALUES
@@ -596,9 +845,10 @@ INSERT INTO `nutzerzuordnung` (`nutzerid`, `behoerdenid`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `oeffnungszeit`
+-- Table structure for table `oeffnungszeit`
 --
 
+DROP TABLE IF EXISTS `oeffnungszeit`;
 CREATE TABLE `oeffnungszeit` (
   `OeffnungszeitID` int(5) UNSIGNED NOT NULL,
   `StandortID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -621,14 +871,15 @@ CREATE TABLE `oeffnungszeit` (
   `Offen_ab` int(11) NOT NULL DEFAULT 0,
   `Offen_bis` int(11) NOT NULL DEFAULT 0,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `organisation`
+-- Table structure for table `organisation`
 --
 
+DROP TABLE IF EXISTS `organisation`;
 CREATE TABLE `organisation` (
   `OrganisationsID` int(5) UNSIGNED NOT NULL,
   `InfoBezirkID` int(11) NOT NULL DEFAULT 0,
@@ -636,25 +887,43 @@ CREATE TABLE `organisation` (
   `Organisationsname` varchar(50) NOT NULL DEFAULT '',
   `Anschrift` varchar(200) NOT NULL DEFAULT '',
   `kioskpasswortschutz` int(2) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `preferences`
+-- Table structure for table `overview_calendar`
 --
 
+DROP TABLE IF EXISTS `overview_calendar`;
+CREATE TABLE `overview_calendar` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `scope_id` int(10) UNSIGNED NOT NULL,
+  `process_id` int(10) UNSIGNED NOT NULL,
+  `status` enum('confirmed','cancelled') NOT NULL DEFAULT 'confirmed',
+  `starts_at` datetime NOT NULL,
+  `ends_at` datetime NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `preferences`
+--
+
+DROP TABLE IF EXISTS `preferences`;
 CREATE TABLE `preferences` (
-  `entity` enum('owner','organisation','department','scope','process','availability') COLLATE utf8mb3_unicode_ci NOT NULL,
+  `entity` enum('owner','organisation','department','scope','process','availability') NOT NULL,
   `id` int(5) UNSIGNED NOT NULL,
   `groupName` varchar(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `name` varchar(100) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `value` text COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `value` text DEFAULT NULL,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Daten für Tabelle `preferences`
+-- Dumping data for table `preferences`
 --
 
 INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`) VALUES
@@ -689,83 +958,141 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `process_sequence`
+-- Table structure for table `process_sequence`
 --
 
+DROP TABLE IF EXISTS `process_sequence`;
 CREATE TABLE `process_sequence` (
   `processId` int(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci COMMENT='This table is just a helper for some queries';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='This table is just a helper for some queries';
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `provider`
+-- Table structure for table `provider`
 --
 
+DROP TABLE IF EXISTS `provider`;
 CREATE TABLE `provider` (
   `source` varchar(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `name` varchar(1000) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `contact__city` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `contact__country` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `name` varchar(1000) NOT NULL,
+  `contact__city` varchar(200) NOT NULL,
+  `contact__country` varchar(200) NOT NULL,
   `contact__lat` float NOT NULL,
   `contact__lon` float NOT NULL,
   `contact__postalCode` int(5) NOT NULL,
-  `contact__region` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `contact__street` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `contact__streetNumber` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `link` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `data` text COLLATE utf8mb3_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `contact__region` varchar(200) NOT NULL,
+  `contact__street` varchar(200) NOT NULL,
+  `contact__streetNumber` varchar(20) NOT NULL,
+  `link` varchar(200) NOT NULL,
+  `data` text NOT NULL,
+  `display_name` varchar(256) DEFAULT NULL,
+  `parent_id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `provider`
+--
+
+INSERT INTO `provider` (`source`, `id`, `name`, `contact__city`, `contact__country`, `contact__lat`, `contact__lon`, `contact__postalCode`, `contact__region`, `contact__street`, `contact__streetNumber`, `link`, `data`, `display_name`, `parent_id`) VALUES
+('zms', '1', '', '', '', 0, 0, 0, '', '', '', '', '{}', '', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `request`
+-- Table structure for table `request`
 --
 
+DROP TABLE IF EXISTS `request`;
 CREATE TABLE `request` (
   `source` varchar(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `name` varchar(1000) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `link` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `group` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `data` text COLLATE utf8mb3_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `name` varchar(1000) NOT NULL,
+  `link` varchar(200) NOT NULL,
+  `group` varchar(200) NOT NULL,
+  `data` text NOT NULL,
+  `parent_id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL,
+  `variant_id` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `request`
+--
+
+INSERT INTO `request` (`source`, `id`, `name`, `link`, `group`, `data`, `parent_id`, `variant_id`) VALUES
+('zms', '1', '', '', '', '{}', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `request_provider`
+-- Table structure for table `request_provider`
 --
 
+DROP TABLE IF EXISTS `request_provider`;
 CREATE TABLE `request_provider` (
   `source` varchar(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `request__id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `provider__id` varchar(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `slots` float NOT NULL DEFAULT 0,
-  `bookable` smallint(5) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `bookable` smallint(5) UNSIGNED DEFAULT 1,
+  `max_quantity` tinyint(4) DEFAULT NULL,
+  `public_visibility` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `request_provider`
+--
+
+INSERT INTO `request_provider` (`source`, `request__id`, `provider__id`, `slots`, `bookable`, `max_quantity`, `public_visibility`) VALUES
+('zms', '1', '1', 0, 1, NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `sessiondata`
+-- Table structure for table `request_variant`
 --
 
+DROP TABLE IF EXISTS `request_variant`;
+CREATE TABLE `request_variant` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `request_variant`
+--
+
+INSERT INTO `request_variant` (`id`, `name`) VALUES
+(7, 'Einzelperson'),
+(6, 'Familie'),
+(4, 'Großkunde'),
+(5, 'Kleinkunde'),
+(1, 'Präsenz'),
+(2, 'Telefon'),
+(3, 'Videoberatung');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessiondata`
+--
+
+DROP TABLE IF EXISTS `sessiondata`;
 CREATE TABLE `sessiondata` (
-  `sessionid` varchar(100) NOT NULL,
+  `sessionid` varchar(64) NOT NULL,
   `sessionname` varchar(100) NOT NULL,
   `sessioncontent` text DEFAULT NULL,
   `ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `slot`
+-- Table structure for table `slot`
 --
 
+DROP TABLE IF EXISTS `slot`;
 CREATE TABLE `slot` (
   `slotID` int(5) UNSIGNED NOT NULL,
   `scopeID` int(5) UNSIGNED DEFAULT NULL,
@@ -777,53 +1104,57 @@ CREATE TABLE `slot` (
   `public` tinyint(5) UNSIGNED DEFAULT NULL,
   `callcenter` tinyint(5) UNSIGNED DEFAULT NULL,
   `intern` tinyint(5) UNSIGNED DEFAULT NULL,
-  `status` enum('free','full','cancelled') COLLATE utf8mb3_unicode_ci DEFAULT 'free',
+  `status` enum('free','full','cancelled') DEFAULT 'free',
   `slotTimeInMinutes` smallint(5) UNSIGNED DEFAULT NULL,
   `createTimestamp` bigint(20) DEFAULT NULL,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `slot_hiera`
+-- Table structure for table `slot_hiera`
 --
 
+DROP TABLE IF EXISTS `slot_hiera`;
 CREATE TABLE `slot_hiera` (
   `slothieraID` bigint(5) UNSIGNED NOT NULL,
   `slotID` int(5) UNSIGNED DEFAULT NULL,
   `ancestorID` int(5) UNSIGNED DEFAULT NULL,
   `ancestorLevel` tinyint(5) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `slot_process`
+-- Table structure for table `slot_process`
 --
 
+DROP TABLE IF EXISTS `slot_process`;
 CREATE TABLE `slot_process` (
   `slotID` int(5) UNSIGNED NOT NULL,
   `processID` int(5) UNSIGNED NOT NULL,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `slot_sequence`
+-- Table structure for table `slot_sequence`
 --
 
+DROP TABLE IF EXISTS `slot_sequence`;
 CREATE TABLE `slot_sequence` (
   `slotsequence` int(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci COMMENT='This table is just a helper for some queries';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='This table is just a helper for some queries';
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `sms`
+-- Table structure for table `sms`
 --
 
+DROP TABLE IF EXISTS `sms`;
 CREATE TABLE `sms` (
   `smsID` int(5) UNSIGNED NOT NULL,
   `BehoerdenID` int(5) UNSIGNED NOT NULL DEFAULT 0,
@@ -831,37 +1162,40 @@ CREATE TABLE `sms` (
   `Absender` varchar(60) NOT NULL DEFAULT 'Service',
   `interneterinnerung` int(2) NOT NULL DEFAULT 1,
   `internetbestaetigung` int(2) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `source`
+-- Table structure for table `source`
 --
 
+DROP TABLE IF EXISTS `source`;
 CREATE TABLE `source` (
   `source` varchar(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `editable` tinyint(1) NOT NULL DEFAULT 0,
-  `contact__name` varchar(255) CHARACTER SET utf8mb3 DEFAULT NULL,
+  `contact__name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `contact__email` varchar(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `lastChange` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Daten für Tabelle `source`
+-- Dumping data for table `source`
 --
 
 INSERT INTO `source` (`source`, `label`, `editable`, `contact__name`, `contact__email`, `lastChange`) VALUES
 ('dldb', 'Dienstleistungsdatenbank', 0, 'Dienstleistungsdatenbank', 'noreply@muenchen.de', '2022-04-14 05:27:15'),
-('unittest', 'Unittest Source', 1, 'Testfirma', 'noreply@muenchen.de', '2022-04-14 05:26:51');
+('unittest', 'Unittest Source', 1, 'Testfirma', 'noreply@muenchen.de', '2022-04-14 05:26:51'),
+('zms', 'Varianten', 1, '', '', '2025-10-22 14:04:10');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `standort`
+-- Table structure for table `standort`
 --
 
+DROP TABLE IF EXISTS `standort`;
 CREATE TABLE `standort` (
   `StandortID` int(5) UNSIGNED NOT NULL,
   `BehoerdenID` int(5) NOT NULL DEFAULT 0,
@@ -883,14 +1217,14 @@ CREATE TABLE `standort` (
   `wartenrhinweis` text NOT NULL,
   `notruffunktion` int(2) NOT NULL DEFAULT 0,
   `notrufausgeloest` int(2) NOT NULL DEFAULT 0,
-  `notrufinitiierung` int(5) DEFAULT NULL,
-  `notrufantwort` int(5) DEFAULT NULL,
+  `notrufinitiierung` varchar(8) DEFAULT NULL,
+  `notrufantwort` varchar(8) DEFAULT NULL,
   `emailPflichtfeld` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `anmerkungPflichtfeld` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `anmerkungLabel` varchar(255) NOT NULL DEFAULT '',
   `telefonPflichtfeld` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `standortinfozeile` varchar(255) NOT NULL DEFAULT '',
-  `standortkuerzel` varchar(20) DEFAULT NULL,
+  `standortkuerzel` varchar(40) DEFAULT NULL,
   `aufrufanzeigetext` text NOT NULL,
   `reservierungsdauer` int(4) NOT NULL DEFAULT 60,
   `anzahlwiederaufruf` int(2) NOT NULL DEFAULT 3,
@@ -918,15 +1252,37 @@ CREATE TABLE `standort` (
   `loeschdauer` int(11) NOT NULL DEFAULT 0,
   `qtv_url` varchar(250) NOT NULL DEFAULT '',
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `source` varchar(10) DEFAULT 'dldb'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `source` varchar(10) DEFAULT 'dldb',
+  `custom_text_field_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `custom_text_field_active` int(5) NOT NULL DEFAULT 0,
+  `custom_text_field_required` int(5) NOT NULL DEFAULT 0,
+  `admin_mail_on_appointment` int(5) NOT NULL DEFAULT 0,
+  `admin_mail_on_deleted` int(5) NOT NULL DEFAULT 0,
+  `admin_mail_on_updated` int(5) NOT NULL DEFAULT 0,
+  `admin_mail_on_mail_sent` int(5) NOT NULL DEFAULT 0,
+  `appointments_per_mail` int(5) DEFAULT NULL,
+  `whitelisted_mails` varchar(1000) DEFAULT NULL,
+  `slots_per_appointment` int(5) DEFAULT NULL,
+  `info_for_appointment` text DEFAULT NULL,
+  `aktivierungsdauer` int(11) NOT NULL DEFAULT 60,
+  `captcha_activated_required` int(5) NOT NULL DEFAULT 0,
+  `email_confirmation_activated` int(5) UNSIGNED NOT NULL DEFAULT 1,
+  `custom_text_field2_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `custom_text_field2_active` int(5) NOT NULL DEFAULT 0,
+  `custom_text_field2_required` int(5) NOT NULL DEFAULT 0,
+  `info_for_all_appointments` text DEFAULT 'Bitte versuchen Sie es noch einmal zu einem späteren Zeitpunkt.',
+  `last_display_number` int(5) DEFAULT 0,
+  `max_display_number` int(5) DEFAULT 9999,
+  `display_number_prefix` varchar(2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `standortcluster`
+-- Table structure for table `standortcluster`
 --
 
+DROP TABLE IF EXISTS `standortcluster`;
 CREATE TABLE `standortcluster` (
   `clusterID` int(5) UNSIGNED NOT NULL,
   `name` varchar(50) NOT NULL DEFAULT '',
@@ -935,14 +1291,15 @@ CREATE TABLE `standortcluster` (
   `stadtplanlink` varchar(255) NOT NULL DEFAULT '',
   `aufrufanzeigetext` text NOT NULL,
   `standortkuerzelanzeigen` int(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `statistik`
+-- Table structure for table `statistik`
 --
 
+DROP TABLE IF EXISTS `statistik`;
 CREATE TABLE `statistik` (
   `statistikid` int(5) UNSIGNED NOT NULL,
   `kundenid` int(5) UNSIGNED NOT NULL,
@@ -954,131 +1311,253 @@ CREATE TABLE `statistik` (
   `datum` date NOT NULL,
   `lastbuergerarchivid` int(5) UNSIGNED NOT NULL,
   `termin` tinyint(1) NOT NULL DEFAULT 0,
-  `info_dl_id` int(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `info_dl_id` int(5) UNSIGNED NOT NULL,
+  `bearbeitungszeit` double DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `wartenrstatistik`
+-- Table structure for table `wartenrstatistik`
 --
 
+DROP TABLE IF EXISTS `wartenrstatistik`;
 CREATE TABLE `wartenrstatistik` (
   `wartenrstatistikid` int(5) UNSIGNED NOT NULL,
   `standortid` int(5) UNSIGNED NOT NULL DEFAULT 0,
   `datum` date NOT NULL DEFAULT '0000-00-00',
-  `zeit_ab_00` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_01` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_02` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_03` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_04` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_05` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_06` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_07` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_08` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_09` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_10` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_11` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_12` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_13` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_14` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_15` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_16` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_17` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_18` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_19` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_20` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_21` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_22` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `zeit_ab_23` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_00` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_01` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_02` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_03` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_04` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_05` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_06` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_07` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_08` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_09` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_10` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_11` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_12` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_13` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_14` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_15` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_16` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_17` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_18` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_19` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_20` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_21` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_22` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `wartende_ab_23` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_00` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_01` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_02` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_03` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_04` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_05` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_06` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_07` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_08` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_09` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_10` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_20` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_11` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_12` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_13` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_14` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_15` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_16` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_17` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_18` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_19` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_21` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_22` int(5) UNSIGNED NOT NULL DEFAULT 0,
-  `echte_zeit_ab_23` int(5) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `zeit_ab_00_spontan` double DEFAULT 0,
+  `zeit_ab_01_spontan` double DEFAULT 0,
+  `zeit_ab_02_spontan` double DEFAULT 0,
+  `zeit_ab_03_spontan` double DEFAULT 0,
+  `zeit_ab_04_spontan` double DEFAULT 0,
+  `zeit_ab_05_spontan` double DEFAULT 0,
+  `zeit_ab_06_spontan` double DEFAULT 0,
+  `zeit_ab_07_spontan` double DEFAULT 0,
+  `zeit_ab_08_spontan` double DEFAULT 0,
+  `zeit_ab_09_spontan` double DEFAULT 0,
+  `zeit_ab_10_spontan` double DEFAULT 0,
+  `zeit_ab_11_spontan` double DEFAULT 0,
+  `zeit_ab_12_spontan` double DEFAULT 0,
+  `zeit_ab_13_spontan` double DEFAULT 0,
+  `zeit_ab_14_spontan` double DEFAULT 0,
+  `zeit_ab_15_spontan` double DEFAULT 0,
+  `zeit_ab_16_spontan` double DEFAULT 0,
+  `zeit_ab_17_spontan` double DEFAULT 0,
+  `zeit_ab_18_spontan` double DEFAULT 0,
+  `zeit_ab_19_spontan` double DEFAULT 0,
+  `zeit_ab_20_spontan` double DEFAULT 0,
+  `zeit_ab_21_spontan` double DEFAULT 0,
+  `zeit_ab_22_spontan` double DEFAULT 0,
+  `zeit_ab_23_spontan` double DEFAULT 0,
+  `wartende_ab_00_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_01_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_02_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_03_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_04_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_05_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_06_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_07_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_08_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_09_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_10_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_11_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_12_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_13_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_14_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_15_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_16_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_17_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_18_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_19_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_20_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_21_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_22_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_23_spontan` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `echte_zeit_ab_00_spontan` double DEFAULT 0,
+  `echte_zeit_ab_01_spontan` double DEFAULT 0,
+  `echte_zeit_ab_02_spontan` double DEFAULT 0,
+  `echte_zeit_ab_03_spontan` double DEFAULT 0,
+  `echte_zeit_ab_04_spontan` double DEFAULT 0,
+  `echte_zeit_ab_05_spontan` double DEFAULT 0,
+  `echte_zeit_ab_06_spontan` double DEFAULT 0,
+  `echte_zeit_ab_07_spontan` double DEFAULT 0,
+  `echte_zeit_ab_08_spontan` double DEFAULT 0,
+  `echte_zeit_ab_09_spontan` double DEFAULT 0,
+  `echte_zeit_ab_10_spontan` double DEFAULT 0,
+  `echte_zeit_ab_20_spontan` double DEFAULT 0,
+  `echte_zeit_ab_11_spontan` double DEFAULT 0,
+  `echte_zeit_ab_12_spontan` double DEFAULT 0,
+  `echte_zeit_ab_13_spontan` double DEFAULT 0,
+  `echte_zeit_ab_14_spontan` double DEFAULT 0,
+  `echte_zeit_ab_15_spontan` double DEFAULT 0,
+  `echte_zeit_ab_16_spontan` double DEFAULT 0,
+  `echte_zeit_ab_17_spontan` double DEFAULT 0,
+  `echte_zeit_ab_18_spontan` double DEFAULT 0,
+  `echte_zeit_ab_19_spontan` double DEFAULT 0,
+  `echte_zeit_ab_21_spontan` double DEFAULT 0,
+  `echte_zeit_ab_22_spontan` double DEFAULT 0,
+  `echte_zeit_ab_23_spontan` double DEFAULT 0,
+  `wegezeit_ab_00_termin` double DEFAULT 0,
+  `wegezeit_ab_01_termin` double DEFAULT 0,
+  `wegezeit_ab_02_termin` double DEFAULT 0,
+  `wegezeit_ab_03_termin` double DEFAULT 0,
+  `wegezeit_ab_04_termin` double DEFAULT 0,
+  `wegezeit_ab_05_termin` double DEFAULT 0,
+  `wegezeit_ab_06_termin` double DEFAULT 0,
+  `wegezeit_ab_07_termin` double DEFAULT 0,
+  `wegezeit_ab_08_termin` double DEFAULT 0,
+  `wegezeit_ab_09_termin` double DEFAULT 0,
+  `wegezeit_ab_10_termin` double DEFAULT 0,
+  `wegezeit_ab_11_termin` double DEFAULT 0,
+  `wegezeit_ab_12_termin` double DEFAULT 0,
+  `wegezeit_ab_13_termin` double DEFAULT 0,
+  `wegezeit_ab_14_termin` double DEFAULT 0,
+  `wegezeit_ab_15_termin` double DEFAULT 0,
+  `wegezeit_ab_16_termin` double DEFAULT 0,
+  `wegezeit_ab_17_termin` double DEFAULT 0,
+  `wegezeit_ab_18_termin` double DEFAULT 0,
+  `wegezeit_ab_19_termin` double DEFAULT 0,
+  `wegezeit_ab_20_termin` double DEFAULT 0,
+  `wegezeit_ab_21_termin` double DEFAULT 0,
+  `wegezeit_ab_22_termin` double DEFAULT 0,
+  `wegezeit_ab_23_termin` double DEFAULT 0,
+  `wegezeit_ab_00_spontan` double DEFAULT 0,
+  `wegezeit_ab_01_spontan` double DEFAULT 0,
+  `wegezeit_ab_02_spontan` double DEFAULT 0,
+  `wegezeit_ab_03_spontan` double DEFAULT 0,
+  `wegezeit_ab_04_spontan` double DEFAULT 0,
+  `wegezeit_ab_05_spontan` double DEFAULT 0,
+  `wegezeit_ab_06_spontan` double DEFAULT 0,
+  `wegezeit_ab_07_spontan` double DEFAULT 0,
+  `wegezeit_ab_08_spontan` double DEFAULT 0,
+  `wegezeit_ab_09_spontan` double DEFAULT 0,
+  `wegezeit_ab_10_spontan` double DEFAULT 0,
+  `wegezeit_ab_11_spontan` double DEFAULT 0,
+  `wegezeit_ab_12_spontan` double DEFAULT 0,
+  `wegezeit_ab_13_spontan` double DEFAULT 0,
+  `wegezeit_ab_14_spontan` double DEFAULT 0,
+  `wegezeit_ab_15_spontan` double DEFAULT 0,
+  `wegezeit_ab_16_spontan` double DEFAULT 0,
+  `wegezeit_ab_17_spontan` double DEFAULT 0,
+  `wegezeit_ab_18_spontan` double DEFAULT 0,
+  `wegezeit_ab_19_spontan` double DEFAULT 0,
+  `wegezeit_ab_20_spontan` double DEFAULT 0,
+  `wegezeit_ab_21_spontan` double DEFAULT 0,
+  `wegezeit_ab_22_spontan` double DEFAULT 0,
+  `wegezeit_ab_23_spontan` double DEFAULT 0,
+  `zeit_ab_00_termin` double DEFAULT 0,
+  `zeit_ab_01_termin` double DEFAULT 0,
+  `zeit_ab_02_termin` double DEFAULT 0,
+  `zeit_ab_03_termin` double DEFAULT 0,
+  `zeit_ab_04_termin` double DEFAULT 0,
+  `zeit_ab_05_termin` double DEFAULT 0,
+  `zeit_ab_06_termin` double DEFAULT 0,
+  `zeit_ab_07_termin` double DEFAULT 0,
+  `zeit_ab_08_termin` double DEFAULT 0,
+  `zeit_ab_09_termin` double DEFAULT 0,
+  `zeit_ab_10_termin` double DEFAULT 0,
+  `zeit_ab_11_termin` double DEFAULT 0,
+  `zeit_ab_12_termin` double DEFAULT 0,
+  `zeit_ab_13_termin` double DEFAULT 0,
+  `zeit_ab_14_termin` double DEFAULT 0,
+  `zeit_ab_15_termin` double DEFAULT 0,
+  `zeit_ab_16_termin` double DEFAULT 0,
+  `zeit_ab_17_termin` double DEFAULT 0,
+  `zeit_ab_18_termin` double DEFAULT 0,
+  `zeit_ab_19_termin` double DEFAULT 0,
+  `zeit_ab_20_termin` double DEFAULT 0,
+  `zeit_ab_21_termin` double DEFAULT 0,
+  `zeit_ab_22_termin` double DEFAULT 0,
+  `zeit_ab_23_termin` double DEFAULT 0,
+  `wartende_ab_00_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_01_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_02_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_03_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_04_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_05_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_06_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_07_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_08_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_09_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_10_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_11_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_12_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_13_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_14_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_15_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_16_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_17_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_18_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_19_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_20_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_21_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_22_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `wartende_ab_23_termin` int(5) UNSIGNED NOT NULL DEFAULT 0,
+  `echte_zeit_ab_00_termin` double DEFAULT 0,
+  `echte_zeit_ab_01_termin` double DEFAULT 0,
+  `echte_zeit_ab_02_termin` double DEFAULT 0,
+  `echte_zeit_ab_03_termin` double DEFAULT 0,
+  `echte_zeit_ab_04_termin` double DEFAULT 0,
+  `echte_zeit_ab_05_termin` double DEFAULT 0,
+  `echte_zeit_ab_06_termin` double DEFAULT 0,
+  `echte_zeit_ab_07_termin` double DEFAULT 0,
+  `echte_zeit_ab_08_termin` double DEFAULT 0,
+  `echte_zeit_ab_09_termin` double DEFAULT 0,
+  `echte_zeit_ab_10_termin` double DEFAULT 0,
+  `echte_zeit_ab_11_termin` double DEFAULT 0,
+  `echte_zeit_ab_12_termin` double DEFAULT 0,
+  `echte_zeit_ab_13_termin` double DEFAULT 0,
+  `echte_zeit_ab_14_termin` double DEFAULT 0,
+  `echte_zeit_ab_15_termin` double DEFAULT 0,
+  `echte_zeit_ab_16_termin` double DEFAULT 0,
+  `echte_zeit_ab_17_termin` double DEFAULT 0,
+  `echte_zeit_ab_18_termin` double DEFAULT 0,
+  `echte_zeit_ab_19_termin` double DEFAULT 0,
+  `echte_zeit_ab_20_termin` double DEFAULT 0,
+  `echte_zeit_ab_21_termin` double DEFAULT 0,
+  `echte_zeit_ab_22_termin` double DEFAULT 0,
+  `echte_zeit_ab_23_termin` double DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Indizes der exportierten Tabellen
+-- Indexes for dumped tables
 --
 
 --
--- Indizes für die Tabelle `abrechnung`
+-- Indexes for table `abrechnung`
 --
 ALTER TABLE `abrechnung`
   ADD PRIMARY KEY (`AbrechnungsID`),
   ADD KEY `StandortID` (`StandortID`,`Datum`);
 
 --
--- Indizes für die Tabelle `apiclient`
+-- Indexes for table `apiclient`
 --
 ALTER TABLE `apiclient`
   ADD PRIMARY KEY (`apiClientID`),
   ADD KEY `clientKey` (`clientKey`,`accesslevel`);
 
 --
--- Indizes für die Tabelle `apikey`
+-- Indexes for table `apikey`
 --
 ALTER TABLE `apikey`
   ADD PRIMARY KEY (`key`);
 
 --
--- Indizes für die Tabelle `apiquota`
+-- Indexes for table `apiquota`
 --
 ALTER TABLE `apiquota`
   ADD PRIMARY KEY (`quotaid`);
 
 --
--- Indizes für die Tabelle `behoerde`
+-- Indexes for table `behoerde`
 --
 ALTER TABLE `behoerde`
   ADD PRIMARY KEY (`BehoerdenID`);
 
 --
--- Indizes für die Tabelle `buerger`
+-- Indexes for table `buerger`
 --
 ALTER TABLE `buerger`
   ADD PRIMARY KEY (`BuergerID`),
@@ -1092,10 +1571,13 @@ ALTER TABLE `buerger`
   ADD KEY `StandortUhrzeit` (`StandortID`,`Uhrzeit`),
   ADD KEY `AbholortID` (`AbholortID`,`Abholer`),
   ADD KEY `NutzerID` (`NutzerID`),
-  ADD KEY `updateTimestamp` (`updateTimestamp`);
+  ADD KEY `updateTimestamp` (`updateTimestamp`),
+  ADD KEY `EMail` (`EMail`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_status_standort_abholort` (`status`,`StandortID`,`AbholortID`);
 
 --
--- Indizes für die Tabelle `buergeranliegen`
+-- Indexes for table `buergeranliegen`
 --
 ALTER TABLE `buergeranliegen`
   ADD PRIMARY KEY (`BuergeranliegenID`),
@@ -1104,7 +1586,7 @@ ALTER TABLE `buergeranliegen`
   ADD KEY `BuergerarchivID` (`BuergerarchivID`);
 
 --
--- Indizes für die Tabelle `buergerarchiv`
+-- Indexes for table `buergerarchiv`
 --
 ALTER TABLE `buergerarchiv`
   ADD PRIMARY KEY (`BuergerarchivID`),
@@ -1115,27 +1597,45 @@ ALTER TABLE `buergerarchiv`
   ADD KEY `scopeappointment` (`StandortID`,`mitTermin`);
 
 --
--- Indizes für die Tabelle `clusterzuordnung`
+-- Indexes for table `closures`
+--
+ALTER TABLE `closures`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `StandortID` (`StandortID`),
+  ADD KEY `StandortID_2` (`StandortID`,`year`,`month`,`day`),
+  ADD KEY `idx_closures_scope_date` (`StandortID`,`year`,`month`,`day`),
+  ADD KEY `idx_closures_StandortID_year_month_day` (`StandortID`,`year`,`month`,`day`);
+
+--
+-- Indexes for table `clusterzuordnung`
 --
 ALTER TABLE `clusterzuordnung`
+  ADD PRIMARY KEY (`clusterID`,`standortID`),
   ADD KEY `clusterID` (`clusterID`,`standortID`),
   ADD KEY `standortID` (`standortID`,`clusterID`);
 
 --
--- Indizes für die Tabelle `config`
+-- Indexes for table `config`
 --
 ALTER TABLE `config`
   ADD PRIMARY KEY (`name`);
 
 --
--- Indizes für die Tabelle `email`
+-- Indexes for table `email`
 --
 ALTER TABLE `email`
   ADD PRIMARY KEY (`emailID`),
   ADD KEY `BehoerdenID` (`BehoerdenID`);
 
 --
--- Indizes für die Tabelle `feiertage`
+-- Indexes for table `eventlog`
+--
+ALTER TABLE `eventlog`
+  ADD PRIMARY KEY (`eventId`),
+  ADD KEY `reference` (`reference`);
+
+--
+-- Indexes for table `feiertage`
 --
 ALTER TABLE `feiertage`
   ADD PRIMARY KEY (`FeiertagID`),
@@ -1144,201 +1644,243 @@ ALTER TABLE `feiertage`
   ADD KEY `updateTimestamp` (`updateTimestamp`);
 
 --
--- Indizes für die Tabelle `imagedata`
+-- Indexes for table `imagedata`
 --
 ALTER TABLE `imagedata`
   ADD PRIMARY KEY (`imagename`);
 
 --
--- Indizes für die Tabelle `ipausnahmen`
+-- Indexes for table `ipausnahmen`
 --
 ALTER TABLE `ipausnahmen`
   ADD PRIMARY KEY (`IPID`);
 
 --
--- Indizes für die Tabelle `kiosk`
+-- Indexes for table `kiosk`
 --
 ALTER TABLE `kiosk`
   ADD PRIMARY KEY (`kioskid`);
 
 --
--- Indizes für die Tabelle `kunde`
+-- Indexes for table `kunde`
 --
 ALTER TABLE `kunde`
   ADD PRIMARY KEY (`KundenID`);
 
 --
--- Indizes für die Tabelle `kundenlinks`
+-- Indexes for table `kundenlinks`
 --
 ALTER TABLE `kundenlinks`
   ADD PRIMARY KEY (`linkid`),
   ADD KEY `behoerdenid` (`behoerdenid`);
 
 --
--- Indizes für die Tabelle `log`
+-- Indexes for table `log`
 --
 ALTER TABLE `log`
   ADD PRIMARY KEY (`log_id`),
   ADD KEY `reference_id` (`reference_id`);
 
 --
--- Indizes für die Tabelle `mailpart`
+-- Indexes for table `mailpart`
 --
 ALTER TABLE `mailpart`
   ADD PRIMARY KEY (`id`),
   ADD KEY `queueId` (`queueId`);
 
 --
--- Indizes für die Tabelle `mailqueue`
+-- Indexes for table `mailqueue`
 --
 ALTER TABLE `mailqueue`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `migrations`
+-- Indexes for table `mailtemplate`
+--
+ALTER TABLE `mailtemplate`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `index_name_and_provider` (`name`,`provider`) USING BTREE,
+  ADD KEY `index_name` (`name`) USING BTREE;
+
+--
+-- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`filename`);
 
 --
--- Indizes für die Tabelle `notificationqueue`
+-- Indexes for table `notificationqueue`
 --
 ALTER TABLE `notificationqueue`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `nutzer`
+-- Indexes for table `nutzer`
 --
 ALTER TABLE `nutzer`
   ADD PRIMARY KEY (`NutzerID`),
   ADD KEY `Standort` (`StandortID`,`Arbeitsplatznr`),
   ADD KEY `Name` (`Name`),
-  ADD KEY `lastUpdate` (`lastUpdate`);
+  ADD KEY `lastUpdate` (`lastUpdate`),
+  ADD KEY `idx_nutzer_sessionid_expiry` (`SessionID`,`sessionExpiry`);
 
 --
--- Indizes für die Tabelle `nutzerzuordnung`
+-- Indexes for table `nutzerzuordnung`
 --
 ALTER TABLE `nutzerzuordnung`
   ADD PRIMARY KEY (`nutzerid`,`behoerdenid`);
 
 --
--- Indizes für die Tabelle `oeffnungszeit`
+-- Indexes for table `oeffnungszeit`
 --
 ALTER TABLE `oeffnungszeit`
   ADD PRIMARY KEY (`OeffnungszeitID`),
   ADD KEY `StandortID` (`StandortID`,`Terminanfangszeit`),
   ADD KEY `Startdatum` (`Startdatum`,`Endedatum`),
-  ADD KEY `updateTimestamp` (`updateTimestamp`);
+  ADD KEY `updateTimestamp` (`updateTimestamp`),
+  ADD KEY `idx_oeffnungszeit_id` (`OeffnungszeitID`);
 
 --
--- Indizes für die Tabelle `organisation`
+-- Indexes for table `organisation`
 --
 ALTER TABLE `organisation`
   ADD PRIMARY KEY (`OrganisationsID`);
 
 --
--- Indizes für die Tabelle `preferences`
+-- Indexes for table `overview_calendar`
+--
+ALTER TABLE `overview_calendar`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_scope_starts` (`scope_id`,`starts_at`),
+  ADD KEY `idx_scope_ends` (`scope_id`,`ends_at`),
+  ADD KEY `idx_updated` (`updated_at`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_process` (`process_id`),
+  ADD KEY `idx_scope_status_time` (`scope_id`,`status`,`starts_at`,`ends_at`),
+  ADD KEY `idx_scope_time` (`scope_id`,`starts_at`,`ends_at`),
+  ADD KEY `idx_scope_updated` (`scope_id`,`updated_at`),
+  ADD KEY `idx_ends_at` (`ends_at`);
+
+--
+-- Indexes for table `preferences`
 --
 ALTER TABLE `preferences`
   ADD PRIMARY KEY (`entity`,`id`,`groupName`,`name`),
   ADD KEY `updateTimestamp` (`updateTimestamp`);
 
 --
--- Indizes für die Tabelle `process_sequence`
+-- Indexes for table `process_sequence`
 --
 ALTER TABLE `process_sequence`
   ADD PRIMARY KEY (`processId`);
 
 --
--- Indizes für die Tabelle `provider`
+-- Indexes for table `provider`
 --
 ALTER TABLE `provider`
   ADD PRIMARY KEY (`source`,`id`),
-  ADD KEY `id` (`id`);
+  ADD KEY `id` (`id`),
+  ADD KEY `fk_provider_parent` (`parent_id`);
 
 --
--- Indizes für die Tabelle `request`
+-- Indexes for table `request`
 --
 ALTER TABLE `request`
   ADD PRIMARY KEY (`source`,`id`),
-  ADD KEY `id` (`id`);
+  ADD KEY `id` (`id`),
+  ADD KEY `fk_request_parent` (`parent_id`),
+  ADD KEY `fk_request_variant` (`variant_id`);
 
 --
--- Indizes für die Tabelle `request_provider`
+-- Indexes for table `request_provider`
 --
 ALTER TABLE `request_provider`
   ADD PRIMARY KEY (`source`,`request__id`,`provider__id`);
 
 --
--- Indizes für die Tabelle `sessiondata`
+-- Indexes for table `request_variant`
+--
+ALTER TABLE `request_variant`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_request_variant_name` (`name`);
+
+--
+-- Indexes for table `sessiondata`
 --
 ALTER TABLE `sessiondata`
   ADD PRIMARY KEY (`sessionid`,`sessionname`),
   ADD KEY `sessionname` (`sessionname`,`ts`);
 
 --
--- Indizes für die Tabelle `slot`
+-- Indexes for table `slot`
 --
 ALTER TABLE `slot`
   ADD PRIMARY KEY (`slotID`),
   ADD KEY `scopeID` (`scopeID`,`year`,`month`,`day`,`time`,`status`),
   ADD KEY `year` (`year`,`month`,`day`,`time`),
   ADD KEY `availabilityID` (`availabilityID`),
-  ADD KEY `updateTimestamp` (`updateTimestamp`);
+  ADD KEY `updateTimestamp` (`updateTimestamp`),
+  ADD KEY `scopeID_year_month_day_status_index` (`scopeID`,`year`,`month`,`day`,`status`),
+  ADD KEY `scopeID_status_slotID_index` (`scopeID`,`status`,`slotID`),
+  ADD KEY `idx_slot_scope_year_month_status` (`scopeID`,`year`,`month`,`status`);
 
 --
--- Indizes für die Tabelle `slot_hiera`
+-- Indexes for table `slot_hiera`
 --
 ALTER TABLE `slot_hiera`
   ADD PRIMARY KEY (`slothieraID`),
   ADD KEY `slotID` (`slotID`,`ancestorID`),
-  ADD KEY `ancestorID` (`ancestorID`,`ancestorLevel`,`slotID`);
+  ADD KEY `ancestorID` (`ancestorID`,`ancestorLevel`,`slotID`),
+  ADD KEY `ancestorID_ancestorLevel_index` (`ancestorID`,`ancestorLevel`),
+  ADD KEY `idx_slot_hiera_ancestorID_slotID_level` (`ancestorID`,`slotID`,`ancestorLevel`);
 
 --
--- Indizes für die Tabelle `slot_process`
+-- Indexes for table `slot_process`
 --
 ALTER TABLE `slot_process`
   ADD PRIMARY KEY (`slotID`,`processID`),
   ADD KEY `processID` (`processID`),
-  ADD KEY `updateTimestamp` (`updateTimestamp`);
+  ADD KEY `updateTimestamp` (`updateTimestamp`),
+  ADD KEY `slotID_index` (`slotID`);
 
 --
--- Indizes für die Tabelle `slot_sequence`
+-- Indexes for table `slot_sequence`
 --
 ALTER TABLE `slot_sequence`
   ADD PRIMARY KEY (`slotsequence`);
 
 --
--- Indizes für die Tabelle `sms`
+-- Indexes for table `sms`
 --
 ALTER TABLE `sms`
   ADD PRIMARY KEY (`smsID`),
   ADD KEY `BehoerdenID` (`BehoerdenID`);
 
 --
--- Indizes für die Tabelle `source`
+-- Indexes for table `source`
 --
 ALTER TABLE `source`
   ADD PRIMARY KEY (`source`),
   ADD KEY `source` (`source`,`lastChange`);
 
 --
--- Indizes für die Tabelle `standort`
+-- Indexes for table `standort`
 --
 ALTER TABLE `standort`
   ADD PRIMARY KEY (`StandortID`),
   ADD KEY `BehoerdenID` (`BehoerdenID`),
   ADD KEY `updateTimestamp` (`updateTimestamp`),
-  ADD KEY `source` (`source`);
+  ADD KEY `source` (`source`),
+  ADD KEY `idx_InfoDienstleisterID` (`InfoDienstleisterID`);
 
 --
--- Indizes für die Tabelle `standortcluster`
+-- Indexes for table `standortcluster`
 --
 ALTER TABLE `standortcluster`
   ADD PRIMARY KEY (`clusterID`);
 
 --
--- Indizes für die Tabelle `statistik`
+-- Indexes for table `statistik`
 --
 ALTER TABLE `statistik`
   ADD PRIMARY KEY (`statistikid`),
@@ -1351,177 +1893,217 @@ ALTER TABLE `statistik`
   ADD KEY `organisationdate` (`organisationsid`,`datum`);
 
 --
--- Indizes für die Tabelle `wartenrstatistik`
+-- Indexes for table `wartenrstatistik`
 --
 ALTER TABLE `wartenrstatistik`
   ADD PRIMARY KEY (`wartenrstatistikid`),
   ADD KEY `scopedate` (`standortid`,`datum`);
 
 --
--- AUTO_INCREMENT für exportierte Tabellen
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT für Tabelle `abrechnung`
+-- AUTO_INCREMENT for table `abrechnung`
 --
 ALTER TABLE `abrechnung`
   MODIFY `AbrechnungsID` int(9) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `apiclient`
+-- AUTO_INCREMENT for table `apiclient`
 --
 ALTER TABLE `apiclient`
   MODIFY `apiClientID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT für Tabelle `apiquota`
+-- AUTO_INCREMENT for table `apiquota`
 --
 ALTER TABLE `apiquota`
   MODIFY `quotaid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `behoerde`
+-- AUTO_INCREMENT for table `behoerde`
 --
 ALTER TABLE `behoerde`
   MODIFY `BehoerdenID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT für Tabelle `buerger`
+-- AUTO_INCREMENT for table `buerger`
 --
 ALTER TABLE `buerger`
   MODIFY `BuergerID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `buergeranliegen`
+-- AUTO_INCREMENT for table `buergeranliegen`
 --
 ALTER TABLE `buergeranliegen`
   MODIFY `BuergeranliegenID` int(9) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `buergerarchiv`
+-- AUTO_INCREMENT for table `buergerarchiv`
 --
 ALTER TABLE `buergerarchiv`
   MODIFY `BuergerarchivID` int(9) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `email`
+-- AUTO_INCREMENT for table `closures`
+--
+ALTER TABLE `closures`
+  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `email`
 --
 ALTER TABLE `email`
   MODIFY `emailID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT für Tabelle `feiertage`
+-- AUTO_INCREMENT for table `eventlog`
 --
-ALTER TABLE `feiertage`
-  MODIFY `FeiertagID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `eventlog`
+  MODIFY `eventId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `ipausnahmen`
+-- AUTO_INCREMENT for table `feiertage`
+--
+ALTER TABLE `feiertage`
+  MODIFY `FeiertagID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `ipausnahmen`
 --
 ALTER TABLE `ipausnahmen`
   MODIFY `IPID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `kiosk`
+-- AUTO_INCREMENT for table `kiosk`
 --
 ALTER TABLE `kiosk`
-  MODIFY `kioskid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `kioskid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `kunde`
+-- AUTO_INCREMENT for table `kunde`
 --
 ALTER TABLE `kunde`
   MODIFY `KundenID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
--- AUTO_INCREMENT für Tabelle `kundenlinks`
+-- AUTO_INCREMENT for table `kundenlinks`
 --
 ALTER TABLE `kundenlinks`
   MODIFY `linkid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `log`
+-- AUTO_INCREMENT for table `log`
 --
 ALTER TABLE `log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT für Tabelle `mailpart`
+-- AUTO_INCREMENT for table `mailpart`
 --
 ALTER TABLE `mailpart`
   MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `mailqueue`
+-- AUTO_INCREMENT for table `mailqueue`
 --
 ALTER TABLE `mailqueue`
   MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `notificationqueue`
+-- AUTO_INCREMENT for table `mailtemplate`
+--
+ALTER TABLE `mailtemplate`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `notificationqueue`
 --
 ALTER TABLE `notificationqueue`
   MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `nutzer`
+-- AUTO_INCREMENT for table `nutzer`
 --
 ALTER TABLE `nutzer`
-  MODIFY `NutzerID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5126;
+  MODIFY `NutzerID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5127;
 
 --
--- AUTO_INCREMENT für Tabelle `oeffnungszeit`
+-- AUTO_INCREMENT for table `oeffnungszeit`
 --
 ALTER TABLE `oeffnungszeit`
   MODIFY `OeffnungszeitID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT für Tabelle `organisation`
+-- AUTO_INCREMENT for table `organisation`
 --
 ALTER TABLE `organisation`
   MODIFY `OrganisationsID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT für Tabelle `slot`
+-- AUTO_INCREMENT for table `overview_calendar`
+--
+ALTER TABLE `overview_calendar`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `request_variant`
+--
+ALTER TABLE `request_variant`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `slot`
 --
 ALTER TABLE `slot`
   MODIFY `slotID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `slot_hiera`
+-- AUTO_INCREMENT for table `slot_hiera`
 --
 ALTER TABLE `slot_hiera`
   MODIFY `slothieraID` bigint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `sms`
+-- AUTO_INCREMENT for table `sms`
 --
 ALTER TABLE `sms`
   MODIFY `smsID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT für Tabelle `standort`
+-- AUTO_INCREMENT for table `standort`
 --
 ALTER TABLE `standort`
   MODIFY `StandortID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `standortcluster`
+-- AUTO_INCREMENT for table `standortcluster`
 --
 ALTER TABLE `standortcluster`
   MODIFY `clusterID` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `statistik`
+-- AUTO_INCREMENT for table `statistik`
 --
 ALTER TABLE `statistik`
   MODIFY `statistikid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `wartenrstatistik`
+-- AUTO_INCREMENT for table `wartenrstatistik`
 --
 ALTER TABLE `wartenrstatistik`
   MODIFY `wartenrstatistikid` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `overview_calendar`
+--
+ALTER TABLE `overview_calendar`
+  ADD CONSTRAINT `fk_ocb_scope` FOREIGN KEY (`scope_id`) REFERENCES `standort` (`StandortID`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
