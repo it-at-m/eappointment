@@ -63,10 +63,10 @@
         >
           <muc-radio-button
             v-for="variant in variantServices"
-            :key="variant.variant_id"
-            :id="'variant-' + variant.variant_id"
-            :value="variant.variant_id.toString()"
-            :label="t(`appointmentTypes.${variant.variant_id}`)"
+            :key="variant.variantId"
+            :id="'variant-' + variant.variantId"
+            :value="variant.variantId.toString()"
+            :label="t(`appointmentTypes.${variant.variantId}`)"
           />
         </muc-radio-button-group>
       </div>
@@ -157,8 +157,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ServiceVariant } from "@/api/models/ServiceVariant";
-
 import {
   MucButton,
   MucCounter,
@@ -271,9 +269,11 @@ const selectedVariant = ref("");
 watch(service, (newService) => {
   if (!newService) return;
 
-  baseServiceId.value = newService.parent_id ?? newService.id;
+  baseServiceId.value = newService.parentId != null
+    ? String(newService.parentId)
+    : String(newService.id);
 
-  const variantId = (newService as any)?.variant_id;
+  const variantId = newService.variantId;
   if (typeof variantId === "number" && Number.isFinite(variantId)) {
     const next = String(variantId);
     if (selectedVariant.value !== next) selectedVariant.value = next;
@@ -494,8 +494,8 @@ const showCaptcha = computed(() => {
 
 onMounted(() => {
   if (service.value) {
-    baseServiceId.value = service.value.parent_id ?? service.value.id;
-    const variantId = (service.value as any)?.variant_id;
+    baseServiceId.value = service.value.parentId ?? service.value.id;
+    const variantId = (service.value as any)?.variantId;
     if (typeof variantId === "number" && Number.isFinite(variantId)) {
       selectedVariant.value = String(variantId);
     }
@@ -528,7 +528,7 @@ onMounted(() => {
         );
         if (handleApiResponseForDownTime(data, props.baseUrl)) return;
 
-        services.value = (data as any).services;
+        services.value = (data as any).services.map(normalizeService);
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
       });
@@ -551,7 +551,7 @@ onMounted(() => {
         return;
       }
 
-      services.value = (data as any).services;
+      services.value = (data as any).services.map(normalizeService);
       relations.value = (data as any).relations;
       offices.value = (data as any).offices;
 
@@ -596,40 +596,28 @@ onMounted(() => {
 });
 
 const servicesWithoutParent = computed(() => {
-  return services.value.filter((service) => service.parent_id === null);
+  return services.value.filter((service) => service.parentId === null);
 });
 
-const variantServices = computed<ServiceVariant[]>(() => {
+const variantServices = computed<Service[]>(() => {
   if (!baseServiceId.value) return [];
 
-  const variants: ServiceVariant[] = services.value
-    .filter((service) => service.parent_id === baseServiceId.value)
-    .filter((service) => typeof service.variant_id === "number")
-    .map((service) => ({
-      id: service.id,
-      name: service.name,
-      maxQuantity: service.maxQuantity,
-      combinable: service.combinable,
-      parent_id: service.parent_id ?? null,
-      variant_id: service.variant_id,
-    }));
+  const variants = services.value
+    .filter((s) => s.parentId === baseServiceId.value)
+    .filter((s) => typeof s.variantId === "number");
 
-  const baseService = services.value.find(
-    (service) => service.id === baseServiceId.value
-  );
+  const base = services.value.find((s) => s.id === baseServiceId.value);
 
-  if (baseService && !variants.some((variant) => variant.variant_id === 1)) {
+  const hasVariant1 = variants.some((v) => v.variantId === 1);
+  if (base && !hasVariant1) {
     variants.unshift({
-      id: baseService.id,
-      name: baseService.name,
-      maxQuantity: baseService.maxQuantity ?? 1,
-      combinable: baseService.combinable ?? {},
-      parent_id: null,
-      variant_id: 1,
+      ...base,
+      parentId: null,
+      variantId: 1,
     });
   }
 
-  variants.sort((a, b) => a.variant_id - b.variant_id);
+  variants.sort((a, b) => a.variantId! - b.variantId!);
   return variants;
 });
 
@@ -637,26 +625,36 @@ watch(selectedVariant, (variantId) => {
   if (!variantId || !baseServiceId.value) return;
 
   const selectedServiceVariant = variantServices.value.find(
-    (v) => String(v.variant_id) === String(variantId)
+    (v) => String(v.variantId) === String(variantId)
   );
 
   if (selectedServiceVariant) {
-    service.value = selectedServiceVariant as any;
+    service.value = selectedServiceVariant as ServiceImpl;
   }
 });
 
 const showSubservices = computed(() => {
-  const s = service.value;
-  if (!s) return false;
+  const value = service.value;
+  if (!value) return false;
 
-  const hasSub = Array.isArray(s.subServices) && s.subServices.length > 0;
+  const hasSub = Array.isArray(value.subServices) && value.subServices.length > 0;
   if (!hasSub) return false;
-  if (s.parent_id != null && (s as any).variant_id !== 1) return false;
-  if (variantServices.value.length > 1 && selectedVariant.value !== "1")
-    return false;
+  if (value.parentId != null && value.variantId !== 1) return false;
+  if (variantServices.value.length > 1 && selectedVariant.value !== "1") return false;
 
   return true;
 });
+
+function normalizeService(raw: any): Service {
+  return {
+    id: String(raw.id),
+    name: raw.name,
+    maxQuantity: raw.maxQuantity,
+    combinable: raw.combinable,
+    parentId: raw.parent_id == null ? null : String(raw.parent_id),
+    variantId: raw.variant_id == null ? null : Number(raw.variant_id),
+  };
+}
 </script>
 
 <style lang="scss" scoped>

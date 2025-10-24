@@ -787,15 +787,16 @@ describe("ServiceFinder", () => {
       const base = {
         id: "10",
         name: "Basis Service",
-        parent_id: null,
+        parentId: null,
+        variantId: null,
         maxQuantity: 5,
         combinable: null,
       };
       const variant2 = {
         id: "12",
         name: "Basis Service (Variante 2)",
-        parent_id: "10",
-        variant_id: 2,
+        parentId: "10",
+        variantId: 2,
         maxQuantity: 5,
         combinable: null,
       };
@@ -811,7 +812,7 @@ describe("ServiceFinder", () => {
 
       const vs = wrapper.vm.variantServices;
       expect(Array.isArray(vs)).toBeTruthy();
-      expect(vs.map((v: any) => v.variant_id)).toEqual([1, 2]);
+      expect(vs.map((v: any) => v.variantId)).toEqual([1, 2]);
       expect(vs[0].id).toBe("10");
       expect(vs[1].id).toBe("12");
     });
@@ -842,15 +843,16 @@ describe("ServiceFinder", () => {
       const base = {
         id: "10",
         name: "Basis Service",
-        parent_id: null,
+        parentId: null,
+        variantId: null,
         maxQuantity: 5,
         combinable: { a: { "2": ["1"] } },
       };
       const variant2 = {
         id: "12",
         name: "Basis Service (Variante 2)",
-        parent_id: "10",
-        variant_id: 2,
+        parentId: "10",
+        variantId: 2,
         maxQuantity: 5,
         combinable: null,
       };

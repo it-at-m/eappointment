@@ -349,7 +349,7 @@ describe("AppointmentSummary", () => {
     });
 
     it("should show address/hint and base text for variant 1", async () => {
-      mockSelectedService.value.variant_id = 1;
+      mockSelectedService.value.variantIdd = 1;
       const wrapper = createWrapper();
       await nextTick();
 
@@ -362,7 +362,7 @@ describe("AppointmentSummary", () => {
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
-      mockSelectedService.value.variant_id = 2;
+      mockSelectedService.value.variantId = 2;
       const wrapper = createWrapper();
       await nextTick();
 

@@ -396,7 +396,7 @@ const estimatedDuration = () => {
 };
 
 const variantId = computed<number | null>(() => {
-  const id = (selectedService.value as any)?.variant_id;
+  const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
 </script>
