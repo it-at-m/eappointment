@@ -92,7 +92,7 @@
           <muc-link
             v-if="!loadingError && appointments.length > 3 && !isMobile"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
@@ -112,6 +112,7 @@
           <appointment-card-viewer
             :all-appointments="appointments"
             :is-mobile="isMobile"
+            :resize-slider-content="resizeSliderContent"
             :new-appointment-url="newAppointmentUrl"
             :appointment-detail-url="appointmentDetailUrl"
             :displayed-on-detail-screen="displayedOnDetailScreen"
@@ -122,7 +123,7 @@
             v-if="!loadingError && appointments.length > 3 && isMobile"
             class="mobile-link"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
@@ -169,6 +170,7 @@ const props = defineProps<{
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+const resizeSliderContent = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
@@ -185,7 +187,8 @@ const apiErrorTranslation = computed(() =>
 );
 
 const checksMobile = () => {
-  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+  isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
+  resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
 };
 
 onMounted(() => {
@@ -217,7 +220,9 @@ onMounted(() => {
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
           if (props.displayedOnDetailScreen) {
             const urlParams = new URLSearchParams(window.location.search);
             const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
