@@ -35,9 +35,17 @@ class DayOff extends Base
         if (!$disableCache && App::$cache) {
             $data = App::$cache->get($cacheKey);
             if (!empty($data)) {
+                App::$log->info('ZMSDBCACHE HIT', [
+                    'cacheKey' => $cacheKey
+                ]);
+
                 return $data;
             }
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
@@ -66,9 +74,16 @@ class DayOff extends Base
         if (!$disableCache && App::$cache) {
             $data = App::$cache->get($cacheKey);
             if (!empty($data)) {
+                App::$log->info('ZMSDBCACHE HIT', [
+                    'cacheKey' => $cacheKey
+                ]);
                 return $data;
             }
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
@@ -99,9 +114,16 @@ class DayOff extends Base
         if (!$disableCache && App::$cache) {
             $data = App::$cache->get($cacheKey);
             if (!empty($data)) {
+                App::$log->info('ZMSDBCACHE HIT', [
+                    'cacheKey' => $cacheKey
+                ]);
                 return $dayOffListCommon->addList($data);
             }
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);

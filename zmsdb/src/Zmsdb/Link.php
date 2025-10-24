@@ -18,8 +18,15 @@ class Link extends Base
         $cacheKey = "linksReadByDepartmentId-$departmentId";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             return App::$cache->get($cacheKey);
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $linkList = new Collection();
         $query = new Query\Link(Query\Base::SELECT);

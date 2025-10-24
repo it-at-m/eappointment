@@ -30,10 +30,16 @@ class Cluster extends Base
 
         $cluster = null;
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $cluster = App::$cache->get($cacheKey);
         }
 
         if (empty($cluster)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Cluster(Query\Base::SELECT);
             $query
                 ->addEntityMapping()

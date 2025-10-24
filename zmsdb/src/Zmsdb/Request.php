@@ -17,9 +17,15 @@ class Request extends Base
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             return App::$cache->get($cacheKey);
         }
 
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
@@ -113,9 +119,15 @@ class Request extends Base
         $cacheKey = "requestReadListBySource-$source-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             return App::$cache->get($cacheKey);
         }
 
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);

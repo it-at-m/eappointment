@@ -27,10 +27,16 @@ class Source extends Base
         $cacheKey = "source-$sourceName-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $entity = App::$cache->get($cacheKey);
         }
 
         if (empty($entity)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Source(Query\Base::SELECT);
             $query
                 ->addEntityMapping()

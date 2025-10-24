@@ -16,9 +16,16 @@ class Closure extends Base
         if (!$disableCache && App::$cache) {
             $data = App::$cache->get($cacheKey);
             if (!empty($data)) {
+                App::$log->info('ZMSDBCACHE HIT', [
+                    'cacheKey' => $cacheKey
+                ]);
                 return $data;
             }
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $closureList = new Collection();
         $query = new Query\Closure(Query\Base::SELECT);

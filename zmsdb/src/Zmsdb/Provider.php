@@ -13,9 +13,16 @@ class Provider extends Base
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
+
             return App::$cache->get($cacheKey);
         }
 
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query

@@ -23,10 +23,16 @@ class Scope extends Base
         $cacheKey = "scope-$scopeId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $scope = App::$cache->get($cacheKey);
         }
 
         if (empty($scope)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
@@ -110,10 +116,16 @@ class Scope extends Base
         $cacheKey = "scopeReadByClusterId-$clusterId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $result = App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             if ($resolveReferences > 0) {
                 $query = new Query\Scope(Query\Base::SELECT);
                 $query->addEntityMapping()
@@ -163,10 +175,16 @@ class Scope extends Base
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $result = App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
@@ -224,12 +242,18 @@ class Scope extends Base
         $cacheKey = "scopeReadByDepartmentId-$departmentId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $result = App::$cache->get($cacheKey);
         }
 
         $scopeList = new Collection();
 
         if (empty($result)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             if ($resolveReferences > 0) {
                 $query = new Query\Scope(Query\Base::SELECT);
                 $query->addEntityMapping()
@@ -304,10 +328,16 @@ class Scope extends Base
         $cacheKey = "scopeReadList-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $result = App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences);

@@ -16,8 +16,15 @@ class Config extends Base
         $cacheKey = "config";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             return App::$cache->get($cacheKey);
         }
+
+        App::$log->info('ZMSDBCACHE NOT HIT', [
+            'cacheKey' => $cacheKey
+        ]);
 
         $query = Query\Config::QUERY_SELECT;
         $config = $this->fetchData($query);

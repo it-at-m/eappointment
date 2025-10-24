@@ -24,10 +24,16 @@ class Department extends Base
         $cacheKey = "department-$departmentId-$resolveReferences";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            App::$log->info('ZMSDBCACHE HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $department = App::$cache->get($cacheKey);
         }
 
         if (empty($department)) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey
+            ]);
             $query = new Query\Department(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
