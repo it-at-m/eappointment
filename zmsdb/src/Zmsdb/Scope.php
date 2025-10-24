@@ -29,6 +29,11 @@ class Scope extends Base
             $scope = App::$cache->get($cacheKey);
         }
 
+        App::$log->info('ZMSDBCACHE SCOPE VISIT', [
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
+        ]);
+
         if (empty($scope)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
                 'cacheKey' => $cacheKey,
