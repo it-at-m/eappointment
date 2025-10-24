@@ -41,6 +41,8 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
 
+export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
+
 export enum APPOINTMENT_ACTION_TYPE {
   RESCHEDULE = "reschedule",
   CANCEL = "cancel",
