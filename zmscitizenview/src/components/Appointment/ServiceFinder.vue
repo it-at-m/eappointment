@@ -269,9 +269,10 @@ const selectedVariant = ref("");
 watch(service, (newService) => {
   if (!newService) return;
 
-  baseServiceId.value = newService.parentId != null
-    ? String(newService.parentId)
-    : String(newService.id);
+  baseServiceId.value =
+    newService.parentId != null
+      ? String(newService.parentId)
+      : String(newService.id);
 
   const variantId = newService.variantId;
   if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -637,10 +638,12 @@ const showSubservices = computed(() => {
   const value = service.value;
   if (!value) return false;
 
-  const hasSub = Array.isArray(value.subServices) && value.subServices.length > 0;
+  const hasSub =
+    Array.isArray(value.subServices) && value.subServices.length > 0;
   if (!hasSub) return false;
   if (value.parentId != null && value.variantId !== 1) return false;
-  if (variantServices.value.length > 1 && selectedVariant.value !== "1") return false;
+  if (variantServices.value.length > 1 && selectedVariant.value !== "1")
+    return false;
 
   return true;
 });
