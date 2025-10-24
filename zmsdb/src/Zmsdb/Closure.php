@@ -24,7 +24,8 @@ class Closure extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
 
         $closureList = new Collection();
@@ -41,7 +42,11 @@ class Closure extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $closureList);
+            $res = App::$cache->set($cacheKey, $closureList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $closureList;

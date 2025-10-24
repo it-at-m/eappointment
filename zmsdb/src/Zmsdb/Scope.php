@@ -31,7 +31,8 @@ class Scope extends Base
 
         if (empty($scope)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
@@ -43,7 +44,11 @@ class Scope extends Base
             }
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $scope);
+                $res = App::$cache->set($cacheKey, $scope);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 
@@ -124,7 +129,8 @@ class Scope extends Base
 
         if (empty($result)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             if ($resolveReferences > 0) {
                 $query = new Query\Scope(Query\Base::SELECT);
@@ -133,14 +139,28 @@ class Scope extends Base
                     ->addConditionClusterId($clusterId);
                 $result = $this->fetchList($query, new Entity());
             } else {
-                $result = $this->getReader()->perform(
+                $queryResult = $this->getReader()->perform(
                     (new Query\Scope(Query\Base::SELECT))->getQuerySimpleClusterMatch(),
                     [$clusterId]
                 );
+
+                $result = [];
+                foreach ($queryResult as $entity) {
+                    $result[] = new Entity(
+                        array(
+                            'id' => $entity['id'],
+                            '$ref' => '/scope/' . $entity['id'] . '/'
+                        )
+                    );
+                }
             }
 
-            if (App::$cache && !($result instanceof \PDOStatement)) {
-                App::$cache->set($cacheKey, $result);
+            if (App::$cache) {
+                $res = App::$cache->set($cacheKey, $result);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 
@@ -151,12 +171,6 @@ class Scope extends Base
 
         foreach ($result as $entity) {
             if (0 == $resolveReferences) {
-                $entity = new Entity(
-                    array(
-                        'id' => $entity['id'],
-                        '$ref' => '/scope/' . $entity['id'] . '/'
-                    )
-                );
                 $scopeList->addEntity($entity);
             } else {
                 $scopeList->addEntity($this->readResolvedReferences(
@@ -183,7 +197,8 @@ class Scope extends Base
 
         if (empty($result)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
@@ -192,7 +207,11 @@ class Scope extends Base
             $result = $this->fetchList($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                $res = App::$cache->set($cacheKey, $result);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 
@@ -252,7 +271,8 @@ class Scope extends Base
 
         if (empty($result)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             if ($resolveReferences > 0) {
                 $query = new Query\Scope(Query\Base::SELECT);
@@ -260,28 +280,37 @@ class Scope extends Base
                     ->addResolvedReferences($resolveReferences)
                     ->addConditionDepartmentId($departmentId);
                 $result = $this->fetchList($query, new Entity());
-
-                if (App::$cache) {
-                    App::$cache->set($cacheKey, $result);
-                }
             } else {
-                $result = $this->getReader()->perform(
+                $queryResult = $this->getReader()->perform(
                     (new Query\Scope(Query\Base::SELECT))->getQuerySimpleDepartmentMatch(),
                     [$departmentId]
                 );
-            }
-        }
 
-        if ($result) {
-            foreach ($result as $entity) {
-                if (0 == $resolveReferences) {
-                    $entity = new Entity(
+                $result = [];
+                foreach ($queryResult as $entity) {
+                    $result[] = new Entity(
                         array(
                             'id' => $entity['id'],
                             'contact' => ['name' => $entity['contact__name']],
                             '$ref' => '/scope/' . $entity['id'] . '/'
                         )
                     );
+                }
+            }
+
+            if (App::$cache) {
+                $res = App::$cache->set($cacheKey, $result);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res,
+                    'time' => microtime(true)
+                ]);
+            }
+        }
+
+        if ($result) {
+            foreach ($result as $entity) {
+                if (0 == $resolveReferences) {
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
@@ -336,7 +365,8 @@ class Scope extends Base
 
         if (empty($result)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
@@ -344,7 +374,11 @@ class Scope extends Base
             $result = $this->fetchList($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                $res = App::$cache->set($cacheKey, $result);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 

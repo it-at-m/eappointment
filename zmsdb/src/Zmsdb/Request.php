@@ -24,7 +24,8 @@ class Request extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
@@ -40,7 +41,11 @@ class Request extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $request);
+            $res = App::$cache->set($cacheKey, $request);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $request;
@@ -126,7 +131,8 @@ class Request extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
         $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
@@ -137,7 +143,11 @@ class Request extends Base
         $requestList = ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $requestList);
+            $res = App::$cache->set($cacheKey, $requestList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $requestList;

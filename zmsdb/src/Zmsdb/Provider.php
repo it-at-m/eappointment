@@ -21,7 +21,8 @@ class Provider extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
@@ -34,7 +35,11 @@ class Provider extends Base
         $provider = $this->fetchOne($query, new Entity());
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $provider);
+            $res = App::$cache->set($cacheKey, $provider);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $provider;

@@ -44,7 +44,8 @@ class DayOff extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
 
         $dayOffList = new Collection();
@@ -61,7 +62,11 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            $res = App::$cache->set($cacheKey, $dayOffList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $dayOffList;
@@ -82,7 +87,8 @@ class DayOff extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
 
         $dayOffList = new Collection();
@@ -99,7 +105,11 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            $res = App::$cache->set($cacheKey, $dayOffList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $dayOffList;
@@ -122,7 +132,8 @@ class DayOff extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
 
         $dayOffList = new Collection();
@@ -139,7 +150,11 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            $res = App::$cache->set($cacheKey, $dayOffList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $dayOffListCommon->addList($dayOffList);

@@ -32,7 +32,8 @@ class Department extends Base
 
         if (empty($department)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Department(Query\Base::SELECT);
             $query->addEntityMapping()
@@ -41,7 +42,11 @@ class Department extends Base
             $department = $this->fetchOne($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $department);
+                $res = App::$cache->set($cacheKey, $department);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 

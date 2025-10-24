@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use BO\Zmsdb\Cli\Db;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 abstract class Base extends TestCase
 {
@@ -26,6 +27,11 @@ abstract class Base extends TestCase
         $className = explode('\\', static::class);
         $testName = end($className) . '/' . $this->name();
         Db::executeTestData($testName, 'setup');
+
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockLogger->expects($this->any())
+            ->method('info');
+        \App::$log = $mockLogger;
     }
 
     public function tearDown(): void

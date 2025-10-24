@@ -35,7 +35,8 @@ class Source extends Base
 
         if (empty($entity)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Source(Query\Base::SELECT);
             $query
@@ -48,7 +49,11 @@ class Source extends Base
             }
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $entity);
+                $res = App::$cache->set($cacheKey, $entity);
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
             }
         }
 

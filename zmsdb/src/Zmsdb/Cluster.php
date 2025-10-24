@@ -38,7 +38,8 @@ class Cluster extends Base
 
         if (empty($cluster)) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
-                'cacheKey' => $cacheKey
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
             ]);
             $query = new Query\Cluster(Query\Base::SELECT);
             $query
@@ -52,7 +53,11 @@ class Cluster extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $cluster);
+            $res = App::$cache->set($cacheKey, $cluster);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);

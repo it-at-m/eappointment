@@ -25,7 +25,8 @@ class Link extends Base
         }
 
         App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey
+            'cacheKey' => $cacheKey,
+            'disableCache' => $disableCache
         ]);
 
         $linkList = new Collection();
@@ -43,7 +44,11 @@ class Link extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $linkList);
+            $res = App::$cache->set($cacheKey, $linkList);
+            App::$log->info('ZMSDBCACHE SAVED', [
+                'cacheKey' => $cacheKey,
+                'res' => $res
+            ]);
         }
 
         return $linkList;
