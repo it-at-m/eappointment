@@ -86,7 +86,7 @@ const props = defineProps({
   appointmentDetailUrl: {
     type: String,
     required: false,
-    default: "appointment-detail.html",
+    default: undefined,
   },
   showLoginOption: {
     type: String,

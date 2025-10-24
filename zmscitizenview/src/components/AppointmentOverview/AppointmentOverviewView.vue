@@ -202,7 +202,9 @@ onMounted(() => {
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
         } else {
           loadingError.value = true;
         }
