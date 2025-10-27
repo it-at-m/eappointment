@@ -24,7 +24,13 @@ class ProcessLog extends BaseController
     ) {
         (new Helper\User($request))->checkRights('audit');
         $searchQuery = urldecode($args['search']);
-        $logList = (new Query())->readByProcessData($searchQuery);
+        $page = Validator::param('page')->isNumber()->setDefault(1)->getValue();
+        $perPage = Validator::param('perPage')->isNumber()->setDefault(100)->getValue();
+        if ($perPage > 1000) {
+            $perPage = 1000;
+        }
+
+        $logList = (new Query())->readByProcessData($searchQuery, $page, $perPage);
 
         $message = Response\Message::create($request);
         $message->data = $logList;

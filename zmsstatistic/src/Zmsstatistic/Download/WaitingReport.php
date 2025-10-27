@@ -40,7 +40,7 @@ class WaitingReport extends Base
         $this->writeInfoHeader($args, $download->getSpreadSheet());
         foreach ($args['reports'] as $report) {
             if ('month' == $report->period) {
-                $this->writeWaitingReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
+                $this->writeWaitingReport($report, $download->getSpreadSheet(), 'MMMM');
             } else {
                 $this->writeWaitingReport($report, $download->getSpreadSheet());
             }
@@ -52,11 +52,10 @@ class WaitingReport extends Base
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        $datePatternCol1 = 'MMMM',
-        $datePatternCol2 = 'dd (ccc)'
+        $datePatternCol = 'dd.MM.yyyy'
     ) {
         $sheet = $spreadsheet->getActiveSheet();
-        $this->writeHeader($report, $sheet, $datePatternCol1, $datePatternCol2);
+        $this->writeHeader($report, $sheet, $datePatternCol);
         $this->writeTotals($report, $sheet);
         foreach ($this->reportParts as $partName => $headline) {
             $this->writeReportPart($report, $sheet, $partName, $headline);
@@ -65,15 +64,16 @@ class WaitingReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
+    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol)
     {
-        $dateString = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
         $reportHeader = [];
         $reportHeader[] = null;
-        $reportHeader[] = $this->getFormatedDates($this->setDateTime($dateString), $datePatternCol1);
-        foreach (array_keys($report->data) as $date) {
+        $reportHeader[] = 'Max.';
+        $dates = array_keys($report->data);
+        sort($dates);
+        foreach ($dates as $date) {
             if (! in_array($date, static::$ignoreColumns)) {
-                $date = $this->getFormatedDates($this->setDateTime($date), $datePatternCol2);
+                $date = $this->getFormatedDates($this->setDateTime($date), $datePatternCol);
                 $reportHeader[] = $date;
             }
         }

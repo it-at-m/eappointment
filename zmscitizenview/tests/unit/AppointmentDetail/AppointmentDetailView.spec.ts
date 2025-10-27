@@ -87,6 +87,9 @@ describe("AppointmentDetailView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentDetailView, {
       props: {
+        globalState: {
+          isLoggedIn: true,
+        },
         appointmentOverviewUrl: mockAppointmentOverviewUrl,
         rescheduleAppointmentUrl: mockRescheduleAppointmentUrl,
         t: (key: string) => {
@@ -126,12 +129,6 @@ describe("AppointmentDetailView", () => {
   };
 
   describe("View States", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
-
     it("shows initial view with error", async () => {
       const wrapper = createWrapper();
       const appointmentId = "1";
@@ -178,12 +175,6 @@ describe("AppointmentDetailView", () => {
   });
 
   describe("Linklist States", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
-
     it("shows one linklist items", async () => {
       const wrapper = createWrapper();
       wrapper.vm.appointment = mockAppointment;

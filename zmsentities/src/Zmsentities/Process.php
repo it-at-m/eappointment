@@ -56,6 +56,7 @@ class Process extends Schema\Entity
             'lastChange' => time(),
             'wasMissed' => false,
             'priority' => null,
+            'external_user_id' => null,
         ];
     }
 
@@ -734,5 +735,16 @@ class Process extends Schema\Entity
         $string .= " client:" . $this['apiclient']['shortname'];
         $string .= " token:" . ($this['captchaToken'] ?? '(none)');
         return $string;
+    }
+
+    public function getExternalUserId()
+    {
+        return $this->toProperty()->external_user_id->get();
+    }
+
+    public function setExternalUserId($externalUserId)
+    {
+        $this->external_user_id = $externalUserId;
+        return $this;
     }
 }

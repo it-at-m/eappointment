@@ -241,6 +241,18 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds(array $scopeIds)
+    {
+        $scopeIds = array_values(array_unique(array_map('intval', $scopeIds)));
+        if (!$scopeIds) {
+            $this->query->where(self::expression('1'), '=', 0);
+            return $this;
+        }
+
+        $this->query->whereIn('scope.StandortID', $scopeIds);
+        return $this;
+    }
+
     public function addConditionWithAdminEmail()
     {
         $this->query->where('scope.emailstandortadmin', '!=', '');

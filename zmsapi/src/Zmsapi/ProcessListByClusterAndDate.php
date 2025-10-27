@@ -44,7 +44,7 @@ class ProcessListByClusterAndDate extends BaseController
         }
 
         $query = new Query();
-        $cluster = $query->readEntity($args['id'], 0);
+        $cluster = $query->readEntity($args['id'], 0, true);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
