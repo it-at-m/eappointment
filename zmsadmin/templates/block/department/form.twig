@@ -87,7 +87,7 @@
                     "type":"input",
                     "parameter": {
                         "name": "sendEmailReminderMinutesBefore",
-                        "value": department.sendEmailReminderMinutesBefore,
+                        "value": department.sendEmailReminderMinutesBefore|default(120),
                     }
                 }]
             ) }}
