@@ -22,7 +22,7 @@ class Config extends Base
             return App::$cache->get($cacheKey);
         }
 
-        if (App::$cache) {
+        if (App::$log) {
             App::$log->info('ZMSDBCACHE NOT HIT', [
                 'cacheKey' => $cacheKey,
                 'disableCache' => $disableCache
