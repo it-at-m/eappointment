@@ -11,7 +11,7 @@ class Munich
 {
     const EXCLUSIVE_LOCATIONS = [
         // Standesamt München - registry office locations (exclusive, don't show alternatives)
-        10470, 10351880, 10351882, 1064292, 10351883, 54260, 1061927, 
+        10470, 10351880, 10351882, 1064292, 10351883, 54260, 1061927,
         10295168, 10469, 102365,
         // Standesamt München-Pasing
         10351880, 10351882, 10351883,
@@ -123,15 +123,15 @@ class Munich
         try {
             $response = Request::get($indexUrl)->send();
             $content = $response->raw_body;
-            
+
             // Extract the latest export URL from the index page
             $urls = explode('https', $content);
             $latestUrl = 'https' . trim(end($urls));
-            
+
             if ($this->logger) {
                 $this->logger->info('Fetching Munich export', ['url' => $latestUrl]);
             }
-            
+
             $exportResponse = Request::get($latestUrl)->send();
             return json_decode($exportResponse->raw_body, true);
         } catch (\Exception $e) {
@@ -184,7 +184,9 @@ class Munich
 
             // Extract ZMS-specific fields
             foreach ($service['fields'] ?? [] as $field) {
-                if (empty($field)) continue;
+                if (empty($field)) {
+                    continue;
+                }
 
                 if ($field['name'] === 'ZMS_MAX_ANZAHL') {
                     $mappedService['maxQuantity'] = $field['value'];
@@ -235,7 +237,9 @@ class Munich
         $mappedLocations = [];
 
         foreach ($data['locations'] ?? [] as $location) {
-            if (!isset($location['altname2'])) continue;
+            if (!isset($location['altname2'])) {
+                continue;
+            }
 
             $name = $location['altname2'];
             $fullName = $name . (isset($location['altname1']) ? ' (' . $location['altname1'] . ')' : '');
@@ -298,7 +302,9 @@ class Munich
             // Map service references for this location
             $durationCommonDivisor = null;
             foreach ($location['extendedServiceReferences'] ?? [] as $reference) {
-                if (!isset($mappedServices[$reference['refId']])) continue;
+                if (!isset($mappedServices[$reference['refId']])) {
+                    continue;
+                }
 
                 $service = $mappedServices[$reference['refId']];
                 $serviceRef = [
@@ -434,4 +440,3 @@ class Munich
         return $slotTime;
     }
 }
-
