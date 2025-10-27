@@ -54,7 +54,7 @@ class Munich
 
     public function __construct($publicUrl = '', $logger = null)
     {
-        $this->publicUrl = $publicUrl ?: 'https://zms-dev.muenchen.de/buergeransicht/#';
+        $this->publicUrl = $publicUrl ?: 'https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#';
         $this->logger = $logger;
     }
 
