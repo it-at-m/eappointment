@@ -34,10 +34,12 @@ class Config extends Base
 
         if (App::$cache) {
             $res = App::$cache->set($cacheKey, $config);
-            App::$log->info('ZMSDBCACHE SAVED', [
-                'cacheKey' => $cacheKey,
-                'res' => $res
-            ]);
+            if (App::$log) {
+                App::$log->info('ZMSDBCACHE SAVED', [
+                    'cacheKey' => $cacheKey,
+                    'res' => $res
+                ]);
+            }
         }
 
         return $config;
