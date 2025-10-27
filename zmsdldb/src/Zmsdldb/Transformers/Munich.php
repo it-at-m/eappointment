@@ -319,6 +319,27 @@ class Munich
                     'duration' => $mappedServices[$reference['refId']]['duration'] ?? 30
                 ];
 
+                // Create location reference for the service (reverse relationship)
+                $locationRef = [
+                    'location' => $mappedLocation['id'],
+                    'authority' => [
+                        'id' => '1',
+                        'name' => 'Stadtverwaltung München',
+                        'webinfo' => 'https://muenchen.de'
+                    ],
+                    'url' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                    'appointment' => [
+                        'link' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                        'slots' => '0',
+                        'external' => false,
+                        'multiple' => '1',
+                        'allowed' => true
+                    ],
+                    'responsibility' => null,
+                    'responsibility_hint' => null,
+                    'hint' => false
+                ];
+
                 if (isset($reference['public'])) {
                     $serviceRef['public'] = $reference['public'];
                 }
@@ -345,6 +366,9 @@ class Munich
                 }
 
                 $mappedLocation['services'][] = $serviceRef;
+
+                // Add location reference to the service
+                $mappedServices[$reference['refId']]['locations'][] = $locationRef;
             }
 
             // Set slot time for each service based on common divisor
