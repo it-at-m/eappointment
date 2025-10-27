@@ -16,32 +16,27 @@ done
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     # Determine which URL and transformer to use based on city flag
-    if [ "$CITY" == "munich" ]; then
+    if [[ $CITY =~ ^munich$ ]]; then
         # Use Munich transformer for SADB export
-        # Fall back to default URL if Munich-specific variable is not set
-        SOURCE_URL="${ZMS_SOURCE_DLDB_MUNICH:-$ZMS_SOURCE_DLDB}"
-        if [ -z "$SOURCE_URL" ]; then
-            echo "Error: ZMS_SOURCE_DLDB_MUNICH or ZMS_SOURCE_DLDB environment variable is not set"
+        if [ -z "$ZMS_SOURCE_DLDB_MUNICH" ]; then
+            echo "Error: ZMS_SOURCE_DLDB_MUNICH environment variable is not set"
             exit 1
         fi
         echo "Using Munich transformer for city: $CITY"
-        echo "Source URL: $SOURCE_URL"
-        $BIN/dldbget-munich -o $EXPORT -b "$SOURCE_URL"
-
-    elif [ "$CITY" == "berlin" ]; then
+        echo "Source URL: $ZMS_SOURCE_DLDB_MUNICH"
+        $BIN/dldbget-munich -o $EXPORT -b "$ZMS_SOURCE_DLDB_MUNICH"
+        
+    elif [[ $CITY =~ ^berlin$ ]]; then
         # Use Berlin API format
-        # Fall back to default URL if Berlin-specific variable is not set
-        SOURCE_URL="${ZMS_SOURCE_DLDB_BERLIN:-$ZMS_SOURCE_DLDB}"
-        if [ -z "$SOURCE_URL" ]; then
-            echo "Error: ZMS_SOURCE_DLDB_BERLIN or ZMS_SOURCE_DLDB environment variable is not set"
+        if [ -z "$ZMS_SOURCE_DLDB_BERLIN" ]; then
+            echo "Error: ZMS_SOURCE_DLDB_BERLIN environment variable is not set"
             exit 1
         fi
         echo "Using Berlin API transformer for city: $CITY"
-        echo "Source URL: $SOURCE_URL"
-        $BIN/dldbget -o $EXPORT -b "$SOURCE_URL" -q "$ZMS_ENV"
+        echo "Source URL: $ZMS_SOURCE_DLDB_BERLIN"
+        $BIN/dldbget -o $EXPORT -b "$ZMS_SOURCE_DLDB_BERLIN" -q "$ZMS_ENV"
 
     else
-        # Default behavior - use ZMS_SOURCE_DLDB
         if [ -z "$ZMS_SOURCE_DLDB" ]; then
             echo "Error: ZMS_SOURCE_DLDB environment variable is not set"
             exit 1
