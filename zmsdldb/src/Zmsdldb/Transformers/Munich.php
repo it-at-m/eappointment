@@ -224,6 +224,8 @@ class Munich
 
     /**
      * Transform Munich SADB format to Berlin-compatible locations format
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function transformLocations($data, $servicesData = null)
     {
