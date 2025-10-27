@@ -173,6 +173,7 @@ class Munich
                     'link' => $this->publicUrl . "/services/{serviceId}"
                 ],
                 'maxQuantity' => 1,
+                'duration' => 30, // Default duration
             ];
 
             // Get combinable services
@@ -295,6 +296,7 @@ class Munich
             }
 
             // Map service references for this location
+            $durationCommonDivisor = null;
             foreach ($location['extendedServiceReferences'] ?? [] as $reference) {
                 if (!isset($mappedServices[$reference['refId']])) continue;
 
@@ -313,8 +315,13 @@ class Munich
                     'onlineprocessing' => [
                         'description' => null,
                         'link' => str_replace('{serviceId}', $reference['refId'], $this->publicUrl . "/services/{serviceId}")
-                    ]
+                    ],
+                    'duration' => $mappedServices[$reference['refId']]['duration'] ?? 30
                 ];
+
+                if (isset($reference['public'])) {
+                    $serviceRef['public'] = $reference['public'];
+                }
 
                 if (isset($reference['fields'])) {
                     foreach ($reference['fields'] as $field) {
@@ -330,8 +337,26 @@ class Munich
                     }
                 }
 
+                // Calculate common divisor for slot times
+                if ($durationCommonDivisor === null) {
+                    $durationCommonDivisor = $serviceRef['duration'];
+                } else {
+                    $durationCommonDivisor = $this->getSlotTime($durationCommonDivisor, $serviceRef['duration']);
+                }
+
                 $mappedLocation['services'][] = $serviceRef;
             }
+
+            // Set slot time for each service based on common divisor
+            foreach ($mappedLocation['services'] as $key => $service) {
+                if ($durationCommonDivisor && isset($service['duration'])) {
+                    $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
+                }
+            }
+
+            // Set location-level slot properties
+            $mappedLocation['slotTimeInMinutes'] = $durationCommonDivisor;
+            $mappedLocation['forceSlotTimeUpdate'] = true;
 
             $mappedLocations[] = $mappedLocation;
         }
@@ -366,6 +391,23 @@ class Munich
         }
 
         return null;
+    }
+
+    /**
+     * Calculate greatest common divisor for slot times
+     */
+    protected function getSlotTime($a, $b)
+    {
+        $slotTimes = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60];
+        $slotTime = 1;
+
+        foreach ($slotTimes as $time) {
+            if ($a % $time === 0 && $b % $time === 0) {
+                $slotTime = $time;
+            }
+        }
+
+        return $slotTime;
     }
 }
 
