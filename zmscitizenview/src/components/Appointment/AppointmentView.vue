@@ -751,45 +751,53 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  if (isBookingAppointment.value) {
+  if (isBookingAppointment.value || !appointment.value) return;
+
+  isBookingAppointment.value = true;
+  clearContextErrors(errorStateMap.value);
+
+  const canDirectConfirm =
+    !!appointment.value?.processId && !!appointment.value?.authKey;
+
+  if (isRebooking.value && canDirectConfirm) {
+    nextConfirmAppointment({
+      id: appointment.value.processId,
+      authKey: appointment.value.authKey,
+    });
     return;
   }
 
-  if (appointment.value) {
-    isBookingAppointment.value = true;
-    clearContextErrors(errorStateMap.value);
-    if (props.globalState.isLoggedIn) {
-      nextConfirmAppointment({
-        id: appointment.value.processId,
-        authKey: appointment.value.authKey,
-      });
-    } else {
-      currentContext.value = "preconfirm";
-      preconfirmAppointment(props.globalState, appointment.value)
-        .then((data) => {
-          if ((data as any)?.errors?.length > 0) {
-            handleErrorApiResponse(
-              data,
-              errorStates.errorStateMap,
-              currentErrorData.value
-            );
-            return;
-          }
-
-          if ((data as AppointmentDTO).processId != undefined) {
-            appointment.value = data as AppointmentDTO;
-            if (isRebooking.value && rebookedAppointment.value) {
-              currentContext.value = "cancel";
-              cancelAppointment(props.globalState, rebookedAppointment.value);
-            }
-            increaseCurrentView();
-          }
-        })
-        .finally(() => {
-          isBookingAppointment.value = false;
-        });
-    }
+  if (props.globalState.isLoggedIn && canDirectConfirm) {
+    nextConfirmAppointment({
+      id: appointment.value.processId,
+      authKey: appointment.value.authKey,
+    });
+    return;
   }
+
+  currentContext.value = "preconfirm";
+  preconfirmAppointment(props.globalState, appointment.value)
+    .then((data) => {
+      if ((data as any)?.errors?.length > 0) {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+        return;
+      }
+      if ((data as AppointmentDTO).processId != undefined) {
+        appointment.value = data as AppointmentDTO;
+        if (isRebooking.value && rebookedAppointment.value) {
+          currentContext.value = "cancel";
+          cancelAppointment(props.globalState, rebookedAppointment.value);
+        }
+        increaseCurrentView();
+      }
+    })
+    .finally(() => {
+      isBookingAppointment.value = false;
+    });
 };
 
 const nextCancelAppointment = () => {
@@ -1006,38 +1014,41 @@ const downloadIcsAppointment = () => {
 };
 
 function nextConfirmAppointment(appointmentData: AppointmentHash) {
-  confirmAppointment(props.globalState, appointmentData).then((data) => {
-    currentView.value = 5;
+  confirmAppointment(props.globalState, appointmentData)
+    .then((data) => {
+      currentView.value = 5;
 
-    if ((data as AppointmentDTO).processId != undefined) {
-      confirmAppointmentSuccess.value = true;
-      appointment.value = data as AppointmentDTO;
-      clearContextErrors(errorStateMap.value);
-      if (isRebooking.value && rebookedAppointment.value) {
-        currentContext.value = "cancel";
-        cancelAppointment(props.globalState, rebookedAppointment.value);
-      }
-    } else {
-      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-      if (
-        firstErrorCode === "processNotPreconfirmedAnymore" ||
-        firstErrorCode === "appointmentNotFound"
-      ) {
-        handleApiError(
-          "preconfirmationExpired",
-          errorStateMap.value,
-          currentErrorData.value
-        );
+      if ((data as AppointmentDTO).processId != undefined) {
+        confirmAppointmentSuccess.value = true;
+        appointment.value = data as AppointmentDTO;
+        clearContextErrors(errorStateMap.value);
+        if (isRebooking.value && rebookedAppointment.value) {
+          currentContext.value = "cancel";
+          cancelAppointment(props.globalState, rebookedAppointment.value);
+        }
       } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
+        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+        if (
+          firstErrorCode === "processNotPreconfirmedAnymore" ||
+          firstErrorCode === "appointmentNotFound"
+        ) {
+          handleApiError(
+            "preconfirmationExpired",
+            errorStateMap.value,
+            currentErrorData.value
+          );
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+        }
       }
-    }
-  });
+    })
+    .finally(() => {
+      isBookingAppointment.value = false;
+    });
 }
 
 onMounted(() => {
