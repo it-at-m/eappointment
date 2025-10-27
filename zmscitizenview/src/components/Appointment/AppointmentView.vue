@@ -1040,7 +1040,16 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
   });
 }
 
+// START Temporary fix for ZMSKVR-1009
+const mountActionExecuted = ref(false);
+// END Temporary fix for ZMSKVR-1009
+
 onMounted(() => {
+  // START Temporary fix for ZMSKVR-1009
+  if (mountActionExecuted.value) return;
+  mountActionExecuted.value = true;
+  // END Temporary fix for ZMSKVR-1009
+
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
