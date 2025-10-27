@@ -1,6 +1,21 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+// Try to find autoload.php in various locations
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
+    require __DIR__ . '/../../../../vendor/autoload.php';
+} elseif (file_exists('vendor/autoload.php')) {
+    require 'vendor/autoload.php';
+} else {
+    // Fallback for production where symlink in vendor/bin points here
+    $path = realpath(__DIR__ . '/../../../../vendor/autoload.php');
+    if ($path && file_exists($path)) {
+        require $path;
+    } else {
+        die("Could not find autoload.php\n");
+    }
+}
 
 require_once(__DIR__."/script_bootstrap.php");
 
