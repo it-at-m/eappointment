@@ -22,10 +22,12 @@ class Config extends Base
             return App::$cache->get($cacheKey);
         }
 
-        App::$log->info('ZMSDBCACHE NOT HIT', [
-            'cacheKey' => $cacheKey,
-            'disableCache' => $disableCache
-        ]);
+        if (App::$cache) {
+            App::$log->info('ZMSDBCACHE NOT HIT', [
+                'cacheKey' => $cacheKey,
+                'disableCache' => $disableCache
+            ]);
+        }
 
         $query = Query\Config::QUERY_SELECT;
         $config = $this->fetchData($query);
