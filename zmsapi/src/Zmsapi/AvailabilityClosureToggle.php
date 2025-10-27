@@ -50,7 +50,7 @@ class AvailabilityClosureToggle extends BaseController
             $closure = (new Closure())->createOne($scopeId, new DateTime($date));
             $closure->existing = true;
         } else {
-            (new Closure())->deleteEntity($closure->getId());
+            (new Closure())->deleteEntity($closure);
             $closure->existing = false;
         }
 

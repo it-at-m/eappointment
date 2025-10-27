@@ -127,7 +127,7 @@ class AppointmentCancelServiceTest extends MiddlewareTestCase
             'authKey' => ''
         ];
 
-        $result = $this->service->processCancel($body);
+        $result = $this->service->processCancel($body, null);
 
         $this->assertArrayHasKey('errors', $result);
     }
