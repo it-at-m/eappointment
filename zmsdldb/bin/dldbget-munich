@@ -1,0 +1,79 @@
+#!/usr/bin/env php
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+require_once(__DIR__."/script_bootstrap.php");
+
+use Garden\Cli\Cli;
+use Httpful\Request;
+use BO\Zmsdldb\Transformers\Munich;
+
+require_once(__DIR__."/dldb-helpers.php");
+
+// Initialize Httpful
+Request::ini(Request::init());
+
+$cli = new Cli();
+$cli->description("Downloads Munich SADB export and transforms it to Berlin-compatible format")
+    ->opt('output:o', 'Path to save files', true)
+    ->opt('base:b', 'Munich SADB index URL', true); 
+$args = $cli->parse($argv, true);
+
+$destinationPath = $args->getOpt('output');
+$indexUrl = $args->getOpt('base');
+
+$helpers = new DldbHelpers($destinationPath, $cli);
+$helpers->ensureDestinationDirectory();
+
+// Check for rollback
+$rollbackDay = $helpers->getRollbackDay();
+if ($rollbackDay !== "none") {
+    $helpers->performRollback($rollbackDay);
+    exit(0);
+}
+
+print("No rollback is requested, fetching current Munich SADB export...\n\n");
+
+$transformer = new Munich();
+$data = $transformer->fetchLatestExport($indexUrl);
+
+print("Transforming services...\n\n");
+$servicesData = $transformer->transformServices($data);
+file_put_contents($destinationPath . '/services_de.json', json_encode($servicesData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+print("Transforming locations...\n\n");
+$locationsData = $transformer->transformLocations($data, $servicesData);
+file_put_contents($destinationPath . '/locations_de.json', json_encode($locationsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+// Create empty files for English versions (not currently supported by Munich)
+file_put_contents($destinationPath . '/services_en.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+file_put_contents($destinationPath . '/locations_en.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+
+// Create empty topic and authority files
+file_put_contents($destinationPath . '/topic_de.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+file_put_contents($destinationPath . '/authority_de.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+file_put_contents($destinationPath . '/settings.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+
+// Track downloaded files for backup
+$downloadedFiles = [
+    'services_de.json' => $destinationPath . '/services_de.json',
+    'locations_de.json' => $destinationPath . '/locations_de.json',
+    'services_en.json' => $destinationPath . '/services_en.json',
+    'locations_en.json' => $destinationPath . '/locations_en.json',
+    'topic_de.json' => $destinationPath . '/topic_de.json',
+    'authority_de.json' => $destinationPath . '/authority_de.json',
+    'settings.json' => $destinationPath . '/settings.json',
+];
+
+// Check if backup is needed and perform backup
+$helpers->checkAndCreateBackup($downloadedFiles);
+
+// Cleanup old backups
+$helpers->cleanupOldBackups();
+
+print("Munich transformation completed!\n\n");
+

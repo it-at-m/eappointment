@@ -40,12 +40,14 @@
         "roave/security-advisories": "dev-latest"
     },
     "bin": [
-        "bin/dldbget"
+        "bin/dldbget",
+        "bin/dldbget-munich"
     ],
     "autoload": {
         "psr-4": {
             "BO\\Zmsdldb\\": "src/Zmsdldb/",
-            "BO\\Zmsdldb\\Tests\\": "tests/Zmsdldb/"
+            "BO\\Zmsdldb\\Tests\\": "tests/Zmsdldb/",
+            "BO\\Zmsdldb\\Transformers\\": "src/Zmsdldb/Transformers/"
         }
     },
     "scripts": {

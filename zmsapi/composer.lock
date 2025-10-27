@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "77937865a5a1d656831f5675989818343eae00e5"
+                "reference": "0b4f8f4f8ebafb620af8f9aeecd909ab6b902b0b"
             },
             "require": {
                 "ext-json": ">=0",
@@ -229,7 +229,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -289,11 +289,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "77937865a5a1d656831f5675989818343eae00e5"
+                "reference": "0b4f8f4f8ebafb620af8f9aeecd909ab6b902b0b"
             },
             "require": {
                 "aura/sql": "^5",
@@ -324,6 +324,7 @@
                 "bin/archiveStatisticData",
                 "bin/anonymizeStatisticData",
                 "bin/calculateDailyWaitingStatistic",
+                "bin/cleanupOverviewCalendar",
                 "bin/calculateSlots",
                 "bin/calculateDayOffList",
                 "bin/deallocateAppointmentData",
@@ -376,11 +377,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "77937865a5a1d656831f5675989818343eae00e5"
+                "reference": "0b4f8f4f8ebafb620af8f9aeecd909ab6b902b0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -395,7 +396,9 @@
                 "ext-pcre": ">=0",
                 "nategood/httpful": "1.*",
                 "php": ">=8.3",
+                "psr/simple-cache": "^3.0",
                 "roave/security-advisories": "dev-latest",
+                "symfony/cache": "^6.0",
                 "twig/twig": "3.*",
                 "vanilla/garden-cli": "4.*"
             },
@@ -407,18 +410,26 @@
                 "squizlabs/php_codesniffer": "*"
             },
             "bin": [
-                "bin/dldbget"
+                "bin/dldbget",
+                "bin/dldbget-munich"
             ],
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "BO\\Zmsdldb\\": "src/Zmsdldb/",
-                    "BO\\Zmsdldb\\Tests\\": "tests/Zmsdldb/"
+                    "BO\\Zmsdldb\\Tests\\": "tests/Zmsdldb/",
+                    "BO\\Zmsdldb\\Transformers\\": "src/Zmsdldb/Transformers/"
                 }
             },
             "scripts": {
                 "command": [
                     "bin/configure"
+                ],
+                "post-install-cmd": [
+                    "@command"
+                ],
+                "post-update-cmd": [
+                    "@command"
                 ],
                 "tests": [
                     "FASTTEST=1 NO_COMPARE=1 vendor/bin/phpcs && vendor/bin/phpmd src text phpmd.rules.xml && vendor/bin/phpunit"
@@ -444,11 +455,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "77937865a5a1d656831f5675989818343eae00e5"
+                "reference": "0b4f8f4f8ebafb620af8f9aeecd909ab6b902b0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -502,11 +513,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feature-zmskvr-implement-cache-in-zmsdb",
+            "version": "dev-cleanup-zmskvr-local-zmsdldb-setup",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "77937865a5a1d656831f5675989818343eae00e5"
+                "reference": "0b4f8f4f8ebafb620af8f9aeecd909ab6b902b0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",

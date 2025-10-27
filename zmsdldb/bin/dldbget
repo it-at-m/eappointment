@@ -4,48 +4,14 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
-// /var/www/html/zmsdldb/vendor/autoload.php
-
 require __DIR__ . '/../vendor/autoload.php';
 
 require_once(__DIR__."/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use Httpful\Request;
-use BO\Zmsdb\Config as ConfigRepository;
 
-$config = (new ConfigRepository())->readEntity();
-
-function getBackupRetentionDays($config) {
-    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to backup retention
-    if ($envValue !== false) {
-        $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
-        // Check if the environment's value is within the retrieved settings
-        print("Checking if retention period is set in admin system config.\n\n");
-        if ($retentionSetting[0] !== "none") {
-            print("Retention period is set in admin system config {$retentionSetting[0]} days.\n\n");
-            return (int)$retentionSetting[0];
-        }
-    }
-    print("Using default rention period 7 days.\n\n");
-    return 7; // Default to 7 days if not set or the environment variable does not match
-}
-
-function getRollbackDay($config) {
-    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to rollback day
-    if ($envValue !== false) {
-        $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
-        // Check if the environment's value is within the retrieved settings   
-        print("Checking if rollback day set in admin system config.\n\n");
-        if ($rollbackDaySetting[0] !== "none") {
-            print("Rollback day is set in admin system config to day {$rollbackDaySetting[0]}.\n\n");
-            return (int)$rollbackDaySetting[0]; // Directly cast the string to int and return
-        }        
-    }
-    print("Using default \"none\" no rollback set.\n\n");
-    return "none"; // Default to 0 (no rollback) if not set or the environment variable does not match
-}
+require_once(__DIR__."/dldb-helpers.php");
 
 $cli = new Cli();
 $cli->description("Downloads JSON files from the official site, validates them, replaces the old files, and handles backups if changes are detected.")
@@ -57,6 +23,7 @@ $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
 $backupPath = $destinationPath . '/backups';
+$helpers = new DldbHelpers($destinationPath, $cli);
 
 // Ensure the destination directory exists
 if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
@@ -64,7 +31,7 @@ if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir
     exit(1);
 }
 
-$baseDomain = $args->getOpt('base');
+$baseDomain = rtrim($args->getOpt('base'), '/'); // Remove trailing slash to avoid double slashes
 $proxy = $args->getOpt('proxy') ?: getenv('HTTP_PROXY');
 $client = Request::init()->withoutAutoParsing()->followRedirects()->timeout(30);
 
@@ -76,34 +43,10 @@ Request::ini($client);
 
 
 
-$rollbackDay = getRollbackDay($config);
+$rollbackDay = $helpers->getRollbackDay();
 // If a rollback is requested, skip fetching new data and do not delete any backups
 if ($rollbackDay !== "none") {
-    print("Rollback to day $rollbackDay is requested.\n\n");
-
-    // Find the specified backup directory
-    $backupDirectories = glob($backupPath . '/*', GLOB_ONLYDIR);
-    usort($backupDirectories, function($a, $b) {
-        return filemtime($b) - filemtime($a);
-    });
-
-    if (isset($backupDirectories[$rollbackDay - 1])) {
-        $rollbackDir = $backupDirectories[$rollbackDay - 1];
-        print("Rolling back using backup from: $rollbackDir\n\n");
-
-        // Copy .json files from the specified backup directory to the data directory
-        foreach (glob($rollbackDir . '/*.json') as $file) {
-            $destFile = $destinationPath . '/' . basename($file);
-            if (!copy($file, $destFile)) {
-                print($cli->red("Error: Failed to rollback $file to $destFile\n\n"));
-            } else {
-                print("Rolled back $file to $destFile\n\n");
-            }
-        }
-    } else {
-        print($cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n\n"));
-    }
-
+    $helpers->performRollback($rollbackDay);
 } else {
     print("No rollback is requested fetching current...\n\n");
     $downloads = [
@@ -137,8 +80,7 @@ if ($rollbackDay !== "none") {
         ],
     ];
     
-    print("Checking if backup is required.\n\n");
-    $backupRequired = false;
+    $downloadedFiles = [];
     foreach ($downloads as $download) {
         $destFile = $destinationPath . '/' . $download['file'];
         $request = Request::get($baseDomain . $download['url'])->send();
@@ -149,47 +91,16 @@ if ($rollbackDay !== "none") {
         }
     
         $newContent = $request->raw_body;
-        if (file_exists($destFile) && md5_file($destFile) !== md5($newContent)) {
-            $backupRequired = true;
-        }
         print("Download {$baseDomain}{$download['url']} to $destFile\n\n");
         file_put_contents($destFile, $newContent);
+        $downloadedFiles[$download['file']] = $destFile;
     }
     
-    if ($backupRequired) {
-        print("Backup is required.\n\n");
-        $timestamp = date('Y-m-d');
-        $backupDir = $backupPath . '/' . $timestamp;
-        
-        if (!is_dir($backupDir) && !mkdir($backupDir, 0777, true)) {
-            print($cli->red("Failed to create backup directory at $backupDir\n\n"));
-            exit(1);
-        }
-        
-        foreach (glob($destinationPath . '/*.json') as $file) {
-            if (!copy($file, $backupDir . '/' . basename($file))) {
-                print($cli->red("Failed to backup $file\n\n"));
-            }
-        }
-    }
+    // Check if backup is needed and perform backup
+    $backupRequired = $helpers->checkAndCreateBackup($downloadedFiles);
     
-    // Deleting old backups according to retention settings
-    print("Fetching the backup retention period.\n\n");
-    $retentionDays = getBackupRetentionDays($config);
-    $limitDate = time() - ($retentionDays * 24 * 60 * 60);
-    foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
-        if (filemtime($dir) < $limitDate) {
-            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
-                if ($item->isDir()) {
-                    rmdir($item->getRealPath());
-                } else {
-                    unlink($item->getRealPath());
-                }
-            }
-            rmdir($dir);
-            print("Deleted old backup: $dir\n\n");
-        }
-    }
+    // Cleanup old backups
+    $helpers->cleanupOldBackups();
 
 }
 
