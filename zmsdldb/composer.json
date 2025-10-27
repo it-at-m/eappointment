@@ -35,6 +35,8 @@
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0",
         "roave/security-advisories": "dev-latest"
     },
     "bin": [
@@ -48,6 +50,12 @@
     },
     "scripts": {
         "command": "bin/configure",
+        "post-install-cmd": [
+            "@command"
+        ],
+        "post-update-cmd": [
+            "@command"
+        ],
         "tests": "FASTTEST=1 NO_COMPARE=1 vendor/bin/phpcs && vendor/bin/phpmd src text phpmd.rules.xml && vendor/bin/phpunit",
         "codecoverage": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
     },

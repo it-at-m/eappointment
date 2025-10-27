@@ -75,6 +75,12 @@ class App extends \BO\Zmsapi\Application
     const DB_PASSWORD = MYSQL_PASSWORD;
 
     /**
+     * Galera cluster support
+     * @var Bool DB_IS_GALERA
+     */
+    const DB_IS_GALERA = true;
+
+    /**
      * Use caching
      *
      */
