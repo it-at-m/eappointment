@@ -10,17 +10,13 @@ use Httpful\Request;
 class Munich
 {
     const EXCLUSIVE_LOCATIONS = [
-        // Standesamt München
+        // Standesamt München - registry office locations (exclusive, don't show alternatives)
         10470, 10351880, 10351882, 1064292, 10351883, 54260, 1061927, 
         10295168, 10469, 102365,
         // Standesamt München-Pasing
         10351880, 10351882, 10351883,
-        // Sozialbürgerhaus Schwabing - Freimann
-        103666,
-        // Sozialbürgerhaus Ramersdorf - Perlach
-        103633,
-        // Sozialbürgerhaus Sendling - Westpark
-        101905,
+        // Sozialbürgerhaus locations
+        103666, 103633, 101905,
     ];
 
     const LOCATION_PRIO_BY_DISPLAY_NAME = [
@@ -44,8 +40,8 @@ class Munich
 
     const DONT_SHOW_LOCATION_BY_SERVICES = [
         [
-            "locations" => [10489],
-            "services" => [1063453, 1063441, 1080582]
+            "locations" => [10489], // Bürgerbüro Ruppertstraße
+            "services" => [1063453, 1063441, 1080582] // Reisepass, Personalausweis, Vorläufiger Reisepass
         ]
     ];
 
@@ -218,6 +214,17 @@ class Munich
 
             if (isset(self::LOCATION_PRIO_BY_DISPLAY_NAME[$name])) {
                 $mappedLocation['prio'] = self::LOCATION_PRIO_BY_DISPLAY_NAME[$name];
+            }
+
+            // Check for exclusive locations (don't show alternatives)
+            $mappedLocation['showAlternativeLocations'] = !in_array($mappedLocation['id'], self::EXCLUSIVE_LOCATIONS);
+
+            // Check for service-based location hiding
+            foreach (self::DONT_SHOW_LOCATION_BY_SERVICES as $avoidByServices) {
+                if (in_array((int) $mappedLocation['id'], $avoidByServices['locations'])) {
+                    $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
+                    break;
+                }
             }
 
             // Map service references for this location
