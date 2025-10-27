@@ -308,9 +308,17 @@ cd zmsapi
 
 ## Cronjobs
 To run cronjobs locally use ddev
+
+**Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
+```
+ddev exec zmsapi/cron/cronjob.hourly
+ddev exec zmsapi/cron/cronjob.hourly --city=berlin
+ddev exec zmsapi/cron/cronjob.hourly --city=munich
+```
+
+**Other cronjobs:**
 ```
 ddev exec zmsapi/cron/cronjob.minutly
-ddev exec zmsapi/cron/cronjob.hourly
 ddev exec zmsapi/cron/cronjob.daily
 ```
 
