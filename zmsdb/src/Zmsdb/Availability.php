@@ -88,7 +88,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $entity['scope'] = clone $scope;
+                $entity['scope'] = $scope;
                 $entity->workstationCount['intern'] = 0;
                 $entity->workstationCount['callcenter'] = 0;
                 $entity->workstationCount['public'] = 0;
