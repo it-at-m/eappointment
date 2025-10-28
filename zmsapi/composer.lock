@@ -334,6 +334,7 @@
                 "bin/deleteOldAvailabilityData",
                 "bin/deleteOldEventLogEntries",
                 "bin/deleteOldLogs",
+                "bin/deleteArchivedProcessForToday",
                 "bin/deleteReservedData",
                 "bin/deleteSessionData",
                 "bin/deleteTicketprinterData",
