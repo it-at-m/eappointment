@@ -3,6 +3,7 @@
 namespace BO\Zmsdldb\Transformers;
 
 use Httpful\Request;
+use Psr\Log\LoggerInterface;
 
 /**
  * Transform Munich's SADB export format to Berlin-compatible format
@@ -109,8 +110,11 @@ class Munich
     protected $publicUrl;
     protected $logger;
 
-    public function __construct($publicUrl = '', $logger = null)
+    public function __construct(string $publicUrl = '', ?LoggerInterface $logger = null)
     {
+        if ($publicUrl && !filter_var($publicUrl, FILTER_VALIDATE_URL)) {
+            throw new \InvalidArgumentException('Invalid public URL provided');
+        }
         $this->publicUrl = $publicUrl ?: 'https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#';
         $this->logger = $logger;
     }
