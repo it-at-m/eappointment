@@ -154,8 +154,9 @@ class Munich
     /**
      * Transform Munich SADB format to Berlin-compatible services format
      */
-    public function transformServices($data)
+    public function transformServices(array $data): array
     {
+        $timestamp = date('Y-m-d\TH:i:s');
         $mappedServices = [];
 
         foreach ($data['services'] ?? [] as $service) {
@@ -164,7 +165,7 @@ class Munich
                 'name' => $service['name'],
                 'description' => $service['description'] ?? '',
                 'meta' => [
-                    'lastupdate' => date('Y-m-d\TH:i:s'),
+                    'lastupdate' => $timestamp,
                     'url' => $this->publicUrl . "/services/{serviceId}",
                     'locale' => 'de',
                     'keywords' => implode(', ', $service['synonyms'] ?? []),
@@ -224,7 +225,7 @@ class Munich
         return [
             'data' => $mappedServices,
             'meta' => [
-                'generated' => date('Y-m-d\TH:i:s'),
+                'generated' => $timestamp,
                 'datacount' => count($mappedServices),
                 'hash' => md5(json_encode($mappedServices))
             ]
