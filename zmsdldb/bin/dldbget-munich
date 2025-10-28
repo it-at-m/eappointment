@@ -64,14 +64,24 @@ print("Transforming locations...\n\n");
 $locationsData = $transformer->transformLocations($data, $servicesData);
 file_put_contents($destinationPath . '/locations_de.json', json_encode($locationsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
+// Helper to safely write JSON files
+function writeJsonFile($path, $data) {
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if (file_put_contents($path, $json) === false) {
+        echo "Error: Failed to write " . basename($path) . "\n\n";
+        exit(1);
+    }
+}
+
 // Create empty files for English versions (not currently supported by Munich)
-file_put_contents($destinationPath . '/services_en.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
-file_put_contents($destinationPath . '/locations_en.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+$emptyData = ['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]];
+writeJsonFile($destinationPath . '/services_en.json', $emptyData);
+writeJsonFile($destinationPath . '/locations_en.json', $emptyData);
 
 // Create empty topic and authority files
-file_put_contents($destinationPath . '/topic_de.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
-file_put_contents($destinationPath . '/authority_de.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
-file_put_contents($destinationPath . '/settings.json', json_encode(['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]]));
+writeJsonFile($destinationPath . '/topic_de.json', $emptyData);
+writeJsonFile($destinationPath . '/authority_de.json', $emptyData);
+writeJsonFile($destinationPath . '/settings.json', $emptyData);
 
 // Track downloaded files for backup
 $downloadedFiles = [
