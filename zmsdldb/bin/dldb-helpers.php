@@ -142,9 +142,8 @@ class DldbHelpers
             $timestamp = date('Y-m-d');
             $backupDir = $this->backupPath . '/' . $timestamp;
 
-            if (!is_dir($backupDir) && !mkdir($backupDir, 0777, true)) {
-                echo "Failed to create backup directory at $backupDir\n\n";
-                exit(1);
+            if (!is_dir($backupDir) && !mkdir($backupDir, 0755, true)) {
+                throw new \RuntimeException("Failed to create backup directory at {$backupDir}");
             }
 
             // Backup all JSON files in destination
