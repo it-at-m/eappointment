@@ -10,8 +10,12 @@ mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
 
 if [ ! -e $ROOT/config.php ]
-then	
+then
     cp $ROOT/config.example.php $ROOT/config.php
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to copy config.example.php to config.php"
+        exit 1
+    fi
 fi
 if [ -d $ROOT/cache ]; then
     if ! chmod -R a+rwX $ROOT/cache 2>/dev/null; then
