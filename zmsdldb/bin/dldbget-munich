@@ -61,6 +61,19 @@ try {
     exit(1);
 }
 
+// Helper to safely write JSON files (defined before first use)
+function writeJsonFile($path, $data) {
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if ($json === false) {
+        echo "Error: JSON encoding failed: " . json_last_error_msg() . "\n\n";
+        exit(1);
+    }
+    if (file_put_contents($path, $json) === false) {
+        echo "Error: Failed to write " . basename($path) . "\n\n";
+        exit(1);
+    }
+}
+
 print("Transforming services...\n\n");
 $servicesData = $transformer->transformServices($data);
 writeJsonFile($destinationPath . '/services_de.json', $servicesData);
@@ -68,15 +81,6 @@ writeJsonFile($destinationPath . '/services_de.json', $servicesData);
 print("Transforming locations...\n\n");
 $locationsData = $transformer->transformLocations($data, $servicesData);
 writeJsonFile($destinationPath . '/locations_de.json', $locationsData);
-
-// Helper to safely write JSON files
-function writeJsonFile($path, $data) {
-    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    if (file_put_contents($path, $json) === false) {
-        echo "Error: Failed to write " . basename($path) . "\n\n";
-        exit(1);
-    }
-}
 
 // Create empty files for English versions (not currently supported by Munich)
 $emptyData = ['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]];
