@@ -144,6 +144,8 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `ddev import-db --file=.resources/zms.sql`
 - `ddev exec zmsapi/vendor/bin/migrate --update`
 
+Import Berlin or Munich DLDB data via the [hourly cronjob](#cronjobs).
+
 ## Dependency Check for PHP Upgrades
 Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
 e.g.
