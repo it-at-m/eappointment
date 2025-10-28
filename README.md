@@ -158,7 +158,7 @@ We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and
 
 To run Checks locally in your local docker container:
 
-0. Run all at once:
+0. Run PHP code formatting all at once:
 - `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
 1. Enter the container (if using DDEV or Docker):
 - `ddev ssh`
@@ -312,7 +312,7 @@ cd zmsapi
 To run cronjobs locally use ddev
 
 **Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
-```
+```bash
 ddev exec zmsapi/cron/cronjob.hourly
 ddev exec zmsapi/cron/cronjob.hourly --city=berlin
 ddev exec zmsapi/cron/cronjob.hourly --city=munich
