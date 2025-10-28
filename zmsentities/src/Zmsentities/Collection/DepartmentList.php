@@ -58,9 +58,9 @@ class DepartmentList extends Base implements JsonUnindexed
         foreach ($this as $department) {
             if ($department->hasAccess($useraccount)) {
                 if ($useraccount->rights['organisation']) {
-                    return clone $this;
+                    return $this;
                 }
-                $list->addEntity(clone $department);
+                $list->addEntity($department);
             }
         }
         return $list;
@@ -97,5 +97,15 @@ class DepartmentList extends Base implements JsonUnindexed
             }
         }
         return $this;
+    }
+
+    public function getIds()
+    {
+        $ids = [];
+        foreach ($this as $department) {
+            $ids[] = $department->id;
+        }
+
+        return $ids;
     }
 }

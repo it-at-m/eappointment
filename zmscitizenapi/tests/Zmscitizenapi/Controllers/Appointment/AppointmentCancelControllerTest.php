@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class AppointmentCancelControllerTest extends ControllerTestCase
@@ -43,6 +43,11 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -117,10 +122,14 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'serviceName' => 'Adressänderung Personalausweis, Reisepass, eAT',
             'serviceCount' => 1,
             'status' => 'deleted',
-            'slotCount' => 1
+            'slotCount' => 1,
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('icsContent', $responseBody);
+        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        unset($responseBody['icsContent']);
+        unset($expectedResponse['icsContent']);
         $this->assertEquals($expectedResponse, $responseBody);
     }
 
@@ -146,6 +155,11 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => json_encode($processJson)
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
             ]
         ]);
     

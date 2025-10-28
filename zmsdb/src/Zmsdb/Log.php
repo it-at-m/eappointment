@@ -79,7 +79,8 @@ class Log extends Base
         $data = json_encode(array_filter([
             'Aktion' => $action,
             "Sachbearbeiter*in" => $userAccount ? $userAccount->getId() : '',
-            "Terminnummer" => $process->getId(),
+            "Terminnummer" => $process->getDisplayNumber(),
+            "Wartenummer" => $process->getQueueNumber(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
             "Bürger*in" => $process->getFirstClient()->familyName,
             "Dienstleistung/en" => implode(', ', array_map(function ($request) {
@@ -111,12 +112,12 @@ class Log extends Base
         return $logList;
     }
 
-    public function readByProcessData($search)
+    public function readByProcessData($search, $page = 1, $perPage = 100)
     {
         $query = new Query\Log(Query\Base::SELECT);
         $query->addEntityMapping();
         $query->addConditionDataSearch($search);
-        $query->addLimit(1000);
+        $query->addLimit($perPage, ($page - 1)  * $perPage);
 
         return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
     }

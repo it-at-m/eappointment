@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Appointment;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class AppointmentReserveControllerTest extends ControllerTestCase
@@ -41,6 +41,11 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
                     'response' => $this->readFixture("POST_reserve_appointment.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ]
             ]
         );
@@ -115,10 +120,16 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "serviceId" => 0,
             "serviceName" => null,
             "serviceCount" => 0,
-            "slotCount" => 4
+            "slotCount" => 4,
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('icsContent', $responseBody);
+        if ($responseBody['icsContent'] !== null) {
+            $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        }
+        unset($responseBody['icsContent']);
+        unset($expectedResponse['icsContent']);
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

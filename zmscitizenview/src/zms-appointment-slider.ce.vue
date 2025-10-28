@@ -3,18 +3,17 @@
     href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
     rel="stylesheet"
   />
-  <main>
+  <main :class="{ 'details-background': displayOptionDetailScreen }">
     <div>
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-slider-view
-        :base-url="baseUrl"
+        v-if="globalState.isLoggedIn"
+        :global-state="globalState"
         :appointment-detail-url="appointmentDetailUrl"
         :appointment-overview-url="appointmentOverviewUrl"
         :new-appointment-url="newAppointmentUrl"
-        :displayed-on-detail-screen="
-          displayedOnDetailScreen.toLowerCase() === 'true'
-        "
+        :displayed-on-detail-screen="displayOptionDetailScreen"
         :t="t"
       />
     </div>
@@ -27,8 +26,9 @@ import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.
 import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -53,7 +53,11 @@ defineProps({
   },
 });
 
+const displayOptionDetailScreen =
+  props.displayedOnDetailScreen.toLowerCase() === "true";
+
 const { t } = useI18n();
+const globalState = useGlobalState(props);
 </script>
 
 <style>
@@ -66,7 +70,8 @@ const { t } = useI18n();
     sans-serif;
 }
 
-main {
-  padding-bottom: 32px;
+/* Background color on details page */
+.details-background {
+  background-color: var(--color-neutrals-blue-xlight);
 }
 </style>

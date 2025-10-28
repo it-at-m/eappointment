@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/script_bootstrap.php';
+
+$now = date('Y-m-d H:i:s');
+$logPrefix = "[cleanupOverviewCalendar]";
+
+error_log("$logPrefix Start at $now");
+
+if (!in_array('--commit', $argv, true)) {
+    error_log("$logPrefix Dry run (no --commit), exiting.");
+    exit(0);
+}
+
+$svc = new \BO\Zmsdb\OverviewCalendar();
+$svc->deleteOlderThan(new DateTimeImmutable('today'));
+
+$end = date('Y-m-d H:i:s');
+error_log("$logPrefix Finished at $end");

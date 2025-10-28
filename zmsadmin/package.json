@@ -32,7 +32,7 @@
   "devDependencies": {
     "@parcel/transformer-sass": "^2.7.0",
     "buffer": "^6.0.3",
-    "eslint": "^7.32.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-react": "^7.31.8",
     "events": "^3.3.0",
@@ -43,7 +43,7 @@
     "json-schema-defaults": "^0.4.0",
     "json-schema-ref-parser": "^9.0.9",
     "moment": "^2.29.1",
-    "monaco-editor": "^0.53.0",
+    "monaco-editor": "^0.54.0",
     "parcel": "^2.7.0",
     "process": "^0.11.10",
     "prop-types": "15.8.1",

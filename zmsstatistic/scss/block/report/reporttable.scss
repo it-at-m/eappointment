@@ -1,0 +1,26 @@
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table--base {
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.table--base th:first-child,
+.table--base td:first-child {
+    position: sticky;
+    left: 0;
+    white-space: nowrap;
+}
+
+.table--base th,
+.table--base td {
+    vertical-align: bottom !important;
+}
+
+.table--base thead th:first-child {
+    position: sticky;
+    top: 0;
+}

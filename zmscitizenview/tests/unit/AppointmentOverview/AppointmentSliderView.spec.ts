@@ -87,7 +87,10 @@ describe("AppointmentOverviewView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentSliderView, {
       props: {
-        baseUrl: mockBaseUrl,
+        globalState: {
+          baseUrl: mockBaseUrl,
+          isLoggedIn: true,
+        },
         appointmentDetailUrl: mockAppointmentDetailUrl,
         appointmentOverviewUrl: mockAppointmentOverviewUrl,
         newAppointmentUrl: mockNewAppointmentUrl,
@@ -170,7 +173,10 @@ describe("AppointmentOverviewView", () => {
       wrapper.vm.appointments = mockAppointments;
       await nextTick();
 
-      expect(wrapper.text()).toContain(de.myAppointments + " (" + mockAppointments.length + ")");
+      expect(wrapper.text()).toContain(de.myAppointments);
+      expect(wrapper.text()).toContain("(" + mockAppointments.length + ")");
+      const headerElement = wrapper.find('.header');
+      expect(headerElement.element.innerHTML).toContain('&nbsp;');
     });
 
     it("shows initial view on detail page after loading", async () => {

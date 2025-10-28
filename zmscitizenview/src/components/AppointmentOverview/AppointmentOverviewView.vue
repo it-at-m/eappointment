@@ -56,14 +56,12 @@
     v-if="
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
-      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+      globalState.isLoggedIn
     "
     class="container"
   >
-    <h2
-      tabindex="0"
-      style="display: flex; align-items: center; margin-bottom: 24px"
-    >
+    <h2 style="display: flex; align-items: center; margin-bottom: 24px">
       <muc-icon
         style="width: 32px; height: 32px; margin-right: 8px"
         icon="calendar"
@@ -132,13 +130,13 @@ import { computed, onMounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { GlobalState } from "@/types/GlobalState";
 import {
-  getApiStatusState,
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
@@ -151,7 +149,7 @@ import {
 import AppointmentCard from "./AppointmentCard.vue";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentDetailUrl: string;
   newAppointmentUrl: string;
   overviewUrl: string;
@@ -164,7 +162,6 @@ const loading = ref(true);
 const loadingError = ref(false);
 
 // API status state
-const apiStatusState = getApiStatusState();
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
 const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
 
@@ -181,10 +178,14 @@ const goToOverviewLink = () => {
 
 onMounted(() => {
   loading.value = true;
-  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+  fetchServicesAndProviders(
+    undefined,
+    undefined,
+    props.globalState.baseUrl ?? undefined
+  )
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -196,12 +197,14 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
         } else {
           loadingError.value = true;
         }

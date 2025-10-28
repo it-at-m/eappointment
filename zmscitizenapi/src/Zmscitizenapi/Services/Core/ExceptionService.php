@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 class ExceptionService
 {
@@ -152,6 +152,10 @@ class ExceptionService
                 break;
             case 'BO\\Zmsentities\\Exception\\SchemaValidation':
                 $error = self::getError('invalidSchema');
+
+                break;
+            case 'BO\\Zmsapi\\Exception\\Useraccount\\InvalidCredentials':
+                $error = self::getError('invalidCredentials');
 
                 break;
 

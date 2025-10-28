@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <link href="/favicon.ico" rel="icon">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Terminvereinbarung Bürgeransicht Webcomponent</title>
+
+    <!-- Muenchen.de-Styles -->
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/fonts.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
+    />
+
+    <!-- login -->
+    <script
+            src="https://dbs-login-webcomponent-integration-dbs-login.apps.capk.muenchen.de/loader.js"
+            type="text/javascript"
+    ></script>
+
+    <!-- built files will be auto injected -->
+    <script src="src/zms-appointment-webcomponent.ts" type="module"></script>
+
+</head>
+<body>
+
+<noscript>
+    <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
+</noscript>
+
+<dbs-login
+        kc-url="https://ssodev.muenchen.de/auth"
+        kc-realm="A61"
+        kc-client-id="dbs-fragments"
+></dbs-login>
+
+<zms-appointment-i18n-host>
+    <zms-appointment-wrapped
+            appointment-detail-url="appointment-detail.html"
+            show-login-option="true"
+    ></zms-appointment-wrapped>
+</zms-appointment-i18n-host>
+
+</body>
+
+</html>

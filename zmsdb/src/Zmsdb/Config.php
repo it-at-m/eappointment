@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Config as Entity;
 
 class Config extends Base
@@ -10,16 +11,27 @@ class Config extends Base
      *
      * @return \BO\Zmsentities\Config
      */
-    public function readEntity()
+    public function readEntity($disableCache = false)
     {
+        $cacheKey = "config";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
         $query = Query\Config::QUERY_SELECT;
         $config = $this->fetchData($query);
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $config);
+        }
+
         return $config;
     }
 
     public function updateEntity(Entity $config)
     {
-        $compareEntity = $this->readEntity();
+        $compareEntity = $this->readEntity(true);
         $result = false;
         $query = new Query\Config(Query\Base::REPLACE);
         foreach ($config as $key => $item) {
@@ -43,7 +55,12 @@ class Config extends Base
                 $result = $this->writeItem($query);
             }
         }
-        return ($result) ? $this->readEntity() : null;
+
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
+        return ($result) ? $this->readEntity(true) : null;
     }
 
     public function readProperty($property, $forUpdate = false)
@@ -57,6 +74,10 @@ class Config extends Base
 
     public function replaceProperty($property, $value)
     {
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
         return $this->perform(Query\Config::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
             'value' => $value,
@@ -73,6 +94,11 @@ class Config extends Base
     {
         $query = new Query\Config(Query\Base::DELETE);
         $query->addConditionName($property);
+
+        if (App::$cache && App::$cache->has('config')) {
+            App::$cache->delete('config');
+        }
+
         return $this->deleteItem($query);
     }
 

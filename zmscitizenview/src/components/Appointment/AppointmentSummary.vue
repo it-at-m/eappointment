@@ -18,13 +18,10 @@
             <h2>{{ t("your") }} {{ t("appointment") }}</h2>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("service") }}</h3>
+            <h3>{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p
-              v-if="selectedService"
-              tabindex="0"
-            >
+            <p v-if="selectedService">
               {{ selectedService.count }}x
               <a
                 :href="getServiceBaseURL() + selectedService.id"
@@ -40,16 +37,12 @@
                 v-for="subService in selectedService.subServices"
                 :key="subService.id"
               >
-                <p
-                  v-if="subService.count > 0"
-                  tabindex="0"
-                >
+                <p v-if="subService.count > 0">
                   {{ subService.count }}x
                   <a
                     :href="getServiceBaseURL() + subService.id"
                     target="_blank"
                     class="m-link"
-                    tabindex="0"
                     >{{ subService.name }}</a
                   >
                   <br />
@@ -58,45 +51,53 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("location") }}</h3>
+            <h3>{{ t("location") }}</h3>
           </div>
           <div
             v-if="selectedProvider"
             class="m-content border-bottom"
           >
-            <p tabindex="0">{{ selectedProvider.name }}<br /></p>
-            <p
-              tabindex="0"
-              class="no-bottom-margin smaller-front-size"
-            >
-              <strong>{{ t("address") }}</strong>
-              <br />
-            </p>
-            <p tabindex="0">
-              {{ selectedProvider.address.street }}
-              {{ selectedProvider.address.house_number }}<br />
-              {{ selectedProvider.address.postal_code }}
-              {{ selectedProvider.address.city }}<br />
-              <br />
-              <span
-                v-if="
-                  selectedProvider &&
-                  selectedProvider.scope &&
-                  selectedProvider.scope.hint
-                "
-                v-html="sanitizeHtml(selectedProvider.scope.hint)"
-              ></span>
-            </p>
+            <p>{{ selectedProvider.name }}<br /></p>
+
+            <template v-if="!variantId || variantId === 1">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("address") }}</strong
+                ><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                ></span>
+              </p>
+
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("appointmentTypes.1") }}</strong
+                ><br />
+              </p>
+              <p>{{ t("locationVariantText.1") }}</p>
+            </template>
+
+            <template v-else>
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}:</strong><br />
+              </p>
+              <p>{{ t(`locationVariantText.${variantId}`) }}</p>
+            </template>
           </div>
 
           <div class="m-content">
-            <h3 tabindex="0">{{ t("time") }}</h3>
+            <h3>{{ t("time") }}</h3>
           </div>
           <div
             v-if="appointment"
             class="m-content border-bottom"
           >
-            <p tabindex="0">
+            <p>
               {{ formatTime(appointment.timestamp) }}
               {{ t("timeStampSuffix") }} <br />
               {{ t("estimatedDuration") }} {{ estimatedDuration() }}
@@ -111,7 +112,7 @@
             "
           >
             <div class="m-content">
-              <h3 tabindex="0">{{ t("hint") }}</h3>
+              <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
               <div
@@ -121,13 +122,13 @@
             </div>
           </div>
           <div class="m-content">
-            <h3 tabindex="0">{{ t("contact") }}</h3>
+            <h3>{{ t("contact") }}</h3>
           </div>
           <div
             v-if="appointment"
             class="m-content border-bottom"
           >
-            <p tabindex="0">
+            <p>
               {{ appointment.familyName }}
               <br />
               {{ appointment.email }}<br />
@@ -164,13 +165,10 @@
           </div>
           <div v-if="!rebookOrCancelDialog">
             <div class="m-content">
-              <h3 tabindex="0">{{ t("termsOfUse") }}</h3>
+              <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <p
-                tabindex="0"
-                class="smaller-front-size"
-              >
+              <p class="smaller-front-size">
                 <strong>{{ t("privacyCheckboxLabel") }}</strong
                 ><br />
               </p>
@@ -184,6 +182,7 @@
                     name="checkbox-privacy-policy"
                     type="checkbox"
                     @click="clickPrivacyPolicy"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"
@@ -194,10 +193,7 @@
               </div>
             </div>
             <div class="m-content">
-              <p
-                tabindex="0"
-                class="smaller-front-size"
-              >
+              <p class="smaller-front-size">
                 <strong>{{ t("communicationCheckboxLabel") }}</strong
                 ><br />
               </p>
@@ -211,6 +207,7 @@
                     name="checkbox-electronic-communication"
                     type="checkbox"
                     @click="clickElectronicCommunication"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"
@@ -298,13 +295,11 @@ import type { Ref } from "vue";
 import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
-import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
-import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { getServiceBaseURL } from "@/utils/Constants";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
@@ -352,7 +347,7 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired, timeLeftString } = useReservationTimer();
+const { isExpired } = useReservationTimer();
 
 const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);
@@ -401,6 +396,11 @@ const estimatedDuration = () => {
     selectedProvider.value
   );
 };
+
+const variantId = computed<number | null>(() => {
+  const id = (selectedService.value as any)?.variantId;
+  return typeof id === "number" && Number.isFinite(id) ? id : null;
+});
 </script>
 
 <style lang="scss" scoped>

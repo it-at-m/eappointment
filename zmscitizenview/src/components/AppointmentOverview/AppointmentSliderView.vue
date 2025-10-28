@@ -56,70 +56,79 @@
     v-if="
       !isInMaintenanceModeComputed &&
       !isInSystemFailureModeComputed &&
-      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
-      (appointments.length > 0 || !displayedOnDetailScreen)
+      !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
     "
-    :class="displayedOnDetailScreen ? 'details-background' : 'overview-padding'"
   >
-    <div class="container">
-      <div class="header">
-        <div class="headline">
-          <span class="header-icon">
-            <muc-icon icon="calendar" />
-          </span>
-          <h2 tabindex="0">
-            <span v-if="displayedOnDetailScreen">{{
-              t("myFurtherAppointments")
-            }}</span>
-            <span v-else>{{ t("myAppointments") }}</span>
-
-            <span
-              v-if="
-                appointments.length && !displayedOnDetailScreen && !loadingError
-              "
-            >
-              ({{ appointments.length }})</span
-            >
-          </h2>
+    <div
+      v-if="
+        globalState.isLoggedIn &&
+        (appointments.length > 0 || !displayedOnDetailScreen)
+      "
+      :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
+    >
+      <div class="container">
+        <div class="header">
+          <div class="headline">
+            <h2 style="display: flex; align-items: center">
+              <muc-icon
+                style="width: 32px; height: 32px; margin-right: 8px"
+                icon="calendar"
+              />
+              <span v-if="displayedOnDetailScreen">{{
+                t("myFurtherAppointments")
+              }}</span>
+              <span v-else>{{ t("myAppointments") }}</span>
+              <span
+                v-if="
+                  appointments.length &&
+                  !displayedOnDetailScreen &&
+                  !loadingError
+                "
+              >
+                &nbsp;({{ appointments.length }})</span
+              >
+            </h2>
+          </div>
+          <muc-link
+            v-if="!loadingError && appointments.length > 3 && !isMobile"
+            :label="t('showAllAppointments')"
+            append-icon="arrow-right"
+            target="_self"
+            no-underline
+            :href="appointmentOverviewUrl"
+          />
         </div>
-        <muc-link
-          v-if="!loadingError && appointments.length > 3 && !isMobile"
-          :label="t('showAllAppointments')"
-          icon="chevron-right"
-          target="_self"
-          no-underline
-          :href="appointmentOverviewUrl"
+        <error-alert
+          v-if="loadingError"
+          class="no-padding-top"
+          :message="t('apiErrorLoadingAppointmentsText')"
+          :header="t('apiErrorLoadingAppointmentsHeader')"
         />
-      </div>
-      <error-alert
-        v-if="loadingError"
-        class="no-padding-top"
-        :message="t('apiErrorLoadingAppointmentsText')"
-        :header="t('apiErrorLoadingAppointmentsHeader')"
-      />
-      <skeleton-loader
-        v-else-if="loading"
-        class="container"
-      />
-      <div v-else>
-        <appointment-card-viewer
-          :all-appointments="appointments"
-          :is-mobile="isMobile"
-          :new-appointment-url="newAppointmentUrl"
-          :appointment-detail-url="appointmentDetailUrl"
-          :displayed-on-detail-screen="displayedOnDetailScreen"
-          :offices="offices"
-          :t="t"
+        <skeleton-loader
+          v-else-if="loading"
+          class="container"
         />
-        <muc-link
-          v-if="!loadingError && appointments.length > 3 && isMobile"
-          class="mobile-link"
-          :label="t('showAllAppointments')"
-          icon="chevron-right"
-          target="_self"
-          no-underline
-          :href="appointmentOverviewUrl"
-        />
+        <div v-else>
+          <appointment-card-viewer
+            :all-appointments="appointments"
+            :is-mobile="isMobile"
+            :resize-slider-content="resizeSliderContent"
+            :new-appointment-url="newAppointmentUrl"
+            :appointment-detail-url="appointmentDetailUrl"
+            :displayed-on-detail-screen="displayedOnDetailScreen"
+            :offices="offices"
+            :t="t"
+          />
+          <muc-link
+            v-if="!loadingError && appointments.length > 3 && isMobile"
+            class="mobile-link"
+            :label="t('showAllAppointments')"
+            append-icon="arrow-right"
+            target="_self"
+            no-underline
+            :href="appointmentOverviewUrl"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -132,11 +141,11 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { GlobalState } from "@/types/GlobalState";
 import {
-  getApiStatusState,
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
@@ -150,7 +159,7 @@ import {
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentDetailUrl: string;
   appointmentOverviewUrl: string;
   newAppointmentUrl: string;
@@ -161,6 +170,7 @@ const props = defineProps<{
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+const resizeSliderContent = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
@@ -177,7 +187,8 @@ const apiErrorTranslation = computed(() =>
 );
 
 const checksMobile = () => {
-  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+  isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
+  resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
 };
 
 onMounted(() => {
@@ -185,10 +196,14 @@ onMounted(() => {
   checksMobile();
   window.addEventListener("resize", checksMobile);
 
-  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+  fetchServicesAndProviders(
+    undefined,
+    undefined,
+    props.globalState.baseUrl ?? undefined
+  )
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -200,12 +215,14 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
           if (props.displayedOnDetailScreen) {
             const urlParams = new URLSearchParams(window.location.search);
             const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
@@ -230,14 +247,14 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* Padding on overview page */
-.overview-padding {
-  padding-top: 40px;
+/* Margin on overview page */
+.overview-margin {
+  margin-top: 40px;
+  margin-bottom: 48px;
 }
 
-/* Background color on details page */
-.details-background {
-  background-color: var(--color-neutrals-blue-xlight);
+/* Padding on details page */
+.details-padding {
   padding: 24px 0;
 }
 
@@ -255,10 +272,6 @@ onUnmounted(() => {
   align-items: center;
 }
 
-.header-icon {
-  margin-right: 8px;
-}
-
 /* Mobile link styles */
 .mobile-link {
   padding-top: 24px;
@@ -271,11 +284,11 @@ onUnmounted(() => {
 
 /* CSS for desktop */
 @media (min-width: 768px) {
-  .overview-padding {
-    padding-top: 40px;
+  .overview-margin {
+    margin: 56px 0;
   }
 
-  .details-background {
+  .details-padding {
     padding: 64px 0;
   }
 }

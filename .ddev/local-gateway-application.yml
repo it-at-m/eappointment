@@ -19,10 +19,17 @@ spring:
           filters:
             - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
             - RemoveResponseHeader=WWW-Authenticate
+        - id: "citizen-api-authenticated"
+          uri: "http://ddev-zms-web:80"
+          predicates:
+            - Path=/buergeransicht/authenticated/api/citizen/**
+          filters:
+            - RewritePath=/buergeransicht/authenticated/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
+            - RemoveResponseHeader=WWW-Authenticate
         - id: "webcomponent"
           uri: "${WEBCOMPONENT_URI}"
           predicates:
             - Path=/buergeransicht/**
           filters:
             - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
-            - RemoveResponseHeader=WWW-Authenticate 
+            - RemoveResponseHeader=WWW-Authenticate

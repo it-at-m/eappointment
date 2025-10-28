@@ -87,6 +87,9 @@ describe("AppointmentDetailView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentDetailView, {
       props: {
+        globalState: {
+          isLoggedIn: true,
+        },
         appointmentOverviewUrl: mockAppointmentOverviewUrl,
         rescheduleAppointmentUrl: mockRescheduleAppointmentUrl,
         t: (key: string) => {

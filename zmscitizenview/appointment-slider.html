@@ -16,6 +16,12 @@
             href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
     />
 
+    <!-- login -->
+    <script
+            src="https://dbs-login-webcomponent-integration-dbs-login.apps.capk.muenchen.de/loader.js"
+            type="text/javascript"
+    ></script>
+
     <!-- built files will be auto injected -->
     <script src="src/zms-appointment-slider-webcomponent.ts" type="module"></script>
 
@@ -25,12 +31,19 @@
 <noscript>
     <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
 </noscript>
+
+<dbs-login
+        kc-url="https://ssodev.muenchen.de/auth"
+        kc-realm="A61"
+        kc-client-id="dbs-fragments"
+></dbs-login>
+
 <h1>zms-appointment-slider overview page</h1>
 <zms-appointment-slider-i18n-host>
     <zms-appointment-slider-wrapped
         appointment-detail-url="appointment-detail.html"
         appointment-overview-url="appointment-overview.html"
-        new-appointment-url="appointment.html"
+        new-appointment-url="appointment-view.html"
         displayed-on-detail-screen="false"
     ></zms-appointment-slider-wrapped>
 </zms-appointment-slider-i18n-host>
@@ -40,7 +53,7 @@
     <zms-appointment-slider-wrapped
             appointment-detail-url="appointment-detail.html"
             appointment-overview-url="appointment-overview.html"
-            new-appointment-url="appointment.html"
+            new-appointment-url="appointment-view.html"
             displayed-on-detail-screen="true"
     ></zms-appointment-slider-wrapped>
 </zms-appointment-slider-i18n-host>

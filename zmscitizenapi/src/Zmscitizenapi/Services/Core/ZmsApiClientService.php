@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
@@ -15,8 +15,64 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Collection\ScopeList;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class ZmsApiClientService
 {
+    public static function getMergedMailTemplates(int $providerId): array
+    {
+        try {
+            $cacheKey = 'merged_mailtemplates_' . $providerId;
+            if (\App::$cache && ($cached = \App::$cache->get($cacheKey))) {
+                return is_array($cached) ? $cached : [];
+            }
+            $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/');
+            $templates = $result?->getCollection();
+            if (!is_iterable($templates)) {
+                return [];
+            }
+            $out = [];
+            foreach ($templates as $template) {
+                $name = is_array($template) ? ($template['name'] ?? null) : ($template->name ?? null);
+                $value = is_array($template) ? ($template['value'] ?? null) : ($template->value ?? null);
+                if ($name !== null && $value !== null) {
+                    $out[(string)$name] = (string)$value;
+                }
+            }
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $out, \App::$SOURCE_CACHE_TTL);
+                LoggerService::logInfo('Cache set', [
+                    'key' => $cacheKey,
+                    'ttl' => \App::$SOURCE_CACHE_TTL,
+                    'entity_type' => 'merged_mail_templates'
+                ]);
+            }
+            return $out;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
+    public static function getIcsContent(int $processId, string $authKey): ?string
+    {
+        try {
+            $url = "/process/{$processId}/{$authKey}/ics/";
+            $result = \App::$http->readGetResult($url);
+            $entity = $result?->getEntity();
+            if ($entity instanceof \BO\Zmsentities\Ics) {
+                return $entity->getContent() ?? null;
+            }
+            return null;
+        } catch (\Exception $e) {
+            // Do not fail the user flow if ICS is unavailable; just log and return null
+            LoggerService::logError($e, null, null, [
+                'processId' => $processId,
+                'context' => 'ICS fetch via API'
+            ]);
+            return null;
+        }
+    }
     public static function getOffices(): ProviderList
     {
         try {
@@ -342,6 +398,24 @@ class ZmsApiClientService
         }
     }
 
+    public static function getProcessByIdAuthenticated(int $processId): Process
+    {
+        try {
+            $resolveReferences = 2;
+            // This endpoint is normally reserved for workstation (zmsadmin) Users.
+            $result = \App::$http->readGetResult("/process/{$processId}/", [
+                'resolveReferences' => $resolveReferences
+            ]);
+            $entity = $result?->getEntity();
+            if (!$entity instanceof Process) {
+                return new Process();
+            }
+            return $entity;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
     public static function getScopesByProviderId(string $source, string|int $providerId): ScopeList
     {
         try {
@@ -411,5 +485,29 @@ class ZmsApiClientService
         }
 
         return $out ?: ['dldb'];
+    }
+
+    public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
+    {
+        try {
+            $params = [
+                'resolveReferences' => 2,
+            ];
+            if (!is_null($filterId)) {
+                $params['filterId'] = $filterId;
+            }
+            if (!is_null($status)) {
+                $params['status'] = $status;
+            }
+            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserIdUrlEncoded}/", $params);
+            $collection = $result?->getCollection();
+            if (!$collection instanceof ProcessList) {
+                return new ProcessList();
+            }
+            return $collection;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
     }
 }

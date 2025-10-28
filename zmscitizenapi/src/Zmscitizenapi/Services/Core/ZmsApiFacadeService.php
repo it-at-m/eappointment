@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
+use BO\Zmscitizenapi\Models\AuthenticatedUser;
+use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
@@ -19,7 +21,6 @@ use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
-use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
@@ -791,10 +792,26 @@ class ZmsApiFacadeService
         return MapperService::processToThinnedProcess($process);
     }
 
-    public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
+    public static function getProcessById(?int $processId, ?string $authKey, ?AuthenticatedUser $user): Process
     {
+        // AuthKey check needs to be first
+        if (!is_null($authKey)) {
+            return ZmsApiClientService::getProcessById($processId, $authKey);
+        } elseif (!is_null($user)) {
+            $externalUserId = $user->getExternalUserId();
+            $process = ZmsApiClientService::getProcessByIdAuthenticated($processId);
+            if ($externalUserId !== $process->getExternalUserId()) {
+                throw new UnauthorizedException();
+            }
+            return $process;
+        } else {
+            throw new UnauthorizedException();
+        }
+    }
 
-        $process = ZmsApiClientService::getProcessById($processId, $authKey);
+    public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
+    {
+        $process = self::getProcessById($processId, $authKey, $user);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
@@ -905,5 +922,10 @@ class ZmsApiFacadeService
             return $clientUpdateResult;
         }
         return $clientUpdateResult;
+    }
+
+    public static function getAppointmentsByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
+    {
+        return ZmsApiClientService::getProcessesByExternalUserId($externalUserId, $filterId, $status);
     }
 }

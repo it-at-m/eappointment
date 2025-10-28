@@ -2,14 +2,20 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Provider as Entity;
 use BO\Zmsentities\Collection\ProviderList as Collection;
-use BO\Zmsdb\Scope as Scope;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId, $resolveReferences = 0)
+    public function readEntity($source, $providerId, $resolveReferences = 0, $disableCache = false)
     {
+        $cacheKey = "provider-$source-$providerId-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query
@@ -19,9 +25,11 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-//        $inUseByScope = (new Scope())->countByInfoDienstleister($providerId, $source) > 0;
-//        $inUseByRel   = (new RequestRelation())->countByProviderId($providerId, $source) > 0;
-        $provider['canDelete'] = false;
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $provider);
+        }
+
         return $provider;
     }
 
@@ -35,11 +43,6 @@ class Provider extends Base
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($providerData));
-//            $source = $entity->getSource();
-//            $id     = $entity->getId();
-//            $inUseByScope = (new Scope())->countByInfoDienstleister($id, $source) > 0;
-//            $inUseByRel   = (new RequestRelation())->countByProviderId($id, $source) > 0;
-            $entity['canDelete'] = false;
             $providerList->addEntity($entity);
         }
         return $providerList;
@@ -93,7 +96,10 @@ class Provider extends Base
             'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : '{}'
         ]);
         $this->writeItem($query);
-        return $this->readEntity($entity->getSource(), $entity->getId());
+
+        $this->removeCache($entity);
+
+        return $this->readEntity($entity->getSource(), $entity->getId(), 0, true);
     }
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
@@ -101,6 +107,7 @@ class Provider extends Base
         $this->writeDeleteListBySource($source->getSource());
         foreach ($source->getProviderList() as $provider) {
             $this->writeEntity($provider);
+            $this->removeCache($provider);
         }
         return $this->readListBySource($source->getSource());
     }
@@ -136,28 +143,19 @@ class Provider extends Base
                 'data' => json_encode($provider)
             ]);
             $this->writeItem($query);
-            $provider = $this->readEntity($source, $provider['id']);
+            $provider = $this->readEntity($source, $provider['id'], 0, true);
         }
         return $provider;
     }
 
     public function writeDeleteEntity($providerId, $source)
     {
+        $provider = $this->readEntity($source, $providerId);
         $query = new Query\Provider(Query\Base::DELETE);
         $query->addConditionProviderId($providerId);
         $query->addConditionProviderSource($source);
+        $this->removeCache($provider);
         return $this->deleteItem($query);
-    }
-
-    public function deleteEntitySafe(string $source, string $providerId): void
-    {
-        $scopeCount  = (new Scope())->countByInfoDienstleister($providerId, $source);
-        $rrCount     = (new RequestRelation())->countByProviderId($providerId, $source);
-
-        if ($scopeCount > 0 || $rrCount > 0) {
-            throw new Exception\Provider\ProviderInUse();
-        }
-        $this->writeDeleteEntity($providerId, $source);
     }
 
     public function writeDeleteListBySource($source)
@@ -171,6 +169,28 @@ class Provider extends Base
     {
         if (! (new Source())->readEntity($source)) {
             throw new Exception\Source\UnknownDataSource();
+        }
+    }
+
+    public function removeCache(Entity $provider)
+    {
+        if (!App::$cache || !isset($provider->id)) {
+            return;
+        }
+
+        $source = $provider->getSource();
+        $providerId = $provider->getId();
+
+        if (App::$cache->has("request-$source-$providerId-0")) {
+            App::$cache->delete("request-$source-$providerId-0");
+        }
+
+        if (App::$cache->has("request-$source-$providerId-1")) {
+            App::$cache->delete("request-$source-$providerId-1");
+        }
+
+        if (App::$cache->has("request-$source-$providerId-2")) {
+            App::$cache->delete("request-$source-$providerId-2");
         }
     }
 }

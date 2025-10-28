@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Cluster as Entity;
 use BO\Zmsentities\Collection\ClusterList as Collection;
 
@@ -23,23 +24,41 @@ class Cluster extends Base
     *
     * @return Resource Entity
     */
-    public function readEntity($itemId, $resolveReferences = 0)
+    public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
     {
-        $query = new Query\Cluster(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionClusterId($itemId);
-        $cluster = $this->fetchOne($query, new Entity());
-        if (! $cluster->hasId()) {
-            return null;
+        $cacheKey = "cluster-$itemId-$resolveReferences";
+
+        $cluster = null;
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $cluster = App::$cache->get($cacheKey);
         }
-        return $this->readResolvedReferences($cluster, $resolveReferences);
+
+        if (empty($cluster)) {
+            $query = new Query\Cluster(Query\Base::SELECT);
+            $query
+                ->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionClusterId($itemId);
+            $cluster = $this->fetchOne($query, new Entity());
+            if (! $cluster->hasId()) {
+                return null;
+            }
+        }
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $cluster);
+        }
+
+        return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
-    {
-        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences,
+        $disableCache = false
+    ) {
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences, $disableCache);
+
         return $entity;
     }
 
@@ -94,7 +113,7 @@ class Cluster extends Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false)
     {
         $clusterList = new Collection();
         $query = new Query\Cluster(Query\Base::SELECT);
@@ -106,7 +125,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences, $disableCache);
                     $clusterList->addEntity($entity);
                 }
             }
@@ -128,7 +147,7 @@ class Cluster extends Base
         \DateTimeInterface $dateTime,
         $resolveReferences = 0
     ) {
-        $cluster = $this->readEntity($clusterId, 1);
+        $cluster = $this->readEntity($clusterId, 1, true);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($cluster->scopes as $scope) {
             $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
@@ -322,6 +341,7 @@ class Cluster extends Base
     public function deleteEntity($itemId)
     {
         $result = false;
+        $cluster = $this->readEntity($itemId);
         $query =  new Query\Cluster(Query\Base::DELETE);
         $query->addConditionClusterId($itemId);
         if ($this->deleteItem($query)) {
@@ -330,6 +350,9 @@ class Cluster extends Base
                 ['clusterId' => $itemId]
             );
         }
+
+        $this->removeCache($cluster);
+
         return $result;
     }
 
@@ -351,7 +374,10 @@ class Cluster extends Base
         if ($entity->toProperty()->scopes->isAvailable()) {
             $this->writeAssignedScopes($lastInsertId, $entity->scopes);
         }
-        return $this->readEntity($lastInsertId, 1);
+
+        $this->removeCache($entity);
+
+        return $this->readEntity($lastInsertId, 1, true);
     }
 
     /**
@@ -372,7 +398,10 @@ class Cluster extends Base
         if ($entity->toProperty()->scopes->isAvailable()) {
             $this->writeAssignedScopes($clusterId, $entity->scopes);
         }
-        return $this->readEntity($clusterId, 1);
+
+        $this->removeCache($entity);
+
+        return $this->readEntity($clusterId, 1, true);
     }
 
     /**
@@ -386,6 +415,7 @@ class Cluster extends Base
      */
     protected function writeAssignedScopes($clusterId, $scopeList)
     {
+        $cluster = $this->readEntity($clusterId);
         $this->perform(
             (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes(),
             ['clusterId' => $clusterId]
@@ -400,6 +430,27 @@ class Cluster extends Base
                     )
                 );
             }
+        }
+
+        $this->removeCache($cluster);
+    }
+
+    public function removeCache($cluster)
+    {
+        if (!App::$cache || !isset($cluster->id)) {
+            return;
+        }
+
+        if (App::$cache->has("cluster-$cluster->id-0")) {
+            App::$cache->delete("cluster-$cluster->id-0");
+        }
+
+        if (App::$cache->has("cluster-$cluster->id-1")) {
+            App::$cache->delete("cluster-$cluster->id-1");
+        }
+
+        if (App::$cache->has("cluster-$cluster->id-2")) {
+            App::$cache->delete("cluster-$cluster->id-2");
         }
     }
 }

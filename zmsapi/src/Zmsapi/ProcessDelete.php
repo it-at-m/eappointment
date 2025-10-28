@@ -37,8 +37,10 @@ class ProcessDelete extends BaseController
             }
             $processDeleted = $process;
         } else {
-            $scopeId = (int) $process->scope->id;
-            (new \BO\Zmsdb\OverallCalendar())->unbook($scopeId, $process->id);
+            (new \BO\Zmsdb\OverviewCalendar())->perform(
+                \BO\Zmsdb\Query\OverviewCalendar::CANCEL_BY_PROCESS,
+                ['process_id' => (int)$process->id]
+            );
 
             $processDeleted = (new Process())->writeCanceledEntity(
                 $args['id'],
@@ -46,7 +48,7 @@ class ProcessDelete extends BaseController
                 null,
                 $workstation->getUseraccount()
             );
-            if (! $processDeleted || ! $processDeleted->hasId()) {
+            if (!$processDeleted || !$processDeleted->hasId()) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }
         }
@@ -70,15 +72,15 @@ class ProcessDelete extends BaseController
                 ->getValue();
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())
-                    ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
-                    ->toResolvedEntity($process, $config, 'deleted', $initiator);
+                ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
+                ->toResolvedEntity($process, $config, 'deleted', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }
 
     protected function testProcessData($process, $authKey)
     {
-        if (! $process) {
+        if (!$process) {
             throw new Exception\Process\ProcessNotFound();
         }
         $authName = $process->getFirstClient()['familyName'];

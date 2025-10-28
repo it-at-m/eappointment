@@ -8,7 +8,8 @@
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-overview-view
-        :base-url="baseUrl"
+        v-if="globalState.isLoggedIn"
+        :global-state="globalState"
         :appointment-detail-url="appointmentDetailUrl"
         :new-appointment-url="newAppointmentUrl"
         :overview-url="overviewUrl"
@@ -24,8 +25,9 @@ import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.
 import { useI18n } from "vue-i18n";
 
 import AppointmentOverviewView from "@/components/AppointmentOverview/AppointmentOverviewView.vue";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -46,6 +48,7 @@ defineProps({
 });
 
 const { t } = useI18n();
+const globalState = useGlobalState(props);
 </script>
 
 <style>
@@ -59,6 +62,12 @@ const { t } = useI18n();
 }
 
 main {
-  padding-bottom: 32px;
+  margin: 32px 0;
+}
+
+@media (min-width: 768px) {
+  main {
+    margin: 48px 0;
+  }
 }
 </style>

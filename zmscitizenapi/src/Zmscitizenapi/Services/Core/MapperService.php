@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
-use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
@@ -17,6 +16,7 @@ use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
+use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
@@ -376,6 +376,9 @@ class MapperService
             }
         }
 
+        // Generate ICS content if process has appointments with time
+        $icsContent = self::generateIcsContent($myProcess);
+
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
@@ -394,7 +397,8 @@ class MapperService
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
-            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
+            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            icsContent: isset($icsContent) ? $icsContent : null
         );
     }
 
@@ -572,5 +576,21 @@ class MapperService
             lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
             contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
         );
+    }
+
+    /**
+     * Generate ICS content for a process if it has appointments with time.
+     *
+     * @param Process $process The process to generate ICS content for
+     * @return string|null The ICS content or null if generation fails or not applicable
+     */
+    private static function generateIcsContent(Process $process): ?string
+    {
+        if (!isset($process->appointments[0]) || !$process->appointments[0]->hasTime()) {
+            return null;
+        }
+
+        $content = ZmsApiClientService::getIcsContent((int)($process->id ?? 0), (string)($process->authKey ?? ''));
+        return $content ?: null;
     }
 }
