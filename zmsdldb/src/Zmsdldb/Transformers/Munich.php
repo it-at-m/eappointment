@@ -228,10 +228,23 @@ class Munich
 
     /**
      * Transform Munich SADB format to Berlin-compatible locations format
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function transformLocations(array $data, ?array $servicesData = null): array
+    {
+        $mappedServices = $this->indexServicesByIds($servicesData);
+        $mappedLocations = [];
+
+        foreach ($data['locations'] ?? [] as $location) {
+            $processed = $this->processLocation($location, $mappedServices);
+            if ($processed) {
+                $mappedLocations[] = $processed;
+            }
+        }
+
+        return $this->buildLocationResponse($mappedLocations);
+    }
+
+    protected function indexServicesByIds(?array $servicesData): array
     {
         $mappedServices = [];
         if ($servicesData) {
@@ -239,164 +252,180 @@ class Munich
                 $mappedServices[$service['id']] = $service;
             }
         }
+        return $mappedServices;
+    }
 
-        $mappedLocations = [];
+    private function processLocation(array $location, array &$mappedServices): ?array
+    {
+        if (!isset($location['altname2'])) {
+            return null;
+        }
 
-        foreach ($data['locations'] ?? [] as $location) {
-            if (!isset($location['altname2'])) {
+        $mappedLocation = $this->buildLocationMetadata($location);
+
+        $this->applyLocationRules($mappedLocation, $mappedLocation['displayName']);
+
+        $durationCommonDivisor = $this->processServiceReferences($location, $mappedLocation, $mappedServices);
+
+        $this->calculateSlotTimes($mappedLocation, $durationCommonDivisor);
+
+        return $mappedLocation;
+    }
+
+    private function buildLocationMetadata(array $location): array
+    {
+        $name = $location['altname2'];
+        $fullName = $name . (isset($location['altname1']) ? ' (' . $location['altname1'] . ')' : '');
+
+        return [
+            'id' => $location['id'],
+            'name' => $fullName,
+            'displayName' => $name,
+            'displayNameAlternatives' => $location['names'] ?? [],
+            'organization' => $location['organisation'] ?? null,
+            'organizationUnit' => $location['orgUnit'] ?? null,
+            'public' => $location['public'] ?? true,
+            'meta' => [
+                'url' => $this->publicUrl . "/locations/{locationId}",
+                'lastupdate' => date('Y-m-d\TH:i:s'),
+                'locale' => 'de',
+                'keywords' => implode(', ', $location['names'] ?? []),
+                'translated' => true,
+                'hash' => '',
+                'id' => $location['id']
+            ],
+            'address' => [
+                'house_number' => $location['address']['streetNumber'] ?? '',
+                'city' => $location['address']['city'] ?? 'München',
+                'postal_code' => $location['address']['zip'] ?? '',
+                'street' => $location['address']['street'] ?? '',
+                'hint' => false
+            ],
+            'geo' => isset($location['coordinate']) ? [
+                'lat' => $location['coordinate']['lat'],
+                'lon' => $location['coordinate']['lon']
+            ] : null,
+            'contact' => [
+                'email' => $location['email'] ?? '',
+                'fax' => $location['fax'] ?? '',
+                'phone' => $location['phone'] ?? '',
+                'signed_mail' => '0',
+                'signed_maillink' => '',
+                'webinfo' => '',
+                'competence' => ''
+            ],
+            'services' => []
+        ];
+    }
+
+    private function applyLocationRules(array &$mappedLocation, string $displayName): void
+    {
+        if (isset(self::LOCATION_PRIO_BY_DISPLAY_NAME[$displayName])) {
+            $mappedLocation['prio'] = self::LOCATION_PRIO_BY_DISPLAY_NAME[$displayName];
+        }
+
+        $mappedLocation['showAlternativeLocations'] = !in_array($mappedLocation['id'], self::EXCLUSIVE_LOCATIONS);
+
+        foreach (self::DONT_SHOW_LOCATION_BY_SERVICES as $avoidByServices) {
+            if (in_array((int) $mappedLocation['id'], $avoidByServices['locations'])) {
+                $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
+                break;
+            }
+        }
+    }
+
+    private function processServiceReferences(array $location, array &$mappedLocation, array &$mappedServices): ?int
+    {
+        $durationCommonDivisor = null;
+
+        foreach ($location['extendedServiceReferences'] ?? [] as $reference) {
+            if (!isset($mappedServices[$reference['refId']])) {
                 continue;
             }
 
-            $name = $location['altname2'];
-            $fullName = $name . (isset($location['altname1']) ? ' (' . $location['altname1'] . ')' : '');
-
-            $mappedLocation = [
-                'id' => $location['id'],
-                'name' => $fullName,
-                'displayName' => $name,
-                'displayNameAlternatives' => $location['names'] ?? [],
-                'organization' => $location['organisation'] ?? null,
-                'organizationUnit' => $location['orgUnit'] ?? null,
-                'public' => $location['public'] ?? true,
-                'meta' => [
-                    'url' => $this->publicUrl . "/locations/{locationId}",
-                    'lastupdate' => date('Y-m-d\TH:i:s'),
-                    'locale' => 'de',
-                    'keywords' => implode(', ', $location['names'] ?? []),
-                    'translated' => true,
-                    'hash' => '',
-                    'id' => $location['id']
+            $serviceRef = [
+                'service' => $reference['refId'],
+                'contact' => [],
+                'hint' => false,
+                'url' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                'appointment' => [
+                    'link' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                    'slots' => '1',
+                    'external' => false,
+                    'allowed' => true
                 ],
-                'address' => [
-                    'house_number' => $location['address']['streetNumber'] ?? '',
-                    'city' => $location['address']['city'] ?? 'München',
-                    'postal_code' => $location['address']['zip'] ?? '',
-                    'street' => $location['address']['street'] ?? '',
-                    'hint' => false
+                'onlineprocessing' => [
+                    'description' => null,
+                    'link' => str_replace('{serviceId}', $reference['refId'], $this->publicUrl . "/services/{serviceId}")
                 ],
-                'geo' => isset($location['coordinate']) ? [
-                    'lat' => $location['coordinate']['lat'],
-                    'lon' => $location['coordinate']['lon']
-                ] : null,
-                'contact' => [
-                    'email' => $location['email'] ?? '',
-                    'fax' => $location['fax'] ?? '',
-                    'phone' => $location['phone'] ?? '',
-                    'signed_mail' => '0',
-                    'signed_maillink' => '',
-                    'webinfo' => '',
-                    'competence' => ''
-                ],
-                'services' => []
+                'duration' => $mappedServices[$reference['refId']]['duration'] ?? 30
             ];
 
-            if (isset(self::LOCATION_PRIO_BY_DISPLAY_NAME[$name])) {
-                $mappedLocation['prio'] = self::LOCATION_PRIO_BY_DISPLAY_NAME[$name];
+            $locationRef = [
+                'location' => $mappedLocation['id'],
+                'authority' => [
+                    'id' => '1',
+                    'name' => 'Stadtverwaltung München',
+                    'webinfo' => 'https://muenchen.de'
+                ],
+                'url' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                'appointment' => [
+                    'link' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
+                    'slots' => '0',
+                    'external' => false,
+                    'multiple' => '1',
+                    'allowed' => true
+                ],
+                'responsibility' => null,
+                'responsibility_hint' => null,
+                'hint' => false
+            ];
+
+            if (isset($reference['public'])) {
+                $serviceRef['public'] = $reference['public'];
             }
 
-            // Check for exclusive locations (don't show alternatives)
-            $mappedLocation['showAlternativeLocations'] = !in_array($mappedLocation['id'], self::EXCLUSIVE_LOCATIONS);
-
-            // Check for service-based location hiding
-            foreach (self::DONT_SHOW_LOCATION_BY_SERVICES as $avoidByServices) {
-                if (in_array((int) $mappedLocation['id'], $avoidByServices['locations'])) {
-                    $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
-                    break;
-                }
-            }
-
-            // Map service references for this location
-            $durationCommonDivisor = null;
-            foreach ($location['extendedServiceReferences'] ?? [] as $reference) {
-                if (!isset($mappedServices[$reference['refId']])) {
-                    continue;
-                }
-
-                $service = $mappedServices[$reference['refId']];
-                $serviceRef = [
-                    'service' => $reference['refId'],
-                    'contact' => [],
-                    'hint' => false,
-                    'url' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
-                    'appointment' => [
-                        'link' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
-                        'slots' => '1',
-                        'external' => false,
-                        'allowed' => true
-                    ],
-                    'onlineprocessing' => [
-                        'description' => null,
-                        'link' => str_replace('{serviceId}', $reference['refId'], $this->publicUrl . "/services/{serviceId}")
-                    ],
-                    'duration' => $mappedServices[$reference['refId']]['duration'] ?? 30
-                ];
-
-                // Create location reference for the service (reverse relationship)
-                $locationRef = [
-                    'location' => $mappedLocation['id'],
-                    'authority' => [
-                        'id' => '1',
-                        'name' => 'Stadtverwaltung München',
-                        'webinfo' => 'https://muenchen.de'
-                    ],
-                    'url' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
-                    'appointment' => [
-                        'link' => str_replace(['{serviceId}', '{locationId}'], [$reference['refId'], $mappedLocation['id']], $this->publicUrl . "/services/{serviceId}/locations/{locationId}"),
-                        'slots' => '0',
-                        'external' => false,
-                        'multiple' => '1',
-                        'allowed' => true
-                    ],
-                    'responsibility' => null,
-                    'responsibility_hint' => null,
-                    'hint' => false
-                ];
-
-                if (isset($reference['public'])) {
-                    $serviceRef['public'] = $reference['public'];
-                }
-
-                if (isset($reference['fields'])) {
-                    foreach ($reference['fields'] as $field) {
-                        if ($field['name'] === 'ZMS_DAUER') {
-                            $serviceRef['duration'] = $field['value'];
-                        }
-                        if ($field['name'] === 'ZMS_MAX_ANZAHL') {
-                            $serviceRef['maxQuantity'] = $field['value'];
-                        }
-                        if ($field['name'] === 'ZMS_INTERN') {
-                            $serviceRef['public'] = !$field['value'];
-                        }
+            if (isset($reference['fields'])) {
+                foreach ($reference['fields'] as $field) {
+                    if ($field['name'] === 'ZMS_DAUER') {
+                        $serviceRef['duration'] = $field['value'];
+                    }
+                    if ($field['name'] === 'ZMS_MAX_ANZAHL') {
+                        $serviceRef['maxQuantity'] = $field['value'];
+                    }
+                    if ($field['name'] === 'ZMS_INTERN') {
+                        $serviceRef['public'] = !$field['value'];
                     }
                 }
-
-                // Calculate common divisor for slot times
-                if ($durationCommonDivisor === null) {
-                    $durationCommonDivisor = $serviceRef['duration'];
-                } else {
-                    $durationCommonDivisor = $this->getSlotTime($durationCommonDivisor, $serviceRef['duration']);
-                }
-
-                $mappedLocation['services'][] = $serviceRef;
-
-                // Add location reference to the service
-                $mappedServices[$reference['refId']]['locations'][] = $locationRef;
             }
 
-            // Set slot time for each service based on common divisor
-            foreach ($mappedLocation['services'] as $key => $service) {
-                if ($durationCommonDivisor && isset($service['duration'])) {
-                    $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
-                }
+            if ($durationCommonDivisor === null) {
+                $durationCommonDivisor = $serviceRef['duration'];
+            } else {
+                $durationCommonDivisor = $this->getSlotTime($durationCommonDivisor, $serviceRef['duration']);
             }
 
-            // Set location-level slot properties
-            $mappedLocation['slotTimeInMinutes'] = $durationCommonDivisor;
-            $mappedLocation['forceSlotTimeUpdate'] = true;
-
-            $mappedLocations[] = $mappedLocation;
+            $mappedLocation['services'][] = $serviceRef;
+            $mappedServices[$reference['refId']]['locations'][] = $locationRef;
         }
 
+        return $durationCommonDivisor;
+    }
+
+    private function calculateSlotTimes(array &$mappedLocation, ?int $durationCommonDivisor): void
+    {
+        foreach ($mappedLocation['services'] as $key => $service) {
+            if ($durationCommonDivisor && isset($service['duration'])) {
+                $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
+            }
+        }
+
+        $mappedLocation['slotTimeInMinutes'] = $durationCommonDivisor;
+        $mappedLocation['forceSlotTimeUpdate'] = true;
+    }
+
+    private function buildLocationResponse(array $mappedLocations): array
+    {
         return [
             'data' => $mappedLocations,
             'meta' => [
