@@ -445,10 +445,8 @@ class Munich
     /**
      * Get service combinations (services that can be booked together)
      */
-    protected function getServiceCombinations($serviceId)
+    protected function getServiceCombinations(int $serviceId): ?array
     {
-        $serviceId = (int) $serviceId;
-
         foreach (self::SERVICE_COMBINATIONS as $combo) {
             if (empty($combo)) {
                 continue;
@@ -467,7 +465,7 @@ class Munich
     /**
      * Calculate greatest common divisor for slot times
      */
-    protected function getSlotTime($a, $b)
+    protected function getSlotTime(int $a, int $b): int
     {
         $slotTimes = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60];
         $slotTime = 1;
