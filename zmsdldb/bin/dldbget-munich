@@ -54,15 +54,20 @@ if ($rollbackDay !== "none") {
 print("No rollback is requested, fetching current Munich SADB export...\n\n");
 
 $transformer = new Munich();
-$data = $transformer->fetchLatestExport($indexUrl);
+try {
+    $data = $transformer->fetchLatestExport($indexUrl);
+} catch (\Exception $e) {
+    echo "Error: Failed to fetch Munich SADB export: " . $e->getMessage() . "\n\n";
+    exit(1);
+}
 
 print("Transforming services...\n\n");
 $servicesData = $transformer->transformServices($data);
-file_put_contents($destinationPath . '/services_de.json', json_encode($servicesData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+writeJsonFile($destinationPath . '/services_de.json', $servicesData);
 
 print("Transforming locations...\n\n");
 $locationsData = $transformer->transformLocations($data, $servicesData);
-file_put_contents($destinationPath . '/locations_de.json', json_encode($locationsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+writeJsonFile($destinationPath . '/locations_de.json', $locationsData);
 
 // Helper to safely write JSON files
 function writeJsonFile($path, $data) {
