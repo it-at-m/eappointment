@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
+use DateTime;
 
 /**
   * Handle requests concerning services
@@ -34,6 +35,22 @@ class ProcessSearch extends BaseController
             ->isNumber()
             ->setDefault(1)
             ->getValue();
+        $service = $validator->getParameter('service')
+            ->isString()
+            ->setDefault('')
+            ->getValue();
+        $provider = $validator->getParameter('provider')
+            ->isString()
+            ->setDefault('')
+            ->getValue();
+        $date = $validator->getParameter('date')
+            ->isString()
+            ->setDefault(null)
+            ->getValue();
+        $userAction = $validator->getParameter('user')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
         $perPage = $validator->getParameter('perPage')
             ->isNumber()
             ->setDefault(100)
@@ -54,7 +71,11 @@ class ProcessSearch extends BaseController
             $logList = \App::$http
                 ->readGetResult("/log/process/$queryString/", [
                         'page' => $page,
-                        'perPage' => $perPage
+                        'perPage' => $perPage,
+                        'service' => trim($service),
+                        'provider' => trim($provider),
+                        'userAction' => (int) $userAction,
+                        'date' => $date
                     ])
                 ->getCollection();
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
@@ -70,6 +91,10 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
+                'service' => trim($service),
+                'provider' => trim($provider),
+                'userAction' => (int) $userAction,
+                'date' => $date,
                 'page' => $page,
                 'perPage' => $perPage,
                 'workstation' => $workstation,

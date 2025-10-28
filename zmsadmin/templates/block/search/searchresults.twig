@@ -1,13 +1,47 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
 
-        {% block board_title %}
-            <span tabindex="1" id="search-result-title">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchProcessQuery }}"</span>
-        {% endblock %}
-
     {% block board_body %}
         <script>
             document.getElementById("search-result-title").focus();
         </script>
+
+        <form method="get" action="">
+            <div class="grid m-5">
+                <div class="grid__item one-whole" style="margin-bottom: 12px;">
+                    <label for="calendar-date-from" class="form-label">Gesamtsuche</label><br>
+                    <input type="text" name="query" value="{{ searchProcessQuery }}" style="width: 100%;height: 30px;">
+                </div>
+
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <label for="calendar-date-from" class="form-label">Dienstleistung</label><br>
+                    <input type="text" name="service" value="{{ service }}" style="width: 100%;height: 30px;">
+                </div>
+
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <label for="calendar-date-from" class="form-label">Standort</label><br>
+                    <input type="text" name="provider" value="{{ provider }}" style="width: 100%;height: 30px;">
+                </div>
+
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <label for="calendar-date-from" class="form-label">Datum</label>
+                    <input type="date" id="adsa" name="date" value="{{ date }}" class="form-control">
+                </div>
+
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <label for="calendar-date-from" class="form-label">Sachbearbeiter</label><br>
+
+                    <input type="radio" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="1">Ja</label>
+                    <input type="radio" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="2">Nein</label>
+                    <input type="radio" name="user" value="0" {% if userAction == 0 %}checked="checked"{% endif %}> <label for="3">Egal</label>
+                </div>
+
+                <input type="hidden" name="perPage" value="{{ perPage }}">
+
+                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                    <button type="submit" class="btn btn-primary">Übernehmen</button>
+                </div>
+            </div>
+        </form>
 
         <div tabindex="1" class="table-responsive-wrapper">
             <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
@@ -87,6 +121,10 @@
 
             <form method="get" action="">
                 <input type="hidden" name="query" value="{{ searchProcessQuery }}">
+                <input type="hidden" name="service" value="{{ service }}">
+                <input type="hidden" name="provider" value="{{ provider }}">
+                <input type="hidden" name="user" value="{{ userAction }}">
+                <input type="hidden" name="date" value="{{ date }}">
                 <label for="perPage">Pro Seite</label>
                 <input
                         type="number"
@@ -100,8 +138,25 @@
             </form>
 
             <div class="pagination">
-                {% set prevParams = (queryParams ?? {})|merge({'query': searchProcessQuery, 'page': currentPage - 1, 'perPage': currentPerPage}) %}
-                {% set nextParams = (queryParams ?? {})|merge({'query': searchProcessQuery, 'page': currentPage + 1, 'perPage': currentPerPage}) %}
+                {% set prevParams = (queryParams ?? {})|merge({
+                    'query': searchProcessQuery,
+                    'page': currentPage - 1,
+                    'perPage': currentPerPage,
+                    'service': service,
+                    'provider': provider,
+                    'user': userAction,
+                    'date': date
+                }) %}
+
+                {% set nextParams = (queryParams ?? {})|merge({
+                    'query': searchProcessQuery,
+                    'page': currentPage + 1,
+                    'perPage': currentPerPage,
+                    'service': service,
+                    'provider': provider,
+                    'user': userAction,
+                    'date': date
+                }) %}
 
                 {% if currentPage > 1 %}
                     <a href="?{{ prevParams|url_encode }}">&lt; Vorherige Seite</a>
