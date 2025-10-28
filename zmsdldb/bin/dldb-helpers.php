@@ -41,13 +41,18 @@ class DldbHelpers
     {
         $envValue = getenv('ZMS_ENV');
         if ($envValue !== false) {
-            $retentionSetting = explode(',', $this->config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
-            if ($retentionSetting[0] !== "none") {
-                echo "Retention period is set in admin system config {$retentionSetting[0]} days.\n\n";
-                return (int)$retentionSetting[0];
-            }
+                    $retentionSetting = explode(',', $this->config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
+                    $val = $retentionSetting[0] ?? '';
+                    if (strtolower((string)$val) !== 'none') {
+                        if (ctype_digit((string)$val) && (int)$val > 0) {
+                            echo "Retention period is set in admin system config {$val} days.\n\n";
+                            return (int)$val;
+                        }
+                        echo "Invalid retention value '{$val}', falling back to 7 days.\n\n";
+                        return 7;
+                    }
         }
-        echo "Using default rention period 7 days.\n\n";
+                echo "Using default retention period 7 days.\n\n";
         return 7;
     }
 
