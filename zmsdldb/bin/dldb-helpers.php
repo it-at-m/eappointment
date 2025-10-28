@@ -165,12 +165,11 @@ class DldbHelpers
         }
     }
 
-    public function ensureDestinationDirectory()
-    {
-        if (!is_dir($this->destinationPath) && !mkdir($this->destinationPath, 0777, true) && !is_dir($this->destinationPath)) {
-            echo "Failed to create the destination directory at $this->destinationPath\n\n";
-            exit(1);
-        }
-    }
+            public function ensureDestinationDirectory()
+            {
+                if (!is_dir($this->destinationPath) && !mkdir($this->destinationPath, 0755, true) && !is_dir($this->destinationPath)) {
+                    throw new \RuntimeException("Failed to create the destination directory at {$this->destinationPath}");
+                }
+            }
 }
 
