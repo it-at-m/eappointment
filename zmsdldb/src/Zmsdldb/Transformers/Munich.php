@@ -118,7 +118,7 @@ class Munich
     /**
      * Fetch latest Munich SADB export and return the data
      */
-    public function fetchLatestExport($indexUrl)
+    public function fetchLatestExport(string $indexUrl): array
     {
         try {
             $response = Request::get($indexUrl)->send();
@@ -227,7 +227,7 @@ class Munich
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function transformLocations($data, $servicesData = null)
+    public function transformLocations(array $data, ?array $servicesData = null): array
     {
         $mappedServices = [];
         if ($servicesData) {
