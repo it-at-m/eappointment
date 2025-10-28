@@ -65,37 +65,47 @@ class DldbHelpers
         return "none";
     }
 
-    public function performRollback($rollbackDay)
-    {
-        if ($rollbackDay === "none") {
-            return false;
-        }
-
-        echo "Rollback to day $rollbackDay is requested.\n\n";
-
-        $backupDirectories = glob($this->backupPath . '/*', GLOB_ONLYDIR);
-        usort($backupDirectories, function($a, $b) {
-            return filemtime($b) - filemtime($a);
-        });
-
-        if (isset($backupDirectories[$rollbackDay - 1])) {
-            $rollbackDir = $backupDirectories[$rollbackDay - 1];
-            echo "Rolling back using backup from: $rollbackDir\n\n";
-
-            foreach (glob($rollbackDir . '/*.json') as $file) {
-                $destFile = $this->destinationPath . '/' . basename($file);
-                if (!copy($file, $destFile)) {
-                    echo "Error: Failed to rollback $file to $destFile\n\n";
-                } else {
-                    echo "Rolled back $file to $destFile\n\n";
+            public function performRollback($rollbackDay)
+            {
+                if ($rollbackDay === "none" || $rollbackDay === null || (int)$rollbackDay < 1) {
+                    return false;
                 }
+
+                echo "Rollback to day $rollbackDay is requested.\n\n";
+
+                // Ensure target paths exist
+                $this->ensureDestinationDirectory();
+                if (!is_dir($this->backupPath)) {
+                    echo "No backups directory at {$this->backupPath}\n\n";
+                    return false;
+                }
+
+                $backupDirectories = glob($this->backupPath . '/*', GLOB_ONLYDIR) ?: [];
+                usort($backupDirectories, function($a, $b) {
+                    return filemtime($b) - filemtime($a);
+                });
+
+                if (!isset($backupDirectories[$rollbackDay - 1])) {
+                    echo "Error: Specified rollback day $rollbackDay does not exist in backups.\n\n";
+                    return false;
+                }
+
+                $rollbackDir = $backupDirectories[$rollbackDay - 1];
+                echo "Rolling back using backup from: $rollbackDir\n\n";
+
+                $hadError = false;
+                foreach (glob($rollbackDir . '/*.json') as $file) {
+                    $destFile = $this->destinationPath . '/' . basename($file);
+                    if (!@copy($file, $destFile)) {
+                        echo "Error: Failed to rollback $file to $destFile\n\n";
+                        $hadError = true;
+                    } else {
+                        echo "Rolled back $file to $destFile\n\n";
+                    }
+                }
+
+                return $hadError ? false : true;
             }
-            return true;
-        } else {
-            echo "Error: Specified rollback day $rollbackDay does not exist in backups.\n\n";
-            return false;
-        }
-    }
 
     public function checkAndCreateBackup($newFiles)
     {
