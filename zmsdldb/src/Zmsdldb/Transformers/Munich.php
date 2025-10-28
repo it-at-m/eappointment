@@ -125,23 +125,28 @@ class Munich
     public function fetchLatestExport(string $indexUrl): array
     {
         try {
-            $response = Request::get($indexUrl)->send();
+            $response = Request::get($indexUrl)->timeout(15)->send();
+            if ((int)($response->code ?? 0) !== 200) {
+                throw new \RuntimeException("Index fetch failed with status {$response->code}");
+            }
             $content = $response->raw_body;
 
-            // Extract the latest export URL from the index page
-            $urls = explode('https', $content);
-            $latestUrl = 'https' . trim(end($urls));
+            // Extract JSON export URLs using regex and pick the last one (latest)
+            if (!preg_match_all('#https://[^"\'\'\s<>]+\\.json#i', $content, $matches) || empty($matches[0])) {
+                throw new \RuntimeException('No JSON export links found on index page');
+            }
+            $latestUrl = end($matches[0]);
 
-            if ($this->logger) {
-                $this->logger->info('Fetching Munich export', ['url' => $latestUrl]);
+            $this->logger?->info('Fetching Munich export', ['url' => $latestUrl]);
+
+            $exportResponse = Request::get($latestUrl)->timeout(30)->send();
+            if ((int)($exportResponse->code ?? 0) !== 200) {
+                throw new \RuntimeException("Export fetch failed with status {$exportResponse->code}");
             }
 
-            $exportResponse = Request::get($latestUrl)->send();
-            return json_decode($exportResponse->raw_body, true);
-        } catch (\Exception $e) {
-            if ($this->logger) {
-                $this->logger->error('Failed to fetch Munich export', ['error' => $e->getMessage()]);
-            }
+            return json_decode($exportResponse->raw_body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            $this->logger?->error('Failed to fetch Munich export', ['error' => $e->getMessage(), 'url' => $indexUrl]);
             throw $e;
         }
     }
