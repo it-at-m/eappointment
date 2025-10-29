@@ -196,9 +196,9 @@
               {{ t("appointmentSuccessfullyCanceledText") }}
             </template>
 
-            <template #header>{{
-              t("appointmentSuccessfullyCanceledHeader")
-            }}</template>
+            <template #header
+              >{{ t("appointmentSuccessfullyCanceledHeader") }}
+            </template>
           </muc-callout>
           <muc-callout
             v-if="hasCancelAppointmentError"
@@ -225,9 +225,9 @@
               {{ t("appointmentSuccessfullyBookedText") }}
             </template>
 
-            <template #header>{{
-              t("appointmentSuccessfullyBookedHeader")
-            }}</template>
+            <template #header
+              >{{ t("appointmentSuccessfullyBookedHeader") }}
+            </template>
           </muc-callout>
           <div
             v-if="confirmAppointmentSuccess"
@@ -751,53 +751,54 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  if (isBookingAppointment.value || !appointment.value) return;
-
-  isBookingAppointment.value = true;
-  clearContextErrors(errorStateMap.value);
-
-  const canDirectConfirm =
-    !!appointment.value?.processId && !!appointment.value?.authKey;
-
-  if (isRebooking.value && canDirectConfirm) {
-    nextConfirmAppointment({
-      id: appointment.value.processId,
-      authKey: appointment.value.authKey,
-    });
+  if (isBookingAppointment.value) {
     return;
   }
 
-  if (props.globalState.isLoggedIn && canDirectConfirm) {
-    nextConfirmAppointment({
-      id: appointment.value.processId,
-      authKey: appointment.value.authKey,
-    });
-    return;
-  }
+  if (appointment.value) {
+    isBookingAppointment.value = true;
+    clearContextErrors(errorStateMap.value);
 
-  currentContext.value = "preconfirm";
-  preconfirmAppointment(props.globalState, appointment.value)
-    .then((data) => {
-      if ((data as any)?.errors?.length > 0) {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-        return;
-      }
-      if ((data as AppointmentDTO).processId != undefined) {
-        appointment.value = data as AppointmentDTO;
-        if (isRebooking.value && rebookedAppointment.value) {
-          currentContext.value = "cancel";
-          cancelAppointment(props.globalState, rebookedAppointment.value);
-        }
-        increaseCurrentView();
-      }
-    })
-    .finally(() => {
-      isBookingAppointment.value = false;
-    });
+    if (isRebooking.value) {
+      nextConfirmAppointment({
+        id: appointment.value.processId,
+        authKey: appointment.value.authKey,
+      });
+      return;
+    }
+
+    if (props.globalState.isLoggedIn) {
+      nextConfirmAppointment({
+        id: appointment.value.processId,
+        authKey: appointment.value.authKey,
+      });
+    } else {
+      currentContext.value = "preconfirm";
+      preconfirmAppointment(props.globalState, appointment.value)
+        .then((data) => {
+          if ((data as any)?.errors?.length > 0) {
+            handleErrorApiResponse(
+              data,
+              errorStates.errorStateMap,
+              currentErrorData.value
+            );
+            return;
+          }
+
+          if ((data as AppointmentDTO).processId != undefined) {
+            appointment.value = data as AppointmentDTO;
+            if (isRebooking.value && rebookedAppointment.value) {
+              currentContext.value = "cancel";
+              cancelAppointment(props.globalState, rebookedAppointment.value);
+            }
+            increaseCurrentView();
+          }
+        })
+        .finally(() => {
+          isBookingAppointment.value = false;
+        });
+    }
+  }
 };
 
 const nextCancelAppointment = () => {
@@ -1028,6 +1029,7 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
         }
       } else {
         const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+
         if (
           firstErrorCode === "processNotPreconfirmedAnymore" ||
           firstErrorCode === "appointmentNotFound"
