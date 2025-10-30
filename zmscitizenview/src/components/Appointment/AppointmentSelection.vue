@@ -44,15 +44,23 @@
       </template>
     </muc-callout>
   </div>
-  <div v-else-if="!error && hasSelectedProviderWithAppointments">
+  <div
+    v-else-if="
+      !error &&
+      (hasSelectedProviderWithAppointments ||
+        !availableDaysFetched ||
+        isSwitchingProvider)
+    "
+    class="m-component"
+  >
     <CalendarListToggle
       :t="t"
       :isListView="isListView"
       @update:isListView="isListView = $event"
     />
     <div
-      class="m-spinner-container"
       v-if="!availableDaysFetched || isSwitchingProvider"
+      class="m-spinner-container"
     >
       <MucPercentageSpinner :aria-label="t('loading')" />
     </div>
