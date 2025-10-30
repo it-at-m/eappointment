@@ -56,6 +56,7 @@ INSERT INTO `request_variant` (`id`, `name`) VALUES
 
 UNLOCK TABLES;
 
+UPDATE `buerger` SET `status` = 'confirmed' WHERE `BuergerID` IN (10118, 10114, 10030);
 
 /* ------------------------------------------------------------------
    Test-Daten OverviewCalendarTest, OverallCalendarRead
@@ -109,4 +110,3 @@ VALUES
     (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
 
 UNLOCK TABLES;
-
