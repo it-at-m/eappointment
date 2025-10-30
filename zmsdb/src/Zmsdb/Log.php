@@ -157,7 +157,9 @@ class Log extends Base
         $conditions = [];
 
         foreach ($fieldValues as $field => $value) {
-            if ($value === null || $value === '') continue;
+            if ($value === null || $value === '') {
+                continue;
+            }
 
             $escapedField = addslashes($field);
             $escapedValue = addslashes($value);
