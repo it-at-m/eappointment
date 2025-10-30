@@ -72,8 +72,8 @@ class ProcessSearch extends BaseController
                 ->readGetResult("/log/process/$queryString/", [
                         'page' => $page,
                         'perPage' => $perPage,
-                        'service' => trim($service),
-                        'provider' => trim($provider),
+                        'service' => trim($service ?? ''),
+                        'provider' => trim($provider ?? ''),
                         'userAction' => (int) $userAction,
                         'date' => $date
                     ])
