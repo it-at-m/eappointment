@@ -102,7 +102,7 @@ class ReportWaitingOrganisationTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-03'], [], []);
-        $this->assertStringContainsString('<th class="statistik">Max.</th>', (string) $response->getBody());
+        $this->assertStringContainsString('<th class="statistik">Zeilenmaximum</th>', (string) $response->getBody());
         $this->assertStringContainsString(
             'Auswertung für Charlottenburg-Wilmersdorf im Zeitraum März 2016',
             (string) $response->getBody()

@@ -264,5 +264,20 @@
   "maintenancePageHeader": "Wir aktualisieren unser System für Sie.",
   "maintenancePageText": "Zur Zeit befindet sich unser System in der Wartung. Bitte versuchen Sie es später noch einmal.",
   "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
-  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal."
+  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
+  "appointmentType": "Art des Termins",
+  "appointmentTypes": {
+    "1": "Vor-Ort-Termin",
+    "2": "Telefon-Termin",
+    "3": "Videokonferenz",
+    "4": "Termin für eine Einzelperson",
+    "5": "Termin für eine Familie",
+    "6": "Termin für einen Kleinkunden",
+    "7": "Termin für einen Großkunden"
+  },
+  "locationVariantText": {
+    "1": "Sie kommen persönlich an unserem Standort vorbei.",
+    "2": "Wir rufen Sie unter Ihrer gewünschten Nummer an.",
+    "3": "Sie erhalten einen Einwahllink für ein Online-Meeting."
+  }
 }

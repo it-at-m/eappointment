@@ -238,5 +238,20 @@
   "maintenancePageHeader": "We are updating our system for you.",
   "maintenancePageText": "Our system is currently under maintenance. Please try again later.",
   "systemFailurePageHeader": "The function is currently not available.",
-  "systemFailurePageText": "There is currently a technical problem with this function. Please try again later."
+  "systemFailurePageText": "There is currently a technical problem with this function. Please try again later.",
+  "appointmentType": "Type of appointment",
+  "appointmentTypes": {
+    "1": "On-site appointment",
+    "2": "Phone appointment",
+    "3": "Video conference",
+    "4": "Appointment for an individual",
+    "5": "Appointment for a family",
+    "6": "Appointment for a small client",
+    "7": "Appointment for a large client"
+  },
+  "locationVariantText": {
+    "1": "You will come to our location in person.",
+    "2": "We will call you at your preferred number.",
+    "3": "You will receive dial-in details and instructions by email."
+  }
 }
