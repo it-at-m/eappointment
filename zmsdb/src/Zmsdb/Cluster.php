@@ -147,7 +147,7 @@ class Cluster extends Base
         \DateTimeInterface $dateTime,
         $resolveReferences = 0
     ) {
-        $cluster = $this->readEntity($clusterId, 1, true);
+        $cluster = $this->readEntity($clusterId, 1);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($cluster->scopes as $scope) {
             $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
