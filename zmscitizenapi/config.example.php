@@ -3,6 +3,7 @@ define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://l
 define('MAINTENANCE_MODE_ENABLED', filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN));
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscitizenapi');
+define('ZMS_API_PASSWORD_CITIZENAPI', getenv('ZMS_API_PASSWORD_CITIZENAPI'));
 
 class App extends \BO\Zmscitizenapi\Application
 {
@@ -25,4 +26,15 @@ class App extends \BO\Zmscitizenapi\Application
      * Name of the module
      */
     const MODULE_NAME = ZMS_MODULE_NAME;
+
+    /**
+     * User for the upstream API
+     */
+    public static $httpUser = '_system_citizenapi';
+
+    /**
+     * Password for the upstream API
+     */
+    public static $httpPassword = ZMS_API_PASSWORD_CITIZENAPI;
+
 }

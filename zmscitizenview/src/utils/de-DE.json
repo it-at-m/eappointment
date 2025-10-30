@@ -85,8 +85,8 @@
   "apiErrorIpBlacklistedHeader": "IP-Adresse blockiert",
   "apiErrorIpBlacklistedText": "Sie haben die maximale Anzahl an Anfragen erreicht. Bitte versuchen Sie es später noch einmal.",
   "apiErrorLoadingAppointmentsHeader": "Ihre Termine können zur Zeit nicht geladen werden.",
-  "apiErrorLoadingAppointmentsText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
-  "apiErrorLoadingSingleAppointmentHeader": "Ihr Termin kann zur Zeit nicht geladen werden.",
+  "apiErrorLoadingAppointmentsText": "Bitte überprüfen Sie, ob Sie den korrekten Link sowie das richtige Konto für die Anmeldung genutzt haben.",
+  "apiErrorLoadingSingleAppointmentHeader": "Ihr Termin konnte nicht geladen werden.",
   "apiErrorMailNotFoundHeader": "Mail-Vorlage nicht gefunden",
   "apiErrorMailNotFoundText": "Leider kann derzeit der Termin nicht gebucht werden. Die angefragte Mail-Vorlage konnte nicht gefunden werden. Bitte versuchen Sie es später erneut.",
   "apiErrorMismatchedArraysHeader": "Interner Fehler",
@@ -146,6 +146,7 @@
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen",
+  "appointmentHintHeader": "Hinweis zu Ihrem Termin",
   "appointmentNumber": "Terminnummer",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde gebucht.",
   "appointmentSuccessfullyBookedText": "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.",
@@ -204,6 +205,8 @@
   "loadingAppointmentTimes": "Verfügbare Termine werden geladen",
   "loadingCustomerInfoUpdate": "Kundendaten werden aktualisiert",
   "location": "Ort",
+  "loggedinHeader": "Sie sind angemeldet.",
+  "loggedinText": "Ihre Kontaktdaten wurden aus Ihrem Konto übernommen.",
   "login": "Anmelden",
   "mailAddress": "E-Mail-Adresse",
   "minutes": "Minuten",
@@ -252,6 +255,7 @@
   "upcomingAppointments": "Kommende Termine",
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
+  "viewAppointment": "Termin ansehen",
   "newAppointmentsInfoLink": "Wann gibt es neue Termine?",
   "noLoginButton": "Termin anzeigen",
   "noLoginInfo": "Sie sind nicht angemeldet.",
@@ -260,5 +264,20 @@
   "maintenancePageHeader": "Wir aktualisieren unser System für Sie.",
   "maintenancePageText": "Zur Zeit befindet sich unser System in der Wartung. Bitte versuchen Sie es später noch einmal.",
   "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
-  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal."
+  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
+  "appointmentType": "Art des Termins",
+  "appointmentTypes": {
+    "1": "Vor-Ort-Termin",
+    "2": "Telefon-Termin",
+    "3": "Videokonferenz",
+    "4": "Termin für eine Einzelperson",
+    "5": "Termin für eine Familie",
+    "6": "Termin für einen Kleinkunden",
+    "7": "Termin für einen Großkunden"
+  },
+  "locationVariantText": {
+    "1": "Sie kommen persönlich an unserem Standort vorbei.",
+    "2": "Wir rufen Sie unter Ihrer gewünschten Nummer an.",
+    "3": "Sie erhalten einen Einwahllink für ein Online-Meeting."
+  }
 }

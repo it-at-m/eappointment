@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Controllers\Appointment;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentCancelService;
+use BO\Zmscitizenapi\Services\Core\AuthenticationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,7 +27,8 @@ class AppointmentCancelController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
-        $result = $this->service->processCancel($request->getParsedBody());
+        $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
+        $result = $this->service->processCancel($request->getParsedBody(), $authenticatedUser);
 
         if (is_array($result) && isset($result['errors'])) {
             foreach ($result['errors'] as &$error) {

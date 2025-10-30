@@ -336,4 +336,49 @@ describe("AppointmentSummary", () => {
       expect(anyButtons.length).toBe(1);
     });
   });
+
+  describe("Location variants", () => {
+    it("should show address/hint and base text when no variant is set (variantId null)", () => {
+      const wrapper = createWrapper();
+
+      expect(wrapper.text()).toContain("Test Street 123");
+      expect(wrapper.text()).toContain("12345 Test City");
+      expect(wrapper.text()).toContain("Test Info");
+      expect(wrapper.text()).toContain("appointmentTypes.1");
+      expect(wrapper.text()).toContain("locationVariantText.1");
+    });
+
+    it("should show address/hint and base text for variant 1", async () => {
+      mockSelectedService.value.variantIdd = 1;
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.text()).toContain("Test Street 123");
+      expect(wrapper.text()).toContain("12345 Test City");
+      expect(wrapper.text()).toContain("Test Info");
+
+      expect(wrapper.text()).toContain("appointmentTypes.1");
+      expect(wrapper.text()).toContain("locationVariantText.1");
+    });
+
+    it("should hide address/hint and show variant text for variant 2", async () => {
+      mockSelectedService.value.variantId = 2;
+      const wrapper = createWrapper();
+      await nextTick();
+
+      expect(wrapper.text()).not.toContain("Test Street 123");
+      expect(wrapper.text()).not.toContain("12345 Test City");
+
+      const borderBlocks = wrapper.findAll(".m-content.border-bottom");
+      const locationBlock = borderBlocks.find(b =>
+        b.text().includes("appointmentTypes.2")
+      );
+      expect(locationBlock).toBeTruthy();
+
+      expect(locationBlock!.text()).not.toContain("Test Info");
+
+      expect(wrapper.text()).toContain("appointmentTypes.2");
+      expect(wrapper.text()).toContain("locationVariantText.2");
+    });
+  });
 });

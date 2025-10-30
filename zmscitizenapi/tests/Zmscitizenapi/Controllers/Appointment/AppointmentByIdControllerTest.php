@@ -39,6 +39,11 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture("GET_process_ics_template.json")
                 ]
             ]
         );
@@ -112,10 +117,14 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             "serviceId" => 1063424,
             "serviceName" => "Gewerbe anmelden",
             "serviceCount" => 1,
-            "slotCount" => 1
+            "slotCount" => 1,
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('icsContent', $responseBody);
+        $this->assertStringContainsString('BEGIN:VCALENDAR', $responseBody['icsContent']);
+        unset($responseBody['icsContent']);
+        unset($expectedResponse['icsContent']);
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
