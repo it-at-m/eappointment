@@ -15,6 +15,8 @@ const config: Config = {
     "height",
     "focusable",
     "xlink:href",
+    "target",
+    "aria-label",
   ],
   FORBID_TAGS: ["img"],
 };
