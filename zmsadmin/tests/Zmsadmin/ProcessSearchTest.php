@@ -47,7 +47,7 @@ class ProcessSearchTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Suchergebnisse für "Test%20BO"', (string)$response->getBody());
+        $this->assertStringContainsString('<input type="text" name="query" value="Test%20BO"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
