@@ -46,7 +46,10 @@ describe("AppointmentOverviewView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentOverviewView, {
       props: {
-        baseUrl: mockBaseUrl,
+        globalState: {
+          mockBaseUrl,
+          isLoggedIn: true,
+        },
         appointmentDetailUrl: mockAppointmentDetailUrl,
         newAppointmentUrl: mockNewAppointmentUrl,
         overviewUrl: mockOverviewUrl,
@@ -76,11 +79,6 @@ describe("AppointmentOverviewView", () => {
   };
 
   describe("View States", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
     it("shows initial view after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -114,11 +112,6 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Edge Cases", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
     it("shows initial view after loading with 0 appointments", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;

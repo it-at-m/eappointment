@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
 
+use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -11,29 +12,29 @@ use BO\Zmscitizenapi\Services\Core\MapperService;
 
 class AppointmentUpdateService
 {
-    public function processUpdate(array $body): ThinnedProcess|array
+    public function processUpdate(array $body, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
 
-        $errors = $this->validateClientData($clientData);
+        $errors = $this->validateClientData($clientData, $authenticatedUser);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
+        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
 
         $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
-        return $this->saveProcessUpdate($updatedProcess);
+        return $this->saveProcessUpdate($updatedProcess, $authenticatedUser);
     }
 
-    private function validateClientData(object $data): array
+    private function validateClientData(object $data, ?AuthenticatedUser $authenticatedUser): array
     {
         $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
         if (is_array($authErrors) && !empty($authErrors['errors'])) {
             return $authErrors;
         }
 
-        $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey);
+        $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey, $authenticatedUser);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -70,9 +71,9 @@ class AppointmentUpdateService
         ];
     }
 
-    private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
+    private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
+        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey, $user);
     }
 
     private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess
@@ -85,9 +86,12 @@ class AppointmentUpdateService
         return $process;
     }
 
-    private function saveProcessUpdate(ThinnedProcess $process): ThinnedProcess|array
+    private function saveProcessUpdate(ThinnedProcess $process, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
+        if (!is_null($authenticatedUser) && is_null($processEntity->getExternalUserId())) {
+            $processEntity->setExternalUserId($authenticatedUser->getExternalUserId());
+        }
         $result = ZmsApiFacadeService::updateClientData($processEntity);
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
