@@ -70,11 +70,11 @@
               <br />
               <span
                 v-if="
-                  selectedProvider &&
-                  selectedProvider.scope &&
-                  selectedProvider.scope.hint
+                  appointment &&
+                  appointment.scope &&
+                  appointment.scope.hint
                 "
-                v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                v-html="sanitizeHtml(appointment.scope.hint)"
               ></span>
             </p>
           </div>
