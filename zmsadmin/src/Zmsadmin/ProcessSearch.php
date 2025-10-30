@@ -72,8 +72,8 @@ class ProcessSearch extends BaseController
                 ->readGetResult("/log/process/$queryString/", [
                         'page' => $page,
                         'perPage' => $perPage,
-                        'service' => trim($service ?? ''),
-                        'provider' => trim($provider ?? ''),
+                        'service' => $service ? trim($service) : null,
+                        'provider' => $provider ? trim($provider) : null,
                         'userAction' => (int) $userAction,
                         'date' => $date
                     ])
@@ -91,8 +91,8 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
-                'service' => trim($service),
-                'provider' => trim($provider),
+                'service' => $service ? trim($service) : null,
+                'provider' => $provider ? trim($provider) : null,
                 'userAction' => (int) $userAction,
                 'date' => $date,
                 'page' => $page,
