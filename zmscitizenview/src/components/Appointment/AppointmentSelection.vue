@@ -50,9 +50,15 @@
       :isListView="isListView"
       @update:isListView="isListView = $event"
     />
+    <div
+      class="m-spinner-container"
+      v-if="!availableDaysFetched || isSwitchingProvider"
+    >
+      <MucPercentageSpinner :aria-label="t('loading')" />
+    </div>
     <CalendarView
       ref="calendarViewRef"
-      v-if="!isListView"
+      v-else-if="!isListView"
       :t="t"
       :selectedDay="selectedDay"
       :calendarKey="calendarKey"
@@ -89,7 +95,7 @@
 
     <ListView
       ref="listViewRef"
-      v-if="isListView"
+      v-else-if="isListView"
       :t="t"
       :isLoadingAppointments="isLoadingAppointments"
       :availabilityInfoHtml="availabilityInfoHtml"
@@ -190,7 +196,11 @@ import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
-import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucPercentageSpinner,
+} from "@muenchen/muc-patternlab-vue";
 import {
   computed,
   inject,
@@ -1288,5 +1298,17 @@ watch(
 
 #listViewAccordion .m-accordion__section-button {
   font-size: 1.125rem !important;
+}
+
+.m-spinner-container {
+  background-color: var(
+    --color-beau-blue-xlight,
+    var(--color-neutrals-blue-xlight)
+  );
+  padding: 25px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
