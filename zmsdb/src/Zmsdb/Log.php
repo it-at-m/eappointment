@@ -141,8 +141,6 @@ class Log extends Base
             $perPage,
             ($page - 1)  * $perPage
         );
-
-        return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
     }
 
     public function getBySearchParams(

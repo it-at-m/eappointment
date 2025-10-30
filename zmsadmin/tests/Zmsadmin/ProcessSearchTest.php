@@ -36,7 +36,11 @@ class ProcessSearchTest extends Base
                     'url' => '/log/process/Test%2520BO/',
                     'parameters' => [
                         'page' => 1,
-                        'perPage' => 100
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -71,7 +75,11 @@ class ProcessSearchTest extends Base
                     'url' => '/log/process/100005/',
                     'parameters' => [
                         'page' => 2,
-                        'perPage' => 20
+                        'perPage' => 20,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
@@ -110,7 +118,11 @@ class ProcessSearchTest extends Base
                     'url' => '/log/process/Test%2520BO/',
                     'parameters' => [
                         'page' => 1,
-                        'perPage' => 100
+                        'perPage' => 100,
+                        'service' => null,
+                        'provider' => null,
+                        'userAction' => 0,
+                        'date' => null
                     ],
                     'response' => $this->readFixture("GET_loglist.json")
                 ]
