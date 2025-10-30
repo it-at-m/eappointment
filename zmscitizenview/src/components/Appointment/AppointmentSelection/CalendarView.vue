@@ -36,111 +36,110 @@
           {{ t("availableTimes") }}
         </h3>
       </div>
-      <div
-        class="m-content"
-        style="margin: 8px 0 0 0"
-        v-if="availabilityInfoHtml"
-      >
-        <muc-button
-          variant="ghost"
-          icon="information"
-          icon-shown-left
-          @click="$emit('openInfo')"
-        >
-          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-        </muc-button>
-      </div>
-      <div
-        style="
-          margin-bottom: 20px;
-          background-color: var(--color-neutrals-blue-xlight);
-          padding: 12px 8px;
-        "
-      >
-        <h4>{{ formatDayFromDate(selectedDay) }}</h4>
-      </div>
 
-      <div
-        v-if="isLoadingAppointments && !isLoadingComplete"
-        class="m-content"
-        style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 80px;
-        "
-      ></div>
-
-      <div
-        v-else
-        v-for="[officeId, office] in timeSlotsInHoursByOffice"
-        :key="String(officeId) + String(selectedProviders[officeId])"
-      >
-        <div
-          v-if="
-            selectedProviders[officeId] &&
-            currentHour !== null &&
-            office.appointments.get(currentHour)
-          "
-        >
-          <template
-            v-for="[timeslot, times] in office.appointments"
-            :key="timeslot"
-          >
-            <TimeSlotGrid
-              v-if="
-                timeslot == currentHour ||
-                providersWithAppointments.length === 1
-              "
-              :officeId="officeId"
-              :times="times"
-              :timeLabel="`${timeslot}:00-${timeslot}:59`"
-              :showLocationTitle="(selectableProviders?.length || 0) > 1"
-              :officeNameById="officeNameById"
-              :isSlotSelected="isSlotSelected"
-              @selectTimeSlot="$emit('selectTimeSlot', $event)"
-            />
-          </template>
+      <template v-if="isLoadingAppointments && !isLoadingComplete">
+        <div class="m-content">
+          <div class="m-spinner-container">
+            <MucPercentageSpinner :aria-label="t('loading')" />
+          </div>
         </div>
-      </div>
+      </template>
 
-      <div
-        class="wrapper m-button-group"
-        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
-      >
-        <muc-button
-          :key="currentHour ?? 0"
-          icon="chevron-left"
-          icon-shown-left
-          variant="ghost"
-          @click="onEarlier('hour')"
-          :disabled="
-            currentHour === null ||
-            firstHour === null ||
-            currentHour <= firstHour ||
-            isLoadingAppointments
+      <template v-else>
+        <div
+          class="m-content"
+          style="margin: 8px 0 0 0"
+          v-if="availabilityInfoHtml"
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            @click="$emit('openInfo')"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
+        <div
+          style="
+            margin-bottom: 20px;
+            background-color: var(--color-neutrals-blue-xlight);
+            padding: 12px 8px;
           "
         >
-          <template #default>{{ t("earlier") }}</template>
-        </muc-button>
+          <h4>{{ formatDayFromDate(selectedDay) }}</h4>
+        </div>
 
-        <muc-button
-          :key="currentHour ?? 0"
-          class="float-right"
-          icon="chevron-right"
-          icon-shown-right
-          variant="ghost"
-          @click="onLater('hour')"
-          :disabled="
-            currentHour === null ||
-            lastHour === null ||
-            currentHour >= lastHour ||
-            isLoadingAppointments
-          "
+        <div
+          v-for="[officeId, office] in timeSlotsInHoursByOffice"
+          :key="String(officeId) + String(selectedProviders[officeId])"
         >
-          <template #default>{{ t("later") }}</template>
-        </muc-button>
-      </div>
+          <div
+            v-if="
+              selectedProviders[officeId] &&
+              currentHour !== null &&
+              office.appointments.get(currentHour)
+            "
+          >
+            <template
+              v-for="[timeslot, times] in office.appointments"
+              :key="timeslot"
+            >
+              <TimeSlotGrid
+                v-if="
+                  timeslot == currentHour ||
+                  providersWithAppointments.length === 1
+                "
+                :officeId="officeId"
+                :times="times"
+                :timeLabel="`${timeslot}:00-${timeslot}:59`"
+                :showLocationTitle="(selectableProviders?.length || 0) > 1"
+                :officeNameById="officeNameById"
+                :isSlotSelected="isSlotSelected"
+                @selectTimeSlot="$emit('selectTimeSlot', $event)"
+              />
+            </template>
+          </div>
+        </div>
+
+        <div
+          class="wrapper m-button-group"
+          v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
+        >
+          <muc-button
+            :key="currentHour ?? 0"
+            icon="chevron-left"
+            icon-shown-left
+            variant="ghost"
+            @click="onEarlier('hour')"
+            :disabled="
+              currentHour === null ||
+              firstHour === null ||
+              currentHour <= firstHour ||
+              isLoadingAppointments
+            "
+          >
+            <template #default>{{ t("earlier") }}</template>
+          </muc-button>
+
+          <muc-button
+            :key="currentHour ?? 0"
+            class="float-right"
+            icon="chevron-right"
+            icon-shown-right
+            variant="ghost"
+            @click="onLater('hour')"
+            :disabled="
+              currentHour === null ||
+              lastHour === null ||
+              currentHour >= lastHour ||
+              isLoadingAppointments
+            "
+          >
+            <template #default>{{ t("later") }}</template>
+          </muc-button>
+        </div>
+      </template>
     </div>
 
     <!-- Day Part View (when appointments <= threshold) -->
@@ -161,106 +160,105 @@
           {{ t("availableTimes") }}
         </h3>
       </div>
-      <div
-        class="m-content"
-        style="margin: 8px 0 0 0"
-        v-if="availabilityInfoHtml"
-      >
-        <muc-button
-          variant="ghost"
-          icon="information"
-          icon-shown-left
-          @click="$emit('openInfo')"
-        >
-          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-        </muc-button>
-      </div>
-      <div
-        style="
-          margin-bottom: 20px;
-          background-color: var(--color-neutrals-blue-xlight);
-          padding: 12px 8px;
-        "
-      >
-        <h4>{{ formatDayFromDate(selectedDay) }}</h4>
-      </div>
 
-      <div
-        v-if="isLoadingAppointments && !isLoadingComplete"
-        class="m-content"
-        style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 80px;
-        "
-      ></div>
-
-      <div
-        v-else
-        v-for="[officeId, office] in timeSlotsInDayPartByOffice"
-        :key="String(officeId) + String(selectedProviders[officeId])"
-      >
-        <div
-          v-if="
-            selectedProviders[officeId] &&
-            office.appointments.get(currentDayPart)
-          "
-        >
-          <template
-            v-for="[timeslot, times] in office.appointments"
-            :key="timeslot"
-          >
-            <TimeSlotGrid
-              v-if="
-                timeslot == currentDayPart ||
-                providersWithAppointments.length === 1
-              "
-              :officeId="officeId"
-              :times="times"
-              :timeLabel="t(timeslot)"
-              :showLocationTitle="(selectableProviders?.length || 0) > 1"
-              :officeNameById="officeNameById"
-              :isSlotSelected="isSlotSelected"
-              @selectTimeSlot="$emit('selectTimeSlot', $event)"
-            />
-          </template>
+      <template v-if="isLoadingAppointments && !isLoadingComplete">
+        <div class="m-content">
+          <div class="m-spinner-container">
+            <MucPercentageSpinner :aria-label="t('loading')" />
+          </div>
         </div>
-      </div>
+      </template>
 
-      <div
-        class="wrapper m-button-group"
-        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
-      >
-        <muc-button
-          icon="chevron-left"
-          icon-shown-left
-          variant="ghost"
-          @click="onEarlier('dayPart')"
-          :disabled="
-            currentDayPart === 'am' ||
-            firstDayPart === 'pm' ||
-            isLoadingAppointments
+      <template v-else>
+        <div
+          class="m-content"
+          style="margin: 8px 0 0 0"
+          v-if="availabilityInfoHtml"
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            @click="$emit('openInfo')"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
+        <div
+          style="
+            margin-bottom: 20px;
+            background-color: var(--color-neutrals-blue-xlight);
+            padding: 12px 8px;
           "
         >
-          <template #default>{{ t("earlier") }}</template>
-        </muc-button>
+          <h4>{{ formatDayFromDate(selectedDay) }}</h4>
+        </div>
 
-        <muc-button
-          class="float-right"
-          icon="chevron-right"
-          icon-shown-right
-          variant="ghost"
-          @click="onLater('dayPart')"
-          :disabled="
-            currentDayPart === 'pm' ||
-            lastDayPart === 'am' ||
-            isLoadingAppointments
-          "
+        <div
+          v-for="[officeId, office] in timeSlotsInDayPartByOffice"
+          :key="String(officeId) + String(selectedProviders[officeId])"
         >
-          <template #default>{{ t("later") }}</template>
-        </muc-button>
-      </div>
+          <div
+            v-if="
+              selectedProviders[officeId] &&
+              office.appointments.get(currentDayPart)
+            "
+          >
+            <template
+              v-for="[timeslot, times] in office.appointments"
+              :key="timeslot"
+            >
+              <TimeSlotGrid
+                v-if="
+                  timeslot == currentDayPart ||
+                  providersWithAppointments.length === 1
+                "
+                :officeId="officeId"
+                :times="times"
+                :timeLabel="t(timeslot)"
+                :showLocationTitle="(selectableProviders?.length || 0) > 1"
+                :officeNameById="officeNameById"
+                :isSlotSelected="isSlotSelected"
+                @selectTimeSlot="$emit('selectTimeSlot', $event)"
+              />
+            </template>
+          </div>
+        </div>
+
+        <div
+          class="wrapper m-button-group"
+          v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
+        >
+          <muc-button
+            icon="chevron-left"
+            icon-shown-left
+            variant="ghost"
+            @click="onEarlier('dayPart')"
+            :disabled="
+              currentDayPart === 'am' ||
+              firstDayPart === 'pm' ||
+              isLoadingAppointments
+            "
+          >
+            <template #default>{{ t("earlier") }}</template>
+          </muc-button>
+
+          <muc-button
+            class="float-right"
+            icon="chevron-right"
+            icon-shown-right
+            variant="ghost"
+            @click="onLater('dayPart')"
+            :disabled="
+              currentDayPart === 'pm' ||
+              lastDayPart === 'am' ||
+              isLoadingAppointments
+            "
+          >
+            <template #default>{{ t("later") }}</template>
+          </muc-button>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -268,7 +266,11 @@
 <script setup lang="ts">
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
-import { MucButton, MucCalendar } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCalendar,
+  MucPercentageSpinner,
+} from "@muenchen/muc-patternlab-vue";
 import { nextTick } from "vue";
 
 import { APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW } from "@/utils/Constants";
@@ -469,5 +471,17 @@ function onLater(type: "hour" | "dayPart") {
 .no-top-margin,
 .no-top-margin h3 {
   margin-top: 0 !important;
+}
+
+.m-spinner-container {
+  background-color: var(
+    --color-beau-blue-xlight,
+    var(--color-neutrals-blue-xlight)
+  );
+  padding: 25px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
