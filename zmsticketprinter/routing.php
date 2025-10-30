@@ -64,6 +64,8 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get('/healthcheck/', '\BO\Zmsticketprinter\Healthcheck')
     ->setName("healthcheck");
+\App::$slim->get('/{path:.+}', '\BO\Zmsticketprinter\Index')
+    ->setName("IndexCatchAll");
 \App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
     return function (RequestInterface $request, ResponseInterface $response) {
         return \BO\Slim\Render::withHtml($response, '404.twig');
