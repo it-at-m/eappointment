@@ -515,4 +515,54 @@ class ReportWaitingScopeTest extends Base
             (string) $response->getBody()
         );
     }
+
+    public function testWithDownloadXLSX()
+    {
+        // Start output buffering to capture any output from the test
+        ob_start();
+        
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 3],
+                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/waitingscope/141/',
+                    'response' => $this->readFixture("GET_waitingscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/waitingscope/141/2016-03/',
+                    'response' => $this->readFixture("GET_waitingscope_141_032016.json")
+                ]
+            ]
+        );
+        $response = $this->render(['period' => '2016-03'], ['type' => 'xlsx'], []);
+        $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
+        
+        // Clean up output buffer (discard any captured output)
+        ob_end_clean();
+    }
+
+   
+    
 }
