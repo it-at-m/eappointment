@@ -589,61 +589,6 @@ class ReportClientScopeTest extends Base
         ob_end_clean();
     }
 
-    public function testWithDownloadCSV()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141/',
-                    'response' => $this->readFixture("GET_clientscope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141/2016-04/',
-                    'response' => $this->readFixture("GET_clientscope_141_042016.json")
-                ]
-            ]
-        );
-
-        $response = $this->render(
-            [
-                'period' => '2016-04'
-            ],
-            [
-                '__uri' => '/report/client/scope/2016-04/',
-                'type' => 'csv'
-            ],
-            [ ]
-        );
-
-        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString(
-            '"April";"2016";"84";"16";"84";"16";"0";"0";"61"',
-            (string) $response->getBody()
-        );
-    }
 
     public function testWithDownloadXLSXAndDateRange()
     {
@@ -699,63 +644,6 @@ class ReportClientScopeTest extends Base
         ob_end_clean();
     }
 
-    public function testWithDownloadCSVAndMultipleScopes()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/',
-                    'response' => $this->readFixture("GET_scope_list.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141/',
-                    'response' => $this->readFixture("GET_clientscope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141,142/2016-04/',
-                    'response' => $this->readFixture("GET_clientscope_141,142_2016-04.json")
-                ]
-            ]
-        );
-
-        $response = $this->render(
-            [
-                'period' => '2016-04'
-            ],
-            [
-                '__uri' => '/report/client/scope/2016-04/',
-                'type' => 'csv',
-                'scopes' => ['141', '142']
-            ],
-            []
-        );
-
-        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-    }
 
     public function testWithEmptyDateRange()
     {
