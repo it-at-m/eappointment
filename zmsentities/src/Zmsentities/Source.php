@@ -54,11 +54,14 @@ class Source extends Schema\Entity
     public function getScopeList()
     {
         $scopeList = new Collection\ScopeList();
-        foreach ($this->toProperty()->scopes->get() as $scope) {
-            if (!$scope instanceof Scope) {
-                $scope = new Scope($scope);
+        $scopes = $this->toProperty()->scopes->get();
+        if ($scopes && is_iterable($scopes)) {
+            foreach ($scopes as $scope) {
+                if (!$scope instanceof Scope) {
+                    $scope = new Scope($scope);
+                }
+                $scopeList->addEntity($scope);
             }
-            $scopeList->addEntity($scope);
         }
         return $scopeList;
     }
@@ -66,11 +69,14 @@ class Source extends Schema\Entity
     public function getRequestList()
     {
         $requestList = new Collection\RequestList();
-        foreach ($this->toProperty()->requests->get() as $request) {
-            if (! $request instanceof Request) {
-                $request = new Request($request);
+        $requests = $this->toProperty()->requests->get();
+        if ($requests && is_iterable($requests)) {
+            foreach ($requests as $request) {
+                if (! $request instanceof Request) {
+                    $request = new Request($request);
+                }
+                $requestList->addEntity($request);
             }
-            $requestList->addEntity($request);
         }
         return $requestList;
     }

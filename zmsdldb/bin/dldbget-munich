@@ -1,0 +1,113 @@
+#!/usr/bin/env php
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Try to find autoload.php in various locations
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
+    require __DIR__ . '/../../../../vendor/autoload.php';
+} elseif (file_exists('vendor/autoload.php')) {
+    require 'vendor/autoload.php';
+} else {
+    // Fallback for production where symlink in vendor/bin points here
+    $path = realpath(__DIR__ . '/../../../../vendor/autoload.php');
+    if ($path && file_exists($path)) {
+        require $path;
+    } else {
+        die("Could not find autoload.php\n");
+    }
+}
+
+require_once(__DIR__."/script_bootstrap.php");
+
+use Garden\Cli\Cli;
+use Httpful\Request;
+use BO\Zmsdldb\Transformers\Munich;
+
+require_once(__DIR__."/dldb-helpers.php");
+
+// Initialize Httpful
+Request::ini(Request::init());
+
+$cli = new Cli();
+$cli->description("Downloads Munich SADB export and transforms it to Berlin-compatible format")
+    ->opt('output:o', 'Path to save files', true)
+    ->opt('base:b', 'Munich SADB index URL', true); 
+$args = $cli->parse($argv, true);
+
+$destinationPath = $args->getOpt('output');
+$indexUrl = $args->getOpt('base');
+
+$helpers = new DldbHelpers($destinationPath, $cli);
+$helpers->ensureDestinationDirectory();
+
+// Check for rollback
+$rollbackDay = $helpers->getRollbackDay();
+if ($rollbackDay !== "none") {
+    $helpers->performRollback($rollbackDay);
+    exit(0);
+}
+
+print("No rollback is requested, fetching current Munich SADB export...\n\n");
+
+$transformer = new Munich();
+try {
+    $data = $transformer->fetchLatestExport($indexUrl);
+} catch (\Exception $e) {
+    echo "Error: Failed to fetch Munich SADB export: " . $e->getMessage() . "\n\n";
+    exit(1);
+}
+
+// Helper to safely write JSON files (defined before first use)
+function writeJsonFile($path, $data) {
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if ($json === false) {
+        echo "Error: JSON encoding failed: " . json_last_error_msg() . "\n\n";
+        exit(1);
+    }
+    if (file_put_contents($path, $json) === false) {
+        echo "Error: Failed to write " . basename($path) . "\n\n";
+        exit(1);
+    }
+}
+
+print("Transforming services...\n\n");
+$servicesData = $transformer->transformServices($data);
+writeJsonFile($destinationPath . '/services_de.json', $servicesData);
+
+print("Transforming locations...\n\n");
+$locationsData = $transformer->transformLocations($data, $servicesData);
+writeJsonFile($destinationPath . '/locations_de.json', $locationsData);
+
+// Create empty files for English versions (not currently supported by Munich)
+$emptyData = ['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]];
+writeJsonFile($destinationPath . '/services_en.json', $emptyData);
+writeJsonFile($destinationPath . '/locations_en.json', $emptyData);
+
+// Create empty topic and authority files
+writeJsonFile($destinationPath . '/topic_de.json', $emptyData);
+writeJsonFile($destinationPath . '/authority_de.json', $emptyData);
+writeJsonFile($destinationPath . '/settings.json', $emptyData);
+
+// Track downloaded files for backup
+$downloadedFiles = [
+    'services_de.json' => $destinationPath . '/services_de.json',
+    'locations_de.json' => $destinationPath . '/locations_de.json',
+    'services_en.json' => $destinationPath . '/services_en.json',
+    'locations_en.json' => $destinationPath . '/locations_en.json',
+    'topic_de.json' => $destinationPath . '/topic_de.json',
+    'authority_de.json' => $destinationPath . '/authority_de.json',
+    'settings.json' => $destinationPath . '/settings.json',
+];
+
+// Check if backup is needed and perform backup
+$helpers->checkAndCreateBackup($downloadedFiles);
+
+// Cleanup old backups
+$helpers->cleanupOldBackups();
+
+print("Munich transformation completed!\n\n");
+
