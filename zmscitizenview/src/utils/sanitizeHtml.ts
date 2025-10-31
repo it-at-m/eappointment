@@ -17,6 +17,7 @@ const config: Config = {
     "xlink:href",
     "target",
     "aria-label",
+    "rel",
   ],
   FORBID_TAGS: ["img"],
 };
