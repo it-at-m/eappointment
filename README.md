@@ -139,6 +139,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run build`
 - `npm run dev`
 - `npm run test`
+- Run once to enable husky hooks (optional): `npm run prepare`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
