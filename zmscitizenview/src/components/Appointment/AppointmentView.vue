@@ -759,7 +759,13 @@ const nextBookAppointment = () => {
     isBookingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
 
-    if (isRebooking.value) {
+    const canDirectConfirm =
+      !!appointment.value?.processId && !!appointment.value?.authKey;
+
+    if (
+      canDirectConfirm &&
+      (isRebooking.value || props.globalState.isLoggedIn)
+    ) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
@@ -767,37 +773,30 @@ const nextBookAppointment = () => {
       return;
     }
 
-    if (props.globalState.isLoggedIn) {
-      nextConfirmAppointment({
-        id: appointment.value.processId,
-        authKey: appointment.value.authKey,
-      });
-    } else {
-      currentContext.value = "preconfirm";
-      preconfirmAppointment(props.globalState, appointment.value)
-        .then((data) => {
-          if ((data as any)?.errors?.length > 0) {
-            handleErrorApiResponse(
-              data,
-              errorStates.errorStateMap,
-              currentErrorData.value
-            );
-            return;
-          }
+    currentContext.value = "preconfirm";
+    preconfirmAppointment(props.globalState, appointment.value)
+      .then((data) => {
+        if ((data as any)?.errors?.length > 0) {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          return;
+        }
 
-          if ((data as AppointmentDTO).processId != undefined) {
-            appointment.value = data as AppointmentDTO;
-            if (isRebooking.value && rebookedAppointment.value) {
-              currentContext.value = "cancel";
-              cancelAppointment(props.globalState, rebookedAppointment.value);
-            }
-            increaseCurrentView();
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          if (isRebooking.value && rebookedAppointment.value) {
+            currentContext.value = "cancel";
+            cancelAppointment(props.globalState, rebookedAppointment.value);
           }
-        })
-        .finally(() => {
-          isBookingAppointment.value = false;
-        });
-    }
+          increaseCurrentView();
+        }
+      })
+      .finally(() => {
+        isBookingAppointment.value = false;
+      });
   }
 };
 
