@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [[ ${1:-} == "--reset" ]]; then
+  docker-compose down -v
+  exit 0
+fi
+
+if [[ ${1:-} == "--no-composer" ]]; then
+  export SKIP_COMPOSER=1
+  shift || true
+fi
+
+export BASE_URI=${BASE_URI:-${1:-http://api-server:8080}}
+export ZMS_CRONROOT=${ZMS_CRONROOT:-1}
+
+# Ensure DB is up (compose healthcheck gates dependents)
+if ! docker-compose ps mariadb | grep -q "Up"; then
+  docker-compose up -d mariadb
+  echo "Waiting for mariadb to be ready..."
+  until docker-compose exec -T mariadb mysqladmin ping -h localhost -u root -pzmsautomation >/dev/null 2>&1; do
+    sleep 2
+  done
+fi
+
+# Start prepare and liquibase (they will exit when done)
+BASE_URI="$BASE_URI" docker-compose up --build prepare liquibase
+
+# Start api-server in detached mode (it will stay running)
+echo "Starting API server..."
+BASE_URI="$BASE_URI" docker-compose up -d --build api-server
+
+echo "Waiting for API server to be healthy..."
+until docker-compose ps api-server | grep -q "healthy"; do
+  echo "Waiting for api-server healthcheck..."
+  sleep 2
+done
+
+echo "API server is healthy! Showing verification pings..."
+# Wait a moment for verification to complete, then show the relevant log lines
+sleep 2
+docker-compose logs api-server 2>&1 | tail -20 | grep -A 5 -E "(Verifying endpoints|Pinging)" || docker-compose logs api-server 2>&1 | tail -10
+
+echo ""
+echo "Running tests..."
+# Run the test service (it will wait for api-server to be healthy via depends_on, then run tests and exit)
+BASE_URI="$BASE_URI" docker-compose up --build test
+TEST_EXIT_CODE=$?
+
+# Stop api-server after tests complete
+echo "Stopping API server..."
+docker-compose stop api-server
+
+exit $TEST_EXIT_CODE

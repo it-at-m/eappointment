@@ -1,0 +1,221 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: zmsautomation
+      MYSQL_DATABASE: zmsbo
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3310:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pzmsautomation"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  prepare:
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    platform: linux/amd64
+    working_dir: /tmp/workspace
+    environment:
+      ZMS_CRONROOT: "1"
+      ZMS_CONFIG_SECURE_TOKEN: secure-token
+      SKIP_COMPOSER: ${SKIP_COMPOSER:-0}
+      MYSQL_PORT: "tcp://mariadb:3306"
+      MYSQL_DATABASE: zmsbo
+      MYSQL_ROOT_PASSWORD: zmsautomation
+      MYSQL_USER: root
+      MYSQL_PASSWORD: zmsautomation
+      ZMS_SOURCE_DLDB_BERLIN: "https://service.berlin.de"
+      ZMS_SOURCE_DLDB_MUNICH: "https://stadt.muenchen.de/service/info/zms/index/"
+      ZMS_SOURCE_DLDB: "https://service.berlin.de"
+    volumes:
+      - type: bind
+        source: ".."
+        target: "/host"
+        read_only: true
+      - type: volume
+        source: zmsautomation-workspace
+        target: /tmp/workspace
+    command: >
+      bash -c "
+        set -e
+        apt-get update && apt-get install -y --no-install-recommends rsync mariadb-client python3 python3-click python3-git && rm -rf /var/lib/apt/lists/* && \
+        git config --global --add safe.directory /tmp/workspace && git config --global --add safe.directory '*' && \
+        rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' --exclude='zmscitizenapi/vendor/' /host/ /tmp/workspace/ && \
+        echo 'Waiting for database..' && \
+        until mysql -h mariadb -u root -pzmsautomation -e 'SELECT 1' >/dev/null 2>&1; do echo 'DB not ready, waiting..'; sleep 2; done && \
+        # 1) Import base schema
+        if [ -f /tmp/workspace/.resources/zms.sql ]; then \
+          echo 'Importing base schema from .resources/zms.sql..'; \
+          mysql -h mariadb -u root -pzmsautomation zmsbo < /tmp/workspace/.resources/zms.sql; \
+        else \
+          echo 'No .resources/zms.sql found, skipping import'; \
+        fi && \
+        # prepare vendor/autoload for zmsapi and zmscitizenapi
+        if [ "x${SKIP_COMPOSER}" != "x1" ]; then \
+          echo 'Preparing vendor and autoload for zmsapi and zmscitizenapi..'; \
+          cd /tmp/workspace && python3 cli modules reference-libraries; \
+          cd /tmp/workspace/zmsapi && composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; \
+          cd /tmp/workspace/zmscitizenapi && composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; \
+        else \
+          echo 'SKIP_COMPOSER=1 set. Skipping reference-libraries and composer install.'; \
+        fi && \
+        # 2) Run hourly (Munich) before migrations
+        echo 'Running hourly cron with --city=munich..' && \
+        cd /tmp/workspace/zmsapi && \
+        if [ ! -x ./cron/cronjob.hourly ]; then \
+          echo 'cron/cronjob.hourly not found. Ensure vendor and project are prepared (rerun without --no-composer the first time).'; \
+          exit 127; \
+        fi && \
+        ./cron/cronjob.hourly --city=munich
+      "
+
+  liquibase:
+    depends_on:
+      prepare:
+        condition: service_completed_successfully
+    image: liquibase/liquibase:4.28
+    working_dir: /workspace/zmsautomation
+    environment:
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: liquibase/changelog-test-data.xml
+      LIQUIBASE_COMMAND_CONTEXTS: test
+      LIQUIBASE_COMMAND_URL: jdbc:mysql://mariadb:3306/zmsbo?useUnicode=true&characterEncoding=utf8
+      LIQUIBASE_COMMAND_USERNAME: root
+      LIQUIBASE_COMMAND_PASSWORD: zmsautomation
+    volumes:
+      - type: bind
+        source: ".."
+        target: "/workspace"
+        read_only: true
+    command: >
+      sh -c "
+        echo 'Fetching MySQL JDBC driver for Liquibase..' && \
+        mkdir -p /liquibase/lib && \
+        wget -qO /liquibase/lib/mysql-connector-j.jar https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/mysql-connector-j-8.3.0.jar && \
+        liquibase update
+      "
+
+  api-server:
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    platform: linux/amd64
+    working_dir: /tmp/workspace
+    environment:
+      ZMS_CONFIG_SECURE_TOKEN: secure-token
+      MYSQL_PORT: "tcp://mariadb:3306"
+      MYSQL_DATABASE: zmsbo
+      MYSQL_ROOT_PASSWORD: zmsautomation
+      MYSQL_USER: root
+      MYSQL_PASSWORD: zmsautomation
+      ZMS_API_URL: "http://localhost:8080/terminvereinbarung/api/2"
+      ZMS_API_PASSWORD_CITIZENAPI: ${ZMS_API_PASSWORD_CITIZENAPI:-}
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - type: volume
+        source: zmsautomation-workspace
+        target: /tmp/workspace
+      - type: volume
+        source: zmsautomation-cache
+        target: /tmp/workspace/zmsdb/src/Zmsdb/cache
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -f http://localhost:8080/terminvereinbarung/api/2/status/ > /dev/null && curl -f http://localhost:8081/terminvereinbarung/api/citizen/offices-and-services/ > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    command: >
+      bash -c "
+        set -e
+        apt-get update && apt-get install -y --no-install-recommends mariadb-client curl && rm -rf /var/lib/apt/lists/* && \
+        git config --global --add safe.directory /tmp/workspace && git config --global --add safe.directory '*' && \
+        mkdir -p /tmp/workspace/zmsdb/src/Zmsdb/cache && chmod -R 777 /tmp/workspace/zmsdb/src/Zmsdb/cache && \
+        mkdir -p /tmp/workspace/zmscitizenapi/cache && chmod -R 777 /tmp/workspace/zmscitizenapi/cache && \
+        php -v >/dev/null && \
+        echo 'Running PHP migrations...' && \
+        cd /tmp/workspace/zmsapi && vendor/bin/migrate --update && \
+        echo '' && \
+        echo '========================================' && \
+        echo 'Database tables after migrations:' && \
+        echo '========================================' && \
+        mysql -h mariadb -u root -pzmsautomation zmsbo -e \"SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = 'zmsbo' ORDER BY table_name;\" && \
+        echo '========================================' && \
+        echo '' && \
+        echo 'Starting API servers...' && \
+        echo '<?php $$requested = isset($$argv[1]) ? ltrim($$argv[1], \"/\") : \"\"; if ($$requested && $$requested !== \"index.php\" && file_exists(__DIR__ . \"/\" . $$requested)) return false; chdir(__DIR__); require __DIR__ . \"/index.php\";' > /tmp/workspace/zmsapi/public/router.php && \
+        echo '<?php $$requested = isset($$argv[1]) ? ltrim($$argv[1], \"/\") : \"\"; if ($$requested && $$requested !== \"index.php\" && file_exists(__DIR__ . \"/\" . $$requested)) return false; chdir(__DIR__); require __DIR__ . \"/index.php\";' > /tmp/workspace/zmscitizenapi/public/router.php && \
+        env ZMS_MODULE_BASEPATH=/terminvereinbarung/api/2 php -S 0.0.0.0:8080 -t /tmp/workspace/zmsapi/public /tmp/workspace/zmsapi/public/router.php > /tmp/zmsapi.log 2>&1 & \
+        API_PID=$$! && \
+        echo $$API_PID > /tmp/zmsapi.pid && \
+        env ZMS_MODULE_BASEPATH=/terminvereinbarung/api/citizen php -S 0.0.0.0:8081 -t /tmp/workspace/zmscitizenapi/public /tmp/workspace/zmscitizenapi/public/router.php > /tmp/zmscitizenapi.log 2>&1 & \
+        CITIZEN_PID=$$! && \
+        echo $$CITIZEN_PID > /tmp/zmscitizenapi.pid && \
+        sleep 2 && \
+        echo 'Waiting for API servers to be ready...' && \
+        for i in {1..30}; do \
+          HTTP_CODE_8080=$$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/terminvereinbarung/api/2/status/ 2>&1) && \
+          HTTP_CODE_8081=$$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/terminvereinbarung/api/citizen/offices-and-services/ 2>&1) && \
+          if [ \"$$HTTP_CODE_8080\" != \"000\" ] && [ \"$$HTTP_CODE_8081\" != \"000\" ]; then \
+            echo \"zmsapi responded with HTTP $$HTTP_CODE_8080\" && \
+            echo \"zmscitizenapi responded with HTTP $$HTTP_CODE_8081\" && \
+            echo 'Both API servers are ready!' && \
+            break; \
+          fi; \
+          echo \"Attempt $$i: zmsapi=$$HTTP_CODE_8080, zmscitizenapi=$$HTTP_CODE_8081\" && \
+          sleep 1; \
+        done && \
+        echo 'zmsapi running on port 8080 (PID: '$$(cat /tmp/zmsapi.pid)')' && \
+        echo 'zmscitizenapi running on port 8081 (PID: '$$(cat /tmp/zmscitizenapi.pid)')' && \
+        echo '' && \
+        echo 'Verifying endpoints are accessible...' && \
+        echo 'Pinging zmsapi status endpoint: http://localhost:8080/terminvereinbarung/api/2/status/' && \
+        curl -sf http://localhost:8080/terminvereinbarung/api/2/status/ > /dev/null && echo '✓ zmsapi status endpoint responding' || echo '✗ zmsapi status endpoint not responding' && \
+        echo 'Pinging zmscitizenapi offices-and-services endpoint: http://localhost:8081/terminvereinbarung/api/citizen/offices-and-services/' && \
+        curl -sf http://localhost:8081/terminvereinbarung/api/citizen/offices-and-services/ > /dev/null && echo '✓ zmscitizenapi offices-and-services endpoint responding' || echo '✗ zmscitizenapi offices-and-services endpoint not responding' && \
+        echo '' && \
+        echo 'Logs location: /tmp/zmsapi.log and /tmp/zmscitizenapi.log' && \
+        tail -f /tmp/zmsapi.log /tmp/zmscitizenapi.log & \
+        wait $$API_PID $$CITIZEN_PID
+      "
+
+  test:
+    depends_on:
+      api-server:
+        condition: service_healthy
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /workspace/zmsautomation
+    environment:
+      BASE_URI: ${BASE_URI:-http://api-server:8080}
+    volumes:
+      - type: bind
+        source: ".."
+        target: "/workspace"
+        read_only: true
+      - type: volume
+        source: zmsautomation-target
+        target: "/workspace/zmsautomation/target"
+      - type: volume
+        source: zmsautomation-cache
+        target: "/root/.m2"
+    command: >
+      bash -c "
+        cd /workspace/zmsautomation && \
+        rm -rf target/* target/.[!.]* 2>/dev/null || true && \
+        mvn test
+      "
+
+volumes:
+  zmsautomation-workspace:
+  zmsautomation-cache:
+  zmsautomation-target:
+
+
