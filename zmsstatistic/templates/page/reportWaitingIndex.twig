@@ -18,8 +18,8 @@
         </form>
 
         {% set reportSections = [
-            {'title': 'Spontankunden', 'suffix': ''},
-            {'title': 'Terminkunden', 'suffix': '_termin'}
+            {'title': 'Terminkunden', 'suffix': '_termin'},
+            {'title': 'Spontankunden', 'suffix': ''}
         ] %}
 
         {% for section in reportSections %}
@@ -55,7 +55,7 @@
                                 </span>
                             </th>
                             {% if exchangeWaiting.period == "day" %}
-                                <th class="statistik">Max.</th>
+                                <th class="statistik">Zeilenmaximum</th>
                             {% elseif exchangeWaiting.period == "month" %}
                                 <th class="statistik">{{ startDate|date('Y') }}</th>
                             {% endif %}
@@ -69,43 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th class="statistik">
-                                <p>{% trans %}Tagesmaximum der Wartezeit (Min.){% endtrans %}</p>
-                                <p>{% trans %}Tagesdurchschnitt der Wartezeit (Min.){% endtrans %}</p>
-                                <p>{% trans %}Tagesdurchschnitt der Wegezeit (Min.){% endtrans %}</p>
-                            </th>
-                            <td class="statistik" style="text-align: right;">
-                                <span class="{% if not exchangeWaiting.data.max['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['max_waitingtime' ~ section.suffix]) }}
-                                </span><br><br>
-                                <span class="{% if not exchangeWaiting.data.max['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waitingtime' ~ section.suffix]) }}
-                                </span><br><br>
-                                <span class="{% if not exchangeWaiting.data.max['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waytime' ~ section.suffix]) }}
-                                </span>
-                            </td>
-                            {% for date in dateRange %}
-                                {% set formattedDate = exchangeWaiting.period == "day"
-                                    ? date
-                                    : startDate|date('Y') ~ "-" ~ "%02d"|format(date)
-                                %}
-                                <td class="statistik" style="text-align: right;">
-                                    <span class="{% if not exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix]) }}
-                                    </span><br><br>
-                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix]) }}
-                                    </span><br><br>
-                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
-                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix]) }}
-                                    </span>
-                                </td>
-                            {% endfor %}
-                        </tr>
-
-                        {% for hour in 6..21 %}
+                        {% for hour in 6..18 %}
                             <tr>
                                 <th>
                                     {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}<br>
@@ -144,6 +108,41 @@
                                 {% endfor %}
                             </tr>
                         {% endfor %}
+                        <tr>
+                            <th class="statistik">
+                                <p title="Höchster Wert der oben angegebenen stündlichen Durchschnittswerte der Wartezeit" style="cursor: help;">{% trans %}Spaltenmaximum der Wartezeit in Min.{% endtrans %}</p>
+                                <p title="Durchschnitt aller stündlichen Durchschnittswerte der Wartezeit" style="cursor: help;">{% trans %}Spaltendurchschnitt der Wartezeit in Min.{% endtrans %}</p>
+                                <p title="Durchschnitt aller stündlichen Durchschnittswerte der Wegezeit" style="cursor: help;">{% trans %}Spaltendurchschnitt der Wegezeit in Min.{% endtrans %}</p>
+                            </th>
+                            <td class="statistik" style="text-align: right;">
+                                <span class="{% if not exchangeWaiting.data.max['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['max_waitingtime' ~ section.suffix]) }}
+                                </span><br><br>
+                                <span class="{% if not exchangeWaiting.data.max['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waitingtime' ~ section.suffix]) }}
+                                </span><br><br>
+                                <span class="{% if not exchangeWaiting.data.max['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                    {{ timeutils.formatMinutesToTime(exchangeWaiting.data.max['average_waytime' ~ section.suffix]) }}
+                                </span>
+                            </td>
+                            {% for date in dateRange %}
+                                {% set formattedDate = exchangeWaiting.period == "day"
+                                    ? date
+                                    : startDate|date('Y') ~ "-" ~ "%02d"|format(date)
+                                %}
+                                <td class="statistik" style="text-align: right;">
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['max_waitingtime' ~ section.suffix]) }}
+                                    </span><br><br>
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waitingtime' ~ section.suffix]) }}
+                                    </span><br><br>
+                                    <span class="{% if not exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix] %}ausgegraut{% endif %}">
+                                        {{ timeutils.formatMinutesToTime(exchangeWaiting.data[formattedDate]['average_waytime' ~ section.suffix]) }}
+                                    </span>
+                                </td>
+                            {% endfor %}
+                        </tr>
                     </tbody>
                 </table>
                 </div>
