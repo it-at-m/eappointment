@@ -249,6 +249,8 @@ class Process extends Base implements MappingInterface
                     THEN "called"
                 WHEN process.status = "called" AND process.Uhrzeit = "00:00:00"
                     THEN "queued"
+                WHEN process.status = "called" AND process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
+                    THEN "confirmed"
                 ELSE process.status
             END'
         );
