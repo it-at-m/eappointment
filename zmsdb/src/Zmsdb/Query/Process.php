@@ -539,9 +539,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionStatus($status)
     {
-        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($status) {
-            $query->andWith('process.status', '=', $status);
-        });
+        $this->query->where('process.status', '=', $status);
         return $this;
     }
 
