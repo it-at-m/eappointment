@@ -243,6 +243,15 @@ class Process extends Base implements MappingInterface
 
     public function getEntityMapping()
     {
+        $status_expression = self::expression(
+            'CASE
+                WHEN process.status = "called" AND process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
+                    THEN "called"
+                WHEN process.status = "called" AND process.Uhrzeit = "00:00:00"
+                    THEN "queued"
+                ELSE process.status
+            END'
+        );
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
@@ -280,8 +289,8 @@ class Process extends Base implements MappingInterface
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
-            'status' => 'process.status',
-            'queue__status' => 'process.status',
+            'status' => $status_expression,
+            'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
                 'CONCAT(
                     `process`.`Datum`,
