@@ -52,14 +52,6 @@ class QueueTableTest extends Base
                         'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
-                    'parameters' => [
-                        'resolveReferences' => 1
-                    ],
-                    'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
         );
@@ -108,14 +100,6 @@ class QueueTableTest extends Base
                         'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/cluster/109/workstation/',
-                    'parameters' => [
-                        'resolveReferences' => 1
-                    ],
-                    'response' => $this->readFixture("GET_cluster_109_workstationlist.json")
                 ]
             ]
         );
@@ -165,14 +149,6 @@ class QueueTableTest extends Base
                         'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/169/workstation/',
-                    'parameters' => [
-                        'resolveReferences' => 1
-                    ],
-                    'response' => $this->readFixture("GET_scope_169.json")
                 ]
             ]
         );
