@@ -145,7 +145,13 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/cluster/',
                     'response' => $this->readFixture("GET_cluster_109.json")
-                ]
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/queue/next/',
+                    'parameters' => ['exclude' => '999999','allowClusterWideCall' => false],
+                    'response' => ''
+                ],
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);

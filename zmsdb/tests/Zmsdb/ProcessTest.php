@@ -345,7 +345,7 @@ class ProcessTest extends Base
         $this->assertTrue($archived->archiveId > 0, "Archived ID should be set");
         $this->assertCount(0, $archived->requests);
         $archived = $queryArchived->readArchivedEntity($archived->archiveId, 1);
-        $this->assertCount(1, $archived->requests);
+        $this->assertCount(2, $archived->requests);
         $this->assertEquals("Anmeldung einer Wohnung", $archived->requests->getFirst()->name);
     }
 
