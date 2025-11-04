@@ -267,6 +267,8 @@ jobs:
           docker-compose --version
 
       - name: Run Unit Tests
+        env:
+          XDEBUG_MODE: coverage
         run: |
           set -e  # Exit immediately on any error
           cd ./zmsclient

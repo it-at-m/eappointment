@@ -14,9 +14,15 @@ PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
 COMPOSE_CMD=""
 
-# Performance optimization: disable Xdebug for faster tests (unless explicitly enabled)
-ENABLE_XDEBUG="${ENABLE_XDEBUG:-false}"
-if [[ "$ENABLE_XDEBUG" != "true" ]]; then
+# Performance optimization: disable Xdebug for faster tests (unless explicitly enabled or in CI)
+# In CI environments, enable Xdebug for coverage collection
+if [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]] || [[ -n "${GITLAB_CI:-}" ]]; then
+  export XDEBUG_MODE=coverage
+  echo "[INFO] CI environment detected - enabling Xdebug for coverage"
+elif [[ "${ENABLE_XDEBUG:-false}" == "true" ]]; then
+  export XDEBUG_MODE=coverage
+  echo "[INFO] Xdebug enabled via ENABLE_XDEBUG=true"
+else
   export XDEBUG_MODE=off
 fi
 
@@ -87,8 +93,8 @@ echo "[INFO] Stopping and removing existing containers..."
 compose_cmd down
 
 echo "[INFO] Starting containers..."
-if [[ "$ENABLE_XDEBUG" != "true" ]]; then
-  echo "[INFO] Xdebug disabled for faster test execution (set ENABLE_XDEBUG=true to enable)"
+if [[ "${XDEBUG_MODE:-off}" == "off" ]]; then
+  echo "[INFO] Xdebug disabled for faster test execution (set ENABLE_XDEBUG=true or run in CI to enable)"
 fi
 compose_cmd up -d
 
