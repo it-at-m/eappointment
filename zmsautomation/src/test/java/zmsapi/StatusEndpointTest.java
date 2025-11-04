@@ -1,9 +1,10 @@
 import static io.restassured.RestAssured.given;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import io.restassured.RestAssured;
 
 class StatusEndpointTest {
 
@@ -31,5 +32,3 @@ class StatusEndpointTest {
                 .statusCode(200);
     }
 }
-
-
