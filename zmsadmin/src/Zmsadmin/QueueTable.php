@@ -23,7 +23,6 @@ class QueueTable extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        // parameters
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
@@ -33,7 +32,6 @@ class QueueTable extends BaseController
 
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
 
-        // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
@@ -50,21 +48,7 @@ class QueueTable extends BaseController
             ])->getEntity()
             : null;
 
-        // data refinement
         $queueList = $processList->toQueueList(\App::$now);
-        $queueList = $queueList->withSortedArrival();
-        $scope = $workstation->getScope();
-        $clusterHelper = (new ClusterHelper($workstation));
-
-        $workstationGhostCount = $scope->status['queue']['ghostWorkstationCount'];
-        $workstationList = ($clusterHelper->isClusterEnabled()) ?
-            static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
-            static::getWorkstationsByScope($scope->getId());
-
-        $workstationCount = $workstationGhostCount > 0
-            ? $workstationGhostCount
-            : ($workstationList === null ? 1 : count($workstationList));
-        $timeAverage = $scope->getPreference('queue', 'processingTimeAverage') ?? 10;
 
         $queueListVisible = $queueList
             ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
@@ -118,19 +102,5 @@ class QueueTable extends BaseController
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
-    }
-
-    public static function getWorkstationsByScope($scopeId)
-    {
-        return \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/workstation/', ['resolveReferences' => 1])
-            ->getCollection();
-    }
-
-    public static function getWorkstationsByCluster($clusterId)
-    {
-        return \App::$http
-            ->readGetResult('/cluster/' . $clusterId . '/workstation/', ['resolveReferences' => 1])
-            ->getCollection();
     }
 }
