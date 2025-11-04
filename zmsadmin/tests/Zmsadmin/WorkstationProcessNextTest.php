@@ -149,7 +149,7 @@ class WorkstationProcessNextTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/queue/next/',
-                    'parameters' => ['exclude' => '999999','allowClusterWideCall' => false],
+                    'parameters' => ['exclude' => ''],
                     'response' => ''
                 ],
             ]
