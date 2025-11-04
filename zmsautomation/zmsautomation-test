@@ -3,10 +3,11 @@ set -euo pipefail
 
 # Configurable endpoints (override via env)
 # When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
+# When running on podman, use 'zms-web' service name
 # BASE_URI should include the full path prefix and be HTTP to avoid TLS trust issues inside container
-BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
-# CITIZEN_API_BASE_URI should include full path prefix; both APIs are served by the same ddev site
-CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
+BASE_URI="${BASE_URI:-}"
+# CITIZEN_API_BASE_URI should include full path prefix; both APIs are served by the same site
+CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-}"
 
 # Maven image and caches
 MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
@@ -26,13 +27,36 @@ require_cmd() {
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 
-require_cmd ddev
+# Detect if we're using Podman or DDEV
+USE_PODMAN=false
+if command -v podman >/dev/null 2>&1; then
+  if podman ps --format "{{.Names}}" | grep -q "^zms-web$" && podman ps --format "{{.Names}}" | grep -q "^zms-db$"; then
+    USE_PODMAN=true
+    info "Using Podman containers (zms-web, zms-db)"
+    # Set default endpoints for Podman
+    BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
+    CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
+  fi
+fi
+
+if [[ "$USE_PODMAN" == false ]]; then
+  require_cmd ddev
+  info "Using DDEV"
+  # Set default endpoints for DDEV
+  BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
+  CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
+fi
+
 require_cmd docker
 
 restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE ..."
-    (cd "$PROJECT_ROOT" && ddev import-db -f "$BACKUP_FILE" >/dev/null)
+    if [[ "$USE_PODMAN" == true ]]; then
+      gunzip < "$BACKUP_FILE" | podman exec -i zms-db mysql -u root -proot db >/dev/null
+    else
+      (cd "$PROJECT_ROOT" && ddev import-db -f "$BACKUP_FILE" >/dev/null)
+    fi
     info "Database restored."
   else
     warn "No backup file found to restore."
@@ -42,22 +66,39 @@ restore_db() {
 trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
 
 # 1) Backup current DB
-info "Exporting current ddev database to $BACKUP_FILE ..."
-(cd "$PROJECT_ROOT" && ddev export-db -f "$BACKUP_FILE" >/dev/null)
+info "Exporting current database to $BACKUP_FILE ..."
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysqldump -u root -proot db | gzip > "$BACKUP_FILE")
+else
+  (cd "$PROJECT_ROOT" && ddev export-db -f "$BACKUP_FILE" >/dev/null)
+fi
 info "Backup completed."
 
-# 1.5) Clear application caches inside ddev (zmsapi, zmsdb, zmscitizenapi)
+# 1.5) Clear application caches inside container (zmsapi, zmsdb, zmscitizenapi)
 info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+if [[ "$USE_PODMAN" == true ]]; then
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+else
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+fi
 if [[ -n "$CACHE_DIR" ]]; then
   info "CACHE_DIR=$CACHE_DIR"
   for dir in zmsapi zmsdb zmscitizenapi; do
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-      if [ -d \"$CACHE_DIR/$dir\" ]; then
-        rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-        echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-      fi
-    ")
+    if [[ "$USE_PODMAN" == true ]]; then
+      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      " || true)
+    else
+      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      ")
+    fi
   done
   # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
   HOST_CACHE_DIR="$CACHE_DIR"
@@ -75,12 +116,17 @@ if [[ -n "$CACHE_DIR" ]]; then
     done
   fi
 else
-  warn "CACHE_DIR not found in ddev container"
+  if [[ "$USE_PODMAN" == true ]]; then
+    warn "CACHE_DIR not found in podman container"
+  else
+    warn "CACHE_DIR not found in ddev container"
+  fi
 fi
 
 # 2) Drop all tables to ensure clean state (removes tables created by migrations from previous runs)
 info "Dropping all existing tables to ensure clean state..."
-(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
   SET FOREIGN_KEY_CHECKS = 0;
   SET @tables = NULL;
   SELECT GROUP_CONCAT('\\`', table_name, '\\`')
@@ -94,143 +140,282 @@ info "Dropping all existing tables to ensure clean state..."
   DEALLOCATE PREPARE stmt;
   SET FOREIGN_KEY_CHECKS = 1;
 " >/dev/null 2>&1 || echo "No tables to drop or database is empty")
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SET FOREIGN_KEY_CHECKS = 0;
+    SET @tables = NULL;
+    SELECT GROUP_CONCAT('\\`', table_name, '\\`')
+      INTO @tables
+      FROM information_schema.tables
+      WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
+    SET @tables = IFNULL(@tables, 'dummy');
+    SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
+    PREPARE stmt FROM @tables;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    SET FOREIGN_KEY_CHECKS = 1;
+  " >/dev/null 2>&1 || echo "No tables to drop or database is empty")
+fi
 info "Tables dropped (if any existed)."
 
-# 3) Import base database using ddev
+# 3) Import base database
 if [[ -f "$BASE_SQL_FILE" ]]; then
   info "Importing base database from $BASE_SQL_FILE ..."
-  (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db < "$BASE_SQL_FILE" >/dev/null)
+  else
+    (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
+  fi
   info "Base database import completed."
   
   # Log database tables after initial import
   info "Database tables after initial SQL import:"
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
     SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
     FROM information_schema.tables
     WHERE table_schema = 'db'
     ORDER BY table_name;
   " || true)
+  else
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+    FROM information_schema.tables
+    WHERE table_schema = 'db'
+    ORDER BY table_name;
+  " || true)
+  fi
 else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
 fi
 
 # 4) Flyway BEFORE PHP migrations
 info "Running Flyway migrations..."
-# Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
-if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
-  info "Using ddev flyway service"
-  (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway \
-    -url=jdbc:mysql://db:3306/db -user=db -password=db \
-    -locations=filesystem:/var/www/html/zmsautomation/flyway \
-    -baselineOnMigrate=true migrate)
+if [[ "$USE_PODMAN" == true ]]; then
+  # Get podman network name from docker-compose network
+  PODMAN_NETWORK=$(docker network ls --filter "name=devcontainer" --format "{{.Name}}" | head -1 || echo "devcontainer_default")
+  if [[ -z "$PODMAN_NETWORK" ]]; then
+    PODMAN_NETWORK="devcontainer_default"
+  fi
+  
+  # Run Flyway in a container on the podman network
+  info "Running Flyway via Docker on podman network ($PODMAN_NETWORK)..."
+  docker run --rm \
+    --network "$PODMAN_NETWORK" \
+    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
+    flyway/flyway:9 \
+    -url=jdbc:mysql://zms-db:3306/db -user=root -password=root \
+    -locations=filesystem:/flyway/sql \
+    -baselineOnMigrate=true \
+    migrate || warn "Flyway (Docker on podman network) failed; continuing."
 else
-  # Get ddev network name
+  # Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
+  if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
+    info "Using ddev flyway service"
+    (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway \
+      -url=jdbc:mysql://db:3306/db -user=db -password=db \
+      -locations=filesystem:/var/www/html/zmsautomation/flyway \
+      -baselineOnMigrate=true migrate)
+  else
+    # Get ddev network name
+    DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
+    if [[ -z "$DDEV_NETWORK" ]]; then
+      DDEV_NETWORK="ddev_default"
+    fi
+    
+    # Run Flyway in a Docker container on the ddev network
+    info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
+    docker run --rm \
+      --network "$DDEV_NETWORK" \
+      -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
+      flyway/flyway:9 \
+      -url=jdbc:mysql://db:3306/db -user=db -password=db \
+      -locations=filesystem:/flyway/sql \
+      -baselineOnMigrate=true \
+      migrate || warn "Flyway (Docker on ddev network) failed; continuing."
+  fi
+fi
+
+# Log database tables after Flyway
+info "Database tables after Flyway (before PHP migrations):"
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+  else
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+  fi
+info "flyway_schema_history (post-flyway):"
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+    SELECT installed_rank, version, description, type, installed_by, success, installed_on
+    FROM flyway_schema_history
+    ORDER BY installed_rank;
+  " || true)
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SELECT installed_rank, version, description, type, installed_by, success, installed_on
+    FROM flyway_schema_history
+    ORDER BY installed_rank;
+  " || true)
+fi
+
+# 5) Run PHP migrations
+info "Running zmsapi PHP migrations..."
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update")
+else
+  (cd "$PROJECT_ROOT" && ddev exec zmsapi/vendor/bin/migrate --update)
+fi
+info "PHP migrations completed."
+
+# Log database tables after PHP migrations
+info "Database tables after PHP migrations:"
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+  else
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+  fi
+info "flyway_schema_history (post-php-migrations):"
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+    SELECT installed_rank, version, description, type, installed_by, success, installed_on
+    FROM flyway_schema_history
+    ORDER BY installed_rank;
+  " || true)
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SELECT installed_rank, version, description, type, installed_by, success, installed_on
+    FROM flyway_schema_history
+    ORDER BY installed_rank;
+  " || true)
+fi
+
+# 6) Run hourly (best-effort)
+info "Running hourly (best-effort)..."
+if [[ "$USE_PODMAN" == true ]]; then
+  if ! (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich"); then
+    warn "Hourly command failed or not available; continuing."
+  else
+    info "Hourly command completed."
+    
+    # Log database tables after hourly
+    info "Database tables after hourly cron:"
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+      SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+      FROM information_schema.tables
+      WHERE table_schema = 'db'
+      ORDER BY table_name;
+    " || true)
+  fi
+else
+  if ! (cd "$PROJECT_ROOT" && ddev exec zmsapi/cron/cronjob.hourly --city=munich); then
+    warn "Hourly command failed or not available; continuing."
+  else
+    info "Hourly command completed."
+    
+    # Log database tables after hourly
+    info "Database tables after hourly cron:"
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+      SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+      FROM information_schema.tables
+      WHERE table_schema = 'db'
+      ORDER BY table_name;
+    " || true)
+  fi
+fi
+
+# 7) Pings for readiness
+if [[ "$USE_PODMAN" == true ]]; then
+  # Note: These pings run from the host, so use localhost with port
+  info "Pinging citizenapi: http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/"
+  if curl -sf --max-time 10 "http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
+    info "✓ citizenapi offices-and-services responding"
+  else
+    warn "✗ citizenapi offices-and-services NOT responding"
+  fi
+
+  info "Pinging zmsapi: http://localhost:8090/terminvereinbarung/api/2/status/"
+  if curl -sf --max-time 10 "http://localhost:8090/terminvereinbarung/api/2/status/" >/dev/null; then
+    info "✓ zmsapi status responding"
+  else
+    warn "✗ zmsapi status NOT responding"
+  fi
+else
+  # Note: These pings run from the host, so use zms.ddev.site
+  info "Pinging citizenapi: http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/"
+  if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
+    info "✓ citizenapi offices-and-services responding"
+  else
+    warn "✗ citizenapi offices-and-services NOT responding"
+  fi
+
+  info "Pinging zmsapi: http://zms.ddev.site/terminvereinbarung/api/2/status/"
+  if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/2/status/" >/dev/null; then
+    info "✓ zmsapi status responding"
+  else
+    warn "✗ zmsapi status NOT responding"
+  fi
+fi
+
+# 8) Run tests (in a throwaway Maven container, using cached ~/.m2)
+info "Running REST-assured tests..."
+docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
+docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
+
+if [[ "$USE_PODMAN" == true ]]; then
+  # Get podman network name from docker-compose network (same logic as Flyway)
+  PODMAN_NETWORK=$(docker network ls --filter "name=devcontainer" --format "{{.Name}}" | head -1 || echo "devcontainer_default")
+  if [[ -z "$PODMAN_NETWORK" ]]; then
+    PODMAN_NETWORK="devcontainer_default"
+  fi
+  
+  # Run tests on podman network so container can reach podman services
+  docker run --rm \
+    --network "$PODMAN_NETWORK" \
+    -e BASE_URI="$BASE_URI" \
+    -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
+    -v "$PROJECT_ROOT:/workspace:ro" \
+    -v "$M2_CACHE_VOLUME:/root/.m2" \
+    -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
+    -w /workspace/zmsautomation \
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
+else
+  # Get ddev network name (same logic as Flyway)
   DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
   if [[ -z "$DDEV_NETWORK" ]]; then
     DDEV_NETWORK="ddev_default"
   fi
   
-  # Run Flyway in a Docker container on the ddev network
-  info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
+  # Run tests on ddev network so container can reach ddev services
   docker run --rm \
     --network "$DDEV_NETWORK" \
-    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
-    flyway/flyway:9 \
-    -url=jdbc:mysql://db:3306/db -user=db -password=db \
-    -locations=filesystem:/flyway/sql \
-    -baselineOnMigrate=true \
-    migrate || warn "Flyway (Docker on ddev network) failed; continuing."
+    -e BASE_URI="$BASE_URI" \
+    -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
+    -v "$PROJECT_ROOT:/workspace:ro" \
+    -v "$M2_CACHE_VOLUME:/root/.m2" \
+    -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
+    -w /workspace/zmsautomation \
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
 fi
-
-# Log database tables after Flyway
-info "Database tables after Flyway (before PHP migrations):"
-(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" || true)
-info "flyway_schema_history (post-flyway):"
-(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT installed_rank, version, description, type, installed_by, success, installed_on
-  FROM flyway_schema_history
-  ORDER BY installed_rank;
-" || true)
-
-# 5) Run PHP migrations via ddev
-info "Running zmsapi PHP migrations via ddev..."
-(cd "$PROJECT_ROOT" && ddev exec zmsapi/vendor/bin/migrate --update)
-info "PHP migrations completed."
-
-# Log database tables after PHP migrations
-info "Database tables after PHP migrations:"
-(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" || true)
-info "flyway_schema_history (post-php-migrations):"
-(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT installed_rank, version, description, type, installed_by, success, installed_on
-  FROM flyway_schema_history
-  ORDER BY installed_rank;
-" || true)
-
-# 6) Run hourly via ddev (best-effort)
-info "Running hourly via ddev (best-effort)..."
-if ! (cd "$PROJECT_ROOT" && ddev exec zmsapi/cron/cronjob.hourly --city=munich); then
-  warn "Hourly command failed or not available; continuing."
-else
-  info "Hourly command completed."
-  
-  # Log database tables after hourly
-  info "Database tables after hourly cron:"
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-    FROM information_schema.tables
-    WHERE table_schema = 'db'
-    ORDER BY table_name;
-  " || true)
-fi
-
-# 7) Pings for readiness
-# Note: These pings run from the host, so use zms.ddev.site
-info "Pinging citizenapi: http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/"
-if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
-  info "✓ citizenapi offices-and-services responding"
-else
-  warn "✗ citizenapi offices-and-services NOT responding"
-fi
-
-info "Pinging zmsapi: http://zms.ddev.site/terminvereinbarung/api/2/status/"
-if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/2/status/" >/dev/null; then
-  info "✓ zmsapi status responding"
-else
-  warn "✗ zmsapi status NOT responding"
-fi
-
-# 8) Run tests (in a throwaway Maven container, using cached ~/.m2)
-info "Running REST-assured tests against ddev..."
-docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
-docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
-
-# Get ddev network name (same logic as Flyway)
-DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
-if [[ -z "$DDEV_NETWORK" ]]; then
-  DDEV_NETWORK="ddev_default"
-fi
-
-# Run tests on ddev network so container can reach ddev services
-docker run --rm \
-  --network "$DDEV_NETWORK" \
-  -e BASE_URI="$BASE_URI" \
-  -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
-  -v "$PROJECT_ROOT:/workspace:ro" \
-  -v "$M2_CACHE_VOLUME:/root/.m2" \
-  -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
-  -w /workspace/zmsautomation \
-  "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
 
 TEST_EXIT=$?
 

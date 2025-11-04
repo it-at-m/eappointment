@@ -1,33 +1,63 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# zmsdb-test - Run zmsdb unit tests against local ddev on a dedicated test DB
+# zmsdb-test - Run zmsdb unit tests against local ddev or podman on a dedicated test DB
 # Usage: ./zmsdb-test [PHPUnit arguments...]
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required" >&2; exit 1; }
 }
 
-require_cmd ddev
-
 PHPUNIT_ARGS="${*:-}"
 PROJECT_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
 TEST_DB="zmsdb_test"
 
+# Detect if we're using Podman or DDEV
+USE_PODMAN=false
+if command -v podman >/dev/null 2>&1; then
+  if podman ps --format "{{.Names}}" | grep -q "^zms-web$" && podman ps --format "{{.Names}}" | grep -q "^zms-db$"; then
+    USE_PODMAN=true
+    echo "[INFO] Using Podman containers (zms-web, zms-db)"
+  fi
+fi
+
+if [[ "$USE_PODMAN" == false ]]; then
+  require_cmd ddev
+  echo "[INFO] Using DDEV"
+fi
+
 # Ensure dedicated test database exists and grant access to 'db' user
-(cd "$PROJECT_ROOT" && ddev mysql -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;" >/dev/null)
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;" >/dev/null)
+else
+  (cd "$PROJECT_ROOT" && ddev mysql -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;" >/dev/null)
+fi
 
 # Optional: clear caches using container's CACHE_DIR (and matching host path)
-CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+if [[ "$USE_PODMAN" == true ]]; then
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+else
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+fi
+
 if [[ -n "$CACHE_DIR" ]]; then
   echo "[INFO] CACHE_DIR=$CACHE_DIR"
   for dir in zmsapi zmsdb zmscitizenapi; do
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-      if [ -d \"$CACHE_DIR/$dir\" ]; then
-        rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-        echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-      fi
-    ")
+    if [[ "$USE_PODMAN" == true ]]; then
+      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      " || true)
+    else
+      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      ")
+    fi
   done
   HOST_CACHE_DIR="$CACHE_DIR"
   if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
@@ -44,23 +74,47 @@ if [[ -n "$CACHE_DIR" ]]; then
     done
   fi
 else
-  echo "[WARN] CACHE_DIR not found in ddev container"
+  if [[ "$USE_PODMAN" == true ]]; then
+    echo "[WARN] CACHE_DIR not found in podman container"
+  else
+    echo "[WARN] CACHE_DIR not found in ddev container"
+  fi
 fi
 
 # Setup fixtures like CI: link zmsapi/data -> zmsdb fixtures (import tool uses that path)
-(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "Setup fixtures..."; rm -rf /var/www/html/zmsapi/data && ln -s /var/www/html/zmsdb/tests/Zmsdb/fixtures /var/www/html/zmsapi/data')
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "Setup fixtures..."; rm -rf /var/www/html/zmsapi/data && ln -s /var/www/html/zmsdb/tests/Zmsdb/fixtures /var/www/html/zmsapi/data')
+else
+  (cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "Setup fixtures..."; rm -rf /var/www/html/zmsapi/data && ln -s /var/www/html/zmsdb/tests/Zmsdb/fixtures /var/www/html/zmsapi/data')
+fi
 
 # Prepare and import test data, then run phpunit on the dedicated DB
-(cd "$PROJECT_ROOT" && ddev exec bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
-  export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; \
-  cd /var/www/html/zmsdb; \
-  php -r '\''require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);'\'' || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o); \
-  php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php bin/importTestData --commit; \
-  mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' || true; \
-  mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\'' || true; \
-  echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; \
-  php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
+    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; \
+    cd /var/www/html/zmsdb; \
+    php -r '\''require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);'\'' || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o); \
+    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php bin/importTestData --commit; \
+    mysql -h db -uroot --ssl-mode=DISABLED -e '\''SET GLOBAL time_zone = "+00:00";'\'' || true; \
+    mysql -h db -uroot --ssl-mode=DISABLED -e '\''SET time_zone = "+00:00";'\'' || true; \
+    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; \
+    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
+else
+  (cd "$PROJECT_ROOT" && ddev exec bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
+    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; \
+    cd /var/www/html/zmsdb; \
+    php -r '\''require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);'\'' || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o); \
+    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php bin/importTestData --commit; \
+    mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' || true; \
+    mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\'' || true; \
+    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; \
+    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsdb/vendor/autoload.php vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
+fi
 
 # Reset MariaDB timezone back to SYSTEM (global + session)
 RESET_SQL="SET GLOBAL time_zone = 'SYSTEM'; SET time_zone = 'SYSTEM';"
-(cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql >/dev/null 2>&1 || true)
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | podman exec -i zms-db mysql -u root -proot >/dev/null 2>&1 || true)
+else
+  (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql >/dev/null 2>&1 || true)
+fi
