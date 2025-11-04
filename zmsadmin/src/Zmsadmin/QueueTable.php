@@ -67,8 +67,7 @@ class QueueTable extends BaseController
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage') ?? 10;
 
         $queueListVisible = $queueList
-            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'])
-            ->withEstimatedWaitingTime($timeAverage, $workstationCount, \App::$now, false);
+            ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
