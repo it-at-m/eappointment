@@ -58,12 +58,12 @@ class ClusterHelper
                     'exclude' => $excludedIds,
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ]
-            )->getEntity();
+            )?->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(
                 '/scope/' . static::$workstation->scope['id'] . '/queue/next/',
                 ['exclude' => $excludedIds]
-            )->getEntity();
+            )?->getEntity();
         }
 
         return $nextProcess;
