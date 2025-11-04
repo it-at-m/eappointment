@@ -123,10 +123,12 @@
             <div v-if="currentView === 3">
               <appointment-summary
                 v-if="
-                  !hasUpdateAppointmentError && !hasPreconfirmAppointmentError
+                  !hasUpdateAppointmentError &&
+                  !hasPreconfirmAppointmentError &&
+                  !reschedulePastError
                 "
                 :is-rebooking="isRebooking"
-                :rebook-or-cancel-dialog="rebookOrCanelDialog"
+                :rebook-or-cancel-dialog="rebookOrCancelDialog"
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
@@ -134,6 +136,23 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
+              <div v-if="reschedulePastError">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("rescheduleErrorText") }}
+                  </template>
+
+                  <template #header>
+                    {{ t("rescheduleErrorHeader") }}
+                  </template>
+                </muc-callout>
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                >
+                  {{ t("newAppointmentButton") }}
+                </muc-button>
+              </div>
               <div v-if="hasUpdateAppointmentError">
                 <muc-callout
                   :type="toCalloutType(apiErrorTranslation.errorType)"
@@ -455,10 +474,11 @@ const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
-const rebookOrCanelDialog = ref<boolean>(false);
+const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
+const reschedulePastError = ref<boolean>(false);
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -673,7 +693,7 @@ const nextReserveAppointment = () => {
   isReservingAppointment.value = true;
   clearContextErrors(errorStateMap.value);
   captchaError.value = false;
-  rebookOrCanelDialog.value = false;
+  rebookOrCancelDialog.value = false;
 
   reserveAppointment(
     props.globalState,
@@ -835,6 +855,13 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
+  const startMs = getAppointmentStartMs(appointment.value);
+  if (startMs && Date.now() >= startMs) {
+    reschedulePastError.value = true;
+    return;
+  }
+
+  reschedulePastError.value = false;
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -843,8 +870,9 @@ const nextRescheduleAppointment = () => {
 
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
+  reschedulePastError.value = false;
   isRebooking.value = false;
-  rebookOrCanelDialog.value = true;
+  rebookOrCancelDialog.value = true;
 };
 
 /**
@@ -1052,6 +1080,15 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
     });
 }
 
+function getAppointmentStartMs(a?: AppointmentDTO | undefined): number | null {
+  const raw = (a as any)?.timestamp;
+  if (raw == null) return null;
+  const n = typeof raw === "string" ? Number.parseInt(raw, 10) : Number(raw);
+  if (!Number.isFinite(n)) return null;
+  // Falls Sekundenstempel geliefert wird, auf Millisekunden hochskalieren
+  return n < 1e12 ? n * 1000 : n;
+}
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -1069,7 +1106,7 @@ onMounted(() => {
 
   if (props.appointmentHash) {
     clearContextErrors(errorStateMap.value);
-    rebookOrCanelDialog.value = true;
+    rebookOrCancelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
