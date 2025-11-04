@@ -46,7 +46,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
-        if (1 <= $resolveReferences) {
+        if (0 <= $resolveReferences) {
             if ($process->archiveId) {
                 $process['requests'] = (new Request())
                     ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
