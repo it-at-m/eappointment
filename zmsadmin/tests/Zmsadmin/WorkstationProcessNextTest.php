@@ -150,7 +150,7 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/queue/next/',
                     'parameters' => ['exclude' => ''],
-                    'response' => '{}'
+                    'response' => $this->readFixture("GET_process_empty.json")
                 ],
             ]
         );
