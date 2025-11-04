@@ -1053,7 +1053,7 @@ class Process extends Base implements MappingInterface
     protected function addValuesExternalUserId($process)
     {
         $data = [
-            'externalUserId' => $process->external_user_id,
+            'external_user_id' => $process->externalUserId,
         ];
 
         $this->addValues($data);
