@@ -30,7 +30,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -39,7 +38,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -80,7 +78,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -89,7 +86,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -133,7 +129,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_fake_entry.json")
@@ -142,7 +137,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_fake_entry.json")
@@ -181,7 +175,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -190,7 +183,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -231,7 +223,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -240,7 +231,6 @@ class WorkstationProcessNextTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
