@@ -11,3 +11,4 @@
 coverage/
 .phpunit.cache
 .phpunit.result.cache
+cache/

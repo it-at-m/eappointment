@@ -34,11 +34,11 @@ class OfficesAndServicesEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /terminvereinbarung/api/citizen/offices-and-services/ returns 200 and JSON body")
+    @DisplayName("GET /offices-and-services/ returns 200 and JSON body")
     void officesAndServicesEndpointShouldBeOk() {
         given()
             .when()
-                .get("/terminvereinbarung/api/citizen/offices-and-services/")
+                .get("/offices-and-services/")
             .then()
                 .statusCode(200);
     }

@@ -1,55 +1,260 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -euo pipefail
 
-if [[ ${1:-} == "--reset" ]]; then
-  docker-compose down -v
-  exit 0
-fi
+# Configurable endpoints (override via env)
+# When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
+# BASE_URI should include the full path prefix and be HTTP to avoid TLS trust issues inside container
+BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
+# CITIZEN_API_BASE_URI should include full path prefix; both APIs are served by the same ddev site
+CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
 
-if [[ ${1:-} == "--no-composer" ]]; then
-  export SKIP_COMPOSER=1
-  shift || true
-fi
+# Maven image and caches
+MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
+M2_CACHE_VOLUME="zmsautomation-cache"
+TARGET_VOLUME="zmsautomation-target"
+WORKSPACE_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
+PROJECT_ROOT="$WORKSPACE_ROOT"
 
-export BASE_URI=${BASE_URI:-${1:-http://api-server:8080}}
-export ZMS_CRONROOT=${ZMS_CRONROOT:-1}
+# Temporary backup file inside host
+BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
+BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 
-# Ensure DB is up (compose healthcheck gates dependents)
-if ! docker-compose ps mariadb | grep -q "Up"; then
-  docker-compose up -d mariadb
-  echo "Waiting for mariadb to be ready..."
-  until docker-compose exec -T mariadb mysqladmin ping -h localhost -u root -pzmsautomation >/dev/null 2>&1; do
-    sleep 2
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required but not installed." >&2; exit 1; }
+}
+
+info() { echo "[INFO] $*"; }
+warn() { echo "[WARN] $*"; }
+
+require_cmd ddev
+require_cmd docker
+
+restore_db() {
+  if [[ -f "$BACKUP_FILE" ]]; then
+    info "Restoring database from $BACKUP_FILE ..."
+    (cd "$PROJECT_ROOT" && ddev import-db -f "$BACKUP_FILE" >/dev/null)
+    info "Database restored."
+  else
+    warn "No backup file found to restore."
+  fi
+}
+
+trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
+
+# 1) Backup current DB
+info "Exporting current ddev database to $BACKUP_FILE ..."
+(cd "$PROJECT_ROOT" && ddev export-db -f "$BACKUP_FILE" >/dev/null)
+info "Backup completed."
+
+# 1.5) Clear application caches inside ddev (zmsapi, zmsdb, zmscitizenapi)
+info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
+CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+if [[ -n "$CACHE_DIR" ]]; then
+  info "CACHE_DIR=$CACHE_DIR"
+  for dir in zmsapi zmsdb zmscitizenapi; do
+    (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+      if [ -d \"$CACHE_DIR/$dir\" ]; then
+        rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+        echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+      fi
+    ")
   done
+  # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
+  HOST_CACHE_DIR="$CACHE_DIR"
+  if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
+    HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
+    if [[ -d "$HOST_CACHE_DIR" ]]; then
+      rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
+      info "[CACHE][host] cleared $HOST_CACHE_DIR"
+    fi
+    for dir in zmsapi zmsdb zmscitizenapi; do
+      if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
+        rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
+        info "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
+      fi
+    done
+  fi
+else
+  warn "CACHE_DIR not found in ddev container"
 fi
 
-# Start prepare and liquibase (they will exit when done)
-BASE_URI="$BASE_URI" docker-compose up --build prepare liquibase
+# 2) Drop all tables to ensure clean state (removes tables created by migrations from previous runs)
+info "Dropping all existing tables to ensure clean state..."
+(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SET FOREIGN_KEY_CHECKS = 0;
+  SET @tables = NULL;
+  SELECT GROUP_CONCAT('\\`', table_name, '\\`')
+    INTO @tables
+    FROM information_schema.tables
+    WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
+  SET @tables = IFNULL(@tables, 'dummy');
+  SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
+  PREPARE stmt FROM @tables;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+  SET FOREIGN_KEY_CHECKS = 1;
+" >/dev/null 2>&1 || echo "No tables to drop or database is empty")
+info "Tables dropped (if any existed)."
 
-# Start api-server in detached mode (it will stay running)
-echo "Starting API server..."
-BASE_URI="$BASE_URI" docker-compose up -d --build api-server
+# 3) Import base database using ddev
+if [[ -f "$BASE_SQL_FILE" ]]; then
+  info "Importing base database from $BASE_SQL_FILE ..."
+  (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
+  info "Base database import completed."
+  
+  # Log database tables after initial import
+  info "Database tables after initial SQL import:"
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+    FROM information_schema.tables
+    WHERE table_schema = 'db'
+    ORDER BY table_name;
+  " || true)
+else
+  warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
+fi
 
-echo "Waiting for API server to be healthy..."
-until docker-compose ps api-server | grep -q "healthy"; do
-  echo "Waiting for api-server healthcheck..."
-  sleep 2
-done
+# 4) Flyway BEFORE PHP migrations
+info "Running Flyway migrations..."
+# Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
+if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
+  info "Using ddev flyway service"
+  (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway \
+    -url=jdbc:mysql://db:3306/db -user=db -password=db \
+    -locations=filesystem:/var/www/html/zmsautomation/flyway \
+    -baselineOnMigrate=true migrate)
+else
+  # Get ddev network name
+  DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
+  if [[ -z "$DDEV_NETWORK" ]]; then
+    DDEV_NETWORK="ddev_default"
+  fi
+  
+  # Run Flyway in a Docker container on the ddev network
+  info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
+  docker run --rm \
+    --network "$DDEV_NETWORK" \
+    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
+    flyway/flyway:9 \
+    -url=jdbc:mysql://db:3306/db -user=db -password=db \
+    -locations=filesystem:/flyway/sql \
+    -baselineOnMigrate=true \
+    migrate || warn "Flyway (Docker on ddev network) failed; continuing."
+fi
 
-echo "API server is healthy! Showing verification pings..."
-# Wait a moment for verification to complete, then show the relevant log lines
-sleep 2
-docker-compose logs api-server 2>&1 | tail -20 | grep -A 5 -E "(Verifying endpoints|Pinging)" || docker-compose logs api-server 2>&1 | tail -10
+# Log database tables after Flyway
+info "Database tables after Flyway (before PHP migrations):"
+(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+info "flyway_schema_history (post-flyway):"
+(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT installed_rank, version, description, type, installed_by, success, installed_on
+  FROM flyway_schema_history
+  ORDER BY installed_rank;
+" || true)
 
-echo ""
-echo "Running tests..."
-# Run the test service (it will wait for api-server to be healthy via depends_on, then run tests and exit)
-BASE_URI="$BASE_URI" docker-compose up --build test
-TEST_EXIT_CODE=$?
+# 5) Run PHP migrations via ddev
+info "Running zmsapi PHP migrations via ddev..."
+(cd "$PROJECT_ROOT" && ddev exec zmsapi/vendor/bin/migrate --update)
+info "PHP migrations completed."
 
-# Stop api-server after tests complete
-echo "Stopping API server..."
-docker-compose stop api-server
+# Log database tables after PHP migrations
+info "Database tables after PHP migrations:"
+(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+info "flyway_schema_history (post-php-migrations):"
+(cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT installed_rank, version, description, type, installed_by, success, installed_on
+  FROM flyway_schema_history
+  ORDER BY installed_rank;
+" || true)
 
-exit $TEST_EXIT_CODE
+# 6) Run hourly via ddev (best-effort)
+info "Running hourly via ddev (best-effort)..."
+if ! (cd "$PROJECT_ROOT" && ddev exec zmsapi/cron/cronjob.hourly --city=munich); then
+  warn "Hourly command failed or not available; continuing."
+else
+  info "Hourly command completed."
+  
+  # Log database tables after hourly
+  info "Database tables after hourly cron:"
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+    FROM information_schema.tables
+    WHERE table_schema = 'db'
+    ORDER BY table_name;
+  " || true)
+fi
+
+# 7) Pings for readiness
+# Note: These pings run from the host, so use zms.ddev.site
+info "Pinging citizenapi: http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/"
+if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
+  info "✓ citizenapi offices-and-services responding"
+else
+  warn "✗ citizenapi offices-and-services NOT responding"
+fi
+
+info "Pinging zmsapi: http://zms.ddev.site/terminvereinbarung/api/2/status/"
+if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/2/status/" >/dev/null; then
+  info "✓ zmsapi status responding"
+else
+  warn "✗ zmsapi status NOT responding"
+fi
+
+# 8) Run tests (in a throwaway Maven container, using cached ~/.m2)
+info "Running REST-assured tests against ddev..."
+docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
+docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
+
+# Get ddev network name (same logic as Flyway)
+DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
+if [[ -z "$DDEV_NETWORK" ]]; then
+  DDEV_NETWORK="ddev_default"
+fi
+
+# Run tests on ddev network so container can reach ddev services
+docker run --rm \
+  --network "$DDEV_NETWORK" \
+  -e BASE_URI="$BASE_URI" \
+  -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
+  -v "$PROJECT_ROOT:/workspace:ro" \
+  -v "$M2_CACHE_VOLUME:/root/.m2" \
+  -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
+  -w /workspace/zmsautomation \
+  "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
+
+TEST_EXIT=$?
+
+# Print surefire reports (if any)
+info "Collecting surefire reports..."
+docker run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
+  if [ -d /t/surefire-reports ]; then
+    ls -la /t/surefire-reports;
+    for f in /t/surefire-reports/*.txt; do
+      echo "==== $f ===="; cat "$f"; echo; done || true;
+  else
+    echo "No surefire-reports found";
+  fi'
+
+# 9) Restore DB regardless of test result
+info "Restoring original database..."
+restore_db
+
+if [[ $TEST_EXIT -eq 0 ]]; then
+  info "Tests completed successfully."
+else
+  warn "Tests failed (exit $TEST_EXIT)."
+fi
+
+exit "$TEST_EXIT"
+
+

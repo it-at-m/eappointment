@@ -22,11 +22,11 @@ class StatusEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /terminvereinbarung/api/2/status/ returns 200 and JSON body")
+    @DisplayName("GET /status/ returns 200 and JSON body")
     void statusEndpointShouldBeOk() {
         given()
             .when()
-                .get("/terminvereinbarung/api/2/status/")
+                .get("/status/")
             .then()
                 .statusCode(200);
     }
