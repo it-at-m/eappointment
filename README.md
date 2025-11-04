@@ -241,10 +241,21 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
 
+**Using Docker:**
+
 ```bash
 cd zmsclient
 docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
+
+**Using Podman:**
+
+```bash
+cd zmsclient
+./zmsclient-test
+```
+
+The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
 
 #### Traditional Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.

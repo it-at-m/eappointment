@@ -31,7 +31,7 @@ services:
         target: "/mellon"
     environment:
       ZMS_API_URL: http://mockup:8083
-      XDEBUG_MODE: coverage
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     working_dir: /app
     command: >

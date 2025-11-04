@@ -16,6 +16,7 @@ cache/
 .DS_*
 .sass-cache
 .cache
+qemu*.core
 
 # =============== Java =================
 # Compiled class file
