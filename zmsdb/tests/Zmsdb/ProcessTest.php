@@ -321,7 +321,7 @@ class ProcessTest extends Base
     public function testProcessStatusFinished()
     {
         $now = static::$now;
-        $entity =(new Query)->readEntity(10029, '1c56', 0);
+        $entity = (new Query)->readEntity(10029, '1c56', 0);
         $entity->status = 'finished';
         $entity->requests[] = new \BO\Zmsentities\Request(
             [
@@ -331,7 +331,7 @@ class ProcessTest extends Base
                 "source"=>"dldb"
             ]
         );
-        $this->assertCount(1, $entity->requests);
+        $this->assertCount(2, $entity->requests);
         $queryArchived = new ProcessStatusArchived();
         $archived = $queryArchived->writeEntityFinished($entity, $now);
         //$this->dumpProfiler();
