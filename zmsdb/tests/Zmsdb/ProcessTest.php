@@ -346,7 +346,7 @@ class ProcessTest extends Base
         $this->assertCount(0, $archived->requests);
         $archived = $queryArchived->readArchivedEntity($archived->archiveId, 1);
         $this->assertCount(2, $archived->requests);
-        $this->assertEquals("Anmeldung einer Wohnung", $archived->requests->getFirst()->name);
+        $this->assertEquals("Reisepass beantragen", $archived->requests->getFirst()->name);
     }
 
     public function testNewWriteFromAdmin()
