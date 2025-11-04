@@ -108,7 +108,6 @@ class View extends BaseView {
         this.loadCalendar();
         if ('counter' == this.page)
             this.loadQueueInfo();
-        this.loadQueueTable();
         if (this.selectedProcess) {
             // Editing an existing appointment -> full reload
             this.loadAppointmentForm(true, false);
@@ -388,7 +387,6 @@ class View extends BaseView {
         //this.calledProcess = null;
         if ('counter' == this.page)
             this.loadQueueInfo();
-        this.loadQueueTable();
     }
 
     onCallNextProcess() {
@@ -468,7 +466,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -488,7 +485,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -505,7 +501,6 @@ class View extends BaseView {
         }
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
             (response) => this.loadMessage(response, () => {
-                this.loadQueueTable();
             }, null, event.currentTarget)
         );
     }
