@@ -160,7 +160,6 @@ class WorkstationProcessTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/' . $date . '/',
                     'parameters' => [
-                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
