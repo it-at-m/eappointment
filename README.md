@@ -127,10 +127,20 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 ----
 
 ## Getting Started
+
+### Using DDEV
 - `ddev start`
 - `ddev exec ./cli modules loop composer install`
 - `ddev exec ./cli modules loop npm install`
 - `ddev exec ./cli modules loop npm build`
+
+### Using Podman (Devcontainer)
+> **Note for macOS users:** You may need to add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or run it in your terminal before using devcontainer commands.
+
+- `devcontainer up --workspace-folder .`
+- `podman exec -it zms-web bash -lc "./cli modules loop composer install"`
+- `podman exec -it zms-web bash -lc "./cli modules loop npm install"`
+- `podman exec -it zms-web bash -lc "./cli modules loop npm build"`
 
 <br>
 
@@ -141,8 +151,14 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run test`
 
 ## Import Database
+
+### Using DDEV
 - `ddev import-db --file=.resources/zms.sql`
 - `ddev exec zmsapi/vendor/bin/migrate --update`
+
+### Using Podman
+- `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
+- `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
 
 Import Berlin or Munich DLDB data via the [hourly cronjob](#cronjobs).
 
@@ -156,12 +172,29 @@ e.g.
 ## Code Quality Checks
 We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and detect possible issues early. These checks run automatically in our GitHub Actions pipeline but can also be executed locally.
 
-To run Checks locally in your local docker container:
-
+### Using DDEV
 0. Run PHP code formatting all at once:
 - `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
-1. Enter the container (if using DDEV or Docker):
+1. Enter the container:
 - `ddev ssh`
+2. Go to the desired module directory:
+- `cd zmsadmin`
+3. Run PHPCS (PSR-12 standard):
+- `vendor/bin/phpcs --standard=psr12 src/`
+- ```
+  You can automatically fix many PHPCS formatting issues by running:
+  - vendor/bin/phpcbf --standard=psr12 src/
+  or
+  - phpcs --standard=psr12 --fix src/
+  ```
+4. Run PHPMD (using the phpmd.rules.xml in the project root):
+- `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
+
+### Using Podman
+0. Run PHP code formatting all at once:
+- `podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
+1. Enter the container:
+- `podman exec -it zms-web bash`
 2. Go to the desired module directory:
 - `cd zmsadmin`
 3. Run PHPCS (PSR-12 standard):
@@ -183,7 +216,13 @@ code style (lint) problems:
 ## Unit Testing
 To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 
+### Using DDEV
 - `ddev ssh`
+- `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
+- `./vendor/bin/phpunit`
+
+### Using Podman
+- `podman exec -it zms-web bash`
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`
 
@@ -207,10 +246,12 @@ cd zmsclient
 docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
-#### Traditional DDEV Method (overwrites local DB)
+#### Traditional Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
 **zmsapi:**
+
+Using DDEV:
 ```bash
 cd zmsapi
 rm -rf data
@@ -221,9 +262,30 @@ vendor/bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
+Using Podman:
+```bash
+cd zmsapi
+rm -rf data
+ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+podman exec -it zms-web bash
+cd zmsapi
+vendor/bin/importTestData --commit
+./vendor/bin/phpunit
+```
+
 **zmsdb:**
+
+Using DDEV:
 ```bash
 ddev ssh
+cd zmsdb
+bin/importTestData --commit
+./vendor/bin/phpunit
+```
+
+Using Podman:
+```bash
+podman exec -it zms-web bash
 cd zmsdb
 bin/importTestData --commit
 ./vendor/bin/phpunit
@@ -309,7 +371,9 @@ cd zmsapi
   ```
 
 ## Cronjobs
-To run cronjobs locally use ddev
+To run cronjobs locally use ddev or podman
+
+### Using DDEV
 
 **Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
 ```bash
@@ -319,9 +383,24 @@ ddev exec zmsapi/cron/cronjob.hourly --city=munich
 ```
 
 **Other cronjobs:**
-```
+```bash
 ddev exec zmsapi/cron/cronjob.minutly
 ddev exec zmsapi/cron/cronjob.daily
+```
+
+### Using Podman
+
+**Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
+```bash
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=berlin"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich"
+```
+
+**Other cronjobs:**
+```bash
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.minutly"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.daily"
 ```
 
 ## Branch Naming Convention
