@@ -17,4 +17,3 @@ VERSION
 .phpunit.result.cache
 coverage
 .phpunit.cache
-data
