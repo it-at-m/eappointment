@@ -70,8 +70,8 @@
                 {{ selectedProvider.address.postal_code }}
                 {{ selectedProvider.address.city }}<br /><br />
                 <span
-                  v-if="selectedProvider?.scope?.hint"
-                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                  v-if="appointment?.scope?.hint"
+                  v-html="sanitizeHtml(appointment.scope.hint)"
                 ></span>
               </p>
 
