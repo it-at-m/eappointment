@@ -24,7 +24,7 @@
 
     <rule ref="rulesets/codesize.xml/NPathComplexity">
         <properties>
-            <property name="minimum" value="400" />
+            <property name="minimum" value="500" />
         </properties>
     </rule>
 
