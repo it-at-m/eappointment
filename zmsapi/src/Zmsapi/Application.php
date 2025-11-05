@@ -7,6 +7,10 @@
 
 namespace BO\Zmsapi;
 
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+
 if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
@@ -26,6 +30,11 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'zms';
 
     const MODULE_NAME = 'zmsapi';
+
+    public static ?CacheInterface $cache = null;
+    // Cache config
+    public static string $CACHE_DIR;
+    public static int $SOURCE_CACHE_TTL;
 
     /**
      * @var Bool DEBUG
@@ -111,4 +120,36 @@ class Application extends \BO\Slim\Application
         }
         return new \DateTimeImmutable();
     }
+
+    private static function initializeCache(): void
+    {
+        self::$CACHE_DIR = getenv('CACHE_DIR') ?: __DIR__ . '/cache';
+        self::$SOURCE_CACHE_TTL = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
+        self::validateCacheDirectory();
+        self::setupCache();
+    }
+
+    private static function validateCacheDirectory(): void
+    {
+        if (!is_dir(self::$CACHE_DIR) && !mkdir(self::$CACHE_DIR, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
+        }
+
+        if (!is_writable(self::$CACHE_DIR)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR));
+        }
+    }
+
+    private static function setupCache(): void
+    {
+        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
+        self::$cache = new Psr16Cache($psr6);
+    }
+
+    public static function initialize(): void
+    {
+        self::initializeCache();
+    }
 }
+
+Application::initialize();

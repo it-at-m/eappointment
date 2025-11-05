@@ -70,8 +70,8 @@
                 {{ selectedProvider.address.postal_code }}
                 {{ selectedProvider.address.city }}<br /><br />
                 <span
-                  v-if="selectedProvider?.scope?.hint"
-                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                  v-if="appointment?.scope?.hint"
+                  v-html="sanitizeHtml(appointment.scope.hint)"
                 ></span>
               </p>
 
@@ -115,10 +115,10 @@
               <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <div
+              <p
                 tabindex="0"
                 v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-              ></div>
+              ></p>
             </div>
           </div>
           <div class="m-content">
@@ -182,6 +182,7 @@
                     name="checkbox-privacy-policy"
                     type="checkbox"
                     @click="clickPrivacyPolicy"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"
@@ -206,6 +207,7 @@
                     name="checkbox-electronic-communication"
                     type="checkbox"
                     @click="clickElectronicCommunication"
+                    aria-required="true"
                   />
                   <label
                     class="m-label m-checkboxes__label"

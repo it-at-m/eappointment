@@ -53,12 +53,12 @@ const emit = defineEmits<{
 const fetchCaptchaDetails = async () => {
   try {
     const response = await fetch(
-      `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
+      `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
     );
     if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
     const data = await response.json();
-    captchaChallengeUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
-    captchaVerifyUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
+    captchaChallengeUrl.value = `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
+    captchaVerifyUrl.value = `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
     captchaEnabled.value = data.captchaEnabled;
   } catch (error) {
     console.error("Fehler beim Abrufen der Captcha-Details:", error);

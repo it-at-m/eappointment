@@ -330,6 +330,12 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
             'errorType' => 'warning'
         ],
+        'invalidCredentials' => [
+            'errorCode' => 'invalidCredentials',
+            'errorMessage' => 'Invalid credentials.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorType' => 'warning'
+        ],
         'noAppointmentForThisScope' => [
             'errorCode' => 'noAppointmentForThisScope',
             'errorMessage' => 'Please try again at a later time.',
@@ -379,7 +385,13 @@ class ErrorMessages
             'statusCode' => self::HTTP_FORBIDDEN,
             'errorMessage' => 'Security policy violation.',
             'errorType' => 'error'
-        ]
+        ],
+        'unauthorized' => [
+            'errorCode' => 'unauthorized',
+            'errorMessage' => 'You are not authorized to access this resource.',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorType' => 'error'
+        ],
     ];
 
     /**

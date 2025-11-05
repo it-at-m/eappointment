@@ -8,7 +8,8 @@
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
       <appointment-overview-view
-        :base-url="baseUrl"
+        v-if="globalState.isLoggedIn"
+        :global-state="globalState"
         :appointment-detail-url="appointmentDetailUrl"
         :new-appointment-url="newAppointmentUrl"
         :overview-url="overviewUrl"
@@ -21,13 +22,12 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentOverviewView from "@/components/AppointmentOverview/AppointmentOverviewView.vue";
-import { registerAuthenticationHook } from "./utils/auth";
+import { useGlobalState } from "./utils/useGlobalState";
 
-defineProps({
+const props = defineProps({
   baseUrl: {
     type: String,
     required: false,
@@ -48,15 +48,7 @@ defineProps({
 });
 
 const { t } = useI18n();
-const accessToken = ref<string | null>(null);
-registerAuthenticationHook(
-  (newAccessToken) => {
-    accessToken.value = newAccessToken;
-  },
-  () => {
-    accessToken.value = null;
-  }
-);
+const globalState = useGlobalState(props);
 </script>
 
 <style>

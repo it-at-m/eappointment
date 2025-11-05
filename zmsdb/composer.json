@@ -34,6 +34,8 @@
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0",
         "ext-pdo": "*",
         "aura/sql": "^5",
         "roave/security-advisories": "dev-latest"
@@ -53,6 +55,7 @@
         "bin/deleteOldAvailabilityData",
         "bin/deleteOldEventLogEntries",
         "bin/deleteOldLogs",
+        "bin/deleteArchivedProcessForToday",
         "bin/deleteReservedData",
         "bin/deleteSessionData",
         "bin/deleteTicketprinterData",

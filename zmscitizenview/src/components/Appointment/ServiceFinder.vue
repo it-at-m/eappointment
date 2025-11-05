@@ -122,9 +122,12 @@
     </div>
     <div class="m-component" v-if="showEstimatedDuration">
       <div class="wrapper">
-        <clock-svg />
+        <clock-svg
+          aria-hidden="true"
+          focusable="false"
+        />
         <div ref="durationInfo">
-          <b>{{ t("estimatedDuration") }}</b>
+          <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
         </div>
@@ -136,7 +139,7 @@
     >
       <AltchaCaptcha
         :t="t"
-        :base-url="baseUrl"
+        :base-url="globalState.baseUrl"
         @validationResult="(valid: boolean) => (isCaptchaValid = valid)"
         @tokenChanged="
           (token: string | null) => emit('captchaTokenChanged', token)
@@ -174,6 +177,7 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import AltchaCaptcha from "@/components/Appointment/ServiceFinder/AltchaCaptcha.vue";
 import ClockSvg from "@/components/Appointment/ServiceFinder/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/ServiceFinder/SubserviceListItem.vue";
+import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -192,7 +196,7 @@ import {
 const isCaptchaValid = ref<boolean>(false);
 
 const props = defineProps<{
-  baseUrl: string | undefined;
+  globalState: GlobalState;
   preselectedServiceId: string | undefined;
   preselectedOfficeId: string | undefined;
   exclusiveLocation: string | undefined;
@@ -544,7 +548,7 @@ onMounted(() => {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
       props.preselectedOfficeId ?? undefined,
-      props.baseUrl ?? undefined
+      props.globalState.baseUrl ?? undefined
     ).then((data) => {
       // Handle normal errors (like rate limit) first
       handleErrorApiResponse(
@@ -554,7 +558,7 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -699,6 +703,15 @@ const isNextDisabled = computed(() => {
   .container {
     padding-left: 24px;
     padding-right: 24px;
+  }
+}
+.grid {
+  grid-template-columns: minmax(150px, auto) 1fr !important;
+}
+
+@include sm-down {
+  .grid {
+    grid-template-columns: 1fr !important;
   }
 }
 </style>

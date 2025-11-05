@@ -124,7 +124,9 @@ describe("ServiceFinder", () => {
   const createWrapper = (service: any, additionalProps: any = {}) => {
     return mount(ServiceFinder, {
       props: {
-        baseUrl: "https://www.muenchen.de",
+        globalState: {
+          baseUrl: "https://www.muenchen.de",
+        },
         preselectedServiceId: undefined,
         preselectedOfficeId: undefined,
         exclusiveLocation: undefined,
@@ -272,7 +274,9 @@ describe("ServiceFinder", () => {
 
       const wrapper = mount(ServiceFinder, {
         props: {
-          baseUrl: "https://www.muenchen.de",
+          globalState: {
+            baseUrl: "https://www.muenchen.de",
+          },
           preselectedServiceId: "999999999999",
           preselectedOfficeId: undefined,
           exclusiveLocation: undefined,
@@ -312,7 +316,9 @@ describe("ServiceFinder", () => {
 
       const wrapper = mount(ServiceFinder, {
         props: {
-          baseUrl: "https://www.muenchen.de",
+          globalState: {
+            baseUrl: "https://www.muenchen.de",
+          },
           preselectedServiceId: "000000000000",
           preselectedOfficeId: "000000000000",
           exclusiveLocation: undefined,
@@ -352,7 +358,9 @@ describe("ServiceFinder", () => {
 
       const wrapper = mount(ServiceFinder, {
         props: {
-          baseUrl: "https://www.muenchen.de",
+          globalState: {
+            baseUrl: "https://www.muenchen.de",
+          },
           preselectedServiceId: "1",
           preselectedOfficeId: undefined,
           exclusiveLocation: undefined,
