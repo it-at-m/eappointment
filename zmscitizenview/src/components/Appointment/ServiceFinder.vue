@@ -120,7 +120,7 @@
         </div>
       </div>
     </div>
-    <div class="m-component">
+    <div class="m-component" v-if="showEstimatedDuration">
       <div class="wrapper">
         <clock-svg />
         <div ref="durationInfo">
@@ -281,6 +281,8 @@ watch(service, (newService) => {
   }
   setServiceData(newService);
   updateSelectedService(newService);
+
+  countOfService.value = newService.count ?? 1;
 });
 
 /**
@@ -298,7 +300,7 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = 1;
+  service.value!.count = Math.max(1, countOfService.value || 1);
   currentSlots.value = getMinSlotOfProvider(service.value!.providers);
 
   if (selectedService.combinable) {
@@ -412,6 +414,10 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 const estimatedDuration = computed(() => {
   const provider = service.value?.providers?.[0];
   return calculateEstimatedDuration(service.value, provider);
+});
+
+const showEstimatedDuration = computed(() => {
+  return !(variantServices.value.length > 1 && !selectedVariant.value);
 });
 
 /**
