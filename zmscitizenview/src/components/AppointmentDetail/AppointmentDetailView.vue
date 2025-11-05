@@ -60,7 +60,7 @@
     "
   >
     <no-login-warning
-      v-if="!loggedIn"
+      v-if="!globalState.isLoggedIn"
       :appointment-id="appointmentId"
       :t="t"
     />
@@ -68,18 +68,27 @@
       <muc-intro
         :tagline="t('appointment')"
         :title="appointmentId ? appointmentId : ''"
+        variant="detail"
       />
-      <error-alert
-        :message="t('apiErrorLoadingAppointmentsText')"
-        :header="t('apiErrorLoadingSingleAppointmentHeader')"
-      >
-        <muc-button
-          icon="arrow-right"
-          @onclick="goToAppointmentOverviewLink"
-        >
-          {{ t("buttonBackToOverview") }}
-        </muc-button>
-      </error-alert>
+      <div class="m-component m-component-form">
+        <div class="container">
+          <div class="m-component__grid">
+            <div class="m-component__column">
+              <error-alert
+                :message="t('apiErrorLoadingAppointmentsText')"
+                :header="t('apiErrorLoadingSingleAppointmentHeader')"
+              >
+                <muc-button
+                  icon="arrow-right"
+                  @onclick="goToAppointmentOverviewLink"
+                >
+                  {{ t("buttonBackToOverview") }}
+                </muc-button>
+              </error-alert>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-else-if="!loading">
       <muc-modal
@@ -96,7 +105,7 @@
             v-if="appointment && selectedProvider"
             style="margin-bottom: 0"
           >
-            <b>{{ t("affectedAppointment") }}</b>
+            <strong>{{ t("affectedAppointment") }}</strong>
             <br />
             {{ getServiceSummary() }}
             <br />
@@ -135,7 +144,7 @@
             v-if="appointment && selectedProvider"
             style="margin-bottom: 0"
           >
-            <b>{{ t("affectedAppointment") }}</b>
+            <strong>{{ t("affectedAppointment") }}</strong>
             <br />
             {{ getServiceSummary() }}
             <br />
@@ -147,7 +156,7 @@
         </template>
         <template #buttons>
           <muc-button
-            icon="arrow-right"
+            icon="trash"
             @click="cancelAppointment"
           >
             {{ t("cancel") }}
@@ -186,7 +195,10 @@
                 class="m-content time-container-margin-bottom"
               >
                 <div class="timeBox">
-                  <calendar-icon :timestamp="appointment.timestamp" />
+                  <calendar-icon
+                    :timestamp="appointment.timestamp"
+                    aria-hidden="true"
+                  />
                   <p>
                     {{ formatAppointmentDateTime(appointment.timestamp) }}
                     {{ t("timeStampSuffix") }} <br />
@@ -218,9 +230,34 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
+                <!--                Used after the content of hint has been checked-->
+                <!--                <p-->
+                <!--                  v-if="-->
+                <!--                    selectedProvider &&-->
+                <!--                    selectedProvider.scope &&-->
+                <!--                    selectedProvider.scope.hint-->
+                <!--                  "-->
+                <!--                >-->
+                <!--                  <strong> {{ selectedProvider.scope.hint }} </strong>-->
+                <!--                </p>-->
               </div>
             </div>
           </div>
+          <!--          Used after the content of infoForAppointment has been checked-->
+          <!--          <muc-callout-->
+          <!--            v-if="-->
+          <!--              appointment &&-->
+          <!--              appointment.scope &&-->
+          <!--              appointment.scope.infoForAppointment-->
+          <!--            "-->
+          <!--            type="info"-->
+          <!--          >-->
+          <!--            <template #content>-->
+          <!--              {{ appointment.scope.infoForAppointment }}-->
+          <!--            </template>-->
+
+          <!--            <template #header>{{ t("appointmentHintHeader") }}</template>-->
+          <!--          </muc-callout>-->
         </div>
       </div>
       <div
@@ -287,8 +324,13 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
-import { computed, onMounted, ref } from "vue";
+import {
+  MucButton,
+  MucCallout,
+  MucIntro,
+  MucModal,
+} from "@muenchen/muc-patternlab-vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -300,8 +342,8 @@ import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentD
 import NoLoginWarning from "@/components/AppointmentDetail/NoLoginWarning.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
+import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
@@ -312,6 +354,7 @@ import {
 } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  APPOINTMENT_ACTION_TYPE,
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
@@ -324,7 +367,7 @@ import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentOverviewUrl: string;
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
@@ -347,8 +390,6 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -378,11 +419,20 @@ const openCancelModal = () => (cancelModalOpen.value = true);
 
 const rescheduleAppointment = () => {
   if (appointment.value)
-    location.href = `${props.rescheduleAppointmentUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value.processId}`;
+    location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.RESCHEDULE)}`;
 };
 
 const cancelAppointment = () => {
-  // TODO cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+  location.href = `${props.rescheduleAppointmentUrl}#/appointment/${getEncodedString(APPOINTMENT_ACTION_TYPE.CANCEL)}`;
+};
+
+const getEncodedString = (type: APPOINTMENT_ACTION_TYPE) => {
+  const json = {
+    id: appointment.value?.processId,
+    authKey: appointment.value?.authKey,
+    action: type,
+  };
+  return btoa(JSON.stringify(json));
 };
 
 const goToAppointmentOverviewLink = () => {
@@ -428,20 +478,30 @@ const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
 
-onMounted(() => {
-  loading.value = true;
-  checksMobile();
-  window.addEventListener("resize", checksMobile);
+function setBreadcrumbAndTitle(appointmentId: string) {
+  const element = document.querySelector(
+    '[data-fragment-placeholder="breadcrumb-label"]'
+  );
+  if (element) {
+    element.innerHTML = appointmentId;
+  }
+  const titleSeperator = "–";
+  const splittedTitle = document.title.split(titleSeperator);
+  splittedTitle[0] =
+    splittedTitle[0].split(":")[0] + ": " + appointmentId + " ";
+  document.title = splittedTitle.join(titleSeperator);
+}
 
+const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
   appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
   fetchServicesAndProviders(
     undefined,
     undefined,
-    props.baseUrl ?? undefined
+    props.globalState.baseUrl ?? undefined
   ).then((data) => {
     // Check if any error state should be activated
-    if (handleApiResponseForDownTime(data, props.baseUrl)) {
+    if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
       return;
     }
 
@@ -457,65 +517,85 @@ onMounted(() => {
     offices.value = data.offices;
 
     if (appointmentId.value) {
-      getAppointmentDetails(appointmentId.value).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data;
+      getAppointmentDetails(props.globalState, appointmentId.value).then(
+        (data) => {
+          if ((data as AppointmentDTO)?.processId !== undefined) {
+            appointment.value = data;
 
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
+            setBreadcrumbAndTitle(appointment.value.processId);
 
-            selectedService.value.providers = getProviders(
-              selectedService.value?.id,
-              null,
-              relations.value,
-              offices.value
+            selectedService.value = services.value.find(
+              (service) => service.id == appointment.value?.serviceId
             );
+            if (selectedService.value) {
+              selectedService.value.count = appointment.value.serviceCount;
 
-            const foundOffice = selectedService.value.providers.find(
-              (office) => office.id == appointment.value?.officeId
-            );
+              selectedService.value.providers = getProviders(
+                selectedService.value?.id,
+                null,
+                relations.value,
+                offices.value
+              );
 
-            if (foundOffice) {
-              selectedProvider.value = foundOffice;
-            }
+              const foundOffice = selectedService.value.providers.find(
+                (office) => office.id == appointment.value?.officeId
+              );
 
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(
-                    subRequest.id,
-                    null,
-                    relations.value,
-                    offices.value
-                  ),
-                  subRequestCount.count
+              if (foundOffice) {
+                selectedProvider.value = foundOffice;
+              }
+
+              if (appointment.value.subRequestCounts.length > 0) {
+                appointment.value.subRequestCounts.forEach(
+                  (subRequestCount) => {
+                    const subRequest = services.value.find(
+                      (service) => service.id == subRequestCount.id
+                    ) as Service;
+                    const subService = new SubService(
+                      subRequest.id,
+                      subRequest.name,
+                      subRequest.maxQuantity,
+                      getProviders(
+                        subRequest.id,
+                        null,
+                        relations.value,
+                        offices.value
+                      ),
+                      subRequestCount.count
+                    );
+                    if (
+                      selectedService.value &&
+                      !selectedService.value.subServices
+                    ) {
+                      selectedService.value.subServices = [];
+                    }
+                    selectedService.value?.subServices?.push(subService);
+                  }
                 );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
+              }
             }
+            loading.value = false;
+          } else {
+            loadingError.value = true;
           }
-          loading.value = false;
-        } else {
-          loadingError.value = true;
         }
-      });
+      );
     }
   });
+};
+
+watch(
+  () => props.globalState.accessToken,
+  () => {
+    loadAppointment();
+  }
+);
+
+onMounted(() => {
+  loading.value = true;
+  checksMobile();
+  window.addEventListener("resize", checksMobile);
+  loadAppointment();
 });
 </script>
 
@@ -540,5 +620,11 @@ onMounted(() => {
 }
 .timeBox p {
   margin-bottom: 0 !important;
+}
+
+@media all and (max-width: 767px) {
+  :deep(dialog) {
+    min-width: 300px !important;
+  }
 }
 </style>

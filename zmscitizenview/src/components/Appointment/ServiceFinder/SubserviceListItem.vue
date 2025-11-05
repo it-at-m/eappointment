@@ -59,8 +59,18 @@ const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
 .list-item {
   margin-bottom: 1.75rem;
+}
+.grid {
+  grid-template-columns: minmax(150px, auto) 1fr !important;
+}
+
+@include sm-down {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 </style>

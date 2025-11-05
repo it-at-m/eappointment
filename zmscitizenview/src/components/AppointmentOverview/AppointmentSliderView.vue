@@ -60,7 +60,10 @@
     "
   >
     <div
-      v-if="loggedIn && (appointments.length > 0 || !displayedOnDetailScreen)"
+      v-if="
+        globalState.isLoggedIn &&
+        (appointments.length > 0 || !displayedOnDetailScreen)
+      "
       :class="displayedOnDetailScreen ? 'details-padding' : 'overview-margin'"
     >
       <div class="container">
@@ -89,7 +92,7 @@
           <muc-link
             v-if="!loadingError && appointments.length > 3 && !isMobile"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
@@ -109,6 +112,7 @@
           <appointment-card-viewer
             :all-appointments="appointments"
             :is-mobile="isMobile"
+            :resize-slider-content="resizeSliderContent"
             :new-appointment-url="newAppointmentUrl"
             :appointment-detail-url="appointmentDetailUrl"
             :displayed-on-detail-screen="displayedOnDetailScreen"
@@ -119,7 +123,7 @@
             v-if="!loadingError && appointments.length > 3 && isMobile"
             class="mobile-link"
             :label="t('showAllAppointments')"
-            icon="chevron-right"
+            append-icon="arrow-right"
             target="_self"
             no-underline
             :href="appointmentOverviewUrl"
@@ -137,10 +141,10 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
-import { useDBSLoginWebcomponentPlugin } from "@/components/DBSLoginWebcomponentPlugin";
+import { GlobalState } from "@/types/GlobalState";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
@@ -155,7 +159,7 @@ import {
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
-  baseUrl?: string;
+  globalState: GlobalState;
   appointmentDetailUrl: string;
   appointmentOverviewUrl: string;
   newAppointmentUrl: string;
@@ -166,11 +170,10 @@ const props = defineProps<{
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+const resizeSliderContent = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
-
-const { loggedIn } = useDBSLoginWebcomponentPlugin();
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -184,7 +187,8 @@ const apiErrorTranslation = computed(() =>
 );
 
 const checksMobile = () => {
-  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+  isMobile.value = window.matchMedia("(max-width: 1399px)").matches;
+  resizeSliderContent.value = window.matchMedia("(min-width: 1200px)").matches;
 };
 
 onMounted(() => {
@@ -192,10 +196,14 @@ onMounted(() => {
   checksMobile();
   window.addEventListener("resize", checksMobile);
 
-  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+  fetchServicesAndProviders(
+    undefined,
+    undefined,
+    props.globalState.baseUrl ?? undefined
+  )
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForDownTime(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.globalState.baseUrl)) {
         return;
       }
 
@@ -207,12 +215,14 @@ onMounted(() => {
       );
 
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments(props.globalState).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
         ) {
-          appointments.value = data;
+          appointments.value = data.toSorted(
+            (a, b) => a.timestamp - b.timestamp
+          );
           if (props.displayedOnDetailScreen) {
             const urlParams = new URLSearchParams(window.location.search);
             const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);

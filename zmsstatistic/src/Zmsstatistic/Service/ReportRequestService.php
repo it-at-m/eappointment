@@ -32,11 +32,11 @@ class ReportRequestService
     {
         if ($dateRange) {
             return $this->getExchangeRequestForDateRange($scopeId, $dateRange);
-        } elseif (isset($args['period'])) {
-            return $this->getExchangeRequestForPeriod($scopeId, $args['period']);
         }
 
-        return null;
+        return isset($args['period'])
+            ? $this->getExchangeRequestForPeriod($scopeId, $args['period'])
+            : null;
     }
 
     /**

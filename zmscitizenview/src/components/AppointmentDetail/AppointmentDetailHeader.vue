@@ -3,10 +3,11 @@
     v-if="appointment"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
+    variant="detail"
   >
     <div class="appointment-data">
       <p>
-        <b> {{ t("appointmentNumber") }}: </b>
+        <strong> {{ t("appointmentNumber") }}: </strong>
         {{ appointment.processId }}
       </p>
       <muc-link
@@ -29,6 +30,17 @@
         prepend-icon="map-pin"
         @click.prevent="focusLocation"
       />
+      <br />
+      <!--      Used after the content of hint has been checked-->
+      <!--      <p-->
+      <!--        v-if="-->
+      <!--          selectedProvider &&-->
+      <!--          selectedProvider.scope &&-->
+      <!--          selectedProvider.scope.hint-->
+      <!--        "-->
+      <!--      >-->
+      <!--        {{ selectedProvider.scope.hint }}-->
+      <!--      </p>-->
     </div>
     <div class="m-button-group">
       <muc-button
@@ -90,9 +102,10 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
 a {
   padding-bottom: 16px;
 }
-
-:deep(.m-intro-vertical__title) {
+</style>
+<style>
+.m-intro-vertical__title {
   margin-bottom: 0 !important;
-  white-space: pre-wrap;
+  white-space: pre-wrap !important;
 }
 </style>

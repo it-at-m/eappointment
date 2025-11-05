@@ -46,7 +46,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         "index": "./index.html",
-        "appointment-html": "./appointment.html",
+        "appointment-view-html": "./appointment-view.html",
         "appointment-detail-html": "./appointment-detail.html",
         "appointment-overview-html": "./appointment-overview.html",
         "appointment-slider-html": "./appointment-slider.html",

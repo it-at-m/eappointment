@@ -318,7 +318,9 @@ class Messaging
         // Get the ICS template for the process status dynamically
         $template = self::getTemplate('ics', $status);
         if (!$template) {
-            throw new \Exception("ICS template for status $status not found");
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("ICS template for status $status not found");
+            $exception->data = $status;
+            throw $exception;
         }
 
         $baseParameters = self::generateMailParameters(new ProcessList([$process]), $config, null, $status);

@@ -14,7 +14,9 @@ vi.mock("@/api/ZMSAppointmentAPI", () => ({
 const t = vi.fn((key: string) => key);
 
 const baseProps = {
-  baseUrl: "http://test.url",
+  globalState: {
+    baseUrl: "http://test.url",
+  },
   isRebooking: false,
   exclusiveLocation: undefined,
   preselectedOfficeId: undefined,

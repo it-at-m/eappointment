@@ -1,3 +1,60 @@
+## Release Muc-33 (24.10.2025)  
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-892'>ZMSKVR-892</a>] -         Log Ergebnisse Innenrevision abgeschnitten
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-97'>ZMSKVR-97</a>] -         ICS als Download bei Terminbestätigung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-506'>ZMSKVR-506</a>] -         Schritt 1: Leistung – Captcha Design Konfiguration umsetzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-664'>ZMSKVR-664</a>] -         Statistiküberarbeitung 3: Wartestatistik - Frontend dynamische Datenübersicht MVP 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-863'>ZMSKVR-863</a>] -         Anpassung der Excel-Wartezeitstatistik
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-894'>ZMSKVR-894</a>] -         Pfennigparade #7: Kein Fokus auf nicht-interaktiven Elementen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-895'>ZMSKVR-895</a>] -         Gesamtübersicht Refaktorisierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-906'>ZMSKVR-906</a>] -         Pfennigparade #3:  Unzureichende Hervorhebung des Fokus durch Farbe
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-907'>ZMSKVR-907</a>] -         Pfennigparade #20:  Pflichtfelder sind unzureichend gekennzeichnet nur ARIA Attribut
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-910'>ZMSKVR-910</a>] -         Pfennigparade #2: Benutzerdefinierte Einstellungen im Browser fehlerhaft übernommen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-911'>ZMSKVR-911</a>] -         Pfennigparade #1: Hervorhebungen im Text fehlerhaft implementiert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-914'>ZMSKVR-914</a>] -         Pfennigparade #9: Nicht für Nutzende von Screenreadern versteckte Icons (Uhr Icon)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-937'>ZMSKVR-937</a>] -         E-Mail Templates Anpassung für Bürgerlogin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-954'>ZMSKVR-954</a>] -         Terminvereinbarung – Anmeldung in Schritt Kontakt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-955'>ZMSKVR-955</a>] -         Terminvereinbarung – Überspringen Bestätigung mit Anmeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-956'>ZMSKVR-956</a>] -         Termin-Detailseite – Termindaten Basis
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-957'>ZMSKVR-957</a>] -         Termin-Detailseite – Verschiebung/Absage
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-958'>ZMSKVR-958</a>] -         Termin-Detailseite – Unangemeldeter Zustand
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-959'>ZMSKVR-959</a>] -         Meine-Übersicht-Seite – Abschnitt Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-960'>ZMSKVR-960</a>] -         Terminvereinbarung – E-Mail-Templates mit Anmeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-961'>ZMSKVR-961</a>] -         Meine-Termine-Seite – Angemeldeter Zustand
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-967'>ZMSKVR-967</a>] -         Performanceverbesserung mit Cache
+</li>
+</ul>
+                                                        
+
 ## Release Muc-32 (08.10.2025)  
                    
 <h2>        Bug

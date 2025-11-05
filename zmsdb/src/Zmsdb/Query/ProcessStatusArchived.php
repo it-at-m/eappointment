@@ -13,9 +13,9 @@ class ProcessStatusArchived extends Base implements MappingInterface
      *
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'buergerarchiv';
-    const STATISTIC_TABLE = 'statistik';
-    const ALIAS = 'process';
+    public const TABLE = 'buergerarchiv';
+    public const STATISTIC_TABLE = 'statistik';
+    public const ALIAS = 'process';
 
     const QUERY_INSERT_IN_STATISTIC = '
         INSERT INTO ' . self::STATISTIC_TABLE . ' SET

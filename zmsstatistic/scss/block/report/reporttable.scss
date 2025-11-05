@@ -12,9 +12,10 @@
 .table--base td:first-child {
     position: sticky;
     left: 0;
+    white-space: nowrap;
 }
 
-.table--base thead th:first-child {
-    position: sticky;
-    top: 0;
+.table--base th,
+.table--base td {
+    vertical-align: bottom !important;
 }

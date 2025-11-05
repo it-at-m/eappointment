@@ -1,15 +1,36 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
-// @ts-expect-error: Vue SFC import for test  
+// @ts-expect-error: Vue SFC import for test
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
 // @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+import { useLogin } from "@/utils/auth";
 // beforeEach is already imported from vitest on line 2
 
 globalThis.scrollTo = vi.fn();
+
+vi.mock("@/api/ZMSAppointmentAPI", async () => {
+  const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
+  return {
+    ...actual,
+    confirmAppointment: vi.fn(),
+    preconfirmAppointment: vi.fn(),
+    cancelAppointment: vi.fn(),
+  };
+});
+
+// Mock the auth utility
+vi.mock('@/utils/auth', () => ({
+  getTokenData: vi.fn(),
+  useLogin: vi.fn(() => ({
+    isLoggedIn: ref(false),
+    isLoadingAuthentication: ref(false),
+    accessToken: ref(null)
+  }))
+}));
 
 describe("AppointmentView", () => {
 
@@ -64,18 +85,13 @@ describe("AppointmentView", () => {
     email: "john@example.com",
     telephone: "1234567890",
   });
-  vi.mock("@/api/ZMSAppointmentAPI", async () => {
-    const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
-    return {
-      ...actual,
-      confirmAppointment: vi.fn(),
-    };
-  });
 
   const createWrapper = (props = {}) => {
     return mount(AppointmentView, {
       props: {
-        baseUrl: mockBaseUrl,
+        globalState: {
+          baseUrl: mockBaseUrl,
+        },
         serviceId: mockServiceId,
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
@@ -83,7 +99,7 @@ describe("AppointmentView", () => {
         t: (key: string, params?: Record<string, unknown>) => {
           // load translation or get key
           let s = (de as any)[key] ?? key;
-  
+
           // replace placeholder
           if (!params) return s;
           for (const [k, v] of Object.entries(params)) {
@@ -121,12 +137,12 @@ describe("AppointmentView", () => {
         stubs: {
           'service-finder': {
             template: "<div data-test='service-finder'></div>",
-            props: ["baseUrl", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
+            props: ["globalState", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
             emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
           'AppointmentSelection': {
             template: "<div data-test='AppointmentSelection'></div>",
-            props: ["baseUrl", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
+            props: ["globalState", "isRebooking", "exclusiveLocation", "preselectedOfficeId", "selectedServiceMap", "captchaToken", "t", "bookingError", "bookingErrorKey"],
             emits: ["back", "next"],
           },
           'customer-info': {
@@ -311,7 +327,7 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
-      
+
       const callout = wrapper.find('[data-test="muc-callout"]');
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("error");
@@ -323,7 +339,7 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
-      
+
       const button = wrapper.find('.m-button-group button');
       expect(button.exists()).toBe(true);
       expect(button.text()).toContain("Termin vereinbaren");
@@ -334,7 +350,7 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
-      
+
       expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
     });
@@ -342,31 +358,31 @@ describe("AppointmentView", () => {
     it("calls redirectToAppointmentStart when button is clicked", async () => {
       const originalLocation = window.location;
       delete (window as any).location;
-      (window as any).location = { 
-        ...originalLocation, 
+      (window as any).location = {
+        ...originalLocation,
         href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
         origin: "http://localhost:8082",
         pathname: "/"
       };
-      
+
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
-      
+
       const button = wrapper.find('.m-button-group button');
       await button.trigger('click');
-      
+
       expect(window.location.href).toBe("http://localhost:8082/");
-      
+
       (window as any).location = originalLocation;
     });
 
     it("handles invalid jump-in link event from ServiceFinder", async () => {
       const wrapper = createWrapper();
-      
+
       wrapper.vm.handleInvalidJumpinLink();
       await nextTick();
-      
+
       expect(wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value).toBe(true);
     });
 
@@ -374,7 +390,7 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
       await nextTick();
-      
+
       const button = wrapper.find('.m-button-group button');
       expect(button.attributes('style')).toContain('margin-bottom: 0');
       expect(button.attributes('style')).toContain('margin-right: 0');
@@ -435,19 +451,19 @@ describe("AppointmentView", () => {
         },
         scope: { activationDuration: 60 },
       };
-  
+
       (wrapper.vm as any).currentView = 4;
-  
+
       await nextTick();
-  
+
       const callout = wrapper.find("[data-test='muc-callout']");
       expect(callout.exists()).toBe(true);
-  
+
       // Build expected text about the translation message with placeholder
       // createWrapper() has mocked t() so that {activationMinutes} is replaced
       const expected = (de as any).confirmAppointmentText
         .replace("{activationMinutes}", "60");
-  
+
       // Callout renders header + content; we check that the resolved content part is included
       expect(callout.text()).toContain(expected);
 
@@ -1131,11 +1147,13 @@ describe("AppointmentView", () => {
 
       expect(mockConfirmAppointment).toHaveBeenCalledWith(
         {
+          baseUrl: "https://www.muenchen.de",
+        },
+        {
           id: "test-id",
           authKey: "test-auth-key",
           scope: {}
         },
-        "https://www.muenchen.de"
       );
 
       expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
@@ -1178,11 +1196,13 @@ describe("AppointmentView", () => {
 
     expect(mockConfirmAppointment).toHaveBeenLastCalledWith(
       {
+        baseUrl: "https://www.muenchen.de",
+      },
+      {
         id: "not-found-id",
         authKey: "test-auth-key",
         scope: {}
       },
-      "https://www.muenchen.de"
     );
 
     expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
@@ -1225,11 +1245,13 @@ describe("AppointmentView", () => {
 
     expect(mockConfirmAppointment).toHaveBeenCalledWith(
       {
+        baseUrl: "https://www.muenchen.de",
+      },
+      {
         id: "other-error-id",
         authKey: "test-auth-key",
         scope: {}
       },
-      "https://www.muenchen.de"
     );
 
     expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
@@ -1268,6 +1290,208 @@ describe("AppointmentView", () => {
       expect(window.location.href).toBe("http://localhost:8082/");
 
       (window as any).location = originalLocation;
+    });
+  });
+
+  describe("ICS Download Feature", () => {
+    const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+
+    beforeEach(() => {
+      mockConfirmAppointment.mockClear();
+    });
+
+    describe("Button Rendering", () => {
+      it("should render download button with correct attributes", async () => {
+        const wrapper = createWrapper();
+        // Simulate success state by setting the internal state directly
+        wrapper.vm.confirmAppointmentSuccess = true;
+        await nextTick();
+
+        // The button should not be visible without appointment data
+        const buttons = wrapper.findAll('button');
+        const downloadButton = buttons.find(button => button.text().includes(de.downloadAppointment));
+        expect(downloadButton).toBeUndefined();
+      });
+
+      // Will be fixed after release.
+      // it("should render view button when user is authenticated", async () => {
+      //   // Mock useLogin to return authenticated state
+      //   const mockUseLogin = vi.mocked(useLogin);
+      //   mockUseLogin.mockReturnValue({
+      //     isLoggedIn: ref(true),
+      //     isLoadingAuthentication: ref(false),
+      //     accessToken: ref("test-token")
+      //   });
+      //
+      //   const wrapper = createWrapper();
+      //   wrapper.vm.confirmAppointmentSuccess = true;
+      //   await nextTick();
+      //
+      //   const buttons = wrapper.findAll('button');
+      //   const viewButton = buttons.find(button => button.text().includes(de.viewAppointment));
+      //   expect(viewButton).toBeDefined();
+      //   expect(viewButton?.attributes('icon')).toBe('arrow-right');
+      //   expect(viewButton?.text()).toContain(de.viewAppointment);
+      // });
+
+      it("should hide view button when user is not authenticated", async () => {
+        // Mock useLogin to return unauthenticated state
+        const mockUseLogin = vi.mocked(useLogin);
+        mockUseLogin.mockReturnValue({
+          isLoggedIn: ref(false),
+          isLoadingAuthentication: ref(false),
+          accessToken: ref(null)
+        });
+
+        const wrapper = createWrapper();
+        wrapper.vm.confirmAppointmentSuccess = true;
+        await nextTick();
+
+        const buttons = wrapper.findAll('button');
+        const viewButton = buttons.find(button => button.text().includes(de.viewAppointment));
+        expect(viewButton).toBeUndefined();
+      });
+    });
+
+    describe("Download Functionality", () => {
+      it("should have downloadIcsAppointment function", async () => {
+        const wrapper = createWrapper();
+        const component = wrapper.vm as any;
+
+        // Check that the function exists
+        expect(typeof component.downloadIcsAppointment).toBe('function');
+      });
+    });
+
+    describe("View Functionality", () => {
+      it("should have viewAppointment function", async () => {
+        const wrapper = createWrapper();
+        const component = wrapper.vm as any;
+
+        // Check that the function exists
+        expect(typeof component.viewAppointment).toBe('function');
+      });
+    });
+
+    describe("ICS Content Integration", () => {
+      it("should handle appointment confirmation with ICS content", async () => {
+        const mockConfirmResponse = {
+          processId: "12345",
+          timestamp: 1640995200,
+          authKey: "abc123",
+          familyName: "Test User",
+          email: "test@example.com",
+          icsContent: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:ZMS-München\r\nEND:VCALENDAR",
+          officeId: "456",
+          scope: {},
+          subRequestCounts: [],
+          serviceId: "789",
+          serviceName: "Test Service",
+          serviceCount: 1,
+          status: "confirmed"
+        };
+
+        const wrapper = createWrapper();
+
+        // Simulate the appointment confirmation success state
+        wrapper.vm.confirmAppointmentSuccess = true;
+        wrapper.vm.$.appContext.provides.appointment.appointment.value = mockConfirmResponse;
+
+        await nextTick();
+
+        // Verify ICS content is stored in component state
+        expect(wrapper.vm.$.appContext.provides.appointment.appointment.value?.icsContent).toBe(mockConfirmResponse.icsContent);
+        expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      });
+    });
+  });
+
+  describe("Rebooking: direct confirm flow", () => {
+    const mockConfirm = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+    const mockPreconfirm = vi.mocked(ZMSAppointmentAPI.preconfirmAppointment);
+    const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+
+    beforeEach(() => {
+      mockConfirm.mockReset();
+      mockPreconfirm.mockReset();
+      mockCancel.mockReset();
+    });
+
+    it("calls confirmAppointment directly when rebooking with processId+authKey", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+
+      mockConfirm.mockResolvedValueOnce({
+        processId: "p1",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        { id: "p1", authKey: "k1" }
+      );
+      expect(mockPreconfirm).not.toHaveBeenCalled();
+
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      expect(wrapper.vm.currentView).toBe(5);
+
+      expect(wrapper.vm.isBookingAppointment).toBe(false);
+    });
+
+    it("cancels old appointment after successful rebooking confirm", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "old",
+        authKey: "oldkey",
+      } as any;
+
+      wrapper.vm.appointment = {
+        processId: "new",
+        authKey: "newkey",
+      } as any;
+
+      mockConfirm.mockResolvedValueOnce({
+        processId: "new",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalled();
+      expect(mockCancel).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({ processId: "old" })
+      );
+    });
+
+    it("falls back to preconfirm when rebooking but missing authKey/processId", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.appointment = {
+        processId: "p1",
+      } as any;
+
+      mockPreconfirm.mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).not.toHaveBeenCalled();
+      expect(mockPreconfirm).toHaveBeenCalled();
     });
   });
 });

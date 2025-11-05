@@ -87,7 +87,10 @@ describe("AppointmentOverviewView", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentSliderView, {
       props: {
-        baseUrl: mockBaseUrl,
+        globalState: {
+          baseUrl: mockBaseUrl,
+          isLoggedIn: true,
+        },
         appointmentDetailUrl: mockAppointmentDetailUrl,
         appointmentOverviewUrl: mockAppointmentOverviewUrl,
         newAppointmentUrl: mockNewAppointmentUrl,
@@ -131,12 +134,6 @@ describe("AppointmentOverviewView", () => {
   };
 
   describe("View States", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
-
     it("shows initial view after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -170,12 +167,6 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display screen Cases", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
-
     it("shows initial view on overview page after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
@@ -200,11 +191,6 @@ describe("AppointmentOverviewView", () => {
   });
 
   describe("Display link Cases", () => {
-    beforeAll(() => {
-      vi.mock('@/components/DBSLoginWebcomponentPlugin', () => ({
-        useDBSLoginWebcomponentPlugin: () => ({ loggedIn: true })
-      }));
-    });
     it("shows link in header", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;

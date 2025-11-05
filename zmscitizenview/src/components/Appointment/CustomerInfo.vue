@@ -7,6 +7,50 @@
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
+  <div v-if="showLoginOption && !isExpired">
+    <!--Can be replaced if MucCallout has been extended with buttons in @muenchen/muc-patternlab-vue https://github.com/it-at-m/muc-patternlab-vue/pull/573 -->
+    <div
+      v-if="!globalState.isLoggedIn"
+      class="m-callout m-callout--default"
+      aria-label="Information"
+    >
+      <div class="m-callout__inner">
+        <div class="m-callout__icon">
+          <muc-icon icon="user" />
+        </div>
+        <div class="m-callout__body">
+          <div class="m-callout__body__inner">
+            <h2 class="m-callout__headline">
+              {{ t("optionalLoginHeader") }}
+            </h2>
+            <div class="m-callout__content">
+              <p>
+                {{ t("optionalLoginText") }}
+              </p>
+              <muc-button
+                :icon="'sing-in'"
+                @click="login"
+              >
+                <template #default>
+                  <span>{{ t("login") }}</span>
+                </template>
+              </muc-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <muc-callout
+      v-else
+      type="success"
+    >
+      <template #content>
+        {{ t("loggedinText") }}
+      </template>
+      <template #header>{{ t("loggedinHeader") }}</template>
+      <template #icon><muc-icon icon="user-fill" /></template>
+    </muc-callout>
+  </div>
   <h2
     v-if="!isExpired"
     class="m-component-form__title"
@@ -105,28 +149,29 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  SelectedAppointmentProvider,
-  SelectedTimeslotProvider,
-} from "@/types/ProvideInjectTypes";
+import type { SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
 import {
   MucButton,
   MucCallout,
+  MucIcon,
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
+  globalState: GlobalState;
+  showLoginOption: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back") => void>();
+const emit = defineEmits<(e: "next" | "back" | "login") => void>();
 
 const { customerData } = inject<CustomerDataProvider>(
   "customerData"
@@ -295,6 +340,10 @@ const validForm = computed(
     !errorMessageCustomTextfield.value &&
     !errorMessageCustomTextfield2.value
 );
+
+const login = () => {
+  emit("login");
+};
 
 const nextStep = () => {
   showErrorMessage.value = true;

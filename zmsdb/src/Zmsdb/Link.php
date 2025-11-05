@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Link as Entity;
 use BO\Zmsentities\Collection\LinkList as Collection;
 
@@ -12,8 +13,14 @@ class Link extends Base
      *
      * @return \BO\Zmsentities\Collection\LinkList
      */
-    public function readByDepartmentId($departmentId)
+    public function readByDepartmentId($departmentId, $disableCache = false)
     {
+        $cacheKey = "linksReadByDepartmentId-$departmentId";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            return App::$cache->get($cacheKey);
+        }
+
         $linkList = new Collection();
         $query = new Query\Link(Query\Base::SELECT);
         $query
@@ -27,6 +34,11 @@ class Link extends Base
                 }
             }
         }
+
+        if (App::$cache) {
+            App::$cache->set($cacheKey, $linkList);
+        }
+
         return $linkList;
     }
 
@@ -44,6 +56,11 @@ class Link extends Base
         $query = new Query\Link(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $departmentId);
         $query->addValues($values);
+
+        if (App::$cache) {
+            App::$cache->delete("linksReadByDepartmentId-$departmentId");
+        }
+
         return $this->writeItem($query);
     }
 
