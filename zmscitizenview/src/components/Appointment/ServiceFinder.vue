@@ -49,7 +49,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
-        :link="getServiceBaseURL() + (service?.id || '')"
+        :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
       />
