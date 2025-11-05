@@ -67,6 +67,7 @@
       "
     >
       <muc-stepper
+        v-if="!isPast"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -125,7 +126,7 @@
                 v-if="
                   !hasUpdateAppointmentError &&
                   !hasPreconfirmAppointmentError &&
-                  !reschedulePastError
+                  !isPast
                 "
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCancelDialog"
@@ -136,7 +137,7 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
-              <div v-if="reschedulePastError">
+              <div v-if="isPast">
                 <muc-callout type="error">
                   <template #content>
                     {{ t("rescheduleErrorText") }}
@@ -478,7 +479,10 @@ const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
-const reschedulePastError = ref<boolean>(false);
+const isPast = computed<boolean>(() => {
+  const ms = getAppointmentStartMs(appointment.value);
+  return !!ms && Date.now() >= ms;
+});
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -855,13 +859,7 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
-  const startMs = getAppointmentStartMs(appointment.value);
-  if (startMs && Date.now() >= startMs) {
-    reschedulePastError.value = true;
-    return;
-  }
-
-  reschedulePastError.value = false;
+  if (isPast.value) return;
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -870,7 +868,6 @@ const nextRescheduleAppointment = () => {
 
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
-  reschedulePastError.value = false;
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
 };
