@@ -147,7 +147,7 @@
   <div class="m-button-group">
     <muc-button
       v-if="service"
-      :disabled="showCaptcha && !isCaptchaValid"
+      :disabled="isNextDisabled"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -664,6 +664,14 @@ function normalizeService(raw: any): Service {
     variantId: raw.variant_id == null ? null : Number(raw.variant_id),
   };
 }
+
+const hasVariants = computed(() => variantServices.value.length > 1);
+const needsVariantSelection = computed(() => hasVariants.value && !selectedVariant.value);
+const isNextDisabled = computed(() => {
+  const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
+  return captchaBlocks || needsVariantSelection.value;
+});
+
 </script>
 
 <style lang="scss" scoped>
