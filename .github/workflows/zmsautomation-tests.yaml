@@ -31,14 +31,14 @@ jobs:
         run: |
           for i in {1..60}; do
             if docker ps --format '{{.Names}}' | grep -q '^zms-db$'; then
-              docker exec zms-db sh -lc 'mysqladmin ping -uroot -proot --silent' && break || true
+              docker exec zms-db sh -lc 'mysqladmin ping -udb -pdb --silent' && break || true
             fi
             sleep 1
           done
 
       - name: Import base database
         run: |
-          docker exec -i zms-db mysql -uroot -proot db < .resources/zms.sql
+          docker exec -i zms-db mysql -udb -pdb db < .resources/zms.sql
 
       - name: Run Flyway test data migrations
         run: |
@@ -48,7 +48,7 @@ jobs:
             --network "$NET" \
             -v "$PWD/zmsautomation/flyway:/flyway/sql:ro" \
             docker.io/flyway/flyway:9 \
-            -url=jdbc:mysql://db:3306/db -user=root -password=root \
+            -url=jdbc:mysql://db:3306/db -user=db -password=db \
             -locations=filesystem:/flyway/sql \
             -baselineOnMigrate=true \
             migrate
