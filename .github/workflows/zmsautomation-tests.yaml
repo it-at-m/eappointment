@@ -50,10 +50,20 @@ jobs:
       - name: Import test data (schema + base data)
         env:
           MYSQL_PORT: "tcp://db:3306"
+          MYSQL_HOST: db
           MYSQL_DATABASE: db
           MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
         run: |
-          docker exec -e MYSQL_PORT="$MYSQL_PORT" -e MYSQL_DATABASE="$MYSQL_DATABASE" -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" zms-web bash -lc '
+          docker exec \
+            -e MYSQL_PORT="$MYSQL_PORT" \
+            -e MYSQL_HOST="$MYSQL_HOST" \
+            -e MYSQL_DATABASE="$MYSQL_DATABASE" \
+            -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
+            -e MYSQL_USER="$MYSQL_USER" \
+            -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+            zms-web bash -lc '
             set -e
             echo "Importing test data..."
             php -d date.timezone="UTC" -d memory_limit=1G \
