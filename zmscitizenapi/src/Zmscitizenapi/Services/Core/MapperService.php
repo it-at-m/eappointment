@@ -303,16 +303,32 @@ class MapperService
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
-            emailRequired: (bool) $scope->getEmailRequired(),
-            telephoneActivated: (bool) $scope->getTelephoneActivated(),
-            telephoneRequired: (bool) $scope->getTelephoneRequired(),
-            customTextfieldActivated: (bool) $scope->getCustomTextfieldActivated(),
-            customTextfieldRequired: (bool) $scope->getCustomTextfieldRequired(),
+            emailRequired: $scope->getEmailRequired() === null
+                ? null
+                : (bool) ($scope->getEmailRequired()),
+            telephoneActivated: $scope->getTelephoneActivated() === null
+                ? null
+                : (bool) ($scope->getTelephoneActivated()),
+            telephoneRequired: $scope->getTelephoneRequired() === null
+                ? null
+                : (bool) ($scope->getTelephoneRequired()),
+            customTextfieldActivated: $scope->getCustomTextfieldActivated() === null
+                ? null
+                : (bool) ($scope->getCustomTextfieldActivated()),
+            customTextfieldRequired: $scope->getCustomTextfieldRequired() === null
+                ? null
+                : (bool) ($scope->getCustomTextfieldRequired()),
             customTextfieldLabel: $scope->getCustomTextfieldLabel(),
-            customTextfield2Activated: (bool) $scope->getCustomTextfield2Activated(),
-            customTextfield2Required: (bool) $scope->getCustomTextfield2Required(),
+            customTextfield2Activated: $scope->getCustomTextfield2Activated() === null
+                ? null
+                : (bool) ($scope->getCustomTextfield2Activated()),
+            customTextfield2Required: $scope->getCustomTextfield2Required() === null
+                ? null
+                : (bool) ($scope->getCustomTextfield2Required()),
             customTextfield2Label: $scope->getCustomTextfield2Label(),
-            captchaActivatedRequired: (bool) $scope->getCaptchaActivatedRequired(),
+            captchaActivatedRequired: $scope->getCaptchaActivatedRequired() === null
+                ? null
+                : (bool) ($scope->getCaptchaActivatedRequired()),
             infoForAppointment: $scope->getInfoForAppointment(),
             infoForAllAppointments: $scope->getInfoForAllAppointments(),
             slotsPerAppointment: $scope->getSlotsPerAppointment(),
