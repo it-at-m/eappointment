@@ -192,22 +192,31 @@ fi
 # 4) Flyway BEFORE PHP migrations
 info "Running Flyway migrations..."
 if [[ "$USE_PODMAN" == true ]]; then
-  # Get podman network name from docker-compose network
-  PODMAN_NETWORK=$(docker network ls --filter "name=devcontainer" --format "{{.Name}}" | head -1 || echo "devcontainer_default")
+  # Discover the actual podman network used by zms-db
+  PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
   if [[ -z "$PODMAN_NETWORK" ]]; then
     PODMAN_NETWORK="devcontainer_default"
   fi
-  
-  # Run Flyway in a container on the podman network
-  info "Running Flyway via Docker on podman network ($PODMAN_NETWORK)..."
-  docker run --rm \
+
+  # Wait for MySQL to be ready inside zms-db (max ~30s)
+  info "Waiting for MySQL (zms-db) to become ready..."
+  for i in {1..30}; do
+    if (cd "$PROJECT_ROOT" && podman exec zms-db sh -lc 'mysqladmin ping -uroot -proot --silent' >/dev/null 2>&1); then
+      break
+    fi
+    sleep 1
+  done
+
+  # Run Flyway in a podman container on the discovered network
+  info "Running Flyway via Podman on network ($PODMAN_NETWORK)..."
+  podman run --rm \
     --network "$PODMAN_NETWORK" \
-    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
-    flyway/flyway:9 \
-    -url=jdbc:mysql://zms-db:3306/db -user=root -password=root \
+    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql:ro" \
+    docker.io/flyway/flyway:9 \
+    -url=jdbc:mysql://db:3306/db -user=root -password=root \
     -locations=filesystem:/flyway/sql \
     -baselineOnMigrate=true \
-    migrate || warn "Flyway (Docker on podman network) failed; continuing."
+    migrate || warn "Flyway (Podman) failed; continuing."
 else
   # Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
   if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
