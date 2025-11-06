@@ -479,11 +479,10 @@ const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
-const isPast = computed<boolean>(() => {
-  const ms = getAppointmentStartMs(appointment.value);
-  return !!ms && Date.now() >= ms;
+const isPast = computed(() => {
+  const sec = Number((appointment.value as any)?.timestamp);
+  return Number.isFinite(sec) && Math.floor(Date.now() / 1000) >= sec;
 });
-
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
@@ -1077,15 +1076,6 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
     });
 }
 
-function getAppointmentStartMs(a?: AppointmentDTO | undefined): number | null {
-  const raw = (a as any)?.timestamp;
-  if (raw == null) return null;
-  const n = typeof raw === "string" ? Number.parseInt(raw, 10) : Number(raw);
-  if (!Number.isFinite(n)) return null;
-  // Falls Sekundenstempel geliefert wird, auf Millisekunden hochskalieren
-  return n < 1e12 ? n * 1000 : n;
-}
-
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -1195,12 +1185,17 @@ onMounted(() => {
               });
             }
             if (appointmentData.action) {
-              if (
-                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-              ) {
-                nextRescheduleAppointment();
+              if (isPast.value) {
+                // Past appointment: display error message
+                currentView.value = 3;
               } else {
-                nextCancelAppointment();
+                if (
+                  appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+                ) {
+                  nextRescheduleAppointment();
+                } else {
+                  nextCancelAppointment();
+                }
               }
             } else {
               currentView.value = 3;
@@ -1261,7 +1256,8 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = localStorageData.currentView;
+          // If the deadline has passed, go directly to the error view; otherwise, apply the saved view.
+          currentView.value = isPast.value ? 3 : localStorageData.currentView;
         });
       }
     }
