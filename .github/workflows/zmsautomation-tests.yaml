@@ -27,6 +27,17 @@ jobs:
         run: |
           devcontainer up --workspace-folder .
 
+      - name: Install Composer dependencies in container
+        run: |
+          docker exec zms-web bash -lc '
+            set -e
+            modules=("zmsapi" "zmsdb" "zmscitizenapi")
+            for module in "${modules[@]}"; do
+              echo "Installing Composer dependencies for $module"
+              (cd "/var/www/html/$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+            done
+          '
+
       - name: Wait for services (zms-db)
         run: |
           for i in {1..60}; do
@@ -71,10 +82,25 @@ jobs:
         run: |
           docker exec zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich" || true
 
-      - name: Health checks
+      - name: Health checks (with retry)
         run: |
-          curl -fsS --max-time 15 http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/ >/dev/null
-          curl -fsS --max-time 15 http://localhost:8090/terminvereinbarung/api/2/status/ >/dev/null
+          set -e
+          for url in \
+            "http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/" \
+            "http://localhost:8090/terminvereinbarung/api/2/status/"; do
+            echo "Waiting for $url"
+            for i in {1..60}; do
+              if curl -fsS --max-time 5 "$url" >/dev/null; then
+                echo "OK: $url"
+                break
+              fi
+              sleep 2
+              if [ "$i" -eq 60 ]; then
+                echo "ERROR: $url did not become ready in time" >&2
+                exit 1
+              fi
+            done
+          done
 
       - name: Run REST-assured tests
         run: |
