@@ -648,12 +648,14 @@ class MapperServiceTest extends TestCase
         $scope = new Scope();
         $scope->id = 1;
         $scope->shortName = 'Test Scope';
-        $scope->data = [
-            'emailRequired' => false,
-            'telephoneActivated' => true,
-            'telephoneRequired' => false
+        $scope->preferences = [
+            'client' => [
+                'emailRequired' => false,
+                'telephoneActivated' => true,
+                'telephoneRequired' => false
+            ]
         ];
-        
+
         $scope->provider = null;
         
         $result = MapperService::scopeToThinnedScope($scope);
