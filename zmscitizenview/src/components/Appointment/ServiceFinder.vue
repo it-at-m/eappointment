@@ -120,7 +120,10 @@
         </div>
       </div>
     </div>
-    <div class="m-component" v-if="showEstimatedDuration">
+    <div
+      class="m-component"
+      v-if="showEstimatedDuration"
+    >
       <div class="wrapper">
         <clock-svg
           aria-hidden="true"
@@ -670,12 +673,13 @@ function normalizeService(raw: any): Service {
 }
 
 const hasVariants = computed(() => variantServices.value.length > 1);
-const needsVariantSelection = computed(() => hasVariants.value && !selectedVariant.value);
+const needsVariantSelection = computed(
+  () => hasVariants.value && !selectedVariant.value
+);
 const isNextDisabled = computed(() => {
   const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
   return captchaBlocks || needsVariantSelection.value;
 });
-
 </script>
 
 <style lang="scss" scoped>
