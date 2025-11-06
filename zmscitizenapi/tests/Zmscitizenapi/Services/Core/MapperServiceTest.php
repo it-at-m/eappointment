@@ -504,17 +504,19 @@ class MapperServiceTest extends TestCase
         $scope->shortName = 'Test Scope';
         $scope->provider = $provider;
         $scope->contact = $contact;
-        $scope->data = [
-            'emailRequired' => true,
-            'telephoneActivated' => true,
-            'telephoneRequired' => false,
-            'customTextfieldActivated' => true,
-            'customTextfieldRequired' => false,
-            'customTextfieldLabel' => 'Test Label',
-            'customTextfield2Activated' => true,
-            'customTextfield2Required' => false,
-            'customTextfield2Label' => 'Test Label2',
-            'captchaActivatedRequired' => false
+        $scope->preferences = [
+            'client' => [
+                'emailRequired' => true,
+                'telephoneActivated' => true,
+                'telephoneRequired' => false,
+                'customTextfieldActivated' => true,
+                'customTextfieldRequired' => false,
+                'customTextfieldLabel' => 'Test Label',
+                'customTextfield2Activated' => true,
+                'customTextfield2Required' => false,
+                'customTextfield2Label' => 'Test Label2',
+                'captchaActivatedRequired' => false
+            ]
         ];
 
         $result = MapperService::scopeToThinnedScope($scope);
