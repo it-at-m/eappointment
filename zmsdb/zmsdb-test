@@ -81,11 +81,27 @@ else
   fi
 fi
 
-# Setup fixtures like CI: link zmsapi/data -> zmsdb fixtures (import tool uses that path)
+# Setup fixtures like CI: materialize required fixture files into zmsapi/data (no symlink)
 if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "Setup fixtures..."; rm -rf /var/www/html/zmsapi/data && ln -s /var/www/html/zmsdb/tests/Zmsdb/fixtures /var/www/html/zmsapi/data')
+  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
+    set -e; echo "Setup fixtures...";
+    mkdir -p /var/www/html/zmsapi/data;
+    find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
+    for f in services_de.json locations_de.json topic_de.json; do
+      cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
+    done;
+    [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
+  ')
 else
-  (cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "Setup fixtures..."; rm -rf /var/www/html/zmsapi/data && ln -s /var/www/html/zmsdb/tests/Zmsdb/fixtures /var/www/html/zmsapi/data')
+  (cd "$PROJECT_ROOT" && ddev exec bash -lc '
+    set -e; echo "Setup fixtures...";
+    mkdir -p /var/www/html/zmsapi/data;
+    find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
+    for f in services_de.json locations_de.json topic_de.json; do
+      cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
+    done;
+    [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
+  ')
 fi
 
 # Prepare and import test data, then run phpunit on the dedicated DB
