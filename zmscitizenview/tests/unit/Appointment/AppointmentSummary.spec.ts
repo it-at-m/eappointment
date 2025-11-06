@@ -37,7 +37,13 @@ describe("AppointmentSummary", () => {
     });
 
     mockAppointment = ref({
-      scope: { reservationDuration: 15 },
+      scope: {
+        reservationDuration: 15,
+        infoForAppointment: "Test Info Scope",
+        infoForAllAppointments: "<p>Test Info</p>",
+        customTextfieldLabel: "Custom Field 1",
+        customTextfield2Label: "Custom Field 2",
+      },
       timestamp: Math.floor(Date.now() / 1000),
       familyName: "John Doe",
       email: "john@example.com",
@@ -103,7 +109,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("Test Provider");
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
-      expect(wrapper.text()).toContain("Test Info");
+      expect(wrapper.text()).toContain("Test Info Scope");
     });
 
     it("renders appointment time correctly", () => {
@@ -343,7 +349,7 @@ describe("AppointmentSummary", () => {
 
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
-      expect(wrapper.text()).toContain("Test Info");
+      expect(wrapper.text()).toContain("Test Info Scope");
       expect(wrapper.text()).toContain("appointmentTypes.1");
       expect(wrapper.text()).toContain("locationVariantText.1");
     });
@@ -355,7 +361,7 @@ describe("AppointmentSummary", () => {
 
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
-      expect(wrapper.text()).toContain("Test Info");
+      expect(wrapper.text()).toContain("Test Info Scope");
 
       expect(wrapper.text()).toContain("appointmentTypes.1");
       expect(wrapper.text()).toContain("locationVariantText.1");
@@ -375,7 +381,7 @@ describe("AppointmentSummary", () => {
       );
       expect(locationBlock).toBeTruthy();
 
-      expect(locationBlock!.text()).not.toContain("Test Info");
+      expect(locationBlock!.text()).not.toContain("Test Info Scope");
 
       expect(wrapper.text()).toContain("appointmentTypes.2");
       expect(wrapper.text()).toContain("locationVariantText.2");
