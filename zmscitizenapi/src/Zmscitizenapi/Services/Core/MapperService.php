@@ -303,33 +303,21 @@ class MapperService
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
-            emailRequired: isset($scope->data['emailRequired']) ? (bool) $scope->data['emailRequired'] : null,
-            telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
-            telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
-            customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
-            customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
-            customTextfieldLabel: isset($scope->data['customTextfieldLabel']) ? (string) $scope->data['customTextfieldLabel'] : null,
-            customTextfield2Activated: isset($scope->data['customTextfield2Activated']) ? (bool) $scope->data['customTextfield2Activated'] : null,
-            customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
-            customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
-            captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            infoForAppointment: isset($scope->data['infoForAppointment'])
-                ? ((string) $scope->data['infoForAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAppointment'])
-                : null,
-            infoForAllAppointments: isset($scope->data['infoForAllAppointments'])
-                ? ((string) $scope->data['infoForAllAppointments'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAllAppointments'])
-                : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
-                ? ((string) $scope->data['slotsPerAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['slotsPerAppointment'])
-                : null,
-            appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            emailRequired: (bool) $scope->getEmailRequired(),
+            telephoneActivated: (bool) $scope->getTelephoneActivated(),
+            telephoneRequired: (bool) $scope->getTelephoneRequired(),
+            customTextfieldActivated: (bool) $scope->getCustomTextfieldActivated(),
+            customTextfieldRequired: (bool) $scope->getCustomTextfieldRequired(),
+            customTextfieldLabel: $scope->getCustomTextfieldLabel(),
+            customTextfield2Activated: (bool) $scope->getCustomTextfield2Activated(),
+            customTextfield2Required: (bool) $scope->getCustomTextfield2Required(),
+            customTextfield2Label: $scope->getCustomTextfield2Label(),
+            captchaActivatedRequired: (bool) $scope->getCaptchaActivatedRequired(),
+            infoForAppointment: $scope->getInfoForAppointment(),
+            infoForAllAppointments: $scope->getInfoForAllAppointments(),
+            slotsPerAppointment: $scope->getSlotsPerAppointment(),
+            appointmentsPerMail: (string) $scope->getAppointmentsPerMail(),
+            whitelistedMails: $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
             hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
