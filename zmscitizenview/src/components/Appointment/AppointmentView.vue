@@ -1185,17 +1185,12 @@ onMounted(() => {
               });
             }
             if (appointmentData.action) {
-              if (isPast.value) {
-                // Past appointment: display error message
-                currentView.value = 3;
+              if (
+                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+              ) {
+                nextRescheduleAppointment();
               } else {
-                if (
-                  appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-                ) {
-                  nextRescheduleAppointment();
-                } else {
-                  nextCancelAppointment();
-                }
+                nextCancelAppointment();
               }
             } else {
               currentView.value = 3;
@@ -1256,8 +1251,7 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          // If the deadline has passed, go directly to the error view; otherwise, apply the saved view.
-          currentView.value = isPast.value ? 3 : localStorageData.currentView;
+          currentView.value = localStorageData.currentView;
         });
       }
     }
