@@ -88,13 +88,21 @@ jobs:
         run: |
           docker exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
 
-      - name: Run hourly (best-effort)
+      - name: Run hourly (best-effort, with logs)
+        env:
+          ZMS_CRONROOT: "1"
+          ZMS_SOURCE_DLDB_MUNICH: "https://stadt.muenchen.de/service/info/zms/index/"
         run: |
-          docker exec zms-web bash -lc '
-            set -e
-            cd /var/www/html/zmsapi
-            php -d date.timezone="UTC" -d memory_limit=1G cron/cronjob.hourly --city=munich || true
-          '
+          docker exec \
+            -e ZMS_CRONROOT="$ZMS_CRONROOT" \
+            -e ZMS_SOURCE_DLDB_MUNICH="$ZMS_SOURCE_DLDB_MUNICH" \
+            zms-web bash -lc '
+              set -e
+              cd /var/www/html/zmsapi
+              mkdir -p /var/www/html/zmsapi/var/log
+              php -d date.timezone="UTC" -d memory_limit=1G cron/cronjob.hourly --city=munich 2>&1 | tee /var/www/html/zmsapi/var/log/cron.hourly.log || true
+              echo "Hourly log saved to /var/www/html/zmsapi/var/log/cron.hourly.log"
+            '
 
       - name: Health checks (with retry)
         run: |
