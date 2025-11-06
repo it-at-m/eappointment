@@ -1,0 +1,104 @@
+name: zmsautomation tests
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ main, "feat-**", "fix-**" ]
+
+jobs:
+  zmsautomation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node (for Dev Containers CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dev Containers CLI
+        run: |
+          npm install -g @devcontainers/cli
+
+      - name: Build and start dev containers
+        run: |
+          devcontainer up --workspace-folder .
+
+      - name: Wait for services (zms-db)
+        run: |
+          for i in {1..60}; do
+            if docker ps --format '{{.Names}}' | grep -q '^zms-db$'; then
+              docker exec zms-db sh -lc 'mysqladmin ping -uroot -proot --silent' && break || true
+            fi
+            sleep 1
+          done
+
+      - name: Import base database
+        run: |
+          docker exec -i zms-db mysql -uroot -proot db < .resources/zms.sql
+
+      - name: Run Flyway test data migrations
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db)
+          echo "Using network: $NET"
+          docker run --rm \
+            --network "$NET" \
+            -v "$PWD/zmsautomation/flyway:/flyway/sql:ro" \
+            docker.io/flyway/flyway:9 \
+            -url=jdbc:mysql://db:3306/db -user=root -password=root \
+            -locations=filesystem:/flyway/sql \
+            -baselineOnMigrate=true \
+            migrate
+
+      - name: Run zmsapi PHP migrations
+        run: |
+          docker exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
+
+      - name: Materialize zmsapi/data fixtures (no symlink)
+        run: |
+          docker exec zms-web bash -lc '
+            set -e
+            mkdir -p /var/www/html/zmsapi/data
+            find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true
+            for f in services_de.json locations_de.json topic_de.json; do
+              cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true
+            done
+            [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore
+          '
+
+      - name: Run hourly (best-effort)
+        run: |
+          docker exec zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich" || true
+
+      - name: Health checks
+        run: |
+          curl -fsS --max-time 15 http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/ >/dev/null
+          curl -fsS --max-time 15 http://localhost:8090/terminvereinbarung/api/2/status/ >/dev/null
+
+      - name: Run REST-assured tests
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
+          docker volume create zmsautomation-cache >/dev/null 2>&1 || true
+          docker volume create zmsautomation-target >/dev/null 2>&1 || true
+          docker run --rm \
+            --network "$NET" \
+            -e BASE_URI="http://zms-web/terminvereinbarung/api/2" \
+            -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
+            -v "$PWD:/workspace:ro" \
+            -v "zmsautomation-cache:/root/.m2" \
+            -v "zmsautomation-target:/workspace/zmsautomation/target" \
+            -w /workspace/zmsautomation \
+            maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: |
+            /var/lib/docker/volumes/zmsautomation-target/_data/surefire-reports/**
+
+
