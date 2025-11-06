@@ -90,7 +90,11 @@ jobs:
 
       - name: Run hourly (best-effort)
         run: |
-          docker exec zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich" || true
+          docker exec zms-web bash -lc '
+            set -e
+            cd /var/www/html/zmsapi
+            php -d date.timezone="UTC" -d memory_limit=1G cron/cronjob.hourly --city=munich || true
+          '
 
       - name: Health checks (with retry)
         run: |
