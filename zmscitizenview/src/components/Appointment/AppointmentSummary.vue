@@ -59,25 +59,34 @@
           >
             <p>{{ selectedProvider.name }}<br /></p>
 
-            <template v-if="!variantId || variantId === 1">
+            <template v-if="!variantId">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("address") }}</strong
-                ><br />
+                <strong>{{ t("address") }}</strong><br />
               </p>
               <p>
-                {{ selectedProvider.address.street }}
-                {{ selectedProvider.address.house_number }}<br />
-                {{ selectedProvider.address.postal_code }}
-                {{ selectedProvider.address.city }}<br /><br />
+                {{ selectedProvider.address.street }} {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }} {{ selectedProvider.address.city }}<br /><br />
                 <span
-                  v-if="appointment?.scope?.hint"
-                  v-html="sanitizeHtml(appointment.scope.hint)"
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
                 ></span>
               </p>
+            </template>
 
+            <template v-else-if="variantId === 1">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("appointmentTypes.1") }}</strong
-                ><br />
+                <strong>{{ t("address") }}</strong><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }} {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }} {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                ></span>
+              </p>
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("appointmentTypes.1") }}</strong><br />
               </p>
               <p>{{ t("locationVariantText.1") }}</p>
             </template>
@@ -293,7 +302,7 @@
 import type { Ref } from "vue";
 
 import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 
 import {
   SelectedAppointmentProvider,
