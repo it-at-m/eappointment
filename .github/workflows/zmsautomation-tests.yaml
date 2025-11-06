@@ -128,14 +128,12 @@ jobs:
         run: |
           NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
           docker volume create zmsautomation-cache >/dev/null 2>&1 || true
-          docker volume create zmsautomation-target >/dev/null 2>&1 || true
           docker run --rm \
             --network "$NET" \
             -e BASE_URI="http://zms-web/terminvereinbarung/api/2" \
             -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
-            -v "$PWD:/workspace:ro" \
+            -v "$PWD:/workspace" \
             -v "zmsautomation-cache:/root/.m2" \
-            -v "zmsautomation-target:/workspace/zmsautomation/target" \
             -w /workspace/zmsautomation \
             maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
 
@@ -145,6 +143,6 @@ jobs:
         with:
           name: surefire-reports
           path: |
-            /var/lib/docker/volumes/zmsautomation-target/_data/surefire-reports/**
+            zmsautomation/target/surefire-reports/**
 
 
