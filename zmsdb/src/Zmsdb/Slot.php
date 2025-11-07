@@ -198,7 +198,11 @@ class Slot extends Base
             'providedDate' => $startDate->format('Y-m-d')
         ]);
         // Cancel slots only if previously generated beyond new bookable end
-        if ($lastGeneratedSlotDate && $lastGeneratedSlotDate->getTimestamp() > $stopDate->getTimestamp()) {
+        if (
+            $stopDate->getTimestamp() >= $now->getTimestamp()
+            && $lastGeneratedSlotDate
+            && $lastGeneratedSlotDate->getTimestamp() > $stopDate->getTimestamp()
+        ) {
             $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE, [
                 'availabilityID' => $availability->id,
                 'providedDate' => $stopDate->format('Y-m-d')
