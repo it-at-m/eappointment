@@ -205,7 +205,7 @@ class Slot extends Base
             ]);
         }
         if ($generateNew) {
-            \App::$log->info('Availability generation: ', ['generateNew' => $generateNew, 'availability_id' => $availability->id]);
+            \App::$log->info('availability: ', ['generate_new' => $generateNew, 'availability_id' => $availability->id]);
             $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
             ]);

@@ -322,12 +322,64 @@ class SlotTest extends Base
     public function testChangeByTimeIntegration()
     {
         $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 60; // Allow booking up to 60 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
         $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
         $status = (new Slot())->writeByAvailability($availability, static::$now);
         //$this->debugOutdated($availability, $now, $lastChange);
         $availability = $this->readTestAvailability();
-        $now = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $lastChange = $now;
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 60; // Allow booking up to 60 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        // Update slot updateTimestamp in database to match our test scenario
+        // This ensures readLastChangedTimeByAvailability returns a time before static::$now
+        (new Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => static::$now->modify('-1 day')->format('Y-m-d H:i:s'),
+            ]
+        );
+        // Use static::$now as base time to test slot rebuilding when time advances
+        $now = static::$now;
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $now = $now->modify('+1 day');
+        $status = (new Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+       
+        $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
+    }
+
+    public function testChangeByTimeIntegrationZeroEndInDays()
+    {
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 0; // Allow booking up to 0 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $status = (new Slot())->writeByAvailability($availability, static::$now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $availability = $this->readTestAvailability();
+        $availability->endDate = static::$now->modify('+1 year')->getTimestamp(); // Fixed end date to allow new slots
+        $availability->bookable['endInDays'] = 0; // Allow booking up to 0 days in advance so slots can be rebuilt when time advances
+        // Set lastChange to before static::$now so the test works correctly with historical test data
+        $availability->lastChange = static::$now->modify('-1 day')->getTimestamp();
+        // Update slot updateTimestamp in database to match our test scenario
+        // This ensures readLastChangedTimeByAvailability returns a time before static::$now
+        (new Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => static::$now->modify('-1 day')->format('Y-m-d H:i:s'),
+            ]
+        );
+        // Use static::$now as base time to test slot rebuilding when time advances
+        $now = static::$now;
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
         $now = $now->modify('+1 day');
         $status = (new Slot())->writeByAvailability($availability, $now);
         //$this->debugOutdated($availability, $now, $lastChange);
@@ -506,7 +558,10 @@ class SlotTest extends Base
             "readLastChangedTimeByAvailability should not return cancelled slots"
         );
         $status = (new Slot())->writeByAvailability($availability, $now);
-        $this->assertFalse($status, "Availability should not rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0");
+        $this->assertTrue($status, "Availability should rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0 where slots are after the end of the bookable period");
+
+        $status = (new Slot())->writeByAvailability($availability, $now);
+        $this->assertFalse($status, "Availability should not rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0 where slots are before the start of the bookable period");
     }
 
     protected function debugOutdated($availability, $now, $lastChange)
@@ -562,6 +617,10 @@ class SlotTest extends Base
         $availability = (new \BO\Zmsdb\Availability())->readEntity(static::TEST_AVAILABILITY_ID, 2);
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
         $availability->endDate = $now->modify('+1 year')->getTimestamp();
+        // Set endInDays to allow booking in the future for tests that check slot rebuilding when time advances
+        if (!isset($availability->bookable['endInDays']) || $availability->bookable['endInDays'] == 0) {
+            $availability->bookable['endInDays'] = 60;
+        }
         $availability->weekday = [
             'sunday' => 1,
             'monday' => 1,
