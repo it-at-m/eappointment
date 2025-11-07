@@ -18,8 +18,8 @@
         "scope": {
             "id": 141
         },
-        "version": 1,
         "slotTimeInMinutes": 12,
+        "version": 1,
         "startDate": 1447919543,
         "startTime": "10:00",
         "weekday": {
@@ -67,10 +67,6 @@
             "type": "string",
             "default": "23:59",
             "description": "format '0:00' or '16:30'"
-        },
-        "version": {
-            "type": ["number"],
-            "description": "Numeric version of the availability"
         },
         "id": {
             "type": [
@@ -855,6 +851,11 @@
             "type": "number",
             "default": 10,
             "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment\/process."
+        },
+        "version": {
+            "type": ["number"],
+            "default": 1,
+            "description": "Numeric version of the availability"
         },
         "startDate": {
             "type": ["null", "number"],

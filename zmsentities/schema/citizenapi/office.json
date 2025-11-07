@@ -88,6 +88,11 @@
             ],
             "description": "Slot time in minutes"
         },
+        "version": {
+            "type": ["number"],
+            "default": 1,
+            "description": "Numeric version of the availability"
+        },
         "geo": {
             "type": [
                 "array",
