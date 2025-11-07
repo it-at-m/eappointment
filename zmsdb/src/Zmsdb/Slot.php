@@ -192,12 +192,18 @@ class Slot extends Base
         $stopDate = $availability->getBookableEnd($now);
         $generateNew = $availability->isNewerThan($slotLastChange);
         (new Availability())->readLock($availability->id);
-        $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
+        $cancelledSlots = 0;
+        $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
             'availabilityID' => $availability->id,
             'providedDate' => $startDate->format('Y-m-d')
         ]);
+        $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE, [
+            'availabilityID' => $availability->id,
+            'providedDate' => $stopDate->format('Y-m-d')
+        ]);
         if ($generateNew) {
-            $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+            \App::$log->info('Availability generation: ', ['generateNew' => $generateNew, 'availability_id' => $availability->id]);
+            $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
             ]);
 
@@ -205,6 +211,8 @@ class Slot extends Base
                 $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
                 return ($cancelledSlots > 0) ? true : false;
             }
+            $availability['processingNote'][] = "cancelled $cancelledSlots slots";
+        } elseif ($cancelledSlots > 0) {
             $availability['processingNote'][] = "cancelled $cancelledSlots slots";
         }
 
