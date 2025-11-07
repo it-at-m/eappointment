@@ -104,7 +104,7 @@
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
     },
     "version": {
-      "type": ["number"],
+      "type": ["number", "null"],
       "description": "Numeric version of the availability"
     },
     "kind": {
