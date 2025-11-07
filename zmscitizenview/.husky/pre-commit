@@ -1,0 +1,19 @@
+# ---- Vue code style check ----
+cd zmscitizenview
+npm run lint
+echo "✅ Vue code style OK (no errors found)."
+cd ..
+
+# ---- PHP code style check ----
+echo "Running PHP CodeSniffer..."
+phpcs_output=$(ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'")
+total_error_count=$(echo "$phpcs_output" | grep -Eo "FOUND [0-9]+ ERROR" | awk '{sum+=$2} END {print sum+0}')
+
+if [ "$total_error_count" -gt 0 ]; then
+  echo "❌ PHP CodeSniffer found $total_error_count error(s)."
+  echo "You can fix them with:"
+  echo "  ddev exec \"./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'\""
+  exit 1
+else
+  echo "✅ PHP code style OK (no errors found)."
+fi
