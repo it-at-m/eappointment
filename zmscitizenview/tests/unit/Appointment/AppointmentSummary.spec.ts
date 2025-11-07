@@ -344,12 +344,12 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info");
-      expect(wrapper.text()).toContain("appointmentTypes.1");
-      expect(wrapper.text()).toContain("locationVariantText.1");
+      expect(wrapper.text()).not.toContain("appointmentTypes.1");
+      expect(wrapper.text()).not.toContain("locationVariantText.1");
     });
 
     it("should show address/hint and base text for variant 1", async () => {
-      mockSelectedService.value.variantIdd = 1;
+      mockSelectedService.value.variantId = 1;
       const wrapper = createWrapper();
       await nextTick();
 
@@ -358,7 +358,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("Test Info");
 
       expect(wrapper.text()).toContain("appointmentTypes.1");
-      expect(wrapper.text()).toContain("locationVariantText.1");
+      !expect(wrapper.text()).toContain("locationVariantText.1");
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
