@@ -89,7 +89,7 @@
             "description": "Slot time in minutes"
         },
         "version": {
-            "type": ["number"],
+            "type": ["number", "null"],
             "default": 1,
             "description": "Numeric version of the availability"
         },

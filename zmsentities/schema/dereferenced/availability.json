@@ -853,7 +853,7 @@
             "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment\/process."
         },
         "version": {
-            "type": ["number"],
+            "type": ["number", "null"],
             "default": 1,
             "description": "Numeric version of the availability"
         },
