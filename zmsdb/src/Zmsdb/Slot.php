@@ -7,7 +7,6 @@ use BO\Zmsentities\Slot as Entity;
 use BO\Zmsentities\Collection\SlotList as Collection;
 use BO\Zmsentities\Availability as AvailabilityEntity;
 use BO\Zmsentities\Scope as ScopeEntity;
-use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @SuppressWarnings(Public)
