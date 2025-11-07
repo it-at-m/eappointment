@@ -1029,9 +1029,6 @@ class Availability extends Schema\Entity
         if (! in_array('description', $keepArray)) {
             unset($entity['description']);
         }
-        if (! in_array('scope', $keepArray)) {
-            unset($entity['scope']);
-        }
 
         return $entity;
     }
