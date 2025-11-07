@@ -1494,4 +1494,45 @@ describe("AppointmentView", () => {
       expect(mockPreconfirm).toHaveBeenCalled();
     });
   });
+
+  describe("Reschedule Error (Vergangener Termin)", () => {
+  it('zeigt die Meldung "rescheduleError" und den Neu-buchen-Button, wenn der Termin in der Vergangenheit liegt', async () => {
+    // avoid disruptive residues from previous tests
+    localStorage.clear();
+
+    const wrapper = createWrapper({
+      appointmentHash: undefined,
+      confirmAppointmentHash: undefined,
+    });
+
+    // appointment in the past
+    const pastTimestampSeconds = Math.floor(Date.now() / 1000) - 3600;
+
+    wrapper.vm.appointment = {
+      ...(wrapper.vm.appointment ?? {}),
+      timestamp: pastTimestampSeconds,
+    } as any;
+
+    wrapper.vm.currentView = 3;
+
+    await nextTick();
+
+    const expectedHeader = (de as any).rescheduleErrorHeader ?? "rescheduleErrorHeader";
+    const expectedText = (de as any).rescheduleErrorText ?? "rescheduleErrorText";
+    const expectedButtonLabel = (de as any).newAppointmentButton ?? "newAppointmentButton";
+
+    const errorCallout = wrapper.find('[data-test="muc-callout"]');
+    expect(errorCallout.exists()).toBe(true);
+    expect(errorCallout.attributes("data-type")).toBe("error");
+    expect(errorCallout.text()).toContain(expectedHeader);
+    expect(errorCallout.text()).toContain(expectedText);
+
+    const buttons = wrapper.findAll('[data-test="muc-button"]');
+    const newAppointmentButton = buttons.find((b) => b.text().includes(expectedButtonLabel));
+    expect(newAppointmentButton).toBeDefined();
+
+    expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(false);
+  });
+});
 });

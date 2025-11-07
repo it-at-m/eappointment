@@ -1185,12 +1185,17 @@ onMounted(() => {
               });
             }
             if (appointmentData.action) {
-              if (
-                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-              ) {
-                nextRescheduleAppointment();
+              if (isPast.value) {
+                // Past appointment: display error message
+                currentView.value = 3;
               } else {
-                nextCancelAppointment();
+                if (
+                  appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+                ) {
+                  nextRescheduleAppointment();
+                } else {
+                  nextCancelAppointment();
+                }
               }
             } else {
               currentView.value = 3;
@@ -1251,7 +1256,7 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = localStorageData.currentView;
+          currentView.value = isPast.value ? 3 : localStorageData.currentView;
         });
       }
     }
