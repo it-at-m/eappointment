@@ -13,6 +13,7 @@
     "kind": "default",
     "multipleSlotsAllowed": true,
     "type": "appointment",
+    "version": 1,
     "repeat": {
       "afterWeeks": 0
     },
@@ -100,6 +101,10 @@
     "id": {
       "type": ["string", "number", "null"],
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
+    },
+    "version": {
+      "type": ["number"],
+      "description": "Numeric version of the availability"
     },
     "kind": {
       "type": ["null", "string"],

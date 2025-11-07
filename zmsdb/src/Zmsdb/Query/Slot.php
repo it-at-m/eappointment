@@ -27,6 +27,13 @@ class Slot extends Base implements MappingInterface
         ORDER BY year DESC, month DESC, day DESC
         LIMIT 1;';
 
+    const QUERY_OLDEST_VERSION_IN_AVAILABILITY = '
+        SELECT `version`
+        FROM slot
+        WHERE availabilityID = :availabilityID AND status="free"
+        ORDER BY `version` ASC
+        LIMIT 1;';
+
     const QUERY_LAST_CHANGED_SCOPE = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';
 
@@ -188,6 +195,11 @@ class Slot extends Base implements MappingInterface
             AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) < :providedDate
 ';
 
+    const QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE = '
+            UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID 
+            AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) > :providedDate
+';
+
     const QUERY_CANCEL_SLOT_OLD_BY_SCOPE = '
     UPDATE slot SET status =  "cancelled" 
         WHERE scopeID = :scopeID AND (
@@ -232,6 +244,7 @@ class Slot extends Base implements MappingInterface
         $data = array();
         $data['scopeID'] = $availability->scope->id;
         $data['availabilityID'] = $availability->id;
+        $data['version'] = $availability->version;
         $data['year'] = $date->format('Y');
         $data['month'] = $date->format('m');
         $data['day'] = $date->format('d');
