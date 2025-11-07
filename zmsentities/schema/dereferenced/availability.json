@@ -18,6 +18,7 @@
         "scope": {
             "id": 141
         },
+        "version": 1,
         "slotTimeInMinutes": 12,
         "startDate": 1447919543,
         "startTime": "10:00",
@@ -66,6 +67,10 @@
             "type": "string",
             "default": "23:59",
             "description": "format '0:00' or '16:30'"
+        },
+        "version": {
+            "type": ["number"],
+            "description": "Numeric version of the availability"
         },
         "id": {
             "type": [
