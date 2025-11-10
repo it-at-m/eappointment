@@ -112,7 +112,8 @@ class WaitingReport extends Base
     public function writeTotals(ReportEntity $report, $sheet, bool $isTermin)
     {
         $entity = clone $report;
-        $totals = array_pop($entity->data);
+        $totals = $entity->data['max'];
+        unset($entity->data['max']);
 
         if ($isTermin) {
             $keys = [
