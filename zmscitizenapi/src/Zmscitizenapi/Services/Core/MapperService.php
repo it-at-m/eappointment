@@ -332,7 +332,9 @@ class MapperService
             infoForAppointment: $scope->getInfoForAppointment(),
             infoForAllAppointments: $scope->getInfoForAllAppointments(),
             slotsPerAppointment: $scope->getSlotsPerAppointment(),
-            appointmentsPerMail: $scope->getAppointmentsPerMail() ?? null,
+            appointmentsPerMail: $scope->getAppointmentsPerMail() !== null
+                ? (string) $scope->getAppointmentsPerMail()
+                : null,
             whitelistedMails: $scope->getWhitelistedMails() ?? null,
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
