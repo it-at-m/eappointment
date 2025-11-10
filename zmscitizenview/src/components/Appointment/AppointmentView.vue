@@ -860,10 +860,7 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
-  const sec = Number((appointment.value as any)?.timestamp);
-  const expired = Number.isFinite(sec) && Math.floor(Date.now() / 1000) >= sec;
-
-  if (expired) {
+  if (isPast.value) {
     forcedPast.value = true;
     currentView.value = 3;
     goToTop();
