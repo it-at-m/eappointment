@@ -18,6 +18,9 @@ require_once(VENDOR_PATH . '/autoload.php');
 // initialize the static \App singleton
 require_once(APP_PATH . '/config.php');
 
+// Initialize App::$now if not already set
+\App::$now = (\App::$now instanceof \DateTimeInterface) ? \App::$now : new \DateTimeImmutable();
+
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
 \BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
@@ -28,7 +31,4 @@ require_once(APP_PATH . '/config.php');
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
-print("-------------------");
-print_r(\App::$now);
-print("-------------------");
 \BO\Zmsdb\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
