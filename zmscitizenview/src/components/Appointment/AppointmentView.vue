@@ -479,9 +479,11 @@ const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
+const forcedPast = ref(false);
 const isPast = computed(() => {
   const sec = Number((appointment.value as any)?.timestamp);
-  return Number.isFinite(sec) && Math.floor(Date.now() / 1000) >= sec;
+  const nowSec = Math.floor(Date.now() / 1000);
+  return forcedPast.value || (Number.isFinite(sec) && nowSec >= sec);
 });
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -858,7 +860,17 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
-  if (isPast.value) return;
+  const sec = Number((appointment.value as any)?.timestamp);
+  const expired = Number.isFinite(sec) && Math.floor(Date.now() / 1000) >= sec;
+
+  if (expired) {
+    forcedPast.value = true;
+    currentView.value = 3;
+    goToTop();
+    return;
+  }
+
+  // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
