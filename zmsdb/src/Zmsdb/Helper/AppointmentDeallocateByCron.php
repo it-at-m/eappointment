@@ -33,7 +33,9 @@ class AppointmentDeallocateByCron
     protected function log($message)
     {
         if ($this->verbose) {
-            if (isset(\App::$log)) { \App::$log->info($message); }
+            if (isset(\App::$log)) {
+                \App::$log->info($message);
+            }
         }
     }
 
