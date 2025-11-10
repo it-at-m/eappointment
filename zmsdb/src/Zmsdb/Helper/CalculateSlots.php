@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Helper;
 
+use BO\Slim\Helper\Sanitizer;
+
 /**
  * @codeCoverageIgnore
  */
@@ -71,25 +73,60 @@ class CalculateSlots
 
     public function writeMaintenanceQueries($daily = false)
     {
+        $dsn = Sanitizer::sanitizeStackTrace(
+            \BO\Zmsdb\Connection\Select::$writeSourceName
+        );
+        if (isset(\App::$log)) {
+            \App::$log->info("CalculateSlots: Starting writeMaintenanceQueries", [
+                'dsn' => $dsn,
+                'daily' => $daily
+            ]);
+        }
         $sqlList = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsMaintenanceSQL');
         if ($sqlList) {
             $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
             foreach (explode("\n", $sqlList) as $sql) {
                 $this->log("Maintenance query: $sql");
+                if (isset(\App::$log)) {
+                    \App::$log->info("CalculateSlots: Executing maintenance query", [
+                        'dsn' => $dsn,
+                        'query' => $sql
+                    ]);
+                }
                 $pdo->exec($sql);
             }
             return \BO\Zmsdb\Connection\Select::writeCommit();
         }
 
         if ($daily) {
+            if (isset(\App::$log)) {
+                \App::$log->info("CalculateSlots: Starting writeOptimizedSlotTables", [
+                    'dsn' => $dsn
+                ]);
+            }
             (new \BO\Zmsdb\Slot())->writeOptimizedSlotTables();
             $this->log("Optimized tables successfully");
+            if (isset(\App::$log)) {
+                \App::$log->info("CalculateSlots: Completed writeOptimizedSlotTables", [
+                    'dsn' => $dsn
+                ]);
+            }
         }
     }
 
 
     public function writeCalculations(\DateTimeInterface $now, $daily = false)
     {
+        $dsn = Sanitizer::sanitizeStackTrace(
+            \BO\Zmsdb\Connection\Select::$writeSourceName
+        );
+        if (isset(\App::$log)) {
+            \App::$log->info("CalculateSlots: Starting writeCalculations", [
+                'dsn' => $dsn,
+                'time' => $now->format('c'),
+                'daily' => $daily
+            ]);
+        }
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $this->readForceVerbose();
@@ -136,7 +173,22 @@ class CalculateSlots
 
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
+        if (isset(\App::$log)) {
+            \App::$log->info("CalculateSlots: Before writeMaintenanceQueries", [
+                'dsn' => Sanitizer::sanitizeStackTrace(
+                    \BO\Zmsdb\Connection\Select::$writeSourceName
+                ),
+                'daily' => $daily
+            ]);
+        }
         $this->writeMaintenanceQueries($daily);
+        if (isset(\App::$log)) {
+            \App::$log->info("CalculateSlots: Completed writeCalculations", [
+                'dsn' => Sanitizer::sanitizeStackTrace(
+                    \BO\Zmsdb\Connection\Select::$writeSourceName
+                )
+            ]);
+        }
 
         return true;
     }

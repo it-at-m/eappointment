@@ -4,6 +4,7 @@ namespace BO\Zmsdb;
 
 use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Config as Entity;
+use BO\Slim\Helper\Sanitizer;
 
 class Config extends Base
 {
@@ -13,14 +14,40 @@ class Config extends Base
      */
     public function readEntity($disableCache = false)
     {
+        $dsn = Sanitizer::sanitizeStackTrace(
+            \BO\Zmsdb\Connection\Select::$readSourceName
+        );
+        if (isset(\App::$log)) {
+            \App::$log->info("Config: Starting readEntity", [
+                'dsn' => $dsn,
+                'disableCache' => $disableCache
+            ]);
+        }
         $cacheKey = "config";
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            if (isset(\App::$log)) {
+                \App::$log->info("Config: Returning cached config", [
+                    'dsn' => $dsn
+                ]);
+            }
             return App::$cache->get($cacheKey);
         }
 
         $query = Query\Config::QUERY_SELECT;
+        if (isset(\App::$log)) {
+            \App::$log->info("Config: Fetching config from database", [
+                'dsn' => $dsn,
+                'query' => $query
+            ]);
+        }
         $config = $this->fetchData($query);
+        if (isset(\App::$log)) {
+            \App::$log->info("Config: Completed readEntity", [
+                'dsn' => $dsn,
+                'config_keys_count' => count((array)$config)
+            ]);
+        }
 
         if (App::$cache) {
             App::$cache->set($cacheKey, $config);

@@ -7,6 +7,7 @@ use BO\Zmsentities\Slot as Entity;
 use BO\Zmsentities\Collection\SlotList as Collection;
 use BO\Zmsentities\Availability as AvailabilityEntity;
 use BO\Zmsentities\Scope as ScopeEntity;
+use BO\Slim\Helper\Sanitizer;
 
 /**
  * @SuppressWarnings(Public)
@@ -474,6 +475,14 @@ class Slot extends Base
 
     public function writeOptimizedSlotTables()
     {
+        $dsn = Sanitizer::sanitizeStackTrace(
+            \BO\Zmsdb\Connection\Select::$writeSourceName
+        );
+        if (isset(\App::$log)) {
+            \App::$log->info("Slot: Starting writeOptimizedSlotTables", [
+                'dsn' => $dsn
+            ]);
+        }
         $queries = [
             Query\Slot::QUERY_OPTIMIZE_SLOT,
             Query\Slot::QUERY_OPTIMIZE_SLOT_HIERA,
@@ -482,14 +491,43 @@ class Slot extends Base
         ];
 
         $status = true;
-        foreach ($queries as $query) {
+        foreach ($queries as $index => $query) {
             try {
+                if (isset(\App::$log)) {
+                    \App::$log->info("Slot: Executing OPTIMIZE query", [
+                        'dsn' => $dsn,
+                        'query_index' => $index + 1,
+                        'total_queries' => count($queries),
+                        'query' => $query
+                    ]);
+                }
                 $status = $status && $this->perform($query);
+                if (isset(\App::$log)) {
+                    \App::$log->info("Slot: Completed OPTIMIZE query", [
+                        'dsn' => $dsn,
+                        'query_index' => $index + 1,
+                        'success' => true
+                    ]);
+                }
             } catch (\PDOException $e) {
+                if (isset(\App::$log)) {
+                    \App::$log->error("Slot: Failed to optimize table", [
+                        'dsn' => $dsn,
+                        'query_index' => $index + 1,
+                        'query' => $query,
+                        'error' => $e->getMessage()
+                    ]);
+                }
                 \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), []);
 
                 return false;
             }
+        }
+        if (isset(\App::$log)) {
+            \App::$log->info("Slot: Completed writeOptimizedSlotTables", [
+                'dsn' => $dsn,
+                'status' => $status
+            ]);
         }
 
         return $status;
