@@ -358,7 +358,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("Test Info");
 
       expect(wrapper.text()).toContain("appointmentTypes.1");
-      !expect(wrapper.text()).toContain("locationVariantText.1");
+      expect(wrapper.text()).toContain("locationVariantText.1");
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
