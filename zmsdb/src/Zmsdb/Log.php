@@ -177,10 +177,11 @@ class Log extends Base
 
         if ($userAction === 1) {
             $conditions[] = "data like '%Sachbearbeiter*in%'";
+            $conditions[] = "data not like '%Sachbearbeiter*in\":\"_system_%'";
         }
 
         if ($userAction === 2) {
-            $conditions[] = "data not like '%Sachbearbeiter*in%'";
+            $conditions[] = "(data like '%Sachbearbeiter*in\":\"_system_%' OR data not like '%Sachbearbeiter*in%')";
         }
 
         if (!empty($conditions)) {
