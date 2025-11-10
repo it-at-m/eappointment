@@ -73,7 +73,7 @@ class ArchivedDataIntoStatisticByCron
     protected function logMessage($message)
     {
         if ($this->verbose) {
-            error_log($message);
+            if (isset(\App::$log)) { \App::$log->info($message); }
         }
     }
 

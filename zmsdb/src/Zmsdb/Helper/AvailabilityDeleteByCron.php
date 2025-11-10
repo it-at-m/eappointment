@@ -22,13 +22,13 @@ class AvailabilityDeleteByCron
     {
         $availabilityList = $this->query->readAvailabilityListBefore($datetime);
         if ($this->verbose) {
-            error_log("INFO: Reading availability list");
+            \App::$log->info("Reading availability list");
         }
         foreach ($availabilityList as $availability) {
             if ($commit) {
                 $this->deleteAvailability($availability->getId());
             } elseif ($this->verbose) {
-                error_log("INFO: Would remove $availability");
+                \App::$log->info("Would remove availability", ['availability' => (string) $availability]);
             }
         }
     }
@@ -37,10 +37,10 @@ class AvailabilityDeleteByCron
     {
         if ($this->query->deleteEntity($availabilityId)) {
             if ($this->verbose) {
-                error_log("INFO: Availability $availabilityId successfully removed");
+                \App::$log->info("Availability successfully removed", ['availabilityId' => $availabilityId]);
             }
         } else {
-            error_log("WARN: Could not remove availability {$availabilityId}!");
+            \App::$log->warning("Could not remove availability", ['availabilityId' => $availabilityId]);
         }
     }
 }

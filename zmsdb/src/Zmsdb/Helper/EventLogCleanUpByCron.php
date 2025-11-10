@@ -24,8 +24,18 @@ class EventLogCleanUpByCron
 
     protected function log($message)
     {
-        if ($this->verbose) {
-            error_log($message);
+        if (!$this->verbose) {
+            return;
+        }
+        $level = 'info';
+        if (strpos($message, 'WARN:') === 0) {
+            $level = 'warning';
+        } elseif (strpos($message, 'ERROR:') === 0) {
+            $level = 'error';
+        }
+        $message = preg_replace('/^(INFO|WARN|ERROR):\s*/', '', (string) $message);
+        if (isset(\App::$log)) {
+            \App::$log->{$level}($message);
         }
     }
 

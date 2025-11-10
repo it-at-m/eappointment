@@ -4,8 +4,13 @@
  * calculate average waiting times for each scope, date, and hour,
  * separated by 'spontan' vs. 'termin', and store results into wartenrstatistik.
  */
-echo "calculateDailyWaitingStatistic: calculate average waiting times\n";
 require_once(__DIR__."/script_bootstrap.php");
+
+if (isset(\App::$log)) {
+    \App::$log->info("calculateDailyWaitingStatistic: calculate average waiting times");
+} else {
+    echo "calculateDailyWaitingStatistic: calculate average waiting times\n";
+}
 
 $verbose = in_array('--verbose', $argv);
 $commit  = in_array('--commit',  $argv);
@@ -17,5 +22,10 @@ $job = new BO\Zmsdb\Helper\CalculateDailyWaitingStatisticByCron();
 $job->run($targetDate, $commit);
 
 if (!$commit) {
-    echo "\n[DRY RUN] Nothing was written to the database. Use --commit to persist data.\n";
+    $message = "[DRY RUN] Nothing was written to the database. Use --commit to persist data.";
+    if (isset(\App::$log)) {
+        \App::$log->info($message);
+    } else {
+        echo "\n$message\n";
+    }
 }

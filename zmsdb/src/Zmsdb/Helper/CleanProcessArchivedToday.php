@@ -20,7 +20,19 @@ class CleanProcessArchivedToday
 
     protected function log($message)
     {
-        if ($this->verbose) {
+        if (!$this->verbose) {
+            return;
+        }
+        $level = 'info';
+        if (strpos($message, 'WARN:') === 0) {
+            $level = 'warning';
+        } elseif (strpos($message, 'ERROR:') === 0) {
+            $level = 'error';
+        }
+        $message = preg_replace('/^(INFO|WARN|ERROR):\s*/', '', (string) $message);
+        if (isset(\App::$log)) {
+            \App::$log->{$level}($message);
+        } else {
             error_log($message);
         }
     }
@@ -29,9 +41,18 @@ class CleanProcessArchivedToday
     {
         $logRepo = new ProcessStatusArchived();
         if ($commit) {
-            error_log("Executing cleanup with commit...");
+            if (isset(\App::$log)) {
+                \App::$log->info("Executing cleanup with commit...");
+            } else {
+                error_log("Executing cleanup with commit...");
+            }
             $result = $logRepo->deleteAllToday();
-            error_log("Cleanup completed. Result: " . ($result ? "success" : "failed"));
+            $message = "Cleanup completed. Result: " . ($result ? "success" : "failed");
+            if (isset(\App::$log)) {
+                \App::$log->info($message);
+            } else {
+                error_log($message);
+            }
         }
     }
 }

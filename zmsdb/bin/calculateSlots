@@ -4,8 +4,12 @@ ini_set('memory_limit', '1024M');
 require_once(__DIR__."/script_bootstrap.php");
 
 function logMessage($message, $level = 'INFO') {
-    $time = date('Y-m-d H:i:s');
-    error_log("[$time] [$level] $message");
+    if (isset(\App::$log)) {
+        \App::$log->{$level}($message);
+    } else {
+        $time = date('Y-m-d H:i:s');
+        error_log("[$time] [$level] $message");
+    }
 }
 
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
@@ -30,7 +34,11 @@ if (preg_grep('#^--commit$#', $argv)) {
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();
-        error_log($exception->getTraceAsString());
+        if (isset(\App::$log)) {
+            \App::$log->error($exception->getTraceAsString());
+        } else {
+            error_log($exception->getTraceAsString());
+        }
     } catch (\Exception $exception) {
         $calculator->dumpLogs();
         throw $exception;
