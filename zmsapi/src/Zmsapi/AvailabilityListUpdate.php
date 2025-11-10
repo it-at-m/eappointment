@@ -104,8 +104,8 @@ class AvailabilityListUpdate extends BaseController
         $updatedAvailability = null;
         if ($availability->id) {
             $existingAvailability = $repository->readEntity($availability->id);
-            $availability->version = $existingAvailability->version + 1;
             if ($existingAvailability && $existingAvailability->hasId()) {
+                $availability->version = $existingAvailability->version + 1;
                 $this->resetOpeningHours($existingAvailability);
                 $updatedAvailability = $repository->updateEntity($availability->id, $availability, $resolveReferences);
                 App::$log->info('Updated availability', [
