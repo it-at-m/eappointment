@@ -59,7 +59,7 @@ class View extends BaseView {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
         return this.loadInto(url).then(() => {
-            this.onNextProcess(true);
+            this.onNextProcess();
             this.updateURL();
         });
     }
@@ -68,7 +68,7 @@ class View extends BaseView {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/parked/`
         return this.loadInto(url).then(() => {
-            this.onNextProcess(true);
+            this.onNextProcess();
             this.updateURL();
         });
     }
