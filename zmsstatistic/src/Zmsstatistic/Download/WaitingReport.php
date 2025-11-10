@@ -11,18 +11,22 @@ use BO\Zmsentities\Exchange as ReportEntity;
 use BO\Zmsstatistic\Helper\Download;
 use BO\Zmsstatistic\Helper\ReportHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
-    protected $reportParts = [
-        'waitingcount' => 'Wartende Spontankunden',
-        'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
-        'waitingcount_termin' => 'Wartende Terminkunden',
+    protected $reportPartsTermin = [
         'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
-        'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',
+        'waitingcount_termin' => 'Wartende Terminkunden',
         'waytime_termin' => 'Durchschnittliche Wegezeit in Min. (Terminkunden)',
+    ];
+
+    protected $reportPartsSpontan = [
+        'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
+        'waitingcount' => 'Wartende Spontankunden',
+        'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',
     ];
 
     /**
@@ -36,15 +40,26 @@ class WaitingReport extends Base
     ) {
         $title = 'waitingstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
+        $spreadsheet = $download->getSpreadSheet();
 
-        $this->writeInfoHeader($args, $download->getSpreadSheet());
+        // Blatt 1: Terminkunden
+        $spreadsheet->getActiveSheet()->setTitle('Terminkunden');
+        $spreadsheet->setActiveSheetIndexByName('Terminkunden');
+        $this->writeInfoHeader($args, $spreadsheet);
         foreach ($args['reports'] as $report) {
-            if ('month' == $report->period) {
-                $this->writeWaitingReport($report, $download->getSpreadSheet(), 'MMMM');
-            } else {
-                $this->writeWaitingReport($report, $download->getSpreadSheet());
-            }
+            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ true, 'dd.MM.yyyy');
         }
+
+        // Blatt 2: Spontankunden
+        $spreadsheet->createSheet()->setTitle('Spontankunden');
+        $spreadsheet->setActiveSheetIndexByName('Spontankunden');
+        $this->writeInfoHeader($args, $spreadsheet);
+        foreach ($args['reports'] as $report) {
+            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ false, 'dd.MM.yyyy');
+        }
+
+        // Für den Download das erste Blatt aktiv lassen
+        $spreadsheet->setActiveSheetIndexByName('Terminkunden');
 
         return $download->writeDownload($response);
     }
@@ -52,12 +67,18 @@ class WaitingReport extends Base
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        $datePatternCol = 'dd.MM.yyyy'
+        bool $isTermin,
+        $datePatternCol = 'dd.MM.yyyy',
     ) {
         $sheet = $spreadsheet->getActiveSheet();
         $this->writeHeader($report, $sheet, $datePatternCol);
-        $this->writeTotals($report, $sheet);
-        foreach ($this->reportParts as $partName => $headline) {
+        $this->writeTotals($report, $sheet, $isTermin);
+        if ($isTermin) {
+            $parts = $this->reportPartsTermin;
+        } else {
+            $parts = $this->reportPartsSpontan;
+        }
+        foreach ($parts as $partName => $headline) {
             $this->writeReportPart($report, $sheet, $partName, $headline);
         }
 
@@ -77,38 +98,50 @@ class WaitingReport extends Base
                 $reportHeader[] = $date;
             }
         }
-        $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
+        $startRow = $sheet->getHighestRow() + 2;
+        $sheet->fromArray($reportHeader, null, 'A' . $startRow);
+        // Datumszellen (ab B) in dieser Zeile fett schreiben
+        $lastColIdx = count($reportHeader);              // Anzahl der geschriebenen Zellen
+        if ($lastColIdx >= 2) {
+            $start = "B{$startRow}";
+            $end   = Coordinate::stringFromColumnIndex($lastColIdx) . $startRow;
+            $sheet->getStyle("$start:$end")->getFont()->setBold(true);
+        }
     }
 
-    public function writeTotals(ReportEntity $report, $sheet)
+    public function writeTotals(ReportEntity $report, $sheet, bool $isTermin)
     {
         $entity = clone $report;
-        $totals = array_pop($entity->data);
-        $reportTotal['max'][] = 'Tagesmaximum der Wartezeit in Min. (Spontankunden)';
-        $reportTotal['average'][] = 'Tagesdurchschnitt der Wartezeit in Min. (Spontankunden)';
-        $reportTotal['average_waytime'][] = 'Tagesdurchschnitt der Wegezeit in Min. (Spontankunden)';
-        $reportTotal['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime']);
-        $reportTotal['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime']);
-        $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime']);
+        $totals = $entity->data['max'];
+        unset($entity->data['max']);
+
+        if ($isTermin) {
+            $keys = [
+                'max' => 'max_waitingtime_termin',
+                'avg' => 'average_waitingtime_termin',
+                'avg_way' => 'average_waytime_termin',
+            ];
+        } else {
+            $keys = [
+                'max' => 'max_waitingtime',
+                'avg' => 'average_waitingtime',
+                'avg_way' => 'average_waytime',
+            ];
+        }
+        $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
+        $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
+        $reportTotal['average_waytime'][] = 'Stundendurchschnitt (Spalten) der Wegezeit in Min.';
+
+        $reportTotal['max'][] = ReportHelper::formatTimeValue($totals[$keys['max']]);
+        $reportTotal['average'][] = ReportHelper::formatTimeValue($totals[$keys['avg']]);
+        $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($totals[$keys['avg_way']]);
+
         foreach ($entity->data as $entry) {
-            $reportTotal['max'][] = ReportHelper::formatTimeValue($entry['max_waitingtime']);
-            $reportTotal['average'][] = ReportHelper::formatTimeValue($entry['average_waitingtime']);
-            $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($entry['average_waytime']);
+            $reportTotal['max'][] = ReportHelper::formatTimeValue($entry[$keys['max']]);
+            $reportTotal['average'][] = ReportHelper::formatTimeValue($entry[$keys['avg']]);
+            $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($entry[$keys['avg_way']]);
         }
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
-
-        $reportTotal2['max'][] = 'Tagesmaximum der Wartezeit in Min. (Terminkunden)';
-        $reportTotal2['average'][] = 'Tagesdurchschnitt der Wartezeit in Min. (Terminkunden)';
-        $reportTotal2['average_waytime'][] = 'Tagesdurchschnitt der Wegezeit in Min. (Terminkunden)';
-        $reportTotal2['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime_termin']);
-        $reportTotal2['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime_termin']);
-        $reportTotal2['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime_termin']);
-        foreach ($entity->data as $entry) {
-            $reportTotal2['max'][] = ReportHelper::formatTimeValue($entry['max_waitingtime_termin']);
-            $reportTotal2['average'][] = ReportHelper::formatTimeValue($entry['average_waitingtime_termin']);
-            $reportTotal2['average_waytime'][] = ReportHelper::formatTimeValue($entry['average_waytime_termin']);
-        }
-        $sheet->fromArray($reportTotal2, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
     public function writeReportPart(ReportEntity $report, $sheet, $rangeName, $headline)
@@ -116,11 +149,11 @@ class WaitingReport extends Base
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
-        $reportData['headline'] = ['Zeitabschnitte',$headline];
+        $reportData['headline'] = ['Zeitabschnitte','Tagesmaximum (Zeilenmaximum)',$headline];
         $formatAsTime = strpos($rangeName, 'waitingcount') === false;
         foreach ($entity->data as $entry) {
             foreach ($entry as $hour => $item) {
-                if (5 < $hour && 22 > $hour) {
+                if (5 < $hour && 19 > $hour) {
                     if (! isset($reportData[$hour])) {
                         $reportData[$hour] = [];
                     }
@@ -139,6 +172,8 @@ class WaitingReport extends Base
                 }
             }
         }
-        $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow() + 2));
+        $startRow = $sheet->getHighestRow() + 2;
+        $sheet->fromArray($reportData, null, 'A' . $startRow);
+        $sheet->getStyle("A{$startRow}:C{$startRow}")->getFont()->setBold(true);
     }
 }
