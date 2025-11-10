@@ -153,6 +153,8 @@ class Log extends Base
     ) {
         $sql = "SELECT * FROM log";
         $conditions = [];
+        $params = [];
+        $jsonParameterNumber = 1;
 
         foreach ($fieldValues as $field => $value) {
             if ($value === null || $value === '') {
@@ -166,32 +168,38 @@ class Log extends Base
         }
 
         if (!empty($generalSearch)) {
-            $conditions[] = "data like '%$generalSearch%'";
+            $conditions[] = "data LIKE :generalSearch";
+            $params['generalSearch'] = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $generalSearch).'%';
         }
 
         if (!empty($date)) {
-            $conditions[] = "(ts > '"
-                . $date->format('Y-m-d') . "' AND ts < '"
-                . $date->add(new \DateInterval('P1D'))->format('Y-m-d') . "')";
+            $start = (clone $date)->setTime(0, 0, 0);
+            $end = (clone $date)->setTime(0, 0, 0)->add(new \DateInterval('P1D'));
+            $conditions[] = "(ts >= :start AND ts < :end)";
+            $params['start'] = $start->format('Y-m-d H:i:s');
+            $params['end'] = $end->format('Y-m-d H:i:s');
         }
 
         if ($userAction === 1) {
-            $conditions[] = "data like '%Sachbearbeiter*in%'";
-            $conditions[] = "data not like '%Sachbearbeiter*in\":\"_system_%'";
+            $conditions[] = "data like :ua_yes";
+            $conditions[] = "data not like :ua_system";
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
         }
 
         if ($userAction === 2) {
-            $conditions[] = "(data like '%Sachbearbeiter*in\":\"_system_%' OR data not like '%Sachbearbeiter*in%')";
+            $conditions[] = "(data like :ua_system OR data not like :ua_yes)";
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
         }
 
         if (!empty($conditions)) {
             $sql .= " WHERE " . implode(' AND ', $conditions);
         }
 
-
         $sql .= " ORDER BY ts DESC LIMIT $perPage OFFSET $offset";
 
-        $rows = $this->fetchAll($sql);
+        $rows = $this->fetchAll($sql, $params);
 
         $logs = new LogList();
         foreach ($rows as $row) {
