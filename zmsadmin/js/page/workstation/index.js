@@ -384,13 +384,10 @@ class View extends BaseView {
         this.loadCalendar();
     }
 
-    onNextProcess(loadQueueTable = false) {
+    onNextProcess() {
         if ('counter' == this.page)
             this.loadQueueInfo();
-
-        if (loadQueueTable) {
-            this.loadQueueTable();
-        }
+        this.loadQueueTable();
     }
 
     onCallNextProcess() {
