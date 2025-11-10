@@ -309,7 +309,7 @@
 import type { Ref } from "vue";
 
 import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject, ref } from "vue";
 
 import {
   SelectedAppointmentProvider,
