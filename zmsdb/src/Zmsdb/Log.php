@@ -154,7 +154,6 @@ class Log extends Base
         $sql = "SELECT * FROM log";
         $conditions = [];
         $params = [];
-        $jsonParameterNumber = 1;
 
         foreach ($fieldValues as $field => $value) {
             if ($value === null || $value === '') {
