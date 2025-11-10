@@ -59,7 +59,7 @@ class View extends BaseView {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
         return this.loadInto(url).then(() => {
-            this.onNextProcess();
+            this.onNextProcess(true);
             this.updateURL();
         });
     }
