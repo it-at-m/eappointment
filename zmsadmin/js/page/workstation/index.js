@@ -108,6 +108,7 @@ class View extends BaseView {
         this.loadCalendar();
         if ('counter' == this.page)
             this.loadQueueInfo();
+        this.loadQueueTable();
         if (this.selectedProcess) {
             // Editing an existing appointment -> full reload
             this.loadAppointmentForm(true, false);
@@ -383,10 +384,13 @@ class View extends BaseView {
         this.loadCalendar();
     }
 
-    onNextProcess() {
-        //this.calledProcess = null;
+    onNextProcess(loadQueueTable = false) {
         if ('counter' == this.page)
             this.loadQueueInfo();
+
+        if (loadQueueTable) {
+            this.loadQueueTable();
+        }
     }
 
     onCallNextProcess() {
