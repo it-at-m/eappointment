@@ -672,7 +672,7 @@ class MapperServiceTest extends TestCase
     {
         $scope = new Scope();
         $scope->id = 1;
-        $scope->data = [];
+        $scope->preferences = [];
         
         $result = MapperService::scopeToThinnedScope($scope);
         $this->assertInstanceOf(ThinnedScope::class, $result);
