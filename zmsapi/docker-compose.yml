@@ -19,7 +19,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    image: ghcr.io/it-at-m/eappointment-php-base:8.4-dev
     volumes:
       - type: bind
         source: ".."
