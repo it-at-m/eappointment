@@ -136,6 +136,12 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 
 ### Using Podman (Devcontainer)
 > **Note for macOS users:** You may need to add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or run it in your terminal before using devcontainer commands.
+> ```
+> source ~/.zshrc
+> podman machine stop
+> podman machine start
+> devcontainer up --workspace-folder .
+> ```
 
 - `devcontainer up --workspace-folder .`
 - `podman exec -it zms-web bash -lc "./cli modules loop composer install"`
