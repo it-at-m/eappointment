@@ -308,7 +308,7 @@
 import type { Ref } from "vue";
 
 import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject, ref } from "vue";
 
 import {
   SelectedAppointmentProvider,
@@ -416,14 +416,6 @@ const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
-
-watch(
-  selectedService,
-  (newVal, oldVal) => {
-    console.log("selectedService changed:", { newVal, oldVal });
-  },
-  { deep: true, immediate: true }
-);
 </script>
 
 <style lang="scss" scoped>
