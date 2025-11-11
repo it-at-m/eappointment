@@ -49,7 +49,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
-        :link="getServiceBaseURL() + (service?.id || '')"
+        :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
       />
@@ -120,7 +120,10 @@
         </div>
       </div>
     </div>
-    <div class="m-component">
+    <div
+      class="m-component"
+      v-if="showEstimatedDuration"
+    >
       <div class="wrapper">
         <clock-svg
           aria-hidden="true"
@@ -150,7 +153,7 @@
   <div class="m-button-group">
     <muc-button
       v-if="service"
-      :disabled="showCaptcha && !isCaptchaValid"
+      :disabled="isNextDisabled"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -285,6 +288,8 @@ watch(service, (newService) => {
   }
   setServiceData(newService);
   updateSelectedService(newService);
+
+  countOfService.value = newService.count ?? 1;
 });
 
 /**
@@ -302,7 +307,7 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = 1;
+  service.value!.count = Math.max(1, countOfService.value || 1);
   currentSlots.value = getMinSlotOfProvider(service.value!.providers);
 
   if (selectedService.combinable) {
@@ -416,6 +421,10 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 const estimatedDuration = computed(() => {
   const provider = service.value?.providers?.[0];
   return calculateEstimatedDuration(service.value, provider);
+});
+
+const showEstimatedDuration = computed(() => {
+  return !(variantServices.value.length > 1 && !selectedVariant.value);
 });
 
 /**
@@ -662,6 +671,15 @@ function normalizeService(raw: any): Service {
     variantId: raw.variant_id == null ? null : Number(raw.variant_id),
   };
 }
+
+const hasVariants = computed(() => variantServices.value.length > 1);
+const needsVariantSelection = computed(
+  () => hasVariants.value && !selectedVariant.value
+);
+const isNextDisabled = computed(() => {
+  const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
+  return captchaBlocks || needsVariantSelection.value;
+});
 </script>
 
 <style lang="scss" scoped>
