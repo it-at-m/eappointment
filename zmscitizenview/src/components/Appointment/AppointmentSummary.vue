@@ -24,7 +24,12 @@
             <p v-if="selectedService">
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + selectedService.id"
+                :href="
+                  getServiceBaseURL() +
+                  (selectedService.parentId
+                    ? selectedService.parentId
+                    : selectedService.id)
+                "
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -59,7 +64,7 @@
           >
             <p>{{ selectedProvider.name }}<br /></p>
 
-            <template v-if="!variantId || variantId === 1">
+            <template v-if="!variantId">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("address") }}</strong
                 ><br />
@@ -74,7 +79,23 @@
                   v-html="sanitizeHtml(appointment.scope.hint)"
                 ></span>
               </p>
+            </template>
 
+            <template v-else-if="variantId === 1">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("address") }}</strong
+                ><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                ></span>
+              </p>
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("appointmentTypes.1") }}</strong
                 ><br />
