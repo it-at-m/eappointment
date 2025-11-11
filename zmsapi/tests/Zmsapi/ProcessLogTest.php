@@ -24,7 +24,7 @@ class ProcessLogTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['search' => 123], [], []);
+        $response = $this->render(['search' => 123456], [], []);
         $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
