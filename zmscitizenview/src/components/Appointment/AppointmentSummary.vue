@@ -24,7 +24,12 @@
             <p v-if="selectedService">
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + (selectedService.parentId ? selectedService.parentId : selectedService.id)"
+                :href="
+                  getServiceBaseURL() +
+                  (selectedService.parentId
+                    ? selectedService.parentId
+                    : selectedService.id)
+                "
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -412,9 +417,13 @@ const variantId = computed<number | null>(() => {
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
 
-watch(selectedService, (newVal, oldVal) => {
-  console.log('selectedService changed:', { newVal, oldVal });
-}, { deep: true, immediate: true });
+watch(
+  selectedService,
+  (newVal, oldVal) => {
+    console.log("selectedService changed:", { newVal, oldVal });
+  },
+  { deep: true, immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
