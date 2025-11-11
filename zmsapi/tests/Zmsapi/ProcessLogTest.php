@@ -16,7 +16,7 @@ class ProcessLogTest extends Base
     {
         (new ProcessUpdateTest('dummyTest'))->testRendering();
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['search' => self::SEARCH_PARAM], [], []);
+        $response = $this->render([], ['searchQuery' => self::SEARCH_PARAM], []);
         $this->assertStringContainsString('log.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -24,7 +24,7 @@ class ProcessLogTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['search' => 123456], [], []);
+        $response = $this->render([], ['searchQuery' => 123456], []);
         $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
