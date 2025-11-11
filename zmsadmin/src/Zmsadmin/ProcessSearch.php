@@ -55,21 +55,21 @@ class ProcessSearch extends BaseController
             ->isNumber()
             ->setDefault(100)
             ->getValue();
-        $processList = \App::$http->readGetResult('/process/search/', [
+        $processList = !empty($queryString) ? \App::$http->readGetResult('/process/search/', [
             'query' => $queryString,
             'resolveReferences' => 1,
-        ])->getCollection();
+        ])->getCollection() : new ProcessList();
 
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
-        if (!$workstation->hasSuperUseraccount()) {
+        if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
 
-        $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         if ($workstation->hasAuditAccount()) {
             $queryString = urlencode($queryString);
             $logList = \App::$http
-                ->readGetResult("/log/process/$queryString/", [
+                ->readGetResult("/log/process/", [
+                        'queryString' => $queryString,
                         'page' => $page,
                         'perPage' => $perPage,
                         'service' => $service ? trim($service) : null,
