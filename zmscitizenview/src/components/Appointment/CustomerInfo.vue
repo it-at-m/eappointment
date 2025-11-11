@@ -82,6 +82,7 @@
     <muc-input
       id="mailaddress"
       v-model="customerData.mailAddress"
+      autocomplete="email"
       :error-msg="errorDisplayMailAddress"
       :label="t('mailAddress')"
       max="50"
