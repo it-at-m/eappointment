@@ -64,7 +64,12 @@
                   >
                     <use :xlink:href="`#${detailIcon}`"></use>
                   </svg>
-                  <span v-if="variantId === VARIANT_ID_TEL || variantId === VARIANT_ID_VIDEO">
+                  <span
+                    v-if="
+                      variantId === VARIANT_ID_TEL ||
+                      variantId === VARIANT_ID_VIDEO
+                    "
+                  >
                     {{ t(`appointmentTypes.${variantId}`) }}
                   </span>
 
