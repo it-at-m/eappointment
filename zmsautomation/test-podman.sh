@@ -12,11 +12,6 @@ echo "Podman version: $(podman --version)"
 # ---------------------------
 # Environment variables
 # ---------------------------
-#export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-#export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
-#export CONTAINER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
-#export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-#export CONTAINER_HOST="${CONTAINER_HOST:-unix://${XDG_RUNTIME_DIR}/podman/podman.sock}"
 
 echo "XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR"
 echo "DBUS_SESSION_BUS_ADDRESS: ${DBUS_SESSION_BUS_ADDRESS:-not set}"

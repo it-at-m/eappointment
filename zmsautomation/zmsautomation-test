@@ -31,16 +31,38 @@ warn() { echo "[WARN] $*"; }
 USE_PODMAN=false
 info "[DEBUG] Starting Podman detection..."
 info "[DEBUG] PATH: ${PATH}"
-info "[DEBUG] Checking for podman command..."
-PODMAN_CMD=$(command -v podman 2>&1 || echo "NOT_FOUND")
-info "[DEBUG] command -v podman result: '${PODMAN_CMD}'"
 
-# Try direct podman call as fallback
-if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
-  info "[DEBUG] Podman command found, checking for containers..."
-  # Use the full path to podman if available
-  PODMAN_EXEC="${PODMAN_CMD:-podman}"
-  info "[DEBUG] Using podman at: ${PODMAN_EXEC}"
+# Check for podman - try multiple locations and versions
+PODMAN_CMD=""
+PODMAN_VERSION=""
+
+# Try /usr/bin/podman first (the one that works when sourced)
+if [[ -x /usr/bin/podman ]]; then
+  PODMAN_VERSION=$(/usr/bin/podman --version 2>&1 || echo "")
+  if [[ -n "$PODMAN_VERSION" ]]; then
+    PODMAN_CMD="/usr/bin/podman"
+    info "[DEBUG] Found podman at /usr/bin/podman: ${PODMAN_VERSION}"
+  fi
+fi
+
+# If that didn't work, try command -v
+if [[ -z "$PODMAN_CMD" ]]; then
+  PODMAN_CMD=$(command -v podman 2>&1 || echo "")
+  if [[ -n "$PODMAN_CMD" ]]; then
+    PODMAN_VERSION=$("$PODMAN_CMD" --version 2>&1 || echo "")
+    info "[DEBUG] Found podman via command -v at: ${PODMAN_CMD} (${PODMAN_VERSION})"
+  fi
+fi
+
+# Ensure we have XDG_RUNTIME_DIR set (needed for podman socket access)
+if [[ -z "${XDG_RUNTIME_DIR:-}" ]]; then
+  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+  info "[DEBUG] Set XDG_RUNTIME_DIR to: ${XDG_RUNTIME_DIR}"
+fi
+
+if [[ -n "$PODMAN_CMD" ]]; then
+  info "[DEBUG] Using podman at: ${PODMAN_CMD}"
+  PODMAN_EXEC="$PODMAN_CMD"
   
   # Check for both required containers, handling potential whitespace issues
   # Try multiple approaches to get container names (format flag might not work in all contexts)
