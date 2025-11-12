@@ -56,6 +56,20 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   info "[DEBUG] REMOTE_CONTAINERS_IPC: ${REMOTE_CONTAINERS_IPC:-not set}"
   info "[DEBUG] DEVCONTAINER: ${DEVCONTAINER:-not set}"
   
+  # Check if we're running inside a container (which would explain why we can't see all containers)
+  INSIDE_CONTAINER=false
+  if [[ -f /.dockerenv ]] || [[ -n "${container:-}" ]]; then
+    INSIDE_CONTAINER=true
+    info "[DEBUG] Script appears to be running inside a container"
+  fi
+  # Also check hostname - if it matches container name, we're likely inside that container
+  HOSTNAME=$(hostname 2>/dev/null || echo "")
+  info "[DEBUG] Hostname: ${HOSTNAME}"
+  if [[ "$HOSTNAME" == "zms-web" ]] || [[ "$HOSTNAME" == *"zms-web"* ]]; then
+    INSIDE_CONTAINER=true
+    info "[DEBUG] Hostname suggests we're running inside zms-web container"
+  fi
+  
   # Check all containers (including stopped) to see what actually exists - this is the source of truth
   PODMAN_PS_ALL=$("$PODMAN_EXEC" ps -a --format "{{.Names}}" 2>&1 || echo "")
   info "[DEBUG] podman ps -a (all containers) names: '${PODMAN_PS_ALL}'"
@@ -70,6 +84,10 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
     
     if [[ -n "$ZMS_WEB_FOUND" ]] && [[ -n "$ZMS_DB_FOUND" ]]; then
       info "[DEBUG] Both containers found in podman ps -a, using that as source of truth"
+      CONTAINER_NAMES="zms-web"$'\n'"zms-db"
+    elif [[ -n "$ZMS_DB_FOUND" ]] && [[ "$INSIDE_CONTAINER" == true ]]; then
+      # If we're inside a container and can see zms-db but not zms-web, we're likely inside zms-web
+      info "[DEBUG] Running inside container, can see zms-db but not zms-web - assuming we're inside zms-web"
       CONTAINER_NAMES="zms-web"$'\n'"zms-db"
     elif [[ -n "$ZMS_WEB_FOUND" ]]; then
       CONTAINER_NAMES="zms-web"
