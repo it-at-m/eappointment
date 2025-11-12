@@ -168,7 +168,7 @@ class Log extends Base
 
         if (!empty($generalSearch)) {
             $conditions[] = "data LIKE :generalSearch";
-            $params['generalSearch'] = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $generalSearch) . '%';
+            $params['generalSearch'] = '%' . $generalSearch . '%';
         }
 
         if (!empty($date)) {
