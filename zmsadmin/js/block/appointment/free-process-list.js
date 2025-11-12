@@ -21,7 +21,7 @@ class View extends BaseView {
     loadList() {
         const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slotType=${this.slotType}&slotsRequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
         return this.loadContent(url, 'GET', null, null, false).then((response) => {
-            this.$main.find('select#process_time').trigger('change');
+            this.$main.find('select#process_time');
             if (ValidationHandler.hasMessage(response)) {
                 this.loadMessage(response, () => {}, null, this.$main);
             }

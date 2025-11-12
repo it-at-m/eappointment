@@ -16,7 +16,7 @@
         <muc-select
           id="service-search"
           v-model="service"
-          :items="services"
+          :items="servicesWithoutParent"
           item-title="name"
           :label="t('serviceSearch')"
           :no-item-found-message="t('noServiceFound')"
@@ -49,12 +49,29 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
-        :link="getServiceBaseURL() + (service?.id || '')"
+        :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
       />
+      <div
+        v-if="variantServices.length > 1"
+        class="m-component"
+      >
+        <muc-radio-button-group
+          v-model="selectedVariant"
+          :heading="t('appointmentType')"
+        >
+          <muc-radio-button
+            v-for="variant in variantServices"
+            :key="variant.variantId"
+            :id="'variant-' + variant.variantId"
+            :value="variant.variantId.toString()"
+            :label="t(`appointmentTypes.${variant.variantId}`)"
+          />
+        </muc-radio-button-group>
+      </div>
     </div>
-    <div v-if="service?.subServices && service.subServices.length > 0">
+    <div v-if="showSubservices">
       <h3>{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
@@ -103,7 +120,10 @@
         </div>
       </div>
     </div>
-    <div class="m-component">
+    <div
+      class="m-component"
+      v-if="showEstimatedDuration"
+    >
       <div class="wrapper">
         <clock-svg
           aria-hidden="true"
@@ -133,7 +153,7 @@
   <div class="m-button-group">
     <muc-button
       v-if="service"
-      :disabled="showCaptcha && !isCaptchaValid"
+      :disabled="isNextDisabled"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -143,7 +163,13 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCounter,
+  MucRadioButton,
+  MucRadioButtonGroup,
+  MucSelect,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 
 import { Combinable } from "@/api/models/Combinable";
@@ -244,13 +270,26 @@ const shouldShowLessButton = computed(() => {
 });
 
 const durationInfo = ref<HTMLElement | null>(null);
+const baseServiceId = ref<number | string | null>(null);
+const selectedVariant = ref("");
 
 watch(service, (newService) => {
-  if (!newService) {
-    return;
+  if (!newService) return;
+
+  baseServiceId.value =
+    newService.parentId != null
+      ? String(newService.parentId)
+      : String(newService.id);
+
+  const variantId = newService.variantId;
+  if (typeof variantId === "number" && Number.isFinite(variantId)) {
+    const next = String(variantId);
+    if (selectedVariant.value !== next) selectedVariant.value = next;
   }
   setServiceData(newService);
   updateSelectedService(newService);
+
+  countOfService.value = newService.count ?? 1;
 });
 
 /**
@@ -268,7 +307,7 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = 1;
+  service.value!.count = Math.max(1, countOfService.value || 1);
   currentSlots.value = getMinSlotOfProvider(service.value!.providers);
 
   if (selectedService.combinable) {
@@ -384,6 +423,10 @@ const estimatedDuration = computed(() => {
   return calculateEstimatedDuration(service.value, provider);
 });
 
+const showEstimatedDuration = computed(() => {
+  return !(variantServices.value.length > 1 && !selectedVariant.value);
+});
+
 /**
  * Calculates whether the count of selected service may be increased, depending on the maxQuantity of the service and the maxSlotsPerAppointment.
  */
@@ -465,6 +508,11 @@ const showCaptcha = computed(() => {
 
 onMounted(() => {
   if (service.value) {
+    baseServiceId.value = service.value.parentId ?? service.value.id;
+    const variantId = (service.value as any)?.variantId;
+    if (typeof variantId === "number" && Number.isFinite(variantId)) {
+      selectedVariant.value = String(variantId);
+    }
     let slots = 0;
     countOfService.value = service.value.count
       ? service.value.count
@@ -475,13 +523,30 @@ onMounted(() => {
     if (service.value.subServices) {
       service.value.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
-          slots =
-            slots +
+          slots +=
             getMinSlotOfProvider(subservice.providers) * subservice.count;
         }
       });
     }
     currentSlots.value = slots;
+    if (services.value.length === 0) {
+      fetchServicesAndProviders(
+        props.preselectedServiceId ?? undefined,
+        props.preselectedOfficeId ?? undefined,
+        props.baseUrl ?? undefined
+      ).then((data) => {
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
+        if (handleApiResponseForDownTime(data, props.baseUrl)) return;
+
+        services.value = (data as any).services.map(normalizeService);
+        relations.value = (data as any).relations;
+        offices.value = (data as any).offices;
+      });
+    }
   } else {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
@@ -500,7 +565,7 @@ onMounted(() => {
         return;
       }
 
-      services.value = (data as any).services;
+      services.value = (data as any).services.map(normalizeService);
       relations.value = (data as any).relations;
       offices.value = (data as any).offices;
 
@@ -542,6 +607,78 @@ onMounted(() => {
       }
     });
   }
+});
+
+const servicesWithoutParent = computed(() => {
+  return services.value.filter((service) => service.parentId === null);
+});
+
+const variantServices = computed<Service[]>(() => {
+  if (!baseServiceId.value) return [];
+
+  const variants = services.value
+    .filter((s) => s.parentId === baseServiceId.value)
+    .filter((s) => typeof s.variantId === "number");
+
+  const base = services.value.find((s) => s.id === baseServiceId.value);
+
+  const hasVariant1 = variants.some((v) => v.variantId === 1);
+  if (base && !hasVariant1) {
+    variants.unshift({
+      ...base,
+      parentId: null,
+      variantId: 1,
+    });
+  }
+
+  variants.sort((a, b) => a.variantId! - b.variantId!);
+  return variants;
+});
+
+watch(selectedVariant, (variantId) => {
+  if (!variantId || !baseServiceId.value) return;
+
+  const selectedServiceVariant = variantServices.value.find(
+    (v) => String(v.variantId) === String(variantId)
+  );
+
+  if (selectedServiceVariant) {
+    service.value = selectedServiceVariant as ServiceImpl;
+  }
+});
+
+const showSubservices = computed(() => {
+  const value = service.value;
+  if (!value) return false;
+
+  const hasSub =
+    Array.isArray(value.subServices) && value.subServices.length > 0;
+  if (!hasSub) return false;
+  if (value.parentId != null && value.variantId !== 1) return false;
+  if (variantServices.value.length > 1 && selectedVariant.value !== "1")
+    return false;
+
+  return true;
+});
+
+function normalizeService(raw: any): Service {
+  return {
+    id: String(raw.id),
+    name: raw.name,
+    maxQuantity: raw.maxQuantity,
+    combinable: raw.combinable,
+    parentId: raw.parent_id == null ? null : String(raw.parent_id),
+    variantId: raw.variant_id == null ? null : Number(raw.variant_id),
+  };
+}
+
+const hasVariants = computed(() => variantServices.value.length > 1);
+const needsVariantSelection = computed(
+  () => hasVariants.value && !selectedVariant.value
+);
+const isNextDisabled = computed(() => {
+  const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
+  return captchaBlocks || needsVariantSelection.value;
 });
 </script>
 
