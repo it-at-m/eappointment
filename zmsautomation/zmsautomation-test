@@ -71,51 +71,38 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   fi
   
   if [[ "$HEADER_ONLY" == true ]]; then
-    # Method 1: Try checking for specific containers by name using ps with container name
-    info "[DEBUG] Method 1: Checking for zms-web container by name..."
-    ZMS_WEB_OUTPUT=$("$PODMAN_EXEC" ps zms-web 2>&1)
-    info "[DEBUG] podman ps zms-web output: '${ZMS_WEB_OUTPUT:0:100}'"
-    if echo "$ZMS_WEB_OUTPUT" | grep -q "zms-web"; then
-      info "[DEBUG] Found zms-web container via direct name check"
+    # If podman ps only shows header, containers might be running as root or in different context
+    # Try podman inspect - this works by directly querying container metadata, not listing
+    info "[DEBUG] podman ps shows no containers, trying podman inspect (works even if containers are root-owned)..."
+    
+    if "$PODMAN_EXEC" inspect zms-web >/dev/null 2>&1; then
+      info "[DEBUG] zms-web container exists (via inspect)"
       CONTAINER_NAMES="zms-web"
+    else
+      info "[DEBUG] zms-web container NOT found via inspect"
     fi
     
-    info "[DEBUG] Method 1: Checking for zms-db container by name..."
-    ZMS_DB_OUTPUT=$("$PODMAN_EXEC" ps zms-db 2>&1)
-    info "[DEBUG] podman ps zms-db output: '${ZMS_DB_OUTPUT:0:100}'"
-    if echo "$ZMS_DB_OUTPUT" | grep -q "zms-db"; then
-      info "[DEBUG] Found zms-db container via direct name check"
+    if "$PODMAN_EXEC" inspect zms-db >/dev/null 2>&1; then
+      info "[DEBUG] zms-db container exists (via inspect)"
       if [[ -n "$CONTAINER_NAMES" ]]; then
         CONTAINER_NAMES="$CONTAINER_NAMES"$'\n'"zms-db"
       else
         CONTAINER_NAMES="zms-db"
       fi
+    else
+      info "[DEBUG] zms-db container NOT found via inspect"
     fi
     
-    # Method 2: Try with --all flag
+    # If inspect also fails, containers might be root-owned - try sudo
     if [[ -z "$CONTAINER_NAMES" ]]; then
-      info "[DEBUG] Method 2: Trying podman ps --all..."
-      PODMAN_PS_ALL=$("$PODMAN_EXEC" ps --all 2>&1)
-      info "[DEBUG] podman ps --all output length: ${#PODMAN_PS_ALL} chars"
-      if [[ ${#PODMAN_PS_ALL} -gt 79 ]]; then
-        info "[DEBUG] Found containers with --all flag, using that output"
-        PODMAN_PS_PLAIN="$PODMAN_PS_ALL"
-      fi
-    fi
-    
-    # Method 3: Try using podman inspect to check if containers exist
-    if [[ -z "$CONTAINER_NAMES" ]]; then
-      info "[DEBUG] Method 3: Trying podman inspect to check container existence..."
-      if "$PODMAN_EXEC" inspect zms-web >/dev/null 2>&1; then
-        info "[DEBUG] zms-web container exists (via inspect)"
-        CONTAINER_NAMES="zms-web"
-      fi
-      if "$PODMAN_EXEC" inspect zms-db >/dev/null 2>&1; then
-        info "[DEBUG] zms-db container exists (via inspect)"
-        if [[ -n "$CONTAINER_NAMES" ]]; then
-          CONTAINER_NAMES="$CONTAINER_NAMES"$'\n'"zms-db"
-        else
-          CONTAINER_NAMES="zms-db"
+      info "[DEBUG] Inspect failed, checking if containers are root-owned (trying sudo podman ps)..."
+      SUDO_PS=$("$PODMAN_EXEC" ps 2>&1 || echo "")
+      # Check if we can use sudo (without password prompt in script)
+      if command -v sudo >/dev/null 2>&1; then
+        SUDO_PODMAN_PS=$(sudo "$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1 || echo "")
+        if [[ -n "$SUDO_PODMAN_PS" ]] && [[ "$SUDO_PODMAN_PS" != *"Error"* ]]; then
+          info "[DEBUG] Found containers via sudo podman ps: '${SUDO_PODMAN_PS}'"
+          CONTAINER_NAMES="$SUDO_PODMAN_PS"
         fi
       fi
     fi
