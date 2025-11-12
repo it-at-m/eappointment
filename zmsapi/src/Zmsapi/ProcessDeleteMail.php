@@ -35,6 +35,7 @@ class ProcessDeleteMail extends BaseController
 
         $process->testValid();
         $this->testProcessData($process);
+        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 

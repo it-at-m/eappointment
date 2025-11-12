@@ -13,6 +13,7 @@
     "kind": "default",
     "multipleSlotsAllowed": true,
     "type": "appointment",
+    "version": 1,
     "repeat": {
       "afterWeeks": 0
     },
@@ -27,6 +28,7 @@
       "shortName": "Zentrale"
     },
     "slotTimeInMinutes": 12,
+    "version": 1,
     "startDate": 1447919543,
     "startTime": "10:00",
     "weekday": {
@@ -100,6 +102,10 @@
     "id": {
       "type": ["string", "number", "null"],
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
+    },
+    "version": {
+      "type": ["number", "null"],
+      "description": "Numeric version of the availability"
     },
     "kind": {
       "type": ["null", "string"],

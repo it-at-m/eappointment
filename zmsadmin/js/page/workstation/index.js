@@ -385,7 +385,6 @@ class View extends BaseView {
     }
 
     onNextProcess() {
-        //this.calledProcess = null;
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -468,7 +467,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -488,7 +486,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -505,7 +502,6 @@ class View extends BaseView {
         }
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
             (response) => this.loadMessage(response, () => {
-                this.loadQueueTable();
             }, null, event.currentTarget)
         );
     }

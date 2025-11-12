@@ -170,7 +170,7 @@
   "closeDialog": "Dialog schließen",
   "combinableServices": "Kombinierbare Leistungen",
   "communicationCheckboxLabel": "Elektronische Kommunikation",
-  "communicationCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank'>Hinweise zur elektronischen Kommunikation</a> zur Kenntnis genommen und stimme zu, über E-Mail zu meinem Termin benachrichtigt zu werden.",
+  "communicationCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank' rel='noopener noreferrer' aria-label='Hinweise zur elektronischen Kommunikation per Link in neuem Tab'>Hinweise zur elektronischen Kommunikation</a> zur Kenntnis genommen und stimme zu, über E-Mail zu meinem Termin benachrichtigt zu werden.",
   "confirmAppointmentHeader": "Aktivieren Sie Ihren Termin.",
   "confirmAppointmentText": "Sie erhalten in den nächsten Minuten eine E-Mail mit einem Link für die Aktivierung. Klicken Sie auf den Link, um die Buchung abzuschließen. Wenn Sie den Termin nicht innerhalb von {activationMinutes} Minuten aktivieren, verfällt Ihre Reservierung.",
   "contact": "Kontakt",
@@ -221,7 +221,7 @@
   "overview": "Übersicht",
   "pm": "Nachmittag",
   "privacyCheckboxLabel": "Datenschutz und Datenverarbeitung",
-  "privacyCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf\" target='_blank'>Datenschutzerklärung</a> zur Kenntnis genommen und akzeptiere die Speicherung und Verarbeitung meiner Daten zu meinem Termin.",
+  "privacyCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf\" target='_blank' rel='noopener noreferrer' aria-label='Datenschutzerklärung pdf download'>Datenschutzerklärung</a> zur Kenntnis genommen und akzeptiere die Speicherung und Verarbeitung meiner Daten zu meinem Termin.",
   "remarkCompletionInstructions": "Sie möchten uns zu Ihrem Termin noch etwas mitteilen? Geben Sie hier an, wenn Sie Hilfe benötigen, auf Übersetzungen angewiesen sind oder sonstige Anliegen haben.",
   "remarks": "Bemerkungen",
   "remarks2": "Weitere Bemerkungen",
@@ -264,5 +264,20 @@
   "maintenancePageHeader": "Wir aktualisieren unser System für Sie.",
   "maintenancePageText": "Zur Zeit befindet sich unser System in der Wartung. Bitte versuchen Sie es später noch einmal.",
   "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
-  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal."
+  "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
+  "appointmentType": "Art des Termins",
+  "appointmentTypes": {
+    "1": "Vor-Ort-Termin",
+    "2": "Telefon-Termin",
+    "3": "Videokonferenz",
+    "4": "Termin für eine Einzelperson",
+    "5": "Termin für eine Familie",
+    "6": "Termin für einen Kleinkunden",
+    "7": "Termin für einen Großkunden"
+  },
+  "locationVariantText": {
+    "1": "Sie kommen persönlich an unserem Standort vorbei.",
+    "2": "Wir rufen Sie unter Ihrer gewünschten Nummer an.",
+    "3": "Sie erhalten einen Einwahllink für ein Online-Meeting."
+  }
 }
