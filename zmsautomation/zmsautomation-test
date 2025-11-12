@@ -43,15 +43,29 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   info "[DEBUG] Using podman at: ${PODMAN_EXEC}"
   
   # Check for both required containers, handling potential whitespace issues
-  # Capture both stdout and stderr separately to debug
+  # Try multiple approaches to get container names (format flag might not work in all contexts)
+  CONTAINER_NAMES=""
+  
+  # First try: with format flag
   CONTAINER_NAMES=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1)
   PODMAN_EXIT=$?
-  info "[DEBUG] podman ps exit code: ${PODMAN_EXIT}"
-  info "[DEBUG] Raw container names output: '${CONTAINER_NAMES}'"
+  info "[DEBUG] podman ps --format exit code: ${PODMAN_EXIT}"
+  info "[DEBUG] Format output: '${CONTAINER_NAMES}'"
   
-  # Also try without format to see if basic ps works
-  PODMAN_PS_TEST=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1 | head -5)
-  info "[DEBUG] podman ps test (first 5 lines): '${PODMAN_PS_TEST}'"
+  # If that didn't work, try parsing the default output
+  if [[ -z "$CONTAINER_NAMES" ]] || [[ "$CONTAINER_NAMES" == *"Error"* ]] || [[ "$CONTAINER_NAMES" == *"error"* ]]; then
+    info "[DEBUG] Format method failed, trying default ps output..."
+    PODMAN_PS_OUTPUT=$("$PODMAN_EXEC" ps --noheading 2>&1)
+    PODMAN_EXIT=$?
+    info "[DEBUG] podman ps --noheading exit code: ${PODMAN_EXIT}"
+    info "[DEBUG] Default output (first 200 chars): '${PODMAN_PS_OUTPUT:0:200}'"
+    
+    # Extract NAMES column (last column in podman ps output)
+    if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$PODMAN_PS_OUTPUT" ]]; then
+      CONTAINER_NAMES=$(echo "$PODMAN_PS_OUTPUT" | awk '{print $NF}' | grep -v "^$")
+      info "[DEBUG] Extracted names from default output: '${CONTAINER_NAMES}'"
+    fi
+  fi
   
   if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"Error"* ]] && [[ "$CONTAINER_NAMES" != *"error"* ]] && [[ "$CONTAINER_NAMES" != *"Cannot connect"* ]]; then
     # Normalize whitespace and check for exact matches
