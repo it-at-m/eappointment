@@ -15,8 +15,17 @@
           <p class="m-teaser-contained-contact__summary">
             {{ selectedProvider.name }}
             <br />
-            {{ selectedProvider.address.street }}
-            {{ selectedProvider.address.house_number }}
+            <span v-if="detailIcon">
+              <br />
+              <svg aria-hidden="true" class="icon icon--before">
+                <use :xlink:href="`#${detailIcon}`"></use>
+              </svg>
+              {{ t(`appointmentTypes.${variantId}`) }}
+            </span>
+            <span v-else>
+              {{ selectedProvider.address.street }}
+              {{ selectedProvider.address.house_number }}
+            </span>
           </p>
         </div>
         <div v-if="selectedDay">
@@ -63,6 +72,9 @@ import {
 } from "@/utils/formatAppointmentDateTime";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
+const VARIANT_ID_TEL = 2;
+const VARIANT_ID_VIDEO = 3;
+
 const props = defineProps<{
   t: (key: string) => string;
   selectedProvider: OfficeImpl | null | undefined;
@@ -83,4 +95,15 @@ const localEstimatedDuration = computed(() =>
     (props.selectedProvider ?? undefined) as OfficeImpl | undefined
   )
 );
+
+const variantId = computed<number | null>(() => {
+  const id = (props.selectedService as any)?.variantId;
+  return Number.isFinite(id) ? id : null;
+});
+
+const detailIcon = computed<string | null>(() => {
+  if (variantId.value === VARIANT_ID_TEL) return "icon-telephone";
+  if (variantId.value === VARIANT_ID_VIDEO) return "icon-video-camera";
+  return null;
+});
 </script>
