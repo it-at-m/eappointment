@@ -41,4 +41,26 @@ echo "User: $(whoami)"
 echo "UID: $(id -u)"
 echo "PODMAN_HOST: ${PODMAN_HOST:-not set}"
 echo "CONTAINER_HOST: ${CONTAINER_HOST:-not set}"
+echo ""
+
+echo "=== Container Detection ==="
+if [[ -f /.dockerenv ]]; then
+  echo "INSIDE CONTAINER: Yes (/.dockerenv exists)"
+else
+  echo "INSIDE CONTAINER: No (/.dockerenv not found)"
+fi
+
+if [[ -n "${container:-}" ]]; then
+  echo "INSIDE CONTAINER: Yes (container env var set to: ${container})"
+else
+  echo "INSIDE CONTAINER: No (container env var not set)"
+fi
+
+echo "Hostname: $(hostname)"
+
+if grep -qi docker /proc/1/cgroup 2>/dev/null || grep -qi podman /proc/1/cgroup 2>/dev/null; then
+  echo "INSIDE CONTAINER: Yes (cgroup indicates container)"
+else
+  echo "INSIDE CONTAINER: No (cgroup doesn't indicate container)"
+fi
 
