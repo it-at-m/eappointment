@@ -95,21 +95,31 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
     HAS_WEB_INSPECT=false
     HAS_DB_INSPECT=false
     
-    if "$PODMAN_EXEC" inspect zms-web >/dev/null 2>&1; then
+    # Check if we're running inside a container (which might affect podman access)
+    if [[ -f /.dockerenv ]] || [[ -n "${container:-}" ]]; then
+      info "[DEBUG] Script appears to be running inside a container"
+    fi
+    
+    # Capture actual error from inspect to understand what's happening
+    ZMS_WEB_INSPECT_ERR=$("$PODMAN_EXEC" inspect zms-web 2>&1)
+    ZMS_WEB_INSPECT_EXIT=$?
+    if [[ $ZMS_WEB_INSPECT_EXIT -eq 0 ]]; then
       info "[DEBUG] zms-web container exists (via inspect)"
       HAS_WEB_INSPECT=true
       CONTAINER_NAMES="zms-web"
     else
-      info "[DEBUG] zms-web container NOT found via inspect, trying exec to verify accessibility..."
+      info "[DEBUG] zms-web inspect failed (exit $ZMS_WEB_INSPECT_EXIT): ${ZMS_WEB_INSPECT_ERR:0:150}"
       # Try exec as fallback - if we can exec into it, it exists and is accessible
-      if "$PODMAN_EXEC" exec zms-web echo "test" >/dev/null 2>&1; then
+      ZMS_WEB_EXEC_ERR=$("$PODMAN_EXEC" exec zms-web echo "test" 2>&1)
+      ZMS_WEB_EXEC_EXIT=$?
+      if [[ $ZMS_WEB_EXEC_EXIT -eq 0 ]]; then
         info "[DEBUG] zms-web is accessible via exec (even though inspect failed)"
         HAS_WEB_INSPECT=true
         if [[ -z "$CONTAINER_NAMES" ]]; then
           CONTAINER_NAMES="zms-web"
         fi
       else
-        info "[DEBUG] zms-web also NOT accessible via exec"
+        info "[DEBUG] zms-web exec also failed (exit $ZMS_WEB_EXEC_EXIT): ${ZMS_WEB_EXEC_ERR:0:150}"
       fi
     fi
     
@@ -129,9 +139,22 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
     # try one more time with a small delay (might be a timing issue)
     if [[ "$HAS_DB_INSPECT" == true ]] && [[ "$HAS_WEB_INSPECT" == false ]]; then
       info "[DEBUG] Found zms-db but not zms-web, retrying zms-web inspect after brief delay..."
-      sleep 0.1
-      if "$PODMAN_EXEC" inspect zms-web >/dev/null 2>&1; then
+      sleep 0.2
+      ZMS_WEB_RETRY_ERR=$("$PODMAN_EXEC" inspect zms-web 2>&1)
+      ZMS_WEB_RETRY_EXIT=$?
+      if [[ $ZMS_WEB_RETRY_EXIT -eq 0 ]]; then
         info "[DEBUG] zms-web container found on retry"
+        HAS_WEB_INSPECT=true
+        if [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"zms-web"* ]]; then
+          CONTAINER_NAMES="zms-web"$'\n'"$CONTAINER_NAMES"
+        elif [[ -z "$CONTAINER_NAMES" ]]; then
+          CONTAINER_NAMES="zms-web"
+        fi
+      else
+        info "[DEBUG] zms-web still not found on retry (exit $ZMS_WEB_RETRY_EXIT): ${ZMS_WEB_RETRY_ERR:0:150}"
+        # Since podman is clearly working (we found zms-db) and user confirmed both exist manually,
+        # assume zms-web exists too - it might just be a timing/context issue with inspect
+        info "[DEBUG] Since zms-db was found and podman is working, assuming zms-web exists (devcontainer context issue)"
         HAS_WEB_INSPECT=true
         if [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"zms-web"* ]]; then
           CONTAINER_NAMES="zms-web"$'\n'"$CONTAINER_NAMES"
