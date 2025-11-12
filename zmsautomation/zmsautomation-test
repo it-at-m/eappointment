@@ -46,9 +46,11 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   # Try multiple approaches to get container names (format flag might not work in all contexts)
   CONTAINER_NAMES=""
   
-  # Check podman environment
+  # Check podman environment and user context
   info "[DEBUG] PODMAN_HOST: ${PODMAN_HOST:-not set}"
   info "[DEBUG] CONTAINER_HOST: ${CONTAINER_HOST:-not set}"
+  info "[DEBUG] Current user: $(whoami)"
+  info "[DEBUG] Current UID: $(id -u)"
   
   # First try: plain podman ps to see if it works at all
   PODMAN_PS_PLAIN=$("$PODMAN_EXEC" ps 2>&1)
@@ -61,17 +63,50 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
     info "[DEBUG] Plain ps output (first 200 chars): '${PODMAN_PS_PLAIN:0:200}'"
   fi
   
-  # Try with format flag
-  CONTAINER_NAMES=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1)
-  PODMAN_EXIT=$?
-  info "[DEBUG] podman ps --format exit code: ${PODMAN_EXIT}"
-  info "[DEBUG] Format output length: ${#CONTAINER_NAMES} chars"
-  info "[DEBUG] Format output: '${CONTAINER_NAMES}'"
+  # If we only got the header, try checking for specific containers by name
+  if [[ "$PODMAN_PS_PLAIN" == *"CONTAINER ID"* ]] && [[ $(echo "$PODMAN_PS_PLAIN" | wc -l) -eq 1 ]]; then
+    info "[DEBUG] Only header found, trying to check for specific containers by name..."
+    # Try checking if containers exist by name directly
+    if "$PODMAN_EXEC" ps --filter "name=zms-web" --format "{{.Names}}" 2>/dev/null | grep -q "zms-web"; then
+      info "[DEBUG] Found zms-web container via filter"
+      CONTAINER_NAMES="zms-web"
+    fi
+    if "$PODMAN_EXEC" ps --filter "name=zms-db" --format "{{.Names}}" 2>/dev/null | grep -q "zms-db"; then
+      info "[DEBUG] Found zms-db container via filter"
+      if [[ -n "$CONTAINER_NAMES" ]]; then
+        CONTAINER_NAMES="$CONTAINER_NAMES"$'\n'"zms-db"
+      else
+        CONTAINER_NAMES="zms-db"
+      fi
+    fi
+    # Also try with --all flag as fallback
+    if [[ -z "$CONTAINER_NAMES" ]]; then
+      info "[DEBUG] Trying podman ps --all..."
+      PODMAN_PS_ALL=$("$PODMAN_EXEC" ps --all 2>&1)
+      info "[DEBUG] podman ps --all output length: ${#PODMAN_PS_ALL} chars"
+      if [[ ${#PODMAN_PS_ALL} -gt 79 ]]; then
+        info "[DEBUG] Found containers with --all flag, using that output"
+        PODMAN_PS_PLAIN="$PODMAN_PS_ALL"
+      fi
+    fi
+  fi
+  
+  # Try with format flag (only if we haven't found containers via filter yet)
+  if [[ -z "$CONTAINER_NAMES" ]]; then
+    CONTAINER_NAMES=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1)
+    PODMAN_EXIT=$?
+    info "[DEBUG] podman ps --format exit code: ${PODMAN_EXIT}"
+    info "[DEBUG] Format output length: ${#CONTAINER_NAMES} chars"
+    info "[DEBUG] Format output: '${CONTAINER_NAMES}'"
+  else
+    PODMAN_EXIT=0
+    info "[DEBUG] Skipping format check, already found containers via filter"
+  fi
   
   # If format didn't work, try parsing the plain output
   if [[ -z "$CONTAINER_NAMES" ]] || [[ "$CONTAINER_NAMES" == *"Error"* ]] || [[ "$CONTAINER_NAMES" == *"error"* ]]; then
     info "[DEBUG] Format method failed, trying to parse plain ps output..."
-    if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$PODMAN_PS_PLAIN" ]]; then
+    if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$PODMAN_PS_PLAIN" ]] && [[ ${#PODMAN_PS_PLAIN} -gt 79 ]]; then
       # Extract NAMES column (last column in podman ps output, skip header)
       CONTAINER_NAMES=$(echo "$PODMAN_PS_PLAIN" | tail -n +2 | awk '{print $NF}' | grep -v "^$")
       info "[DEBUG] Extracted names from plain output: '${CONTAINER_NAMES}'"
