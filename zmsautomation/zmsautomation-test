@@ -30,28 +30,46 @@ warn() { echo "[WARN] $*"; }
 # Detect if we're using Podman or DDEV
 USE_PODMAN=false
 if command -v podman >/dev/null 2>&1; then
+  info "[DEBUG] Podman command found, checking for containers..."
   # Check for both required containers, handling potential whitespace issues
-  # Read container names, trim whitespace, and check for exact matches
-  HAS_ZMS_WEB=false
-  HAS_ZMS_DB=false
-  while IFS= read -r name; do
-    # Trim leading/trailing whitespace
-    name=$(echo "$name" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    if [[ "$name" == "zms-web" ]]; then
-      HAS_ZMS_WEB=true
+  # Store output once to avoid multiple podman calls and handle errors
+  CONTAINER_NAMES=$(podman ps --format "{{.Names}}" 2>/dev/null || echo "")
+  info "[DEBUG] Raw container names output: '${CONTAINER_NAMES}'"
+  if [[ -n "$CONTAINER_NAMES" ]]; then
+    # Normalize whitespace and check for exact matches
+    # Use tr to normalize all whitespace to single spaces, then check for whole word matches
+    NORMALIZED=$(echo "$CONTAINER_NAMES" | tr '\n' ' ' | tr -s '[:space:]' ' ')
+    info "[DEBUG] Normalized container names: '${NORMALIZED}'"
+    
+    HAS_WEB=false
+    HAS_DB=false
+    if echo "$NORMALIZED" | grep -qw "zms-web"; then
+      HAS_WEB=true
+      info "[DEBUG] Found zms-web container"
+    else
+      info "[DEBUG] zms-web container NOT found"
     fi
-    if [[ "$name" == "zms-db" ]]; then
-      HAS_ZMS_DB=true
+    if echo "$NORMALIZED" | grep -qw "zms-db"; then
+      HAS_DB=true
+      info "[DEBUG] Found zms-db container"
+    else
+      info "[DEBUG] zms-db container NOT found"
     fi
-  done < <(podman ps --format "{{.Names}}" 2>/dev/null || true)
-  
-  if [[ "$HAS_ZMS_WEB" == true ]] && [[ "$HAS_ZMS_DB" == true ]]; then
-    USE_PODMAN=true
-    info "Using Podman containers (zms-web, zms-db)"
-    # Set default endpoints for Podman
-    BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
-    CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
+    
+    if [[ "$HAS_WEB" == true ]] && [[ "$HAS_DB" == true ]]; then
+      USE_PODMAN=true
+      info "Using Podman containers (zms-web, zms-db)"
+      # Set default endpoints for Podman
+      BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
+      CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
+    else
+      info "[DEBUG] Not using Podman: HAS_WEB=${HAS_WEB}, HAS_DB=${HAS_DB}"
+    fi
+  else
+    info "[DEBUG] No container names found or podman ps failed"
   fi
+else
+  info "[DEBUG] Podman command not found"
 fi
 
 if [[ "$USE_PODMAN" == false ]]; then
