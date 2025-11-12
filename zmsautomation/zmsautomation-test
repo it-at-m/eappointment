@@ -46,24 +46,35 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   # Try multiple approaches to get container names (format flag might not work in all contexts)
   CONTAINER_NAMES=""
   
-  # First try: with format flag
+  # Check podman environment
+  info "[DEBUG] PODMAN_HOST: ${PODMAN_HOST:-not set}"
+  info "[DEBUG] CONTAINER_HOST: ${CONTAINER_HOST:-not set}"
+  
+  # First try: plain podman ps to see if it works at all
+  PODMAN_PS_PLAIN=$("$PODMAN_EXEC" ps 2>&1)
+  PODMAN_EXIT=$?
+  info "[DEBUG] podman ps (plain) exit code: ${PODMAN_EXIT}"
+  info "[DEBUG] Plain ps output length: ${#PODMAN_PS_PLAIN} chars"
+  if [[ ${#PODMAN_PS_PLAIN} -lt 200 ]]; then
+    info "[DEBUG] Plain ps output: '${PODMAN_PS_PLAIN}'"
+  else
+    info "[DEBUG] Plain ps output (first 200 chars): '${PODMAN_PS_PLAIN:0:200}'"
+  fi
+  
+  # Try with format flag
   CONTAINER_NAMES=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1)
   PODMAN_EXIT=$?
   info "[DEBUG] podman ps --format exit code: ${PODMAN_EXIT}"
+  info "[DEBUG] Format output length: ${#CONTAINER_NAMES} chars"
   info "[DEBUG] Format output: '${CONTAINER_NAMES}'"
   
-  # If that didn't work, try parsing the default output
+  # If format didn't work, try parsing the plain output
   if [[ -z "$CONTAINER_NAMES" ]] || [[ "$CONTAINER_NAMES" == *"Error"* ]] || [[ "$CONTAINER_NAMES" == *"error"* ]]; then
-    info "[DEBUG] Format method failed, trying default ps output..."
-    PODMAN_PS_OUTPUT=$("$PODMAN_EXEC" ps --noheading 2>&1)
-    PODMAN_EXIT=$?
-    info "[DEBUG] podman ps --noheading exit code: ${PODMAN_EXIT}"
-    info "[DEBUG] Default output (first 200 chars): '${PODMAN_PS_OUTPUT:0:200}'"
-    
-    # Extract NAMES column (last column in podman ps output)
-    if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$PODMAN_PS_OUTPUT" ]]; then
-      CONTAINER_NAMES=$(echo "$PODMAN_PS_OUTPUT" | awk '{print $NF}' | grep -v "^$")
-      info "[DEBUG] Extracted names from default output: '${CONTAINER_NAMES}'"
+    info "[DEBUG] Format method failed, trying to parse plain ps output..."
+    if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$PODMAN_PS_PLAIN" ]]; then
+      # Extract NAMES column (last column in podman ps output, skip header)
+      CONTAINER_NAMES=$(echo "$PODMAN_PS_PLAIN" | tail -n +2 | awk '{print $NF}' | grep -v "^$")
+      info "[DEBUG] Extracted names from plain output: '${CONTAINER_NAMES}'"
     fi
   fi
   
