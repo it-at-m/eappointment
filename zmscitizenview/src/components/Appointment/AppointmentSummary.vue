@@ -24,7 +24,12 @@
             <p v-if="selectedService">
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + selectedService.id"
+                :href="
+                  getServiceBaseURL() +
+                  (selectedService.parentId
+                    ? selectedService.parentId
+                    : selectedService.id)
+                "
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -59,7 +64,7 @@
           >
             <p>{{ selectedProvider.name }}<br /></p>
 
-            <template v-if="!variantId || variantId === 1">
+            <template v-if="!variantId">
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("address") }}</strong
                 ><br />
@@ -74,7 +79,23 @@
                   v-html="sanitizeHtml(appointment.scope.hint)"
                 ></span>
               </p>
+            </template>
 
+            <template v-else-if="variantId === 1">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("address") }}</strong
+                ><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                ></span>
+              </p>
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{ t("appointmentTypes.1") }}</strong
                 ><br />
@@ -106,9 +127,9 @@
           </div>
           <div
             v-if="
-              selectedProvider &&
-              selectedProvider.scope &&
-              selectedProvider.scope.infoForAppointment
+              appointment &&
+              appointment.scope &&
+              appointment.scope.infoForAppointment
             "
           >
             <div class="m-content">
@@ -117,7 +138,7 @@
             <div class="m-content border-bottom">
               <p
                 tabindex="0"
-                v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+                v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
               ></p>
             </div>
           </div>
@@ -136,28 +157,22 @@
             </p>
             <div
               v-if="
-                appointment &&
-                selectedProvider &&
-                selectedProvider.scope &&
-                appointment.customTextfield
+                appointment && appointment.scope && appointment.customTextfield
               "
               tabindex="0"
             >
-              <strong>{{ selectedProvider.scope.customTextfieldLabel }}</strong
+              <strong>{{ appointment.scope.customTextfieldLabel }}</strong
               ><br />
               <p>{{ appointment.customTextfield }}</p>
               <br />
             </div>
             <div
               v-if="
-                appointment &&
-                selectedProvider &&
-                selectedProvider.scope &&
-                appointment.customTextfield2
+                appointment && appointment.scope && appointment.customTextfield2
               "
               tabindex="0"
             >
-              <strong>{{ selectedProvider.scope.customTextfield2Label }}</strong
+              <strong>{{ appointment.scope.customTextfield2Label }}</strong
               ><br />
               <p>{{ appointment.customTextfield2 }}</p>
               <br />

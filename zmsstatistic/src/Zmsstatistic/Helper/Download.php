@@ -65,12 +65,6 @@ class Download
 
     public function getWriter()
     {
-        if ('csv' == $this->type) {
-            $this->writer = IOFactory::createWriter($this->spreadsheet, 'Csv')
-              ->setUseBOM(true)
-              ->setSheetIndex(0)
-              ->setDelimiter(';');
-        }
         if ('xlsx' == $this->type) {
             $this->writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
         }
