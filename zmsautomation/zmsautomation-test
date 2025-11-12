@@ -52,6 +52,23 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   info "[DEBUG] Current user: $(whoami)"
   info "[DEBUG] Current UID: $(id -u)"
   
+  # Check for devcontainer-specific environment
+  info "[DEBUG] REMOTE_CONTAINERS_IPC: ${REMOTE_CONTAINERS_IPC:-not set}"
+  info "[DEBUG] DEVCONTAINER: ${DEVCONTAINER:-not set}"
+  
+  # Check all containers (including stopped) to see what actually exists
+  PODMAN_PS_ALL=$("$PODMAN_EXEC" ps -a --format "{{.Names}}" 2>&1 || echo "")
+  info "[DEBUG] podman ps -a (all containers) names: '${PODMAN_PS_ALL}'"
+  
+  # If ps -a worked and shows containers, try to extract names from it
+  if [[ -n "$PODMAN_PS_ALL" ]] && [[ "$PODMAN_PS_ALL" != *"Error"* ]] && [[ ${#PODMAN_PS_ALL} -gt 10 ]]; then
+    info "[DEBUG] podman ps -a returned output, checking if it contains our containers..."
+    if echo "$PODMAN_PS_ALL" | grep -qw "zms-web" && echo "$PODMAN_PS_ALL" | grep -qw "zms-db"; then
+      info "[DEBUG] Found both containers in podman ps -a output, using that"
+      CONTAINER_NAMES="$PODMAN_PS_ALL"
+    fi
+  fi
+  
   # First try: plain podman ps to see if it works at all
   PODMAN_PS_PLAIN=$("$PODMAN_EXEC" ps 2>&1)
   PODMAN_EXIT=$?
