@@ -101,6 +101,7 @@ class View extends RequestView {
             if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
                 this.auralMessage(this.auralMessages.chooseRequestFirst)
             this.onDatePick(value)
+            this.selectedDate = value;
             this.loadFreeProcessList().loadList().then(() => {
                 this.bindEvents();
             });
