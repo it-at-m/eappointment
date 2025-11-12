@@ -17,7 +17,10 @@
             <br />
             <span v-if="detailIcon">
               <br />
-              <svg aria-hidden="true" class="icon icon--before">
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
                 <use :xlink:href="`#${detailIcon}`"></use>
               </svg>
               {{ t(`appointmentTypes.${variantId}`) }}
