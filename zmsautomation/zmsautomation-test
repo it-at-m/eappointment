@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Detect if script is being sourced (vs executed directly)
+IS_SOURCED=false
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  IS_SOURCED=true
+fi
+
+# Only set strict mode if not sourced (to avoid closing terminal on errors)
+if [[ "$IS_SOURCED" == false ]]; then
+  set -euo pipefail
+else
+  set -uo pipefail  # Don't use -e when sourced to avoid closing terminal
+fi
 
 # Configurable endpoints (override via env)
 # When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
@@ -29,7 +40,14 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 
 require_cmd() {
-  command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required but not installed." >&2; exit 1; }
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "ERROR: '$1' is required but not installed." >&2
+    if [[ "$IS_SOURCED" == true ]]; then
+      return 1
+    else
+      exit 1
+    fi
+  fi
 }
 
 info() { echo "[INFO] $*"; }
@@ -465,5 +483,10 @@ else
   warn "Tests failed (exit $TEST_EXIT)."
 fi
 
-exit "$TEST_EXIT"
+# Use return when sourced to avoid closing terminal, exit when executed directly
+if [[ "$IS_SOURCED" == true ]]; then
+  return "$TEST_EXIT" 2>/dev/null || exit "$TEST_EXIT"
+else
+  exit "$TEST_EXIT"
+fi
 
