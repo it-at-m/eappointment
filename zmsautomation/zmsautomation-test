@@ -29,13 +29,20 @@ warn() { echo "[WARN] $*"; }
 
 # Detect if we're using Podman or DDEV
 USE_PODMAN=false
-if command -v podman >/dev/null 2>&1; then
+info "[DEBUG] Starting Podman detection..."
+info "[DEBUG] PATH: ${PATH}"
+info "[DEBUG] Checking for podman command..."
+PODMAN_CMD=$(command -v podman 2>&1 || echo "NOT_FOUND")
+info "[DEBUG] command -v podman result: '${PODMAN_CMD}'"
+
+# Try direct podman call as fallback
+if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   info "[DEBUG] Podman command found, checking for containers..."
   # Check for both required containers, handling potential whitespace issues
   # Store output once to avoid multiple podman calls and handle errors
-  CONTAINER_NAMES=$(podman ps --format "{{.Names}}" 2>/dev/null || echo "")
+  CONTAINER_NAMES=$(podman ps --format "{{.Names}}" 2>&1 || echo "")
   info "[DEBUG] Raw container names output: '${CONTAINER_NAMES}'"
-  if [[ -n "$CONTAINER_NAMES" ]]; then
+  if [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"Error"* ]] && [[ "$CONTAINER_NAMES" != *"error"* ]]; then
     # Normalize whitespace and check for exact matches
     # Use tr to normalize all whitespace to single spaces, then check for whole word matches
     NORMALIZED=$(echo "$CONTAINER_NAMES" | tr '\n' ' ' | tr -s '[:space:]' ' ')
@@ -66,10 +73,10 @@ if command -v podman >/dev/null 2>&1; then
       info "[DEBUG] Not using Podman: HAS_WEB=${HAS_WEB}, HAS_DB=${HAS_DB}"
     fi
   else
-    info "[DEBUG] No container names found or podman ps failed"
+    info "[DEBUG] No container names found or podman ps failed/errored"
   fi
 else
-  info "[DEBUG] Podman command not found"
+  info "[DEBUG] Podman command not found via command -v or direct call"
 fi
 
 if [[ "$USE_PODMAN" == false ]]; then
