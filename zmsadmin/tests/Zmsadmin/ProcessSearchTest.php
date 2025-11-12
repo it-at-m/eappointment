@@ -35,7 +35,7 @@ class ProcessSearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
-                        'queryString' => 'Test%2520BO',
+                        'searchQuery' => 'Test%2520BO',
                         'page' => 1,
                         'perPage' => 100,
                         'service' => null,
@@ -75,7 +75,7 @@ class ProcessSearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
-                        'queryString' => '100005',
+                        'searchQuery' => '100005',
                         'page' => 2,
                         'perPage' => 20,
                         'service' => null,
@@ -119,7 +119,7 @@ class ProcessSearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/log/process/',
                     'parameters' => [
-                        'queryString' => 'Test%2520BO',
+                        'searchQuery' => 'Test%2520BO',
                         'page' => 1,
                         'perPage' => 100,
                         'service' => null,

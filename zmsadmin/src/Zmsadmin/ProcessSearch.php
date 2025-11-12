@@ -69,7 +69,7 @@ class ProcessSearch extends BaseController
             $queryString = urlencode($queryString);
             $logList = \App::$http
                 ->readGetResult("/log/process/", [
-                        'queryString' => $queryString,
+                        'searchQuery' => $queryString,
                         'page' => $page,
                         'perPage' => $perPage,
                         'service' => $service ? trim($service) : null,
