@@ -1,41 +1,70 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ---------------------------
+# Ensure correct Podman binary
+# ---------------------------
+export PATH="/usr/bin:$PATH"
+
+echo "Using podman from: $(which podman)"
+echo "Podman version: $(podman --version)"
+
+# ---------------------------
+# Environment variables
+# ---------------------------
+#export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+#export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+#export CONTAINER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
+#export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+#export CONTAINER_HOST="${CONTAINER_HOST:-unix://${XDG_RUNTIME_DIR}/podman/podman.sock}"
+
+echo "XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR"
+echo "DBUS_SESSION_BUS_ADDRESS: ${DBUS_SESSION_BUS_ADDRESS:-not set}"
+#echo "CONTAINER_HOST: $CONTAINER_HOST"
+ls -l "$XDG_RUNTIME_DIR/podman/podman.sock" || echo "Podman socket not visible"
+
+# ---------------------------
+# Podman container testing
+# ---------------------------
+echo ""
 echo "=== Testing Podman Commands ==="
 echo ""
 
-echo "1. Testing: podman ps"
-podman ps
+echo "1. podman ps"
+podman ps || echo "Failed to list running containers"
 echo ""
 
-echo "2. Testing: podman ps --format '{{.Names}}'"
-podman ps --format "{{.Names}}"
+echo "2. podman ps --format '{{.Names}}'"
+podman ps --format "{{.Names}}" || echo "Failed to list container names"
 echo ""
 
-echo "3. Testing: podman ps -a"
-podman ps -a
+echo "3. podman ps -a"
+podman ps -a || echo "Failed to list all containers"
 echo ""
 
-echo "4. Testing: podman ps -a --format '{{.Names}}'"
-podman ps -a --format "{{.Names}}"
+echo "4. podman ps -a --format '{{.Names}}'"
+podman ps -a --format "{{.Names}}" || echo "Failed to list all container names"
 echo ""
 
-echo "5. Testing: podman inspect zms-web"
+echo "5. podman inspect zms-web"
 podman inspect zms-web 2>&1 | head -5 || echo "FAILED"
 echo ""
 
-echo "6. Testing: podman inspect zms-db"
+echo "6. podman inspect zms-db"
 podman inspect zms-db 2>&1 | head -5 || echo "FAILED"
 echo ""
 
-echo "7. Testing: podman exec zms-web echo test"
+echo "7. podman exec zms-web echo test"
 podman exec zms-web echo "test" 2>&1 || echo "FAILED"
 echo ""
 
-echo "8. Testing: podman exec zms-db echo test"
+echo "8. podman exec zms-db echo test"
 podman exec zms-db echo "test" 2>&1 || echo "FAILED"
 echo ""
 
+# ---------------------------
+# Environment diagnostics
+# ---------------------------
 echo "=== Environment ==="
 echo "User: $(whoami)"
 echo "UID: $(id -u)"
@@ -63,4 +92,3 @@ if grep -qi docker /proc/1/cgroup 2>/dev/null || grep -qi podman /proc/1/cgroup 
 else
   echo "INSIDE CONTAINER: No (cgroup doesn't indicate container)"
 fi
-
