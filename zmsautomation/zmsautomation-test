@@ -63,30 +63,60 @@ if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
     info "[DEBUG] Plain ps output (first 200 chars): '${PODMAN_PS_PLAIN:0:200}'"
   fi
   
-  # If we only got the header, try checking for specific containers by name
-  if [[ "$PODMAN_PS_PLAIN" == *"CONTAINER ID"* ]] && [[ $(echo "$PODMAN_PS_PLAIN" | wc -l) -eq 1 ]]; then
-    info "[DEBUG] Only header found, trying to check for specific containers by name..."
-    # Try checking if containers exist by name directly
-    if "$PODMAN_EXEC" ps --filter "name=zms-web" --format "{{.Names}}" 2>/dev/null | grep -q "zms-web"; then
-      info "[DEBUG] Found zms-web container via filter"
+  # If we only got the header (79 chars = just the header line), try alternative methods
+  HEADER_ONLY=false
+  if [[ ${#PODMAN_PS_PLAIN} -eq 79 ]] && [[ "$PODMAN_PS_PLAIN" == *"CONTAINER ID"* ]]; then
+    HEADER_ONLY=true
+    info "[DEBUG] Only header found (${#PODMAN_PS_PLAIN} chars), trying alternative detection methods..."
+  fi
+  
+  if [[ "$HEADER_ONLY" == true ]]; then
+    # Method 1: Try checking for specific containers by name using ps with container name
+    info "[DEBUG] Method 1: Checking for zms-web container by name..."
+    ZMS_WEB_OUTPUT=$("$PODMAN_EXEC" ps zms-web 2>&1)
+    info "[DEBUG] podman ps zms-web output: '${ZMS_WEB_OUTPUT:0:100}'"
+    if echo "$ZMS_WEB_OUTPUT" | grep -q "zms-web"; then
+      info "[DEBUG] Found zms-web container via direct name check"
       CONTAINER_NAMES="zms-web"
     fi
-    if "$PODMAN_EXEC" ps --filter "name=zms-db" --format "{{.Names}}" 2>/dev/null | grep -q "zms-db"; then
-      info "[DEBUG] Found zms-db container via filter"
+    
+    info "[DEBUG] Method 1: Checking for zms-db container by name..."
+    ZMS_DB_OUTPUT=$("$PODMAN_EXEC" ps zms-db 2>&1)
+    info "[DEBUG] podman ps zms-db output: '${ZMS_DB_OUTPUT:0:100}'"
+    if echo "$ZMS_DB_OUTPUT" | grep -q "zms-db"; then
+      info "[DEBUG] Found zms-db container via direct name check"
       if [[ -n "$CONTAINER_NAMES" ]]; then
         CONTAINER_NAMES="$CONTAINER_NAMES"$'\n'"zms-db"
       else
         CONTAINER_NAMES="zms-db"
       fi
     fi
-    # Also try with --all flag as fallback
+    
+    # Method 2: Try with --all flag
     if [[ -z "$CONTAINER_NAMES" ]]; then
-      info "[DEBUG] Trying podman ps --all..."
+      info "[DEBUG] Method 2: Trying podman ps --all..."
       PODMAN_PS_ALL=$("$PODMAN_EXEC" ps --all 2>&1)
       info "[DEBUG] podman ps --all output length: ${#PODMAN_PS_ALL} chars"
       if [[ ${#PODMAN_PS_ALL} -gt 79 ]]; then
         info "[DEBUG] Found containers with --all flag, using that output"
         PODMAN_PS_PLAIN="$PODMAN_PS_ALL"
+      fi
+    fi
+    
+    # Method 3: Try using podman inspect to check if containers exist
+    if [[ -z "$CONTAINER_NAMES" ]]; then
+      info "[DEBUG] Method 3: Trying podman inspect to check container existence..."
+      if "$PODMAN_EXEC" inspect zms-web >/dev/null 2>&1; then
+        info "[DEBUG] zms-web container exists (via inspect)"
+        CONTAINER_NAMES="zms-web"
+      fi
+      if "$PODMAN_EXEC" inspect zms-db >/dev/null 2>&1; then
+        info "[DEBUG] zms-db container exists (via inspect)"
+        if [[ -n "$CONTAINER_NAMES" ]]; then
+          CONTAINER_NAMES="$CONTAINER_NAMES"$'\n'"zms-db"
+        else
+          CONTAINER_NAMES="zms-db"
+        fi
       fi
     fi
   fi
