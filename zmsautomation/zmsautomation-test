@@ -30,7 +30,22 @@ warn() { echo "[WARN] $*"; }
 # Detect if we're using Podman or DDEV
 USE_PODMAN=false
 if command -v podman >/dev/null 2>&1; then
-  if podman ps --format "{{.Names}}" | grep -q "^zms-web$" && podman ps --format "{{.Names}}" | grep -q "^zms-db$"; then
+  # Check for both required containers, handling potential whitespace issues
+  # Read container names, trim whitespace, and check for exact matches
+  HAS_ZMS_WEB=false
+  HAS_ZMS_DB=false
+  while IFS= read -r name; do
+    # Trim leading/trailing whitespace
+    name=$(echo "$name" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    if [[ "$name" == "zms-web" ]]; then
+      HAS_ZMS_WEB=true
+    fi
+    if [[ "$name" == "zms-db" ]]; then
+      HAS_ZMS_DB=true
+    fi
+  done < <(podman ps --format "{{.Names}}" 2>/dev/null || true)
+  
+  if [[ "$HAS_ZMS_WEB" == true ]] && [[ "$HAS_ZMS_DB" == true ]]; then
     USE_PODMAN=true
     info "Using Podman containers (zms-web, zms-db)"
     # Set default endpoints for Podman
