@@ -13,7 +13,15 @@ CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-}"
 MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
 M2_CACHE_VOLUME="zmsautomation-cache"
 TARGET_VOLUME="zmsautomation-target"
-WORKSPACE_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
+# Detect script directory - works with both ./script.sh and source script.sh
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  # Script is being sourced
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+  # Script is being executed
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$WORKSPACE_ROOT"
 
 # Temporary backup file inside host
@@ -208,15 +216,23 @@ if [[ "$USE_PODMAN" == true ]]; then
   done
 
   # Run Flyway in a podman container on the discovered network
-  info "Running Flyway via Podman on network ($PODMAN_NETWORK)..."
-  podman run --rm \
-    --network "$PODMAN_NETWORK" \
-    -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql:ro" \
-    docker.io/flyway/flyway:9 \
-    -url=jdbc:mysql://db:3306/db -user=root -password=root \
-    -locations=filesystem:/flyway/sql \
-    -baselineOnMigrate=true \
-    migrate || warn "Flyway (Podman) failed; continuing."
+  FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/flyway"
+  # Ensure we have an absolute path
+  FLYWAY_DIR=$(cd "$FLYWAY_DIR" 2>/dev/null && pwd || echo "$FLYWAY_DIR")
+  if [[ ! -d "$FLYWAY_DIR" ]]; then
+    warn "Flyway directory not found: $FLYWAY_DIR"
+    warn "Flyway (Podman) skipped; continuing."
+  else
+    info "Running Flyway via Podman on network ($PODMAN_NETWORK)..."
+    podman run --rm \
+      --network "$PODMAN_NETWORK" \
+      -v "$FLYWAY_DIR:/flyway/sql:ro" \
+      docker.io/flyway/flyway:9 \
+      -url=jdbc:mysql://db:3306/db -user=root -password=root \
+      -locations=filesystem:/flyway/sql \
+      -baselineOnMigrate=true \
+      migrate || warn "Flyway (Podman) failed; continuing."
+  fi
 else
   # Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
   if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
