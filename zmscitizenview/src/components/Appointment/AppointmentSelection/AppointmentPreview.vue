@@ -75,9 +75,6 @@ import {
 } from "@/utils/formatAppointmentDateTime";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
-const VARIANT_ID_TEL = 2;
-const VARIANT_ID_VIDEO = 3;
-
 const props = defineProps<{
   t: (key: string) => string;
   selectedProvider: OfficeImpl | null | undefined;
@@ -105,8 +102,8 @@ const variantId = computed<number | null>(() => {
 });
 
 const detailIcon = computed<string | null>(() => {
-  if (variantId.value === VARIANT_ID_TEL) return "icon-telephone";
-  if (variantId.value === VARIANT_ID_VIDEO) return "icon-video-camera";
+  if (variantId.value === 2) return "icon-telephone";
+  if (variantId.value === 3) return "icon-video-camera";
   return null;
 });
 </script>
