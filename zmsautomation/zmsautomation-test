@@ -38,11 +38,22 @@ info "[DEBUG] command -v podman result: '${PODMAN_CMD}'"
 # Try direct podman call as fallback
 if [[ "$PODMAN_CMD" != "NOT_FOUND" ]] || podman --version >/dev/null 2>&1; then
   info "[DEBUG] Podman command found, checking for containers..."
+  # Use the full path to podman if available
+  PODMAN_EXEC="${PODMAN_CMD:-podman}"
+  info "[DEBUG] Using podman at: ${PODMAN_EXEC}"
+  
   # Check for both required containers, handling potential whitespace issues
-  # Store output once to avoid multiple podman calls and handle errors
-  CONTAINER_NAMES=$(podman ps --format "{{.Names}}" 2>&1 || echo "")
+  # Capture both stdout and stderr separately to debug
+  CONTAINER_NAMES=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1)
+  PODMAN_EXIT=$?
+  info "[DEBUG] podman ps exit code: ${PODMAN_EXIT}"
   info "[DEBUG] Raw container names output: '${CONTAINER_NAMES}'"
-  if [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"Error"* ]] && [[ "$CONTAINER_NAMES" != *"error"* ]]; then
+  
+  # Also try without format to see if basic ps works
+  PODMAN_PS_TEST=$("$PODMAN_EXEC" ps --format "{{.Names}}" 2>&1 | head -5)
+  info "[DEBUG] podman ps test (first 5 lines): '${PODMAN_PS_TEST}'"
+  
+  if [[ $PODMAN_EXIT -eq 0 ]] && [[ -n "$CONTAINER_NAMES" ]] && [[ "$CONTAINER_NAMES" != *"Error"* ]] && [[ "$CONTAINER_NAMES" != *"error"* ]] && [[ "$CONTAINER_NAMES" != *"Cannot connect"* ]]; then
     # Normalize whitespace and check for exact matches
     # Use tr to normalize all whitespace to single spaces, then check for whole word matches
     NORMALIZED=$(echo "$CONTAINER_NAMES" | tr '\n' ' ' | tr -s '[:space:]' ' ')
