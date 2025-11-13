@@ -9,7 +9,10 @@ fi
 if [[ "$IS_SOURCED" == false ]]; then
   set -euo pipefail
 else
-  set -uo pipefail  # Don't use -e when sourced to avoid closing terminal
+  # When sourced, disable all strict modes to prevent terminal from closing
+  set +e  # Don't exit on error
+  set +u  # Don't error on unset variables
+  set +o pipefail  # Don't fail pipelines if any command fails
 fi
 
 # Configurable endpoints (override via env)
@@ -89,7 +92,15 @@ restore_db() {
   fi
 }
 
-trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
+# ERR trap - restore DB on error
+# When sourced, disable trap to avoid terminal closing (we'll handle errors manually)
+if [[ "$IS_SOURCED" == false ]]; then
+  trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
+else
+  # When sourced, don't set ERR trap to avoid closing terminal
+  # We'll manually check for errors and restore DB at the end if needed
+  :
+fi
 
 # 1) Backup current DB
 info "Exporting current database to $BACKUP_FILE ..."
@@ -188,7 +199,12 @@ info "Tables dropped (if any existed)."
 if [[ -f "$BASE_SQL_FILE" ]]; then
   info "Importing base database from $BASE_SQL_FILE ..."
   if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db < "$BASE_SQL_FILE" >/dev/null)
+    # Disable foreign key checks during import to avoid constraint errors
+    (cd "$PROJECT_ROOT" && {
+      echo "SET FOREIGN_KEY_CHECKS = 0;"
+      cat "$BASE_SQL_FILE"
+      echo "SET FOREIGN_KEY_CHECKS = 1;"
+    } | podman exec -i zms-db mysql -u root -proot db >/dev/null)
   else
     (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
   fi

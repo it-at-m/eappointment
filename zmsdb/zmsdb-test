@@ -1,15 +1,57 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Detect if script is being sourced (vs executed directly)
+IS_SOURCED=false
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  IS_SOURCED=true
+fi
+
+# Only set strict mode if not sourced (to avoid closing terminal on errors)
+if [[ "$IS_SOURCED" == false ]]; then
+  set -euo pipefail
+else
+  # When sourced, disable strict modes to prevent terminal from closing
+  set +e  # Don't exit on error
+  set +u  # Don't error on unset variables
+  set +o pipefail  # Don't fail pipelines if any command in pipeline fails
+fi
+
+# Ensure podman remote client environment is set up (needed for WSL/Windows when sourcing)
+if [[ -z "${XDG_RUNTIME_DIR:-}" ]] && [[ -d "/run/user/$(id -u)" ]]; then
+  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+fi
+if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && [[ -n "${XDG_RUNTIME_DIR:-}" ]]; then
+  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+fi
+
+# Prefer podman-remote if available (works better in some WSL setups)
+if command -v podman-remote >/dev/null 2>&1; then
+  podman() {
+    command podman-remote "$@"
+  }
+  export -f podman
+fi
 
 # zmsdb-test - Run zmsdb unit tests against local ddev or podman on a dedicated test DB
 # Usage: ./zmsdb-test [PHPUnit arguments...]
 
 require_cmd() {
-  command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required" >&2; exit 1; }
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "ERROR: '$1' is required" >&2
+    if [[ "$IS_SOURCED" == true ]]; then
+      return 1
+    else
+      exit 1
+    fi
+  fi
 }
 
 PHPUNIT_ARGS="${*:-}"
-PROJECT_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
+if [[ "$IS_SOURCED" == true ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEST_DB="zmsdb_test"
 
 # Detect if we're using Podman or DDEV
