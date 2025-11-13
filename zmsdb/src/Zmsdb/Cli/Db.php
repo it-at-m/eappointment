@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Cli;
 
+use BO\Slim\Helper\Sanitizer;
+
 /**
  * @codeCoverageIgnore
  * @SuppressWarnings(Short)
@@ -79,7 +81,14 @@ class Db
         }
 
         if ($verbose) {
-            error_log("Use Connection " . \BO\Zmsdb\Connection\Select::$writeSourceName);
+            $dsn = Sanitizer::sanitizeStackTrace(
+                \BO\Zmsdb\Connection\Select::$writeSourceName
+            );
+            if (isset(\App::$log)) {
+                \App::$log->info("Use Connection", ['dsn' => $dsn]);
+            } else {
+                error_log("Use Connection " . \BO\Zmsdb\Connection\Select::$writeSourceName);
+            }
         }
 
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -125,7 +134,15 @@ class Db
                 }
             }
         }
-        echo "\nFound " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.\n";
+        $message = "Found " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.";
+        if (isset(\App::$log)) {
+            \App::$log->info($message, [
+                'completed' => count($migrationsDoneList),
+                'added' => $addedMigrations
+            ]);
+        } else {
+            echo "\n$message\n";
+        }
         return $addedMigrations;
     }
 

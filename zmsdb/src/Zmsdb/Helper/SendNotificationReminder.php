@@ -38,8 +38,20 @@ class SendNotificationReminder
 
     protected function log($message)
     {
-        if ($this->verbose) {
-            error_log(trim($message));
+        if (!$this->verbose) {
+            return;
+        }
+        $trimmed = trim((string) $message);
+        $level = 'info';
+        if (strpos($trimmed, 'WARNING') === 0 || strpos($trimmed, 'WARN') === 0) {
+            $level = 'warning';
+        } elseif (strpos($trimmed, 'ERROR') === 0) {
+            $level = 'error';
+        }
+        if (isset(\App::$log)) {
+            \App::$log->{$level}($trimmed);
+        } else {
+            error_log($trimmed);
         }
     }
 

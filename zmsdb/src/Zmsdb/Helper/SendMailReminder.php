@@ -49,8 +49,20 @@ class SendMailReminder
 
     protected function log($message)
     {
-        if ($this->verbose) {
-            error_log($message);
+        if (!$this->verbose) {
+            return;
+        }
+        $level = 'info';
+        if (strpos($message, 'WARN') !== false || strpos($message, 'WARNING') === 0) {
+            $level = 'warning';
+        } elseif (strpos($message, 'ERROR') === 0) {
+            $level = 'error';
+        }
+        $trimmed = trim((string) $message);
+        if (isset(\App::$log)) {
+            \App::$log->{$level}($trimmed);
+        } else {
+            error_log($trimmed);
         }
     }
 

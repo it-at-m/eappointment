@@ -77,7 +77,21 @@ class ReservedDataDeleteByCron
 
     protected function log($message): bool
     {
-        return $this->verbose && error_log($message);
+        if (!$this->verbose) {
+            return false;
+        }
+        $level = 'info';
+        if (strpos($message, 'WARN:') === 0) {
+            $level = 'warning';
+        } elseif (strpos($message, 'ERROR:') === 0) {
+            $level = 'error';
+        }
+        $message = preg_replace('/^(INFO|WARN|ERROR):\s*/', '', (string) $message);
+        if (isset(\App::$log)) {
+            \App::$log->{$level}($message);
+            return true;
+        }
+        return false;
     }
 
     protected function deleteExpiredReservations(ScopeList $scopeList): void
