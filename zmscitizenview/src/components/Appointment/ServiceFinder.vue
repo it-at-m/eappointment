@@ -496,7 +496,7 @@ const showCaptcha = computed(() => {
   if (!service.value || !relations.value || !offices.value) return false;
 
   const relatedOfficeIds = relations.value
-    .filter((relation) => relation.serviceId === service.value?.id)
+    .filter((relation) => relation.serviceId == service.value?.id)
     .map((relation) => relation.officeId);
 
   return offices.value.some(
