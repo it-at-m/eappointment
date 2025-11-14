@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsdb\Availability;
 use BO\Zmsdb\Scope as Query;
 use BO\Zmsdb\ProcessStatusArchived;
 use BO\Zmsentities\Collection\QueueList;
@@ -43,7 +44,7 @@ class ProcessListByScopeAndDate extends BaseController
         }
 
         $query = new Query();
-        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
+        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0, []);
         if (! $scope || ! $scope->getId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -53,7 +54,8 @@ class ProcessListByScopeAndDate extends BaseController
             $queueList->addList($query->readQueueListWithWaitingTime(
                 $scope,
                 $date,
-                $resolveReferences ? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
+                3,
+                []
             ));
         }
 
@@ -61,7 +63,7 @@ class ProcessListByScopeAndDate extends BaseController
             (new ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
+        $message->data = $queueList->toProcessList()->withResolveLevel(2);
         $message->data->addData($archivedProcesses);
 
         $response = Render::withLastModified($response, time(), '0');

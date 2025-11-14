@@ -44,9 +44,14 @@ class ProcessListByClusterAndDate extends BaseController
         }
 
         $query = new Query();
-        $cluster = $query->readEntity($args['id'], 0, true);
+        $cluster = $query->readEntity($args['id'], 1);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
+        }
+
+        $shortNames = [];
+        foreach ($cluster->scopes as $scope) {
+            $shortNames[$scope->id] = $scope->shortName;
         }
 
         $queueList = new QueueList();
@@ -54,7 +59,8 @@ class ProcessListByClusterAndDate extends BaseController
             $dateQueueList = $query->readQueueList(
                 $cluster->id,
                 $date,
-                $resolveReferences ? $resolveReferences + 1 : 1
+                2,
+                ['availability']
             );
 
             if (! $dateQueueList) {
@@ -77,8 +83,17 @@ class ProcessListByClusterAndDate extends BaseController
             error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
         }
 
+        $queueList = $queueList->toProcessList()->withResolveLevel(2);
+        foreach ($queueList as $queue) {
+            if (!$queue->scope->id) {
+                continue;
+            }
+
+            $queue->scope->shortName = $shortNames[$queue->scope->id];
+        }
+
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
+        $message->data = $queueList;
 
         // Add all archived processes to the response data
         $message->data->addData($allArchivedProcesses);

@@ -78,6 +78,8 @@ abstract class Base
      */
     protected $joinedQueryList = [];
 
+    protected $withEntities = [];
+
     /**
      * Create query builder if necessary
      *
@@ -85,10 +87,11 @@ abstract class Base
      * @param String $prefix If used in a subquery, prefix results with this string
      * @param String $name A named query has a cached SQL as soon as called first
      */
-    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
+    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null, $withEntities = [])
     {
         $this->prefix = $prefix;
         $this->name = $name;
+        $this->withEntities = $withEntities;
         $this->setResolveLevel($resolveLevel);
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
@@ -261,6 +264,7 @@ abstract class Base
             $queryList = $this->addJoin();
             foreach ($queryList as $query) {
                 $query->setResolveLevel($depth);
+                $query->setWithEntities($this->withEntities);
                 $query->addResolvedReferences($depth - 1);
                 $query->addEntityMapping();
             }
@@ -269,6 +273,11 @@ abstract class Base
             $this->addReferenceMapping();
         }
         return $this;
+    }
+
+    public function setWithEntities($withEntities = [])
+    {
+        $this->withEntities = $withEntities;
     }
 
     /**

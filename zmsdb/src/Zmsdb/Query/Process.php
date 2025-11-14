@@ -90,6 +90,8 @@ class Process extends Base implements MappingInterface
         WHERE istFolgeterminvon = :processID
         ";
 
+    protected $withEntities = [];
+
     public function getQueryNewProcessId()
     {
         $random = rand(20, 999);
@@ -110,10 +112,17 @@ class Process extends Base implements MappingInterface
 
     public function addJoin()
     {
-        return [
-            $this->addJoinAvailability(),
-            $this->addJoinScope(),
-        ];
+        $joins = [];
+
+        if (empty($this->withEntities) || in_array('availability', $this->withEntities)) {
+            $joins[] = $this->addJoinAvailability();
+        }
+
+        if (empty($this->withEntities) || in_array('scope', $this->withEntities)) {
+            $joins[] = $this->addJoinScope();
+        }
+
+        return $joins;
     }
 
     /**
@@ -241,6 +250,13 @@ class Process extends Base implements MappingInterface
         return null;
     }
 
+    public function setWithEntities($withEntities = [])
+    {
+        $this->withEntities = $withEntities;
+
+        return $this;
+    }
+
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -254,7 +270,8 @@ class Process extends Base implements MappingInterface
                 ELSE process.status
             END'
         );
-        return [
+
+        return array_filter([
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
@@ -318,13 +335,15 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => self::expression(
+            'queue__destination' => in_array('processscope', $this->withEntities) ? self::expression(
                 'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
 )'
-            ),
-            'queue__destinationHint' => 'processuser.aufrufzusatz',
+            ) : '',
+            'queue__destinationHint' => in_array('processuser', $this->withEntities)
+                ? 'processuser.aufrufzusatz'
+                : '',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
@@ -337,7 +356,7 @@ class Process extends Base implements MappingInterface
             '__clientsCount' => 'process.AnzahlPersonen',
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
-        ];
+        ], 'strlen');
     }
 
     public function addCountValue()
@@ -1112,19 +1131,23 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        $this->leftJoin(
-            new Alias(Useraccount::TABLE, 'processuser'),
-            'process.NutzerID',
-            '=',
-            'processuser.NutzerID'
-        );
+        if (empty($this->withEntities) || in_array('processuser', $this->withEntities)) {
+            $this->leftJoin(
+                new Alias(Useraccount::TABLE, 'processuser'),
+                'process.NutzerID',
+                '=',
+                'processuser.NutzerID'
+            );
+        }
 
-        $this->leftJoin(
-            new Alias(Scope::TABLE, 'processscope'),
-            'process.StandortID',
-            '=',
-            'processscope.StandortID'
-        );
+        if (empty($this->withEntities) || in_array('processscope', $this->withEntities)) {
+            $this->leftJoin(
+                new Alias(Scope::TABLE, 'processscope'),
+                'process.StandortID',
+                '=',
+                'processscope.StandortID'
+            );
+        }
     }
 
     public function addConditionExternalUserId(string $externalUserId)
