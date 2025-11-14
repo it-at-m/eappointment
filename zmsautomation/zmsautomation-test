@@ -93,13 +93,13 @@ restore_db() {
 }
 
 # ERR trap - restore DB on error
-# When sourced, disable trap to avoid terminal closing (we'll handle errors manually)
+# When sourced, clear any existing ERR trap and don't set a new one
+# This prevents the trap from affecting commands after the script finishes
 if [[ "$IS_SOURCED" == false ]]; then
   trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
 else
-  # When sourced, don't set ERR trap to avoid closing terminal
-  # We'll manually check for errors and restore DB at the end if needed
-  :
+  # When sourced, clear any existing ERR trap to prevent it from affecting future commands
+  trap - ERR
 fi
 
 # 1) Backup current DB
@@ -500,7 +500,9 @@ else
 fi
 
 # Use return when sourced to avoid closing terminal, exit when executed directly
+# Also clear ERR trap when sourced to prevent it from affecting future commands
 if [[ "$IS_SOURCED" == true ]]; then
+  trap - ERR  # Clear ERR trap to prevent it from affecting future commands
   return "$TEST_EXIT" 2>/dev/null || exit "$TEST_EXIT"
 else
   exit "$TEST_EXIT"
