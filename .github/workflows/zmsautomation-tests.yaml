@@ -95,6 +95,52 @@ jobs:
         run: |
           docker exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
 
+      - name: Setup cache directories
+        run: |
+          docker exec zms-web bash -lc '
+            set -e
+            # Create common cache directory
+            COMMON_CACHE="/var/www/html/cache"
+            mkdir -p "$COMMON_CACHE"
+            chmod 777 "$COMMON_CACHE"
+            
+            # Create module-specific cache directories (default locations)
+            for module in zmsapi zmsdb zmscitizenapi; do
+              # Default location: module/src/ModuleNamespace/cache
+              if [ "$module" = "zmsapi" ]; then
+                MODULE_CACHE="/var/www/html/zmsapi/src/Zmsapi/cache"
+              elif [ "$module" = "zmscitizenapi" ]; then
+                MODULE_CACHE="/var/www/html/zmscitizenapi/src/Zmscitizenapi/cache"
+              elif [ "$module" = "zmsdb" ]; then
+                MODULE_CACHE="/var/www/html/zmsdb/src/Zmsdb/cache"
+              fi
+              mkdir -p "$MODULE_CACHE"
+              chmod 777 "$MODULE_CACHE"
+              
+              # Also create subdirectories in common cache
+              mkdir -p "$COMMON_CACHE/$module"
+              chmod 777 "$COMMON_CACHE/$module"
+            done
+            
+            # Ensure www-data user owns the directories (if www-data user exists)
+            if id "www-data" &>/dev/null; then
+              chown -R www-data:www-data "$COMMON_CACHE" || true
+              for module in zmsapi zmsdb zmscitizenapi; do
+                if [ "$module" = "zmsapi" ]; then
+                  MODULE_CACHE="/var/www/html/zmsapi/src/Zmsapi/cache"
+                elif [ "$module" = "zmscitizenapi" ]; then
+                  MODULE_CACHE="/var/www/html/zmscitizenapi/src/Zmscitizenapi/cache"
+                elif [ "$module" = "zmsdb" ]; then
+                  MODULE_CACHE="/var/www/html/zmsdb/src/Zmsdb/cache"
+                fi
+                chown -R www-data:www-data "$MODULE_CACHE" || true
+              done
+            fi
+            
+            echo "Cache directories created and permissions set"
+            ls -la /var/www/html/cache || true
+          '
+
       - name: Run hourly (best-effort, with logs)
         env:
           ZMS_CRONROOT: "1"
