@@ -223,25 +223,33 @@ jobs:
             done
           done
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('zmsautomation/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Check code formatting with Spotless
         run: |
           NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
           docker run --rm \
             --network "$NET" \
             -v "$PWD:/workspace" \
+            -v "$HOME/.m2:/root/.m2" \
             -w /workspace/zmsautomation \
             maven:3.9-eclipse-temurin-17 mvn spotless:check
 
       - name: Run REST-assured tests
         run: |
           NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
-          docker volume create zmsautomation-cache >/dev/null 2>&1 || true
           docker run --rm \
             --network "$NET" \
             -e BASE_URI="http://zms-web/terminvereinbarung/api/2" \
             -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
             -v "$PWD:/workspace" \
-            -v "zmsautomation-cache:/root/.m2" \
+            -v "$HOME/.m2:/root/.m2" \
             -w /workspace/zmsautomation \
             maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
 
