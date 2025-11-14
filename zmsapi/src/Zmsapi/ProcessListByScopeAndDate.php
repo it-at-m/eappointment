@@ -54,8 +54,8 @@ class ProcessListByScopeAndDate extends BaseController
             $queueList->addList($query->readQueueListWithWaitingTime(
                 $scope,
                 $date,
-                3,
-                []
+                2,
+                ['availability']
             ));
         }
 
