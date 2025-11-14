@@ -141,6 +141,23 @@ jobs:
             ls -la /var/www/html/cache || true
           '
 
+      - name: Ensure Apache is running
+        run: |
+          docker exec zms-web bash -lc '
+            # Check if Apache is running, restart if needed
+            if ! pgrep -f "apache2\|httpd" > /dev/null; then
+              echo "Apache not running, starting..."
+              service apache2 start || service httpd start || /usr/sbin/apache2ctl start || true
+            fi
+            
+            # Ensure Apache is enabled and running
+            service apache2 status || service httpd status || true
+            sleep 2
+            
+            # Verify Apache is responding
+            curl -f http://localhost/ > /dev/null 2>&1 && echo "Apache is responding" || echo "Warning: Apache may not be fully ready"
+          '
+
       - name: Run hourly (best-effort, with logs)
         env:
           ZMS_CRONROOT: "1"
@@ -157,6 +174,24 @@ jobs:
               echo "Hourly log saved to /var/www/html/zmsapi/var/log/cron.hourly.log"
             '
 
+      - name: Debug web server status
+        run: |
+          echo "=== Checking container status ==="
+          docker ps | grep zms-web || echo "zms-web container not found"
+          
+          echo "=== Checking Apache status ==="
+          docker exec zms-web bash -lc 'ps aux | grep -E "(apache|httpd)" | head -5' || echo "Apache process check failed"
+          
+          echo "=== Testing basic connectivity ==="
+          curl -v http://localhost:8090/ 2>&1 | head -20 || echo "Basic connectivity test failed"
+          
+          echo "=== Checking Apache error logs ==="
+          docker exec zms-web bash -lc 'tail -50 /var/log/apache2/error.log 2>/dev/null || tail -50 /var/log/httpd/error_log 2>/dev/null || echo "Could not read error logs"' || true
+          
+          echo "=== Testing API endpoints with verbose output ==="
+          curl -v http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/ 2>&1 | head -30 || true
+          curl -v http://localhost:8090/terminvereinbarung/api/2/status/ 2>&1 | head -30 || true
+
       - name: Health checks (with retry)
         run: |
           set -e
@@ -165,13 +200,24 @@ jobs:
             "http://localhost:8090/terminvereinbarung/api/2/status/"; do
             echo "Waiting for $url"
             for i in {1..60}; do
-              if curl -fsS --max-time 5 "$url" >/dev/null; then
-                echo "OK: $url"
+              # Get response with status code
+              HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" --max-time 5 "$url" || echo "000")
+              if [ "$HTTP_CODE" = "200" ]; then
+                echo "OK: $url (HTTP $HTTP_CODE)"
                 break
+              elif [ "$HTTP_CODE" != "000" ]; then
+                echo "Attempt $i: HTTP $HTTP_CODE"
+                if [ "$i" -le 5 ]; then
+                  # Show response body for first few attempts
+                  echo "Response body:"
+                  head -20 /tmp/response.txt || true
+                fi
               fi
               sleep 2
               if [ "$i" -eq 60 ]; then
-                echo "ERROR: $url did not become ready in time" >&2
+                echo "ERROR: $url did not become ready in time (last HTTP code: $HTTP_CODE)" >&2
+                echo "Final response body:"
+                cat /tmp/response.txt || true
                 exit 1
               fi
             done
