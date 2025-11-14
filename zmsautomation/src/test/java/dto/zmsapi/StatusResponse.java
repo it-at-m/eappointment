@@ -128,7 +128,7 @@ public class StatusResponse {
         private String lastCalculate;
 
         @JsonProperty("lastInsert")
-        private Long lastInsert;
+        private String lastInsert;
 
         @JsonProperty("outdatedOldest")
         private String outdatedOldest;
@@ -198,11 +198,11 @@ public class StatusResponse {
             this.lastCalculate = lastCalculate;
         }
 
-        public Long getLastInsert() {
+        public String getLastInsert() {
             return lastInsert;
         }
 
-        public void setLastInsert(Long lastInsert) {
+        public void setLastInsert(String lastInsert) {
             this.lastInsert = lastInsert;
         }
 

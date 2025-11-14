@@ -14,7 +14,7 @@ public class ProcessStatusBuilder {
     private Integer reserved = 0;
     private Integer outdated = 0;
     private String lastCalculate;
-    private Long lastInsert;
+    private String lastInsert;
     private String outdatedOldest;
 
     public ProcessStatusBuilder withBlocked(Integer blocked) {
@@ -57,7 +57,7 @@ public class ProcessStatusBuilder {
         return this;
     }
 
-    public ProcessStatusBuilder withLastInsert(Long lastInsert) {
+    public ProcessStatusBuilder withLastInsert(String lastInsert) {
         this.lastInsert = lastInsert;
         return this;
     }
