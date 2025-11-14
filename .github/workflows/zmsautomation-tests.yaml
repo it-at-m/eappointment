@@ -214,6 +214,25 @@ jobs:
             done
           done
 
+      - name: Cache Maven Docker image
+        id: cache-maven-image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/maven-image.tar
+          key: ${{ runner.os }}-maven-image-3.9-eclipse-temurin-17
+
+      - name: Load or pull Maven Docker image
+        run: |
+          if [ -f /tmp/maven-image.tar ] && [ "${{ steps.cache-maven-image.outputs.cache-hit }}" == "true" ]; then
+            echo "Loading cached Maven Docker image..."
+            docker load -i /tmp/maven-image.tar
+          else
+            echo "Pulling Maven Docker image..."
+            docker pull maven:3.9-eclipse-temurin-17
+            echo "Saving Maven Docker image for future runs..."
+            docker save maven:3.9-eclipse-temurin-17 -o /tmp/maven-image.tar
+          fi
+
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
