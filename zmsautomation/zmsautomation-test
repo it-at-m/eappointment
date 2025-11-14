@@ -437,18 +437,23 @@ fi
 
 # 8) Run tests (in a throwaway Maven container, using cached ~/.m2)
 info "Running REST-assured tests..."
-docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
-docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
+if [[ "$USE_PODMAN" == true ]]; then
+  podman volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
+  podman volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
+else
+  docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
+  docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
+fi
 
 if [[ "$USE_PODMAN" == true ]]; then
-  # Get podman network name from docker-compose network (same logic as Flyway)
-  PODMAN_NETWORK=$(docker network ls --filter "name=devcontainer" --format "{{.Name}}" | head -1 || echo "devcontainer_default")
+  # Discover the actual podman network used by zms-db (same logic as Flyway)
+  PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
   if [[ -z "$PODMAN_NETWORK" ]]; then
-    PODMAN_NETWORK="devcontainer_default"
+    PODMAN_NETWORK="eappointment_devcontainer_default"
   fi
   
   # Run tests on podman network so container can reach podman services
-  docker run --rm \
+  podman run --rm \
     --network "$PODMAN_NETWORK" \
     -e BASE_URI="$BASE_URI" \
     -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \

@@ -127,6 +127,15 @@ jobs:
             done
           done
 
+      - name: Check code formatting with Spotless
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
+          docker run --rm \
+            --network "$NET" \
+            -v "$PWD:/workspace" \
+            -w /workspace/zmsautomation \
+            maven:3.9-eclipse-temurin-17 mvn spotless:check
+
       - name: Run REST-assured tests
         run: |
           NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
