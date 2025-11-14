@@ -1,10 +1,6 @@
 name: zmsautomation tests
 
 on:
-  push:
-    branches: [ '**' ]
-  pull_request:
-    branches: [ main, "feat-**", "fix-**" ]
   workflow_call:
     outputs:
       result:
