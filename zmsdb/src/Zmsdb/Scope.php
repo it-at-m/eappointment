@@ -423,12 +423,17 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0)
+    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         if ($resolveReferences > 0) {
             // resolveReferences > 0 is only necessary for a resolved process
             $queueList = (new Process())
-                ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences - 1)
+                ->readProcessListByScopeAndTime(
+                    $scopeId,
+                    $dateTime,
+                    $resolveReferences - 1,
+                    $withEntities
+                )
                 ->toQueueList($dateTime);
         } else {
             $queueList = (new Queue())
@@ -446,10 +451,9 @@ class Scope extends Base
      *
      * @return \BO\Zmsentities\Scope
      */
-    public function readWithWorkstationCount($scopeId, $dateTime, $resolveReferences = 0)
+    public function readWithWorkstationCount($scopeId, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
-        //get scope
-        $query = new Query\Scope(Query\Base::SELECT);
+        $query = new Query\Scope(Query\Base::SELECT, '', false, null, $withEntities);
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
@@ -460,14 +464,24 @@ class Scope extends Base
         return ($scope->hasId()) ? $scope : null;
     }
 
-    public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
+    public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $scope = (! $timeAverage) ? (new Scope())->readEntity($scope->id) : $scope;
-        $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
+        $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences, $withEntities);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
-        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
+        $queueList = $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
+
+
+        foreach ($queueList as $queue) {
+            if (isset($queue->process)) {
+                $queue->process->appointments[0]->scope->shortName = 'aa';
+                $queue->process->scope->shortName = 'aa';
+            }
+        }
+
+        return $queueList;
     }
 
     /**

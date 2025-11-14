@@ -145,14 +145,15 @@ class Cluster extends Base
     public function readQueueList(
         $clusterId,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        $withEntities = []
     ) {
         $cluster = $this->readEntity($clusterId, 1);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($cluster->scopes as $scope) {
-            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
+            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime, 0, $withEntities);
             $scopeQueueList = (new Scope())
-                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
+                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences, $withEntities);
             if (0 < $scopeQueueList->count()) {
                 $queueList->addList($scopeQueueList);
             }
