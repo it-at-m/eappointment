@@ -7,6 +7,10 @@ on:
         description: "ZMSAutomation test result"
         value: ${{ jobs.zmsautomation.outputs.result }}
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   zmsautomation:
     outputs:
