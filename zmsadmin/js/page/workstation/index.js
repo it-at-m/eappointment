@@ -273,6 +273,10 @@ class View extends BaseView {
         if ($(event.currentTarget).data('id')) {
             this.selectedProcess = $(event.currentTarget).data('id');
         }
+
+        if ($('select#process_time').val() !== "00-00") {
+            this.$.find('select[name=priority]').val('');
+        }
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadCall(`${this.includeUrl}/process/${this.selectedProcess}/save/`, 'POST', sendData, false, scope.$main).then((response) => {
