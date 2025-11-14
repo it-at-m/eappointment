@@ -54,29 +54,20 @@ jobs:
             sleep 1
           done
 
-      - name: Import test data (schema + base data)
-        env:
-          MYSQL_PORT: "tcp://db:3306"
-          MYSQL_HOST: db
-          MYSQL_DATABASE: db
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
+      - name: Import base database
         run: |
-          docker exec \
-            -e MYSQL_PORT="$MYSQL_PORT" \
-            -e MYSQL_HOST="$MYSQL_HOST" \
-            -e MYSQL_DATABASE="$MYSQL_DATABASE" \
-            -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
-            -e MYSQL_USER="$MYSQL_USER" \
-            -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-            zms-web bash -lc '
-            set -e
-            echo "Importing test data..."
-            php -d date.timezone="UTC" -d memory_limit=1G \
-              -d auto_prepend_file=/var/www/html/zmsapi/vendor/autoload.php \
-              /var/www/html/zmsdb/bin/importTestData --commit
-          '
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing base database from .resources/zms.sql..."
+            # Disable foreign key checks during import to avoid constraint errors
+            {
+              echo "SET FOREIGN_KEY_CHECKS = 0;"
+              cat .resources/zms.sql
+              echo "SET FOREIGN_KEY_CHECKS = 1;"
+            } | docker exec -i zms-db mysql -u root -proot db
+            echo "Base database import completed."
+          else
+            echo "Base SQL file not found at .resources/zms.sql, skipping import."
+          fi
 
       - name: Run Flyway test data migrations
         run: |
