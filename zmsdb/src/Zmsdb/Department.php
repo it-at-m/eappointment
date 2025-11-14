@@ -59,7 +59,7 @@ class Department extends Base
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId(
                 $entity->id,
-                $resolveReferences - 1,
+                max(1, $resolveReferences - 1),
                 $disableCache
             );
             $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id, $disableCache);
