@@ -1,10 +1,10 @@
-FROM ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+FROM php:8.3-apache
 
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # —————————————————————————————————————————
-# 1. Build args & user (devcontainer-specific)
+# 1. Build args & user
 # —————————————————————————————————————————
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -14,15 +14,25 @@ RUN groupadd --gid $USER_GID $USERNAME \
  && useradd -m -u $USER_UID -g $USER_GID -s /bin/bash $USERNAME
 
 # —————————————————————————————————————————
-# 2. Install devcontainer-specific dependencies
+# 2. Install system deps & PHP extensions
 # —————————————————————————————————————————
 RUN apt-get update && apt-get install -y \
+      git curl unzip make wget \
+      libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+      libicu-dev libonig-dev libzip-dev \
       python3-click python3-git python3-colorama \
       mariadb-client \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install intl gd pdo pdo_mysql zip \
     && apt-get clean
 
 # —————————————————————————————————————————
-# 3. Generate self-signed SSL certificate (devcontainer-specific)
+# 3. Enable Apache modules
+# —————————————————————————————————————————
+RUN a2enmod rewrite proxy_fcgi alias headers ssl
+
+# —————————————————————————————————————————
+# 4. Generate self-signed SSL certificate
 # —————————————————————————————————————————
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /etc/ssl/private/apache-selfsigned.key \
@@ -30,14 +40,25 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -subj "/C=DE/ST=Dev/L=Dev/O=Dev/OU=Dev/CN=localhost"
 
 # —————————————————————————————————————————
-# 4. Copy and enable SSL VirtualHost config (devcontainer-specific)
+# 5. Copy and enable SSL VirtualHost config
 # —————————————————————————————————————————
 COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-RUN mkdir -p /etc/apache2/sites-enabled && \
-    ln -sf /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
+RUN a2ensite default-ssl
 
 # —————————————————————————————————————————
-# 5. Set working directory & permissions
+# 6. Install Node.js
+# —————————————————————————————————————————
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+ && apt-get install -y nodejs
+
+# —————————————————————————————————————————
+# 7. Install Composer
+# —————————————————————————————————————————
+RUN curl -sS https://getcomposer.org/installer | php \
+ && mv composer.phar /usr/local/bin/composer
+
+# —————————————————————————————————————————
+# 8. Set working directory & permissions
 # —————————————————————————————————————————
 WORKDIR /var/www/html
 
@@ -45,6 +66,6 @@ RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 755 /var/www/html
 
 # —————————————————————————————————————————
-# 6. Expose
+# 9. Expose
 # —————————————————————————————————————————
 EXPOSE 80
