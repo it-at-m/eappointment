@@ -69,6 +69,25 @@ jobs:
             echo "Base SQL file not found at .resources/zms.sql, skipping import."
           fi
 
+      - name: Cache Flyway Docker image
+        id: cache-flyway-image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/flyway-image.tar
+          key: ${{ runner.os }}-flyway-image-9
+
+      - name: Load or pull Flyway Docker image
+        run: |
+          if [ -f /tmp/flyway-image.tar ] && [ "${{ steps.cache-flyway-image.outputs.cache-hit }}" == "true" ]; then
+            echo "Loading cached Flyway Docker image..."
+            docker load -i /tmp/flyway-image.tar
+          else
+            echo "Pulling Flyway Docker image..."
+            docker pull docker.io/flyway/flyway:9
+            echo "Saving Flyway Docker image for future runs..."
+            docker save docker.io/flyway/flyway:9 -o /tmp/flyway-image.tar
+          fi
+
       - name: Run Flyway test data migrations
         run: |
           NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db)
