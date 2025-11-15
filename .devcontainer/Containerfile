@@ -33,7 +33,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # 4. Copy and enable SSL VirtualHost config (devcontainer-specific)
 # —————————————————————————————————————————
 COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-RUN a2ensite default-ssl
+RUN mkdir -p /etc/apache2/sites-enabled && \
+    ln -sf /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 
 # —————————————————————————————————————————
 # 5. Set working directory & permissions
