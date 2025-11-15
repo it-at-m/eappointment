@@ -41,7 +41,7 @@
     "eslint-plugin-import": "^2.24.2",
     "jquery": "^3.6.0",
     "js-cookie": "^3.0.0",
-    "parcel": "^2.6.2",
+    "parcel": "^2.16.1",
     "postcss": "^8.4.16",
     "qrcode-generator": "2.0.4",
     "sass": "^1.54.4",
