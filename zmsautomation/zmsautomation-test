@@ -93,6 +93,25 @@ restore_db() {
   fi
 }
 
+# Cleanup function to clear zmsapi/data folder (preserve .gitignore)
+cleanup_data_folder() {
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
+      if [ -d /var/www/html/zmsapi/data ]; then
+        find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
+        [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
+      fi
+    ' 2>/dev/null || true)
+  else
+    (cd "$PROJECT_ROOT" && ddev exec bash -lc '
+      if [ -d /var/www/html/zmsapi/data ]; then
+        find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
+        [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
+      fi
+    ' 2>/dev/null || true)
+  fi
+}
+
 # Function to clear application caches
 clear_caches() {
   info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
@@ -149,6 +168,8 @@ clear_caches() {
 # This prevents the trap from affecting commands after the script finishes
 if [[ "$IS_SOURCED" == false ]]; then
   trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
+  # Set up EXIT trap to cleanup zmsapi/data folder on script exit (normal, error, or Ctrl+C)
+  trap 'cleanup_data_folder' EXIT INT TERM
 else
   # When sourced, clear any existing ERR trap to prevent it from affecting future commands
   trap - ERR
@@ -555,6 +576,14 @@ else
     DELETE FROM flyway_schema_history WHERE version > 1;
   " 2>/dev/null || true)
 fi
+echo ""
+
+# Clean up zmsapi/data folder after tests (preserve .gitignore)
+# Note: Cleanup also runs via EXIT trap on error or Ctrl+C
+section "13. Cleanup"
+info "Cleaning up zmsapi/data folder..."
+cleanup_data_folder
+info "Cleared zmsapi/data folder (preserved .gitignore)"
 echo ""
 
 if [[ $TEST_EXIT -eq 0 ]]; then
