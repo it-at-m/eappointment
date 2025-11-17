@@ -168,8 +168,8 @@ clear_caches() {
 # This prevents the trap from affecting commands after the script finishes
 if [[ "$IS_SOURCED" == false ]]; then
   trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
-  # Set up EXIT trap to cleanup zmsapi/data folder on script exit (normal, error, or Ctrl+C)
-  trap 'cleanup_data_folder' EXIT INT TERM
+  # Set up EXIT trap to cleanup caches and zmsapi/data folder on script exit (normal, error, or Ctrl+C)
+  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
 else
   # When sourced, clear any existing ERR trap to prevent it from affecting future commands
   trap - ERR

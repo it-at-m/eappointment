@@ -145,7 +145,7 @@ clear_caches() {
 
 # Set up EXIT trap to cleanup on script exit (normal, error, or Ctrl+C)
 if [[ "$IS_SOURCED" == false ]]; then
-  trap 'cleanup_data_folder' EXIT INT TERM
+  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
 fi
 
 # Ensure dedicated test database exists and grant access to 'db' user
