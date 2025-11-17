@@ -15,6 +15,8 @@ else
   set +o pipefail  # Don't fail pipelines if any command fails
 fi
 
+command podman ps -a
+
 # Configurable endpoints (override via env)
 # When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
 # When running on podman, use 'zms-web' service name
