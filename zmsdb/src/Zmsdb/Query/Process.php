@@ -329,10 +329,10 @@ class Process extends Base implements MappingInterface
             'queue__destination' => $this->shouldLoadEntity('processscope')
                 && $this->shouldLoadEntity('processuser')
                 ? self::expression(
-                'IF(`process`.`AbholortID`,
+                    'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
-)'
+                )'
             ) : '',
             'queue__destinationHint' => $this->shouldLoadEntity('processuser')
                 ? 'processuser.aufrufzusatz'
