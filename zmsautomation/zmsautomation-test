@@ -234,6 +234,18 @@ else
 fi
 
 # 4) Flyway BEFORE PHP migrations
+# Clear test data migrations from flyway_schema_history after import so they re-run
+info "Clearing test data migrations from flyway_schema_history..."
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+    DELETE FROM flyway_schema_history WHERE version > 1;
+  " 2>/dev/null || true)
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    DELETE FROM flyway_schema_history WHERE version > 1;
+  " 2>/dev/null || true)
+fi
+
 info "Running Flyway migrations..."
 if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db
