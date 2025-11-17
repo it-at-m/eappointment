@@ -161,7 +161,6 @@ class Scope extends Base implements MappingInterface
                 self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'),
             'preferences__appointment__notificationHeadsUpEnabled' =>
                 self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung'),
-            'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailFrom' => 'scopemail.absenderadresse',
@@ -325,7 +324,6 @@ class Scope extends Base implements MappingInterface
         // notificationConfirmationEnabled and notificationHeadsUpEnabled are saved in department!
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
-        $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);

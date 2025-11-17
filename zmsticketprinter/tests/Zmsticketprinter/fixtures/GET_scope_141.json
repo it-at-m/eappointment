@@ -29,7 +29,6 @@
                 "notificationHeadsUpEnabled": "1"
             },
             "client": {
-                "alternateAppointmentUrl": "",
                 "amendmentActivated": 1,
                 "amendmentLabel": 1,
                 "emailRequired": 1,

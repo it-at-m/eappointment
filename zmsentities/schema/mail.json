@@ -82,7 +82,6 @@
                         "startInDaysDefault": "0"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "",
                         "appointmentsPerMail": "",
                         "slotsPerAppointment": "",
                         "whitelistedMails": "",

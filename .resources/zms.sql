@@ -1250,7 +1250,6 @@ CREATE TABLE `standort` (
   `smsnachtrag` int(1) DEFAULT 0,
   `wartezeitveroeffentlichen` tinyint(1) NOT NULL DEFAULT 0,
   `loeschdauer` int(11) NOT NULL DEFAULT 0,
-  `qtv_url` varchar(250) NOT NULL DEFAULT '',
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `source` varchar(10) DEFAULT 'dldb',
   `custom_text_field_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,

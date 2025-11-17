@@ -750,7 +750,6 @@ class ProcessTest extends Base
                         "notificationHeadsUpEnabled"=>"1"
                     ],
                     "client"=>[
-                        "alternateAppointmentUrl"=>"",
                         "amendmentActivated"=>"0",
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",

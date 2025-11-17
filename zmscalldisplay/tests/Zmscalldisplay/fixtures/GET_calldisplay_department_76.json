@@ -30,7 +30,6 @@
 					"startInDaysDefault": "0"
 				},
 				"client": {
-					"alternateAppointmentUrl": "",
 					"amendmentActivated": "1",
 					"amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen k\u00f6nnen nicht beantwortet werden.) ",
 					"emailRequired": "1",

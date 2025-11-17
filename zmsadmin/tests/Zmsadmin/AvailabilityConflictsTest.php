@@ -88,7 +88,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -552,7 +551,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -1017,7 +1015,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -1484,7 +1481,6 @@ class AvailabilityConflictsTest extends Base
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailFrom": "test@example.com",

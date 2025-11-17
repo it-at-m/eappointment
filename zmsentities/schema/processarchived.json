@@ -208,7 +208,6 @@
             "startInDaysDefault": "2"
         },
         "client": {
-            "alternateAppointmentUrl": "https://service.berlin.de",
             "appointmentsPerMail": "",
             "slotsPerAppointment": "",
             "whitelistedMails": "",

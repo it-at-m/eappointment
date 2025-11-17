@@ -48,7 +48,6 @@
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "0",
@@ -147,7 +146,6 @@
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "0",
                                     "emailRequired": "0",
@@ -280,7 +278,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -377,7 +374,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -474,7 +470,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -581,7 +576,6 @@
                                             "startInDaysDefault": "2"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "1",
@@ -703,7 +697,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -798,7 +791,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -942,7 +934,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -1039,7 +1030,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -1136,7 +1126,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -1233,7 +1222,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -1341,7 +1329,6 @@
                                             "startInDaysDefault": "2"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -1449,7 +1436,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -1544,7 +1530,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -1639,7 +1624,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -1737,7 +1721,6 @@
                                     "startInDaysDefault": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "0",
@@ -1834,7 +1817,6 @@
                                     "startInDaysDefault": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "0",
@@ -1943,7 +1925,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2051,7 +2032,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -2146,7 +2126,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -2241,7 +2220,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -2327,7 +2305,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -2422,7 +2399,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2520,7 +2496,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -2617,7 +2592,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "0",
@@ -2736,7 +2710,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2831,7 +2804,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2929,7 +2901,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -3026,7 +2997,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -3123,7 +3093,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -3220,7 +3189,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -3317,7 +3285,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -3414,7 +3381,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "1",
                                     "amendmentLabel": "Anmerkung",
                                     "emailRequired": "1",
@@ -3511,7 +3477,6 @@
                                     "startInDaysDefault": "2"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "Anmerkung",
                                     "emailRequired": "0",
@@ -3608,7 +3573,6 @@
                                     "startInDaysDefault": "2"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "Anmerkung",
                                     "emailRequired": "0",
@@ -3705,7 +3669,6 @@
                                     "startInDaysDefault": "2"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "Anmerkung",
                                     "emailRequired": "0",
@@ -3837,7 +3800,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "Das Bürgerbüro erreichen Sie über den Haupteingang der \"Stadtteilbibliothek Falkenhagener Feld\".",
                                     "emailRequired": "1",
@@ -3934,7 +3896,6 @@
                                     "startInDaysDefault": "0"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailRequired": "1",
@@ -4049,7 +4010,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                                             "emailRequired": "1",
@@ -4144,7 +4104,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                                             "emailRequired": "1",
@@ -4356,7 +4315,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                             "emailRequired": "1",
@@ -4442,7 +4400,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                             "emailRequired": "1",
@@ -4537,7 +4494,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                             "emailRequired": "1",
@@ -4632,7 +4588,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                             "emailRequired": "1",
@@ -4764,7 +4719,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "https://service.berlin.de",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -4859,7 +4813,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -5966,7 +5919,6 @@
                         "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "emailRequired": "0",
@@ -6075,7 +6027,6 @@
                     "notificationHeadsUpEnabled": "1"
                 },
                 "client": {
-                    "alternateAppointmentUrl": "",
                     "amendmentActivated": "0",
                     "amendmentLabel": "",
                     "emailRequired": "0",

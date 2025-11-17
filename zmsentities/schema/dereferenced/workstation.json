@@ -299,7 +299,6 @@
                         "startInDaysDefault": "2"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                         "appointmentsPerMail": "",
                         "slotsPerAppointment": "",
                         "whitelistedMails": "",
@@ -593,11 +592,6 @@
                             "type": "object",
                             "additionalProperties": false,
                             "properties": {
-                                "alternateAppointmentUrl": {
-                                    "type": "string",
-                                    "description": "redirect url if client should book appointments over a specialised application",
-                                    "default": ""
-                                },
                                 "appointmentsPerMail": {
                                     "type": ["string", "null", "integer"],
                                     "description": "allowed appointments per e-mail address",

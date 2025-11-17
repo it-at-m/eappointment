@@ -33,7 +33,6 @@
                         "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "emailRequired": "0",
@@ -132,7 +131,6 @@
                         "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "0",
                         "emailRequired": "0",
@@ -265,7 +263,6 @@
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
@@ -362,7 +359,6 @@
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
@@ -459,7 +455,6 @@
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",

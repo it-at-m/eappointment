@@ -63,7 +63,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -417,7 +416,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -771,7 +769,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -1125,7 +1122,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -1479,7 +1475,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -1833,7 +1828,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -2187,7 +2181,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -2541,7 +2534,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -2895,7 +2887,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -3249,7 +3240,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -3603,7 +3593,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -3957,7 +3946,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -4311,7 +4299,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -4665,7 +4652,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -5019,7 +5005,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -5373,7 +5358,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -5727,7 +5711,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -6081,7 +6064,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -6435,7 +6417,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -6789,7 +6770,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -7143,7 +7123,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -7497,7 +7476,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -7851,7 +7829,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",
@@ -8205,7 +8182,6 @@
             "notificationHeadsUpEnabled": "1"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "0",
             "emailFrom": "test@example.com",

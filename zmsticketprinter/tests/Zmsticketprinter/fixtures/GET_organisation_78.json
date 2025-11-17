@@ -58,7 +58,6 @@
                     "startInDaysDefault": "0"
                   },
                   "client": {
-                    "alternateAppointmentUrl": "https://service.berlin.de",
                     "amendmentActivated": 1,
                     "amendmentLabel": "",
                     "emailRequired": 1,
@@ -154,7 +153,6 @@
                     "startInDaysDefault": "0"
                   },
                   "client": {
-                    "alternateAppointmentUrl": "",
                     "amendmentActivated": 1,
                     "amendmentLabel": "",
                     "emailRequired": 1,

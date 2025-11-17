@@ -123,7 +123,6 @@
                   "notificationHeadsUpEnabled":"0"
                },
                "client":{
-                  "alternateAppointmentUrl":"",
                   "amendmentActivated":"0",
                   "amendmentLabel":"",
                   "emailFrom":"no-reply@muenchen.de",

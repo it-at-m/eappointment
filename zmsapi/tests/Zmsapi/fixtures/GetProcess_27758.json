@@ -141,7 +141,6 @@
                 "startInDaysDefault": 2
             },
             "client": {
-                "alternateAppointmentUrl": "",
                 "amendmentActivated": 0,
                 "amendmentLabel": "Anmerkung",
                 "emailFrom": "test@example.com",
