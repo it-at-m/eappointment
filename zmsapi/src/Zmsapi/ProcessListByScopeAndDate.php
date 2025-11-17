@@ -9,7 +9,6 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsdb\Availability;
 use BO\Zmsdb\Scope as Query;
 use BO\Zmsdb\ProcessStatusArchived;
 use BO\Zmsentities\Collection\QueueList;
