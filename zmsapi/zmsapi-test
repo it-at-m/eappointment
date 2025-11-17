@@ -93,6 +93,56 @@ cleanup_data_folder() {
   fi
 }
 
+# Function to clear application caches
+clear_caches() {
+  if [[ "$USE_PODMAN" == true ]]; then
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  else
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  fi
+
+  if [[ -n "$CACHE_DIR" ]]; then
+    info "CACHE_DIR=$CACHE_DIR"
+    for dir in zmsapi zmsdb zmscitizenapi; do
+      if [[ "$USE_PODMAN" == true ]]; then
+        (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+          if [ -d \"$CACHE_DIR/$dir\" ]; then
+            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+          fi
+        " || true)
+      else
+        (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+          if [ -d \"$CACHE_DIR/$dir\" ]; then
+            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+          fi
+        ")
+      fi
+    done
+    HOST_CACHE_DIR="$CACHE_DIR"
+    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
+      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
+      if [[ -d "$HOST_CACHE_DIR" ]]; then
+        rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
+        echo "[CACHE][host] cleared $HOST_CACHE_DIR"
+      fi
+      for dir in zmsapi zmsdb zmscitizenapi; do
+        if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
+          rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
+          echo "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
+        fi
+      done
+    fi
+  else
+    if [[ "$USE_PODMAN" == true ]]; then
+      warn "CACHE_DIR not found in podman container"
+    else
+      warn "CACHE_DIR not found in ddev container"
+    fi
+  fi
+}
+
 # Set up EXIT trap to cleanup on script exit (normal, error, or Ctrl+C)
 if [[ "$IS_SOURCED" == false ]]; then
   trap 'cleanup_data_folder' EXIT INT TERM
@@ -110,52 +160,7 @@ echo ""
 
 # Optional: clear caches using container's CACHE_DIR (and matching host path)
 section "3. Cache Clearing"
-if [[ "$USE_PODMAN" == true ]]; then
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-else
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-fi
-
-if [[ -n "$CACHE_DIR" ]]; then
-  info "CACHE_DIR=$CACHE_DIR"
-  for dir in zmsapi zmsdb zmscitizenapi; do
-    if [[ "$USE_PODMAN" == true ]]; then
-      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      " || true)
-    else
-      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      ")
-    fi
-  done
-  HOST_CACHE_DIR="$CACHE_DIR"
-  if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-    HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-    if [[ -d "$HOST_CACHE_DIR" ]]; then
-      rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
-      echo "[CACHE][host] cleared $HOST_CACHE_DIR"
-    fi
-    for dir in zmsapi zmsdb zmscitizenapi; do
-      if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
-        rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
-        echo "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
-      fi
-    done
-  fi
-else
-  if [[ "$USE_PODMAN" == true ]]; then
-    warn "CACHE_DIR not found in podman container"
-  else
-    warn "CACHE_DIR not found in ddev container"
-  fi
-fi
+clear_caches
 echo ""
 
 # Setup fixtures like CI: materialize required fixture files into zmsapi/data (no symlink)
@@ -217,9 +222,14 @@ else
 fi
 echo ""
 
+# Clear caches after tests
+section "7. Final Cache Clearing"
+clear_caches
+echo ""
+
 # Clean up zmsapi/data folder after tests (preserve .gitignore)
 # Note: Cleanup also runs via EXIT trap on error or Ctrl+C
-section "7. Cleanup"
+section "8. Cleanup"
 info "Cleaning up zmsapi/data folder..."
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"

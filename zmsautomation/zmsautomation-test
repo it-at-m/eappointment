@@ -93,6 +93,57 @@ restore_db() {
   fi
 }
 
+# Function to clear application caches
+clear_caches() {
+  info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
+  if [[ "$USE_PODMAN" == true ]]; then
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  else
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  fi
+  if [[ -n "$CACHE_DIR" ]]; then
+    info "CACHE_DIR=$CACHE_DIR"
+    for dir in zmsapi zmsdb zmscitizenapi; do
+      if [[ "$USE_PODMAN" == true ]]; then
+        (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+          if [ -d \"$CACHE_DIR/$dir\" ]; then
+            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+          fi
+        " || true)
+      else
+        (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+          if [ -d \"$CACHE_DIR/$dir\" ]; then
+            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+          fi
+        ")
+      fi
+    done
+    # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
+    HOST_CACHE_DIR="$CACHE_DIR"
+    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
+      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
+      if [[ -d "$HOST_CACHE_DIR" ]]; then
+        rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
+        info "[CACHE][host] cleared $HOST_CACHE_DIR"
+      fi
+      for dir in zmsapi zmsdb zmscitizenapi; do
+        if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
+          rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
+          info "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
+        fi
+      done
+    fi
+  else
+    if [[ "$USE_PODMAN" == true ]]; then
+      warn "CACHE_DIR not found in podman container"
+    else
+      warn "CACHE_DIR not found in ddev container"
+    fi
+  fi
+}
+
 # ERR trap - restore DB on error
 # When sourced, clear any existing ERR trap and don't set a new one
 # This prevents the trap from affecting commands after the script finishes
@@ -116,53 +167,7 @@ echo ""
 
 # 1.5) Clear application caches inside container (zmsapi, zmsdb, zmscitizenapi)
 section "2. Cache Clearing"
-info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-if [[ "$USE_PODMAN" == true ]]; then
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-else
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-fi
-if [[ -n "$CACHE_DIR" ]]; then
-  info "CACHE_DIR=$CACHE_DIR"
-  for dir in zmsapi zmsdb zmscitizenapi; do
-    if [[ "$USE_PODMAN" == true ]]; then
-      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      " || true)
-    else
-      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      ")
-    fi
-  done
-  # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
-  HOST_CACHE_DIR="$CACHE_DIR"
-  if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-    HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-    if [[ -d "$HOST_CACHE_DIR" ]]; then
-      rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
-      info "[CACHE][host] cleared $HOST_CACHE_DIR"
-    fi
-    for dir in zmsapi zmsdb zmscitizenapi; do
-      if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
-        rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
-        info "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
-      fi
-    done
-  fi
-else
-  if [[ "$USE_PODMAN" == true ]]; then
-    warn "CACHE_DIR not found in podman container"
-  else
-    warn "CACHE_DIR not found in ddev container"
-  fi
-fi
+clear_caches
 echo ""
 
 # 2) Drop all tables to ensure clean state (removes tables created by migrations from previous runs)
@@ -529,8 +534,13 @@ docker run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
   fi'
 echo ""
 
+# Clear caches after tests
+section "11. Final Cache Clearing"
+clear_caches
+echo ""
+
 # 9) Restore DB regardless of test result
-section "11. Database Restore"
+section "12. Database Restore"
 info "Restoring original database..."
 restore_db
 
