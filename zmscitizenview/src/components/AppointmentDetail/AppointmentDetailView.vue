@@ -326,7 +326,6 @@
 <script setup lang="ts">
 import {
   MucButton,
-  MucCallout,
   MucIntro,
   MucModal,
 } from "@muenchen/muc-patternlab-vue";
@@ -446,7 +445,7 @@ const getServiceSummary = () => {
     const subserviceSummary = appointment.value.subRequestCounts
       .map((subCount) => subCount.count + "x " + subCount.name)
       .join(", ");
-    return serviceSummary
+    return subserviceSummary
       ? serviceSummary + ", " + subserviceSummary
       : serviceSummary;
   } else {
