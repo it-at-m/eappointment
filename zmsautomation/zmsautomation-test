@@ -512,6 +512,18 @@ docker run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
 info "Restoring original database..."
 restore_db
 
+# Clear test data migrations from flyway_schema_history after restore to keep restored DB clean
+info "Clearing test data migrations from flyway_schema_history after restore..."
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+    DELETE FROM flyway_schema_history WHERE version > 1;
+  " 2>/dev/null || true)
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+    DELETE FROM flyway_schema_history WHERE version > 1;
+  " 2>/dev/null || true)
+fi
+
 if [[ $TEST_EXIT -eq 0 ]]; then
   info "Tests completed successfully."
 else
