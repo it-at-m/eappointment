@@ -90,8 +90,6 @@ class Process extends Base implements MappingInterface
         WHERE istFolgeterminvon = :processID
         ";
 
-    protected $withEntities = [];
-
     public function getQueryNewProcessId()
     {
         $random = rand(20, 999);
@@ -248,13 +246,6 @@ class Process extends Base implements MappingInterface
         }
 
         return null;
-    }
-
-    public function setWithEntities($withEntities = [])
-    {
-        $this->withEntities = $withEntities;
-
-        return $this;
     }
 
     public function getEntityMapping()
