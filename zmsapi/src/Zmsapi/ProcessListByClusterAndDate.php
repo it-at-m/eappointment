@@ -26,7 +26,6 @@ class ProcessListByClusterAndDate extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('basic');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
