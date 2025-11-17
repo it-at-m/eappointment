@@ -42,7 +42,7 @@ class ProcessListByScopeAndDate extends BaseController
         }
 
         $query = new Query();
-        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0, []);
+        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0, ['none']);
         if (! $scope || ! $scope->getId()) {
             throw new Exception\Scope\ScopeNotFound();
         }

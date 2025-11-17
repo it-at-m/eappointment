@@ -326,7 +326,9 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => $this->shouldLoadEntity('processscope') ? self::expression(
+            'queue__destination' => $this->shouldLoadEntity('processscope')
+                && $this->shouldLoadEntity('processuser')
+                ? self::expression(
                 'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
