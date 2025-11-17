@@ -36,7 +36,6 @@
 						"startInDaysDefault": "0"
 					},
 					"client": {
-						"alternateAppointmentUrl": "",
 						"amendmentActivated": "0",
 						"amendmentLabel": "Anmerkung",
 						"emailRequired": "0",

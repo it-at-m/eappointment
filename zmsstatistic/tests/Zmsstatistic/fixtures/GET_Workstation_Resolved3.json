@@ -55,7 +55,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "0",
                       "emailRequired": "0",
@@ -155,7 +154,6 @@
                   "notificationHeadsUpEnabled": "1"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -507,7 +505,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -605,7 +602,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -703,7 +699,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -811,7 +806,6 @@
                       "startInDaysDefault": "2"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Anmerkung",
                       "emailRequired": "1",
@@ -933,7 +927,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1029,7 +1022,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1174,7 +1166,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1272,7 +1263,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1370,7 +1360,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1468,7 +1457,6 @@
                       "notificationHeadsUpEnabled": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1577,7 +1565,6 @@
                       "startInDaysDefault": "2"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Anmerkung",
                       "emailFrom": "test@example.com",
@@ -1686,7 +1673,6 @@
                       "startInDaysDefault": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1782,7 +1768,6 @@
                       "startInDaysDefault": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1878,7 +1863,6 @@
                       "startInDaysDefault": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -1977,7 +1961,6 @@
                   "startInDaysDefault": "1"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -2289,7 +2272,6 @@
                   "startInDaysDefault": "1"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -2613,7 +2595,6 @@
                       "startInDaysDefault": "1"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -2722,7 +2703,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Anmerkung",
                       "emailFrom": "test@example.com",
@@ -2818,7 +2798,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Anmerkung",
                       "emailFrom": "test@example.com",
@@ -2914,7 +2893,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Anmerkung",
                       "emailFrom": "test@example.com",
@@ -3001,7 +2979,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Anmerkung",
                       "emailFrom": "test@example.com",
@@ -3097,7 +3074,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -3196,7 +3172,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -3516,7 +3491,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -3858,7 +3832,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -3954,7 +3927,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -4053,7 +4025,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -4385,7 +4356,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -4717,7 +4687,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -5049,7 +5018,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -5381,7 +5349,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -5713,7 +5680,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "1",
                   "amendmentLabel": "Anmerkung",
                   "emailFrom": "test@example.com",
@@ -6045,7 +6011,6 @@
                   "startInDaysDefault": "2"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "Anmerkung",
                   "emailFrom": "test@example.com",
@@ -6377,7 +6342,6 @@
                   "startInDaysDefault": "2"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "Anmerkung",
                   "emailFrom": "test@example.com",
@@ -6709,7 +6673,6 @@
                   "startInDaysDefault": "2"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "Anmerkung",
                   "emailFrom": "test@example.com",
@@ -7076,7 +7039,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "Das Bürgerbüro erreichen Sie über den Haupteingang der \"Stadtteilbibliothek Falkenhagener Feld\".",
                   "emailFrom": "test@example.com",
@@ -7392,7 +7354,6 @@
                   "startInDaysDefault": "0"
                 },
                 "client": {
-                  "alternateAppointmentUrl": "",
                   "amendmentActivated": "0",
                   "amendmentLabel": "",
                   "emailFrom": "test@example.com",
@@ -7726,7 +7687,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                       "emailFrom": "test@example.com",
@@ -7822,7 +7782,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "0",
                       "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                       "emailFrom": "test@example.com",
@@ -8035,7 +7994,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                       "emailFrom": "test@example.com",
@@ -8122,7 +8080,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                       "emailFrom": "test@example.com",
@@ -8218,7 +8175,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                       "emailFrom": "test@example.com",
@@ -8314,7 +8270,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                       "emailFrom": "test@example.com",
@@ -8447,7 +8402,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "https://service.berlin.de",
                       "amendmentActivated": "1",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -8543,7 +8497,6 @@
                       "startInDaysDefault": "0"
                     },
                     "client": {
-                      "alternateAppointmentUrl": "",
                       "amendmentActivated": "1",
                       "amendmentLabel": "",
                       "emailFrom": "test@example.com",
@@ -8668,7 +8621,6 @@
           "notificationHeadsUpEnabled": "1"
         },
         "client": {
-          "alternateAppointmentUrl": "",
           "amendmentActivated": "0",
           "amendmentLabel": "",
           "emailFrom": "test@example.com",

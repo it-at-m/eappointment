@@ -173,7 +173,6 @@ class MailTest extends Base
                     "id" => 151,
                     "preferences" => [
                         "client" => [
-                            "alternateAppointmentUrl" => "",
                             "amendmentActivated" => "0",
                             "amendmentLabel" => "",
                             "customTextfieldActivated" => "0",

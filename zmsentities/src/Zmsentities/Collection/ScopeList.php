@@ -11,12 +11,6 @@ class ScopeList extends Base
 
     protected $slotsByID = [];
 
-    public function getAlternateRedirectUrl()
-    {
-        $scope = $this->getIterator()->current();
-        return (1 == count($this) && $scope->getAlternateRedirectUrl()) ? $scope->getAlternateRedirectUrl() : null;
-    }
-
     /**
     * Get shortest bookable start date of a scope in scopelist
     *

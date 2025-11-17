@@ -122,7 +122,6 @@
                 "notificationHeadsUpEnabled": "1"
             },
             "client": {
-                "alternateAppointmentUrl": "",
                 "amendmentActivated": "0",
                 "amendmentLabel": "0",
                 "emailFrom": "buergeramt@charlottenburg-wilmersdorf.de",

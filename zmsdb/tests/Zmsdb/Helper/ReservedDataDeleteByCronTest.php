@@ -77,7 +77,6 @@ class ReservedDataDeleteByCronTest extends Base
                         "startInDaysDefault"=>"0"
                     ],
                     "client"=>[
-                        "alternateAppointmentUrl"=>"",
                         "amendmentActivated"=>"0",
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",
