@@ -128,7 +128,7 @@ class Scope extends Base implements MappingInterface
             );
         }
 
-        if ($this->shouldLoadEntity('scopesms')) {
+        if ($this->shouldLoadEntity('scopesms') && $this->shouldLoadEntity('scopedepartment')) {
             $this->leftJoin(
                 new Alias('sms', 'scopesms'),
                 'scopedepartment.BehoerdenID',
@@ -137,7 +137,7 @@ class Scope extends Base implements MappingInterface
             );
         }
 
-        if ($this->shouldLoadEntity('scopemail')) {
+        if ($this->shouldLoadEntity('scopemail') && $this->shouldLoadEntity('scopedepartment')) {
             $this->leftJoin(
                 new Alias('email', 'scopemail'),
                 'scopedepartment.BehoerdenID',
@@ -186,7 +186,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
-            'preferences__client__emailFrom' => $this->shouldLoadEntity('scopesms')
+            'preferences__client__emailFrom' => $this->shouldLoadEntity('scopemail')
                 ? 'scopemail.absenderadresse'
                 : '',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
@@ -458,7 +458,7 @@ class Scope extends Base implements MappingInterface
 
     private function setDefaultValues($data)
     {
-        if ($this->shouldLoadEntity('scopesms')) {
+        if ($this->shouldLoadEntity('scopemail')) {
             $this->setIfEmpty($data, 'preferences__client__emailFrom', [
                 'preferences__client__emailRequired' => 0
             ]);
