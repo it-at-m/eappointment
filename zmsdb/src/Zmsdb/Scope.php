@@ -471,17 +471,7 @@ class Scope extends Base
         $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences, $withEntities);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
-        $queueList = $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
-
-
-        foreach ($queueList as $queue) {
-            if (isset($queue->process)) {
-                $queue->process->appointments[0]->scope->shortName = 'aa';
-                $queue->process->scope->shortName = 'aa';
-            }
-        }
-
-        return $queueList;
+        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
     /**
