@@ -420,4 +420,13 @@ abstract class Base
         }
         return $data;
     }
+
+    public function shouldLoadEntity($name)
+    {
+        if (empty($this->withEntities)) {
+            return true;
+        }
+
+        return in_array('$name', $this->withEntities);
+    }
 }

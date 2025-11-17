@@ -114,11 +114,11 @@ class Process extends Base implements MappingInterface
     {
         $joins = [];
 
-        if (empty($this->withEntities) || in_array('availability', $this->withEntities)) {
+        if ($this->shouldLoadEntity('availability')) {
             $joins[] = $this->addJoinAvailability();
         }
 
-        if (empty($this->withEntities) || in_array('scope', $this->withEntities)) {
+        if ($this->shouldLoadEntity('scope')) {
             $joins[] = $this->addJoinScope();
         }
 
@@ -335,13 +335,13 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => in_array('processscope', $this->withEntities) ? self::expression(
+            'queue__destination' => $this->shouldLoadEntity('processscope') ? self::expression(
                 'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
 )'
             ) : '',
-            'queue__destinationHint' => in_array('processuser', $this->withEntities)
+            'queue__destinationHint' => $this->shouldLoadEntity('processuser')
                 ? 'processuser.aufrufzusatz'
                 : '',
             'queue__waitingTime' => 'process.wartezeit',
@@ -1131,7 +1131,7 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        if (empty($this->withEntities) || in_array('processuser', $this->withEntities)) {
+        if ($this->shouldLoadEntity('processuser')) {
             $this->leftJoin(
                 new Alias(Useraccount::TABLE, 'processuser'),
                 'process.NutzerID',
@@ -1140,7 +1140,7 @@ class Process extends Base implements MappingInterface
             );
         }
 
-        if (empty($this->withEntities) || in_array('processscope', $this->withEntities)) {
+        if ($this->shouldLoadEntity('processscope')) {
             $this->leftJoin(
                 new Alias(Scope::TABLE, 'processscope'),
                 'process.StandortID',

@@ -114,11 +114,11 @@ class Workstation extends Base implements MappingInterface
     {
         $joins = [];
 
-        if (empty($this->withEntities) || in_array('useraccount', $this->withEntities)) {
+        if ($this->shouldLoadEntity('useraccount')) {
             $joins[] = $this->addJoinUseraccount();
         }
 
-        if (empty($this->withEntities) || in_array('scope', $this->withEntities)) {
+        if ($this->shouldLoadEntity('scope')) {
             $joins[] = $this->addJoinScope();
         }
 
