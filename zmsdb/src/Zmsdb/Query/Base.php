@@ -427,6 +427,6 @@ abstract class Base
             return true;
         }
 
-        return in_array('$name', $this->withEntities);
+        return in_array($name, $this->withEntities);
     }
 }
