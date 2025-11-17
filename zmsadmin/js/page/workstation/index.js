@@ -15,7 +15,7 @@ import ValidationHandler from '../../lib/validationHandler'
 class View extends BaseView {
     constructor(element, options) {
         super(element);
-        this.page = 'workstation';
+        this.page = options.page ?? 'workstation';
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedTime = options['selected-time'];
