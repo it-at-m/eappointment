@@ -79,7 +79,10 @@ class ProcessListByClusterAndDate extends BaseController
         if ($archivedProcesses instanceof ProcessListCollection) {
             $allArchivedProcesses = $archivedProcesses;
         } else {
-            error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+            \App::$log->error('Expected ProcessListCollection, received different type', [
+                'received_type' => gettype($archivedProcesses),
+                'cluster_id' => $args['id'],
+            ]);
         }
 
         $queueList = $queueList->toProcessList()->withResolveLevel(2);
