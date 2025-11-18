@@ -333,7 +333,7 @@ class Process extends Base implements MappingInterface
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
                 )'
-            ) : '',
+                ) : '',
             'queue__destinationHint' => $this->shouldLoadEntity('processuser')
                 ? 'processuser.aufrufzusatz'
                 : '',
