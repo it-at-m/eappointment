@@ -51,7 +51,7 @@
     "qrcode-generator": "^2.0.0",
     "querystring-es3": "^0.2.1",
     "react": "^18.0.2",
-    "react-datepicker": "^4.2.1",
+    "react-datepicker": "^8.0.0",
     "react-dom": "^18.0.2",
     "react-icons": "^5.0.0",
     "react-to-print": "^2.14.10",
