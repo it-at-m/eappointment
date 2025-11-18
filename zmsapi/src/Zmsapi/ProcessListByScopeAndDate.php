@@ -25,7 +25,6 @@ class ProcessListByScopeAndDate extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('basic');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
@@ -43,7 +42,7 @@ class ProcessListByScopeAndDate extends BaseController
         }
 
         $query = new Query();
-        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
+        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0, ['none']);
         if (! $scope || ! $scope->getId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -53,7 +52,8 @@ class ProcessListByScopeAndDate extends BaseController
             $queueList->addList($query->readQueueListWithWaitingTime(
                 $scope,
                 $date,
-                $resolveReferences ? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
+                2,
+                ['availability']
             ));
         }
 
@@ -61,7 +61,7 @@ class ProcessListByScopeAndDate extends BaseController
             (new ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
+        $message->data = $queueList->toProcessList()->withResolveLevel(2);
         $message->data->addData($archivedProcesses);
 
         $response = Render::withLastModified($response, time(), '0');

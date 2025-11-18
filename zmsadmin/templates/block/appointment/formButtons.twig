@@ -27,6 +27,9 @@
                     {% set queuedLabel = "zum Spontankunden ändern" %}
                 {% endif %}
                 <button class="button button-submit process-queue" accesskey="h">{{ "%s"|format(queuedLabel)|trans }}</button>
+            {% elseif not selectedProcess and not selectedTime %}
+                {% set queuedLabel = "Spontankunden hinzufügen" %}
+                <button class="button button-submit process-queue" accesskey="h">{{ "%s"|format(queuedLabel)|trans }}</button>
             {% endif %}
             {% if selectedTime and "00-00" != selectedTime and isNewAppointment %}
                 <button data-id="{{ selectedProcess.id }}" class="button button-submit process-copy">{{ "%s"|format("Als neu hinzufügen")|trans }}</button>
@@ -35,6 +38,7 @@
             {% if selectedTime and "00-00" != selectedTime and not isNewAppointment  %}
                 <button class="button button--positive button-submit process-reserve" accesskey="h">{{ "%s"|format("Termin buchen")|trans }}</button>
             {% endif %}
+
         {% endif %}
     </div>
 </div>
