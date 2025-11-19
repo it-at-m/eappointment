@@ -552,6 +552,7 @@ else
   docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
 fi
 
+TEST_EXIT=0
 if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db (same logic as Flyway)
   PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
@@ -560,7 +561,7 @@ if [[ "$USE_PODMAN" == true ]]; then
   fi
   
   # Run tests on podman network so container can reach podman services
-  podman run --rm \
+  if podman run --rm \
     --network "$PODMAN_NETWORK" \
     -e BASE_URI="$BASE_URI" \
     -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
@@ -568,7 +569,11 @@ if [[ "$USE_PODMAN" == true ]]; then
     -v "$M2_CACHE_VOLUME:/root/.m2" \
     -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
     -w /workspace/zmsautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test; then
+    TEST_EXIT=0
+  else
+    TEST_EXIT=$?
+  fi
 else
   # Get ddev network name (same logic as Flyway)
   DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
@@ -577,7 +582,7 @@ else
   fi
   
   # Run tests on ddev network so container can reach ddev services
-  docker run --rm \
+  if docker run --rm \
     --network "$DDEV_NETWORK" \
     -e BASE_URI="$BASE_URI" \
     -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
@@ -585,10 +590,12 @@ else
     -v "$M2_CACHE_VOLUME:/root/.m2" \
     -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
     -w /workspace/zmsautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test; then
+    TEST_EXIT=0
+  else
+    TEST_EXIT=$?
+  fi
 fi
-
-TEST_EXIT=$?
 echo ""
 
 # Print surefire reports (if any)
