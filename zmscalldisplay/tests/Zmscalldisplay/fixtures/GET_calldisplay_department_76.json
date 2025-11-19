@@ -51,7 +51,6 @@
 					"firstNumber": "1",
 					"lastNumber": "200",
 					"processingTimeAverage": "10",
-					"publishWaitingTimeEnabled": "1",
 					"statisticsEnabled": "1"
 				},
 				"survey": {

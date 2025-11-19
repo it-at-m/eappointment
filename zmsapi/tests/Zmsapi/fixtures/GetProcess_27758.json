@@ -167,7 +167,6 @@
                 "lastNumber": 999,
                 "maxNumberContingent": 0,
                 "processingTimeAverage": 15,
-                "publishWaitingTimeEnabled": 0,
                 "statisticsEnabled": 1
             },
             "survey": {

@@ -57,7 +57,6 @@
                                 "lastNumber": "799",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "15",
-                                "publishWaitingTimeEnabled": "0",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {
@@ -155,7 +154,6 @@
                                 "lastNumber": "499",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "5",
-                                "publishWaitingTimeEnabled": "1",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {
@@ -287,7 +285,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "15",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -383,7 +380,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "15",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -479,7 +475,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "10",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -585,7 +580,6 @@
                                         "lastNumber": "999",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "7",
-                                        "publishWaitingTimeEnabled": "0",
                                         "statisticsEnabled": "0"
                                     },
                                     "survey": {

@@ -236,7 +236,6 @@
             "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
             "firstNumber": 300,
             "lastNumber": 500,
-            "publishWaitingTimeEnabled": true,
             "processingTimeAverage": 12,
             "statisticsEnabled": true
         },

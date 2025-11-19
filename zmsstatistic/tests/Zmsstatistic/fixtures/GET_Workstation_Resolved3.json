@@ -77,7 +77,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "5",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -177,7 +176,6 @@
                   "lastNumber": "799",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "0",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -528,7 +526,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -625,7 +622,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -722,7 +718,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -828,7 +823,6 @@
                       "lastNumber": "999",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "7",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "0"
                     },
                     "survey": {
@@ -950,7 +944,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1045,7 +1038,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1189,7 +1181,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1286,7 +1277,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1383,7 +1373,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1480,7 +1469,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1588,7 +1576,6 @@
                       "lastNumber": "99",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "20",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "0"
                     },
                     "survey": {
@@ -1696,7 +1683,6 @@
                       "lastNumber": "599",
                       "maxNumberContingent": "42",
                       "processingTimeAverage": "6",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1791,7 +1777,6 @@
                       "lastNumber": "599",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "6",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1886,7 +1871,6 @@
                       "lastNumber": "599",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "6",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -1984,7 +1968,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -2295,7 +2278,6 @@
                   "lastNumber": "499",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -2618,7 +2600,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -2726,7 +2707,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -2821,7 +2801,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -2916,7 +2895,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -3002,7 +2980,6 @@
                       "lastNumber": "899",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -3097,7 +3074,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -3195,7 +3171,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "10",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -3514,7 +3489,6 @@
                   "lastNumber": "799",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "11",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -3855,7 +3829,6 @@
                       "lastNumber": "599",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -3950,7 +3923,6 @@
                       "lastNumber": "599",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -4048,7 +4020,6 @@
                   "lastNumber": "1999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -4379,7 +4350,6 @@
                   "lastNumber": "1999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -4710,7 +4680,6 @@
                   "lastNumber": "1999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -5041,7 +5010,6 @@
                   "lastNumber": "1999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -5372,7 +5340,6 @@
                   "lastNumber": "1999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -5703,7 +5670,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "0",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -6034,7 +6000,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "0",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -6365,7 +6330,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "0",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -6696,7 +6660,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "0",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -7062,7 +7025,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -7377,7 +7339,6 @@
                   "lastNumber": "999",
                   "maxNumberContingent": "0",
                   "processingTimeAverage": "15",
-                  "publishWaitingTimeEnabled": "1",
                   "statisticsEnabled": "1"
                 },
                 "survey": {
@@ -7710,7 +7671,6 @@
                       "lastNumber": "499",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -7805,7 +7765,6 @@
                       "lastNumber": "799",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8017,7 +7976,6 @@
                       "lastNumber": "200",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8103,7 +8061,6 @@
                       "lastNumber": "300",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "15",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8198,7 +8155,6 @@
                       "lastNumber": "300",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8293,7 +8249,6 @@
                       "lastNumber": "200",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "10",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8425,7 +8380,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "1",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8520,7 +8474,6 @@
                       "lastNumber": "399",
                       "maxNumberContingent": "0",
                       "processingTimeAverage": "12",
-                      "publishWaitingTimeEnabled": "0",
                       "statisticsEnabled": "1"
                     },
                     "survey": {
@@ -8644,7 +8597,6 @@
           "lastNumber": "499",
           "maxNumberContingent": "0",
           "processingTimeAverage": "15",
-          "publishWaitingTimeEnabled": "1",
           "statisticsEnabled": "1"
         },
         "survey": {

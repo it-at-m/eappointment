@@ -64,7 +64,6 @@
                 "lastDisplayNumber": 150,
                 "maxDisplayNumber": 9999,
                 "displayNumberPrefix": "TT",
-                "publishWaitingTimeEnabled": true,
                 "processingTimeAverage": 12,
                 "statisticsEnabled": true
             },
@@ -871,25 +870,6 @@
                             "description": "contingent of given waiting numbers for ticket printer per day",
                             "maximum": 999,
                             "default": 999
-                        },
-                        "publishWaitingTimeEnabled": {
-                            "oneOf": [
-                                {
-                                    "type": "null"
-                                },
-                                {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "boolean"
-                                },
-                                {
-                                    "type": "string",
-                                    "pattern": "^[01]$"
-                                }
-                            ],
-                            "description": "true if waiting times are allowed to be published for public use",
-                            "default": true
                         },
                         "processingTimeAverage": {
                             "oneOf": [
