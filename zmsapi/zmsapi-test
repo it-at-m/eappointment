@@ -206,17 +206,23 @@ section "6. Running Tests"
 if [[ "$USE_PODMAN" == true ]]; then
   (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
     export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' || true; 
-    mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\'' || true; 
-    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
+    if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
+       mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
+      echo "[INFO] MariaDB time_zone set to +00:00 (UTC)";
+    else
+      echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
+    fi;
     export SKIP_DNS_VALIDATION=1; 
     cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
 else
   (cd "$PROJECT_ROOT" && ddev exec bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
     export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' || true; 
-    mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\'' || true; 
-    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
+    if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
+       mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
+      echo "[INFO] MariaDB time_zone set to +00:00 (UTC)";
+    else
+      echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
+    fi;
     export SKIP_DNS_VALIDATION=1; 
     cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
 fi
