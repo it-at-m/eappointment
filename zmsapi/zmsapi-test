@@ -74,41 +74,54 @@ if [[ "$USE_PODMAN" == false ]]; then
 fi
 echo ""
 
+# Execute command in web container (abstraction for podman/ddev)
+exec_in_web() {
+  local cmd="$1"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
+  else
+    (cd "$PROJECT_ROOT" && ddev exec bash -lc "$cmd")
+  fi
+}
+
+# Execute SQL in database (abstraction for podman/ddev, supports stdin)
+exec_sql() {
+  local sql="$1"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -i zms-db mysql -u root -proot)
+  else
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql)
+  fi
+}
+
+# Execute SQL command in database (for simple commands without stdin)
+exec_sql_cmd() {
+  local sql="$1"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "$sql")
+  else
+    (cd "$PROJECT_ROOT" && ddev mysql -e "$sql")
+  fi
+}
+
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
-      if [ -d /var/www/html/zmsapi/data ]; then
-        if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-          echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-        fi
-        if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-          printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-        fi
+  exec_in_web '
+    if [ -d /var/www/html/zmsapi/data ]; then
+      if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
+        echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
       fi
-    ' || warn "cleanup_data_folder podman exec failed")
-  else
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc '
-      if [ -d /var/www/html/zmsapi/data ]; then
-        if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-          echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-        fi
-        if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-          printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-        fi
+      if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
+        printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
       fi
-    ' || warn "cleanup_data_folder ddev exec failed")
-  fi
+    fi
+  ' || warn "cleanup_data_folder exec failed"
 }
 
 # Function to clear application caches
 clear_caches() {
   info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-  if [[ "$USE_PODMAN" == true ]]; then
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  else
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  fi
+  CACHE_DIR=$(exec_in_web 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
   if [[ -n "$CACHE_DIR" ]]; then
     # Validate CACHE_DIR is absolute and sensible
     if [[ "$CACHE_DIR" != /* ]] || [[ "$CACHE_DIR" == *..* ]]; then
@@ -118,36 +131,19 @@ clear_caches() {
     info "CACHE_DIR=$CACHE_DIR"
     for dir in zmsapi zmsdb zmscitizenapi; do
       FULL_PATH="$CACHE_DIR/$dir"
-      if [[ "$USE_PODMAN" == true ]]; then
-        if (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-          if [ -d \"$FULL_PATH\" ]; then
-            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-              echo \"[CACHE] cleared $FULL_PATH\"
-            else
-              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-              exit 1
-            fi
+      if exec_in_web "
+        if [ -d \"$FULL_PATH\" ]; then
+          if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
+            echo \"[CACHE] cleared $FULL_PATH\"
+          else
+            echo \"[CACHE] failed to clear $FULL_PATH\" >&2
+            exit 1
           fi
-        "); then
-          : # Success
-        else
-          warn "Failed to clear cache directory $FULL_PATH in container"
         fi
+      "; then
+        : # Success
       else
-        if (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-          if [ -d \"$FULL_PATH\" ]; then
-            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-              echo \"[CACHE] cleared $FULL_PATH\"
-            else
-              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-              exit 1
-            fi
-          fi
-        "); then
-          : # Success
-        else
-          warn "Failed to clear cache directory $FULL_PATH in container"
-        fi
+        warn "Failed to clear cache directory $FULL_PATH in container"
       fi
     done
     # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
@@ -176,29 +172,17 @@ clear_caches() {
       done
     fi
   else
-    if [[ "$USE_PODMAN" == true ]]; then
-      warn "CACHE_DIR not found in podman container"
-    else
-      warn "CACHE_DIR not found in ddev container"
-    fi
+    warn "CACHE_DIR not found in container"
   fi
 }
 
 # Function to reset timezone
 reset_timezone() {
   RESET_SQL="SET GLOBAL time_zone = 'SYSTEM'; SET time_zone = 'SYSTEM';"
-  if [[ "$USE_PODMAN" == true ]]; then
-    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | podman exec -i zms-db mysql -u root -proot 2>&1); then
-      info "MariaDB timezone reset to SYSTEM"
-    else
-      warn "Failed to reset MariaDB timezone to SYSTEM"
-    fi
+  if exec_sql "$RESET_SQL" 2>&1; then
+    info "MariaDB timezone reset to SYSTEM"
   else
-    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql 2>&1); then
-      info "MariaDB timezone reset to SYSTEM"
-    else
-      warn "Failed to reset MariaDB timezone to SYSTEM"
-    fi
+    warn "Failed to reset MariaDB timezone to SYSTEM"
   fi
 }
 
@@ -209,11 +193,7 @@ fi
 
 # Ensure dedicated test database exists and grant access to 'db' user
 section "2. Test Database Setup"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;")
-else
-  (cd "$PROJECT_ROOT" && ddev mysql -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;")
-fi
+exec_sql_cmd "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;"
 info "Test database '$TEST_DB' ready"
 echo ""
 
@@ -233,51 +213,30 @@ FIXTURE_SETUP_CMD='
   done;
   [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
 '
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$FIXTURE_SETUP_CMD")
-else
-  (cd "$PROJECT_ROOT" && ddev exec bash -lc "$FIXTURE_SETUP_CMD")
-fi
+exec_in_web "$FIXTURE_SETUP_CMD"
 echo ""
 
 # Import test data with UTC timezone (base schema + fixtures + migrations)
 section "5. Test Data Import"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
-    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsapi/vendor/autoload.php /var/www/html/zmsdb/bin/importTestData --commit')
-else
-  (cd "$PROJECT_ROOT" && ddev exec bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
-    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsapi/vendor/autoload.php /var/www/html/zmsdb/bin/importTestData --commit')
-fi
+IMPORT_TEST_DATA_CMD='set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"'
+  export TZ="UTC"; echo "[INFO] Using timezone: $TZ";
+  php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsapi/vendor/autoload.php /var/www/html/zmsdb/bin/importTestData --commit'
+exec_in_web "$IMPORT_TEST_DATA_CMD"
 echo ""
 
 # Run PHPUnit with UTC timezone
 section "6. Running Tests"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
-    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
-       mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
-    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
-    else
-      echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
-    fi;
-    export SKIP_DNS_VALIDATION=1; 
-    cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
-else
-  (cd "$PROJECT_ROOT" && ddev exec bash -lc 'set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"' \
-    export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
-    if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
-       mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
-    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
-    else
-      echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
-    fi;
-    export SKIP_DNS_VALIDATION=1; 
-    cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS" )
-fi
+RUN_TESTS_CMD='set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"'
+  export TZ="UTC"; echo "[INFO] Using timezone: $TZ";
+  if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
+     mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
+    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)";
+  else
+    echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
+  fi;
+  export SKIP_DNS_VALIDATION=1;
+  cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS"
+exec_in_web "$RUN_TESTS_CMD"
 echo ""
 
 # Reset MariaDB timezone back to SYSTEM (global + session)

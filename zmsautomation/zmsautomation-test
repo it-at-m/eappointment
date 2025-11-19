@@ -106,6 +106,37 @@ fi
 
 require_cmd docker
 
+# Execute command in web container (abstraction for podman/ddev)
+exec_in_web() {
+  local cmd="$1"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
+  else
+    (cd "$PROJECT_ROOT" && ddev exec bash -lc "$cmd")
+  fi
+}
+
+# Execute SQL in database (abstraction for podman/ddev, supports stdin)
+exec_sql() {
+  local sql="$1"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -i zms-db mysql -u root -proot)
+  else
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql)
+  fi
+}
+
+# Execute SQL command in database (for simple commands without stdin)
+exec_sql_cmd() {
+  local sql="$1"
+  local db="${2:-db}"
+  if [[ "$USE_PODMAN" == true ]]; then
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot "$db" -e "$sql")
+  else
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb "$db" -e "$sql")
+  fi
+}
+
 restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE ..."
@@ -122,29 +153,16 @@ restore_db() {
 
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
-      if [ -d /var/www/html/zmsapi/data ]; then
-        if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-          echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-        fi
-        if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-          printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-        fi
+  exec_in_web '
+    if [ -d /var/www/html/zmsapi/data ]; then
+      if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
+        echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
       fi
-    ' || warn "cleanup_data_folder podman exec failed")
-  else
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc '
-      if [ -d /var/www/html/zmsapi/data ]; then
-        if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-          echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-        fi
-        if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-          printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-        fi
+      if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
+        printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
       fi
-    ' || warn "cleanup_data_folder ddev exec failed")
-  fi
+    fi
+  ' || warn "cleanup_data_folder exec failed"
 }
 
 # Function to get Podman network name
@@ -170,11 +188,7 @@ get_ddev_network() {
 # Function to clear application caches
 clear_caches() {
   info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-  if [[ "$USE_PODMAN" == true ]]; then
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  else
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  fi
+  CACHE_DIR=$(exec_in_web 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
   if [[ -n "$CACHE_DIR" ]]; then
     # Validate CACHE_DIR is absolute and sensible
     if [[ "$CACHE_DIR" != /* ]] || [[ "$CACHE_DIR" == *..* ]]; then
@@ -184,36 +198,19 @@ clear_caches() {
     info "CACHE_DIR=$CACHE_DIR"
     for dir in zmsapi zmsdb zmscitizenapi; do
       FULL_PATH="$CACHE_DIR/$dir"
-      if [[ "$USE_PODMAN" == true ]]; then
-        if (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-          if [ -d \"$FULL_PATH\" ]; then
-            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-              echo \"[CACHE] cleared $FULL_PATH\"
-            else
-              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-              exit 1
-            fi
+      if exec_in_web "
+        if [ -d \"$FULL_PATH\" ]; then
+          if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
+            echo \"[CACHE] cleared $FULL_PATH\"
+          else
+            echo \"[CACHE] failed to clear $FULL_PATH\" >&2
+            exit 1
           fi
-        "); then
-          : # Success
-        else
-          warn "Failed to clear cache directory $FULL_PATH in container"
         fi
+      "; then
+        : # Success
       else
-        if (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-          if [ -d \"$FULL_PATH\" ]; then
-            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-              echo \"[CACHE] cleared $FULL_PATH\"
-            else
-              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-              exit 1
-            fi
-          fi
-        "); then
-          : # Success
-        else
-          warn "Failed to clear cache directory $FULL_PATH in container"
-        fi
+        warn "Failed to clear cache directory $FULL_PATH in container"
       fi
     done
     # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
@@ -242,11 +239,7 @@ clear_caches() {
       done
     fi
   else
-    if [[ "$USE_PODMAN" == true ]]; then
-      warn "CACHE_DIR not found in podman container"
-    else
-      warn "CACHE_DIR not found in ddev container"
-    fi
+    warn "CACHE_DIR not found in container"
   fi
 }
 
@@ -338,21 +331,12 @@ info "Tables dropped (if any existed)."
 
 # Log database tables after reset to confirm drop
 info "Database tables after reset (should be empty):"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+exec_sql_cmd "
   SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
   FROM information_schema.tables
   WHERE table_schema = 'db'
   ORDER BY table_name;
-" || true)
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" || true)
-fi
+" db || true
 echo ""
 
 # 3) Import base database
@@ -373,21 +357,12 @@ if [[ -f "$BASE_SQL_FILE" ]]; then
   
   # Log database tables after initial import
   info "Database tables after initial SQL import:"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+  exec_sql_cmd "
     SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
     FROM information_schema.tables
     WHERE table_schema = 'db'
     ORDER BY table_name;
-  " || true)
-  else
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-    FROM information_schema.tables
-    WHERE table_schema = 'db'
-    ORDER BY table_name;
-  " || true)
-  fi
+  " db || true
   echo ""
 else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
@@ -398,15 +373,7 @@ fi
 section "5. Flyway Migrations"
 # Clear test data migrations from flyway_schema_history after import so they re-run
 info "Clearing test data migrations from flyway_schema_history..."
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-    DELETE FROM flyway_schema_history WHERE version > 1;
-  " 2>/dev/null || true)
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    DELETE FROM flyway_schema_history WHERE version > 1;
-  " 2>/dev/null || true)
-fi
+exec_sql_cmd "DELETE FROM flyway_schema_history WHERE version > 1;" db 2>/dev/null || true
 
 info "Running Flyway migrations..."
 if [[ "$USE_PODMAN" == true ]]; then
@@ -467,42 +434,25 @@ fi
 
 # Log database tables after Flyway
 info "Database tables after Flyway (before PHP migrations):"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+exec_sql_cmd "
   SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
   FROM information_schema.tables
   WHERE table_schema = 'db'
   ORDER BY table_name;
-" || true)
-  else
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" || true)
-  fi
+" db || true
 info "flyway_schema_history (post-flyway):"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-    SELECT installed_rank, version, description, type, installed_by, success, installed_on
-    FROM flyway_schema_history
-    ORDER BY installed_rank;
-  " || true)
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    SELECT installed_rank, version, description, type, installed_by, success, installed_on
-    FROM flyway_schema_history
-    ORDER BY installed_rank;
-  " || true)
-  fi
-  echo ""
+exec_sql_cmd "
+  SELECT installed_rank, version, description, type, installed_by, success, installed_on
+  FROM flyway_schema_history
+  ORDER BY installed_rank;
+" db || true
+echo ""
 
 # 5) Run PHP migrations
 section "6. PHP Migrations"
 info "Running zmsapi PHP migrations..."
 if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update")
+  exec_in_web "cd zmsapi && vendor/bin/migrate --update"
 else
   (cd "$PROJECT_ROOT" && ddev exec zmsapi/vendor/bin/migrate --update)
 fi
@@ -511,70 +461,36 @@ echo ""
 
 # Log database tables after PHP migrations
 info "Database tables after PHP migrations:"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+exec_sql_cmd "
   SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
   FROM information_schema.tables
   WHERE table_schema = 'db'
   ORDER BY table_name;
-" || true)
-  else
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" || true)
-  fi
+" db || true
 info "flyway_schema_history (post-php-migrations):"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-    SELECT installed_rank, version, description, type, installed_by, success, installed_on
-    FROM flyway_schema_history
-    ORDER BY installed_rank;
-  " || true)
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    SELECT installed_rank, version, description, type, installed_by, success, installed_on
-    FROM flyway_schema_history
-    ORDER BY installed_rank;
-  " || true)
-fi
+exec_sql_cmd "
+  SELECT installed_rank, version, description, type, installed_by, success, installed_on
+  FROM flyway_schema_history
+  ORDER BY installed_rank;
+" db || true
 echo ""
 
 # 6) Run hourly (best-effort)
 section "7. Hourly Cronjob"
 info "Running hourly (best-effort)..."
-if [[ "$USE_PODMAN" == true ]]; then
-  if ! (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich"); then
-    warn "Hourly command failed or not available; continuing."
-  else
-    info "Hourly command completed."
-    
-    # Log database tables after hourly
-    info "Database tables after hourly cron:"
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-      SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-      FROM information_schema.tables
-      WHERE table_schema = 'db'
-      ORDER BY table_name;
-    " || true)
-  fi
+if ! exec_in_web "zmsapi/cron/cronjob.hourly --city=munich"; then
+  warn "Hourly command failed or not available; continuing."
 else
-  if ! (cd "$PROJECT_ROOT" && ddev exec zmsapi/cron/cronjob.hourly --city=munich); then
-    warn "Hourly command failed or not available; continuing."
-  else
-    info "Hourly command completed."
-    
-    # Log database tables after hourly
-    info "Database tables after hourly cron:"
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-      SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-      FROM information_schema.tables
-      WHERE table_schema = 'db'
-      ORDER BY table_name;
-    " || true)
-  fi
+  info "Hourly command completed."
+  
+  # Log database tables after hourly
+  info "Database tables after hourly cron:"
+  exec_sql_cmd "
+    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+    FROM information_schema.tables
+    WHERE table_schema = 'db'
+    ORDER BY table_name;
+  " db || true
 fi
 echo ""
 
@@ -694,15 +610,7 @@ restore_db
 
 # Clear test data migrations from flyway_schema_history after restore to keep restored DB clean
 info "Clearing test data migrations from flyway_schema_history after restore..."
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-    DELETE FROM flyway_schema_history WHERE version > 1;
-  " 2>/dev/null || true)
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    DELETE FROM flyway_schema_history WHERE version > 1;
-  " 2>/dev/null || true)
-fi
+exec_sql_cmd "DELETE FROM flyway_schema_history WHERE version > 1;" db 2>/dev/null || true
 echo ""
 
 # Clean up zmsapi/data folder after tests (preserve .gitignore)
