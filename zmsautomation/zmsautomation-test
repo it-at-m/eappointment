@@ -192,40 +192,80 @@ clear_caches
 echo ""
 
 # 2) Drop all tables to ensure clean state (removes tables created by migrations from previous runs)
-section "3. Database Reset"
+section "3. Database Tables Drop"
 info "Dropping all existing tables to ensure clean state..."
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
-  SET FOREIGN_KEY_CHECKS = 0;
-  SET @tables = NULL;
-  SELECT GROUP_CONCAT(CONCAT('\\`', table_name, '\\`'))
-    INTO @tables
-    FROM information_schema.tables
-    WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
-  SET @tables = IFNULL(@tables, 'dummy');
-  SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
-  PREPARE stmt FROM @tables;
-  EXECUTE stmt;
-  DEALLOCATE PREPARE stmt;
-  SET FOREIGN_KEY_CHECKS = 1;
-" >/dev/null 2>&1 || echo "No tables to drop or database is empty")
-else
-  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
-    SET FOREIGN_KEY_CHECKS = 0;
-    SET @tables = NULL;
-    SELECT GROUP_CONCAT('\\`', table_name, '\\`')
-      INTO @tables
+drop_tables() {
+  local client="$1" # podman or ddev
+  local table_count
+
+  if [[ "$client" == "podman" ]]; then
+    table_count=$(cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -N -B -u root -proot db -e "
+      SELECT COUNT(*)
       FROM information_schema.tables
       WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
-    SET @tables = IFNULL(@tables, 'dummy');
-    SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
-    PREPARE stmt FROM @tables;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-    SET FOREIGN_KEY_CHECKS = 1;
-  " >/dev/null 2>&1 || echo "No tables to drop or database is empty")
+    " 2>/dev/null | tr -d '\r')
+  else
+    table_count=$(cd "$PROJECT_ROOT" && ddev exec -T mysql -udb -pdb db -N -B -e "
+      SELECT COUNT(*)
+      FROM information_schema.tables
+      WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
+    " 2>/dev/null | tr -d '\r')
+  fi
+
+  if [[ -z "$table_count" || "$table_count" == "0" ]]; then
+    echo "No tables to drop or database is empty"
+    return
+  fi
+
+  if [[ "$client" == "podman" ]]; then
+    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db <<'SQL'
+SET FOREIGN_KEY_CHECKS = 0;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;
+SQL
+    )
+  else
+    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db <<'SQL'
+SET FOREIGN_KEY_CHECKS = 0;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;
+SQL
+    )
+  fi
+}
+
+if [[ "$USE_PODMAN" == true ]]; then
+  drop_tables "podman"
+else
+  drop_tables "ddev"
 fi
 info "Tables dropped (if any existed)."
+
+# Log database tables after reset to confirm drop
+info "Database tables after reset (should be empty):"
+if [[ "$USE_PODMAN" == true ]]; then
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+else
+  (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db -e "
+  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
+  FROM information_schema.tables
+  WHERE table_schema = 'db'
+  ORDER BY table_name;
+" || true)
+fi
 echo ""
 
 # 3) Import base database
