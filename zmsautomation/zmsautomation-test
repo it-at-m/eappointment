@@ -15,6 +15,9 @@ else
   set +o pipefail  # Don't fail pipelines if any command fails
 fi
 
+# Capture Maven arguments (e.g., -Dtest=StatusEndpointTest to run a specific test)
+MAVEN_ARGS=("$@")
+
 # Configurable endpoints (override via env)
 # When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
 # When running on podman, use 'zms-web' service name
@@ -540,6 +543,17 @@ else
   docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
 fi
 
+# Clear target directory to remove old surefire reports
+if [[ "$USE_PODMAN" == true ]]; then
+  if podman run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -c 'rm -rf /t/surefire-reports' 2>/dev/null; then
+    info "Cleared old surefire reports"
+  fi
+else
+  if docker run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -c 'rm -rf /t/surefire-reports' 2>/dev/null; then
+    info "Cleared old surefire reports"
+  fi
+fi
+
 TEST_EXIT=0
 if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db (same logic as Flyway)
@@ -554,7 +568,7 @@ if [[ "$USE_PODMAN" == true ]]; then
     -v "$M2_CACHE_VOLUME:/root/.m2" \
     -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
     -w /workspace/zmsautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test; then
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
     TEST_EXIT=0
   else
     TEST_EXIT=$?
@@ -572,7 +586,7 @@ else
     -v "$M2_CACHE_VOLUME:/root/.m2" \
     -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
     -w /workspace/zmsautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test; then
+    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
     TEST_EXIT=0
   else
     TEST_EXIT=$?
