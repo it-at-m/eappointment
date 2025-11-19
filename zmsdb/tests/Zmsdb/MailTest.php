@@ -199,7 +199,6 @@ class MailTest extends Base
                             "firstNumber" => "1000",
                             "lastNumber" => "1999",
                             "processingTimeAverage" => "00 =>15 =>00",
-                            "publishWaitingTimeEnabled" => "1",
                             "statisticsEnabled" => "1"
                         ],
                         "survey" => [

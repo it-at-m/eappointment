@@ -103,7 +103,6 @@
                                     "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
                                     "firstNumber": 300,
                                     "lastNumber": 500,
-                                    "publishWaitingTimeEnabled": true,
                                     "processingTimeAverage": 12,
                                     "statisticsEnabled": true
                                 },
@@ -563,14 +562,6 @@
                                                 "description": "contingent of given waiting numbers for ticket printer per day",
                                                 "maximum": 999,
                                                 "default": 999
-                                            },
-                                            "publishWaitingTimeEnabled": {
-                                                "type": [
-                                                    "boolean",
-                                                    "number"
-                                                ],
-                                                "description": "true if waiting times are allowed to be published for public use",
-                                                "default": true
                                             },
                                             "processingTimeAverage": {
                                                 "type": "number",

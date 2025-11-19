@@ -196,7 +196,6 @@ class Scope extends Base implements MappingInterface
             'preferences__queue__processingTimeAverage' => self::expression(
                 'FLOOR(TIME_TO_SEC(`scope`.`Bearbeitungszeit`) / 60)'
             ),
-            'preferences__queue__publishWaitingTimeEnabled' => 'scope.wartezeitveroeffentlichen',
             'preferences__queue__statisticsEnabled' => self::expression('NOT `scope`.`ohnestatistik`'),
             'preferences__survey__emailContent' => 'scope.kundenbef_emailtext',
             'preferences__survey__enabled' => 'scope.kundenbefragung',
@@ -359,7 +358,6 @@ class Scope extends Base implements MappingInterface
             ? strtoupper($entity->getPreference('queue', 'displayNumberPrefix'))
             : '';
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
-        $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);

@@ -111,7 +111,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -574,7 +573,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -1038,7 +1036,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -1504,7 +1501,6 @@ class AvailabilityConflictsTest extends Base
                                 "lastNumber": "499",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "15",
-                                "publishWaitingTimeEnabled": "1",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {

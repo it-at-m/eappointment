@@ -772,7 +772,6 @@ class ProcessTest extends Base
                         "firstNumber"=>"1000",
                         "lastNumber"=>"1999",
                         "processingTimeAverage"=>"15",
-                        "publishWaitingTimeEnabled"=>"1",
                         "statisticsEnabled"=>"1"
                     ],
                     "survey"=>[

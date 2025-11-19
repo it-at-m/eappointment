@@ -1248,7 +1248,6 @@ CREATE TABLE `standort` (
   `virtuellesachbearbeiterzahl` int(5) NOT NULL DEFAULT -1,
   `datumvirtuellesachbearbeiterzahl` date DEFAULT NULL,
   `smsnachtrag` int(1) DEFAULT 0,
-  `wartezeitveroeffentlichen` tinyint(1) NOT NULL DEFAULT 0,
   `loeschdauer` int(11) NOT NULL DEFAULT 0,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `source` varchar(10) DEFAULT 'dldb',

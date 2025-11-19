@@ -403,8 +403,6 @@
                             }
                         }]
                     ) }}
-
-                    <br>
 					{{ formgroup(
                         {
                             "legend": "E-Mail-Adresse:",
@@ -453,7 +451,7 @@
                         }]
                     ) }}
                     <br>
-                    <legend class="label">Freitextfelder</legend>
+                    <legend class="label" style="font-size:1rem;">Freitextfelder</legend>
 					<p>Hier können Sie optionale Eingabefelder konfigurieren, die in der Buchungsmaske zusätzlich angezeigt werden.</p>
                     <legend class="label">Freitextfeld 1:</legend>
                     {{ formgroup(
@@ -533,20 +531,6 @@
                             }
                         }]
                     ) }}
-
-					
-{# löschen! #}
-					{# {{ formgroup(
-                        {"label": "URL für qualifizierte Terminvereinbarung:", "description": "Diese URL wird für Internetkunden automatisch verwendet.<br> Buchungen per Telefon oder über den Tresen umgehen die hier angegebene qualifizierte Terminvereinbarung."},
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[client][alternateAppointmentUrl]",
-                                "value": scope.preferences.client.alternateAppointmentUrl,
-                                "maxlength": 100
-                            }
-                        }]
-                    ) }} #}
 				</div>
 			</fieldset>
 
@@ -957,7 +941,7 @@
                         }]
                     ) }}
 
-					{{ formgroup(
+					{# {{ formgroup(
                         {
                             "legend": "Wartezeit publizieren:", 
                             "groupTag": "fieldset", 
@@ -972,7 +956,7 @@
                                 "checked": scope.preferences.queue.publishWaitingTimeEnabled|default(0),
                             }
                         }]
-                    ) }}
+                    ) }} #}
 
 					{{ formgroup(
                         {"label": "Text für die Aufrufanzeige:", "description": "Dieser Text erscheint rechts in der Aufrufanzeige."},

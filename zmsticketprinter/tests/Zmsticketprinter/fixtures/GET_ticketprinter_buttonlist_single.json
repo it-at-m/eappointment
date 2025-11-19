@@ -59,7 +59,6 @@
               "firstNumber": 1,
               "lastNumber": 399,
               "processingTimeAverage": 12,
-              "publishWaitingTimeEnabled": 1,
               "statisticsEnabled": 1
             },
             "survey": {
