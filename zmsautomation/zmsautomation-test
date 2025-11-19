@@ -58,16 +58,42 @@ info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 section() { echo ""; echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; echo "[SECTION] $*"; echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; echo ""; }
 
+# Function to detect if podman command is available
+detect_podman_command() {
+  command -v podman >/dev/null 2>&1
+}
+
+# Function to get list of podman containers
+get_podman_containers() {
+  local containers
+  containers=$(podman ps --format "{{.Names}}" 2>/dev/null || echo "")
+  if [[ -z "$containers" ]]; then
+    # Fallback: try inspect for known containers
+    for name in zms-web zms-db; do
+      if podman inspect "$name" >/dev/null 2>&1; then
+        containers="${containers}${containers:+$'\n'}${name}"
+      fi
+    done
+  fi
+  echo "$containers"
+}
+
+# Function to detect if we're in a Podman environment
+detect_podman_environment() {
+  detect_podman_command || return 1
+  local containers
+  containers=$(get_podman_containers)
+  [[ "$containers" == *"zms-web"* ]] && [[ "$containers" == *"zms-db"* ]]
+}
+
 # Detect if we're using Podman or DDEV
 USE_PODMAN=false
-if command -v podman >/dev/null 2>&1; then
-  if podman ps --format "{{.Names}}" | grep -q "^zms-web$" && podman ps --format "{{.Names}}" | grep -q "^zms-db$"; then
-    USE_PODMAN=true
-    info "Using Podman containers (zms-web, zms-db)"
-    # Set default endpoints for Podman
-    BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
-    CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
-  fi
+if detect_podman_environment; then
+  USE_PODMAN=true
+  info "Using Podman containers (zms-web, zms-db)"
+  # Set default endpoints for Podman
+  BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
+  CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
 fi
 
 if [[ "$USE_PODMAN" == false ]]; then
