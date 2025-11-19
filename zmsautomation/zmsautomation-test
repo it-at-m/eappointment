@@ -121,6 +121,26 @@ cleanup_data_folder() {
   fi
 }
 
+# Function to get Podman network name
+get_podman_network() {
+  local network
+  network=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
+  if [[ -z "$network" ]]; then
+    network="eappointment_devcontainer_default"
+  fi
+  echo "$network"
+}
+
+# Function to get DDEV network name
+get_ddev_network() {
+  local network
+  network=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
+  if [[ -z "$network" ]]; then
+    network="ddev_default"
+  fi
+  echo "$network"
+}
+
 # Function to clear application caches
 clear_caches() {
   info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
@@ -365,10 +385,7 @@ fi
 info "Running Flyway migrations..."
 if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db
-  PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
-  if [[ -z "$PODMAN_NETWORK" ]]; then
-    PODMAN_NETWORK="eappointment_devcontainer_default"
-  fi
+  PODMAN_NETWORK=$(get_podman_network)
 
   # Wait for MySQL to be ready inside zms-db (max ~30s)
   info "Waiting for MySQL (zms-db) to become ready..."
@@ -407,10 +424,7 @@ else
       -baselineOnMigrate=true migrate)
   else
     # Get ddev network name
-    DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
-    if [[ -z "$DDEV_NETWORK" ]]; then
-      DDEV_NETWORK="ddev_default"
-    fi
+    DDEV_NETWORK=$(get_ddev_network)
     
     # Run Flyway in a Docker container on the ddev network
     info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
@@ -587,10 +601,7 @@ fi
 TEST_EXIT=0
 if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db (same logic as Flyway)
-  PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
-  if [[ -z "$PODMAN_NETWORK" ]]; then
-    PODMAN_NETWORK="eappointment_devcontainer_default"
-  fi
+  PODMAN_NETWORK=$(get_podman_network)
   
   # Run tests on podman network so container can reach podman services
   if podman run --rm \
@@ -608,10 +619,7 @@ if [[ "$USE_PODMAN" == true ]]; then
   fi
 else
   # Get ddev network name (same logic as Flyway)
-  DDEV_NETWORK=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
-  if [[ -z "$DDEV_NETWORK" ]]; then
-    DDEV_NETWORK="ddev_default"
-  fi
+  DDEV_NETWORK=$(get_ddev_network)
   
   # Run tests on ddev network so container can reach ddev services
   if docker run --rm \
