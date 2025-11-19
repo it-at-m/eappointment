@@ -2,7 +2,6 @@
 -- Insert Munich-specific behoerde (authorities) for testing
 
 INSERT IGNORE INTO `behoerde` (`BehoerdenID`, `OrganisationsID`, `KundenID`, `Name`, `Adresse`, `Ansprechpartner`, `IPProtectZeit`) VALUES
-(1, 1, 1, 'Testbehoerde', 'Teststr.', '', 0),
 (2, 3, 1, 'Gewerbeamt', '', '', 0),
 (3, 3, 1, 'Versicherungsamt', 'Implerstraße 11', '', 0),
 (6, 3, 1, 'Führerscheinstelle', 'Garmischer Straße 19/21', '', 0),
