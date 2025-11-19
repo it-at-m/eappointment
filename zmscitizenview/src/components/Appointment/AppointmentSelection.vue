@@ -1,7 +1,7 @@
 <template>
   <ProviderSelection
     :t="t"
-    :selectableProviders="selectableProviders"
+    :selectableProviders="filteredProviders"
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
@@ -514,6 +514,17 @@ const providersWithAppointments = computed(() => {
     const aPriority = a.priority ?? -Infinity;
     const bPriority = b.priority ?? -Infinity;
     return bPriority - aPriority;
+  });
+});
+
+const filteredProviders = computed(() => {
+  // filters providers when some provider have no opening hours for Appointments
+  return selectableProviders.value?.filter(provider => {
+    const hasActiveAppointmentHours = availableDays.value?.some(day => {
+      const providerIDs = day.providerIDs.split(",");
+      return providerIDs.includes(provider.id.toString());
+    });
+    return hasActiveAppointmentHours;
   });
 });
 
@@ -1072,6 +1083,7 @@ onMounted(() => {
       });
     } else {
       selectableProviders.value = availableProviders;
+      console.log(selectableProviders.value);
     }
 
     // Checks whether a provider is already selected so that it is displayed first in the slider.
