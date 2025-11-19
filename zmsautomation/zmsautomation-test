@@ -326,7 +326,7 @@ if [[ "$USE_PODMAN" == true ]]; then
   # Discover the actual podman network used by zms-db
   PODMAN_NETWORK=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
   if [[ -z "$PODMAN_NETWORK" ]]; then
-    PODMAN_NETWORK="devcontainer_default"
+    PODMAN_NETWORK="eappointment_devcontainer_default"
   fi
 
   # Wait for MySQL to be ready inside zms-db (max ~30s)
