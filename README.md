@@ -380,6 +380,93 @@ cd zmsapi
 * **What it does**: Runs `docker-compose down -v` to remove everything
 * **After reset**: Next run will be treated as a "first run" with full setup
 
+### API Testing (zmsautomation)
+
+**zmsautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
+
+**Using the test runner script (Recommended):**
+
+The `zmsautomation-test` script automatically handles database setup, migrations, and test execution:
+
+```bash
+cd zmsautomation
+./zmsautomation-test                    # Run all tests
+./zmsautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+./zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+./zmsautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+```
+
+**Maven Test Filtering:**
+
+The script supports Maven Surefire test filtering using the `-Dtest` parameter:
+
+```bash
+# Run a specific test class
+./zmsautomation-test -Dtest=StatusEndpointTest
+
+# Run a specific test method
+./zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+
+# Run multiple test classes
+./zmsautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+
+# Run tests matching a pattern
+./zmsautomation-test -Dtest=*EndpointTest
+
+# Run tests with additional Maven options
+./zmsautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+```
+
+**Environment Configuration:**
+
+The script automatically detects Podman or DDEV environments and sets appropriate defaults:
+
+- **Podman**: Uses `http://zms-web/terminvereinbarung/api/2` for BASE_URI
+- **DDEV**: Uses `http://web/terminvereinbarung/api/2` for BASE_URI
+
+You can override these defaults:
+
+```bash
+BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsautomation-test
+CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsautomation-test
+```
+
+**What the Script Does:**
+
+1. Backs up the current database
+2. Clears application caches
+3. Drops all database tables for a clean state
+4. Imports base database schema from `.resources/zms.sql`
+5. Runs Flyway migrations for test data
+6. Runs PHP migrations
+7. Executes hourly cronjob to import Munich DLDB data (if configured)
+8. Performs health checks on both APIs
+9. Runs Maven tests with REST-assured
+10. Collects and displays test results
+11. Restores the original database
+12. Cleans up test artifacts
+
+**Data Preparation (Optional):**
+
+To import Munich DLDB data during test setup:
+
+```bash
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsautomation-test
+```
+
+**Running Tests Directly with Maven:**
+
+For local development without the full setup script:
+
+```bash
+cd zmsautomation
+mvn test -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+mvn test -Dtest=StatusEndpointTest -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+```
+
+**References:**
+- REST-assured: https://github.com/rest-assured/rest-assured
+
 ### Common Errors
 
 - If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module's phpunit.xml.
