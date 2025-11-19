@@ -95,49 +95,82 @@ fi
 
 # Function to clear application caches
 clear_caches() {
-if [[ "$USE_PODMAN" == true ]]; then
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-else
-  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-fi
-
-if [[ -n "$CACHE_DIR" ]]; then
+  info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
+  if [[ "$USE_PODMAN" == true ]]; then
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  else
+    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+  fi
+  if [[ -n "$CACHE_DIR" ]]; then
+    # Validate CACHE_DIR is absolute and sensible
+    if [[ "$CACHE_DIR" != /* ]] || [[ "$CACHE_DIR" == *..* ]]; then
+      warn "CACHE_DIR '$CACHE_DIR' looks suspicious, skipping cache clear"
+      return
+    fi
     info "CACHE_DIR=$CACHE_DIR"
-  for dir in zmsapi zmsdb zmscitizenapi; do
-    if [[ "$USE_PODMAN" == true ]]; then
-      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      " || true)
-    else
-      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-        if [ -d \"$CACHE_DIR/$dir\" ]; then
-          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-        fi
-      ")
-    fi
-  done
-  HOST_CACHE_DIR="$CACHE_DIR"
-  if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-    HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-    if [[ -d "$HOST_CACHE_DIR" ]]; then
-      rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
-      echo "[CACHE][host] cleared $HOST_CACHE_DIR"
-    fi
     for dir in zmsapi zmsdb zmscitizenapi; do
-      if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
-        rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
-        echo "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
+      FULL_PATH="$CACHE_DIR/$dir"
+      if [[ "$USE_PODMAN" == true ]]; then
+        if (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+          if [ -d \"$FULL_PATH\" ]; then
+            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
+              echo \"[CACHE] cleared $FULL_PATH\"
+            else
+              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
+              exit 1
+            fi
+          fi
+        "); then
+          : # Success
+        else
+          warn "Failed to clear cache directory $FULL_PATH in container"
+        fi
+      else
+        if (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+          if [ -d \"$FULL_PATH\" ]; then
+            if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
+              echo \"[CACHE] cleared $FULL_PATH\"
+            else
+              echo \"[CACHE] failed to clear $FULL_PATH\" >&2
+              exit 1
+            fi
+          fi
+        "); then
+          : # Success
+        else
+          warn "Failed to clear cache directory $FULL_PATH in container"
+        fi
       fi
     done
-  fi
-else
-  if [[ "$USE_PODMAN" == true ]]; then
-      warn "CACHE_DIR not found in podman container"
+    # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
+    HOST_CACHE_DIR="$CACHE_DIR"
+    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
+      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
+      # Validate host cache dir path
+      if [[ "$HOST_CACHE_DIR" == *..* ]]; then
+        warn "HOST_CACHE_DIR '$HOST_CACHE_DIR' looks suspicious, skipping host cache clear"
+      elif [[ -d "$HOST_CACHE_DIR" ]]; then
+        if find "$HOST_CACHE_DIR" -mindepth 1 -delete 2>/dev/null; then
+          info "[CACHE][host] cleared $HOST_CACHE_DIR"
+        else
+          warn "[CACHE][host] failed to clear $HOST_CACHE_DIR"
+        fi
+      fi
+      for dir in zmsapi zmsdb zmscitizenapi; do
+        HOST_FULL_PATH="$HOST_CACHE_DIR/$dir"
+        if [[ -d "$HOST_FULL_PATH" ]]; then
+          if find "$HOST_FULL_PATH" -mindepth 1 -delete 2>/dev/null; then
+            info "[CACHE][host] cleared $HOST_FULL_PATH"
+          else
+            warn "[CACHE][host] failed to clear $HOST_FULL_PATH"
+          fi
+        fi
+      done
+    fi
   else
+    if [[ "$USE_PODMAN" == true ]]; then
+      warn "CACHE_DIR not found in podman container"
+    else
       warn "CACHE_DIR not found in ddev container"
     fi
   fi
