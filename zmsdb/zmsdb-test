@@ -143,9 +143,27 @@ else
   fi
 }
 
+# Function to reset timezone
+reset_timezone() {
+  RESET_SQL="SET GLOBAL time_zone = 'SYSTEM'; SET time_zone = 'SYSTEM';"
+  if [[ "$USE_PODMAN" == true ]]; then
+    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | podman exec -i zms-db mysql -u root -proot 2>&1); then
+      info "MariaDB timezone reset to SYSTEM"
+    else
+      warn "Failed to reset MariaDB timezone to SYSTEM"
+    fi
+  else
+    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql 2>&1); then
+      info "MariaDB timezone reset to SYSTEM"
+    else
+      warn "Failed to reset MariaDB timezone to SYSTEM"
+    fi
+  fi
+}
+
 # Set up EXIT trap to cleanup on script exit (normal, error, or Ctrl+C)
 if [[ "$IS_SOURCED" == false ]]; then
-  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
+  trap 'reset_timezone; clear_caches; cleanup_data_folder' EXIT INT TERM
 fi
 
 # Ensure dedicated test database exists and grant access to 'db' user
@@ -232,12 +250,7 @@ echo ""
 
 # Reset MariaDB timezone back to SYSTEM (global + session)
 section "7. Database Timezone Reset"
-RESET_SQL="SET GLOBAL time_zone = 'SYSTEM'; SET time_zone = 'SYSTEM';"
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | podman exec -i zms-db mysql -u root -proot >/dev/null 2>&1 || true)
-else
-  (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql >/dev/null 2>&1 || true)
-fi
+reset_timezone
 echo ""
 
 # Clear caches after tests

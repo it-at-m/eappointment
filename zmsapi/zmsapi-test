@@ -143,9 +143,27 @@ else
   fi
 }
 
+# Function to reset timezone
+reset_timezone() {
+  RESET_SQL="SET GLOBAL time_zone = 'SYSTEM'; SET time_zone = 'SYSTEM';"
+  if [[ "$USE_PODMAN" == true ]]; then
+    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | podman exec -i zms-db mysql -u root -proot 2>&1); then
+      info "MariaDB timezone reset to SYSTEM"
+    else
+      warn "Failed to reset MariaDB timezone to SYSTEM"
+    fi
+  else
+    if (cd "$PROJECT_ROOT" && printf "%s" "$RESET_SQL" | ddev mysql 2>&1); then
+      info "MariaDB timezone reset to SYSTEM"
+    else
+      warn "Failed to reset MariaDB timezone to SYSTEM"
+    fi
+  fi
+}
+
 # Set up EXIT trap to cleanup on script exit (normal, error, or Ctrl+C)
 if [[ "$IS_SOURCED" == false ]]; then
-  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
+  trap 'reset_timezone; clear_caches; cleanup_data_folder' EXIT INT TERM
 fi
 
 # Ensure dedicated test database exists and grant access to 'db' user
@@ -228,14 +246,19 @@ else
 fi
 echo ""
 
+# Reset MariaDB timezone back to SYSTEM (global + session)
+section "7. Database Timezone Reset"
+reset_timezone
+echo ""
+
 # Clear caches after tests
-section "7. Final Cache Clearing"
+section "8. Final Cache Clearing"
 clear_caches
 echo ""
 
 # Clean up zmsapi/data folder after tests (preserve .gitignore)
 # Note: Cleanup also runs via EXIT trap on error or Ctrl+C
-section "8. Cleanup"
+section "9. Cleanup"
 info "Cleaning up zmsapi/data folder..."
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"
