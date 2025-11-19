@@ -132,7 +132,7 @@ cleanup_data_folder() {
           printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
         fi
       fi
-    ' 2>/dev/null || warn "cleanup_data_folder podman exec failed")
+    ' || warn "cleanup_data_folder podman exec failed")
   else
     (cd "$PROJECT_ROOT" && ddev exec bash -lc '
       if [ -d /var/www/html/zmsapi/data ]; then
@@ -143,7 +143,7 @@ cleanup_data_folder() {
           printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
         fi
       fi
-    ' 2>/dev/null || warn "cleanup_data_folder ddev exec failed")
+    ' || warn "cleanup_data_folder ddev exec failed")
   fi
 }
 
