@@ -259,6 +259,7 @@ docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./ve
 ```bash
 cd zmsclient
 ./zmsclient-test
+./zmsclient-test --filter "testSetKeyBasic"
 ```
 
 The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
