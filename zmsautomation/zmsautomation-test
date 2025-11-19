@@ -25,6 +25,7 @@ CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-}"
 
 # Maven image and caches
 MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
+ALPINE_IMAGE="docker.io/library/alpine:3.20"
 M2_CACHE_VOLUME="zmsautomation-cache"
 TARGET_VOLUME="zmsautomation-target"
 # Detect script directory - works with both ./script.sh and source script.sh
@@ -590,7 +591,7 @@ if [[ "$USE_PODMAN" == true ]]; then
 else
   RUNTIME="docker"
 fi
-$RUNTIME run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
+$RUNTIME run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -lc '
   if [ -d /t/surefire-reports ]; then
     ls -la /t/surefire-reports;
     for f in /t/surefire-reports/*.txt; do

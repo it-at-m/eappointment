@@ -7,7 +7,7 @@ fi
 
 # Only set strict mode if not sourced (to avoid closing terminal on errors)
 if [[ "$IS_SOURCED" == false ]]; then
-  set -euo pipefail
+set -euo pipefail
 else
   # When sourced, disable strict modes to prevent terminal from closing
   set +e  # Don't exit on error
@@ -76,68 +76,68 @@ echo ""
 
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
-  if [[ "$USE_PODMAN" == true ]]; then
+if [[ "$USE_PODMAN" == true ]]; then
     (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
       if [ -d /var/www/html/zmsapi/data ]; then
         find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
         [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
       fi
     ' 2>/dev/null || true)
-  else
+else
     (cd "$PROJECT_ROOT" && ddev exec bash -lc '
       if [ -d /var/www/html/zmsapi/data ]; then
         find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
         [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
       fi
     ' 2>/dev/null || true)
-  fi
+fi
 }
 
 # Function to clear application caches
 clear_caches() {
-  if [[ "$USE_PODMAN" == true ]]; then
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  else
-    CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  fi
+if [[ "$USE_PODMAN" == true ]]; then
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && podman exec zms-web bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+else
+  CACHE_DIR=$(cd "$PROJECT_ROOT" && ddev exec bash -lc 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
+fi
 
-  if [[ -n "$CACHE_DIR" ]]; then
+if [[ -n "$CACHE_DIR" ]]; then
     info "CACHE_DIR=$CACHE_DIR"
+  for dir in zmsapi zmsdb zmscitizenapi; do
+    if [[ "$USE_PODMAN" == true ]]; then
+      (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      " || true)
+    else
+      (cd "$PROJECT_ROOT" && ddev exec bash -lc "
+        if [ -d \"$CACHE_DIR/$dir\" ]; then
+          rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
+          echo \"[CACHE] cleared $CACHE_DIR/$dir\"
+        fi
+      ")
+    fi
+  done
+  HOST_CACHE_DIR="$CACHE_DIR"
+  if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
+    HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
+    if [[ -d "$HOST_CACHE_DIR" ]]; then
+      rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
+      echo "[CACHE][host] cleared $HOST_CACHE_DIR"
+    fi
     for dir in zmsapi zmsdb zmscitizenapi; do
-      if [[ "$USE_PODMAN" == true ]]; then
-        (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "
-          if [ -d \"$CACHE_DIR/$dir\" ]; then
-            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-          fi
-        " || true)
-      else
-        (cd "$PROJECT_ROOT" && ddev exec bash -lc "
-          if [ -d \"$CACHE_DIR/$dir\" ]; then
-            rm -rf \"$CACHE_DIR/$dir\"/* \"$CACHE_DIR/$dir\"/.[!.]* \"$CACHE_DIR/$dir\"/..?* 2>/dev/null || true
-            echo \"[CACHE] cleared $CACHE_DIR/$dir\"
-          fi
-        ")
+      if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
+        rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
+        echo "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
       fi
     done
-    HOST_CACHE_DIR="$CACHE_DIR"
-    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-      if [[ -d "$HOST_CACHE_DIR" ]]; then
-        rm -rf "$HOST_CACHE_DIR"/* "$HOST_CACHE_DIR"/.[!.]* "$HOST_CACHE_DIR"/..?* 2>/dev/null || true
-        echo "[CACHE][host] cleared $HOST_CACHE_DIR"
-      fi
-      for dir in zmsapi zmsdb zmscitizenapi; do
-        if [[ -d "$HOST_CACHE_DIR/$dir" ]]; then
-          rm -rf "$HOST_CACHE_DIR/$dir"/* "$HOST_CACHE_DIR/$dir"/.[!.]* "$HOST_CACHE_DIR/$dir"/..?* 2>/dev/null || true
-          echo "[CACHE][host] cleared $HOST_CACHE_DIR/$dir"
-        fi
-      done
-    fi
-  else
-    if [[ "$USE_PODMAN" == true ]]; then
+  fi
+else
+  if [[ "$USE_PODMAN" == true ]]; then
       warn "CACHE_DIR not found in podman container"
-    else
+  else
       warn "CACHE_DIR not found in ddev container"
     fi
   fi
@@ -208,7 +208,7 @@ if [[ "$USE_PODMAN" == true ]]; then
     export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
     if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
        mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
-      echo "[INFO] MariaDB time_zone set to +00:00 (UTC)";
+    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
     else
       echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
     fi;
@@ -219,7 +219,7 @@ else
     export TZ="UTC"; echo "[INFO] Using timezone: $TZ"; 
     if mysql -h db -uroot -e '\''SET GLOBAL time_zone = "+00:00";'\'' &&
        mysql -h db -uroot -e '\''SET time_zone = "+00:00";'\''; then
-      echo "[INFO] MariaDB time_zone set to +00:00 (UTC)";
+    echo "[INFO] MariaDB time_zone set to +00:00 (UTC)"; 
     else
       echo "[WARN] Failed to set MariaDB time_zone to +00:00" >&2;
     fi;
