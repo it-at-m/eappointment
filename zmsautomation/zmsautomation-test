@@ -585,7 +585,12 @@ echo ""
 # Print surefire reports (if any)
 section "10. Test Results"
 info "Collecting surefire reports..."
-docker run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
+if [[ "$USE_PODMAN" == true ]]; then
+  RUNTIME="podman"
+else
+  RUNTIME="docker"
+fi
+$RUNTIME run --rm -v "$TARGET_VOLUME:/t" alpine sh -lc '
   if [ -d /t/surefire-reports ]; then
     ls -la /t/surefire-reports;
     for f in /t/surefire-reports/*.txt; do
