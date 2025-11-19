@@ -9,7 +9,7 @@ require_cmd() {
   command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required" >&2; exit 1; }
 }
 
-PHPUNIT_ARGS="${*:-}"
+PHPUNIT_ARGS=("$@")
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
 COMPOSE_CMD=""
@@ -130,8 +130,12 @@ echo "[INFO] Found test container: $TEST_CONTAINER"
 
 # Run PHPUnit tests
 echo "[INFO] Running PHPUnit tests..."
-if [[ -n "$PHPUNIT_ARGS" ]]; then
-  exec_cmd "$TEST_CONTAINER" ./vendor/bin/phpunit "$PHPUNIT_ARGS"
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+  if [[ "$USE_PODMAN" == true ]]; then
+    podman exec "$TEST_CONTAINER" ./vendor/bin/phpunit "${PHPUNIT_ARGS[@]}"
+  else
+    docker exec "$TEST_CONTAINER" ./vendor/bin/phpunit "${PHPUNIT_ARGS[@]}"
+  fi
 else
   exec_cmd "$TEST_CONTAINER" ./vendor/bin/phpunit
 fi
