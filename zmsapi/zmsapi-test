@@ -151,9 +151,9 @@ fi
 # Ensure dedicated test database exists and grant access to 'db' user
 section "2. Test Database Setup"
 if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;" >/dev/null)
+  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;")
 else
-  (cd "$PROJECT_ROOT" && ddev mysql -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;" >/dev/null)
+  (cd "$PROJECT_ROOT" && ddev mysql -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;")
 fi
 info "Test database '$TEST_DB' ready"
 echo ""
