@@ -216,26 +216,19 @@ echo ""
 
 # Setup fixtures like CI: materialize required fixture files into zmsapi/data (no symlink)
 section "4. Fixture Setup"
+FIXTURE_SETUP_CMD='
+  set -e; echo "Setup fixtures...";
+  mkdir -p /var/www/html/zmsapi/data;
+  find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
+  for f in services_de.json locations_de.json topic_de.json; do
+    cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
+  done;
+  [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
+'
 if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc '
-    set -e; echo "Setup fixtures...";
-    mkdir -p /var/www/html/zmsapi/data;
-    find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
-    for f in services_de.json locations_de.json topic_de.json; do
-      cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
-    done;
-    [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
-  ')
+  (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$FIXTURE_SETUP_CMD")
 else
-  (cd "$PROJECT_ROOT" && ddev exec bash -lc '
-    set -e; echo "Setup fixtures...";
-    mkdir -p /var/www/html/zmsapi/data;
-    find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
-    for f in services_de.json locations_de.json topic_de.json; do
-      cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
-    done;
-    [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
-  ')
+  (cd "$PROJECT_ROOT" && ddev exec bash -lc "$FIXTURE_SETUP_CMD")
 fi
 echo ""
 
