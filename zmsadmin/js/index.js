@@ -134,7 +134,6 @@ $('.client-processed').each(function () {
 })
 
 $('form').each(function () {
-    // Validate cluster forms first to ensure at least one scope is selected
     if ($(this).find('#scope-validation-error').length > 0) {
         validateClusterScopes(this);
     }
