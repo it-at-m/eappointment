@@ -350,6 +350,20 @@
                         }]
                     ) }}
 
+                    {{ formgroup(
+                        {
+                            "label": "Anzahl an maximal buchbaren Slots pro Termin:"
+                        },
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "preferences[client][slotsPerAppointment]",
+                                "value": scope.preferences.client.slotsPerAppointment,
+                                "maxlength": 2
+                            }
+                        }]
+                    ) }}
+
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
@@ -437,20 +451,8 @@
 						}]
 					) }}
 
-					{{ formgroup(
-                        {
-                            "label": "Anzahl an maximal buchbaren Slots pro Termin:"
-                        },
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[client][slotsPerAppointment]",
-                                "value": scope.preferences.client.slotsPerAppointment,
-                                "maxlength": 2
-                            }
-                        }]
-                    ) }}
                     <br>
+
                     <legend class="label" style="font-size:1rem;">Freitextfelder</legend>
 					<p>Hier können Sie optionale Eingabefelder konfigurieren, die in der Buchungsmaske zusätzlich angezeigt werden.</p>
                     <legend class="label">Freitextfeld 1:</legend>
@@ -940,23 +942,6 @@
                             }
                         }]
                     ) }}
-
-					{# {{ formgroup(
-                        {
-                            "legend": "Wartezeit publizieren:", 
-                            "groupTag": "fieldset", 
-                            "description": "(via Webservice)"
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "die Wartezeiten des Standorts dürfen im Internet veröffentlicht werden",
-                                "name": "preferences[queue][publishWaitingTimeEnabled]",
-                                "value": 1,
-                                "checked": scope.preferences.queue.publishWaitingTimeEnabled|default(0),
-                            }
-                        }]
-                    ) }} #}
 
 					{{ formgroup(
                         {"label": "Text für die Aufrufanzeige:", "description": "Dieser Text erscheint rechts in der Aufrufanzeige."},
