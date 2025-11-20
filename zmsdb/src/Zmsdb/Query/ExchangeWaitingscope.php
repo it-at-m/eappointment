@@ -206,11 +206,12 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_READ_DAY = "
         SELECT
+            standortid,
             `datum` AS datum,
             " . self::WAITING_VALUES . "
         FROM " . self::TABLE . "
         WHERE
-            `standortid` = :scopeid AND
+            `standortid` IN (:scopeids) AND
             `datum` BETWEEN :datestart AND :dateend
         GROUP BY `datum`
         ORDER BY `datum` ASC

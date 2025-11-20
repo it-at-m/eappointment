@@ -52,19 +52,18 @@ class ReportClientService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
+            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
             }
 
-            $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
-
-            if (empty($filteredData)) {
-                return null;
-            }
-
-            return $this->createFilteredExchangeClient($combinedData['entity'], $filteredData, $fromDate, $toDate);
+            return $this->createFilteredExchangeClient(
+                $combinedData['entity'],
+                $combinedData['data'],
+                $fromDate,
+                $toDate
+            );
         } catch (Exception $exception) {
             return null;
         }
@@ -103,7 +102,7 @@ class ReportClientService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears(string $scopeId, array $years): array
+    private function fetchAndCombineDataFromYears(string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;
@@ -113,7 +112,11 @@ class ReportClientService
                 $exchangeClient = \App::$http
                     ->readGetResult(
                         '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
-                        ['groupby' => 'day']
+                        [
+                            'groupby' => 'day',
+                            'fromDate' => $fromDate,
+                            'toDate' => $toDate
+                        ]
                     )
                     ->getEntity();
 
@@ -159,12 +162,12 @@ class ReportClientService
      * Create filtered exchange client with updated properties
      */
     private function createFilteredExchangeClient(
-        $exchangeClientFull,
+        $exchangeClientBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
     ): mixed {
-        $exchangeClient = clone $exchangeClientFull;
+        $exchangeClient = $exchangeClientBasic;
         $exchangeClient->data = $filteredData;
 
         if (!isset($exchangeClient->period)) {
