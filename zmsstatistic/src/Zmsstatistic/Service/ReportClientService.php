@@ -145,20 +145,6 @@ class ReportClientService
     }
 
     /**
-     * Filter data array by date range
-     */
-    private function filterDataByDateRange(array $data, string $fromDate, string $toDate): array
-    {
-        $filteredData = [];
-        foreach ($data as $row) {
-            if ($row[1] >= $fromDate && $row[1] <= $toDate) {
-                $filteredData[] = $row;
-            }
-        }
-        return $filteredData;
-    }
-
-    /**
      * Create filtered exchange client with updated properties
      */
     private function createFilteredExchangeClient(
