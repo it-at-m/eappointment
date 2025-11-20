@@ -1,3 +1,5 @@
+{% set rights = workstation.useraccount.rights %}
+
 {% embed "block/scaffholding/board.twig" with {'class': 'calendar board--light'} %}
 {% use "block/calendar/navigation.twig" %}
     {% block board_title %}Kalender{% endblock %}
@@ -19,6 +21,7 @@
         {% endfor %}
     {% endblock %}
     {% block board_footer %}
+        {% if rights.availability %}<a title="{% trans %}die Öffnungszeiten bearbeiten{% endtrans %}" href="{{ urlGet('calendar_week', {year:selectedYear, weeknr:selectedWeek|number_format}, {}) }}">Öffnungszeiten</a><br>{% endif %}
         <a title="{% trans %}den Wochenkalender (Übersicht) anzeigen{% endtrans %}" href="{{ urlGet('calendar_week', {year:selectedYear, weeknr:selectedWeek|number_format}, {}) }}">Wochenkalender</a>
     {% endblock %}
 {% endembed %}
