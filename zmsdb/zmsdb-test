@@ -47,7 +47,41 @@ require_cmd() {
 
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
-section() { echo ""; echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; echo "[SECTION] $*"; echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; echo ""; }
+
+SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+SECTION_COLOR_RESET=$'\033[0m'
+SECTION_COLOR_INDEX=0
+SECTION_COLORS=()
+USE_SECTION_COLORS=false
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  SECTION_COLORS=(
+    $'\033[38;5;196m'
+    $'\033[38;5;208m'
+    $'\033[38;5;226m'
+    $'\033[38;5;46m'
+    $'\033[38;5;51m'
+    $'\033[38;5;21m'
+    $'\033[38;5;201m'
+  )
+  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
+    USE_SECTION_COLORS=true
+  fi
+fi
+
+section() {
+  local title="$*"
+  local prefix="" suffix=""
+  if [[ "$USE_SECTION_COLORS" == true ]]; then
+    prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
+    suffix="$SECTION_COLOR_RESET"
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
+  fi
+  echo ""
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo "${prefix}[SECTION] $title${suffix}"
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo ""
+}
 
 PHPUNIT_ARGS="${*:-}"
 if [[ "$IS_SOURCED" == true ]]; then
