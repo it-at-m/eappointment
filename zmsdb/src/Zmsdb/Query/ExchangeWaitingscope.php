@@ -211,7 +211,7 @@ class ExchangeWaitingscope extends Base
             " . self::WAITING_VALUES . "
         FROM " . self::TABLE . "
         WHERE
-            `standortid` IN (:scopeids) AND
+            `standortid` IN (:scopeid) AND
             `datum` BETWEEN :datestart AND :dateend
         GROUP BY `datum`
         ORDER BY `datum` ASC

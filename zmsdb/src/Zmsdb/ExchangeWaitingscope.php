@@ -34,7 +34,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             ->fetchAll(
                 constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . strtoupper($period)),
                 [
-                    'scopeids' => $subjectIdList,
+                    'scopeid' => $subjectIdList,
                     'datestart' => $datestart->format('Y-m-d'),
                     'dateend' => $dateend->format('Y-m-d')
                 ]

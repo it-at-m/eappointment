@@ -41,8 +41,8 @@ class WarehousePeriodGet extends BaseController
 
         $subjectPeriod = (new $exchangeClass())->readEntity(
             $subjectId,
-            $fromDate ? new \DateTime($fromDate) : $periodHelper->getStartDateTime(),
-            $toDate ? new \DateTime($toDate) : $periodHelper->getEndDateTime(),
+            $fromDate ? new \DateTime($fromDate) : $start,
+            $toDate ? new \DateTime($toDate) : $end,
             $periodHelper->getPeriodIdentifier($groupby)
         );
         if (0 == count($subjectPeriod['data'])) {
