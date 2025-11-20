@@ -109,6 +109,16 @@ fi
 
 require_cmd docker
 
+DB_NAME="${DB_NAME:-db}"
+if [[ "$USE_PODMAN" == true ]]; then
+  DB_USER="${DB_USER:-root}"
+  DB_PASSWORD="${DB_PASSWORD:-${MARIADB_ROOT_PASSWORD:-root}}"
+else
+  DEFAULT_MYSQL_USER="${MYSQL_USER:-db}"
+  DB_USER="${DB_USER:-$DEFAULT_MYSQL_USER}"
+  DB_PASSWORD="${DB_PASSWORD:-${MYSQL_PASSWORD:-db}}"
+fi
+
 # Execute command in web container (abstraction for podman/ddev)
 exec_in_web() {
   local cmd="$1"
@@ -123,20 +133,20 @@ exec_in_web() {
 exec_sql() {
   local sql="$1"
   if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -i zms-db mysql -u root -proot)
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME")
   else
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql)
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME")
   fi
 }
 
 # Execute SQL command in database (for simple commands without stdin)
 exec_sql_cmd() {
   local sql="$1"
-  local db="${2:-db}"
+  local db="${2:-$DB_NAME}"
   if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot "$db" -e "$sql")
+    (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$db" -e "$sql")
   else
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb "$db" -e "$sql")
+    (cd "$PROJECT_ROOT" && ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$db" -e "$sql")
   fi
 }
 
@@ -144,7 +154,7 @@ restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE ..."
     if [[ "$USE_PODMAN" == true ]]; then
-      gunzip < "$BACKUP_FILE" | podman exec -i zms-db mysql -u root -proot db >/dev/null
+      gunzip < "$BACKUP_FILE" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" >/dev/null
     else
       (cd "$PROJECT_ROOT" && ddev import-db -f "$BACKUP_FILE" >/dev/null)
     fi
@@ -262,7 +272,7 @@ fi
 section "1. Database Backup"
 info "Exporting current database to $BACKUP_FILE ..."
 if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -i zms-db mysqldump -u root -proot db | gzip > "$BACKUP_FILE")
+  (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysqldump -u "$DB_USER" "$DB_NAME" | gzip > "$BACKUP_FILE")
 else
   (cd "$PROJECT_ROOT" && ddev export-db -f "$BACKUP_FILE" >/dev/null)
 fi
@@ -282,13 +292,13 @@ drop_tables() {
   local table_count
 
   if [[ "$client" == "podman" ]]; then
-    table_count=$(cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -N -B -u root -proot db -e "
+    table_count=$(cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -N -B -u "$DB_USER" "$DB_NAME" -e "
       SELECT COUNT(*)
       FROM information_schema.tables
       WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
     " 2>/dev/null | tr -d '\r')
   else
-    table_count=$(cd "$PROJECT_ROOT" && ddev exec -T mysql -udb -pdb db -N -B -e "
+    table_count=$(cd "$PROJECT_ROOT" && ddev exec -T env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME" -N -B -e "
       SELECT COUNT(*)
       FROM information_schema.tables
       WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
@@ -301,7 +311,7 @@ drop_tables() {
   fi
 
   if [[ "$client" == "podman" ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot db <<'SQL'
+    (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" <<'SQL'
 SET FOREIGN_KEY_CHECKS = 0;
 SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
 SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
@@ -312,7 +322,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 SQL
     )
   else
-    (cd "$PROJECT_ROOT" && ddev exec mysql -udb -pdb db <<'SQL'
+    (cd "$PROJECT_ROOT" && ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME" <<'SQL'
 SET FOREIGN_KEY_CHECKS = 0;
 SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
 SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
@@ -352,7 +362,7 @@ if [[ -f "$BASE_SQL_FILE" ]]; then
       echo "SET FOREIGN_KEY_CHECKS = 0;"
       cat "$BASE_SQL_FILE"
       echo "SET FOREIGN_KEY_CHECKS = 1;"
-    } | podman exec -i zms-db mysql -u root -proot db >/dev/null)
+    } | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" >/dev/null)
   else
     (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
   fi
@@ -386,7 +396,7 @@ if [[ "$USE_PODMAN" == true ]]; then
   # Wait for MySQL to be ready inside zms-db (max ~30s)
   info "Waiting for MySQL (zms-db) to become ready..."
   for i in {1..30}; do
-    if (cd "$PROJECT_ROOT" && podman exec zms-db sh -lc 'mysqladmin ping -uroot -proot --silent' >/dev/null 2>&1); then
+    if (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" zms-db mysqladmin ping -u"$DB_USER" --silent >/dev/null 2>&1); then
       break
     fi
     sleep 1
@@ -404,8 +414,9 @@ if [[ "$USE_PODMAN" == true ]]; then
     podman run --rm \
       --network "$PODMAN_NETWORK" \
       -v "$FLYWAY_DIR:/flyway/sql:ro" \
+      -e FLYWAY_PASSWORD="$DB_PASSWORD" \
       docker.io/flyway/flyway:9 \
-      -url=jdbc:mysql://db:3306/db -user=root -password=root \
+      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
       -locations=filesystem:/flyway/sql \
       -baselineOnMigrate=true \
       migrate || warn "Flyway (Podman) failed; continuing."
@@ -414,8 +425,8 @@ else
   # Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
   if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
     info "Using ddev flyway service"
-    (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway \
-      -url=jdbc:mysql://db:3306/db -user=db -password=db \
+    (cd "$PROJECT_ROOT" && ddev exec -s flyway env FLYWAY_PASSWORD="$DB_PASSWORD" flyway \
+      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
       -locations=filesystem:/var/www/html/zmsautomation/flyway \
       -baselineOnMigrate=true migrate)
   else
@@ -427,8 +438,9 @@ else
     docker run --rm \
       --network "$DDEV_NETWORK" \
       -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
+      -e FLYWAY_PASSWORD="$DB_PASSWORD" \
       flyway/flyway:9 \
-      -url=jdbc:mysql://db:3306/db -user=db -password=db \
+      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
       -locations=filesystem:/flyway/sql \
       -baselineOnMigrate=true \
       migrate || warn "Flyway (Docker on ddev network) failed; continuing."
