@@ -220,6 +220,7 @@ class ExchangeWaitingscope extends Base
     //PLEASE REMEMBER THE REALY COOL DYNAMIC VERSION
     const QUERY_READ_MONTH = "
         SELECT
+            standortid,
             DATE_FORMAT(`datum`, '%Y-%m') as datum,
             " . self::WAITING_VALUES . "
         FROM " . self::TABLE . "
@@ -232,12 +233,13 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_READ_QUARTER = "
         SELECT
-          CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) as datum,
-          " . self::WAITING_VALUES . "
+            standortid,
+            CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) as datum,
+            " . self::WAITING_VALUES . "
         FROM " . self::TABLE . " w
         WHERE
-          w.`standortid` = :scopeid AND
-          w.`datum` BETWEEN :datestart AND :dateend
+            w.`standortid` = :scopeid AND
+            w.`datum` BETWEEN :datestart AND :dateend
         GROUP BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`))
         ORDER BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) ASC
     ";
