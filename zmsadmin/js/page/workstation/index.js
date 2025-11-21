@@ -15,7 +15,7 @@ import ValidationHandler from '../../lib/validationHandler'
 class View extends BaseView {
     constructor(element, options) {
         super(element);
-        this.page = 'workstation';
+        this.page = options.page ?? 'workstation';
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedTime = options['selected-time'];
@@ -272,6 +272,10 @@ class View extends BaseView {
         showSpinner(scope.$main);
         if ($(event.currentTarget).data('id')) {
             this.selectedProcess = $(event.currentTarget).data('id');
+        }
+
+        if ($('select#process_time').val() !== "00-00") {
+            this.$.find('select[name=priority]').val('');
         }
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
