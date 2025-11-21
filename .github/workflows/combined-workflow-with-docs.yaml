@@ -18,6 +18,9 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
+  call-zmsautomation-tests:
+    uses: ./.github/workflows/zmsautomation-tests.yaml
+
   call-zmscitizenview-coverage:
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
@@ -107,9 +110,10 @@ jobs:
       git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests]
+    needs: [call-php-code-quality, call-php-unit-tests, call-zmsautomation-tests]
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.result == 'success'
+      needs.call-php-unit-tests.result == 'success' &&
+      needs.call-zmsautomation-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml

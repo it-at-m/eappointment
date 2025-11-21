@@ -37,6 +37,7 @@ import { getDataAttributes, forceHttps } from './lib/utils'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
+import validateClusterScopes from './element/form/validateClusterScopes'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
@@ -133,6 +134,9 @@ $('.client-processed').each(function () {
 })
 
 $('form').each(function () {
+    if ($(this).find('#scope-validation-error').length > 0) {
+        validateClusterScopes(this);
+    }
     preventFormResubmit(this);
     focusFirstErrorElement(this);
 })

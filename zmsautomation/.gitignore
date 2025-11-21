@@ -1,23 +1,3 @@
-# =============== ddev =================
-.ddev/.env
-.ddev/.env.template
-.devcontainer/.env
-
-# =============== Local =================
-/local/
-coverage/
-
-# =============== PHP =================
-vendor/
-vendor.zmsbase
-.phpunit.cache
-.phpunit.result.cache
-cache/
-.DS_*
-.sass-cache
-.cache
-qemu*.core
-
 # =============== Java =================
 # Compiled class file
 *.class
@@ -183,7 +163,6 @@ local.properties
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 .idea
-.idea/
 *.iml
 
 # Covers Netbeans:
@@ -199,10 +178,6 @@ nbdist/
 !.vscode/tasks.json
 *.code-workspace
 .history/
-.vscode/launch.json
-.vscode/settings.json
-.vscode/tasks.json
-.vscode/terminals.json
 
 # Covers other editors
 *.suo
