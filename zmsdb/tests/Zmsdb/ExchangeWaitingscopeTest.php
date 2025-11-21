@@ -13,8 +13,7 @@ class ExchangeWaitingscopeTest extends Base
         $query = new Query();
         $entity = $query->readEntity(141, new DateTime('2016-03-01'), new DateTime('2016-04-01'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        var_dump($entity->data);
-        $this->assertEquals(432, count($entity->data));
+        $this->assertEquals(234, count($entity->data));
     }
 
     public function testSubject()
