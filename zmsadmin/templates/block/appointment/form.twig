@@ -406,7 +406,8 @@
                             ) }}
                         {% endif %}
 
-                        <div id="priority">
+                        {% set withAppointment = selectedProcess.appointments|first.date|date("H-i") != "00-00" %}
+                        <div id="priority" {% if withAppointment %}style="display:none;"{% endif %}>
                             <input type="hidden" name="selected_process_priority" value="{{ selectedProcess.priority }}">
                             {% set priorityOptions = [
                                 {"value": 1, "name": "Hoch",   "selected": selectedProcess.priority == 1 ? "selected" : ""},

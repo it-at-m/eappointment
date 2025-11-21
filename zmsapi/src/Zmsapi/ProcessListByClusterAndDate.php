@@ -26,7 +26,6 @@ class ProcessListByClusterAndDate extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('basic');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
@@ -44,9 +43,14 @@ class ProcessListByClusterAndDate extends BaseController
         }
 
         $query = new Query();
-        $cluster = $query->readEntity($args['id'], 0, true);
+        $cluster = $query->readEntity($args['id'], 1);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
+        }
+
+        $shortNames = [];
+        foreach ($cluster->scopes as $scope) {
+            $shortNames[$scope->id] = $scope->shortName;
         }
 
         $queueList = new QueueList();
@@ -54,7 +58,8 @@ class ProcessListByClusterAndDate extends BaseController
             $dateQueueList = $query->readQueueList(
                 $cluster->id,
                 $date,
-                $resolveReferences ? $resolveReferences + 1 : 1
+                2,
+                ['availability']
             );
 
             if (! $dateQueueList) {
@@ -74,11 +79,23 @@ class ProcessListByClusterAndDate extends BaseController
         if ($archivedProcesses instanceof ProcessListCollection) {
             $allArchivedProcesses = $archivedProcesses;
         } else {
-            error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+            \App::$log->error('Expected ProcessListCollection, received different type', [
+                'received_type' => gettype($archivedProcesses),
+                'cluster_id' => $args['id'],
+            ]);
+        }
+
+        $queueList = $queueList->toProcessList()->withResolveLevel(2);
+        foreach ($queueList as $queue) {
+            if (!$queue->scope->id) {
+                continue;
+            }
+
+            $queue->scope->shortName = $shortNames[$queue->scope->id];
         }
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
+        $message->data = $queueList;
 
         // Add all archived processes to the response data
         $message->data->addData($allArchivedProcesses);
