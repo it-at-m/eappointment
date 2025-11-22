@@ -22,11 +22,15 @@ class AnonymizeStatisticDataByCron
         $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));
         if ($retentionSetting[0] !== "none") {
             // Ensure it's a positive integer and assign it to timespan
-            print("Using retention period set in admin system config {$retentionSetting[0]} days.\n\n");
+            if (isset(\App::$log)) {
+                \App::$log->info("Using retention period from admin system config", ['days' => (int)$retentionSetting[0]]);
+            }
             $this->timespan = (int)$retentionSetting[0];
         } else {
             // Default to 90 days if the setting is not set or not numeric
-            print("Using default retention period 90 days.\n\n");
+            if (isset(\App::$log)) {
+                \App::$log->info("Using default retention period", ['days' => 90]);
+            }
             $this->timespan = 90;
         }
     }
@@ -35,18 +39,26 @@ class AnonymizeStatisticDataByCron
     {
         // Adjust the currentDate based on the numeric timespan
         $targetDate = $currentDate->modify("-{$this->timespan} days");
-        print("Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.\n\n");
+        if (isset(\App::$log)) {
+            \App::$log->info("Beginning anonymization", ['targetDate' => $targetDate->format('Y-m-d')]);
+        }
 
         if ($commit) {
             $processStatusArchived = new ProcessStatusArchived();
             $success = $processStatusArchived->anonymizeNames($targetDate);
             if ($success) {
-                print("Anonymization process completed successfully.\n\n");
+                if (isset(\App::$log)) {
+                    \App::$log->info("Anonymization process completed successfully");
+                }
             } else {
-                print("An error occurred during the anonymization process.\n\n");
+                if (isset(\App::$log)) {
+                    \App::$log->error("An error occurred during the anonymization process");
+                }
             }
         } else {
-            print("Dry run mode - no changes have been made to the database.\n\n");
+            if (isset(\App::$log)) {
+                \App::$log->info("Dry run mode - no changes have been made to the database");
+            }
         }
     }
 }

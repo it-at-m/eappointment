@@ -54,7 +54,9 @@ class AppointmentDeleteByCron
     protected function log($message)
     {
         if ($this->verbose) {
-            error_log($message);
+            if (isset(\App::$log)) {
+                \App::$log->info($message);
+            }
         }
     }
 

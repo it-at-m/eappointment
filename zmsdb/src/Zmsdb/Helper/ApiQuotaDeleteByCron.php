@@ -14,7 +14,7 @@ class ApiQuotaDeleteByCron
     {
         $query = new \BO\Zmsdb\Apikey();
         if ($verbose) {
-            error_log("INFO: Deleting quota older than given period");
+            \App::$log->info("Deleting quota older than given period");
             $this->verbose = true;
         }
         $this->quotaList = $query->readExpiredQuotaListByPeriod($dateTime);
@@ -26,7 +26,7 @@ class ApiQuotaDeleteByCron
         if ($this->quotaList) {
             foreach ($this->quotaList as $quota) {
                 if ($verbose) {
-                    error_log("INFO: Processing quota: " . join(', ', $quota));
+                    \App::$log->info("Processing quota", ['quota' => $quota]);
                 }
                 if ($commit) {
                     $this->removeQuota($quota['quotaid']);
@@ -34,7 +34,7 @@ class ApiQuotaDeleteByCron
             }
         } else {
             if ($verbose) {
-                error_log("INFO: no expired quota was found");
+                \App::$log->info("No expired quota was found");
             }
         }
     }
@@ -46,13 +46,13 @@ class ApiQuotaDeleteByCron
             $query = new \BO\Zmsdb\Apikey();
             if ($query->writeDeletedQuota($quotaId)) {
                 if ($verbose) {
-                    error_log("INFO: Quota $quotaId successfully removed");
+                    \App::$log->info("Quota successfully removed", ['quotaId' => $quotaId]);
                 }
             } else {
-                error_log("WARN: Could not remove quota '$quotaId'!");
+                \App::$log->warning("Could not remove quota", ['quotaId' => $quotaId]);
             }
         } elseif ($verbose) {
-            error_log("INFO: Keep quota $quotaId");
+            \App::$log->info("Keep quota", ['quotaId' => $quotaId]);
         }
     }
 }
