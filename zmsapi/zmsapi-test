@@ -114,7 +114,8 @@ exec_in_web() {
   if [[ "$USE_PODMAN" == true ]]; then
     (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
   else
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc "$cmd")
+    # Use stdin approach for DDEV to avoid unbound variable issues with login shell profiles
+    (cd "$PROJECT_ROOT" && printf 'set +u\n%s\n' "$cmd" | ddev exec bash -s)
   fi
 }
 
@@ -229,7 +230,7 @@ echo ""
 # Setup fixtures like CI: materialize required fixture files into zmsapi/data (no symlink)
 section "4. Fixture Setup"
 FIXTURE_SETUP_CMD='
-  set -e; echo "Setup fixtures...";
+  set +euo pipefail; set -e; echo "Setup fixtures...";
   mkdir -p /var/www/html/zmsapi/data;
   find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
   for f in services_de.json locations_de.json topic_de.json; do

@@ -159,7 +159,8 @@ exec_in_web() {
   if [[ "$USE_PODMAN" == true ]]; then
     (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
   else
-    (cd "$PROJECT_ROOT" && ddev exec bash -lc "$cmd")
+    # Use stdin approach for DDEV to avoid unbound variable issues with login shell profiles
+    (cd "$PROJECT_ROOT" && printf 'set +u\n%s\n' "$cmd" | ddev exec bash -s)
   fi
 }
 
@@ -169,7 +170,7 @@ exec_sql() {
   if [[ "$USE_PODMAN" == true ]]; then
     (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME")
   else
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME")
+    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql "$DB_NAME")
   fi
 }
 
@@ -180,7 +181,7 @@ exec_sql_cmd() {
   if [[ "$USE_PODMAN" == true ]]; then
     (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$db" -e "$sql")
   else
-    (cd "$PROJECT_ROOT" && ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$db" -e "$sql")
+    (cd "$PROJECT_ROOT" && ddev mysql "$db" -e "$sql")
   fi
 }
 
@@ -344,35 +345,25 @@ drop_tables() {
     return
   fi
 
+  local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;"
+
   if [[ "$client" == "podman" ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" <<'SQL'
-SET FOREIGN_KEY_CHECKS = 0;
-SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
-SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-SET FOREIGN_KEY_CHECKS = 1;
-SQL
-    )
+    (cd "$PROJECT_ROOT" && printf '%s\n' "$drop_sql" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME")
   else
-    (cd "$PROJECT_ROOT" && ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME" <<'SQL'
-SET FOREIGN_KEY_CHECKS = 0;
-SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
-SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-SET FOREIGN_KEY_CHECKS = 1;
-SQL
-    )
+    (cd "$PROJECT_ROOT" && printf '%s\n' "$drop_sql" | ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME")
   fi
 }
 
 if [[ "$USE_PODMAN" == true ]]; then
-  drop_tables "podman"
+  drop_tables "podman" || warn "Failed to drop tables (podman)"
 else
-  drop_tables "ddev"
+  drop_tables "ddev" || warn "Failed to drop tables (ddev)"
 fi
 info "Tables dropped (if any existed)."
 
