@@ -29,8 +29,8 @@ CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-}"
 # Maven image and caches
 MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
 ALPINE_IMAGE="docker.io/library/alpine:3.20"
-M2_CACHE_VOLUME="zmsautomation-cache"
-TARGET_VOLUME="zmsautomation-target"
+M2_CACHE_VOLUME="zmsapiautomation-cache"
+TARGET_VOLUME="zmsapiautomation-target"
 # Detect script directory - works with both ./script.sh and source script.sh
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
   # Script is being sourced
@@ -428,7 +428,7 @@ if [[ "$USE_PODMAN" == true ]]; then
   done
 
   # Run Flyway in a podman container on the discovered network
-  FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/flyway"
+  FLYWAY_DIR="$PROJECT_ROOT/zmsapiautomation/flyway"
   # Ensure we have an absolute path
   FLYWAY_DIR=$(cd "$FLYWAY_DIR" 2>/dev/null && pwd || echo "$FLYWAY_DIR")
   if [[ ! -d "$FLYWAY_DIR" ]]; then
@@ -452,7 +452,7 @@ else
     info "Using ddev flyway service"
     (cd "$PROJECT_ROOT" && ddev exec -s flyway env FLYWAY_PASSWORD="$DB_PASSWORD" flyway \
       -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
-      -locations=filesystem:/var/www/html/zmsautomation/flyway \
+      -locations=filesystem:/var/www/html/zmsapiautomation/flyway \
       -baselineOnMigrate=true migrate)
   else
     # Get ddev network name
@@ -462,7 +462,7 @@ else
     info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
     docker run --rm \
       --network "$DDEV_NETWORK" \
-      -v "$PROJECT_ROOT/zmsautomation/flyway:/flyway/sql" \
+      -v "$PROJECT_ROOT/zmsapiautomation/flyway:/flyway/sql" \
       -e FLYWAY_PASSWORD="$DB_PASSWORD" \
       flyway/flyway:9 \
       -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
@@ -603,8 +603,8 @@ if [[ "$USE_PODMAN" == true ]]; then
     -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
     -v "$PROJECT_ROOT:/workspace:ro" \
     -v "$M2_CACHE_VOLUME:/root/.m2" \
-    -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
-    -w /workspace/zmsautomation \
+    -v "$TARGET_VOLUME:/workspace/zmsapiautomation/target" \
+    -w /workspace/zmsapiautomation \
     "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
     TEST_EXIT=0
   else
@@ -621,8 +621,8 @@ else
     -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
     -v "$PROJECT_ROOT:/workspace:ro" \
     -v "$M2_CACHE_VOLUME:/root/.m2" \
-    -v "$TARGET_VOLUME:/workspace/zmsautomation/target" \
-    -w /workspace/zmsautomation \
+    -v "$TARGET_VOLUME:/workspace/zmsapiautomation/target" \
+    -w /workspace/zmsapiautomation \
     "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
     TEST_EXIT=0
   else
