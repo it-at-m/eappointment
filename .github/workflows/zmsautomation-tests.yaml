@@ -1,18 +1,18 @@
-name: zmsautomation tests
+name: zmsapiautomation tests
 
 on:
   workflow_call:
     outputs:
       result:
         description: "ZMSAutomation test result"
-        value: ${{ jobs.zmsautomation.outputs.result }}
+        value: ${{ jobs.zmsapiautomation.outputs.result }}
 
 permissions:
   contents: read
   actions: write
 
 jobs:
-  zmsautomation:
+  zmsapiautomation:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
           echo "Using network: $NET"
           docker run --rm \
             --network "$NET" \
-            -v "$PWD/zmsautomation/flyway:/flyway/sql:ro" \
+            -v "$PWD/zmsapiautomation/flyway:/flyway/sql:ro" \
             docker.io/flyway/flyway:9 \
             -url=jdbc:mysql://db:3306/db -user=root -password=root \
             -locations=filesystem:/flyway/sql \
@@ -256,7 +256,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('zmsautomation/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('zmsapiautomation/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -267,7 +267,7 @@ jobs:
             --network "$NET" \
             -v "$PWD:/workspace" \
             -v "$HOME/.m2:/root/.m2" \
-            -w /workspace/zmsautomation \
+            -w /workspace/zmsapiautomation \
             maven:3.9-eclipse-temurin-17 mvn spotless:check
 
       - name: Run REST-assured tests
@@ -279,7 +279,7 @@ jobs:
             -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
             -v "$PWD:/workspace" \
             -v "$HOME/.m2:/root/.m2" \
-            -w /workspace/zmsautomation \
+            -w /workspace/zmsapiautomation \
             maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
 
       - name: Upload surefire reports
@@ -288,7 +288,7 @@ jobs:
         with:
           name: surefire-reports
           path: |
-            zmsautomation/target/surefire-reports/**
+            zmsapiautomation/target/surefire-reports/**
 
       - name: Set job result
         id: set-result
