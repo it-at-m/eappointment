@@ -380,20 +380,20 @@ cd zmsapi
 * **What it does**: Runs `docker-compose down -v` to remove everything
 * **After reset**: Next run will be treated as a "first run" with full setup
 
-### API Testing (zmsautomation)
+### API Testing (zmsapiautomation)
 
-**zmsautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
+**zmsapiautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
 
 **Using the test runner script (Recommended):**
 
-The `zmsautomation-test` script automatically handles database setup, migrations, and test execution:
+The `zmsapiautomation-test` script automatically handles database setup, migrations, and test execution:
 
 ```bash
-cd zmsautomation
-./zmsautomation-test                    # Run all tests
-./zmsautomation-test -Dtest=StatusEndpointTest  # Run specific test class
-./zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
-./zmsautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+cd zmsapiautomation
+./zmsapiautomation-test                    # Run all tests
+./zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+./zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
 ```
 
 **Maven Test Filtering:**
@@ -402,19 +402,19 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 ```bash
 # Run a specific test class
-./zmsautomation-test -Dtest=StatusEndpointTest
+./zmsapiautomation-test -Dtest=StatusEndpointTest
 
 # Run a specific test method
-./zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
 
 # Run multiple test classes
-./zmsautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+./zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
 
 # Run tests matching a pattern
-./zmsautomation-test -Dtest=*EndpointTest
+./zmsapiautomation-test -Dtest=*EndpointTest
 
 # Run tests with additional Maven options
-./zmsautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+./zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
 ```
 
 **Environment Configuration:**
@@ -427,8 +427,8 @@ The script automatically detects Podman or DDEV environments and sets appropriat
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsautomation-test
-CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsautomation-test
+BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsapiautomation-test
+CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsapiautomation-test
 ```
 
 **What the Script Does:**
@@ -451,7 +451,7 @@ CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsa
 To import Munich DLDB data during test setup:
 
 ```bash
-ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsautomation-test
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsapiautomation-test
 ```
 
 **Running Tests Directly with Maven:**
@@ -459,7 +459,7 @@ ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsautomation-test
 For local development without the full setup script:
 
 ```bash
-cd zmsautomation
+cd zmsapiautomation
 mvn test -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
 mvn test -Dtest=StatusEndpointTest -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
 ```
