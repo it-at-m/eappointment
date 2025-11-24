@@ -69,3 +69,6 @@ RUN chown -R www-data:www-data /var/www/html \
 # 9. Expose
 # —————————————————————————————————————————
 EXPOSE 80
+
+# Copy PHP overrides (upload limits etc.)
+COPY php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
