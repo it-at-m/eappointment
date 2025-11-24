@@ -37,18 +37,7 @@ class ProcessDeleteNotification extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
         $config = (new Config())->readEntity();
-        $scopeId = $process->getScopeId();
-        if (!$scopeId || $scopeId == 0) {
-            throw new Exception\Process\ProcessInvalid(
-                "Process scope ID is missing or invalid"
-            );
-        }
-        $department = (new Department())->readByScopeId($scopeId);
-        if (!$department) {
-            throw new Exception\Department\DepartmentNotFound(
-                "Department not found for scope " . $scopeId
-            );
-        }
+        $department = (new Department())->readByScopeId($process->scope->id);
         $notification = (new \BO\Zmsentities\Notification())
             ->toResolvedEntity($process, $config, $department, 'deleted');
         $notification = (new Query())->writeInQueue($notification, \App::$now, false);
