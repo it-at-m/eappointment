@@ -151,9 +151,10 @@ jobs:
         run: |
           set -e  # Exit immediately on any error
           cd zmsapi
-          echo "Setup fixtures..."
+          echo "Setup DLDB data..."
           rm -rf data
-          ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+          mkdir -p data
+          cp ../zmsdb/tests/Zmsdb/fixtures/*.json data/
           echo "Importing test data..."
           vendor/bin/importTestData --commit
           mkdir -p coverage
@@ -214,6 +215,10 @@ jobs:
           XDEBUG_MODE: coverage
         run: |
           set -e  # Exit immediately on any error
+          echo "Setup DLDB data..."
+          rm -rf zmsapi/data
+          mkdir -p zmsapi/data
+          cp zmsdb/tests/Zmsdb/fixtures/*.json zmsapi/data/
           cd zmsdb
           bin/importTestData --commit
           mkdir -p coverage
