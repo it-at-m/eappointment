@@ -24,11 +24,6 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $department = \App::$http
-            ->readGetResult(
-                '/scope/' . $workstation->scope['id'] . '/department/',
-                ['resolveReferences' => 2]
-            )->getEntity();
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
