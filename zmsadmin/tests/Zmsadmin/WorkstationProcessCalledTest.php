@@ -67,30 +67,6 @@ class WorkstationProcessCalledTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testRenderingAlreadyCalledPickup()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
-                ]
-            ]
-        );
-        $response = $this->render(['id' => 161275], [
-            'exclude' => 82252
-        ], []);
-        $this->assertStringContainsString(
-            'Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.',
-            (string)$response->getBody()
-        );
-        $this->assertStringContainsString('Zur Abholerverwaltung', (string)$response->getBody());
-        $this->assertStringNotContainsString('client-called_button-success', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
     public function testWithStatusProcessing()
     {
         \App::$allowClusterWideCall = false;

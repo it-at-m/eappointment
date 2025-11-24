@@ -688,39 +688,6 @@
                     ) }}
 				</div>
 			</fieldset>
-			<fieldset>
-				<legend>Abholer</legend>
-				<div class="panel--heavy">
-					{{ formgroup(
-                        {"label": "Ausgabeschaltername:", "description": "Dieser Name erscheint auf dem Display, falls ein Abholer aufgerufen wird."},
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[pickup][alternateName]",
-                                "value": scope.preferences.pickup.alternateName|default('Ausgabe'),
-                                "maxlength": 10,
-                            }
-                        }]
-                    ) }}
-
-					{{ formgroup(
-                        {
-                            "legend": "Abholerstandort:",
-                            "groupTag": "fieldset",
-                            "description": ""
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "Per Default ist dieser Standort bei der Statistikerfassung vorausgewählt",
-                                "name": "preferences[pickup][isDefault]",
-                                "value": 1,
-                                "checked": scope.preferences.pickup.isDefault|default(0),
-                            }
-                        }]
-                    ) }}
-				</div>
-			</fieldset>
 
             {% if rights.superuser %}
                 <fieldset class="superuser-only-field">

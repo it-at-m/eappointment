@@ -105,10 +105,6 @@
                         "headsUpContent": "",
                         "headsUpTime": "0"
                     },
-                    "pickup": {
-                        "alternateName": "Ausgabe",
-                        "isDefault": "0"
-                    },
                     "queue": {
                         "callCountMax": "0",
                         "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",

@@ -49,10 +49,6 @@
               "headsUpContent": "",
               "headsUpTime": 0
             },
-            "pickup": {
-              "alternateName": "Ausgabe",
-              "isDefault": 0
-            },
             "queue": {
               "callCountMax": 0,
               "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",

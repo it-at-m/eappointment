@@ -147,10 +147,6 @@
                   "headsUpContent":"",
                   "headsUpTime":"10"
                },
-               "pickup":{
-                  "alternateName":"Ausgabe",
-                  "isDefault":"0"
-               },
                "queue":{
                   "callCountMax":"1",
                   "callDisplayText":"Herzlich Willkommen",

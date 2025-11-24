@@ -3621,50 +3621,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/process/status/pickup/":
- *      post:
- *          summary: Find or create a process to be used to pickup documents.
- *          x-since: 2.11
- *          description: Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey
- *          tags:
- *              - process
- *          parameters:
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: process
- *                  description: process data to create
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/process.json"
- *          responses:
- *              200:
- *                  description: you are able to call this process now
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/process.json"
- *              400:
- *                  description: "Invalid input"
- *              403:
- *                  description: "authkey does not match"
- */
-\App::$slim->post(
-    '/process/status/pickup/',
-    '\BO\Zmsapi\ProcessPickup'
-)
-    ->setName("ProcessPickup");
-
-/**
- *  @swagger
  *  "/process/status/redirect/":
  *      post:
  *          summary: Find or create a process to be used to redirect documents.
@@ -6436,48 +6392,6 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\WorkstationProcess'
 )
     ->setName("WorkstationProcess");
-
-/**
- *  @swagger
- *  "/workstation/process/pickup/":
- *      get:
- *          summary: Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled
- *          x-since: 2.12
- *          tags:
- *              - process
- *              - workstation
- *          parameters:
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/process.json"
- *              401:
- *                  description: "login required"
- *              404:
- *                  description: "scope or cluster id does not exists"
- */
-\App::$slim->get(
-    '/workstation/process/pickup/',
-    '\BO\Zmsapi\Pickup'
-)
-    ->setName("Pickup");
 
 /**
  *  @swagger

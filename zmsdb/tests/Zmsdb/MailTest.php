@@ -77,17 +77,6 @@ class MailTest extends Base
         $this->assertStringContainsString('18:52', $entity->getHtmlPart());
     }
 
-    public function testWriteInQueueWithPickupStatus()
-    {
-        $now = static::$now;
-        $entity = $this->getTestEntity();
-        $entity->process['status'] = 'pickup';
-        $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
-        $entity = (new Query)->writeInQueue($entity, $now);
-        $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
-        $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
-    }
-
     public function testExceptionWithoutMail()
     {
         $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');

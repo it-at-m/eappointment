@@ -129,10 +129,6 @@ class AppointmentDeallocateByCronTest extends Base
                         "headsUpContent"=>"",
                         "headsUpTime"=>"0"
                     ],
-                    "pickup"=>[
-                        "alternateName"=>"Ausgabe",
-                        "isDefault"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",

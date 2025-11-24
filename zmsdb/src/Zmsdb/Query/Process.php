@@ -198,13 +198,6 @@ class Process extends Base implements MappingInterface
         }
 
         if (
-            $this->query->value('AbholortID') != 0
-            && $this->query->value('NutzerID') != 0
-        ) {
-            return 'pickup';
-        }
-
-        if (
             $this->query->value('AbholortID') == 0
             && $this->query->value('aufruferfolgreich') != 0
             && $this->query->value('NutzerID') != 0
@@ -318,12 +311,7 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => self::expression(
-                'IF(`process`.`AbholortID`,
-                    `processscope`.`ausgabeschaltername`,
-                    `processuser`.`Arbeitsplatznr`
-)'
-            ),
+            'queue__destination' => 'processuser.Arbeitsplatznr',
             'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__wayTime' => 'process.wegezeit',
@@ -804,13 +792,6 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'pending') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
-            $data['nicht_erschienen'] = 0;
-            $data['parked'] = 0;
-        }
-        if ($process->status == 'pickup') {
-            $data['AbholortID'] = $process->scope['id'];
-            $data['Abholer'] = 1;
-            $data['Timestamp'] = 0;
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
         }

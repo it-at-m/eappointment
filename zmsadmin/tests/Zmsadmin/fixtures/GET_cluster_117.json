@@ -50,10 +50,6 @@
               "headsUpContent": "",
               "headsUpTime": "0"
             },
-            "pickup": {
-              "alternateName": "Ausgabe",
-              "isDefault": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -138,10 +134,6 @@
               "confirmationContent": "",
               "headsUpContent": "",
               "headsUpTime": "0"
-            },
-            "pickup": {
-              "alternateName": "",
-              "isDefault": "0"
             },
             "queue": {
               "callCountMax": "0",

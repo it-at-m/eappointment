@@ -94,10 +94,6 @@
                                     "headsUpTime": 15,
                                     "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
                                 },
-                                "pickup": {
-                                    "alternateName": "Ausgabe von Dokumenten",
-                                    "isDefault": false
-                                },
                                 "queue": {
                                     "callCountMax": 3,
                                     "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
@@ -511,25 +507,6 @@
                                                 "type": "string",
                                                 "description": "text to send a short time before a call",
                                                 "default": ""
-                                            }
-                                        }
-                                    },
-                                    "pickup": {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "alternateName": {
-                                                "type": "string",
-                                                "description": "alternate text to display on call display if pickup of documents is required",
-                                                "default": ""
-                                            },
-                                            "isDefault": {
-                                                "type": [
-                                                    "boolean",
-                                                    "number"
-                                                ],
-                                                "description": "a pickup of documents is default, this scope is preselected for pickup",
-                                                "default": false
                                             }
                                         }
                                     },
