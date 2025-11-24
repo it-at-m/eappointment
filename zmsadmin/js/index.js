@@ -20,9 +20,6 @@ import ConfigView from './page/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
-import PickupView from './page/pickup'
-import PickupHandheldView from './page/pickup/handheld'
-import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
@@ -115,18 +112,6 @@ $('[data-scope-select-form]').each(function () {
 $('.emergency-end').each(function () {
     new EmergencyEnd(this, getDataAttributes(this));
 })
-
-$('.pickup-view').each(function () {
-    new PickupView(this, getDataAttributes(this));
-})
-
-$('.pickup-handheld-view').each(function () {
-    new PickupHandheldView(this, getDataAttributes(this));
-})
-
-$('.pickup-keyboard-handheld').each(function () {
-    new PickupKeyboardHandheldView(this);
-});
 
 $('.client-processed').each(function () {
     new StatisticView(this, getDataAttributes(this));

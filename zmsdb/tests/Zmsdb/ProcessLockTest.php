@@ -64,7 +64,6 @@ class ProcessLockTest extends Base
         $now = static::$now;
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
-        $query->writeNewPickup($scope, $now);
     }
 
     public function testDBIsLockedByUpdateProcess()

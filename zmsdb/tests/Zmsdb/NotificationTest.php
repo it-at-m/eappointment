@@ -11,7 +11,6 @@ class NotificationTest extends Base
     {
         $now = static::$now;
         $input = $this->getTestEntity();
-        $input->process['status'] = 'pickup';
 
         $this->assertEquals('0', $input->getFirstClient()->emailSendCount);
 

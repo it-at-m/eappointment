@@ -156,10 +156,6 @@
                 "headsUpContent": "",
                 "headsUpTime": 0
             },
-            "pickup": {
-                "alternateName": "",
-                "isDefault": 0
-            },
             "queue": {
                 "callCountMax": 3,
                 "callDisplayText": "",

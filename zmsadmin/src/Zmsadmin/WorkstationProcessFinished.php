@@ -32,9 +32,8 @@ class WorkstationProcessFinished extends BaseController
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
-        $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
 
-        if (! $statisticEnabled && ! $isDefaultPickup) {
+        if (! $statisticEnabled) {
             $workstation->process['status'] = 'finished';
             return $this->getFinishedResponse($workstation);
         }
@@ -61,11 +60,9 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
-                'pickupList' => $department->getScopeList(),
                 'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
-                'statisticEnabled' => $statisticEnabled,
-                'isDefaultPickup' => $isDefaultPickup
+                'statisticEnabled' => $statisticEnabled
             )
         );
     }

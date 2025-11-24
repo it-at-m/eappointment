@@ -6,7 +6,6 @@ SET `status` = CASE
     WHEN `nicht_erschienen` != 0 THEN 'missed'
     WHEN `parked` != 0 THEN 'parked'
     WHEN `Abholer` != 0 AND `AbholortID` != 0 AND `NutzerID` = 0 THEN 'pending'
-    WHEN `AbholortID` != 0 AND `NutzerID` != 0 THEN 'pickup'
     WHEN `AbholortID` = 0 AND `aufruferfolgreich` != 0 AND `NutzerID` != 0 THEN 'processing'
     WHEN `aufrufzeit` != '00:00:00' AND `NutzerID` != 0 AND `AbholortID` = 0 THEN 'called'
     WHEN `Uhrzeit` = '00:00:00' THEN 'queued'

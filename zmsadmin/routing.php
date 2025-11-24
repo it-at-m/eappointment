@@ -228,43 +228,6 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/owner/delete/{id:\d+}/', \BO\Zmsadmin\OwnerDelete::class)
     ->setName("ownerDelete");
 
-/*
- * ---------------------------------------------------------------------------
- * Pickup
- * -------------------------------------------------------------------------
- */
-
-\App::$slim->group('/pickup', function (RouteCollectorProxy $group) {
-    $group->get('/', \BO\Zmsadmin\Pickup::class)
-        ->setName("pickup");
-
-    $group->get('/queue/', \BO\Zmsadmin\PickupQueue::class)
-        ->setName("pickup_queue");
-
-    $group->get('/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
-        ->setName("pickup_delete");
-
-    $group->map(['GET','POST'], '/handheld/', \BO\Zmsadmin\PickupHandheld::class)
-        ->setName("pickup_handheld");
-
-    $group->get('/keyboard/', \BO\Zmsadmin\PickupKeyboard::class)
-        ->setName("pickup_keyboard");
-
-    $group->get('/spreadsheet/', \BO\Zmsadmin\PickupSpreadSheet::class)
-        ->setName("pickup_spreadsheet");
-
-    $group->get('/mail/', \BO\Zmsadmin\PickupMail::class)
-        ->setName("pickup_mail");
-
-    $group->get('/notification/', \BO\Zmsadmin\PickupNotification::class)
-        ->setName("pickup_notification");
-
-    $group->get('/call/{id:\d+}/', \BO\Zmsadmin\PickupCall::class)
-        ->setName("pickup_call");
-
-    $group->get('/call/cancel/', \BO\Zmsadmin\PickupCallCancel::class)
-        ->setName("pickup_call_cancel");
-});
 
 /*
  * ---------------------------------------------------------------------------

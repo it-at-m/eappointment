@@ -100,10 +100,6 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -561,10 +557,6 @@ class AvailabilityConflictsTest extends Base
                                     "confirmationContent": "",
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
-                                },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -1024,10 +1016,6 @@ class AvailabilityConflictsTest extends Base
                                     "confirmationContent": "",
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
-                                },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -1489,10 +1477,6 @@ class AvailabilityConflictsTest extends Base
                                 "confirmationContent": "",
                                 "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                 "headsUpTime": "30"
-                            },
-                            "pickup": {
-                                "alternateName": "Ausgabe",
-                                "isDefault": "0"
                             },
                             "queue": {
                                 "callCountMax": "0",

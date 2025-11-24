@@ -54,7 +54,6 @@ class ProcessTest extends Base
         $now = static::$now;
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
-        $process = $query->writeNewPickup($scope, $now);
         $process = $query->readEntity($process->id, $process->authKey, 0);
         $this->assertEquals('pending', $process->status);
         $this->assertEquals($now->getTimestamp(), $process->queue['arrivalTime']);
@@ -363,7 +362,6 @@ class ProcessTest extends Base
     {
         $statusArray = [
             'pending',
-            'pickup',
             'called',
             'missed',
             'queued',
@@ -762,10 +760,6 @@ class ProcessTest extends Base
                         "enabled"=>"0",
                         "headsUpContent"=>"",
                         "headsUpTime"=>"0"
-                    ],
-                    "pickup"=>[
-                        "alternateName"=>"Ausgabe",
-                        "isDefault"=>"0"
                     ],
                     "queue"=>[
                         "callCountMax"=>"0",

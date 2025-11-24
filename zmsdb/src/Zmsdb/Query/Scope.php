@@ -185,8 +185,6 @@ class Scope extends Base implements MappingInterface
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
-            'preferences__pickup__alternateName' => 'scope.ausgabeschaltername',
-            'preferences__pickup__isDefault' => 'scope.defaultabholerstandort',
             'preferences__queue__callCountMax' => 'scope.anzahlwiederaufruf',
             'preferences__queue__callDisplayText' => 'scope.aufrufanzeigetext',
             'preferences__queue__firstNumber' => 'scope.startwartenr',
@@ -347,8 +345,6 @@ class Scope extends Base implements MappingInterface
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
-        $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
-        $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault', true);
         $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText', false, '');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
