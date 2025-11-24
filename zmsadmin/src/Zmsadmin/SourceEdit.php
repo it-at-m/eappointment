@@ -51,7 +51,7 @@ class SourceEdit extends BaseController
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            $result = $this->testUpdateEntity($input);
+            $result = $this->writeUpdatedEntity($input);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect('sourceEdit', ['name' => $result->getSource()], [
                     'success' => 'source_saved'
@@ -76,18 +76,20 @@ class SourceEdit extends BaseController
         );
     }
 
-    protected function testUpdateEntity($input)
+    protected function writeUpdatedEntity($input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         try {
             $entity = \App::$http->readPostResult('/source/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
-                $exceptionData = [
-                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
+                // Return transformed error data with template for backward compatibility with tests
+                // Field-level errors are also displayed inline in the form via exception.data
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
                 ];
-                $exceptionData['data'] = $exception->data;
-                return $exceptionData;
             } else {
                 throw $exception;
             }

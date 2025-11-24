@@ -48,7 +48,7 @@ class Scope extends BaseController
         $callDisplayImage = \App::$http->readGetResult('/scope/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if ($request->getMethod() === 'POST') {
-            $result = $this->testUpdateEntity($input, $entityId);
+            $result = $this->writeUpdatedEntity($input, $entityId);
             if ($result instanceof Entity) {
                 $this->writeUploadedImage($request, $entityId, $input);
                 return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
@@ -94,7 +94,7 @@ class Scope extends BaseController
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
      * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
-    protected function testUpdateEntity($input, $entityId = null)
+    protected function writeUpdatedEntity($input, $entityId = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         try {
@@ -106,6 +106,15 @@ class Scope extends BaseController
                                      ->getEntity();
             }
         } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                // Return transformed error data with template for backward compatibility with tests
+                // Field-level errors are also displayed inline in the form via exception.data
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if (
                 '' != $exception->template
@@ -113,7 +122,8 @@ class Scope extends BaseController
             ) {
                 return [
                     'template' => $template,
-                    'data' => $exception->data
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
                 ];
             }
             throw $exception;

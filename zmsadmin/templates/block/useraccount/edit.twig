@@ -27,6 +27,10 @@
         {% if action == "add" and 0 < oidcProviderList|length %}
         <div class="fieldset">
             <div class="panel--light">
+                {% set selectedOidcProvider = (providerOptions[1] is defined) ? providerOptions[1].value : "" %}
+                {% if userAccount and userAccount.oidcProvider is defined %}
+                    {% set selectedOidcProvider = userAccount.oidcProvider %}
+                {% endif %}
                 {{ formgroup(
                     {
                         "label": "Login nur über OIDC",
@@ -40,7 +44,7 @@
                             "name": "oidcProvider",
                             "id": "useOidcProvider",
                             "options": providerOptions,
-                            "value": providerOptions[1].value
+                            "value": selectedOidcProvider
                         }
                     }]
                 ) }}
@@ -53,7 +57,7 @@
                 "label": "Nutzername:",
                 "description": metadata.id.description,
                 "required": true,
-                "errors": exception.data.id.messages
+                "errors": (exception and exception.data.id.messages is defined) ? exception.data.id.messages : []
             },
             [{
                 "type":"input",
@@ -74,7 +78,7 @@
                 "label": "Passwort:",
                 "description": passwordDescription|filter((v, k) => (k == 'minLength')),
                 "required": passwordRequired,
-                "errors": exception.data.changePassword.messages
+                "errors": (exception and exception.data.changePassword.messages is defined) ? exception.data.changePassword.messages : []
             },
             [{
                 "type":"input",
@@ -91,7 +95,7 @@
                 "label": "Passwortwiederholung:",
                 "description": passwordDescription|filter((v, k) => k != 'maxLength'),
                 "required": passwordRequired,
-                "errors":exception.data.changePassword.messages
+                "errors": (exception and exception.data.changePassword.messages is defined) ? exception.data.changePassword.messages : []
             },
             [{
                 "type":"input",
@@ -146,7 +150,7 @@
                 {
                     "label": "Behörde:",
                     "description": metadata.departments.description,
-                    "errors": exception.data.departments.messages
+                    "errors": (exception and exception.data.departments.messages is defined) ? exception.data.departments.messages : []
                 },
                 [{
                     "type":"select",

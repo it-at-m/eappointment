@@ -67,6 +67,15 @@ class Profile extends BaseController
         try {
             $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                // Return transformed error data with template for backward compatibility with tests
+                // Field-level errors are also displayed inline in the form via exception.data
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if (
                 '' != $exception->template
@@ -74,7 +83,8 @@ class Profile extends BaseController
             ) {
                 return [
                     'template' => $template,
-                    'data' => $exception->data
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
                 ];
             }
             throw $exception;

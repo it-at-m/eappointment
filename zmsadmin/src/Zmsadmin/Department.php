@@ -27,22 +27,24 @@ class Department extends BaseController
         $entity = \App::$http->readGetResult('/department/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $entityId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
+        $result = null;
 
         if ($request->getMethod() === 'POST') {
             $input = $this->withCleanupLinks($input);
             $input = $this->withCleanupDayoffs($input);
             $input = $this->withEmailReminderDefaultValues($input);
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->id = $entityId;
-            $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
-            $entity = \App::$http->readPostResult(
-                '/department/' . $entity->id . '/',
-                $entity
-            )->getEntity();
-            return \BO\Slim\Render::redirect('department', ['id' => $entityId], [
-                'success' => 'department_saved'
-            ]);
+            $result = $this->writeUpdatedEntity($input, $entityId);
+            if ($result instanceof Entity) {
+                return \BO\Slim\Render::redirect('department', ['id' => $entityId], [
+                    'success' => 'department_saved'
+                ]);
+            }
         }
+
+        // If there was an error, use the submitted input data for form re-population
+        $departmentData = (isset($result) && is_array($result) && isset($result['data']))
+            ? array_merge((new Schema($entity))->toSanitizedArray(), $input ?? [])
+            : (new Schema($entity))->toSanitizedArray();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -51,10 +53,11 @@ class Department extends BaseController
                 'title' => 'Standort',
                 'workstation' => $workstation,
                 'organisation' => $organisation,
-                'department' => (new Schema($entity))->toSanitizedArray(),
+                'department' => $departmentData,
                 'hasAccess' => $entity->hasAccess($workstation->getUseraccount()),
                 'menuActive' => 'owner',
                 'success' => $success,
+                'exception' => (isset($result) && !($result instanceof Entity)) ? $result : null,
             )
         );
     }
@@ -101,5 +104,41 @@ class Department extends BaseController
         }
 
         return $input;
+    }
+
+    protected function writeUpdatedEntity($input, $entityId)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity->id = $entityId;
+        $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
+        try {
+            $entity = \App::$http->readPostResult(
+                '/department/' . $entity->id . '/',
+                $entity
+            )->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                // Return transformed error data with template for backward compatibility with tests
+                // Field-level errors are also displayed inline in the form via exception.data
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
+            if (
+                '' != $exception->template
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+            ) {
+                return [
+                    'template' => $template,
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+            throw $exception;
+        }
+        return $entity;
     }
 }

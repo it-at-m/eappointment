@@ -27,8 +27,10 @@ class UseraccountAdd extends BaseController
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
+        $submittedUserAccount = null;
         if ($request->getMethod() === 'POST') {
-            $input['password'] = $input['changePassword'][0];
+            $input['password'] = $input['changePassword'][0] ?? null;
+            $submittedUserAccount = $input; // Preserve submitted data for form re-population
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect(
@@ -57,7 +59,7 @@ class UseraccountAdd extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration',
                 'menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
-                'userAccount' => (isset($result)) ? $input : null,
+                'userAccount' => $submittedUserAccount, // Use submitted data to preserve form values on error
                 'selectedDepartment' => $selectedDepartment,
                 'oidcProviderList' => array_filter($allowedProviderList),
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
@@ -75,6 +77,15 @@ class UseraccountAdd extends BaseController
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                // Return transformed error data with template for backward compatibility with tests
+                // Field-level errors are also displayed inline in the form via exception.data
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if (
                 '' != $exception->template
@@ -83,7 +94,7 @@ class UseraccountAdd extends BaseController
                 return [
                     'template' => $template,
                     'include' => true,
-                    'data' => $exception->data
+                    'data' => $this->transformValidationErrors($exception->data)
                 ];
             }
             throw $exception;
