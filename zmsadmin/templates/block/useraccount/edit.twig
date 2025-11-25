@@ -1,5 +1,9 @@
 
 {% from 'element/helper/form.twig' import formgroup, formbutton, custombutton, inputfield %}
+
+{% set userAccount = userAccount|default({}) %}
+{% set userAccountDepartments = userAccount.departments|default([]) %}
+{% set userAccountRights = userAccount.rights|default({}) %}
     
 {% set readonly = 1 %}
 {% if action == "add" %}
@@ -63,7 +67,7 @@
                 "type":"input",
                 "parameter": {
                     "name": "id",
-                    "value": userAccount.id,
+                    "value": userAccount.id|default(''),
                     "maxlength": 40,
                     "readonly": (readonly and isFromOidc)
                 }
@@ -113,7 +117,7 @@
             {% set departmentOneSelected = 0 %}
 
             {% if workstation.useraccount.rights.superuser %}
-                {% if userAccount.rights.superuser %}
+                {% if userAccountRights.superuser|default(0) %}
                     {% set allOverSelected = 1 %}
                 {% endif %}
                 {% set departmentOptionsGroup = departmentOptionsGroup|merge([
@@ -126,7 +130,7 @@
                     {% set departmentOptions = [] %}
                     {% for department in departmentList %}
                         {% set selected = 0 %}
-                        {% for selectedDepartment in userAccount.departments %}
+                        {% for selectedDepartment in userAccountDepartments %}
                             {% if department.id == selectedDepartment.id %}
                                 {% if not allOverSelected %}
                                     {% set selected = 1 %}
@@ -188,7 +192,7 @@
                     "label": "Innenrevision (Rolle: 5)",
                     "name": "rights[audit]",
                     "value": 1,
-                    "checked" : userAccount.rights.audit,
+                    "checked" : userAccountRights.audit|default(0),
                     "id": "check_rights_15"
                 }
                 },
@@ -198,7 +202,7 @@
                         "label": "Terminadministration (Rolle: 30)",
                         "name": "rights[scope]",
                         "value": 1,
-                            "checked" : userAccount.rights.scope,
+                            "checked" : userAccountRights.scope|default(0),
                         "id": "check_rights_5"
                     }
                 }
@@ -213,7 +217,7 @@
                         "label": "Fachliche Administration (Rolle: 40)",
                         "name": "rights[cluster]",
                         "value": 1,
-                            "checked" : userAccount.rights.cluster,
+                            "checked" : userAccountRights.cluster|default(0),
                         "id": "check_rights_7"
                     }
                 }
@@ -228,7 +232,7 @@
                         "label": "Technische Administration (Rolle: 90)",
                         "name": "rights[superuser]",
                         "value": 1,
-                            "checked" : userAccount.rights.superuser,
+                            "checked" : userAccountRights.superuser|default(0),
                     "id": "check_rights_10"
                     }
                 }
@@ -248,7 +252,7 @@
     {% set label = "Nutzer anlegen" %}
     {% if action != "add" %}
         {% set label = "Nutzerdaten ändern" %}
-        {{ custombutton({ "class": "button button--destructive button-delete", "type":"delete", "target": urlGet("useraccountDelete", {"loginname": userAccount.id}, {}), "label":"Löschen", "data": {"name": userAccount.id} }) }}
+        {{ custombutton({ "class": "button button--destructive button-delete", "type":"delete", "target": urlGet("useraccountDelete", {"loginname": userAccount.id|default('')}, {}), "label":"Löschen", "data": {"name": userAccount.id|default('')} }) }}
     {% endif %}
     {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":label, "value": "save" }) }}
     </div>
