@@ -67,7 +67,7 @@ class WorkstationProcessNext extends BaseController
 
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
-        if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
+        if (!$process || ! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
             return \BO\Slim\Render::withHtml(
                 $response,
                 'block/process/next.twig',

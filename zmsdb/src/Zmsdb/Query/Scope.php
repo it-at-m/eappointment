@@ -104,47 +104,63 @@ class Scope extends Base implements MappingInterface
 
     public function addJoin()
     {
-        $this->leftJoin(
-            new Alias(Provider::getTablename(), 'provider'),
-            self::expression('scope.InfoDienstleisterID = provider.id && scope.source = provider.source')
-        );
-        $providerQuery = new Provider($this, $this->getPrefixed('provider__'));
-        return [$providerQuery];
+        if ($this->shouldLoadEntity('provider')) {
+            $this->leftJoin(
+                new Alias(Provider::getTablename(), 'provider'),
+                self::expression('scope.InfoDienstleisterID = provider.id && scope.source = provider.source')
+            );
+            $providerQuery = new Provider($this, $this->getPrefixed('provider__'));
+            return [$providerQuery];
+        }
+
+        return [];
     }
 
     protected function addRequiredJoins()
     {
-        $this->leftJoin(
-            new Alias(Department::TABLE, 'scopedepartment'),
-            'scope.BehoerdenID',
-            '=',
-            'scopedepartment.BehoerdenID'
-        );
-        $this->leftJoin(
-            new Alias('sms', 'scopesms'),
-            'scopedepartment.BehoerdenID',
-            '=',
-            'scopesms.BehoerdenID'
-        );
-        $this->leftJoin(
-            new Alias('email', 'scopemail'),
-            'scopedepartment.BehoerdenID',
-            '=',
-            'scopemail.BehoerdenID'
-        );
-        $this->leftJoin(
-            new Alias(Provider::getTablename(), 'scopeprovider'),
-            self::expression('scope.InfoDienstleisterID = scopeprovider.id && scope.source = scopeprovider.source')
-        );
+
+        if ($this->shouldLoadEntity('scopedepartment')) {
+            $this->leftJoin(
+                new Alias(Department::TABLE, 'scopedepartment'),
+                'scope.BehoerdenID',
+                '=',
+                'scopedepartment.BehoerdenID'
+            );
+        }
+
+        if ($this->shouldLoadEntity('scopesms') && $this->shouldLoadEntity('scopedepartment')) {
+            $this->leftJoin(
+                new Alias('sms', 'scopesms'),
+                'scopedepartment.BehoerdenID',
+                '=',
+                'scopesms.BehoerdenID'
+            );
+        }
+
+        if ($this->shouldLoadEntity('scopemail') && $this->shouldLoadEntity('scopedepartment')) {
+            $this->leftJoin(
+                new Alias('email', 'scopemail'),
+                'scopedepartment.BehoerdenID',
+                '=',
+                'scopemail.BehoerdenID'
+            );
+        }
+
+        if ($this->shouldLoadEntity('scopeprovider')) {
+            $this->leftJoin(
+                new Alias(Provider::getTablename(), 'scopeprovider'),
+                self::expression('scope.InfoDienstleisterID = scopeprovider.id && scope.source = scopeprovider.source')
+            );
+        }
     }
 
     //Todo: now() Parameter to enable query cache
     public function getEntityMapping()
     {
-        return [
+        return array_filter([
             'hint' => 'scope.Hinweis',
             'id' => 'scope.StandortID',
-            'contact__name' => 'scopeprovider.name',
+            'contact__name' => $this->shouldLoadEntity('scopeprovider') ? 'scopeprovider.name' : '',
             'contact__street' => 'scope.Adresse',
             'contact__email' => 'scope.emailstandortadmin',
             'contact__country' => self::expression('"Germany"'),
@@ -158,13 +174,21 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__activationDuration' => 'scope.aktivierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
             'preferences__appointment__notificationConfirmationEnabled' =>
-                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'),
+                $this->shouldLoadEntity('scopesms')
+                    ? self::expression(
+                        'scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'
+                    )
+                : '',
             'preferences__appointment__notificationHeadsUpEnabled' =>
-                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung'),
+                $this->shouldLoadEntity('scopesms')
+                ? self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung')
+                : '',
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
-            'preferences__client__emailFrom' => 'scopemail.absenderadresse',
+            'preferences__client__emailFrom' => $this->shouldLoadEntity('scopemail')
+                ? 'scopemail.absenderadresse'
+                : '',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
             'preferences__client__emailConfirmationActivated' => 'scope.email_confirmation_activated',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
@@ -225,14 +249,14 @@ class Scope extends Base implements MappingInterface
             'status__queue__maxDisplayNumber' => 'scope.max_display_number',
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
-            'provider__id' => self::expression(
+            'provider__id' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
                 'IF(`scopeprovider`.`id`!="", `scopeprovider`.`id`, `scope`.`InfoDienstleisterID`)'
-            ),
-            'provider__source' => self::expression(
+            ) : '',
+            'provider__source' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
                 'IF(`scopeprovider`.`source`!="", `scopeprovider`.`source`, `scope`.`source`)'
-            ),
+            ) : '',
             'source' => 'scope.source'
-        ];
+        ], 'strlen');
     }
 
     public function addConditionScopeId($scopeId)
@@ -434,9 +458,11 @@ class Scope extends Base implements MappingInterface
 
     private function setDefaultValues($data)
     {
-        $this->setIfEmpty($data, 'preferences__client__emailFrom', [
-            'preferences__client__emailRequired' => 0
-        ]);
+        if ($this->shouldLoadEntity('scopemail')) {
+            $this->setIfEmpty($data, 'preferences__client__emailFrom', [
+                'preferences__client__emailRequired' => 0
+            ]);
+        }
 
         $this->setIfEmpty($data, 'preferences__client__telephoneActivated', [
             'preferences__client__telephoneRequired' => 0
