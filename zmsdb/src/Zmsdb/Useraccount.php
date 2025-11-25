@@ -7,6 +7,7 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
 
 /**
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(TooManyMethods)
  *
  */
 class Useraccount extends Base
@@ -42,14 +43,6 @@ class Useraccount extends Base
         return $useraccount;
     }
 
-    /**
-     * read list of useraccounts
-     *
-     * @param
-     *            resolveReferences
-     *
-     * @return Resource Collection
-     */
     public function readList($resolveReferences = 0)
     {
         $collection = new Collection();
@@ -96,14 +89,6 @@ class Useraccount extends Base
         return $collection;
     }
 
-    /**
-     * read list assigned departments
-     *
-     * @param
-     *            resolveReferences
-     *
-     * @return Resource Collection
-     */
     public function readAssignedDepartmentList($useraccount, $resolveReferences = 0)
     {
         if ($useraccount->isSuperUser()) {
@@ -124,13 +109,6 @@ class Useraccount extends Base
         return $departmentList;
     }
 
-    /**
-     * Load assigned departments for all useraccounts in a single query
-     *
-     * @param Collection $useraccounts Collection of useraccount entities
-     * @param int $resolveReferences
-     * @return array Map of useraccount name => DepartmentList
-     */
     protected function readAssignedDepartmentListsForAll(Collection $useraccounts, $resolveReferences = 0)
     {
         if (count($useraccounts) === 0) {
@@ -151,12 +129,6 @@ class Useraccount extends Base
         return $result;
     }
 
-    /**
-     * Separate superusers from regular users
-     *
-     * @param Collection $useraccounts
-     * @return array [superusers[], regularUsers[]]
-     */
     protected function separateSuperusersFromRegularUsers(Collection $useraccounts)
     {
         $superusers = [];
@@ -171,13 +143,6 @@ class Useraccount extends Base
         return [$superusers, $regularUsers];
     }
 
-    /**
-     * Load departments for all superusers (they all get the same list)
-     *
-     * @param array $superusers Array of superuser IDs
-     * @param int $resolveReferences
-     * @return array Map of useraccount name => DepartmentList
-     */
     protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
     {
         $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
@@ -191,13 +156,6 @@ class Useraccount extends Base
         return $result;
     }
 
-    /**
-     * Load departments for regular users in a single query
-     *
-     * @param array $regularUsers Array of regular user IDs
-     * @param int $resolveReferences
-     * @return array Map of useraccount name => DepartmentList
-     */
     protected function loadRegularUserDepartments(array $regularUsers, $resolveReferences = 0)
     {
         $placeholders = str_repeat('?,', count($regularUsers) - 1) . '?';
@@ -227,14 +185,6 @@ class Useraccount extends Base
         return $assignmentsByUser;
     }
 
-    /**
-     * Build department lists for each useraccount
-     *
-     * @param array $useraccountNames
-     * @param array $assignmentsByUser Map of useraccount name => assignments[]
-     * @param int $resolveReferences
-     * @return array Map of useraccount name => DepartmentList
-     */
     protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0)
     {
         $result = [];
@@ -248,13 +198,6 @@ class Useraccount extends Base
         return $result;
     }
 
-    /**
-     * Build a DepartmentList from assignment data
-     *
-     * @param array $items Array of assignment items with 'id' and 'organisation__name'
-     * @param int $resolveReferences
-     * @return \BO\Zmsentities\Collection\DepartmentList
-     */
     protected function buildDepartmentList(array $items, $resolveReferences = 0)
     {
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
@@ -341,14 +284,6 @@ class Useraccount extends Base
         return $collection;
     }
 
-    /**
-     * write an useraccount
-     *
-     * @param
-     *            entity
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         if ($this->readIsUserExisting($entity->id)) {
@@ -362,14 +297,6 @@ class Useraccount extends Base
         return $this->readEntity($entity->getId(), $resolveReferences);
     }
 
-    /**
-     * update a useraccount
-     *
-     * @param
-     *            useraccountId
-     *
-     * @return Entity
-     */
     public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::UPDATE);
@@ -381,14 +308,6 @@ class Useraccount extends Base
         return $this->readEntity($entity->getId(), $resolveReferences);
     }
 
-    /**
-     * remove an user
-     *
-     * @param
-     *            itemId
-     *
-     * @return Resource Status
-     */
     public function deleteEntity($loginName)
     {
         $query = new Query\Useraccount(Query\Base::DELETE);
