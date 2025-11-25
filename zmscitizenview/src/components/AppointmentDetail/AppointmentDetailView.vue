@@ -639,10 +639,4 @@ onMounted(() => {
 .timeBox p {
   margin-bottom: 0 !important;
 }
-
-@media all and (max-width: 767px) {
-  :deep(dialog) {
-    min-width: 300px !important;
-  }
-}
 </style>
