@@ -31,13 +31,16 @@ class UseraccountSearch extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readSearch($parameters, $resolveReferences)->withLessData();
+        // Load with departments needed for access check (resolveReferences=1)
+        // TODO: Optimize to batch load departments to avoid N+1 queries
+        $useraccountList = (new Useraccount())->readSearch($parameters, 1);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             try {
                 Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount;
+                // Remove departments after access check since withLessData() removes them anyway
+                $validUserAccounts[] = $useraccount->withLessData();
             } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
                 continue;
             }
