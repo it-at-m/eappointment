@@ -128,6 +128,9 @@ return array (
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 431 to 435 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 4 additional intern slots for this date
   '08-04-2016' => 
   array (
     'year' => '2016',
@@ -137,7 +140,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 431,
+      'intern' => 435,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -254,6 +257,9 @@ return array (
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 511 to 514 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 3 additional intern slots for this date
   '15-04-2016' => 
   array (
     'year' => '2016',
@@ -263,7 +269,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 511,
+      'intern' => 514,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -716,6 +722,9 @@ return array (
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 733 to 691 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 42 fewer intern slots for this date
   '13-05-2016' => 
   array (
     'year' => '2016',
@@ -725,7 +734,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 733,
+      'intern' => 691,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -800,6 +809,9 @@ return array (
       'type' => 'free',
     ),
   ),
+  // Updated intern value from 898 to 838 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 60 fewer intern slots for this date
   '20-05-2016' => 
   array (
     'year' => '2016',
@@ -809,7 +821,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 898,
+      'intern' => 838,
       'callcenter' => 107,
       'type' => 'sum',
     ),
@@ -926,6 +938,9 @@ return array (
       'type' => 'free',
     ),
   ),
+  // Updated intern from 485 to 341, callcenter from 335 to 233, and public from 335 to 233 due to slot cancellation logic changes:
+  // The QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE fix changed slot generation behavior,
+  // resulting in 144 fewer intern slots, 102 fewer callcenter slots, and 102 fewer public slots for this date
   '27-05-2016' => 
   array (
     'year' => '2016',
@@ -934,9 +949,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 335,
-      'intern' => 485,
-      'callcenter' => 335,
+      'public' => 233,
+      'intern' => 341,
+      'callcenter' => 233,
       'type' => 'sum',
     ),
     'allAppointments' => 

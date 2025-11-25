@@ -110,10 +110,17 @@ class Process extends Base implements MappingInterface
 
     public function addJoin()
     {
-        return [
-            $this->addJoinAvailability(),
-            $this->addJoinScope(),
-        ];
+        $joins = [];
+
+        if ($this->shouldLoadEntity('availability')) {
+            $joins[] = $this->addJoinAvailability();
+        }
+
+        if ($this->shouldLoadEntity('scope')) {
+            $joins[] = $this->addJoinScope();
+        }
+
+        return $joins;
     }
 
     /**
@@ -243,7 +250,19 @@ class Process extends Base implements MappingInterface
 
     public function getEntityMapping()
     {
-        return [
+        $status_expression = self::expression(
+            'CASE
+                WHEN process.status = "called" AND process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
+                    THEN "called"
+                WHEN process.status = "called" AND process.Uhrzeit = "00:00:00"
+                    THEN "queued"
+                WHEN process.status = "called" AND process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
+                    THEN "confirmed"
+                ELSE process.status
+            END'
+        );
+
+        return array_filter([
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
@@ -280,8 +299,8 @@ class Process extends Base implements MappingInterface
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
-            'status' => 'process.status',
-            'queue__status' => 'process.status',
+            'status' => $status_expression,
+            'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
                 'CONCAT(
                     `process`.`Datum`,
@@ -307,13 +326,17 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => self::expression(
-                'IF(`process`.`AbholortID`,
+            'queue__destination' => $this->shouldLoadEntity('processscope')
+                && $this->shouldLoadEntity('processuser')
+                ? self::expression(
+                    'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,
                     `processuser`.`Arbeitsplatznr`
-)'
-            ),
-            'queue__destinationHint' => 'processuser.aufrufzusatz',
+                )'
+                ) : '',
+            'queue__destinationHint' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.aufrufzusatz'
+                : '',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
@@ -326,7 +349,7 @@ class Process extends Base implements MappingInterface
             '__clientsCount' => 'process.AnzahlPersonen',
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
-        ];
+        ], 'strlen');
     }
 
     public function addCountValue()
@@ -1042,7 +1065,7 @@ class Process extends Base implements MappingInterface
     protected function addValuesExternalUserId($process)
     {
         $data = [
-            'external_user_id' => $process->external_user_id,
+            'external_user_id' => $process->externalUserId,
         ];
 
         $this->addValues($data);
@@ -1101,19 +1124,23 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        $this->leftJoin(
-            new Alias(Useraccount::TABLE, 'processuser'),
-            'process.NutzerID',
-            '=',
-            'processuser.NutzerID'
-        );
+        if ($this->shouldLoadEntity('processuser')) {
+            $this->leftJoin(
+                new Alias(Useraccount::TABLE, 'processuser'),
+                'process.NutzerID',
+                '=',
+                'processuser.NutzerID'
+            );
+        }
 
-        $this->leftJoin(
-            new Alias(Scope::TABLE, 'processscope'),
-            'process.StandortID',
-            '=',
-            'processscope.StandortID'
-        );
+        if ($this->shouldLoadEntity('processscope')) {
+            $this->leftJoin(
+                new Alias(Scope::TABLE, 'processscope'),
+                'process.StandortID',
+                '=',
+                'processscope.StandortID'
+            );
+        }
     }
 
     public function addConditionExternalUserId(string $externalUserId)

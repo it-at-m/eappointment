@@ -16,7 +16,13 @@ if [ ! -e $ROOT/config.php ]
 then
     cp $ROOT/config.example.php $ROOT/config.php
 fi
-test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
+if [ -d $ROOT/cache ]; then
+    if ! chmod -R a+rwX $ROOT/cache 2>/dev/null; then
+        echo "Warning: Could not set permissions on cache directory"
+    fi
+else
+    echo "Warning: Cache directory does not exist at $ROOT/cache"
+fi
 
 VERSION=`git describe --tags --always`
 echo $VERSION > $ROOT/VERSION

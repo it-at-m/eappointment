@@ -1826,7 +1826,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/log/process/{search}/":
+ *  "/log/process/":
  *      get:
  *          summary: Get a list of log entries for a process
  *          x-since: 2.11
@@ -1838,11 +1838,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
- *                  type: string
- *              -   name: search
- *                  description: search string that is part of log data
- *                  in: path
- *                  required: true
  *                  type: string
  *          responses:
  *              200:
@@ -1858,7 +1853,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                                  $ref: "schema/log.json"
  */
 \App::$slim->get(
-    '/log/process/{search}/',
+    '/log/process/',
     '\BO\Zmsapi\ProcessLog'
 )
     ->setName("ProcessLog");
