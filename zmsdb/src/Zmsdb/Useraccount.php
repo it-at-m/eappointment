@@ -430,6 +430,28 @@ class Useraccount extends Base
         return $this->readListStatement($statement, $resolveReferences);
     }
 
+    public function readSearchByDepartmentIds(array $departmentIds, array $parameter, $resolveReferences = 0)
+    {
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addEntityMapping();
+
+        if (isset($parameter['query'])) {
+            if (preg_match('#^\d+$#', $parameter['query'])) {
+                $query->addConditionUserId($parameter['query']);
+                $query->addConditionDepartmentIdsAndSearch($departmentIds, $parameter['query'], true);
+            } else {
+                $query->addConditionDepartmentIdsAndSearch($departmentIds, $parameter['query']);
+            }
+            unset($parameter['query']);
+        } else {
+            $query->addConditionDepartmentIds($departmentIds);
+        }
+
+        $statement = $this->fetchStatement($query);
+        return $this->readListStatement($statement, $resolveReferences);
+    }
+
     public function readListRole($roleLevel, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);

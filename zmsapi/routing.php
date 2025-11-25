@@ -1777,6 +1777,53 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/department/{ids}/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts by departments
+ *          x-since: 2.25
+ *          tags:
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in useraccount.NutzerID and useraccount.Name"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/department/{ids}/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearchByDepartments'
+)
+    ->setName("UseraccountSearchByDepartments");
+
+/**
+ *  @swagger
  *  "/department/{id}/workstation/":
  *      get:
  *          summary: Get a list of workstations for a department

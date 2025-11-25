@@ -37,20 +37,14 @@ class UseraccountSearch extends BaseController
                 'resolveReferences' => 1,
             ])->getCollection();
         } else {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-            $departmentList = $workstation->getUseraccount()->getDepartmentList();
+            $departmentListIds = $workstation->getUseraccount()->getDepartmentList()->getIds();
 
-            foreach ($departmentList as $accountDepartment) {
-                $departmentUseraccountList = \App::$http
-                    ->readGetResult("/department/$accountDepartment->id/useraccount/search/", [
-                        'query' => $queryString,
-                        'resolveReferences' => 1
-                    ])
-                    ->getCollection();
-                if ($departmentUseraccountList) {
-                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
-                }
-            }
+            $useraccountList = \App::$http
+                ->readGetResult('/department/' . implode(',', $departmentListIds) . '/useraccount/search/', [
+                    'query' => $queryString,
+                    'resolveReferences' => 1
+                ])
+                ->getCollection();
         }
 
         return \BO\Slim\Render::withHtml(
