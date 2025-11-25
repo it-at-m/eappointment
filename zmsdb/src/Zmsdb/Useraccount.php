@@ -86,7 +86,7 @@ class Useraccount extends Base
         }
         // Then batch load departments for all entities at once
         if (0 < $resolveReferences && count($collection) > 0) {
-            $departmentMap = $this->readAssignedDepartmentListBatch($collection, $resolveReferences - 1);
+            $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
             foreach ($collection as $entity) {
                 if (isset($departmentMap[$entity->id])) {
                     $entity->departments = $departmentMap[$entity->id];
