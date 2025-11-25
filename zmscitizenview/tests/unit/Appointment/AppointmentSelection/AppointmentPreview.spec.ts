@@ -50,4 +50,28 @@ describe("AppointmentPreview", () => {
     });
     expect(wrapper.exists()).toBe(true);
   });
+  it("displays appropriate icon and appointment type for variantId", () => {
+    const variants = [
+      { id: 2, icon: "icon-telephone", textKey: `appointmentTypes.${2}` },
+      { id: 3, icon: "icon-video-camera", textKey: `appointmentTypes.${3}` },
+    ];
+
+    variants.forEach(variant => {
+      const wrapper = mount(AppointmentPreview, {
+        global: { stubs: { "muc-callout": { template: '<div data-test="muc-callout"><slot name="header"></slot><slot name="content"></slot></div>' } } },
+        props: {
+          t,
+          selectedProvider: { name: "Office A", address: { street: "Elm", house_number: "99" } },
+          selectedDay: new Date("2025-06-17"),
+          selectedTimeslot: 1750118400,
+          selectedService: { id: "service1", variantId: variant.id },
+        },
+      });
+
+      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
+      expect(wrapper.text()).toContain(t(variant.textKey));
+      expect(wrapper.text()).not.toContain("Elm");
+      expect(wrapper.text()).not.toContain("99");
+    });
+  });
 });

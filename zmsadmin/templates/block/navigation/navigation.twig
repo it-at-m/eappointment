@@ -39,7 +39,7 @@
                             </li>
                         {% endif %}
                     {% endif %}
-                    {% if workstation.useraccount.rights.useraccount  %}
+                    {% if workstation.useraccount.rights.scope %}
                     <li class="nav__link{{ menuActive == 'overallcalendar'? ' active' }}">
                         <a title="{% trans %}Gesamtübersicht mit allen Terminen{% endtrans %}"
                            href="{{ urlGet('overallcalendar', {}, {}) }}"

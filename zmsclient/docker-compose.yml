@@ -31,14 +31,16 @@ services:
         target: "/mellon"
     environment:
       ZMS_API_URL: http://mockup:8083
-      XDEBUG_MODE: coverage
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     working_dir: /app
     command: >
       sh -c "
         mkdir -p /tmp/php/conf.d &&
-        echo 'zend_extension=xdebug.so' > /tmp/php/conf.d/xdebug.ini &&
-        echo 'xdebug.mode=coverage' >> /tmp/php/conf.d/xdebug.ini &&
-        echo 'xdebug.start_with_request=yes' >> /tmp/php/conf.d/xdebug.ini &&
+        if [ \"$${XDEBUG_MODE:-off}\" != \"off\" ]; then
+          echo 'zend_extension=xdebug.so' > /tmp/php/conf.d/xdebug.ini &&
+          echo 'xdebug.mode=$${XDEBUG_MODE}' >> /tmp/php/conf.d/xdebug.ini &&
+          echo 'xdebug.start_with_request=yes' >> /tmp/php/conf.d/xdebug.ini
+        fi &&
         tail -f /dev/null
       "

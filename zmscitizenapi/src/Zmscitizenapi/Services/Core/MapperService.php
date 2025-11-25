@@ -303,33 +303,51 @@ class MapperService
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
-            emailRequired: isset($scope->data['emailRequired']) ? (bool) $scope->data['emailRequired'] : null,
-            telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
-            telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
-            customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
-            customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
-            customTextfieldLabel: isset($scope->data['customTextfieldLabel']) ? (string) $scope->data['customTextfieldLabel'] : null,
-            customTextfield2Activated: isset($scope->data['customTextfield2Activated']) ? (bool) $scope->data['customTextfield2Activated'] : null,
-            customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
-            customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
-            captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            infoForAppointment: isset($scope->data['infoForAppointment'])
-                ? ((string) $scope->data['infoForAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAppointment'])
+            emailRequired: $scope->getEmailRequired() === null
+                ? null
+                : (bool) $scope->getEmailRequired(),
+            telephoneActivated: $scope->getTelephoneActivated() === null
+                ? null
+                : (bool) $scope->getTelephoneActivated(),
+            telephoneRequired: $scope->getTelephoneRequired() === null
+                ? null
+                : (bool) $scope->getTelephoneRequired(),
+            customTextfieldActivated: $scope->getCustomTextfieldActivated() === null
+                ? null
+                : (bool) $scope->getCustomTextfieldActivated(),
+            customTextfieldRequired: $scope->getCustomTextfieldRequired() === null
+                ? null
+                : (bool) $scope->getCustomTextfieldRequired(),
+            customTextfieldLabel: $scope->getCustomTextfieldLabel() === null
+                ? null
+                : (string) $scope->getCustomTextfieldLabel(),
+            customTextfield2Activated: $scope->getCustomTextfield2Activated() === null
+                ? null
+                : (bool) $scope->getCustomTextfield2Activated(),
+            customTextfield2Required: $scope->getCustomTextfield2Required() === null
+                ? null
+                : (bool) $scope->getCustomTextfield2Required(),
+            customTextfield2Label: $scope->getCustomTextfield2Label() === null
+                ? null
+                : (string) $scope->getCustomTextfield2Label(),
+            captchaActivatedRequired: $scope->getCaptchaActivatedRequired() === null
+                ? null
+                : (bool) $scope->getCaptchaActivatedRequired(),
+            infoForAppointment: $scope->getInfoForAppointment() === null
+                ? null
+                : (string) $scope->getInfoForAppointment(),
+            infoForAllAppointments: $scope->getInfoForAllAppointments() === null
+                ? null
+                : (string) $scope->getInfoForAllAppointments(),
+            slotsPerAppointment: $scope->getSlotsPerAppointment() === null
+                ? null
+                : (string) $scope->getSlotsPerAppointment(),
+            appointmentsPerMail: $scope->getAppointmentsPerMail() !== null
+                ? (string) $scope->getAppointmentsPerMail()
                 : null,
-            infoForAllAppointments: isset($scope->data['infoForAllAppointments'])
-                ? ((string) $scope->data['infoForAllAppointments'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAllAppointments'])
-                : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
-                ? ((string) $scope->data['slotsPerAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['slotsPerAppointment'])
-                : null,
-            appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            whitelistedMails: $scope->getWhitelistedMails() === null
+                ? null
+                : (string) $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
             hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()

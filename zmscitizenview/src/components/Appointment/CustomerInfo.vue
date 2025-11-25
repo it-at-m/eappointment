@@ -64,6 +64,7 @@
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
+      autocomplete="given-name"
       :error-msg="errorDisplayFirstName"
       :label="t('firstName')"
       max="50"
@@ -72,6 +73,7 @@
     <muc-input
       id="lastname"
       v-model="customerData.lastName"
+      autocomplete="family-name"
       :error-msg="errorDisplayLastName"
       :label="t('lastName')"
       max="50"
@@ -80,6 +82,7 @@
     <muc-input
       id="mailaddress"
       v-model="customerData.mailAddress"
+      autocomplete="email"
       :error-msg="errorDisplayMailAddress"
       :label="t('mailAddress')"
       max="50"

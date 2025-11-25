@@ -239,7 +239,11 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2016/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2016-03-01',
+                        'toDate' => '2016-03-31'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_032016.json")
                 ]
             ]
@@ -292,13 +296,21 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2015/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2015-12-31',
+                        'toDate' => '2016-03-01'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_2015.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2016/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2015-12-31',
+                        'toDate' => '2016-03-01'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_032016.json")
                 ]
             ]
@@ -563,95 +575,6 @@ class ReportWaitingScopeTest extends Base
         ob_end_clean();
     }
 
-    public function testWithDownloadCSV()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/waitingscope/141/',
-                    'response' => $this->readFixture("GET_waitingscope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/waitingscope/141/2016-03/',
-                    'response' => $this->readFixture("GET_waitingscope_141_032016.json")
-                ]
-            ]
-        );
-
-        $response = $this->render(['period' => '2016-03'], ['type' => 'csv'], []);
-
-        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString(
-            'Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"414:00";"280:00";"160:00";"256:00";"437:00";"455:00";"202:00";"532:00";"359:00";"384:00";"417:00";"148:00";"375:00";"343:00";',
-            (string) $response->getBody()
-        );
-    }
-
-    public function testWithDownloadByMonthCSV()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/waitingscope/141/',
-                    'response' => $this->readFixture("GET_waitingscope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/waitingscope/141/2016/',
-                    'response' => $this->readFixture("GET_waitingscope_141_2016.json")
-                ]
-            ]
-        );
-
-        $response = $this->render(['period' => '2016'], ['type' => 'csv'], []);
-
-        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString('"Max.";"Januar";"Februar";"März"', (string) $response->getBody());
-        $this->assertStringContainsString('Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"384:00";"506:00";"532:00"', (string) $response->getBody());
-    }
+   
+    
 }

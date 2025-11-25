@@ -105,11 +105,14 @@ class AvailabilityListUpdate extends BaseController
         if ($availability->id) {
             $existingAvailability = $repository->readEntity($availability->id);
             if ($existingAvailability && $existingAvailability->hasId()) {
+                $availability->version = $existingAvailability->version + 1;
                 $this->resetOpeningHours($existingAvailability);
                 $updatedAvailability = $repository->updateEntity($availability->id, $availability, $resolveReferences);
                 App::$log->info('Updated availability', [
                     'id' => $availability->id,
                     'scope_id' => $availability->scope['id'],
+                    'version' => $availability->version,
+                    'data' => json_encode($availability->withLessData(['workstationCount'])),
                     'operation' => 'update'
                 ]);
             }
@@ -118,6 +121,7 @@ class AvailabilityListUpdate extends BaseController
             App::$log->info('Created new availability', [
                 'id' => $updatedAvailability->id,
                 'scope_id' => $availability->scope['id'],
+                'data' => json_encode($availability->withLessData(['workstationCount'])),
                 'operation' => 'create'
             ]);
         }
