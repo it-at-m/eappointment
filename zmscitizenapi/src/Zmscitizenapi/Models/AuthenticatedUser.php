@@ -10,9 +10,9 @@ use JsonSerializable;
 class AuthenticatedUser implements JsonSerializable
 {
     private ?string $externalUserId;
+    private ?string $email;
     private ?string $givenName;
     private ?string $familyName;
-    private ?string $email;
 
     public function __construct(
         ?string $externalUserId = null,
@@ -60,7 +60,7 @@ class AuthenticatedUser implements JsonSerializable
             $instance->setGivenName($payload['given_name']);
         }
         if (!empty($payload['family_name'])) {
-            $instance->setGivenName($payload['family_name']);
+            $instance->setFamilyName($payload['family_name']);
         }
         return $instance;
     }
