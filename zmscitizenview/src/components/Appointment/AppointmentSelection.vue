@@ -1253,6 +1253,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+@use "@/styles/components.scss";
 
 .m-button-group {
   margin-bottom: 20px;
@@ -1309,17 +1310,5 @@ watch(
 
 #listViewAccordion .m-accordion__section-button {
   font-size: 1.125rem !important;
-}
-
-.m-spinner-container {
-  background-color: var(
-    --color-beau-blue-xlight,
-    var(--color-neutrals-blue-xlight)
-  );
-  padding: 25px;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

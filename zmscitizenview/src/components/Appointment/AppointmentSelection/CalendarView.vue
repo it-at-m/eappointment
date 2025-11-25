@@ -424,6 +424,8 @@ function onLater(type: "hour" | "dayPart") {
 }
 </script>
 <style lang="scss" scoped>
+@use "@/styles/components.scss";
+
 .m-button--ghost.disabled,
 .m-button--ghost:disabled {
   background: #fff;
@@ -477,17 +479,5 @@ function onLater(type: "hour" | "dayPart") {
 .no-top-margin,
 .no-top-margin h3 {
   margin-top: 0 !important;
-}
-
-.m-spinner-container {
-  background-color: var(
-    --color-beau-blue-xlight,
-    var(--color-neutrals-blue-xlight)
-  );
-  padding: 25px;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
