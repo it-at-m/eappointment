@@ -49,22 +49,19 @@ class AuthenticatedUser implements JsonSerializable
         $payload = json_decode(self::base64UrlDecode($tokenParts[1]), true);
 
         $instance = new self();
-        if (empty($payload['lhmExtID'])) {
-            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `lhmExtID` is missing from the JWT payload.');
+        if (empty($payload[\App::ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME])) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `' . \App::ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME . '` is missing from the JWT payload.');
         }
-        $instance->setExternalUserId($payload['lhmExtID']);
-        if (empty($payload['email'])) {
-            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `email` is missing from the JWT payload.');
+        $instance->setExternalUserId($payload[\App::ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME]);
+        if (!empty($payload['email'])) {
+            $instance->setEmail($payload['email']);
         }
-        $instance->setEmail($payload['email']);
-        if (empty($payload['given_name'])) {
-            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `given_name` is missing from the JWT payload.');
+        if (!empty($payload['given_name'])) {
+            $instance->setGivenName($payload['given_name']);
         }
-        $instance->setGivenName($payload['given_name']);
-        if (empty($payload['family_name'])) {
-            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `family_name` is missing from the JWT payload.');
+        if (!empty($payload['family_name'])) {
+            $instance->setGivenName($payload['family_name']);
         }
-        $instance->setFamilyName($payload['family_name']);
         return $instance;
     }
 

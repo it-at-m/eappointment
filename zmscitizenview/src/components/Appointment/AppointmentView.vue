@@ -439,11 +439,11 @@ watch(
     if (!newAccessToken) return;
     const tokenData = getTokenData(newAccessToken);
     customerData.value.firstName =
-      customerData.value.firstName || tokenData.given_name;
+      customerData.value.firstName || tokenData.given_name || "";
     customerData.value.lastName =
-      customerData.value.lastName || tokenData.family_name;
+      customerData.value.lastName || tokenData.family_name || "";
     customerData.value.mailAddress =
-      customerData.value.mailAddress || tokenData.email;
+      customerData.value.mailAddress || tokenData.email || "";
   },
   { immediate: true }
 );
