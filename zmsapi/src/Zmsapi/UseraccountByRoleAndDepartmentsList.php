@@ -35,7 +35,6 @@ class UseraccountByRoleAndDepartmentsList extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
         $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);

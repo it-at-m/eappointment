@@ -35,7 +35,6 @@ class UseraccountSearchByDepartments extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
         $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
