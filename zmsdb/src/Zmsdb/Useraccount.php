@@ -137,7 +137,28 @@ class Useraccount extends Base
             return [];
         }
 
-        // Separate superusers from regular users
+        list($superusers, $regularUsers) = $this->separateSuperusersFromRegularUsers($useraccounts);
+        $result = [];
+
+        if (count($superusers) > 0) {
+            $result = array_merge($result, $this->loadSuperuserDepartments($superusers, $resolveReferences));
+        }
+
+        if (count($regularUsers) > 0) {
+            $result = array_merge($result, $this->loadRegularUserDepartments($regularUsers, $resolveReferences));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Separate superusers from regular users
+     *
+     * @param Collection $useraccounts
+     * @return array [superusers[], regularUsers[]]
+     */
+    protected function separateSuperusersFromRegularUsers(Collection $useraccounts)
+    {
         $superusers = [];
         $regularUsers = [];
         foreach ($useraccounts as $useraccount) {
@@ -147,60 +168,104 @@ class Useraccount extends Base
                 $regularUsers[] = $useraccount->id;
             }
         }
+        return [$superusers, $regularUsers];
+    }
+
+    /**
+     * Load departments for all superusers (they all get the same list)
+     *
+     * @param array $superusers Array of superuser IDs
+     * @param int $resolveReferences
+     * @return array Map of useraccount name => DepartmentList
+     */
+    protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
+    {
+        $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
+        $departmentIds = $this->getReader()->fetchAll($query);
+        $departmentList = $this->buildDepartmentList($departmentIds, $resolveReferences);
 
         $result = [];
-
-        // Load all departments once for all superusers
-        if (count($superusers) > 0) {
-            $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
-            $departmentIds = $this->getReader()->fetchAll($query);
-            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
-            foreach ($departmentIds as $item) {
-                $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                if ($department instanceof \BO\Zmsentities\Department) {
-                    $department->name = $item['organisation__name'] . ' -> ' . $department->name;
-                    $departmentList->addEntity($department);
-                }
-            }
-            // Assign same department list to all superusers
-            foreach ($superusers as $useraccountName) {
-                $result[$useraccountName] = clone $departmentList;
-            }
+        foreach ($superusers as $useraccountName) {
+            $result[$useraccountName] = clone $departmentList;
         }
-
-            // Load all departments for regular users in one query
-        if (count($regularUsers) > 0) {
-            $placeholders = str_repeat('?,', count($regularUsers) - 1) . '?';
-            $query = str_replace(':useraccountNames', $placeholders, Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL);
-            $allAssignments = $this->getReader()->fetchAll($query, $regularUsers);
-
-            // Group assignments by useraccount name
-            $assignmentsByUser = [];
-            foreach ($allAssignments as $assignment) {
-                $useraccountName = $assignment['useraccountName'];
-                if (!isset($assignmentsByUser[$useraccountName])) {
-                    $assignmentsByUser[$useraccountName] = [];
-                }
-                $assignmentsByUser[$useraccountName][] = $assignment;
-            }
-
-            // Build department lists for each useraccount
-            foreach ($regularUsers as $useraccountName) {
-                $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
-                if (isset($assignmentsByUser[$useraccountName])) {
-                    foreach ($assignmentsByUser[$useraccountName] as $item) {
-                        $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                        if ($department instanceof \BO\Zmsentities\Department) {
-                            $department->name = $item['organisation__name'] . ' -> ' . $department->name;
-                            $departmentList->addEntity($department);
-                        }
-                    }
-                }
-                $result[$useraccountName] = $departmentList;
-            }
-        }
-
         return $result;
+    }
+
+    /**
+     * Load departments for regular users in a single query
+     *
+     * @param array $regularUsers Array of regular user IDs
+     * @param int $resolveReferences
+     * @return array Map of useraccount name => DepartmentList
+     */
+    protected function loadRegularUserDepartments(array $regularUsers, $resolveReferences = 0)
+    {
+        $placeholders = str_repeat('?,', count($regularUsers) - 1) . '?';
+        $query = str_replace(':useraccountNames', $placeholders, Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL);
+        $allAssignments = $this->getReader()->fetchAll($query, $regularUsers);
+
+        $assignmentsByUser = $this->groupAssignmentsByUser($allAssignments);
+        return $this->buildDepartmentListsForUsers($regularUsers, $assignmentsByUser, $resolveReferences);
+    }
+
+    /**
+     * Group department assignments by useraccount name
+     *
+     * @param array $allAssignments
+     * @return array Map of useraccount name => assignments[]
+     */
+    protected function groupAssignmentsByUser(array $allAssignments)
+    {
+        $assignmentsByUser = [];
+        foreach ($allAssignments as $assignment) {
+            $useraccountName = $assignment['useraccountName'];
+            if (!isset($assignmentsByUser[$useraccountName])) {
+                $assignmentsByUser[$useraccountName] = [];
+            }
+            $assignmentsByUser[$useraccountName][] = $assignment;
+        }
+        return $assignmentsByUser;
+    }
+
+    /**
+     * Build department lists for each useraccount
+     *
+     * @param array $useraccountNames
+     * @param array $assignmentsByUser Map of useraccount name => assignments[]
+     * @param int $resolveReferences
+     * @return array Map of useraccount name => DepartmentList
+     */
+    protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0)
+    {
+        $result = [];
+        foreach ($useraccountNames as $useraccountName) {
+            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+            if (isset($assignmentsByUser[$useraccountName])) {
+                $departmentList = $this->buildDepartmentList($assignmentsByUser[$useraccountName], $resolveReferences);
+            }
+            $result[$useraccountName] = $departmentList;
+        }
+        return $result;
+    }
+
+    /**
+     * Build a DepartmentList from assignment data
+     *
+     * @param array $items Array of assignment items with 'id' and 'organisation__name'
+     * @param int $resolveReferences
+     * @return \BO\Zmsentities\Collection\DepartmentList
+     */
+    protected function buildDepartmentList(array $items, $resolveReferences = 0)
+    {
+        $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+        foreach ($items as $item) {
+            $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
+            if ($department instanceof \BO\Zmsentities\Department) {
+                $department->name = $item['organisation__name'] . ' -> ' . $department->name;
+                $departmentList->addEntity($department);
+            }
+        }
+        return $departmentList;
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
