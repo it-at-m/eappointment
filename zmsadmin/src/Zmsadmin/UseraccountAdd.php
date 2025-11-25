@@ -29,7 +29,9 @@ class UseraccountAdd extends BaseController
         $input = $request->getParsedBody();
         $submittedUserAccount = null;
         if ($request->getMethod() === 'POST') {
-            $input['password'] = $input['changePassword'][0] ?? null;
+            $input['password'] = (
+                isset($input['changePassword']) && is_array($input['changePassword'])
+            ) ? ($input['changePassword'][0] ?? null) : null;
             $submittedUserAccount = $input; // Preserve submitted data for form re-population
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
