@@ -39,7 +39,7 @@ class View extends BaseView {
         const $oidcSelect = this.$main.find('#useOidcProvider');
         const $passwordInputs = this.$main.find('input[type="password"]');
         
-        // Only adjust if OIDC select exists (on add page, not edit page)
+        // If OIDC select does not exist, we're on the edit page
         if (!$oidcSelect.length) {
             // On edit page: disable password fields (won't submit), show masked placeholder for visual indication
             // Keep value empty so nothing gets submitted, but placeholder shows there's a password set
