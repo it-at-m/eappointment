@@ -7,7 +7,6 @@
 
 namespace BO\Zmsapi;
 
-use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
@@ -27,7 +26,6 @@ class UseraccountByRoleList extends BaseController
     ) {
         $roleLevel = $args['level'];
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();

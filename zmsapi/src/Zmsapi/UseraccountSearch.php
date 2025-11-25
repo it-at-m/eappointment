@@ -7,7 +7,6 @@
 
 namespace BO\Zmsapi;
 
-use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
@@ -26,7 +25,6 @@ class UseraccountSearch extends BaseController
         array $args
     ) {
         (new Helper\User($request, 1))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $parameters = $request->getParams();
 
         /** @var Useraccount $useraccount */
