@@ -55,6 +55,19 @@ class Useraccount extends Base implements MappingInterface
         ORDER BY organisation.Organisationsname, behoerde.Name
     ';
 
+    const QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL = '
+        SELECT useraccount.Name as useraccountName,
+            userAssignment.`behoerdenid` AS id,
+            organisation.Organisationsname as organisation__name
+        FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
+        LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.NutzerID = userAssignment.nutzerid
+        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
+        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
+        WHERE
+            useraccount.Name IN (:useraccountNames)
+        ORDER BY useraccount.Name, organisation.Organisationsname, behoerde.Name
+    ';
+
     public function getEntityMapping()
     {
         return [

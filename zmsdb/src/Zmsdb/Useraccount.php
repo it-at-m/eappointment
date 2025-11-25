@@ -58,8 +58,18 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
+            // First collect all entities without resolving references
             foreach ($result as $entity) {
-                $collection->addEntity($this->readResolvedReferences($entity, $resolveReferences));
+                $collection->addEntity($entity);
+            }
+            // Then batch load departments for all entities at once
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
+                    }
+                }
             }
         }
         return $collection;
@@ -69,10 +79,19 @@ class Useraccount extends Base
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $collection = new Collection();
+        // First collect all entities without resolving references
         while ($userAccountData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($userAccountData));
-            $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $collection->addEntity($entity);
+        }
+        // Then batch load departments for all entities at once
+        if (0 < $resolveReferences && count($collection) > 0) {
+            $departmentMap = $this->readAssignedDepartmentListBatch($collection, $resolveReferences - 1);
+            foreach ($collection as $entity) {
+                if (isset($departmentMap[$entity->id])) {
+                    $entity->departments = $departmentMap[$entity->id];
+                }
+            }
         }
         return $collection;
     }
@@ -105,6 +124,85 @@ class Useraccount extends Base
         return $departmentList;
     }
 
+    /**
+     * Load assigned departments for all useraccounts in a single query
+     *
+     * @param Collection $useraccounts Collection of useraccount entities
+     * @param int $resolveReferences
+     * @return array Map of useraccount name => DepartmentList
+     */
+    protected function readAssignedDepartmentListsForAll(Collection $useraccounts, $resolveReferences = 0)
+    {
+        if (count($useraccounts) === 0) {
+            return [];
+        }
+
+        // Separate superusers from regular users
+        $superusers = [];
+        $regularUsers = [];
+        foreach ($useraccounts as $useraccount) {
+            if ($useraccount->isSuperUser()) {
+                $superusers[] = $useraccount->id;
+            } else {
+                $regularUsers[] = $useraccount->id;
+            }
+        }
+
+        $result = [];
+
+        // Load all departments once for all superusers
+        if (count($superusers) > 0) {
+            $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
+            $departmentIds = $this->getReader()->fetchAll($query);
+            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+            foreach ($departmentIds as $item) {
+                $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
+                if ($department instanceof \BO\Zmsentities\Department) {
+                    $department->name = $item['organisation__name'] . ' -> ' . $department->name;
+                    $departmentList->addEntity($department);
+                }
+            }
+            // Assign same department list to all superusers
+            foreach ($superusers as $useraccountName) {
+                $result[$useraccountName] = clone $departmentList;
+            }
+        }
+
+            // Load all departments for regular users in one query
+        if (count($regularUsers) > 0) {
+            $placeholders = str_repeat('?,', count($regularUsers) - 1) . '?';
+            $query = str_replace(':useraccountNames', $placeholders, Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL);
+            $allAssignments = $this->getReader()->fetchAll($query, $regularUsers);
+
+            // Group assignments by useraccount name
+            $assignmentsByUser = [];
+            foreach ($allAssignments as $assignment) {
+                $useraccountName = $assignment['useraccountName'];
+                if (!isset($assignmentsByUser[$useraccountName])) {
+                    $assignmentsByUser[$useraccountName] = [];
+                }
+                $assignmentsByUser[$useraccountName][] = $assignment;
+            }
+
+            // Build department lists for each useraccount
+            foreach ($regularUsers as $useraccountName) {
+                $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+                if (isset($assignmentsByUser[$useraccountName])) {
+                    foreach ($assignmentsByUser[$useraccountName] as $item) {
+                        $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
+                        if ($department instanceof \BO\Zmsentities\Department) {
+                            $department->name = $item['organisation__name'] . ' -> ' . $department->name;
+                            $departmentList->addEntity($department);
+                        }
+                    }
+                }
+                $result[$useraccountName] = $departmentList;
+            }
+        }
+
+        return $result;
+    }
+
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
     {
         $hashedAuthKey = hash('sha256', $xAuthKey);
@@ -135,8 +233,18 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
+            // First collect all entities without resolving references
             foreach ($result as $entity) {
-                $collection->addEntity($this->readResolvedReferences($entity, $resolveReferences));
+                $collection->addEntity($entity);
+            }
+            // Then batch load departments for all entities at once
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
+                    }
+                }
             }
         }
         return $collection;
@@ -151,14 +259,18 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
+            // First collect all entities without resolving references
             foreach ($result as $entity) {
-                if (0 < $resolveReferences && $entity->toProperty()->id->get()) {
-                    $entity->departments = $this->readAssignedDepartmentList(
-                        $entity,
-                        $resolveReferences - 1
-                    );
-                }
                 $collection->addEntity($entity);
+            }
+            // Then batch load departments for all entities at once
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
+                    }
+                }
             }
         }
         return $collection;

@@ -30,8 +30,6 @@ class UseraccountByRoleAndDepartmentList extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        // Load with departments needed for access checks (resolveReferences=1)
-        // TODO: Optimize to batch load departments to avoid N+1 queries
         $useraccountList = (new Useraccount())->readListByRoleAndDepartment($roleLevel, $department->id, 1);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
 

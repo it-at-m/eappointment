@@ -29,7 +29,6 @@ class UseraccountList extends BaseController
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
         // Load with departments needed for access check (resolveReferences=1)
-        // TODO: Optimize to batch load departments to avoid N+1 queries
         $useraccountList = (new Useraccount())->readList(1);
 
         $validUserAccounts = [];
