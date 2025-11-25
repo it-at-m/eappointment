@@ -1,4 +1,5 @@
 -- Create table with proper structure including primary key
+DROP TABLE IF EXISTS buergerarchivtoday;
 CREATE TABLE buergerarchivtoday (
   `BuergerarchivID` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `StandortID` int(5) unsigned NOT NULL DEFAULT 0,
