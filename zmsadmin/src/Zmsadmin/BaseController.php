@@ -97,11 +97,13 @@ abstract class BaseController extends \BO\Slim\Controller
             return $httpCall();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
-                return [
+                $errorResponse = [
                     'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
                     'include' => true,
                     'data' => $this->transformValidationErrors($exception->data)
                 ];
+                error_log('handleEntityWrite returning error response: ' . json_encode($errorResponse, JSON_UNESCAPED_SLASHES));
+                return $errorResponse;
             }
 
             $template = TwigExceptionHandler::getExceptionTemplate($exception);
