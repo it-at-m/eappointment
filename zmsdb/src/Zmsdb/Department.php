@@ -85,6 +85,39 @@ class Department extends Base
         return $departmentList;
     }
 
+    /**
+     * Read multiple departments by IDs in a single query
+     *
+     * @param array $departmentIds Array of department IDs
+     * @param int $resolveReferences
+     * @return array Associative array [id => Department entity]
+     */
+    public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0)
+    {
+        if (empty($departmentIds)) {
+            return [];
+        }
+
+        $query = new Query\Department(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentIds($departmentIds);
+
+        $departments = [];
+        $result = $this->fetchList($query, new Entity());
+
+        foreach ($result as $department) {
+            if ($department instanceof Entity) {
+                $department = $this->readResolvedReferences($department, $resolveReferences);
+                if ($department instanceof Entity) {
+                    $departments[$department->id] = $department->withOutClusterDuplicates();
+                }
+            }
+        }
+
+        return $departments;
+    }
+
     public function readByScopeId($scopeId, $resolveReferences = 0)
     {
         $query = new Query\Department(Query\Base::SELECT);

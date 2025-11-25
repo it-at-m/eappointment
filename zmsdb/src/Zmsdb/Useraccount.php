@@ -93,20 +93,12 @@ class Useraccount extends Base
     {
         if ($useraccount->isSuperUser()) {
             $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
-            $departmentIds = $this->getReader()->fetchAll($query);
+            $departmentData = $this->getReader()->fetchAll($query);
         } else {
             $query = Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
-            $departmentIds = $this->getReader()->fetchAll($query, ['useraccountName' => $useraccount->id]);
+            $departmentData = $this->getReader()->fetchAll($query, ['useraccountName' => $useraccount->id]);
         }
-        $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
-        foreach ($departmentIds as $item) {
-            $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-            if ($department instanceof \BO\Zmsentities\Department) {
-                $department->name = $item['organisation__name'] . ' -> ' . $department->name;
-                $departmentList->addEntity($department);
-            }
-        }
-        return $departmentList;
+        return $this->buildDepartmentList($departmentData, $resolveReferences);
     }
 
     protected function readAssignedDepartmentListsForAll(Collection $useraccounts, $resolveReferences = 0)
@@ -201,13 +193,31 @@ class Useraccount extends Base
     protected function buildDepartmentList(array $items, $resolveReferences = 0)
     {
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+
+        if (empty($items)) {
+            return $departmentList;
+        }
+
+        // Extract department IDs and build organization name map
+        $departmentIds = [];
+        $orgNameMap = [];
         foreach ($items as $item) {
-            $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-            if ($department instanceof \BO\Zmsentities\Department) {
-                $department->name = $item['organisation__name'] . ' -> ' . $department->name;
+            $departmentIds[] = $item['id'];
+            $orgNameMap[$item['id']] = $item['organisation__name'];
+        }
+
+        // Bulk load all departments in a single query
+        $departments = (new \BO\Zmsdb\Department())->readEntitiesByIds($departmentIds, $resolveReferences);
+
+        // Build the list with organization names
+        foreach ($departmentIds as $id) {
+            if (isset($departments[$id])) {
+                $department = $departments[$id];
+                $department->name = $orgNameMap[$id] . ' -> ' . $department->name;
                 $departmentList->addEntity($department);
             }
         }
+
         return $departmentList;
     }
 
