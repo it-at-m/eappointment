@@ -175,14 +175,54 @@ class Useraccount extends Base
 
     protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0)
     {
+        // Collect ALL unique department IDs and organization names from all useraccounts
+        $allDepartmentIds = [];
+        $allOrganisationNameMap = [];
+        $departmentIdsByUser = [];
+
+        foreach ($useraccountNames as $useraccountName) {
+            $departmentIdsByUser[$useraccountName] = [];
+            if (isset($assignmentsByUser[$useraccountName])) {
+                foreach ($assignmentsByUser[$useraccountName] as $item) {
+                    $deptId = $item['id'];
+                    if (!isset($allDepartmentIds[$deptId])) {
+                        $allDepartmentIds[$deptId] = true;
+                        $allOrganisationNameMap[$deptId] = $item['organisation__name'];
+                    }
+                    $departmentIdsByUser[$useraccountName][] = $deptId;
+                }
+            }
+        }
+
+        // Load ALL departments in ONE query
+        $allDepartments = [];
+        if (!empty($allDepartmentIds)) {
+            $uniqueDepartmentIds = array_keys($allDepartmentIds);
+            $allDepartments = (new \BO\Zmsdb\Department())->readEntitiesByIds($uniqueDepartmentIds, $resolveReferences);
+
+            // Apply organization name prefix to all departments
+            foreach ($allDepartments as $id => $department) {
+                if (isset($allOrganisationNameMap[$id])) {
+                    $department->name = $allOrganisationNameMap[$id] . ' -> ' . $department->name;
+                }
+            }
+        }
+
+        // Build department lists for each useraccount from the pre-loaded departments
         $result = [];
         foreach ($useraccountNames as $useraccountName) {
             $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
-            if (isset($assignmentsByUser[$useraccountName])) {
-                $departmentList = $this->buildDepartmentList($assignmentsByUser[$useraccountName], $resolveReferences);
+            if (isset($departmentIdsByUser[$useraccountName])) {
+                foreach ($departmentIdsByUser[$useraccountName] as $deptId) {
+                    if (isset($allDepartments[$deptId])) {
+                        // Clone department so each useraccount gets its own instance
+                        $departmentList->addEntity(clone $allDepartments[$deptId]);
+                    }
+                }
             }
             $result[$useraccountName] = $departmentList;
         }
+
         return $result;
     }
 
