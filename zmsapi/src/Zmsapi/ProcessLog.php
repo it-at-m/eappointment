@@ -36,7 +36,7 @@ class ProcessLog extends BaseController
         }
 
         $logList = (new Query())->readByProcessData(
-            $searchQuery,
+            urldecode($searchQuery),
             $service,
             $provider,
             $date ? new DateTime($date) : null,
