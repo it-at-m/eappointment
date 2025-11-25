@@ -37,7 +37,7 @@ class ExchangeClientscope extends Base
             0 AS missedwithappointment,
             0 AS requestcount
           FROM ' . self::NOTIFICATIONSTABLE . '
-          WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
+          WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
 
       UNION ALL
@@ -52,7 +52,7 @@ class ExchangeClientscope extends Base
             SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment,
             0 AS requestcount
             FROM ' . ProcessStatusArchived::TABLE . '
-            WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
+            WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend
               GROUP BY date
 
       UNION ALL
@@ -68,7 +68,7 @@ class ExchangeClientscope extends Base
             COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
             FROM ' . ProcessStatusArchived::TABLE . ' a
               LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
-            WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0
+            WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0
             GROUP BY date
       ) as unionresult
       GROUP BY date;  
