@@ -12,7 +12,7 @@
       {{ t("noLoginText") }}
     </p>
     <muc-button
-      icon="sign-in"
+      icon="sing-in"
       @click="requestLogin"
     >
       {{ t("login") }}
