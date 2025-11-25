@@ -64,7 +64,7 @@ class Profile extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->setPassword($input);
-        return $this->handleEntityWrite(function () use ($entity) {
+        return $this->handleEntityWriteException(function () use ($entity) {
             return \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
         });
     }

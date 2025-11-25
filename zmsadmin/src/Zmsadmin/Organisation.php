@@ -73,7 +73,7 @@ class Organisation extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;
-        return $this->handleEntityWrite(function () use ($entity) {
+        return $this->handleEntityWriteException(function () use ($entity) {
             return \App::$http->readPostResult('/organisation/' . $entity->id . '/', $entity)->getEntity();
         });
     }

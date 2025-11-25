@@ -68,7 +68,7 @@ class UseraccountEdit extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->setPassword($input);
-        return $this->handleEntityWrite(function () use ($entity, $userAccountName) {
+        return $this->handleEntityWriteException(function () use ($entity, $userAccountName) {
             return \App::$http
                 ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
                 ->getEntity();

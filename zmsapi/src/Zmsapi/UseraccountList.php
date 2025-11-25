@@ -26,16 +26,13 @@ class UseraccountList extends BaseController
     ) {
         (new Helper\User($request, 1))->checkRights('useraccount');
 
-        /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        // Load with departments needed for access check (resolveReferences=1)
         $useraccountList = (new Useraccount())->readList(1);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             try {
                 Helper\User::testWorkstationAccessRights($useraccount);
-                // Remove departments after access check since withLessData() removes them anyway
                 $validUserAccounts[] = $useraccount->withLessData();
             } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
                 continue;

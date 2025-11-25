@@ -51,11 +51,9 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            // First collect all entities without resolving references
             foreach ($result as $entity) {
                 $collection->addEntity($entity);
             }
-            // Then batch load departments for all entities at once
             if (0 < $resolveReferences) {
                 $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
                 foreach ($collection as $entity) {
@@ -72,12 +70,10 @@ class Useraccount extends Base
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $collection = new Collection();
-        // First collect all entities without resolving references
         while ($userAccountData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($userAccountData));
             $collection->addEntity($entity);
         }
-        // Then batch load departments for all entities at once
         if (0 < $resolveReferences && count($collection) > 0) {
             $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
             foreach ($collection as $entity) {
@@ -248,11 +244,9 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            // First collect all entities without resolving references
             foreach ($result as $entity) {
                 $collection->addEntity($entity);
             }
-            // Then batch load departments for all entities at once
             if (0 < $resolveReferences) {
                 $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
                 foreach ($collection as $entity) {
@@ -274,11 +268,9 @@ class Useraccount extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            // First collect all entities without resolving references
             foreach ($result as $entity) {
                 $collection->addEntity($entity);
             }
-            // Then batch load departments for all entities at once
             if (0 < $resolveReferences) {
                 $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
                 foreach ($collection as $entity) {

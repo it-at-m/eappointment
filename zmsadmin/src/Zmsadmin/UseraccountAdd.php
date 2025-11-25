@@ -76,7 +76,7 @@ class UseraccountAdd extends BaseController
             $entity->id = $entity->id . '@' . $input['oidcProvider'];
         }
         $entity = $entity->withCleanedUpFormData(true);
-        return $this->handleEntityWrite(function () use ($entity) {
+        return $this->handleEntityWriteException(function () use ($entity) {
             return \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         });
     }

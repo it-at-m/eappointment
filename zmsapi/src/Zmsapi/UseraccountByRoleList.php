@@ -40,7 +40,6 @@ class UseraccountByRoleList extends BaseController
         foreach ($useraccountList as $useraccount) {
             try {
                 Helper\User::testWorkstationAccessRights($useraccount);
-                // Remove departments after access check since withLessData() removes them anyway
                 $validUserAccounts[] = $useraccount->withLessData();
             } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
                 continue;

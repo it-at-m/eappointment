@@ -111,7 +111,7 @@ class Department extends BaseController
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;
         $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
-        return $this->handleEntityWrite(function () use ($entity) {
+        return $this->handleEntityWriteException(function () use ($entity) {
             return \App::$http->readPostResult(
                 '/department/' . $entity->id . '/',
                 $entity
