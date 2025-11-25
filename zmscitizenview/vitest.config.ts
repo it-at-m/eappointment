@@ -17,7 +17,8 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    globals: true
+    globals: true,
+    setupFiles: ["./tests/setup/localStorageMock.ts"]
   }
 })
 
