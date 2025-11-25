@@ -408,28 +408,6 @@ class Useraccount extends Base
         return $this->readListStatement($statement, $resolveReferences);
     }
 
-    public function readSearchByDepartmentId($departmentId, array $parameter, $resolveReferences = 0)
-    {
-        $query = new Query\Useraccount(Query\Base::SELECT);
-        $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
-
-        if (isset($parameter['query'])) {
-            if (preg_match('#^\d+$#', $parameter['query'])) {
-                $query->addConditionUserId($parameter['query']);
-                $query->addConditionDepartmentAndSearch($departmentId, $parameter['query'], true);
-            } else {
-                $query->addConditionDepartmentAndSearch($departmentId, $parameter['query']);
-            }
-            unset($parameter['query']);
-        } else {
-            $query->addConditionDepartmentId($departmentId);
-        }
-
-        $statement = $this->fetchStatement($query);
-        return $this->readListStatement($statement, $resolveReferences);
-    }
-
     public function readSearchByDepartmentIds(array $departmentIds, array $parameter, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
