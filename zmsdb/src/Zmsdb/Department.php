@@ -85,13 +85,6 @@ class Department extends Base
         return $departmentList;
     }
 
-    /**
-     * Read multiple departments by IDs in a single query
-     *
-     * @param array $departmentIds Array of department IDs
-     * @param int $resolveReferences
-     * @return array Associative array [id => Department entity]
-     */
     public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0)
     {
         if (empty($departmentIds)) {
