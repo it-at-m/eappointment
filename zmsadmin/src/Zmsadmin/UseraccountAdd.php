@@ -74,31 +74,8 @@ class UseraccountAdd extends BaseController
             $entity->id = $entity->id . '@' . $input['oidcProvider'];
         }
         $entity = $entity->withCleanedUpFormData(true);
-        try {
-            $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
-                // Return transformed error data with template for backward compatibility with tests
-                // Field-level errors are also displayed inline in the form via exception.data
-                return [
-                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
-                    'include' => true,
-                    'data' => $this->transformValidationErrors($exception->data)
-                ];
-            }
-            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if (
-                '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
-            ) {
-                return [
-                    'template' => $template,
-                    'include' => true,
-                    'data' => $this->transformValidationErrors($exception->data)
-                ];
-            }
-            throw $exception;
-        }
-        return $entity;
+        return $this->handleEntityWrite(function () use ($entity) {
+            return \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
+        });
     }
 }

@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsadmin\Helper\TwigExceptionHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -81,5 +82,41 @@ abstract class BaseController extends \BO\Slim\Controller
             }
         }
         return $transformed;
+    }
+
+    /**
+     * Wraps an HTTP write operation with standardized exception handling.
+     *
+     * @param callable $httpCall
+     * @return mixed
+     * @throws \BO\Zmsclient\Exception
+     */
+    protected function handleEntityWrite(callable $httpCall)
+    {
+        try {
+            return $httpCall();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+
+            $template = TwigExceptionHandler::getExceptionTemplate($exception);
+            if (
+                '' != $exception->template
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+            ) {
+                return [
+                    'template' => $template,
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+
+            throw $exception;
+        }
     }
 }
