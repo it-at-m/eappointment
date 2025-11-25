@@ -1639,10 +1639,10 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/role/{level}/department/{id}/useraccount/":
+ *  "/role/{level}/department/{ids}/useraccount/":
  *      get:
- *          summary: Get a list of useraccounts for a role and department
- *          x-since: 2.10
+ *          summary: Get a list of useraccounts for a role and departments
+ *          x-since: 2.25
  *          tags:
  *              - role
  *              - department
@@ -1653,11 +1653,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: id
- *                  description: department number
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1687,10 +1687,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "role does not exist"
  */
 \App::$slim->get(
-    '/role/{level:\d{1,11}}/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\UseraccountByRoleAndDepartmentList'
+    '/role/{level:\d{1,11}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleAndDepartmentsList'
 )
-    ->setName("UseraccountByRoleAndDepartmentList");
+    ->setName("UseraccountByRoleAndDepartmentsList");
 
 /**
  *  @swagger

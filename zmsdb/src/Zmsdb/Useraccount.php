@@ -420,15 +420,15 @@ class Useraccount extends Base
         return $this->readListStatement($statement, $resolveReferences);
     }
 
-    public function readListByRoleAndDepartment($roleLevel, $departmentId, $resolveReferences = 0)
+    public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
               ->addEntityMapping();
 
-        if (isset($roleLevel) && isset($departmentId)) {
+        if (isset($roleLevel) && !empty($departmentIds)) {
             $query->addConditionRoleLevel($roleLevel);
-            $query->addConditionDepartmentId($departmentId);
+            $query->addConditionDepartmentIds($departmentIds);
         }
 
         $statement = $this->fetchStatement($query);

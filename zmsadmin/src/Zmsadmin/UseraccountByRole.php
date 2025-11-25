@@ -37,18 +37,20 @@ class UseraccountByRole extends BaseController
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
+            $departmentListIds = $departmentList->getIds();
 
-            foreach ($departmentList as $accountDepartment) {
+            if (!empty($departmentListIds)) {
                 try {
                     $departmentUseraccountList = \App::$http
-                        ->readGetResult("/role/$roleLevel/department/$accountDepartment->id/useraccount/")
+                        ->readGetResult("/role/$roleLevel/department/" . implode(',', $departmentListIds) . "/useraccount/", [
+                            'resolveReferences' => 1
+                        ])
                         ->getCollection();
+                    if ($departmentUseraccountList) {
+                        $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
+                    }
                 } catch (\Exception $e) {
-                    continue;
-                }
-
-                if ($departmentUseraccountList) {
-                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
+                    // Continue with empty list
                 }
             }
         }

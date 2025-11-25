@@ -120,18 +120,6 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
-    {
-        $this->leftJoin(
-            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
-            'useraccount.NutzerID',
-            '=',
-            'useraccount_department.nutzerid'
-        );
-        $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
-        return $this;
-    }
-
     public function addConditionSearch($queryString, $orWhere = false)
     {
         $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
