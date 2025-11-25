@@ -31,7 +31,9 @@ class UseraccountByRoleList extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readListRole($roleLevel, $resolveReferences)->withLessData();
+        // Load with departments needed for access checks (resolveReferences=1)
+        // TODO: Optimize to batch load departments to avoid N+1 queries
+        $useraccountList = (new Useraccount())->readListRole($roleLevel, 1);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
 
         if (! $useraccountList or count($useraccountList) === 0) {
@@ -42,7 +44,8 @@ class UseraccountByRoleList extends BaseController
         foreach ($useraccountList as $useraccount) {
             try {
                 Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount;
+                // Remove departments after access check since withLessData() removes them anyway
+                $validUserAccounts[] = $useraccount->withLessData();
             } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
                 continue;
             }
