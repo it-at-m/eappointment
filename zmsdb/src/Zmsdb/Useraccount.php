@@ -198,22 +198,19 @@ class Useraccount extends Base
             return $departmentList;
         }
 
-        // Extract department IDs and build organization name map
         $departmentIds = [];
-        $orgNameMap = [];
+        $organisationNameMap = [];
         foreach ($items as $item) {
             $departmentIds[] = $item['id'];
-            $orgNameMap[$item['id']] = $item['organisation__name'];
+            $organisationNameMap[$item['id']] = $item['organisation__name'];
         }
 
-        // Bulk load all departments in a single query
         $departments = (new \BO\Zmsdb\Department())->readEntitiesByIds($departmentIds, $resolveReferences);
 
-        // Build the list with organization names
         foreach ($departmentIds as $id) {
             if (isset($departments[$id])) {
                 $department = $departments[$id];
-                $department->name = $orgNameMap[$id] . ' -> ' . $department->name;
+                $department->name = $organisationNameMap[$id] . ' -> ' . $department->name;
                 $departmentList->addEntity($department);
             }
         }
