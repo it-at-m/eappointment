@@ -62,7 +62,10 @@
       v-if="!availableDaysFetched || isSwitchingProvider"
       class="m-spinner-container"
     >
-      <MucPercentageSpinner :aria-label="t('loading')" />
+      <MucSpinner
+        :aria-label="t('loading')"
+        :text="t('spinnerText')"
+      />
     </div>
     <CalendarView
       ref="calendarViewRef"
@@ -207,7 +210,7 @@ import type { Ref } from "vue";
 import {
   MucButton,
   MucCallout,
-  MucPercentageSpinner,
+  MucSpinner,
 } from "@muenchen/muc-patternlab-vue";
 import {
   computed,

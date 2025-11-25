@@ -40,7 +40,10 @@
       <template v-if="isLoadingAppointments && !isLoadingComplete">
         <div class="m-content">
           <div class="m-spinner-container">
-            <MucPercentageSpinner :aria-label="t('loading')" />
+            <MucSpinner
+              :aria-label="t('loading')"
+              :text="t('spinnerText')"
+            />
           </div>
         </div>
       </template>
@@ -164,7 +167,10 @@
       <template v-if="isLoadingAppointments && !isLoadingComplete">
         <div class="m-content">
           <div class="m-spinner-container">
-            <MucPercentageSpinner :aria-label="t('loading')" />
+            <MucSpinner
+              :aria-label="t('loading')"
+              :text="t('spinnerText')"
+            />
           </div>
         </div>
       </template>
@@ -269,7 +275,7 @@ import type { OfficeImpl } from "@/types/OfficeImpl";
 import {
   MucButton,
   MucCalendar,
-  MucPercentageSpinner,
+  MucSpinner,
 } from "@muenchen/muc-patternlab-vue";
 import { nextTick } from "vue";
 
