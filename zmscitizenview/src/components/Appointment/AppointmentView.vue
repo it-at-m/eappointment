@@ -67,7 +67,7 @@
       "
     >
       <muc-stepper
-        v-if="!isPast"
+        v-if="!isAppointmentInPast"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -126,7 +126,7 @@
                 v-if="
                   !hasUpdateAppointmentError &&
                   !hasPreconfirmAppointmentError &&
-                  !isPast
+                  !isAppointmentInPast
                 "
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCancelDialog"
@@ -137,7 +137,7 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
-              <div v-if="isPast">
+              <div v-if="isAppointmentInPast">
                 <muc-callout type="error">
                   <template #content>
                     {{ t("rescheduleErrorText") }}
@@ -399,6 +399,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -480,11 +481,10 @@ const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
 const forcedPast = ref(false);
-const isPast = computed(() => {
-  const sec = Number((appointment.value as any)?.timestamp);
-  const nowSec = Math.floor(Date.now() / 1000);
-  return forcedPast.value || (Number.isFinite(sec) && nowSec >= sec);
+const isAppointmentInPast = computed(() => {
+  return forcedPast.value || isExpired((appointment.value as any)?.timestamp);
 });
+
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
@@ -860,10 +860,8 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
-  const sec = Number((appointment.value as any)?.timestamp);
-  const expired = Number.isFinite(sec) && Math.floor(Date.now() / 1000) >= sec;
 
-  if (expired) {
+  if (isExpired((appointment.value as any)?.timestamp)) {
     forcedPast.value = true;
     currentView.value = 3;
     goToTop();
@@ -1196,21 +1194,14 @@ onMounted(() => {
                 selectedService.value?.subServices?.push(subService);
               });
             }
-            if (appointmentData.action) {
-              if (isPast.value) {
-                // Past appointment: display error message
-                currentView.value = 3;
-              } else {
-                if (
-                  appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-                ) {
-                  nextRescheduleAppointment();
-                } else {
-                  nextCancelAppointment();
-                }
-              }
-            } else {
+            if (!appointmentData.action || isAppointmentInPast.value) {
               currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
             }
           }
         } else {
@@ -1268,7 +1259,9 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = isPast.value ? 3 : localStorageData.currentView;
+          currentView.value = isAppointmentInPast.value
+            ? 3
+            : localStorageData.currentView;
         });
       }
     }
