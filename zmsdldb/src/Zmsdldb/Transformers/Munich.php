@@ -46,6 +46,13 @@ class Munich
         ]
     ];
 
+    const DONT_SHOW_SERVICE_ON_START_PAGE = [
+        10396802, // Anmeldung einer Eheschließung mit Auslandsbezug
+        1063648, // Anmeldung einer Eheschließung ohne Auslandsbezug
+        1063731, // Kirchenaustritt
+        1071907, // Einbürgerung
+    ];
+
     const SERVICE_COMBINATIONS = [
         //BB
         [10295182],
@@ -183,6 +190,7 @@ class Munich
                     'link' => $this->publicUrl . "/services/{serviceId}"
                 ],
                 'maxQuantity' => 1,
+                'showOnStartPage' => true,
                 'duration' => 30, // Default duration
             ];
 
@@ -191,6 +199,8 @@ class Munich
             if ($combinableServices) {
                 $mappedService['combinable'] = $combinableServices;
             }
+
+            $mappedService['showOnStartPage'] = !in_array($service['id'], self::DONT_SHOW_SERVICE_ON_START_PAGE);
 
             // Extract ZMS-specific fields
             foreach ($service['fields'] ?? [] as $field) {
