@@ -41,6 +41,13 @@ class Useraccount extends Base
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $useraccount = App::$cache->get($cacheKey);
+            if ($useraccount && App::$log) {
+                App::$log->info('Useraccount cache hit', [
+                    'cache_key' => $cacheKey,
+                    'loginname' => $loginname,
+                    'resolveReferences' => $resolveReferences,
+                ]);
+            }
         }
 
         if (empty($useraccount)) {
@@ -85,6 +92,13 @@ class Useraccount extends Base
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
+            if ($result && App::$log) {
+                App::$log->info('Useraccount list cache hit', [
+                    'cache_key' => $cacheKey,
+                    'resolveReferences' => $resolveReferences,
+                    'count' => $result->count()
+                ]);
+            }
         }
 
         if (empty($result)) {
@@ -339,6 +353,14 @@ class Useraccount extends Base
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
+            if ($result && App::$log) {
+                App::$log->info('Useraccount department list cache hit', [
+                    'cache_key' => $cacheKey,
+                    'department_ids' => $departmentIds,
+                    'resolveReferences' => $resolveReferences,
+                    'count' => $result->count()
+                ]);
+            }
         }
 
         if (empty($result)) {
@@ -522,6 +544,15 @@ class Useraccount extends Base
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
+            if ($result && App::$log) {
+                App::$log->info('Useraccount role and department list cache hit', [
+                    'cache_key' => $cacheKey,
+                    'role_level' => $roleLevel,
+                    'department_ids' => $departmentIds,
+                    'resolveReferences' => $resolveReferences,
+                    'count' => $result->count()
+                ]);
+            }
         }
 
         if (empty($result)) {
