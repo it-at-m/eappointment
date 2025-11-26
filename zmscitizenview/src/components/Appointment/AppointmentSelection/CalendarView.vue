@@ -424,7 +424,7 @@ function onLater(type: "hour" | "dayPart") {
 }
 </script>
 <style lang="scss" scoped>
-@use "@/styles/components.scss";
+@use "@/styles/style.scss";
 
 .m-button--ghost.disabled,
 .m-button--ghost:disabled {
