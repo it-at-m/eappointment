@@ -239,7 +239,11 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2016/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2016-03-01',
+                        'toDate' => '2016-03-31'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_032016.json")
                 ]
             ]
@@ -292,13 +296,21 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2015/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2015-12-31',
+                        'toDate' => '2016-03-01'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_2015.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/2016/',
-                    'parameters' => ['groupby' => 'day'],
+                    'parameters' => [
+                        'groupby' => 'day',
+                        'fromDate' => '2015-12-31',
+                        'toDate' => '2016-03-01'
+                    ],
                     'response' => $this->readFixture("GET_waitingscope_141_032016.json")
                 ]
             ]
