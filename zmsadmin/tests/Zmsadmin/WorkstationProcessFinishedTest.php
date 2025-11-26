@@ -22,12 +22,6 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ]
