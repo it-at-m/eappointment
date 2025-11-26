@@ -102,10 +102,6 @@ class View extends RequestView {
                 this.auralMessage(this.auralMessages.chooseRequestFirst)
             this.onDatePick(value)
             this.selectedDate = value;
-            this.loadFreeProcessList().loadList().then(() => {
-                this.bindEvents();
-            });
-            this.$main.find('select#process_time').trigger('change');
         }
         return (
             calendarElement.render(
