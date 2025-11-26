@@ -31,7 +31,11 @@ class UseraccountGet extends BaseController
             throw new Exception\Useraccount\UseraccountNotFound();
         }
 
-        Helper\User::testWorkstationAccessRights($useraccount);
+        try {
+            Helper\User::testWorkstationAccessRights($useraccount);
+        } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
         $message = Response\Message::create($request);
         $message->data = $useraccount;
 
