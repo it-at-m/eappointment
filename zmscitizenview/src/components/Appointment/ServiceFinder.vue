@@ -16,7 +16,7 @@
         <muc-select
           id="service-search"
           v-model="service"
-          :items="servicesWithoutParent"
+          :items="filteredServices"
           item-title="name"
           :label="t('serviceSearch')"
           :no-item-found-message="t('noServiceFound')"
@@ -609,8 +609,11 @@ onMounted(() => {
   }
 });
 
-const servicesWithoutParent = computed(() => {
-  return services.value.filter((service) => service.parentId === null);
+const hasNoParent = (service: Service) => service.parentId === null;
+const showOnStartPage = (service: Service) => service.showOnStartPage === true;
+
+const filteredServices = computed(() => {
+  return services.value.filter(hasNoParent).filter(showOnStartPage);
 });
 
 const variantServices = computed<Service[]>(() => {
@@ -669,6 +672,7 @@ function normalizeService(raw: any): Service {
     combinable: raw.combinable,
     parentId: raw.parent_id == null ? null : String(raw.parent_id),
     variantId: raw.variant_id == null ? null : Number(raw.variant_id),
+    showOnStartPage: raw.showOnStartPage,
   };
 }
 
