@@ -1253,7 +1253,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
-@use "@/styles/components.scss";
+@use "@/styles/style.scss";
 
 .m-button-group {
   margin-bottom: 20px;
