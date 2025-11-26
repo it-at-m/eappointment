@@ -50,7 +50,7 @@ function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
         MucCalendar: MucCalendarStub,
         MucButton: MucButtonStub,
         TimeSlotGrid: TimeSlotGridStub,
-        MuCSpinner: MucSpinnerStub,
+        MucSpinner: MucSpinnerStub,
       },
     },
     props: {

@@ -2249,7 +2249,7 @@ describe("AppointmentSelection", () => {
       expect(laterButton).toBeUndefined();
     });
   });
-  describe("Loading UI – spinner instead od calendar", () => {
+  describe("Loading UI – spinner instead of calendar", () => {
     it("shows spinner during initial loading (availableDays pending) and hides the calendar", async () => {
       // Promise for fetchAvailableDays to keep the loading status stable
       let resolveDays!: (v: any) => void;
@@ -2274,7 +2274,7 @@ describe("AppointmentSelection", () => {
 
       await nextTick();
       expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
-      // caledar must not be rendered yet
+      // calendar must not be rendered yet
       expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
 
       // finish loading
@@ -2290,4 +2290,3 @@ describe("AppointmentSelection", () => {
     });
   });
 });
-
