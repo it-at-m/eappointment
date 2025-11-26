@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 
@@ -12,6 +13,15 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
  */
 class Useraccount extends Base
 {
+    /**
+     * Sanitize cache key by replacing reserved characters
+     * Reserved characters: {}()/\@:
+     */
+    protected function sanitizeCacheKey($key)
+    {
+        return str_replace(['{', '}', '(', ')', '/', '\\', '@', ':'], '_', $key);
+    }
+
     public function readIsUserExisting($loginName, $password = false)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
@@ -25,14 +35,40 @@ class Useraccount extends Base
         return ($useraccount->hasId()) ? true : false;
     }
 
-    public function readEntity($loginname, $resolveReferences = 1)
+    public function readEntity($loginname, $resolveReferences = 1, $disableCache = false)
     {
-        $query = new Query\Useraccount(Query\Base::SELECT);
-        $query->addEntityMapping()
+        $cacheKey = $this->sanitizeCacheKey("useraccount-$loginname-$resolveReferences");
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $useraccount = App::$cache->get($cacheKey);
+        }
+
+        if (empty($useraccount)) {
+            $query = new Query\Useraccount(Query\Base::SELECT);
+            $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
-        $useraccount = $this->fetchOne($query, new Entity());
-        return $this->readResolvedReferences($useraccount, $resolveReferences);
+            $useraccount = $this->fetchOne($query, new Entity());
+            if (!$useraccount->hasId()) {
+                return null;
+            }
+
+            $useraccount = $this->readResolvedReferences($useraccount, $resolveReferences);
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $useraccount);
+                if (App::$log) {
+                    App::$log->info('Useraccount cache set', [
+                        'cache_key' => $cacheKey,
+                        'loginname' => $loginname,
+                        'resolveReferences' => $resolveReferences,
+                        'useraccount_id' => $useraccount->id ?? null
+                    ]);
+                }
+            }
+        }
+
+        return $useraccount;
     }
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
@@ -43,27 +79,48 @@ class Useraccount extends Base
         return $useraccount;
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0, $disableCache = false)
     {
-        $collection = new Collection();
-        $query = new Query\Useraccount(Query\Base::SELECT);
-        $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                $collection->addEntity($entity);
-            }
-            if (0 < $resolveReferences) {
-                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
-                foreach ($collection as $entity) {
-                    if (isset($departmentMap[$entity->id])) {
-                        $entity->departments = $departmentMap[$entity->id];
+        $cacheKey = "useraccountReadList-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $result = App::$cache->get($cacheKey);
+        }
+
+        if (empty($result)) {
+            $collection = new Collection();
+            $query = new Query\Useraccount(Query\Base::SELECT);
+            $query->addResolvedReferences($resolveReferences)
+                ->addEntityMapping();
+            $result = $this->fetchList($query, new Entity());
+            if (count($result)) {
+                foreach ($result as $entity) {
+                    $collection->addEntity($entity);
+                }
+                if (0 < $resolveReferences) {
+                    $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                    foreach ($collection as $entity) {
+                        if (isset($departmentMap[$entity->id])) {
+                            $entity->departments = $departmentMap[$entity->id];
+                        }
                     }
                 }
             }
+            $result = $collection;
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $result);
+                if (App::$log) {
+                    App::$log->info('Useraccount list cache set', [
+                        'cache_key' => $cacheKey,
+                        'resolveReferences' => $resolveReferences,
+                        'count' => $result->count()
+                    ]);
+                }
+            }
         }
-        return $collection;
+
+        return $result;
     }
 
     protected function readListStatement($statement, $resolveReferences)
@@ -133,8 +190,8 @@ class Useraccount extends Base
 
     protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
     {
-        $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
-        $departmentIds = $this->getReader()->fetchAll($query);
+            $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
+            $departmentIds = $this->getReader()->fetchAll($query);
         $departmentList = $this->buildDepartmentList($departmentIds, $resolveReferences);
 
         $result = [];
@@ -275,28 +332,51 @@ class Useraccount extends Base
         return $this->readResolvedReferences($entity, $resolveReferences);
     }
 
-    public function readCollectionByDepartmentIds($departmentIds, $resolveReferences = 0)
+    public function readCollectionByDepartmentIds($departmentIds, $resolveReferences = 0, $disableCache = false)
     {
-        $collection = new Collection();
-        $query = new Query\Useraccount(Query\Base::SELECT);
-        $query->addResolvedReferences($resolveReferences)
+        sort($departmentIds);
+        $cacheKey = "useraccountReadByDepartmentIds-" . implode(',', $departmentIds) . "-$resolveReferences";
+
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $result = App::$cache->get($cacheKey);
+        }
+
+        if (empty($result)) {
+            $collection = new Collection();
+            $query = new Query\Useraccount(Query\Base::SELECT);
+            $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentIds($departmentIds)
             ->addEntityMapping();
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                $collection->addEntity($entity);
-            }
-            if (0 < $resolveReferences) {
-                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
-                foreach ($collection as $entity) {
-                    if (isset($departmentMap[$entity->id])) {
-                        $entity->departments = $departmentMap[$entity->id];
+            $result = $this->fetchList($query, new Entity());
+            if (count($result)) {
+                foreach ($result as $entity) {
+                    $collection->addEntity($entity);
+                }
+                if (0 < $resolveReferences) {
+                    $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                    foreach ($collection as $entity) {
+                        if (isset($departmentMap[$entity->id])) {
+                            $entity->departments = $departmentMap[$entity->id];
+                        }
                     }
                 }
             }
+            $result = $collection;
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $result);
+                if (App::$log) {
+                    App::$log->info('Useraccount department list cache set', [
+                        'cache_key' => $cacheKey,
+                        'department_ids' => $departmentIds,
+                        'resolveReferences' => $resolveReferences,
+                        'count' => $result->count()
+                    ]);
+                }
+            }
         }
-        return $collection;
+
+        return $result;
     }
 
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
@@ -309,7 +389,10 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
-        return $this->readEntity($entity->getId(), $resolveReferences);
+
+        $this->removeCache($entity);
+
+        return $this->readEntity($entity->getId(), $resolveReferences, true);
     }
 
     public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
@@ -320,15 +403,27 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
-        return $this->readEntity($entity->getId(), $resolveReferences);
+
+        $this->removeCache($entity);
+
+        return $this->readEntity($entity->getId(), $resolveReferences, true);
     }
 
     public function deleteEntity($loginName)
     {
+        // Read entity before deletion to get cache info
+        $entity = $this->readEntity($loginName, 0, true);
+
         $query = new Query\Useraccount(Query\Base::DELETE);
         $query->addConditionLoginName($loginName);
         $this->deleteAssignedDepartments($loginName);
-        return $this->deleteItem($query);
+        $result = $this->deleteItem($query);
+
+        if ($entity && $entity->hasId()) {
+            $this->removeCache($entity);
+        }
+
+        return $result;
     }
 
     protected function updateAssignedDepartments($entity)
@@ -420,18 +515,85 @@ class Useraccount extends Base
         return $this->readListStatement($statement, $resolveReferences);
     }
 
-    public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0)
+    public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0, $disableCache = false)
     {
-        $query = new Query\Useraccount(Query\Base::SELECT);
-        $query->addResolvedReferences($resolveReferences)
-              ->addEntityMapping();
+        sort($departmentIds);
+        $cacheKey = "useraccountReadByRoleAndDepartmentIds-$roleLevel-" . implode(',', $departmentIds) . "-$resolveReferences";
 
-        if (isset($roleLevel) && !empty($departmentIds)) {
-            $query->addConditionRoleLevel($roleLevel);
-            $query->addConditionDepartmentIds($departmentIds);
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
+            $result = App::$cache->get($cacheKey);
         }
 
-        $statement = $this->fetchStatement($query);
-        return $this->readListStatement($statement, $resolveReferences);
+        if (empty($result)) {
+            $query = new Query\Useraccount(Query\Base::SELECT);
+            $query->addResolvedReferences($resolveReferences)
+                  ->addEntityMapping();
+
+            if (isset($roleLevel) && !empty($departmentIds)) {
+                $query->addConditionRoleLevel($roleLevel);
+                $query->addConditionDepartmentIds($departmentIds);
+            }
+
+            $statement = $this->fetchStatement($query);
+            $result = $this->readListStatement($statement, $resolveReferences);
+
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $result);
+                if (App::$log) {
+                    App::$log->info('Useraccount role and department list cache set', [
+                        'cache_key' => $cacheKey,
+                        'role_level' => $roleLevel,
+                        'department_ids' => $departmentIds,
+                        'resolveReferences' => $resolveReferences,
+                        'count' => $result->count()
+                    ]);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function removeCache($useraccount)
+    {
+        if (!App::$cache) {
+            return;
+        }
+
+        // Collect all possible identifiers for this useraccount (id, loginname, etc.)
+        $identifiers = [];
+
+        if (isset($useraccount->id)) {
+            $identifiers[] = $useraccount->id;
+        }
+
+        if (isset($useraccount->loginname) && $useraccount->loginname !== $useraccount->id) {
+            $identifiers[] = $useraccount->loginname;
+        }
+
+        // Remove individual useraccount cache entries
+        foreach ($identifiers as $identifier) {
+            for ($i = 0; $i <= 2; $i++) {
+                $cacheKey = $this->sanitizeCacheKey("useraccount-{$identifier}-$i");
+                if (App::$cache->has($cacheKey)) {
+                    App::$cache->delete($cacheKey);
+                }
+            }
+        }
+
+        // Remove all list caches (any list could contain this useraccount)
+        // Invalidate main list cache
+        for ($i = 0; $i <= 2; $i++) {
+            $cacheKey = "useraccountReadList-$i";
+            if (App::$cache->has($cacheKey)) {
+                App::$cache->delete($cacheKey);
+            }
+        }
+
+        // Note: Department-based and role-based list caches (e.g.,
+        // useraccountReadByDepartmentIds-*, useraccountReadByRoleAndDepartmentIds-*)
+        // cannot be easily invalidated without tracking all possible combinations.
+        // These caches will expire naturally based on TTL, or we could implement
+        // a cache tag/version system for more sophisticated invalidation.
     }
 }
