@@ -466,6 +466,7 @@ const focusTimeTitle = () => {
 
 const focusLocationTitle = () => {
   if (locationTitleElement.value) {
+    locationTitleElement.value.focus();
     const scrollPosition =
       getOffsetTop(locationTitleElement.value) - getOffsetHeader();
     window.scroll({
