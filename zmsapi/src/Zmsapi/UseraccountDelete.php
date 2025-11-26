@@ -26,7 +26,7 @@ class UseraccountDelete extends BaseController
 
         (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
         $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
-        if (! $useraccount->hasId() || ! (new Useraccount())->deleteEntity($useraccount->getId())) {
+        if (! $useraccount || ! $useraccount->hasId() || ! (new Useraccount())->deleteEntity($useraccount->getId())) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
         Helper\User::testWorkstationAccessRights($useraccount);
