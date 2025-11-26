@@ -2,8 +2,10 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Log as Entity;
+use DateTime;
 
 /**
  * Logging for actions
@@ -83,10 +85,11 @@ class Log extends Base
             "Wartenummer" => $process->getQueueNumber(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
             "Bürger*in" => $process->getFirstClient()->familyName,
-            "Dienstleistung/en" => implode(', ', array_map(function ($request) {
+            "Dienstleistungen" => implode(', ', array_map(function ($request) {
                 return $request->getName();
             }, $requests->getAsArray())),
             "Anmerkung" => $process->getAmendment(),
+            "Standort" => $process->scope->getName(),
             "E-Mail" => $process->getFirstClient()->email,
             "Telefon" => $process->getFirstClient()->telephone,
             "Status" => $process->getStatus(),
@@ -112,14 +115,97 @@ class Log extends Base
         return $logList;
     }
 
-    public function readByProcessData($search, $page = 1, $perPage = 100)
-    {
-        $query = new Query\Log(Query\Base::SELECT);
-        $query->addEntityMapping();
-        $query->addConditionDataSearch($search);
-        $query->addLimit($perPage, ($page - 1)  * $perPage);
+    public function readByProcessData(
+        $generalSearch,
+        $service,
+        $provider,
+        $date,
+        $userAction,
+        $page = 1,
+        $perPage = 100
+    ) {
+        $params = [];
+        if ($provider) {
+            $params['Standort'] = $provider;
+        }
 
-        return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
+        if ($service) {
+            $params['en'] = $service;
+        }
+
+        return $this->getBySearchParams(
+            $params,
+            $generalSearch,
+            $userAction,
+            $date,
+            $perPage,
+            ($page - 1)  * $perPage
+        );
+    }
+
+    public function getBySearchParams(
+        array $fieldValues,
+        ?string $generalSearch,
+        int $userAction,
+        ?DateTime $date,
+        int $perPage,
+        int $offset
+    ) {
+        $sql = "SELECT * FROM log";
+        $conditions = [];
+        $params = [];
+
+        foreach ($fieldValues as $field => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $escapedField = addslashes($field);
+            $escapedValue = addslashes($value);
+
+            $conditions[] = "(data LIKE '%$escapedField:$escapedValue%' OR data LIKE '%$escapedField\":\"$escapedValue%')";
+        }
+
+        if (!empty($generalSearch)) {
+            $conditions[] = "data LIKE :generalSearch";
+            $params['generalSearch'] = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $generalSearch) . '%';
+        }
+
+        if (!empty($date)) {
+            $start = (clone $date)->setTime(0, 0, 0);
+            $end = (clone $date)->setTime(0, 0, 0)->add(new \DateInterval('P1D'));
+            $conditions[] = "(ts >= :start AND ts < :end)";
+            $params['start'] = $start->format('Y-m-d H:i:s');
+            $params['end'] = $end->format('Y-m-d H:i:s');
+        }
+
+        if ($userAction === 1) {
+            $conditions[] = "data like :ua_yes";
+            $conditions[] = "data not like :ua_system";
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+        }
+
+        if ($userAction === 2) {
+            $conditions[] = "(data like :ua_system OR data not like :ua_yes)";
+            $params['ua_yes'] = '%Sachbearbeiter*in%';
+            $params['ua_system'] = '%Sachbearbeiter*in\":\"_system_%';
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        $sql .= " ORDER BY ts DESC LIMIT $perPage OFFSET $offset";
+
+        $rows = $this->fetchAll($sql, $params);
+
+        $logs = new LogList();
+        foreach ($rows as $row) {
+            $logs->addEntity(new Entity($row));
+        }
+
+        return $logs;
     }
 
     public function delete($processId)

@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
+use DateTime;
 
 /**
   * Handle requests concerning services
@@ -34,27 +35,47 @@ class ProcessSearch extends BaseController
             ->isNumber()
             ->setDefault(1)
             ->getValue();
+        $service = $validator->getParameter('service')
+            ->isString()
+            ->setDefault('')
+            ->getValue();
+        $provider = $validator->getParameter('provider')
+            ->isString()
+            ->setDefault('')
+            ->getValue();
+        $date = $validator->getParameter('date')
+            ->isString()
+            ->setDefault(null)
+            ->getValue();
+        $userAction = $validator->getParameter('user')
+            ->isNumber()
+            ->setDefault(0)
+            ->getValue();
         $perPage = $validator->getParameter('perPage')
             ->isNumber()
             ->setDefault(100)
             ->getValue();
-        $processList = \App::$http->readGetResult('/process/search/', [
+        $processList = !empty($queryString) ? \App::$http->readGetResult('/process/search/', [
             'query' => $queryString,
             'resolveReferences' => 1,
-        ])->getCollection();
+        ])->getCollection() : new ProcessList();
 
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
-        if (!$workstation->hasSuperUseraccount()) {
+        if (!empty($processList) && !$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
         }
 
-        $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         if ($workstation->hasAuditAccount()) {
             $queryString = urlencode($queryString);
             $logList = \App::$http
-                ->readGetResult("/log/process/$queryString/", [
+                ->readGetResult("/log/process/", [
+                        'searchQuery' => $queryString,
                         'page' => $page,
-                        'perPage' => $perPage
+                        'perPage' => $perPage,
+                        'service' => $service ? trim($service) : null,
+                        'provider' => $provider ? trim($provider) : null,
+                        'userAction' => (int) $userAction,
+                        'date' => $date
                     ])
                 ->getCollection();
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
@@ -70,6 +91,10 @@ class ProcessSearch extends BaseController
             'page/search.twig',
             array(
                 'title' => 'Suche',
+                'service' => $service ? trim($service) : null,
+                'provider' => $provider ? trim($provider) : null,
+                'userAction' => (int) $userAction,
+                'date' => $date,
                 'page' => $page,
                 'perPage' => $perPage,
                 'workstation' => $workstation,

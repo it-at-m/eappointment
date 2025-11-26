@@ -17,6 +17,8 @@ vi.mock("@/api/ZMSAppointmentAPI", async () => {
   return {
     ...actual,
     confirmAppointment: vi.fn(),
+    preconfirmAppointment: vi.fn(),
+    cancelAppointment: vi.fn(),
   };
 });
 
@@ -1401,6 +1403,95 @@ describe("AppointmentView", () => {
         expect(wrapper.vm.$.appContext.provides.appointment.appointment.value?.icsContent).toBe(mockConfirmResponse.icsContent);
         expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
       });
+    });
+  });
+
+  describe("Rebooking: direct confirm flow", () => {
+    const mockConfirm = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+    const mockPreconfirm = vi.mocked(ZMSAppointmentAPI.preconfirmAppointment);
+    const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+
+    beforeEach(() => {
+      mockConfirm.mockReset();
+      mockPreconfirm.mockReset();
+      mockCancel.mockReset();
+    });
+
+    it("calls confirmAppointment directly when rebooking with processId+authKey", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+
+      mockConfirm.mockResolvedValueOnce({
+        processId: "p1",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        { id: "p1", authKey: "k1" }
+      );
+      expect(mockPreconfirm).not.toHaveBeenCalled();
+
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      expect(wrapper.vm.currentView).toBe(5);
+
+      expect(wrapper.vm.isBookingAppointment).toBe(false);
+    });
+
+    it("cancels old appointment after successful rebooking confirm", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "old",
+        authKey: "oldkey",
+      } as any;
+
+      wrapper.vm.appointment = {
+        processId: "new",
+        authKey: "newkey",
+      } as any;
+
+      mockConfirm.mockResolvedValueOnce({
+        processId: "new",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalled();
+      expect(mockCancel).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({ processId: "old" })
+      );
+    });
+
+    it("falls back to preconfirm when rebooking but missing authKey/processId", async () => {
+      const wrapper = createWrapper({ appointmentHash: "somehash" });
+
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.appointment = {
+        processId: "p1",
+      } as any;
+
+      mockPreconfirm.mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).not.toHaveBeenCalled();
+      expect(mockPreconfirm).toHaveBeenCalled();
     });
   });
 });

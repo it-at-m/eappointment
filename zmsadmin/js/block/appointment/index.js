@@ -74,10 +74,10 @@ class View extends RequestView {
                 this.assigneMainFormValues();
                 this.loadPromise.then(() => {
                     this.initRequestView();
-                    this.bindEvents();
-                    this.$main.find('select#process_time').trigger('change');
+                    this.$main.find('select#process_time');
                     this.loadDatePicker();
-                    this.calculateSlotCount();
+                    this.bindEvents();
+                    this.calculateSlotCount(true);
                 });
             });
     }
@@ -88,13 +88,9 @@ class View extends RequestView {
         this.loadPromise.then(() => {
             this.initRequestView(true);
             this.bindEvents();
-            this.$main.find('select#process_time').trigger('change');
         }).then(() => {
             if (this.selectedScope || this.selectedDate) {
                 this.loadDatePicker();
-                this.loadFreeProcessList().loadList().then(() => {
-                    this.bindEvents();
-                });
             }
         });
     }
@@ -105,6 +101,11 @@ class View extends RequestView {
             if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
                 this.auralMessage(this.auralMessages.chooseRequestFirst)
             this.onDatePick(value)
+            this.selectedDate = value;
+            this.loadFreeProcessList().loadList().then(() => {
+                this.bindEvents();
+            });
+            this.$main.find('select#process_time').trigger('change');
         }
         return (
             calendarElement.render(
@@ -240,6 +241,7 @@ class View extends RequestView {
         //}
         this.loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
+            this.$main.find('select#process_time').trigger('change');
         });
         this.onChangeSlotCountCallback(event);
     }
@@ -283,6 +285,7 @@ class View extends RequestView {
         }).loadButtons().then(() => {
             this.bindEvents();
         });
+
         this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments && this.emailConfirmationActivated)
     }
 

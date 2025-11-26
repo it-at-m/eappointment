@@ -46,7 +46,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
-        if (1 <= $resolveReferences) {
+        if (0 <= $resolveReferences) {
             if ($process->archiveId) {
                 $process['requests'] = (new Request())
                     ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
@@ -375,9 +375,13 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
-    {
-        $query = new Query\Process(Query\Base::SELECT);
+    public function readProcessListByScopeAndTime(
+        $scopeId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0,
+        $withEntities = []
+    ) {
+        $query = new Query\Process(Query\Base::SELECT, '', false, null, $withEntities);
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
