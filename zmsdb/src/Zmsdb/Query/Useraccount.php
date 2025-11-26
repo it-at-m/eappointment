@@ -36,36 +36,28 @@ class Useraccount extends Base implements MappingInterface
     ';
 
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
-        SELECT behoerde.`BehoerdenID` AS id,
-            organisation.Organisationsname as organisation__name
+        SELECT behoerde.`BehoerdenID` AS id
         FROM ' . Department::TABLE . '
-        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY behoerde.Name
     ';
 
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
-        SELECT userAssignment.`behoerdenid` AS id,
-            organisation.Organisationsname as organisation__name
+        SELECT userAssignment.`behoerdenid` AS id
         FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
         LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.Name = :useraccountName
-        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
-        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         WHERE
             useraccount.`NutzerID` = userAssignment.`nutzerid`
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY userAssignment.`behoerdenid`
     ';
 
     const QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL = '
         SELECT useraccount.Name as useraccountName,
-            userAssignment.`behoerdenid` AS id,
-            organisation.Organisationsname as organisation__name
+            userAssignment.`behoerdenid` AS id
         FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
         LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.NutzerID = userAssignment.nutzerid
-        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
-        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         WHERE
             useraccount.Name IN (:useraccountNames)
-        ORDER BY useraccount.Name, organisation.Organisationsname, behoerde.Name
+        ORDER BY useraccount.Name, userAssignment.`behoerdenid`
     ';
 
     public function getEntityMapping()

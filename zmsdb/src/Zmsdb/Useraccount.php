@@ -51,11 +51,11 @@ class Useraccount extends Base
         }
 
         if (empty($useraccount)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addEntityMapping()
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
-            $useraccount = $this->fetchOne($query, new Entity());
+        $useraccount = $this->fetchOne($query, new Entity());
             if (!$useraccount->hasId()) {
                 return null;
             }
@@ -102,16 +102,16 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $collection = new Collection();
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-                ->addEntityMapping();
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
-                    $collection->addEntity($entity);
-                }
-                if (0 < $resolveReferences) {
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addEntityMapping();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($entity);
+            }
+            if (0 < $resolveReferences) {
                     $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
                     foreach ($collection as $entity) {
                         if (isset($departmentMap[$entity->id])) {
@@ -200,7 +200,7 @@ class Useraccount extends Base
             }
         }
         return [$superusers, $regularUsers];
-    }
+        }
 
     protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
     {
@@ -246,9 +246,8 @@ class Useraccount extends Base
 
     protected function buildDepartmentListsForUsers(array $useraccountNames, array $assignmentsByUser, $resolveReferences = 0)
     {
-        // Collect ALL unique department IDs and organization names from all useraccounts
+        // Collect ALL unique department IDs from all useraccounts
         $allDepartmentIds = [];
-        $allOrganisationNameMap = [];
         $departmentIdsByUser = [];
 
         foreach ($useraccountNames as $useraccountName) {
@@ -258,7 +257,6 @@ class Useraccount extends Base
                     $deptId = $item['id'];
                     if (!isset($allDepartmentIds[$deptId])) {
                         $allDepartmentIds[$deptId] = true;
-                        $allOrganisationNameMap[$deptId] = $item['organisation__name'];
                     }
                     $departmentIdsByUser[$useraccountName][] = $deptId;
                 }
@@ -270,19 +268,12 @@ class Useraccount extends Base
         if (!empty($allDepartmentIds)) {
             $uniqueDepartmentIds = array_keys($allDepartmentIds);
             $allDepartments = (new \BO\Zmsdb\Department())->readEntitiesByIds($uniqueDepartmentIds, $resolveReferences);
-
-            // Apply organization name prefix to all departments
-            foreach ($allDepartments as $id => $department) {
-                if (isset($allOrganisationNameMap[$id])) {
-                    $department->name = $allOrganisationNameMap[$id] . ' -> ' . $department->name;
-                }
-            }
         }
 
         // Build department lists for each useraccount from the pre-loaded departments
         $result = [];
-        foreach ($useraccountNames as $useraccountName) {
-            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+            foreach ($useraccountNames as $useraccountName) {
+                $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             if (isset($departmentIdsByUser[$useraccountName])) {
                 foreach ($departmentIdsByUser[$useraccountName] as $deptId) {
                     if (isset($allDepartments[$deptId])) {
@@ -306,19 +297,16 @@ class Useraccount extends Base
         }
 
         $departmentIds = [];
-        $organisationNameMap = [];
         foreach ($items as $item) {
             $departmentIds[] = $item['id'];
-            $organisationNameMap[$item['id']] = $item['organisation__name'];
         }
 
         $departments = (new \BO\Zmsdb\Department())->readEntitiesByIds($departmentIds, $resolveReferences);
 
         foreach ($departmentIds as $id) {
             if (isset($departments[$id])) {
-                $department = $departments[$id];
-                $department->name = $organisationNameMap[$id] . ' -> ' . $department->name;
-                $departmentList->addEntity($department);
+                // Clone department so the list has its own instances
+                $departmentList->addEntity(clone $departments[$id]);
             }
         }
 
@@ -364,14 +352,14 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $collection = new Collection();
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentIds($departmentIds)
             ->addEntityMapping();
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
                     $collection->addEntity($entity);
                 }
                 if (0 < $resolveReferences) {
@@ -556,16 +544,16 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-                  ->addEntityMapping();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+              ->addEntityMapping();
 
             if (isset($roleLevel) && !empty($departmentIds)) {
-                $query->addConditionRoleLevel($roleLevel);
+            $query->addConditionRoleLevel($roleLevel);
                 $query->addConditionDepartmentIds($departmentIds);
-            }
+        }
 
-            $statement = $this->fetchStatement($query);
+        $statement = $this->fetchStatement($query);
             $result = $this->readListStatement($statement, $resolveReferences);
 
             if (App::$cache) {
