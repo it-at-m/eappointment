@@ -632,7 +632,7 @@ onMounted(() => {
 
 .timeBox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 32px;
   margin-bottom: 32px;
 }
