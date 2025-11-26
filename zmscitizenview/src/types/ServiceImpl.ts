@@ -21,6 +21,8 @@ export class ServiceImpl implements Service {
   parentId: string | number | null;
   variantId: number | null;
 
+  showOnStartPage?: boolean;
+
   constructor(
     id: string,
     name: string,
@@ -30,7 +32,8 @@ export class ServiceImpl implements Service {
     subServices: SubService[] | undefined,
     count: number | undefined,
     parentId: string | number | null,
-    variantId: number | null
+    variantId: number | null,
+    showOnStartPage: boolean | undefined
   ) {
     this.id = id;
     this.name = name;
@@ -41,5 +44,6 @@ export class ServiceImpl implements Service {
     this.count = count;
     this.parentId = parentId;
     this.variantId = variantId;
+    this.showOnStartPage = showOnStartPage;
   }
 }
