@@ -16,7 +16,7 @@ class ExchangeRequestscope extends Base
         s.`standortid` as scopeid,
         s.`behoerdenid` as departmentid,
         s.`organisationsid` as organisationid,
-        DATE_FORMAT(s.`datum`, :groupby) as date,
+        DATE_FORMAT(s.`Datum`, :groupby) as date,
         (
             CASE
               WHEN s.anliegenid = -1 THEN "Dienstleistung wurde nicht erfasst"
@@ -28,9 +28,9 @@ class ExchangeRequestscope extends Base
         AVG(s.bearbeitungszeit) as processingtime
     FROM ' . self::TABLE . ' AS s
         LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
-    WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
-    GROUP BY DATE_FORMAT(s.`datum`, :groupby), s.anliegenid
-    ORDER BY r.name, s.anliegenid
+    WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend
+    GROUP BY date, s.anliegenid
+    ORDER BY r.name
     ';
 
     const QUERY_SUBJECTS = '

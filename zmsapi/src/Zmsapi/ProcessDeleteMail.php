@@ -9,7 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsdb\Mail as Query;
+use BO\Zmsdb\Mail;
 use BO\Zmsdb\Config;
 use BO\Zmsdb\Process as ProcessRepository;
 use BO\Zmsdb\Department as DepartmentRepository;
@@ -35,7 +35,6 @@ class ProcessDeleteMail extends BaseController
 
         $process->testValid();
         $this->testProcessData($process);
-        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
@@ -52,7 +51,7 @@ class ProcessDeleteMail extends BaseController
     protected static function writeMail(Process $process, $initiator = null)
     {
         $config = (new Config())->readEntity();
-        $department = (new DepartmentRepository())->readByScopeId($process->scope['id']);
+        $department = (new DepartmentRepository())->readByScopeId($process->scope->id);
         $collection = ProcessConfirmationMail::getProcessListOverview($process, $config);
 
         $mail = (new \BO\Zmsentities\Mail())
@@ -61,7 +60,7 @@ class ProcessDeleteMail extends BaseController
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
-            $mail = (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
+            $mail = (new Mail())->writeInQueue($mail, \App::$now, false);
             \App::$log->debug("Send mail", [$mail]);
         }
         return $mail;
