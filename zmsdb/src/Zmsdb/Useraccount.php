@@ -214,6 +214,7 @@ class Useraccount extends Base
     {
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = $this->sanitizeCacheKey("useraccount-v{$version}-$loginname-$resolveReferences");
+        $useraccount = null;
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $useraccount = App::$cache->get($cacheKey);
