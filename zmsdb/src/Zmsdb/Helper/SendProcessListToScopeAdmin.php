@@ -36,7 +36,7 @@ class SendProcessListToScopeAdmin
             }
             if ($commit) {
                 $processList = (new \BO\Zmsdb\Process())
-                    ->readProcessListByScopeAndTime($scope->getId(), $this->dateTime, 1);
+                    ->readProcessListByScopeAndTime([$scope->getId()], $this->dateTime, 1);
                 $processList = $processList
                    ->toQueueList($this->dateTime)
                    ->withStatus(array('confirmed', 'queued', 'reserved'))

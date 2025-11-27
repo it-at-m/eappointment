@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Scope as Entity;
 use BO\Zmsentities\Collection\ScopeList as Collection;
 use BO\Zmsdb\Application as App;
@@ -423,13 +424,12 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0, $withEntities = [])
+    public function readQueueList($scopeIds, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         if ($resolveReferences > 0) {
-            // resolveReferences > 0 is only necessary for a resolved process
             $queueList = (new Process())
                 ->readProcessListByScopeAndTime(
-                    $scopeId,
+                    $scopeIds,
                     $dateTime,
                     $resolveReferences - 1,
                     $withEntities
@@ -437,8 +437,9 @@ class Scope extends Base
                 ->toQueueList($dateTime);
         } else {
             $queueList = (new Queue())
-                ->readListByScopeAndTime($scopeId, $dateTime, $resolveReferences);
+                ->readListByScopeAndTime($scopeIds, $dateTime, $resolveReferences);
         }
+
         return $queueList->withSortedArrival();
     }
 
@@ -468,9 +469,25 @@ class Scope extends Base
     {
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $scope = (! $timeAverage) ? (new Scope())->readEntity($scope->id) : $scope;
-        $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences, $withEntities);
-        $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
+        $queueList = $this->readQueueList([$scope->id], $dateTime, $resolveReferences, $withEntities);
         $workstationCount = $scope->getCalculatedWorkstationCount();
+        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
+    }
+
+    public function readScopesQueueListWithWaitingTime(ScopeList $scopes, $dateTime, $resolveReferences = 0, $withEntities = [])
+    {
+        $timeSum = 0;
+        $workstationCount = 0;
+        $scopeIds = [];
+        foreach ($scopes as $scope) {
+            $timeSum += $scope->getPreference('queue', 'processingTimeAverage');
+            $workstationCount += $scope->getCalculatedWorkstationCount();
+            $scopeIds[] = $scope->id;
+        }
+
+        $timeAverage = $timeSum / $scopes->count();
+        $queueList = $this->readQueueList($scopeIds, $dateTime, $resolveReferences, $withEntities);
+
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
