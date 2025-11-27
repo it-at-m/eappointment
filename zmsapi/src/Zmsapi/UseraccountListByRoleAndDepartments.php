@@ -37,14 +37,8 @@ class UseraccountListByRoleAndDepartments extends BaseController
 
         $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences, false, $workstation);
 
-        $validUserAccounts = [];
-        foreach ($useraccountList as $useraccount) {
-            $validUserAccounts[] = $useraccount->withLessData();
-        }
-        $useraccountList = $validUserAccounts;
-
         $message = Response\Message::create($request);
-        $message->data = $useraccountList;
+        $message->data = $useraccountList->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

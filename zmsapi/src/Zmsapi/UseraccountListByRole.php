@@ -33,14 +33,8 @@ class UseraccountListByRole extends BaseController
             throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
         }
 
-        $validUserAccounts = [];
-        foreach ($useraccountList as $useraccount) {
-            $validUserAccounts[] = $useraccount->withLessData();
-        }
-        $useraccountList = $validUserAccounts;
-
         $message = Response\Message::create($request);
-        $message->data = $useraccountList;
+        $message->data = $useraccountList->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

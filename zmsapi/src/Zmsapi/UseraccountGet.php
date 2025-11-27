@@ -32,7 +32,7 @@ class UseraccountGet extends BaseController
         }
 
         try {
-            Helper\User::testWorkstationAccessRights($useraccount);
+        Helper\User::testWorkstationAccessRights($useraccount);
         } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
