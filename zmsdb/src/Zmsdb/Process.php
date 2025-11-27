@@ -513,10 +513,9 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
     {
-        $processList = new Collection();
         $cluster = (new Cluster())->readEntity($clusterId, 1);
+        $scopeIds = [];
         if ($cluster->scopes->count()) {
-            $scopeIds = [];
             foreach ($cluster->scopes as $scope) {
                 $scopeIds[] = $scope->id;
             }
