@@ -8,7 +8,7 @@ class UseraccountTest extends Base
 
     protected $parameters = [];
 
-    protected $classname = "Useraccount";
+    protected $classname = "UseraccountList";
 
     public function testRendering()
     {

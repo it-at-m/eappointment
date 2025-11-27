@@ -10,7 +10,7 @@ class UseraccountByDepartmentTest extends Base
 
     protected $parameters = [];
 
-    protected $classname = "UseraccountByDepartment";
+    protected $classname = "UseraccountListByDepartment";
 
     public function testRendering()
     {

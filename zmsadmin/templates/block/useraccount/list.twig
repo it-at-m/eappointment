@@ -5,10 +5,10 @@
         {% if searchUserQuery %}
             {% trans %}Suchergebnisse für {% endtrans %} "{{ searchUserQuery }}"
         {% else %}
-            {% if workstation.useraccount.rights.superuser %}
-                Gesamtnutzerliste
-            {% else %}
-                Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
+        {% if workstation.useraccount.rights.superuser %}
+            Gesamtnutzerliste
+        {% else %}
+            Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
             {% endif %}
         {% endif %}
     {% endblock %}
