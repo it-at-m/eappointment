@@ -4,7 +4,7 @@ namespace BO\Zmsapi\Tests;
 
 class UseraccountByDepartmentListTest extends Base
 {
-    protected $classname = "UseraccountByDepartmentList";
+    protected $classname = "UseraccountSearchByDepartments";
 
     public function testRendering()
     {

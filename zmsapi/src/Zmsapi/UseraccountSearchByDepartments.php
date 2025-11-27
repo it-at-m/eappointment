@@ -37,6 +37,15 @@ class UseraccountSearchByDepartments extends BaseController
 
         $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences, $workstation);
 
+        // Add department entities if resolveReferences < 1 (same logic as UseraccountByDepartmentList)
+        foreach ($useraccountList as $userAccount) {
+            foreach ($departments as $department) {
+                if ($resolveReferences < 1 && !$userAccount->getDepartmentById($department->getId())->hasId()) {
+                    $userAccount->getDepartmentList()->addEntity($department);
+                }
+            }
+        }
+
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             $validUserAccounts[] = $useraccount->withLessData();

@@ -28,7 +28,7 @@ class UseraccountByDepartment extends BaseController
         $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
 
         $useraccountList = new Collection();
-        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
+        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/", ['resolveReferences' => 1])->getCollection();
         $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();

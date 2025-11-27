@@ -2,10 +2,14 @@
     {% from 'element/helper/form.twig' import custombutton, inputfield %}
 
     {% block board_title %}
-        {% if workstation.useraccount.rights.superuser %}
-            Gesamtnutzerliste
+        {% if searchUserQuery %}
+            {% trans %}Suchergebnisse für {% endtrans %} "{{ searchUserQuery }}"
         {% else %}
-            Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
+            {% if workstation.useraccount.rights.superuser %}
+                Gesamtnutzerliste
+            {% else %}
+                Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
+            {% endif %}
         {% endif %}
     {% endblock %}
 
