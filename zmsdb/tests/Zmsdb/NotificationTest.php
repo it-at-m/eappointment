@@ -74,30 +74,31 @@ class NotificationTest extends Base
             "id" => 1234,
             "createIP" => "145.15.3.10",
             "createTimestamp" => 1447931596,
-            "scope" => [
-                "id" => 141,
-                "provider" => [
-                    "id" => 1,
-                    "name" => "Test-Provider"
-                ],
+            "department" => [
+                "id" => 72,
                 "preferences" => [
                     "notifications" => [
                         "enabled" => true,
                         "identification" => "terminvereinbarung@mitte.berlin.de",
                         "sendConfirmationEnabled" => true,
                         "sendReminderEnabled" => true
-                    ]
-                ]
+                    ],
+                ],
             ],
             "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
             "process" => [
-                "appointments"=>[
+                "appointments" => [
                     [
                         "date"=>"1464339600",
                         "scope"=>[
-                            "id"=>"141"
+                            "id" => "141",
+                            "shortName" => "Zentrale",
+                            "provider" => [
+                                "id" => 123456,
+                                "name" => "Test-Provider"
+                            ],
                         ],
-                        "slotCount"=>"1"
+                        "slotCount" => "1"
                     ]
                 ],
                 "clients" => [
@@ -111,7 +112,12 @@ class NotificationTest extends Base
                 "authKey" => "f22c",
                 "reminderTimestamp" => 1447931730000,
                 "scope" => [
-                    "id" => 141
+                    "id" => 141,
+                    "shortName" => "Zentrale",
+                    "provider" => [
+                        "id" => 123456,
+                        "name" => "Test-Provider",
+                    ],
                 ],
                 "status" => "confirmed"
             ],
