@@ -81,6 +81,7 @@ class ProcessSearch extends BaseController
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
         }
 
+        $processList = $processList ?? new \BO\Zmsentities\Collection\ProcessList();
         $processListOther = new \BO\Zmsentities\Collection\ProcessList();
         if (!$workstation->hasSuperUseraccount()) {
             $processListOther = $processList->withOutScopeId($workstation->scope['id']);
