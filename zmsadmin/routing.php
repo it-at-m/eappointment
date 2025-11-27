@@ -142,7 +142,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/users/department/{id:\d+}/', \BO\Zmsadmin\UseraccountListByDepartment::class)
     ->setName("useraccountListByDepartment");
 
-\App::$slim->get('/role/{level:\d+}/users/', \BO\Zmsadmin\UseraccountListByRole::class)
+\App::$slim->get('/users/role/{level:\d+}/', \BO\Zmsadmin\UseraccountListByRole::class)
     ->setName("useraccountListByRole");
 
 \App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
