@@ -497,6 +497,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds($scopeIds)
+    {
+        if (count($scopeIds) > 1) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($scopeIds) {
+                $query
+                    ->andWith('process.StandortID', 'IN', $scopeIds)
+                    ->orWith('process.AbholortID', 'IN', $scopeIds);
+            });
+            return $this;
+        }
+
+        return $this->addConditionScopeId($scopeIds[0]);
+    }
+
     public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
     {
         ($queueLimit > $queueNumber)
