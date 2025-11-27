@@ -193,6 +193,9 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
     public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false)
     {
         // Superusers can access all useraccounts, no filtering needed

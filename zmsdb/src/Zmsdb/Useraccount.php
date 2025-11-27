@@ -228,11 +228,11 @@ class Useraccount extends Base
         }
 
         if (empty($useraccount)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addEntityMapping()
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
-            $useraccount = $this->fetchOne($query, new Entity());
+        $useraccount = $this->fetchOne($query, new Entity());
             if (!$useraccount->hasId()) {
                 return null;
             }
@@ -263,6 +263,9 @@ class Useraccount extends Base
         return $useraccount;
     }
 
+    /**
+     * @SuppressWarnings(NPathComplexity)
+     */
     public function readList($resolveReferences = 0, $disableCache = false, $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
@@ -285,9 +288,9 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $collection = new Collection();
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
             ->addEntityMapping();
 
             // Apply workstation access filtering if provided
@@ -308,12 +311,12 @@ class Useraccount extends Base
                 );
             }
 
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
-                    $collection->addEntity($entity);
-                }
-                if (0 < $resolveReferences) {
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($entity);
+            }
+            if (0 < $resolveReferences) {
                     $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
                     foreach ($collection as $entity) {
                         if (isset($departmentMap[$entity->id])) {
@@ -403,7 +406,7 @@ class Useraccount extends Base
             }
         }
         return [$superusers, $regularUsers];
-    }
+        }
 
     protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
     {
@@ -475,8 +478,8 @@ class Useraccount extends Base
 
         // Build department lists for each useraccount from the pre-loaded departments
         $result = [];
-        foreach ($useraccountNames as $useraccountName) {
-            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+            foreach ($useraccountNames as $useraccountName) {
+                $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             if (isset($departmentIdsByUser[$useraccountName])) {
                 foreach ($departmentIdsByUser[$useraccountName] as $departmentId) {
                     if (isset($allDepartments[$departmentId])) {
@@ -537,6 +540,9 @@ class Useraccount extends Base
         return $this->readResolvedReferences($entity, $resolveReferences);
     }
 
+    /**
+     * @SuppressWarnings(NPathComplexity)
+     */
     public function readCollectionByDepartmentIds($departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
     {
         sort($departmentIds);
@@ -561,9 +567,9 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $collection = new Collection();
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentIds($departmentIds)
             ->addEntityMapping();
 
@@ -572,9 +578,9 @@ class Useraccount extends Base
                 $query->addConditionExcludeSuperusers();
             }
 
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
                     $collection->addEntity($entity);
                 }
                 if (0 < $resolveReferences) {
@@ -774,13 +780,13 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
             ->addEntityMapping();
 
-            if (isset($roleLevel)) {
-                $query->addConditionRoleLevel($roleLevel);
-            }
+        if (isset($roleLevel)) {
+            $query->addConditionRoleLevel($roleLevel);
+        }
 
             // Apply workstation access filtering if provided
             if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
@@ -793,7 +799,7 @@ class Useraccount extends Base
                 );
             }
 
-            $statement = $this->fetchStatement($query);
+        $statement = $this->fetchStatement($query);
             $result = $this->readListStatement($statement, $resolveReferences);
 
             if (App::$cache) {
@@ -813,6 +819,9 @@ class Useraccount extends Base
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(NPathComplexity)
+     */
     public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
     {
         sort($departmentIds);
@@ -838,21 +847,21 @@ class Useraccount extends Base
         }
 
         if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
               ->addEntityMapping();
 
             if (isset($roleLevel) && !empty($departmentIds)) {
-                $query->addConditionRoleLevel($roleLevel);
+            $query->addConditionRoleLevel($roleLevel);
                 $query->addConditionDepartmentIds($departmentIds);
             }
 
             // Exclude superusers if workstation user is not superuser
             if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
                 $query->addConditionExcludeSuperusers();
-            }
+        }
 
-            $statement = $this->fetchStatement($query);
+        $statement = $this->fetchStatement($query);
             $result = $this->readListStatement($statement, $resolveReferences);
 
             if (App::$cache) {
