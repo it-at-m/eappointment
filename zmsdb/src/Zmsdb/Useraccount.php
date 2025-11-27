@@ -266,6 +266,7 @@ class Useraccount extends Base
     {
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = "useraccountReadList-v{$version}-$resolveReferences";
+        $result = null;
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
@@ -517,6 +518,7 @@ class Useraccount extends Base
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = "useraccountReadByDepartmentIds-v{$version}-" . implode(',', $departmentIds) . "-$resolveReferences";
+        $result = null;
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
@@ -697,6 +699,7 @@ class Useraccount extends Base
     {
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = "useraccountReadByRole-v{$version}-" . ($roleLevel ?? 'null') . "-$resolveReferences";
+        $result = null;
 
         if (App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
@@ -744,6 +747,7 @@ class Useraccount extends Base
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = "useraccountReadByRoleAndDepartmentIds-v{$version}-$roleLevel-" . implode(',', $departmentIds) . "-$resolveReferences";
+        $result = null;
 
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
