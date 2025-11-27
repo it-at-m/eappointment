@@ -24,24 +24,19 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        $helper = new Helper\User($request, 2);
+        $helper->checkRights('useraccount');
 
-        $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readList(1);
+        $workstation = Helper\User::$workstation;
+        $useraccountList = (new Useraccount())->readList(1, false, $workstation);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount->withLessData();
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
+            $validUserAccounts[] = $useraccount->withLessData();
         }
-        $useraccountList = $validUserAccounts;
 
         $message = Response\Message::create($request);
-        $message->data = $useraccountList;
+        $message->data = $validUserAccounts;
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

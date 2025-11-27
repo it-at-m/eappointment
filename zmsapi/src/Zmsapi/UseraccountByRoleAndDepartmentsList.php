@@ -35,18 +35,11 @@ class UseraccountByRoleAndDepartmentsList extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences);
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences, false, $workstation);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount->withLessData();
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
+            $validUserAccounts[] = $useraccount->withLessData();
         }
         $useraccountList = $validUserAccounts;
 

@@ -35,18 +35,11 @@ class UseraccountSearchByDepartments extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences);
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences, $workstation);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount->withLessData();
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
+            $validUserAccounts[] = $useraccount->withLessData();
         }
         $useraccountList = $validUserAccounts;
 

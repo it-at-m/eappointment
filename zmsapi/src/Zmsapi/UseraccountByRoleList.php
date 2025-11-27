@@ -27,9 +27,7 @@ class UseraccountByRoleList extends BaseController
         $roleLevel = $args['level'];
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
 
-        $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readListRole($roleLevel, 1);
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        $useraccountList = (new Useraccount())->readListRole($roleLevel, 1, $workstation);
 
         if (! $useraccountList or count($useraccountList) === 0) {
             throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
@@ -37,12 +35,7 @@ class UseraccountByRoleList extends BaseController
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount->withLessData();
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
+            $validUserAccounts[] = $useraccount->withLessData();
         }
         $useraccountList = $validUserAccounts;
 

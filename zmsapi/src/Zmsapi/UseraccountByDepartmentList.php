@@ -28,8 +28,7 @@ class UseraccountByDepartmentList extends BaseController
         $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
 
         $useraccountList = (new Query())
-            ->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences);
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+            ->readCollectionByDepartmentIds(explode(',', $args['ids']), $resolveReferences, false, $workstation);
         foreach ($useraccountList as $userAccount) {
             foreach ($departments as $department) {
                 if ($resolveReferences < 1 && !$userAccount->getDepartmentByIds($department->getId())) {
@@ -40,12 +39,7 @@ class UseraccountByDepartmentList extends BaseController
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount->withLessData();
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
+            $validUserAccounts[] = $useraccount->withLessData();
         }
         $useraccountList = $validUserAccounts;
 

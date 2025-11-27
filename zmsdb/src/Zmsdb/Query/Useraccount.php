@@ -186,4 +186,40 @@ class Useraccount extends Base implements MappingInterface
 
         return $this;
     }
+
+    public function addConditionExcludeSuperusers()
+    {
+        $this->query->where('useraccount.Berechtigung', '!=', 90);
+        return $this;
+    }
+
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false)
+    {
+        // Superusers can access all useraccounts, no filtering needed
+        if ($isWorkstationSuperuser) {
+            return $this;
+        }
+
+        // Always exclude superusers for non-superuser workstation users
+        $this->query->where('useraccount.Berechtigung', '!=', 90);
+
+        // If no departments, only exclude superusers (already done above)
+        if (empty($workstationDepartmentIds)) {
+            return $this;
+        }
+
+        // Ensure we have a join to nutzerzuordnung for target useraccounts
+        $this->setDistinctSelect();
+        $this->leftJoin(
+            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+
+        // Target useraccount must share at least one department with workstation user
+        $this->query->where('useraccount_department.behoerdenid', 'IN', $workstationDepartmentIds);
+
+        return $this;
+    }
 }
