@@ -16,7 +16,7 @@ services:
     - PMA_HOST=db
     - PMA_PORT=3306
     - VIRTUAL_HOST=$DDEV_HOSTNAME
-    - UPLOAD_LIMIT=4000M
+    - UPLOAD_LIMIT=25600M
     - HTTP_EXPOSE=8036:80
     - HTTPS_EXPOSE=8037:80
     healthcheck:

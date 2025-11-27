@@ -53,19 +53,18 @@ class ReportRequestService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
+            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
             }
 
-            $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
-
-            if (empty($filteredData)) {
-                return null;
-            }
-
-            return $this->createFilteredExchangeRequest($combinedData['entity'], $filteredData, $fromDate, $toDate);
+            return $this->createFilteredExchangeRequest(
+                $combinedData['entity'],
+                $combinedData['data'],
+                $fromDate,
+                $toDate
+            );
         } catch (Exception $exception) {
             return null;
         }
@@ -105,7 +104,7 @@ class ReportRequestService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears(string $scopeId, array $years): array
+    private function fetchAndCombineDataFromYears(string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;
@@ -115,7 +114,11 @@ class ReportRequestService
                 $exchangeRequest = \App::$http
                     ->readGetResult(
                         '/warehouse/requestscope/' . $scopeId . '/' . $year . '/',
-                        ['groupby' => 'day']
+                        [
+                            'groupby' => 'day',
+                            'fromDate' => $fromDate,
+                            'toDate' => $toDate
+                        ]
                     )
                     ->getEntity();
 
@@ -140,29 +143,15 @@ class ReportRequestService
     }
 
     /**
-     * Filter data array by date range
-     */
-    private function filterDataByDateRange(array $data, string $fromDate, string $toDate): array
-    {
-        $filteredData = [];
-        foreach ($data as $row) {
-            if ($row[3] >= $fromDate && $row[3] <= $toDate) {
-                $filteredData[] = $row;
-            }
-        }
-        return $filteredData;
-    }
-
-    /**
      * Create filtered exchange request with updated properties
      */
     private function createFilteredExchangeRequest(
-        $exchangeRequestFull,
+        $exchangeRequestBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
     ): mixed {
-        $exchangeRequest = clone $exchangeRequestFull;
+        $exchangeRequest = $exchangeRequestBasic;
         $exchangeRequest->data = $filteredData;
 
         if (!isset($exchangeRequest->period)) {
