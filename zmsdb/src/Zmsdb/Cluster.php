@@ -149,16 +149,10 @@ class Cluster extends Base
         $withEntities = []
     ) {
         $cluster = $this->readEntity($clusterId, 1);
-        $queueList = new \BO\Zmsentities\Collection\QueueList();
-        foreach ($cluster->scopes as $scope) {
-            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime, 0, $withEntities);
-            $scopeQueueList = (new Scope())
-                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences, $withEntities);
-            if (0 < $scopeQueueList->count()) {
-                $queueList->addList($scopeQueueList);
-            }
-        }
-        return $queueList->withSortedWaitingTime();
+
+        return (new Scope())
+            ->readScopesQueueListWithWaitingTime($cluster->scopes, $dateTime, $resolveReferences, $withEntities)
+            ->withSortedWaitingTime();
     }
 
     /**

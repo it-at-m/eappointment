@@ -103,11 +103,11 @@ class ClusterTest extends Base
     public function testReadQueueListWithCallTime()
     {
         $now = new \DateTimeImmutable("2016-04-19 11:55");
-        $queueList = (new \BO\Zmsdb\Scope())->readQueueList(106, $now);
+        $queueList = (new \BO\Zmsdb\Scope())->readQueueList([106], $now);
         $this->assertEquals(1461077847, $queueList->getFirst()->lastCallTime);
 
         $now = new \DateTimeImmutable("2016-05-16 11:55");
-        $queueList = (new \BO\Zmsdb\Scope())->readQueueList(141, $now);
+        $queueList = (new \BO\Zmsdb\Scope())->readQueueList([141], $now);
         $queueList = $queueList->withStatus(array('called'));
         $this->assertEquals(1, $queueList->count());
     }
