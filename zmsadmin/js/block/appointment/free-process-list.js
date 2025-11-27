@@ -21,13 +21,13 @@ class View extends BaseView {
     loadList() {
         const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slotType=${this.slotType}&slotsRequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
         return this.loadContent(url, 'GET', null, null, false).then((response) => {
-            this.$main.find('select#process_time');
+            if (this.selectedTime !== this.$main.find('select#process_time').val()) {
+                this.$main.find('select#process_time').trigger('change');
+            }
             if (ValidationHandler.hasMessage(response)) {
                 this.loadMessage(response, () => {}, null, this.$main);
             }
         });
-
-        
     }
 }
 
