@@ -14,7 +14,7 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountSearchByDepartments extends BaseController
+class UseraccountListByRoleAndDepartments extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -25,26 +25,17 @@ class UseraccountSearchByDepartments extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
+        $roleLevel = $args['level'];
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
-        $parameters = $request->getParams();
 
         $departmentIds = [];
         foreach ($departments as $department) {
             $departmentIds[] = $department->id;
         }
 
-        $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences, $workstation);
-
-        // Add department entities if resolveReferences < 1 (same logic as UseraccountByDepartmentList)
-        foreach ($useraccountList as $userAccount) {
-            foreach ($departments as $department) {
-                if ($resolveReferences < 1 && !$userAccount->getDepartmentById($department->getId())->hasId()) {
-                    $userAccount->getDepartmentList()->addEntity($department);
-                }
-            }
-        }
+        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences, false, $workstation);
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
@@ -56,8 +47,6 @@ class UseraccountSearchByDepartments extends BaseController
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
-
-        return $response;
+        return Render::withJson($response, $message, 200);
     }
 }

@@ -13,7 +13,7 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountByRoleList extends BaseController
+class UseraccountListByRole extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

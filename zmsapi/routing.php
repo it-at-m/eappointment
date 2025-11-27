@@ -1583,9 +1583,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/role/{level:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\UseraccountByRoleList'
+    '\BO\Zmsapi\UseraccountListByRole'
 )
-    ->setName("UseraccountByRoleList");
+    ->setName("UseraccountListByRole");
 
 
 /**
@@ -1639,9 +1639,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/role/{level:\d{1,11}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
-    '\BO\Zmsapi\UseraccountByRoleAndDepartmentsList'
+    '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
-    ->setName("UseraccountByRoleAndDepartmentsList");
+    ->setName("UseraccountListByRoleAndDepartments");
 
 /**
  *  @swagger
@@ -1686,9 +1686,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/useraccount/',
-    '\BO\Zmsapi\UseraccountSearch'
+    '\BO\Zmsapi\UseraccountList'
 )
-    ->setName("UseraccountSearch");
+    ->setName("UseraccountList");
 
 
 /**
@@ -1740,7 +1740,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
-    '\BO\Zmsapi\UseraccountSearchByDepartments'
+    '\BO\Zmsapi\UseraccountListByDepartments'
 )
     ->setName("UseraccountByDepartmentList");
 
