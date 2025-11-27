@@ -74,8 +74,12 @@ class NotificationTest extends Base
             "id" => 1234,
             "createIP" => "145.15.3.10",
             "createTimestamp" => 1447931596,
-            "department" => [
-                "id" => 72,
+            "scope" => [
+                "id" => 141,
+                "provider" => [
+                    "id" => 1,
+                    "name" => "Test-Provider"
+                ],
                 "preferences" => [
                     "notifications" => [
                         "enabled" => true,
