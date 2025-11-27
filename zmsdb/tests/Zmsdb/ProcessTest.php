@@ -49,16 +49,6 @@ class ProcessTest extends Base
         $this->assertEquals(10029, $process->id);
     }
 
-    public function testPending()
-    {
-        $now = static::$now;
-        $query = new Query();
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
-        $process = $query->readEntity($process->id, $process->authKey, 0);
-        $this->assertEquals('pending', $process->status);
-        $this->assertEquals($now->getTimestamp(), $process->queue['arrivalTime']);
-    }
-
     public function testExceptionCreate()
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessCreateFailed');

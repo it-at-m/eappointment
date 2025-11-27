@@ -62,8 +62,9 @@ class ProcessLockTest extends Base
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
         $now = static::$now;
-        $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
+        $query = new ProcessStatusQueued();
+        $query->writeNewFromTicketprinter($scope, $now);
     }
 
     public function testDBIsLockedByUpdateProcess()
