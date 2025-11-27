@@ -1739,7 +1739,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "department does not exist"
  */
 \App::$slim->get(
-    '/department/{ids}/useraccount/',
+    '/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
     '\BO\Zmsapi\UseraccountSearchByDepartments'
 )
     ->setName("UseraccountByDepartmentList");
