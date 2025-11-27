@@ -34,7 +34,7 @@ class UseraccountSearch extends BaseController
         if ($workstation->hasSuperUseraccount()) {
             $useraccountList = \App::$http->readGetResult('/useraccount/search/', [
                 'query' => $queryString,
-                'resolveReferences' => 1,
+                'resolveReferences' => 0,
             ])->getCollection();
         } else {
             $departmentListIds = $workstation->getUseraccount()->getDepartmentList()->getIds();
@@ -42,7 +42,7 @@ class UseraccountSearch extends BaseController
             $useraccountList = \App::$http
                 ->readGetResult('/department/' . implode(',', $departmentListIds) . '/useraccount/search/', [
                     'query' => $queryString,
-                    'resolveReferences' => 1
+                    'resolveReferences' => 0
                 ])
                 ->getCollection();
         }
