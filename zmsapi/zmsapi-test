@@ -1,272 +1,82 @@
 #!/usr/bin/env bash
-# Detect if script is being sourced (vs executed directly)
-IS_SOURCED=false
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-  IS_SOURCED=true
-fi
-
-# Only set strict mode if not sourced (to avoid closing terminal on errors)
-if [[ "$IS_SOURCED" == false ]]; then
 set -euo pipefail
-else
-  # When sourced, disable strict modes to prevent terminal from closing
-  set +e  # Don't exit on error
-  set +u  # Don't error on unset variables
-  set +o pipefail  # Don't fail pipelines if any command in pipeline fails
-fi
-
-# Ensure podman remote client environment is set up (needed for WSL/Windows when sourcing)
-if [[ -z "${XDG_RUNTIME_DIR:-}" ]] && [[ -d "/run/user/$(id -u)" ]]; then
-  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-fi
-if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && [[ -n "${XDG_RUNTIME_DIR:-}" ]]; then
-  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
-fi
-
-# Prefer podman-remote if available (works better in some WSL setups)
-if command -v podman-remote >/dev/null 2>&1; then
-  podman() {
-    command podman-remote "$@"
-  }
-  export -f podman
-fi
-
-# zmsapi-test - Run zmsapi unit tests against local ddev or podman on a dedicated test DB
-# Usage: ./zmsapi-test [PHPUnit arguments...]
-
-require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "ERROR: '$1' is required" >&2
-    if [[ "$IS_SOURCED" == true ]]; then
-      return 1
-    else
-      exit 1
-    fi
-  fi
-}
 
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
 
 SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-SECTION_COLOR_RESET=$'\033[0m'
-SECTION_COLOR_INDEX=0
-SECTION_COLORS=()
-USE_SECTION_COLORS=false
-if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
-  SECTION_COLORS=(
-    $'\033[38;5;196m'
-    $'\033[38;5;208m'
-    $'\033[38;5;226m'
-    $'\033[38;5;46m'
-    $'\033[38;5;51m'
-    $'\033[38;5;21m'
-    $'\033[38;5;201m'
-  )
-  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
-    USE_SECTION_COLORS=true
-  fi
-fi
-
 section() {
-  local title="$*"
-  local prefix="" suffix=""
-  if [[ "$USE_SECTION_COLORS" == true ]]; then
-    prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
-    suffix="$SECTION_COLOR_RESET"
-    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
-  fi
   echo ""
-  echo "${prefix}${SECTION_BAR}${suffix}"
-  echo "${prefix}[SECTION] $title${suffix}"
-  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo "$SECTION_BAR"
+  echo "[SECTION] $*"
+  echo "$SECTION_BAR"
   echo ""
 }
 
-PHPUNIT_ARGS="${*:-}"
-if [[ "$IS_SOURCED" == true ]]; then
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-else
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-fi
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# Paths and variables
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TEST_DB="zmsapi_test"
-
-# Detect if we're using Podman or DDEV
-section "1. Environment Detection"
-USE_PODMAN=false
-if command -v podman >/dev/null 2>&1; then
-  if podman ps --format "{{.Names}}" | grep -q "^zms-web$" && podman ps --format "{{.Names}}" | grep -q "^zms-db$"; then
-    USE_PODMAN=true
-    info "Using Podman containers (zms-web, zms-db)"
-  fi
-fi
-
-if [[ "$USE_PODMAN" == false ]]; then
-  require_cmd ddev
-  info "Using DDEV"
-fi
-echo ""
-
-# Execute command in web container (abstraction for podman/ddev)
-exec_in_web() {
-  local cmd="$1"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
-  else
-    # Use stdin approach for DDEV to avoid unbound variable issues with login shell profiles
-    (cd "$PROJECT_ROOT" && printf 'set +u\n%s\n' "$cmd" | ddev exec bash -s)
-  fi
-}
-
-# Execute SQL in database (abstraction for podman/ddev, supports stdin)
-exec_sql() {
-  local sql="$1"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -i zms-db mysql -u root -proot)
-  else
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql)
-  fi
-}
-
-# Execute SQL command in database (for simple commands without stdin)
-exec_sql_cmd() {
-  local sql="$1"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -i zms-db mysql -u root -proot -e "$sql")
-  else
-    (cd "$PROJECT_ROOT" && ddev mysql -e "$sql")
-  fi
-}
+DB_PORT="${MYSQL_PORT##*:}"
 
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
-  exec_in_web '
-    if [ -d /var/www/html/zmsapi/data ]; then
-      if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-        echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-      fi
-      if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-        printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-      fi
-    fi
-  ' || warn "cleanup_data_folder exec failed"
-}
-
-# Function to clear application caches
-clear_caches() {
-  info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-  CACHE_DIR=$(exec_in_web 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  if [[ -n "$CACHE_DIR" ]]; then
-    # Validate CACHE_DIR is absolute and sensible
-    if [[ "$CACHE_DIR" != /* ]] || [[ "$CACHE_DIR" == *..* ]]; then
-      warn "CACHE_DIR '$CACHE_DIR' looks suspicious, skipping cache clear"
-      return
-    fi
-    info "CACHE_DIR=$CACHE_DIR"
-    for dir in zmsapi zmsdb zmscitizenapi; do
-      FULL_PATH="$CACHE_DIR/$dir"
-      if exec_in_web "
-        if [ -d \"$FULL_PATH\" ]; then
-          if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-            echo \"[CACHE] cleared $FULL_PATH\"
-          else
-            echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-            exit 1
-          fi
-        fi
-      "; then
-        : # Success
-      else
-        warn "Failed to clear cache directory $FULL_PATH in container"
-      fi
-    done
-    # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
-    HOST_CACHE_DIR="$CACHE_DIR"
-    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-      # Validate host cache dir path
-      if [[ "$HOST_CACHE_DIR" == *..* ]]; then
-        warn "HOST_CACHE_DIR '$HOST_CACHE_DIR' looks suspicious, skipping host cache clear"
-      elif [[ -d "$HOST_CACHE_DIR" ]]; then
-        if find "$HOST_CACHE_DIR" -mindepth 1 -delete 2>/dev/null; then
-          info "[CACHE][host] cleared $HOST_CACHE_DIR"
-        else
-          warn "[CACHE][host] failed to clear $HOST_CACHE_DIR"
-        fi
-      fi
-      for dir in zmsapi zmsdb zmscitizenapi; do
-        HOST_FULL_PATH="$HOST_CACHE_DIR/$dir"
-        if [[ -d "$HOST_FULL_PATH" ]]; then
-          if find "$HOST_FULL_PATH" -mindepth 1 -delete 2>/dev/null; then
-            info "[CACHE][host] cleared $HOST_FULL_PATH"
-          else
-            warn "[CACHE][host] failed to clear $HOST_FULL_PATH"
-          fi
-        fi
-      done
-    fi
-  else
-    warn "CACHE_DIR not found in container"
+  if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
+    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
   fi
 }
 
-# Set up EXIT trap to cleanup on script exit (normal, error, or Ctrl+C)
-if [[ "$IS_SOURCED" == false ]]; then
-  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
-fi
+# Clear caches
+clear_caches() {
+  if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
+    info "Clearing caches in $CACHE_DIR..."
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear container caches"
+  else
+    warn "CACHE_DIR not set or does not exist"
+  fi
+}
 
-# Ensure dedicated test database exists and grant access to 'db' user
-section "2. Test Database Setup"
-exec_sql_cmd "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO 'db'@'%'; FLUSH PRIVILEGES;"
+# Ensure cleanup on exit
+trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
+
+# 1. Test Database Setup
+section "1. Test Database Setup"
+mysql --ssl=0 -h "$MYSQL_DATABASE" -P "$DB_PORT" -u root -proot \
+  -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+      GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
 info "Test database '$TEST_DB' ready"
-echo ""
 
-# Optional: clear caches using container's CACHE_DIR (and matching host path)
-section "3. Cache Clearing"
+# 2. Cache Clearing
+section "2. Cache Clearing"
 clear_caches
-echo ""
 
-# Setup fixtures like CI: materialize required fixture files into zmsapi/data (no symlink)
-section "4. Fixture Setup"
-FIXTURE_SETUP_CMD='
-  set +euo pipefail; set -e; echo "Setup fixtures...";
-  mkdir -p /var/www/html/zmsapi/data;
-  find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete || true;
-  for f in services_de.json locations_de.json topic_de.json; do
-    cp -f "/var/www/html/zmsdb/tests/Zmsdb/fixtures/$f" "/var/www/html/zmsapi/data/$f" 2>/dev/null || true;
-  done;
-  [ -f /var/www/html/zmsapi/data/.gitignore ] || printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore;
-'
-exec_in_web "$FIXTURE_SETUP_CMD"
-echo ""
+# 3. Fixture Setup
+section "3. Fixture Setup"
+mkdir -p "$PROJECT_ROOT/zmsapi/data"
+find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || true
+for f in services_de.json locations_de.json topic_de.json; do
+  cp -f "$PROJECT_ROOT/zmsdb/tests/Zmsdb/fixtures/$f" "$PROJECT_ROOT/zmsapi/data/$f" 2>/dev/null || true
+done
+[ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
 
-# Import test data with UTC timezone (base schema + fixtures + migrations)
-section "5. Test Data Import"
-IMPORT_TEST_DATA_CMD='set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"'
-  export TZ="UTC"; echo "[INFO] Using timezone: $TZ";
-  php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/var/www/html/zmsapi/vendor/autoload.php /var/www/html/zmsdb/bin/importTestData --commit'
-exec_in_web "$IMPORT_TEST_DATA_CMD"
-echo ""
+# 4. Test Data Import
+section "4. Test Data Import"
+export MYSQL_DATABASE="$TEST_DB"
+export TZ="UTC"
+php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" -d auto_prepend_file="$PROJECT_ROOT/zmsapi/vendor/autoload.php" \
+  "$PROJECT_ROOT/zmsdb/bin/importTestData" --commit
 
-# Run PHPUnit with UTC timezone
-section "6. Running Tests"
-RUN_TESTS_CMD='set -e; set +u; '"export MYSQL_DATABASE=\"$TEST_DB\";"'
-  export TZ="UTC"; echo "[INFO] Using timezone: $TZ";
-  export SKIP_DNS_VALIDATION=1;
-  cd /var/www/html/zmsapi && php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage '"$PHPUNIT_ARGS"
-exec_in_web "$RUN_TESTS_CMD"
-echo ""
+# 5. Running Tests
+section "5. Running Tests"
+export SKIP_DNS_VALIDATION=1
+cd "$PROJECT_ROOT/zmsapi"
+php -d date.timezone="UTC" -d memory_limit=${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --no-coverage "$@"
 
-
-# Clear caches after tests
-section "7. Final Cache Clearing"
+# 6. Final Cache Clearing
+section "6. Final Cache Clearing"
 clear_caches
-echo ""
 
-# Clean up zmsapi/data folder after tests (preserve .gitignore)
-# Note: Cleanup also runs via EXIT trap on error or Ctrl+C
-section "8. Cleanup"
-info "Cleaning up zmsapi/data folder..."
+# 7. Cleanup
+section "7. Cleanup"
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"
