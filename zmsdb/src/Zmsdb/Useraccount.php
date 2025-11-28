@@ -410,13 +410,15 @@ class Useraccount extends Base
 
     protected function loadSuperuserDepartments(array $superusers, $resolveReferences = 0)
     {
+        // Load all departments once - all superusers have access to all departments
             $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
             $departmentIds = $this->getReader()->fetchAll($query);
         $departmentList = $this->buildDepartmentList($departmentIds, $resolveReferences);
 
+        // Reuse the same list for all superusers - no need to clone since they all get the same departments
         $result = [];
         foreach ($superusers as $useraccountName) {
-            $result[$useraccountName] = clone $departmentList;
+            $result[$useraccountName] = $departmentList;
         }
         return $result;
     }
