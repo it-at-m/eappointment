@@ -2249,5 +2249,44 @@ describe("AppointmentSelection", () => {
       expect(laterButton).toBeUndefined();
     });
   });
-});
+  describe("Loading UI – spinner instead of calendar", () => {
+    it("shows spinner during initial loading (availableDays pending) and hides the calendar", async () => {
+      // Promise for fetchAvailableDays to keep the loading status stable
+      let resolveDays!: (v: any) => void;
+      (fetchAvailableDays as Mock).mockImplementation(() => {
+        return new Promise((resolve) => {
+          resolveDays = resolve;
+        });
+      });
 
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({ offices: [] });
+
+      const wrapper = createWrapper({
+        // preselection forces a provider to be selected during the first fetch
+        props: { preselectedOfficeId: 1 },
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+          ],
+        },
+      });
+
+      await nextTick();
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
+      // calendar must not be rendered yet
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
+
+      // finish loading
+      resolveDays({
+        availableDays: [{ time: "2025-06-16", providerIDs: "1" }],
+      });
+      await flushPromises();
+      await nextTick();
+
+      // spinner disappears, calendar is displayed
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+    });
+  });
+});

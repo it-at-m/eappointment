@@ -67,6 +67,7 @@
       "
     >
       <muc-stepper
+        v-if="!isAppointmentInPast"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -123,10 +124,12 @@
             <div v-if="currentView === 3">
               <appointment-summary
                 v-if="
-                  !hasUpdateAppointmentError && !hasPreconfirmAppointmentError
+                  !hasUpdateAppointmentError &&
+                  !hasPreconfirmAppointmentError &&
+                  !isAppointmentInPast
                 "
                 :is-rebooking="isRebooking"
-                :rebook-or-cancel-dialog="rebookOrCanelDialog"
+                :rebook-or-cancel-dialog="rebookOrCancelDialog"
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
@@ -134,6 +137,23 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
+              <div v-if="isAppointmentInPast">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("rescheduleErrorText") }}
+                  </template>
+
+                  <template #header>
+                    {{ t("rescheduleErrorHeader") }}
+                  </template>
+                </muc-callout>
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                >
+                  {{ t("newAppointmentButton") }}
+                </muc-button>
+              </div>
               <div v-if="hasUpdateAppointmentError">
                 <muc-callout
                   :type="toCalloutType(apiErrorTranslation.errorType)"
@@ -379,6 +399,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -455,10 +476,14 @@ const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
-const rebookOrCanelDialog = ref<boolean>(false);
+const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
+const forcedPast = ref(false);
+const isAppointmentInPast = computed(() => {
+  return forcedPast.value || isExpired((appointment.value as any)?.timestamp);
+});
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -673,7 +698,7 @@ const nextReserveAppointment = () => {
   isReservingAppointment.value = true;
   clearContextErrors(errorStateMap.value);
   captchaError.value = false;
-  rebookOrCanelDialog.value = false;
+  rebookOrCancelDialog.value = false;
 
   reserveAppointment(
     props.globalState,
@@ -835,6 +860,15 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
+
+  if (isExpired((appointment.value as any)?.timestamp)) {
+    forcedPast.value = true;
+    currentView.value = 3;
+    goToTop();
+    return;
+  }
+
+  // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -844,7 +878,7 @@ const nextRescheduleAppointment = () => {
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
-  rebookOrCanelDialog.value = true;
+  rebookOrCancelDialog.value = true;
 };
 
 /**
@@ -1069,7 +1103,7 @@ onMounted(() => {
 
   if (props.appointmentHash) {
     clearContextErrors(errorStateMap.value);
-    rebookOrCanelDialog.value = true;
+    rebookOrCancelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
@@ -1160,16 +1194,14 @@ onMounted(() => {
                 selectedService.value?.subServices?.push(subService);
               });
             }
-            if (appointmentData.action) {
-              if (
-                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-              ) {
-                nextRescheduleAppointment();
-              } else {
-                nextCancelAppointment();
-              }
-            } else {
+            if (!appointmentData.action || isAppointmentInPast.value) {
               currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
             }
           }
         } else {
@@ -1227,7 +1259,9 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = localStorageData.currentView;
+          currentView.value = isAppointmentInPast.value
+            ? 3
+            : localStorageData.currentView;
         });
       }
     }
