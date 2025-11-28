@@ -52,6 +52,12 @@ class UseraccountTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/department/74/useraccount/',
                     'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_useraccountlist_department_74.json")
