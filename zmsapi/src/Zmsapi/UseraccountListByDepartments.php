@@ -26,12 +26,22 @@ class UseraccountListByDepartments extends BaseController
         array $args
     ) {
         $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
-        $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
         $parameters = $request->getParams();
 
+        $rawIds = array_map('trim', explode(',', $args['ids']));
+        $rawIds = array_filter($rawIds, 'strlen');
+        $requestedDepartmentIds = array_map('intval', $rawIds);
+
         $departmentIds = [];
-        foreach ($departments as $department) {
-            $departmentIds[] = $department->id;
+        if ($workstation->getUseraccount()->isSuperUser()) {
+            // Superusers can access all departments; no need to validate via DB here
+            $departmentIds = $requestedDepartmentIds;
+        } else {
+            // Non-superusers must go through Helper\User::checkDepartments for access checks
+            $departments = Helper\User::checkDepartments($requestedDepartmentIds);
+            foreach ($departments as $department) {
+                $departmentIds[] = $department->id;
+            }
         }
 
         $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, 0, $workstation);
