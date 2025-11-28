@@ -292,7 +292,8 @@ class Useraccount extends Base
             $collection = new Collection();
             $query = new Query\Useraccount(Query\Base::SELECT);
             $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
+            ->addEntityMapping()
+            ->addOrderByName();
 
             // Apply workstation access filtering if provided
             if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
@@ -574,7 +575,8 @@ class Useraccount extends Base
             $query = new Query\Useraccount(Query\Base::SELECT);
             $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentIds($departmentIds)
-            ->addEntityMapping();
+            ->addEntityMapping()
+            ->addOrderByName();
 
             // Exclude superusers if workstation user is not superuser
             if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
@@ -738,7 +740,8 @@ class Useraccount extends Base
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
+            ->addEntityMapping()
+            ->addOrderByName();
 
         // For superusers: select all users without department filtering
         // For non-superusers: apply department-based access filtering
@@ -775,7 +778,8 @@ class Useraccount extends Base
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
+            ->addEntityMapping()
+            ->addOrderByName();
 
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
@@ -871,7 +875,8 @@ class Useraccount extends Base
         if (empty($result)) {
             $query = new Query\Useraccount(Query\Base::SELECT);
             $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
+            ->addEntityMapping()
+            ->addOrderByName();
 
             if (isset($roleLevel)) {
                 $query->addConditionRoleLevel($roleLevel);
@@ -938,7 +943,8 @@ class Useraccount extends Base
         if (empty($result)) {
             $query = new Query\Useraccount(Query\Base::SELECT);
             $query->addResolvedReferences($resolveReferences)
-              ->addEntityMapping();
+              ->addEntityMapping()
+              ->addOrderByName();
 
             if (isset($roleLevel) && !empty($departmentIds)) {
                 $query->addConditionRoleLevel($roleLevel);

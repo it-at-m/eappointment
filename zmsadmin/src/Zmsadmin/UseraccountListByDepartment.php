@@ -43,9 +43,7 @@ class UseraccountListByDepartment extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'workstationList' => $workstationList,
-                'useraccountListByDepartment' => ($useraccountList) ?
-                    $useraccountList->sortByCustomStringKey('id') :
-                    new Collection(),
+                'useraccountListByDepartment' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )

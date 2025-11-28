@@ -58,9 +58,7 @@ class UseraccountList extends BaseController
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountList' => ($useraccountList) ?
-                $useraccountList->sortByCustomStringKey('id') :
-                new Collection(),
+                'useraccountList' => $useraccountList,
                 'searchUserQuery' => $queryString,
                 'ownerlist' => $ownerList,
                 'success' => $success,

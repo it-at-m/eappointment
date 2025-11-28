@@ -193,6 +193,12 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
+    public function addOrderByName()
+    {
+        $this->query->orderBy('useraccount.Name', 'ASC');
+        return $this;
+    }
+
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */

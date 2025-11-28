@@ -63,9 +63,7 @@ class UseraccountListByRole extends BaseController
                 'roleLevel' => $roleLevel,
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountListByRole' => ($useraccountList) ?
-                    $useraccountList->sortByCustomStringKey('id') :
-                    new Collection(),
+                'useraccountListByRole' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )
