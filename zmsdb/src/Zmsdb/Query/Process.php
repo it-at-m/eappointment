@@ -110,10 +110,17 @@ class Process extends Base implements MappingInterface
 
     public function addJoin()
     {
-        return [
-            $this->addJoinAvailability(),
-            $this->addJoinScope(),
-        ];
+        $joins = [];
+
+        if ($this->shouldLoadEntity('availability')) {
+            $joins[] = $this->addJoinAvailability();
+        }
+
+        if ($this->shouldLoadEntity('scope')) {
+            $joins[] = $this->addJoinScope();
+        }
+
+        return $joins;
     }
 
     /**
@@ -247,7 +254,8 @@ class Process extends Base implements MappingInterface
                 ELSE process.status
             END'
         );
-        return [
+
+        return array_filter([
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
@@ -311,8 +319,12 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => 'processuser.Arbeitsplatznr',
-            'queue__destinationHint' => 'processuser.aufrufzusatz',
+            'queue__destination' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.Arbeitsplatznr'
+                : '',
+            'queue__destinationHint' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.aufrufzusatz'
+                : '',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
@@ -325,7 +337,7 @@ class Process extends Base implements MappingInterface
             '__clientsCount' => 'process.AnzahlPersonen',
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
-        ];
+        ], 'strlen');
     }
 
     public function addCountValue()
@@ -1093,19 +1105,23 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        $this->leftJoin(
-            new Alias(Useraccount::TABLE, 'processuser'),
-            'process.NutzerID',
-            '=',
-            'processuser.NutzerID'
-        );
+        if ($this->shouldLoadEntity('processuser')) {
+            $this->leftJoin(
+                new Alias(Useraccount::TABLE, 'processuser'),
+                'process.NutzerID',
+                '=',
+                'processuser.NutzerID'
+            );
+        }
 
-        $this->leftJoin(
-            new Alias(Scope::TABLE, 'processscope'),
-            'process.StandortID',
-            '=',
-            'processscope.StandortID'
-        );
+        if ($this->shouldLoadEntity('processscope')) {
+            $this->leftJoin(
+                new Alias(Scope::TABLE, 'processscope'),
+                'process.StandortID',
+                '=',
+                'processscope.StandortID'
+            );
+        }
     }
 
     public function addConditionExternalUserId(string $externalUserId)

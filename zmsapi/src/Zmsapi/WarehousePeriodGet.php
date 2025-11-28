@@ -27,16 +27,22 @@ class WarehousePeriodGet extends BaseController
         $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();
         $validator = $request->getAttribute('validator');
         $groupby = $validator->getParameter('groupby')->isString()->isBiggerThan(2)->getValue();
+        $fromDate = $validator->getParameter('fromDate')->isString()->getValue();
+        $toDate = $validator->getParameter('toDate')->isString()->getValue();
 
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject ?? '');
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\UnknownReportType();
         }
+
         $periodHelper = new Helper\ExchangePeriod($period);
+        $start = $periodHelper->getStartDateTime();
+        $end = $periodHelper->getEndDateTime();
+
         $subjectPeriod = (new $exchangeClass())->readEntity(
             $subjectId,
-            $periodHelper->getStartDateTime(),
-            $periodHelper->getEndDateTime(),
+            $fromDate ? new \DateTime($fromDate) : $start,
+            $toDate ? new \DateTime($toDate) : $end,
             $periodHelper->getPeriodIdentifier($groupby)
         );
         if (0 == count($subjectPeriod['data'])) {

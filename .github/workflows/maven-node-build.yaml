@@ -18,18 +18,18 @@ jobs:
         include: # hier müssen die Pfade angegeben werden
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@691ffa2542ed7cc1c53c416d22ace9a153d5152f # v1.0.21
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@12966547963631f8429d42bab860485b413003c2 # v1.0.22
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@691ffa2542ed7cc1c53c416d22ace9a153d5152f # v1.0.21
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@12966547963631f8429d42bab860485b413003c2 # v1.0.22
         with:
           app-path: "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@691ffa2542ed7cc1c53c416d22ace9a153d5152f # v1.0.21
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@12966547963631f8429d42bab860485b413003c2 # v1.0.22
         with:
           app-path: "${{ matrix.app-path }}"
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@691ffa2542ed7cc1c53c416d22ace9a153d5152f # v1.0.21
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@12966547963631f8429d42bab860485b413003c2 # v1.0.22
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"
