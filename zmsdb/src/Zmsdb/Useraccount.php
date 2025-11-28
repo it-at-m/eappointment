@@ -770,8 +770,22 @@ class Useraccount extends Base
             }
         }
 
-        $statement = $this->fetchStatement($query);
-        return $this->readListStatement($statement, $resolveReferences);
+        $collection = new Collection();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($entity);
+            }
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
+                    }
+                }
+            }
+        }
+        return $collection;
     }
 
     protected function executeSearchByDepartmentIdsQuery(array $departmentIds, array $parameter, $resolveReferences, $workstation)
@@ -797,8 +811,22 @@ class Useraccount extends Base
             $query->addConditionExcludeSuperusers();
         }
 
-        $statement = $this->fetchStatement($query);
-        return $this->readListStatement($statement, $resolveReferences);
+        $collection = new Collection();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($entity);
+            }
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
+                    }
+                }
+            }
+        }
+        return $collection;
     }
 
     /**
