@@ -27,7 +27,6 @@ class UseraccountListByDepartment extends BaseController
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $department = \App::$http->readGetResult("/department/$departmentId/", ['resolveReferences' => 0])->getEntity();
 
-        $useraccountList = new Collection();
         $result = \App::$http->readGetResult("/department/$departmentId/useraccount/", ['resolveReferences' => 0]);
         $useraccountList = $result ? $result->getCollection() : new Collection();
 
