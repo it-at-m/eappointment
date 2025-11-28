@@ -4,10 +4,10 @@
 -- Index on nutzerzuordnung.behoerdenid for department-based queries
 -- This is critical for addConditionDepartmentIds() and department list endpoints
 ALTER TABLE nutzerzuordnung 
-    ADD INDEX idx_nutzerzuordnung_behoerdenid (behoerdenid);
+    ADD INDEX IF NOT EXISTS idx_nutzerzuordnung_behoerdenid (behoerdenid);
 
 -- Index on nutzer.Berechtigung for role-based queries
 -- This optimizes readListRole() and role-based list endpoints
 ALTER TABLE nutzer 
-    ADD INDEX idx_nutzer_berechtigung (Berechtigung);
+    ADD INDEX IF NOT EXISTS idx_nutzer_berechtigung (Berechtigung);
 
