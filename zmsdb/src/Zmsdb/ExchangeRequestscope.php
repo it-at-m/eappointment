@@ -31,22 +31,21 @@ class ExchangeRequestscope extends Base
         $entity->addDictionaryEntry('processingtime', 'number', 'Average processing time in minutes');
         $subjectIdList = explode(',', $subjectid);
 
-        foreach ($subjectIdList as $subjectid) {
-            $raw = $this
-                ->getReader()
-                ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeRequestscope::QUERY_READ_REPORT"),
-                    [
-                        'scopeid' => $subjectid,
-                        'datestart' => $datestart->format('Y-m-d'),
-                        'dateend' => $dateend->format('Y-m-d'),
-                        'groupby' => $this->groupBy[$period]
-                    ]
-                );
-            foreach ($raw as $entry) {
-                $entity->addDataSet(array_values($entry));
-            }
+        $raw = $this
+            ->getReader()
+            ->fetchAll(
+                constant("\BO\Zmsdb\Query\ExchangeRequestscope::QUERY_READ_REPORT"),
+                [
+                    'scopeid' => $subjectIdList,
+                    'datestart' => $datestart->format('Y-m-d'),
+                    'dateend' => $dateend->format('Y-m-d'),
+                    'groupby' => $this->groupBy[$period]
+                ]
+            );
+        foreach ($raw as $entry) {
+            $entity->addDataSet(array_values($entry));
         }
+
         return $entity;
     }
 

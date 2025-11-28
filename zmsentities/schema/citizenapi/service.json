@@ -50,6 +50,13 @@
         "null"
       ],
       "description": "Variant-ID (z.B. ZMS-Variantenkennung)"
+    },
+    "showOnStartPage": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Indicates whether the service is visible on the start page (ServiceFinder)"
     }
   },
   "required": [

@@ -44,15 +44,32 @@
       </template>
     </muc-callout>
   </div>
-  <div v-else-if="!error && hasSelectedProviderWithAppointments">
+  <div
+    v-else-if="
+      !error &&
+      (hasSelectedProviderWithAppointments ||
+        !availableDaysFetched ||
+        isSwitchingProvider)
+    "
+    class="m-component"
+  >
     <CalendarListToggle
       :t="t"
       :isListView="isListView"
       @update:isListView="isListView = $event"
     />
+    <div
+      v-if="!availableDaysFetched || isSwitchingProvider"
+      class="m-spinner-container"
+    >
+      <MucSpinner
+        :aria-label="t('loading')"
+        :text="t('spinnerText')"
+      />
+    </div>
     <CalendarView
       ref="calendarViewRef"
-      v-if="!isListView"
+      v-else-if="!isListView"
       :t="t"
       :selectedDay="selectedDay"
       :calendarKey="calendarKey"
@@ -89,7 +106,7 @@
 
     <ListView
       ref="listViewRef"
-      v-if="isListView"
+      v-else-if="isListView"
       :t="t"
       :isLoadingAppointments="isLoadingAppointments"
       :availabilityInfoHtml="availabilityInfoHtml"
@@ -190,7 +207,11 @@ import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
-import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucSpinner,
+} from "@muenchen/muc-patternlab-vue";
 import {
   computed,
   inject,
@@ -1232,6 +1253,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+@use "@/styles/style.scss";
 
 .m-button-group {
   margin-bottom: 20px;

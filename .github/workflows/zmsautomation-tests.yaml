@@ -1,0 +1,298 @@
+name: zmsapiautomation tests
+
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "ZMSAutomation test result"
+        value: ${{ jobs.zmsapiautomation.outputs.result }}
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  zmsapiautomation:
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node (for Dev Containers CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dev Containers CLI
+        run: |
+          npm install -g @devcontainers/cli
+
+      - name: Build and start dev containers
+        run: |
+          devcontainer up --workspace-folder .
+
+      - name: Install Composer dependencies in container
+        run: |
+          docker exec zms-web bash -lc '
+            set -e
+            modules=("zmsapi" "zmsdb" "zmscitizenapi")
+            for module in "${modules[@]}"; do
+              echo "Installing Composer dependencies for $module"
+              (cd "/var/www/html/$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+            done
+          '
+
+      - name: Wait for services (zms-db)
+        run: |
+          for i in {1..60}; do
+            if docker ps --format '{{.Names}}' | grep -q '^zms-db$'; then
+              docker exec zms-db sh -lc 'mysqladmin ping -uroot -proot --silent' && break || true
+            fi
+            sleep 1
+          done
+
+      - name: Import base database
+        run: |
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing base database from .resources/zms.sql..."
+            # Disable foreign key checks during import to avoid constraint errors
+            {
+              echo "SET FOREIGN_KEY_CHECKS = 0;"
+              cat .resources/zms.sql
+              echo "SET FOREIGN_KEY_CHECKS = 1;"
+            } | docker exec -i zms-db mysql -u root -proot db
+            echo "Base database import completed."
+          else
+            echo "Base SQL file not found at .resources/zms.sql, skipping import."
+          fi
+
+      - name: Cache Flyway Docker image
+        id: cache-flyway-image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/flyway-image.tar
+          key: ${{ runner.os }}-flyway-image-9
+
+      - name: Load or pull Flyway Docker image
+        run: |
+          if [ -f /tmp/flyway-image.tar ] && [ "${{ steps.cache-flyway-image.outputs.cache-hit }}" == "true" ]; then
+            echo "Loading cached Flyway Docker image..."
+            docker load -i /tmp/flyway-image.tar
+          else
+            echo "Pulling Flyway Docker image..."
+            docker pull docker.io/flyway/flyway:9
+            echo "Saving Flyway Docker image for future runs..."
+            docker save docker.io/flyway/flyway:9 -o /tmp/flyway-image.tar
+          fi
+
+      - name: Run Flyway test data migrations
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db)
+          echo "Using network: $NET"
+          docker run --rm \
+            --network "$NET" \
+            -v "$PWD/zmsapiautomation/flyway:/flyway/sql:ro" \
+            docker.io/flyway/flyway:9 \
+            -url=jdbc:mysql://db:3306/db -user=root -password=root \
+            -locations=filesystem:/flyway/sql \
+            -baselineOnMigrate=true \
+            migrate || echo "Flyway failed; continuing."
+
+      - name: Run zmsapi PHP migrations
+        run: |
+          docker exec zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"
+
+      - name: Setup cache directories
+        run: |
+          docker exec zms-web bash -lc '
+            set -e
+            # Create common cache directory
+            COMMON_CACHE="/var/www/html/cache"
+            mkdir -p "$COMMON_CACHE"
+            chmod 777 "$COMMON_CACHE"
+            
+            # Create module-specific cache directories (default locations)
+            for module in zmsapi zmsdb zmscitizenapi; do
+              # Default location: module/src/ModuleNamespace/cache
+              if [ "$module" = "zmsapi" ]; then
+                MODULE_CACHE="/var/www/html/zmsapi/src/Zmsapi/cache"
+              elif [ "$module" = "zmscitizenapi" ]; then
+                MODULE_CACHE="/var/www/html/zmscitizenapi/src/Zmscitizenapi/cache"
+              elif [ "$module" = "zmsdb" ]; then
+                MODULE_CACHE="/var/www/html/zmsdb/src/Zmsdb/cache"
+              fi
+              mkdir -p "$MODULE_CACHE"
+              chmod 777 "$MODULE_CACHE"
+              
+              # Also create subdirectories in common cache
+              mkdir -p "$COMMON_CACHE/$module"
+              chmod 777 "$COMMON_CACHE/$module"
+            done
+            
+            # Ensure www-data user owns the directories (if www-data user exists)
+            if id "www-data" &>/dev/null; then
+              chown -R www-data:www-data "$COMMON_CACHE" || true
+              for module in zmsapi zmsdb zmscitizenapi; do
+                if [ "$module" = "zmsapi" ]; then
+                  MODULE_CACHE="/var/www/html/zmsapi/src/Zmsapi/cache"
+                elif [ "$module" = "zmscitizenapi" ]; then
+                  MODULE_CACHE="/var/www/html/zmscitizenapi/src/Zmscitizenapi/cache"
+                elif [ "$module" = "zmsdb" ]; then
+                  MODULE_CACHE="/var/www/html/zmsdb/src/Zmsdb/cache"
+                fi
+                chown -R www-data:www-data "$MODULE_CACHE" || true
+              done
+            fi
+            
+            echo "Cache directories created and permissions set"
+            ls -la /var/www/html/cache || true
+          '
+
+      - name: Ensure Apache is running
+        run: |
+          docker exec zms-web bash -lc '
+            # Check if Apache is running, restart if needed
+            if ! pgrep -f "apache2\|httpd" > /dev/null; then
+              echo "Apache not running, starting..."
+              service apache2 start || service httpd start || /usr/sbin/apache2ctl start || true
+            fi
+            
+            # Ensure Apache is enabled and running
+            service apache2 status || service httpd status || true
+            sleep 2
+            
+            # Verify Apache is responding
+            curl -f http://localhost/ > /dev/null 2>&1 && echo "Apache is responding" || echo "Warning: Apache may not be fully ready"
+          '
+
+      - name: Run hourly (best-effort, with logs)
+        env:
+          ZMS_CRONROOT: "1"
+          ZMS_SOURCE_DLDB_MUNICH: "https://stadt.muenchen.de/service/info/zms/index/"
+        run: |
+          docker exec \
+            -e ZMS_CRONROOT="$ZMS_CRONROOT" \
+            -e ZMS_SOURCE_DLDB_MUNICH="$ZMS_SOURCE_DLDB_MUNICH" \
+            zms-web bash -lc '
+              set -e
+              cd /var/www/html/zmsapi
+              mkdir -p /var/www/html/zmsapi/var/log
+              php -d date.timezone="UTC" -d memory_limit=1G cron/cronjob.hourly --city=munich 2>&1 | tee /var/www/html/zmsapi/var/log/cron.hourly.log || true
+              echo "Hourly log saved to /var/www/html/zmsapi/var/log/cron.hourly.log"
+            '
+
+      - name: Debug web server status
+        run: |
+          echo "=== Checking container status ==="
+          docker ps | grep zms-web || echo "zms-web container not found"
+          
+          echo "=== Checking Apache status ==="
+          docker exec zms-web bash -lc 'ps aux | grep -E "(apache|httpd)" | head -5' || echo "Apache process check failed"
+          
+          echo "=== Testing basic connectivity ==="
+          curl -v http://localhost:8090/ 2>&1 | head -20 || echo "Basic connectivity test failed"
+          
+          echo "=== Checking Apache error logs ==="
+          docker exec zms-web bash -lc 'tail -50 /var/log/apache2/error.log 2>/dev/null || tail -50 /var/log/httpd/error_log 2>/dev/null || echo "Could not read error logs"' || true
+          
+          echo "=== Testing API endpoints with verbose output ==="
+          curl -v http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/ 2>&1 | head -30 || true
+          curl -v http://localhost:8090/terminvereinbarung/api/2/status/ 2>&1 | head -30 || true
+
+      - name: Health checks (with retry)
+        run: |
+          set -e
+          for url in \
+            "http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/" \
+            "http://localhost:8090/terminvereinbarung/api/2/status/"; do
+            echo "Waiting for $url"
+            for i in {1..60}; do
+              # Get response with status code
+              HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" --max-time 5 "$url" || echo "000")
+              if [ "$HTTP_CODE" = "200" ]; then
+                echo "OK: $url (HTTP $HTTP_CODE)"
+                break
+              elif [ "$HTTP_CODE" != "000" ]; then
+                echo "Attempt $i: HTTP $HTTP_CODE"
+                if [ "$i" -le 5 ]; then
+                  # Show response body for first few attempts
+                  echo "Response body:"
+                  head -20 /tmp/response.txt || true
+                fi
+              fi
+              sleep 2
+              if [ "$i" -eq 60 ]; then
+                echo "ERROR: $url did not become ready in time (last HTTP code: $HTTP_CODE)" >&2
+                echo "Final response body:"
+                cat /tmp/response.txt || true
+                exit 1
+              fi
+            done
+          done
+
+      - name: Cache Maven Docker image
+        id: cache-maven-image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/maven-image.tar
+          key: ${{ runner.os }}-maven-image-3.9-eclipse-temurin-17
+
+      - name: Load or pull Maven Docker image
+        run: |
+          if [ -f /tmp/maven-image.tar ] && [ "${{ steps.cache-maven-image.outputs.cache-hit }}" == "true" ]; then
+            echo "Loading cached Maven Docker image..."
+            docker load -i /tmp/maven-image.tar
+          else
+            echo "Pulling Maven Docker image..."
+            docker pull maven:3.9-eclipse-temurin-17
+            echo "Saving Maven Docker image for future runs..."
+            docker save maven:3.9-eclipse-temurin-17 -o /tmp/maven-image.tar
+          fi
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('zmsapiautomation/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Check code formatting with Spotless
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
+          docker run --rm \
+            --network "$NET" \
+            -v "$PWD:/workspace" \
+            -v "$HOME/.m2:/root/.m2" \
+            -w /workspace/zmsapiautomation \
+            maven:3.9-eclipse-temurin-17 mvn spotless:check
+
+      - name: Run REST-assured tests
+        run: |
+          NET=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-web)
+          docker run --rm \
+            --network "$NET" \
+            -e BASE_URI="http://zms-web/terminvereinbarung/api/2" \
+            -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
+            -v "$PWD:/workspace" \
+            -v "$HOME/.m2:/root/.m2" \
+            -w /workspace/zmsapiautomation \
+            maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: |
+            zmsapiautomation/target/surefire-reports/**
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+
