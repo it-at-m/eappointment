@@ -226,6 +226,7 @@
   "showAllServices": "Show all services",
   "showLessServices": "Show less services",
   "skipCombinableServices": "Skip combinable services",
+  "spinnerText": "We are searching for available dates...",
   "telephoneNumber": "Telephone number",
   "termsOfUse": "Terms of Use",
   "time": "Time",
