@@ -24,7 +24,7 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $helper = new Helper\User($request, 2);
+        $helper = new Helper\User($request, 1);
         $helper->checkRights('useraccount');
         $parameters = $request->getParams();
 
