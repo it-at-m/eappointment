@@ -23,7 +23,7 @@ class UseraccountListByDepartment extends BaseController
         array $args
     ) {
         $departmentId = $args['id'];
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
 
