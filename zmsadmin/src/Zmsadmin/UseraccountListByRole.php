@@ -23,7 +23,7 @@ class UseraccountListByRole extends BaseController
         array $args
     ) {
         $roleLevel = $args['level'];
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -35,7 +35,6 @@ class UseraccountListByRole extends BaseController
                 false;
             }
         } else {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
             $departmentListIds = $departmentList->getIds();
 
