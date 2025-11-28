@@ -40,6 +40,11 @@ class WorkstationProcessParked extends BaseController
             $previousStatus,
             $workstation->getUseraccount()
         );
+        \App::$log->info('Process parked', [
+            'process_parked' => true,
+            'process_id' => $process->id,
+            'scope_id' => $process->scope['id']
+        ]);
         (new Workstation())->writeRemovedProcess($workstation);
         unset($workstation->process);
 
