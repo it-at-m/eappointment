@@ -21,9 +21,6 @@ class User
 
     public static $request = null;
 
-    protected static $validatedDepartments = [];
-    protected static $validatedDepartmentsUserId = null;
-
     public function __construct($request, $resolveReferences = 0)
     {
         static::$request = $request;
@@ -143,35 +140,22 @@ class User
             throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
         }
 
-        self::ensureDepartmentRegistryOwner($userAccount->id);
-
-        $missingIds = array_values(array_diff($normalizedIds, array_keys(static::$validatedDepartments)));
-
-        if (!empty($missingIds)) {
-            if ($userAccount->isSuperUser()) {
-                $departmentMap = (new \BO\Zmsdb\Department())->readEntitiesByIds($missingIds, 1);
-                foreach ($missingIds as $departmentId) {
-                    if (!isset($departmentMap[$departmentId])) {
-                        throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
-                            "No access to department " . htmlspecialchars((string) $departmentId)
-                        );
-                    }
-                    static::$validatedDepartments[$departmentId] = $departmentMap[$departmentId];
+        if ($userAccount->isSuperUser()) {
+            // Bulk-load all departments in one query for superusers
+            $departmentMap = (new \BO\Zmsdb\Department())->readEntitiesByIds($normalizedIds, 1);
+            foreach ($normalizedIds as $departmentId) {
+                if (!isset($departmentMap[$departmentId])) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
                 }
-            } else {
-                foreach ($missingIds as $departmentId) {
-                    static::$validatedDepartments[$departmentId] = self::checkDepartment($departmentId);
-                }
+                $departments->addEntity($departmentMap[$departmentId]);
             }
-        }
-
-        foreach ($normalizedIds as $departmentId) {
-            if (!isset(static::$validatedDepartments[$departmentId])) {
-                throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
-                    "No access to department " . htmlspecialchars((string) $departmentId)
-                );
+        } else {
+            // Non-superusers need per-department access checks
+            foreach ($normalizedIds as $departmentId) {
+                $departments->addEntity(self::checkDepartment($departmentId));
             }
-            $departments->addEntity(static::$validatedDepartments[$departmentId]);
         }
 
         return $departments;
@@ -238,14 +222,6 @@ class User
         $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
         $department = $organisation->departments->getEntity($departmentId);
         return $department;
-    }
-
-    protected static function ensureDepartmentRegistryOwner($userId)
-    {
-        if (static::$validatedDepartmentsUserId !== $userId) {
-            static::$validatedDepartments = [];
-            static::$validatedDepartmentsUserId = $userId;
-        }
     }
 
     protected static function normalizeDepartmentIds(array $departmentIds)
