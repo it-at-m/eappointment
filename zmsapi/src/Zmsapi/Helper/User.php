@@ -151,10 +151,35 @@ class User
                 }
                 $departments->addEntity($departmentMap[$departmentId]);
             }
-        } else {
-            // Non-superusers need per-department access checks
+        } elseif ($userAccount->hasRights(['department'])) {
+            // Users with 'department' rights: need organisation-based access checks
+            // Group departments by organisation and load in batches
             foreach ($normalizedIds as $departmentId) {
                 $departments->addEntity(self::checkDepartment($departmentId));
+            }
+        } else {
+            // Regular users: extract departments directly from already-loaded user department list
+            $userDepartmentList = $userAccount->getDepartmentList();
+            $accessibleDepartmentIds = $userDepartmentList->getIds();
+            $accessibleRequestedIds = array_intersect($normalizedIds, $accessibleDepartmentIds);
+
+            if (count($accessibleRequestedIds) !== count($normalizedIds)) {
+                // Some requested departments are not accessible
+                $missingIds = array_diff($normalizedIds, $accessibleRequestedIds);
+                throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                    "No access to department(s): " . implode(', ', array_map('htmlspecialchars', $missingIds))
+                );
+            }
+
+            // Extract requested departments from already-loaded list (no DB query needed)
+            foreach ($accessibleRequestedIds as $departmentId) {
+                $department = $userDepartmentList->getEntity($departmentId);
+                if (!$department || !$department->hasId()) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
+                }
+                $departments->addEntity($department);
             }
         }
 
