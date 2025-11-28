@@ -18,7 +18,7 @@ class UseraccountTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
                 ],
                 [
                     'function' => 'readGetResult',
