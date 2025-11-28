@@ -114,6 +114,7 @@
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
       :maxlength="100"
+      :rows="textfieldRows"
     />
     <muc-text-area
       v-if="
@@ -127,6 +128,7 @@
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
       :maxlength="100"
+      :rows="textfieldRows"
     />
   </form>
   <div class="m-button-group">
@@ -287,6 +289,10 @@ const errorDisplayTelephoneNumber = computed(
   () =>
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
+
+const textfieldRows = computed(() => {
+      return window.innerWidth <= 500 ? 6 : 3;
+    });
 
 const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
