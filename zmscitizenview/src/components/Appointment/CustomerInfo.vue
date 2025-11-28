@@ -291,8 +291,8 @@ const errorDisplayTelephoneNumber = computed(
 );
 
 const textfieldRows = computed(() => {
-      return window.innerWidth <= 500 ? 6 : 3;
-    });
+  return window.innerWidth <= 500 ? 6 : 3;
+});
 
 const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
