@@ -25,12 +25,11 @@ class UseraccountListByDepartment extends BaseController
         $departmentId = $args['id'];
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
+        $department = \App::$http->readGetResult("/department/$departmentId/", ['resolveReferences' => 0])->getEntity();
 
         $useraccountList = new Collection();
         $result = \App::$http->readGetResult("/department/$departmentId/useraccount/", ['resolveReferences' => 0]);
         $useraccountList = $result ? $result->getCollection() : new Collection();
-        $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -42,7 +41,6 @@ class UseraccountListByDepartment extends BaseController
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
                 'department' => $department,
-                'workstationList' => $workstationList,
                 'useraccountListByDepartment' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
