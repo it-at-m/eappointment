@@ -1,3 +1,64 @@
+## Release Muc-34 (21.11.2025)
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-843'>ZMSKVR-843</a>] -         Schritt 4: Übersicht – Paragraph um Hinweistext
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-924'>ZMSKVR-924</a>] -         Identische Scopes haben nicht konsistente Kundenhinweise im Bürgerfrontend
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1020'>ZMSKVR-1020</a>] -         „Überbuchung von Terminen bei Ausnahmen und Terminserien Standort KVR-III/311 Renten-Auskunft+ Standort KVR-V/52
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1023'>ZMSKVR-1023</a>] -         Gesamtübersicht: Reihenfolge und Farben der Standorte ändern sich nach Datenaktualisierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1034'>ZMSKVR-1034</a>] -         Verpasste Termine: Wiederaufruf nicht möglich und Fehler auf Aufrufmonitoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1041'>ZMSKVR-1041</a>] -         External User ID wird aus Termin gelöscht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1060'>ZMSKVR-1060</a>] -         Hotfix Kalendar Fehlt Tresenansicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1061'>ZMSKVR-1061</a>] -         Hotfix Termin Rutscht in der Warteschlange nach Unten nach Bearbeitung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1062'>ZMSKVR-1062</a>] -         Hotfix Warteschlange Termindauern Doppelt und Dienstleistung Nicht Sichtbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1063'>ZMSKVR-1063</a>] -         Stacktrace ScopeNotFound
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1064'>ZMSKVR-1064</a>] -         Hotfix Button Sperren/Entsperren eines Tages funktioniert nicht nach refresh
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1065'>ZMSKVR-1065</a>] -         Hotfix Captcha bei Terminvarianten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1066'>ZMSKVR-1066</a>] -         Hotfix Übersichtsseite - keine Reservierung möglich Typing int/string
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1068'>ZMSKVR-1068</a>] -         Hotfix UI Fehler bei Terminaktivierung
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-353'>ZMSKVR-353</a>] -         Umbuchung verlangt keine zusätzliche Aktivierung 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-784'>ZMSKVR-784</a>] -         Terminvarianten im Bürgerfrontend auswählbar machen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-832'>ZMSKVR-832</a>] -         Präzisere Suche mit Filtern und Wildcard für Innenrevision
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-846'>ZMSKVR-846</a>] -         Schritt 4: Übersicht – Einwilligungslinks in neuem Tab öffnen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-861'>ZMSKVR-861</a>] -         Optimierung der Wartestatistik-Darstellung in der GUI
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-862'>ZMSKVR-862</a>] -         Benutzerfreundlichere Gestaltung der Wartezeitstatistik (Excel)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-973'>ZMSKVR-973</a>] -         Aktivierung Statusfeld
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-991'>ZMSKVR-991</a>] -         Heutige archivierte Termine von anderen trennen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-992'>ZMSKVR-992</a>] -         Nur ein Request für Terminformular
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1024'>ZMSKVR-1024</a>] -         Nacharbeiten &quot;Terminvarianten&quot; FrontEnd
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1052'>ZMSKVR-1052</a>] -         Slot-Generierung auf Availability-Versionierung umstellen
+</li>
+</ul>
+
 ## Release Muc-33 (24.10.2025)  
 
 <h2>        Bug

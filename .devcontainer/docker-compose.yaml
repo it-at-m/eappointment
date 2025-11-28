@@ -36,7 +36,7 @@ services:
       - PMA_PASSWORD=root
       - PMA_HOST=zms-db
       - PMA_PORT=3306
-      - UPLOAD_LIMIT=4000M
+      - UPLOAD_LIMIT=25600M
     depends_on:
       - db
 

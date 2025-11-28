@@ -358,9 +358,13 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
-    {
-        $query = new Query\Process(Query\Base::SELECT);
+    public function readProcessListByScopeAndTime(
+        $scopeId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0,
+        $withEntities = []
+    ) {
+        $query = new Query\Process(Query\Base::SELECT, '', false, null, $withEntities);
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
