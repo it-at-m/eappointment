@@ -30,10 +30,7 @@ class Useraccount extends Schema\Entity
                 "ticketprinter" => false,
                 "useraccount" => false,
             ],
-            // Use empty array instead of DepartmentList object to avoid creating 100+ objects
-            // when resolveReferences is 0 and departments aren't needed
-            // getDepartmentList() will convert to DepartmentList when accessed
-            'departments' => [],
+            'departments' => new Collection\DepartmentList(),
         ];
     }
 
@@ -48,19 +45,12 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    /**
-     * @return Collection\DepartmentList
-     */
     public function getDepartmentList()
     {
-        if (!isset($this->departments) || !$this->departments instanceof Collection\DepartmentList) {
-            if (!isset($this->departments) || empty($this->departments)) {
-                $this->departments = new Collection\DepartmentList();
-            } else {
-                $this->departments = new Collection\DepartmentList($this->departments);
-                foreach ($this->departments as $key => $department) {
-                    $this->departments[$key] = new Department($department);
-                }
+        if (!$this->departments instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList($this->departments);
+            foreach ($this->departments as $key => $department) {
+                $this->departments[$key] = new Department($department);
             }
         }
         return $this->departments;
@@ -68,19 +58,14 @@ class Useraccount extends Schema\Entity
 
     public function addDepartment($department)
     {
-        // Ensure departments is accessible (may be empty array from getDefaults)
-        if (!isset($this->departments) || !($this->departments instanceof Collection\DepartmentList)) {
-            $this->departments = new Collection\DepartmentList(is_array($this->departments) ? $this->departments : []);
-        }
         $this->departments[] = $department;
         return $this;
     }
 
     public function getDepartment($departmentId)
     {
-        $departments = $this->getDepartmentList();
-        if ($departments->count()) {
-            foreach ($departments as $department) {
+        if (count($this->departments)) {
+            foreach ($this->getDepartmentList() as $department) {
                 if ($department['id'] == $departmentId) {
                     return $department;
                 }
@@ -165,7 +150,7 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentById($departmentId)
     {
-        foreach ($this->getDepartmentList() as $department) {
+        foreach ($this->departments as $department) {
             if ($departmentId == $department['id']) {
                 return new Department($department);
             }
@@ -175,7 +160,7 @@ class Useraccount extends Schema\Entity
 
     public function getDepartmentByIds(array $departmentIds)
     {
-        foreach ($this->getDepartmentList() as $department) {
+        foreach ($this->departments as $department) {
             if (in_array($department['id'], $departmentIds)) {
                 return new Department($department);
             }
@@ -212,7 +197,7 @@ class Useraccount extends Schema\Entity
     {
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
-        foreach ($this->getDepartmentList() as $department) {
+        foreach ($this->departments as $department) {
             if (! is_array($department) && ! $department instanceof Department) {
                 $department = new Department(array('id' => $department));
             }
