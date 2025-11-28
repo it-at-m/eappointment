@@ -43,15 +43,18 @@ class UseraccountList extends BaseController
         } else {
             // Non-superusers need departments loaded, so reload workstation with resolveReferences => 2
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-            $departmentListIds = $workstation->getUseraccount()->getDepartmentList()->getIds();
+            $departmentList = $workstation->getUseraccount()->getDepartmentList();
+            $departmentListIds = $departmentList->getIds();
 
-            $params = ['resolveReferences' => 0];
-            if ($queryString) {
-                $params['query'] = $queryString;
+            if (!empty($departmentListIds)) {
+                $params = ['resolveReferences' => 0];
+                if ($queryString) {
+                    $params['query'] = $queryString;
+                }
+                $useraccountList = \App::$http
+                    ->readGetResult('/department/' . implode(',', $departmentListIds) . '/useraccount/', $params)
+                    ->getCollection();
             }
-            $useraccountList = \App::$http
-                ->readGetResult('/department/' . implode(',', $departmentListIds) . '/useraccount/', $params)
-                ->getCollection();
         }
 
         return \BO\Slim\Render::withHtml(
