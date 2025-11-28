@@ -32,7 +32,7 @@ class UseraccountList extends BaseController
         $useraccountList = (new Useraccount())->readSearch($parameters, 1, $workstation);
 
         $message = Response\Message::create($request);
-        $message->data = $useraccountList->withLessData();
+        $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

@@ -34,7 +34,7 @@ class UseraccountListByRole extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $useraccountList->withLessData();
+        $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);

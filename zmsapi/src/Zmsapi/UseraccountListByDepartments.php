@@ -38,7 +38,7 @@ class UseraccountListByDepartments extends BaseController
         $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences, $workstation);
 
         $message = Response\Message::create($request);
-        $message->data = $useraccountList->withLessData();
+        $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
