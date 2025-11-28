@@ -57,6 +57,10 @@ class WorkstationProcessRedirect extends BaseController
             $newProcess->amendment = $input['amendment'];
 
             $process = \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
+            \App::$log->info('Process redirected', [
+                'process_id' => $process->id,
+                'scope_id' => $process->scope['id']
+            ]);
 
             return \BO\Slim\Render::redirect(
                 $workstation->getVariantName(),
