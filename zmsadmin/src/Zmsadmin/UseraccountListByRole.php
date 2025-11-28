@@ -52,7 +52,12 @@ class UseraccountListByRole extends BaseController
                         $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
                     }
                 } catch (\Exception $e) {
-                    // Continue with empty list
+                    // Log the error for debugging/monitoring
+                    \App::$log?->warning('Failed to fetch useraccounts by role and department', [
+                        'roleLevel' => $roleLevel,
+                        'departmentIds' => $departmentListIds,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
