@@ -29,7 +29,7 @@ class UseraccountList extends BaseController
         $parameters = $request->getParams();
 
         $workstation = Helper\User::$workstation;
-        $useraccountList = (new Useraccount())->readSearch($parameters, 1, $workstation);
+        $useraccountList = (new Useraccount())->readSearch($parameters, 0, $workstation);
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;

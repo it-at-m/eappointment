@@ -26,7 +26,6 @@ class UseraccountListByDepartments extends BaseController
         array $args
     ) {
         $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
         $parameters = $request->getParams();
 
@@ -35,7 +34,7 @@ class UseraccountListByDepartments extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, $resolveReferences, $workstation);
+        $useraccountList = (new Useraccount())->readSearchByDepartmentIds($departmentIds, $parameters, 0, $workstation);
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;

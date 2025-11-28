@@ -27,7 +27,6 @@ class UseraccountListByRoleAndDepartments extends BaseController
     ) {
         $roleLevel = $args['level'];
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $departments = Helper\User::checkDepartments(explode(',', $args['ids']));
 
         $departmentIds = [];
@@ -35,7 +34,7 @@ class UseraccountListByRoleAndDepartments extends BaseController
             $departmentIds[] = $department->id;
         }
 
-        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, $resolveReferences, false, $workstation);
+        $useraccountList = (new Useraccount())->readListByRoleAndDepartmentIds($roleLevel, $departmentIds, 0, false, $workstation);
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
