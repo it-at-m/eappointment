@@ -158,7 +158,7 @@ class Useraccount extends Base implements MappingInterface
     public function addConditionDepartmentIds(array $departmentIds)
     {
         $this->setDistinctSelect();
-        $this->leftJoin(
+        $this->innerJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
             'useraccount.NutzerID',
             '=',
@@ -171,7 +171,7 @@ class Useraccount extends Base implements MappingInterface
     public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false)
     {
         $this->setDistinctSelect();
-        $this->leftJoin(
+        $this->innerJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
             'useraccount.NutzerID',
             '=',
@@ -219,7 +219,7 @@ class Useraccount extends Base implements MappingInterface
 
         // Ensure we have a join to nutzerzuordnung for target useraccounts
         $this->setDistinctSelect();
-        $this->leftJoin(
+        $this->innerJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
             'useraccount.NutzerID',
             '=',
