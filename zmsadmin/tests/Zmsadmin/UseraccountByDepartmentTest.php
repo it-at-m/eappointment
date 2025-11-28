@@ -48,7 +48,7 @@ class UseraccountByDepartmentTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('useraccount-list', (string)$response->getBody());
-        $this->assertStringContainsString('/useraccount/testuser/', (string)$response->getBody());
+        $this->assertStringContainsString('/users/testuser/', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

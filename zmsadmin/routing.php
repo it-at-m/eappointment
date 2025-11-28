@@ -377,13 +377,13 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/users/', \BO\Zmsadmin\UseraccountList::class)
     ->setName("useraccountList");
 
-\App::$slim->map(['GET', 'POST'], '/useraccount/add/', \BO\Zmsadmin\UseraccountAdd::class)
+\App::$slim->map(['GET', 'POST'], '/users/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
-\App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
+\App::$slim->map(['GET','POST'], '/users/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
-\App::$slim->get('/useraccount/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
+\App::$slim->get('/users/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
     ->setName("useraccountDelete");
 
 
