@@ -43,7 +43,7 @@ class UseraccountListByRole extends BaseController
                 try {
                     $departmentUseraccountList = \App::$http
                         ->readGetResult("/role/$roleLevel/department/" . implode(',', $departmentListIds) . "/useraccount/", [
-                            'resolveReferences' => 1
+                            'resolveReferences' => 0
                         ])
                         ->getCollection();
                     if ($departmentUseraccountList) {
