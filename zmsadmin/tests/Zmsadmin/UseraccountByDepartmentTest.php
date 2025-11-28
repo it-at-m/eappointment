@@ -25,6 +25,7 @@ class UseraccountByDepartmentTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/',
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
@@ -32,11 +33,6 @@ class UseraccountByDepartmentTest extends Base
                     'url' => '/department/74/useraccount/',
                     'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_useraccountlist_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/workstation/',
-                    'response' => $this->readFixture("GET_workstationlist_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
