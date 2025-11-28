@@ -23,6 +23,7 @@ class UseraccountListByRole extends BaseController
         array $args
     ) {
         $roleLevel = $args['level'];
+        // Load workstation with resolveReferences => 1 first to check if superuser
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
@@ -35,6 +36,8 @@ class UseraccountListByRole extends BaseController
                 false;
             }
         } else {
+            // Non-superusers need departments loaded, so reload workstation with resolveReferences => 2
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
             $departmentListIds = $departmentList->getIds();
 
