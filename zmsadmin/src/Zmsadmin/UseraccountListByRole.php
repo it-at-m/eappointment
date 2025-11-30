@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountByRole extends BaseController
+class UseraccountListByRole extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -23,7 +23,8 @@ class UseraccountByRole extends BaseController
         array $args
     ) {
         $roleLevel = $args['level'];
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        // Load workstation with resolveReferences => 1 first to check if superuser
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -35,20 +36,28 @@ class UseraccountByRole extends BaseController
                 false;
             }
         } else {
+            // Non-superusers need departments loaded, so reload workstation with resolveReferences => 2
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
+            $departmentListIds = $departmentList->getIds();
 
-            foreach ($departmentList as $accountDepartment) {
+            if (!empty($departmentListIds)) {
                 try {
                     $departmentUseraccountList = \App::$http
-                        ->readGetResult("/role/$roleLevel/department/$accountDepartment->id/useraccount/")
+                        ->readGetResult("/role/$roleLevel/department/" . implode(',', $departmentListIds) . "/useraccount/", [
+                            'resolveReferences' => 0
+                        ])
                         ->getCollection();
+                    if ($departmentUseraccountList) {
+                        $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
+                    }
                 } catch (\Exception $e) {
-                    continue;
-                }
-
-                if ($departmentUseraccountList) {
-                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
+                    // Log the error for debugging/monitoring
+                    \App::$log?->warning('Failed to fetch useraccounts by role and department', [
+                        'roleLevel' => $roleLevel,
+                        'departmentIds' => $departmentListIds,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
@@ -61,9 +70,7 @@ class UseraccountByRole extends BaseController
                 'roleLevel' => $roleLevel,
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountListByRole' => ($useraccountList) ?
-                    $useraccountList->sortByCustomStringKey('id') :
-                    new Collection(),
+                'useraccountListByRole' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )

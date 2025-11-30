@@ -36,16 +36,27 @@ class View extends BaseView {
     }
 
     adjustCredentialsToOidc() {
-        this.$main.find('input[type="password"]').each((index, item) => {
-            if ($('#useOidcProvider').val() != "") {
-                $(item).prop('readonly', true);
-                $(item).val(this.randomPassword)
+        const $oidcSelect = this.$main.find('#useOidcProvider');
+        const $passwordInputs = this.$main.find('input[type="password"]');
+        
+        // If OIDC select does not exist, we're on the edit page
+        if (!$oidcSelect.length) {
+            // On edit page: disable password fields (won't submit), show masked placeholder for visual indication
+            // Keep value empty so nothing gets submitted, but placeholder shows there's a password set
+            $passwordInputs.prop('disabled', true).attr('placeholder', '••••••••').val('');
+            return;
+        }
+        
+        // On add page: fill with random password if OIDC is selected
+        const oidcSelected = $oidcSelect.val() !== '';
+        $passwordInputs.each((index, item) => {
+            const $item = $(item);
+            if (oidcSelected) {
+                $item.prop('readonly', true).val(this.randomPassword);
             } else {
-                $('#useOidcProvider').prop('checked', false)
-                $(item).prop('readonly', false);
-                $(item).val('')
+                $item.prop('readonly', false).val('');
             }
-        })
+        });
     }
 
     createRandomPassword() {

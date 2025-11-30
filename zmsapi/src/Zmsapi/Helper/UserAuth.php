@@ -15,8 +15,13 @@ class UserAuth
     public static function getVerifiedUseraccount($entity)
     {
         $useraccountQuery = new Useraccount();
-        $useraccount = $useraccountQuery->readEntity($entity->getId())->withVerifiedHash($entity->password);
-        $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        $useraccount = $useraccountQuery->readEntity($entity->getId());
+        $originalPassword = $useraccount->password;
+        $useraccount = $useraccount->withVerifiedHash($entity->password);
+        // Only write if password was actually updated (rehashing needed)
+        if ($useraccount->password !== $originalPassword) {
+            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        }
         return $useraccount;
     }
 
@@ -50,11 +55,14 @@ class UserAuth
         $useraccountQuery = new Useraccount();
 
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
-            $useraccount = $useraccountQuery
-                ->readEntity($basicAuth['username'])
-                ->withVerifiedHash($basicAuth['password']);
+            $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
+            $originalPassword = $useraccount->password;
+            $useraccount = $useraccount->withVerifiedHash($basicAuth['password']);
             static::testPasswordMatching($useraccount, $basicAuth['password']);
-            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+            // Only write if password was actually updated (rehashing needed)
+            if ($useraccount->password !== $originalPassword) {
+                $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+            }
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
         }
