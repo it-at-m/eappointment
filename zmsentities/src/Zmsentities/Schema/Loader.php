@@ -23,6 +23,9 @@ class Loader
         }
 
         $fileMtime = filemtime($fullPath);
+        if ($fileMtime === false) {
+            return null;
+        }
         if ($cacheMtime < $fileMtime) {
             return null;
         }
@@ -49,7 +52,10 @@ class Loader
         }
 
         \App::$cache->set($cacheKey, $data);
-        \App::$cache->set($cacheKey . '_mtime', filemtime($fullPath));
+        $fileMtime = filemtime($fullPath);
+        if ($fileMtime !== false) {
+            \App::$cache->set($cacheKey . '_mtime', $fileMtime);
+        }
         if (class_exists('\App') && isset(\App::$log) && \App::$log) {
             \App::$log->debug('Schema cache set', [
                 'schema' => $schemaFilename,
