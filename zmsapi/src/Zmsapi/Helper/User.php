@@ -249,7 +249,7 @@ class User
         return $department;
     }
 
-    protected static function normalizeDepartmentIds(array $departmentIds)
+    public static function normalizeDepartmentIds(array $departmentIds)
     {
         $normalized = [];
         foreach ($departmentIds as $departmentId) {

@@ -30,7 +30,7 @@ class UseraccountListByDepartments extends BaseController
 
         $rawIds = array_map('trim', explode(',', $args['ids']));
         $rawIds = array_filter($rawIds, 'strlen');
-        $requestedDepartmentIds = array_map('intval', $rawIds);
+        $requestedDepartmentIds = Helper\User::normalizeDepartmentIds($rawIds);
 
         $departmentIds = [];
         if ($workstation->getUseraccount()->isSuperUser()) {
