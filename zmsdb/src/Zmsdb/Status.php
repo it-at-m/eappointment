@@ -223,17 +223,17 @@ class Status extends Base
 
         $processStats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(CASE WHEN name = "dereferenced" THEN 1 ELSE NULL END) as blocked,
-                SUM(CASE WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as confirmed,
-                SUM(CASE WHEN (b.StandortID != 0 OR AbholortID != 0) AND vorlaeufigeBuchung = 0 AND Abholer = 1 THEN 1 ELSE NULL END) as pending,
-                SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
-                SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
-                SUM(CASE WHEN parked != 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as parked,
-                SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
-                SUM(CASE WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
-                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
-                SUM(CASE WHEN IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
-                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
+                COALESCE(SUM(CASE WHEN name = "dereferenced" THEN 1 ELSE NULL END), 0) as blocked,
+                COALESCE(SUM(CASE WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END), 0) as confirmed,
+                COALESCE(SUM(CASE WHEN (b.StandortID != 0 OR AbholortID != 0) AND vorlaeufigeBuchung = 0 AND Abholer = 1 THEN 1 ELSE NULL END), 0) as pending,
+                COALESCE(SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END), 0) as deleted,
+                COALESCE(SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END), 0) as missed,
+                COALESCE(SUM(CASE WHEN parked != 0 AND b.StandortID != 0 THEN 1 ELSE NULL END), 0) as parked,
+                COALESCE(SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END), 0) as reserved,
+                COALESCE(SUM(CASE WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
+                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END), 0) as sincemidnight,
+                COALESCE(SUM(CASE WHEN IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
+                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END), 0) as last7days,
                 FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
              FROM buerger AS b
              WHERE b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0'
