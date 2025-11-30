@@ -119,6 +119,11 @@ class Loader
 
         // Load from disk
         $jsonString = file_get_contents($filename);
+        if ($jsonString === false) {
+            throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile(
+                "Could not read JSON-Schema file: $filename"
+            );
+        }
 
         // Cache the JSON string
         self::setCachedSchema($cacheKey, $filename, $schemaFilename, 'json', $jsonString);
