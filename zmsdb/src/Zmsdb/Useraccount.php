@@ -642,7 +642,7 @@ class Useraccount extends Base
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
 
-        $this->removeCache($entity, $previousDepartmentIds);
+        $this->removeCache($entity, $previousDepartmentIds, $loginName);
 
         return $this->readEntity($entity->getId(), $resolveReferences, true);
     }
@@ -659,7 +659,7 @@ class Useraccount extends Base
         $result = $this->deleteItem($query);
 
         if ($entity && $entity->hasId()) {
-            $this->removeCache($entity, $previousDepartmentIds);
+            $this->removeCache($entity, $previousDepartmentIds, $loginName);
         }
 
         return $result;
@@ -1005,7 +1005,7 @@ class Useraccount extends Base
         return $result;
     }
 
-    public function removeCache($useraccount, array $previousDepartmentIds = [])
+    public function removeCache($useraccount, array $previousDepartmentIds = [], ?string $oldLoginName = null)
     {
         if (!App::$cache) {
             return;
@@ -1013,6 +1013,11 @@ class Useraccount extends Base
 
         $currentVersion = $this->getUseraccountCacheVersion();
         $identifiers = $this->collectUseraccountIdentifiers($useraccount);
+        // Add old loginname to identifiers if provided and not already in the list
+        // This ensures cache keys for the old loginname are invalidated when loginname changes
+        if ($oldLoginName !== null && !in_array($oldLoginName, $identifiers, true)) {
+            $identifiers[] = $oldLoginName;
+        }
         $removedEntityKeys = [];
 
         foreach ($identifiers as $identifier) {
