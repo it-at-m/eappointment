@@ -170,15 +170,7 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false)
     {
-        $this->setDistinctSelect();
-        $this->innerJoin(
-            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
-            'useraccount.NutzerID',
-            '=',
-            'useraccount_department.nutzerid'
-        );
-
-        $this->query->where('useraccount_department.behoerdenid', 'IN', $departmentIds);
+        $this->addConditionDepartmentIds($departmentIds);
 
         if ($queryString) {
             $this->addConditionSearch($queryString, $orWhere);
