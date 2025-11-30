@@ -228,6 +228,7 @@ class Status extends Base
                 SUM(CASE WHEN (b.StandortID != 0 OR AbholortID != 0) AND vorlaeufigeBuchung = 0 AND Abholer = 1 THEN 1 ELSE NULL END) as pending,
                 SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
                 SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
+                SUM(CASE WHEN parked != 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as parked,
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
                 SUM(CASE WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
                     AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
