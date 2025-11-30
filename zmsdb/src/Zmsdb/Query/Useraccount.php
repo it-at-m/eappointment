@@ -168,7 +168,7 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false)
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false): self
     {
         $this->addConditionDepartmentIds($departmentIds);
 
@@ -179,13 +179,13 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionExcludeSuperusers()
+    public function addConditionExcludeSuperusers(): self
     {
         $this->query->where('useraccount.Berechtigung', '!=', 90);
         return $this;
     }
 
-    public function addOrderByName()
+    public function addOrderByName(): self
     {
         $this->query->orderBy('useraccount.Name', 'ASC');
         return $this;
@@ -194,7 +194,7 @@ class Useraccount extends Base implements MappingInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false)
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false): self
     {
         // Superusers can access all useraccounts, no filtering needed
         if ($isWorkstationSuperuser) {
