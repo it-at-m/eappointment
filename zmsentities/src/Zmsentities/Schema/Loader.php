@@ -28,7 +28,7 @@ class Loader
         }
 
         if (class_exists('\App') && isset(\App::$log) && \App::$log) {
-            \App::$log->info('Schema cache hit', [
+            \App::$log->debug('Schema cache hit', [
                 'schema' => $schemaFilename,
                 'type' => $type
             ]);
@@ -46,7 +46,7 @@ class Loader
         \App::$cache->set($cacheKey, $data);
         \App::$cache->set($cacheKey . '_mtime', filemtime($fullPath));
         if (class_exists('\App') && isset(\App::$log) && \App::$log) {
-            \App::$log->info('Schema cache set', [
+            \App::$log->debug('Schema cache set', [
                 'schema' => $schemaFilename,
                 'type' => $type
             ]);
