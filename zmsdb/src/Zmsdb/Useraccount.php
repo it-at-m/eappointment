@@ -189,6 +189,29 @@ class Useraccount extends Base
             return $identifier !== null && $identifier !== '';
         })));
     }
+
+    protected function applyWorkstationAccessFilter(Query\Useraccount $query, $workstation): bool
+    {
+        if (!$workstation || $workstation->getUseraccount()->isSuperUser()) {
+            return true; // No filtering needed for superusers
+        }
+
+        $workstationUserId = $this->readEntityIdByLoginName($workstation->getUseraccount()->id);
+        $workstationDepartmentIds = $workstation->getDepartmentList()->getIds();
+
+        // If no departments loaded, return empty result for security
+        if (empty($workstationDepartmentIds)) {
+            return false; // Signal to return empty collection
+        }
+
+        $query->addConditionWorkstationAccess(
+            $workstationUserId,
+            $workstationDepartmentIds,
+            false // We already checked isSuperUser above
+        );
+
+        return true;
+    }
     /**
      * Sanitize cache key by replacing reserved characters
      * Reserved characters: {}()/\@:
@@ -296,21 +319,9 @@ class Useraccount extends Base
             ->addOrderByName();
 
             // Apply workstation access filtering if provided
-            if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-                $workstationUserId = $this->readEntityIdByLoginName($workstation->getUseraccount()->id);
-                $workstationDepartmentIds = $workstation->getDepartmentList()->getIds();
-
-                // If no departments loaded, return empty result for security
-                if (empty($workstationDepartmentIds)) {
-                    $result = new Collection();
-                    return $result;
-                }
-
-                $query->addConditionWorkstationAccess(
-                    $workstationUserId,
-                    $workstationDepartmentIds,
-                    $workstation->getUseraccount()->isSuperUser()
-                );
+            if (!$this->applyWorkstationAccessFilter($query, $workstation)) {
+                $result = new Collection();
+                return $result;
             }
 
             $result = $this->fetchList($query, new Entity());
@@ -745,20 +756,8 @@ class Useraccount extends Base
 
         // For superusers: select all users without department filtering
         // For non-superusers: apply department-based access filtering
-        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            $workstationUserId = $this->readEntityIdByLoginName($workstation->getUseraccount()->id);
-            $workstationDepartmentIds = $workstation->getDepartmentList()->getIds();
-
-            // If no departments loaded, return empty result for security
-            if (empty($workstationDepartmentIds)) {
-                return new Collection();
-            }
-
-            $query->addConditionWorkstationAccess(
-                $workstationUserId,
-                $workstationDepartmentIds,
-                $workstation->getUseraccount()->isSuperUser()
-            );
+        if (!$this->applyWorkstationAccessFilter($query, $workstation)) {
+            return new Collection();
         }
 
         if (isset($parameter['query'])) {
@@ -911,14 +910,8 @@ class Useraccount extends Base
             }
 
             // Apply workstation access filtering if provided
-            if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-                $workstationUserId = $this->readEntityIdByLoginName($workstation->getUseraccount()->id);
-                $workstationDepartmentIds = $workstation->getDepartmentList()->getIds();
-                $query->addConditionWorkstationAccess(
-                    $workstationUserId,
-                    $workstationDepartmentIds,
-                    $workstation->getUseraccount()->isSuperUser()
-                );
+            if (!$this->applyWorkstationAccessFilter($query, $workstation)) {
+                return new Collection();
             }
 
             $statement = $this->fetchStatement($query);
