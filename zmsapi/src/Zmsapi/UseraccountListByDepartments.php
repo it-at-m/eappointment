@@ -10,7 +10,6 @@ namespace BO\Zmsapi;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
-use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
