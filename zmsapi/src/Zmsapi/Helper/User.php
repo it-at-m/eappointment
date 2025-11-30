@@ -260,7 +260,14 @@ class User
             if ($departmentId === '') {
                 continue;
             }
-            $normalized[] = (int) $departmentId;
+            // Validate that the string represents a valid integer before casting
+            $validatedId = filter_var($departmentId, FILTER_VALIDATE_INT);
+            if ($validatedId === false) {
+                throw new \BO\Zmsapi\Exception\BadRequest(
+                    "Invalid department ID: " . htmlspecialchars($departmentId)
+                );
+            }
+            $normalized[] = $validatedId;
         }
 
         return array_values(array_unique($normalized));
