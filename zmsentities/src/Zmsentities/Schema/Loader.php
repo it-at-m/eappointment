@@ -6,12 +6,13 @@ use Exception;
 
 class Loader
 {
-    private static function getCachedSchema(string $cacheKey, string $fullPath, string $schemaFilename, string $type)
+    private static function isCacheAvailable(): bool
     {
-        if (!class_exists('\App') || !isset(\App::$cache) || !\App::$cache) {
-            return null;
-        }
+        return class_exists('\App') && isset(\App::$cache) && \App::$cache;
+    }
 
+    private static function validateCacheMtime(string $cacheKey, string $fullPath): ?int
+    {
         $cacheMtime = \App::$cache->get($cacheKey . '_mtime');
         if ($cacheMtime === null) {
             return null;
@@ -30,18 +31,35 @@ class Loader
             return null;
         }
 
-        $cached = \App::$cache->get($cacheKey);
-        if ($cached === null) {
-            return null;
-        }
+        return $cacheMtime;
+    }
 
+    private static function logCacheHit(string $schemaFilename, string $type): void
+    {
         if (class_exists('\App') && isset(\App::$log) && \App::$log) {
             \App::$log->debug('Schema cache hit', [
                 'schema' => $schemaFilename,
                 'type' => $type
             ]);
         }
+    }
 
+    private static function getCachedSchema(string $cacheKey, string $fullPath, string $schemaFilename, string $type)
+    {
+        if (!self::isCacheAvailable()) {
+            return null;
+        }
+
+        if (self::validateCacheMtime($cacheKey, $fullPath) === null) {
+            return null;
+        }
+
+        $cached = \App::$cache->get($cacheKey);
+        if ($cached === null) {
+            return null;
+        }
+
+        self::logCacheHit($schemaFilename, $type);
         return $cached;
     }
 
