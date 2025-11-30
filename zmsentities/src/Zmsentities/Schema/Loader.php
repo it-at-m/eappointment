@@ -8,12 +8,17 @@ class Loader
 {
     private static function getCachedSchema(string $cacheKey, string $fullPath, string $schemaFilename, string $type)
     {
-        if (!class_exists('\App') || !isset(\App::$cache) || !\App::$cache || !file_exists($fullPath)) {
+        if (!class_exists('\App') || !isset(\App::$cache) || !\App::$cache) {
             return null;
         }
 
         $cacheMtime = \App::$cache->get($cacheKey . '_mtime');
         if ($cacheMtime === null) {
+            return null;
+        }
+
+        // Validate file exists and compare modification times
+        if (!file_exists($fullPath)) {
             return null;
         }
 
