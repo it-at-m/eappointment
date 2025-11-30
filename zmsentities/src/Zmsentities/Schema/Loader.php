@@ -88,8 +88,14 @@ class Loader
     {
         // Build cache key from schema filename
         $cacheKey = 'schema_array_' . md5($schemaFilename);
-        $schemaPath = self::getSchemaPath();
-        $fullPath = ($schemaPath ? $schemaPath . DIRECTORY_SEPARATOR : '') . $schemaFilename;
+
+        // Handle absolute paths consistently with asJson()
+        if (preg_match('#^/#', $schemaFilename)) {
+            $fullPath = $schemaFilename;
+        } else {
+            $schemaPath = self::getSchemaPath();
+            $fullPath = $schemaPath . DIRECTORY_SEPARATOR . $schemaFilename;
+        }
 
         // Try to get from cache
         $cached = self::getCachedSchema($cacheKey, $fullPath, $schemaFilename, 'array');
@@ -121,8 +127,13 @@ class Loader
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
         }
 
-        $directory = preg_match('#^/#', $schemaFilename) ? '' : self::getSchemaPath();
-        $filename = $directory . DIRECTORY_SEPARATOR . $schemaFilename;
+        // Handle absolute paths - avoid double separator
+        if (preg_match('#^/#', $schemaFilename)) {
+            $filename = $schemaFilename;
+        } else {
+            $directory = self::getSchemaPath();
+            $filename = $directory . DIRECTORY_SEPARATOR . $schemaFilename;
+        }
 
         // Build cache key from schema filename
         $cacheKey = 'schema_json_' . md5($schemaFilename);
