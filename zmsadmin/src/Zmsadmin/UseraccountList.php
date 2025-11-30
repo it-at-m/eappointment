@@ -26,9 +26,9 @@ class UseraccountList extends BaseController
     ) {
         // Load workstation with resolveReferences => 1 first to check if superuser
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         $validator = $request->getAttribute('validator');
+        $success = $validator->getParameter('success')->isString()->getValue();
         $queryString = $validator->getParameter('query')
             ->isString()
             ->getValue();
@@ -36,7 +36,7 @@ class UseraccountList extends BaseController
         $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
             $params = ["resolveReferences" => 0];
-            if ($queryString) {
+            if ($queryString !== null && $queryString !== '') {
                 $params['query'] = $queryString;
             }
             $useraccountList = \App::$http->readGetResult("/useraccount/", $params)->getCollection();
@@ -48,7 +48,7 @@ class UseraccountList extends BaseController
 
             if (!empty($departmentListIds)) {
                 $params = ['resolveReferences' => 0];
-                if ($queryString) {
+                if ($queryString !== null && $queryString !== '') {
                     $params['query'] = $queryString;
                 }
                 $useraccountList = \App::$http
