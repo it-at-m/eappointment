@@ -94,7 +94,12 @@ class Loader
         // Try to get from cache
         $cached = self::getCachedSchema($cacheKey, $fullPath, $schemaFilename, 'array');
         if ($cached !== null) {
-            return unserialize($cached);
+            // Reconstruct Schema from cached JSON string (safer than unserialize)
+            $cachedArray = json_decode($cached, true);
+            $cachedObject = json_decode($cached);
+            $schema = new Schema($cachedArray);
+            $schema->setJsonObject($cachedObject);
+            return $schema;
         }
 
         // Load and parse schema
@@ -104,8 +109,8 @@ class Loader
         $schema = new Schema($array);
         $schema->setJsonObject($object);
 
-        // Cache the parsed schema
-        self::setCachedSchema($cacheKey, $fullPath, $schemaFilename, 'array', serialize($schema));
+        // Cache the JSON string instead of serialized object (safer than serialize)
+        self::setCachedSchema($cacheKey, $fullPath, $schemaFilename, 'array', $jsonString);
 
         return $schema;
     }
