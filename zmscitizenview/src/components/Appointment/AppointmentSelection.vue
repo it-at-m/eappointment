@@ -62,10 +62,7 @@
       v-if="!availableDaysFetched || isSwitchingProvider"
       class="m-spinner-container"
     >
-      <MucSpinner
-        :aria-label="t('loading')"
-        :text="t('spinnerText')"
-      />
+      <MucSpinner :text="t('spinnerText')" />
     </div>
     <CalendarView
       ref="calendarViewRef"
