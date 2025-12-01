@@ -41,7 +41,6 @@
         <div class="m-content">
           <div class="m-spinner-container">
             <MucSpinner
-              :aria-label="t('loading')"
               :text="t('spinnerText')"
             />
           </div>
@@ -168,7 +167,6 @@
         <div class="m-content">
           <div class="m-spinner-container">
             <MucSpinner
-              :aria-label="t('loading')"
               :text="t('spinnerText')"
             />
           </div>
