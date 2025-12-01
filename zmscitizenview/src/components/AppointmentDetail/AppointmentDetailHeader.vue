@@ -13,7 +13,7 @@
       <muc-link
         :label="
           formatAppointmentDateTime(appointment.timestamp) +
-          '' +
+          ' ' +
           t('timeStampSuffix')
         "
         prepend-icon="calendar"

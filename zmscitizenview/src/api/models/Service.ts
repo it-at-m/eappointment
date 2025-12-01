@@ -39,4 +39,9 @@ export interface Service {
    * @memberof Service
    */
   variantId: number | null;
+  /**
+   * @type {(boolean)}
+   * @memberof Service
+   */
+  showOnStartPage?: boolean;
 }
