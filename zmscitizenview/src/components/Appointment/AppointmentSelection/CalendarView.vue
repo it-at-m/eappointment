@@ -40,10 +40,7 @@
       <template v-if="isLoadingAppointments && !isLoadingComplete">
         <div class="m-content">
           <div class="m-spinner-container">
-            <MucSpinner
-              :aria-label="t('loading')"
-              :text="t('spinnerText')"
-            />
+            <MucSpinner :text="t('spinnerText')" />
           </div>
         </div>
       </template>
@@ -167,10 +164,7 @@
       <template v-if="isLoadingAppointments && !isLoadingComplete">
         <div class="m-content">
           <div class="m-spinner-container">
-            <MucSpinner
-              :aria-label="t('loading')"
-              :text="t('spinnerText')"
-            />
+            <MucSpinner :text="t('spinnerText')" />
           </div>
         </div>
       </template>
