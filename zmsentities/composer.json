@@ -21,7 +21,7 @@
         "twig/intl-extra": "^3.4",
         "symfony/translation": "^5.4",
         "symfony/twig-bridge": "^5.4",
-        "symfony/cache": "^5.4",
+        "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "opis/json-schema": "^2.4",
         "roave/security-advisories": "dev-latest"
