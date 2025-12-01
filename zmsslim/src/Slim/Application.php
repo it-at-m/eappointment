@@ -7,6 +7,7 @@ if (!defined('ZMS_SLIM_TWIG_CACHE')) {
     $value = getenv('ZMS_SLIM_TWIG_CACHE');
     define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
 }
+define('ZMS_DEBUGLEVEL', getenv('DEBUGLEVEL') ? getenv('DEBUGLEVEL') : 'INFO');
 
 class Application
 {
@@ -25,7 +26,7 @@ class Application
      * if debug is enabled, an exception is shown with a backtrace
      */
     const DEBUG = false;
-    const DEBUGLEVEL = 'INFO';
+    const DEBUGLEVEL = ZMS_DEBUGLEVEL;
     const SESSION_DURATION = ZMS_SESSION_DURATION;
     const LOG_ERRORS = true;
     const LOG_DETAILS = true;

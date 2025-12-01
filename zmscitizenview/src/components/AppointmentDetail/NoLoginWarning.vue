@@ -12,47 +12,23 @@
       {{ t("noLoginText") }}
     </p>
     <muc-button
-      icon="arrow-right"
-      @click="openRequestLoginModal"
+      icon="sing-in"
+      @click="requestLogin"
     >
-      {{ t("noLoginButton") }}
+      {{ t("login") }}
     </muc-button>
   </muc-intro>
-  <muc-modal
-    :open="requestLoginModalOpen"
-    @close="requestLoginModalOpen = false"
-    @cancel="requestLoginModalOpen = false"
-  >
-    <template #title>{{ t("requestLoginModalHeading") }}</template>
-    <template #body>
-      {{ t("requestLoginModalText") }}
-    </template>
-    <template #buttons>
-      <muc-button
-        icon="ext-link"
-        @click="requestLogin"
-      >
-        {{ t("login") }}
-      </muc-button>
-    </template>
-  </muc-modal>
 </template>
 
 <script lang="ts" setup>
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
-import { ref } from "vue";
+import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
 
 defineProps<{
   appointmentId: string | undefined;
   t: (key: string) => string;
 }>();
 
-const requestLoginModalOpen = ref(false);
-
-const openRequestLoginModal = () => (requestLoginModalOpen.value = true);
-
 const requestLogin = () => {
-  requestLoginModalOpen.value = false;
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
