@@ -49,7 +49,7 @@ jobs:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install Composer Dependencies
         continue-on-error: true
         run: |
@@ -101,11 +101,11 @@ jobs:
           - module: zmscitizenapi
             url: http://localhost:8080/citizen-api
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Run OWASP ZAP Scan
         continue-on-error: true
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@v0.13.0
         with:
           target: ${{ matrix.url }}
           rules_file_name: '.zap/rules.tsv'
