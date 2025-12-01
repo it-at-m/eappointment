@@ -1,0 +1,45 @@
+id: add and configure zms client
+author: ZMS Development
+realm: zms
+changes:
+  - addSimpleClient:
+      clientId: zms
+      secret: zms-secret-change-in-production
+      publicClient: false
+      enabled: true
+      redirectUris:
+        - http://*
+        - https://*
+        - http://localhost:8090/*
+        - http://localhost:8090/terminvereinbarung/admin/*
+        - http://localhost:8090/terminvereinbarung/admin/oidc/*
+        - https://localhost:8091/*
+        - https://localhost:8091/terminvereinbarung/admin/*
+        - https://localhost:8091/terminvereinbarung/admin/oidc/*
+        - https://localhost:8091/terminvereinbarung/statistic/*
+        - https://localhost:8091/terminvereinbarung/statistic/oidc/*
+        - https://*.ddev.site/*
+        - http://*.ddev.site/*
+
+  # Maps user client roles of current client into a claim "authorities"
+  - addClientMapper:
+      clientId: zms
+      name: userClientRolesAuthorities
+      protocolMapper: oidc-usermodel-client-role-mapper
+      config:
+        access.token.claim: true
+        id.token.claim: true
+        userinfo.token.claim: true
+        jsonType.label: String
+        multivalued: true
+        claim.name: "authorities"
+        usermodel.clientRoleMapping.clientId: zms
+        usermodel.clientRoleMapping.rolePrefix: "ROLE_"
+
+  # !!! very important must have. Without that default scope you don't have access to userinfo-endpoint
+  # NOTE: openid is a default scope in Keycloak and doesn't need to be explicitly assigned
+  # It's automatically available to all clients
+  # - assignDefaultClientScope:
+  #     clientId: zms
+  #     clientScopeName: openid
+

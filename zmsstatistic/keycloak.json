@@ -1,0 +1,25 @@
+{
+  "realm": "zms",
+  "auth-server-url": "http://keycloak.local:8080/auth",
+  "ssl-required": "external",
+  "resource": "zms",
+  "clientId": "zms",
+  "clientName": "ZMS",
+  "public-client": false,
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "zms-secret-change-in-production"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0,
+  "auth-redirect-url": "https://localhost:8091/terminvereinbarung/statistic/oidc/?provider=keycloak",
+  "logout-redirect-url": "https://localhost:8091/terminvereinbarung/statistic/logout/?provider=keycloak",
+  "version": "24.0.0",
+  "access-role": "user",
+  "scopes": {
+    "openid": "openid",
+    "email": "email",
+    "profile": "profile"
+  }
+}
+
