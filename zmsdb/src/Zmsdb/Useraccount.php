@@ -446,12 +446,6 @@ class Useraccount extends Base
         return $this->buildDepartmentListsForUsers($regularUsers, $assignmentsByUser, $resolveReferences);
     }
 
-    /**
-     * Group department assignments by useraccount name
-     *
-     * @param array $allAssignments
-     * @return array Map of useraccount name => assignments[]
-     */
     protected function groupAssignmentsByUser(array $allAssignments)
     {
         $assignmentsByUser = [];

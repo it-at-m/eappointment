@@ -24,7 +24,6 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        // Load workstation with resolveReferences => 1 first to check if superuser
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         $validator = $request->getAttribute('validator');
@@ -41,7 +40,6 @@ class UseraccountList extends BaseController
             }
             $useraccountList = \App::$http->readGetResult("/useraccount/", $params)->getCollection();
         } else {
-            // Non-superusers need departments loaded, so reload workstation with resolveReferences => 2
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
             $departmentListIds = $departmentList->getIds();
@@ -59,7 +57,7 @@ class UseraccountList extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/useraccount.twig',
+            'page/useraccountList.twig',
             array(
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',

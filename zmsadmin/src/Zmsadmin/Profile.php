@@ -63,6 +63,7 @@ class Profile extends BaseController
     protected function writeUpdatedEntity($input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
+        // TODO: Remove the password fields when password authentication is removed in the future
         $entity->setPassword($input);
         return $this->handleEntityWriteException(function () use ($entity) {
             return \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();

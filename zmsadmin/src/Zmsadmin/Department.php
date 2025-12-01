@@ -41,7 +41,6 @@ class Department extends BaseController
             }
         }
 
-        // If there was an error, use the submitted input data for form re-population
         $departmentData = (isset($result) && is_array($result) && isset($result['data']))
             ? array_merge((new Schema($entity))->toSanitizedArray(), $input ?? [])
             : (new Schema($entity))->toSanitizedArray();

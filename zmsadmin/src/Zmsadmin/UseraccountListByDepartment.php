@@ -34,7 +34,7 @@ class UseraccountListByDepartment extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/useraccount.twig',
+            'page/useraccountList.twig',
             array(
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',

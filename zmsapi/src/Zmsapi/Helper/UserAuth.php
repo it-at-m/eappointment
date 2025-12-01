@@ -16,9 +16,10 @@ class UserAuth
     {
         $useraccountQuery = new Useraccount();
         $useraccount = $useraccountQuery->readEntity($entity->getId());
+        // TODO: Remove the password fields when password authentication is removed in the future
         $originalPassword = $useraccount->password;
         $useraccount = $useraccount->withVerifiedHash($entity->password);
-        // Only write if password was actually updated (rehashing needed)
+        // Only write if password was actually updated (rehashing needed) for system users
         if ($useraccount->password !== $originalPassword) {
             $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
         }
@@ -28,6 +29,7 @@ class UserAuth
     public static function testPasswordMatching($useraccount, $password)
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
+        // TODO: Remove the password fields when password authentication is removed in the future
         $result = (strpos($useraccount->password, '$') !== 0) ?
             ($useraccount->password === md5($password)) :
             password_verify($password, $useraccount->password);
@@ -54,12 +56,13 @@ class UserAuth
         $xAuthKey = static::getXAuthKey($request);
         $useraccountQuery = new Useraccount();
 
+        // TODO: Remove the password fields when password authentication is removed in the future
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
             $originalPassword = $useraccount->password;
             $useraccount = $useraccount->withVerifiedHash($basicAuth['password']);
             static::testPasswordMatching($useraccount, $basicAuth['password']);
-            // Only write if password was actually updated (rehashing needed)
+            // Only write if password was actually updated (rehashing needed) for system users
             if ($useraccount->password !== $originalPassword) {
                 $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
             }

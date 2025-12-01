@@ -260,7 +260,6 @@ class User
             if ($departmentId === '') {
                 continue;
             }
-            // Validate that the string represents a valid integer before casting
             $validatedId = filter_var($departmentId, FILTER_VALIDATE_INT);
             if ($validatedId === false) {
                 throw new \BO\Zmsapi\Exception\BadRequest(

@@ -32,7 +32,7 @@ class UseraccountAdd extends BaseController
             $input['password'] = (
                 isset($input['changePassword']) && is_array($input['changePassword'])
             ) ? ($input['changePassword'][0] ?? null) : null;
-            $submittedUserAccount = $input; // Preserve submitted data for form re-population
+            $submittedUserAccount = $input;
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect(
@@ -61,7 +61,7 @@ class UseraccountAdd extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration',
                 'menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
-                'userAccount' => $submittedUserAccount, // Use submitted data to preserve form values on error
+                'userAccount' => $submittedUserAccount,
                 'selectedDepartment' => $selectedDepartment,
                 'oidcProviderList' => array_filter($allowedProviderList),
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
