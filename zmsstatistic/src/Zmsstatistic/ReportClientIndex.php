@@ -82,6 +82,7 @@ class ReportClientIndex extends BaseController
         $args['scope'] = $this->workstation->getScope();
         $args['department'] = $this->department;
         $args['organisation'] = $this->organisation;
+        $args['isSuperUser'] = $this->workstation->getUseraccount()->isSuperUser();
 
         return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
     }
