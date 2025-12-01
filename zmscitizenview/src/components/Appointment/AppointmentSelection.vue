@@ -63,7 +63,6 @@
       class="m-spinner-container"
     >
       <MucSpinner
-        :aria-label="t('loading')"
         :text="t('spinnerText')"
       />
     </div>
