@@ -54,7 +54,7 @@ class Notification extends Base
                 ->readEntity(
                     $notification->process['id'],
                     new Helper\NoAuth(),
-                    $resolveReferences
+                    $resolveReferences - 1
                 );
             // only overwrite process with resolved version if not dereferenced
             if ($process && $notification->getScopeId() == $process->getScopeId()) {

@@ -11,6 +11,7 @@ class NotificationTest extends Base
     {
         $now = static::$now;
         $input = $this->getTestEntity();
+        $input->process['status'] = 'pickup';
 
         $this->assertEquals('0', $input->getFirstClient()->emailSendCount);
 
@@ -82,23 +83,18 @@ class NotificationTest extends Base
                         "identification" => "terminvereinbarung@mitte.berlin.de",
                         "sendConfirmationEnabled" => true,
                         "sendReminderEnabled" => true
-                    ],
-                ],
+                    ]
+                ]
             ],
             "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
             "process" => [
-                "appointments" => [
+                "appointments"=>[
                     [
                         "date"=>"1464339600",
                         "scope"=>[
-                            "id" => "141",
-                            "shortName" => "Zentrale",
-                            "provider" => [
-                                "id" => 123456,
-                                "name" => "Test-Provider"
-                            ],
+                            "id"=>"141"
                         ],
-                        "slotCount" => "1"
+                        "slotCount"=>"1"
                     ]
                 ],
                 "clients" => [
@@ -112,12 +108,7 @@ class NotificationTest extends Base
                 "authKey" => "f22c",
                 "reminderTimestamp" => 1447931730000,
                 "scope" => [
-                    "id" => 141,
-                    "shortName" => "Zentrale",
-                    "provider" => [
-                        "id" => 123456,
-                        "name" => "Test-Provider",
-                    ],
+                    "id" => 141
                 ],
                 "status" => "confirmed"
             ],
