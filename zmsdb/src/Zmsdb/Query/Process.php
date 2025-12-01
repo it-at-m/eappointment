@@ -700,6 +700,9 @@ class Process extends Base implements MappingInterface
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
             $values['apiClientID'] = $process->apiclient->apiClientID;
         }
+        if (isset($process->isTicketprinter) && $process->isTicketprinter) {
+            $values['is_ticketprinter'] = 1;
+        }
         $this->addValues($values);
     }
 
