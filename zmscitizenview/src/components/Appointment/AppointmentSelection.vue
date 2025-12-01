@@ -126,7 +126,7 @@
       "
       @openInfo="openAvailabilityInfoModal"
     />
-    <div ref="summary" tabindex="0">
+    <div ref="summary" tabindex="0" role="region" aria-label="Termindaten">
       <AppointmentPreview
         :t="t"
         :selectedProvider="selectedProvider"
