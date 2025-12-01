@@ -290,8 +290,26 @@ const errorDisplayTelephoneNumber = computed(
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
 
+const windowWidth = ref(typeof window !== "undefined" ? window.innerWidth : 0);
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    window.addEventListener("resize", updateWindowWidth);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("resize", updateWindowWidth);
+  }
+});
+
 const textfieldRows = computed(() => {
-  return window.innerWidth <= 500 ? 6 : 3;
+  return windowWidth.value <= 500 ? 6 : 3;
 });
 
 const errorMessageCustomTextfield = computed(() => {
