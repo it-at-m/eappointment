@@ -21,6 +21,7 @@ class Status extends Schema\Entity
                 'preconfirmed' => 0,
                 'deleted' => 0,
                 'missed' => 0,
+                'parked' => 0,
                 'reserved' => 0,
                 'lastInsert' => 0,
             ),
