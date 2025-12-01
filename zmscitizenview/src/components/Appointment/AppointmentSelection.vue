@@ -126,7 +126,7 @@
       "
       @openInfo="openAvailabilityInfoModal"
     />
-    <div ref="summary">
+    <div ref="summary" tabindex="0">
       <AppointmentPreview
         :t="t"
         :selectedProvider="selectedProvider"
