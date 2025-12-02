@@ -219,8 +219,11 @@ class AvailableDaysListServiceTest extends TestCase
     {
         $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
         if (!\class_exists($class, false)) {
+            $serialized = base64_encode(serialize($returnValue));
             eval('namespace BO\\Zmscitizenapi\\Services\\Core;
                 class ZmsApiFacadeService {
+                    private static $mockReturnValue = null;
+                    
                     public static function getBookableFreeDays(
                         array $officeIds,
                         array $serviceIds,
@@ -228,7 +231,10 @@ class AvailableDaysListServiceTest extends TestCase
                         string $startDate,
                         string $endDate
                     ): \\BO\\Zmscitizenapi\\Models\\AvailableDays|array {
-                        return unserialize(\'' . serialize($returnValue) . '\');
+                        if (self::$mockReturnValue === null) {
+                            self::$mockReturnValue = unserialize(base64_decode(\'' . $serialized . '\'));
+                        }
+                        return self::$mockReturnValue;
                     }
                 }'
             );
