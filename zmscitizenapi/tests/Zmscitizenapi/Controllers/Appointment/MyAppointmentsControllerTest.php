@@ -77,23 +77,32 @@ class MyAppointmentsControllerTest extends ControllerTestCase
         $this->assertTrue(true);
     }
 
-    public static function filterParameterProvider(): array
+    public static function basicRenderingProvider(): array
     {
         return [
             [
-                [],
+                null,
+                false,
             ],
             [
-                [
-                    "filterId" => 101002,
-                ]
-            ]
+                101002,
+                false,
+            ],
+            [
+                null,
+                true,
+            ],
+
         ];
     }
 
-    #[DataProvider('filterParameterProvider')]
-    public function testBasicRendering(array $providedParameters)
+    #[DataProvider('basicRenderingProvider')]
+    public function testBasicRendering(?int $filterId, bool $emptyOptionalOidcClaims)
     {
+        $additionalParameters = [];
+        if (!empty($filterId)) {
+            $additionalParameters['filterId'] = $filterId;
+        }
         $this->setApiCalls(
             [
                 [
@@ -108,26 +117,30 @@ class MyAppointmentsControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                         'status' => 'confirmed',
-                        ...$providedParameters
+                        ...$additionalParameters,
                     ],
                     'response' => $this->readFixture("GET_process.json")
                 ],
             ]
         );
 
-        $token_part = base64_encode(
-            json_encode([
-                'lhmExtID' => 'ext_1',
-                'email' => 'test@example.com',
-                'given_name' => 'Test',
-                'family_name' => 'User',
-            ])
-        );
+        $claims = [
+            'lhmExtID' => 'ext_1',
+            'email' => 'test@example.com',
+            'given_name' => 'Test',
+            'family_name' => 'User',
+        ];
+        if ($emptyOptionalOidcClaims) {
+            unset($claims['email']);
+            unset($claims['given_name']);
+            unset($claims['family_name']);
+        }
+        $token_part = base64_encode(json_encode($claims));
         $parameters = [
             '__header' => [
                 'Authorization' => 'Bearer .'.$token_part.'.',
             ],
-            ...$providedParameters,
+            ...$additionalParameters,
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
