@@ -109,25 +109,31 @@ class OfficeListByServiceServiceTest extends TestCase
 
     private function createMockValidationService(array $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ValidationService {
-                public static function validateGetOfficeListByServiceId(?int $serviceId): array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ValidationService {
+                    public static function validateGetOfficeListByServiceId(?int $serviceId): array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 
     private function createMockFacade(OfficeList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getOfficeListByServiceId(int $serviceId): \BO\Zmscitizenapi\Models\Collections\OfficeList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    public static function getOfficeListByServiceId(int $serviceId): \BO\Zmscitizenapi\Models\Collections\OfficeList|array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }

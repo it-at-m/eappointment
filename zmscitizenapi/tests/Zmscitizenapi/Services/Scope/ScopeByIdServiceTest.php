@@ -110,25 +110,31 @@ class ScopeByIdServiceTest extends TestCase
 
     private function createMockValidationService(array $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ValidationService {
-                public static function validateGetScopeById(?int $scopeId): array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ValidationService {
+                    public static function validateGetScopeById(?int $scopeId): array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 
     private function createMockFacade(ThinnedScope $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getScopeById(?int $scopeId): \BO\Zmscitizenapi\Models\ThinnedScope|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    public static function getScopeById(?int $scopeId): \BO\Zmscitizenapi\Models\ThinnedScope|array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }

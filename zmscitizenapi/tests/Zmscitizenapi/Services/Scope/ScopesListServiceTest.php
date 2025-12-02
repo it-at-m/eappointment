@@ -53,13 +53,16 @@ class ScopesListServiceTest extends TestCase
 
     private function createMockFacade(ThinnedScopeList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getScopes(): \BO\Zmscitizenapi\Models\Collections\ThinnedScopeList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    public static function getScopes(): \BO\Zmscitizenapi\Models\Collections\ThinnedScopeList|array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }

@@ -73,13 +73,16 @@ class OfficesServicesRelationsServiceTest extends TestCase
 
     private function createMockFacade(OfficeServiceAndRelationList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getServicesAndOffices(): \BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    public static function getServicesAndOffices(): \BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList|array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }
