@@ -11,7 +11,9 @@ class PaginateTest extends TestCase
      */
     protected function paginateObject()
     {
-        return $this->getMockForTrait('BO\\Zmsdb\\Query\\Builder\\Paginate');
+        return new class {
+            use \BO\Zmsdb\Query\Builder\Paginate;
+        };
     }
 
     public function testNoPaginateSet()

@@ -14,7 +14,9 @@ class WhereTest extends TestCase
      */
     protected function whereObject()
     {
-        return $this->getMockForTrait('BO\\Zmsdb\\Query\\Builder\\Where');
+        return new class {
+            use \BO\Zmsdb\Query\Builder\Where;
+        };
     }
 
     public function testNoWhere()

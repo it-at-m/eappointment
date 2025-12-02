@@ -12,7 +12,9 @@ class ValuesTest extends TestCase
      */
     protected function traitObject()
     {
-        return $this->getMockForTrait('BO\\Zmsdb\\Query\\Builder\\Values');
+        return new class {
+            use \BO\Zmsdb\Query\Builder\Values;
+        };
     }
 
     public function testDefault()
