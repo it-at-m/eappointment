@@ -556,7 +556,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    summary.value.firstChild?.focus();
+    (summary.value.firstElementChild as HTMLElement | null)?.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };
