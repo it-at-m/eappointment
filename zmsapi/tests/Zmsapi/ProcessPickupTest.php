@@ -17,14 +17,7 @@ class ProcessPickupTest extends Base
 
     public function setUp(): void
     {
-        // Ensure clean database state before each test
-        \BO\Zmsdb\Connection\Select::writeRollback();
-        \BO\Zmsdb\Connection\Select::closeWriteConnection();
-        \BO\Zmsdb\Connection\Select::closeReadConnection();
-        
-        // Start fresh transaction
-        \BO\Zmsdb\Connection\Select::setTransaction();
-        \BO\Zmsdb\Connection\Select::setProfiling();
+        parent::setUp();
     }
 
     public function testRendering()
