@@ -28,7 +28,7 @@
     "require-dev": {
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^12",
         "phpspec/prophecy-phpunit": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
