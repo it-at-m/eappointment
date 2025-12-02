@@ -8,8 +8,6 @@ changes:
       publicClient: false
       enabled: true
       redirectUris:
-        - http://*
-        - https://*
         - http://localhost:8090/*
         - http://localhost:8090/terminvereinbarung/admin/*
         - http://localhost:8090/terminvereinbarung/admin/oidc/*
