@@ -499,7 +499,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeIds($scopeIds)
     {
-        if (count($scopeIds) == 0) {
+        if (count($scopeIds) == 1) {
             return $this->addConditionScopeId($scopeIds[0]);
         }
 
