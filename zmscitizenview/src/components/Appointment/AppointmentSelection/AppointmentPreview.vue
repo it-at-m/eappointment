@@ -8,7 +8,6 @@
         selectedTimeslot > 0
       "
       type="info"
-      tabindex="0"
     >
       <template #content>
         <div v-if="selectedProvider">
