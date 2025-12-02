@@ -23,7 +23,7 @@ class ExceptionServiceTest extends TestCase
     /**
      * @dataProvider processExceptionProvider
      */
-    public function testProcessExceptions(string $template, string $errorKey): void
+    public function testProcessExceptions($template, $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
         $expectedError = ErrorMessages::get($errorKey);
@@ -101,7 +101,7 @@ class ExceptionServiceTest extends TestCase
     /**
      * @dataProvider calendarExceptionProvider
      */
-    public function testCalendarExceptions(string $template, string $errorKey): void
+    public function testCalendarExceptions($template, $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
         $expectedError = ErrorMessages::get($errorKey);
@@ -139,7 +139,7 @@ class ExceptionServiceTest extends TestCase
     /**
      * @dataProvider entityExceptionProvider
      */
-    public function testEntityExceptions(string $template, string $errorKey): void
+    public function testEntityExceptions($template, $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
         $expectedError = ErrorMessages::get($errorKey);

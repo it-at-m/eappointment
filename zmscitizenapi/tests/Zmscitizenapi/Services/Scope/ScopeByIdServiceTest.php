@@ -131,11 +131,17 @@ class ScopeByIdServiceTest extends TestCase
     {
         $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
         if (!\class_exists($class, false)) {
+            $serialized = base64_encode(serialize($returnValue));
             eval('
                 namespace BO\Zmscitizenapi\Services\Core;
                 class ZmsApiFacadeService {
+                    private static $mockReturnValue = null;
+                    
                     public static function getScopeById(?int $scopeId): \BO\Zmscitizenapi\Models\ThinnedScope|array {
-                        return unserialize(\'' . serialize($returnValue) . '\');
+                        if (self::$mockReturnValue === null) {
+                            self::$mockReturnValue = unserialize(base64_decode(\'' . $serialized . '\'));
+                        }
+                        return self::$mockReturnValue;
                     }
                 }
             ');
