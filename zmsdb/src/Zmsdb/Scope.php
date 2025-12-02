@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Scope as Entity;
 use BO\Zmsentities\Collection\ScopeList as Collection;
 use BO\Zmsdb\Application as App;
@@ -428,7 +427,7 @@ class Scope extends Base
     {
         if ($resolveReferences > 0) {
             $queueList = (new Process())
-                ->readProcessListByScopeAndTime(
+                ->readProcessListByScopesAndTime(
                     $scopeIds,
                     $dateTime,
                     $resolveReferences - 1,

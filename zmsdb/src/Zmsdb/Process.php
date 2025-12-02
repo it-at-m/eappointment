@@ -375,7 +375,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime(
+    public function readProcessListByScopesAndTime(
         $scopeIds,
         \DateTimeInterface $dateTime,
         $resolveReferences = 0,
@@ -521,7 +521,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             }
         }
 
-        return $this->readProcessListByScopeAndTime($scopeIds, $dateTime);
+        return $this->readProcessListByScopesAndTime($scopeIds, $dateTime);
     }
 
     /**
