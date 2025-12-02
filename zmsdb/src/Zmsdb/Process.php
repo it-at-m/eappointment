@@ -375,8 +375,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime(
-        $scopeId,
+    public function readProcessListByScopesAndTime(
+        $scopeIds,
         \DateTimeInterface $dateTime,
         $resolveReferences = 0,
         $withEntities = []
@@ -385,7 +385,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionScopeId($scopeId)
+            ->addConditionScopeIds($scopeIds)
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addConditionTime($dateTime)
@@ -513,14 +513,15 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
     {
-        $processList = new Collection();
         $cluster = (new Cluster())->readEntity($clusterId, 1);
+        $scopeIds = [];
         if ($cluster->scopes->count()) {
             foreach ($cluster->scopes as $scope) {
-                $processList->addList($this->readProcessListByScopeAndTime($scope->id, $dateTime));
+                $scopeIds[] = $scope->id;
             }
         }
-        return $processList;
+
+        return $this->readProcessListByScopesAndTime($scopeIds, $dateTime);
     }
 
     /**
