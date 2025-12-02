@@ -126,7 +126,7 @@
       "
       @openInfo="openAvailabilityInfoModal"
     />
-    <div ref="summary" tabindex="0" role="region" aria-label="Termindaten">
+    <div ref="summary">
       <AppointmentPreview
         :t="t"
         :selectedProvider="selectedProvider"
@@ -555,7 +555,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    summary.value.focus();
+    summary.value?.firstChild.firstChild.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };
