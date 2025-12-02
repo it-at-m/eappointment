@@ -14,7 +14,9 @@ class HavingTest extends TestCase
      */
     protected function havingObject()
     {
-        return $this->getMockForTrait('BO\\Zmsdb\\Query\\Builder\\Having');
+        return new class {
+            use \BO\Zmsdb\Query\Builder\Having;
+        };
     }
 
     public function testNoHaving()

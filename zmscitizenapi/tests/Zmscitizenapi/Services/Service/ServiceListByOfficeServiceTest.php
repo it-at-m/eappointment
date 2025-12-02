@@ -20,6 +20,10 @@ class ServiceListByOfficeServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Set up mock HTTP client to prevent null errors
+        if (!isset(\App::$http)) {
+            \App::$http = $this->createMock(\BO\Zmsclient\Http::class);
+        }
         $this->service = new ServiceListByOfficeService();
     }
 
@@ -109,25 +113,37 @@ class ServiceListByOfficeServiceTest extends TestCase
 
     private function createMockValidationService(array $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ValidationService {
-                public static function validateGetServicesByOfficeId(?int $officeId): array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
+        if (!\class_exists($class, false)) {
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ValidationService {
+                    public static function validateGetServicesByOfficeId(?int $officeId): array {
+                        return unserialize(\'' . serialize($returnValue) . '\');
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 
     private function createMockFacade(ServiceList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getServicesByOfficeId(int $officeId): \BO\Zmscitizenapi\Models\Collections\ServiceList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            $serialized = base64_encode(serialize($returnValue));
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    private static $mockReturnValue = null;
+                    
+                    public static function getServicesByOfficeId(int $officeId): \BO\Zmscitizenapi\Models\Collections\ServiceList|array {
+                        if (self::$mockReturnValue === null) {
+                            self::$mockReturnValue = unserialize(base64_decode(\'' . $serialized . '\'));
+                        }
+                        return self::$mockReturnValue;
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }

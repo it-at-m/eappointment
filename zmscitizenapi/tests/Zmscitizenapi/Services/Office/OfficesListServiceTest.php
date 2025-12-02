@@ -18,6 +18,10 @@ class OfficesListServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Set up mock HTTP client to prevent null errors
+        if (!isset(\App::$http)) {
+            \App::$http = $this->createMock(\BO\Zmsclient\Http::class);
+        }
         $this->officesListService = new OfficesListService();
     }
 
@@ -47,13 +51,22 @@ class OfficesListServiceTest extends TestCase
 
     private function createMockFacade(OfficeList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getOffices(): \BO\Zmscitizenapi\Models\Collections\OfficeList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            $serialized = base64_encode(serialize($returnValue));
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    private static $mockReturnValue = null;
+                    
+                    public static function getOffices(): \BO\Zmscitizenapi\Models\Collections\OfficeList|array {
+                        if (self::$mockReturnValue === null) {
+                            self::$mockReturnValue = unserialize(base64_decode(\'' . $serialized . '\'));
+                        }
+                        return self::$mockReturnValue;
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }

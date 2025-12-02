@@ -18,6 +18,10 @@ class ScopesListServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Set up mock HTTP client to prevent null errors
+        if (!isset(\App::$http)) {
+            \App::$http = $this->createMock(\BO\Zmsclient\Http::class);
+        }
         $this->scopesListService = new ScopesListService();
     }
 
@@ -53,13 +57,22 @@ class ScopesListServiceTest extends TestCase
 
     private function createMockFacade(ThinnedScopeList $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getScopes(): \BO\Zmscitizenapi\Models\Collections\ThinnedScopeList|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            $serialized = base64_encode(serialize($returnValue));
+            eval('
+                namespace BO\Zmscitizenapi\Services\Core;
+                class ZmsApiFacadeService {
+                    private static $mockReturnValue = null;
+                    
+                    public static function getScopes(): \BO\Zmscitizenapi\Models\Collections\ThinnedScopeList|array {
+                        if (self::$mockReturnValue === null) {
+                            self::$mockReturnValue = unserialize(base64_decode(\'' . $serialized . '\'));
+                        }
+                        return self::$mockReturnValue;
+                    }
                 }
-            }
-        ');
+            ');
+        }
     }
 }
