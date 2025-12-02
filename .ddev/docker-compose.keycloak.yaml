@@ -33,7 +33,7 @@ services:
       - FAIL_ON_UNDEFINED_VARIABLES=true
       - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
     volumes:
-      - ./keycloak/migration:/migration
+      - ../.resources/keycloak/migration:/migration
     networks:
       - default
     restart: "no"
