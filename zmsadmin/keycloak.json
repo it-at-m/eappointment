@@ -1,4 +1,5 @@
 {
+  "_comment": "Local development configuration only. Production uses Helm-managed Keycloak config.",
   "realm": "zms",
   "auth-server-url": "http://keycloak.local:8080/auth",
   "ssl-required": "external",
