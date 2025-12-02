@@ -473,7 +473,7 @@ class Scope extends Base
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
-    public function readScopesQueueListWithWaitingTime(ScopeList $scopes, $dateTime, $resolveReferences = 0, $withEntities = [])
+    public function readScopesQueueListWithWaitingTime(Collection $scopes, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         $timeSum = 0;
         $workstationCount = 0;
