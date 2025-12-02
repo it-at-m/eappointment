@@ -22,6 +22,10 @@ class OfficesServicesRelationsServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Set up mock HTTP client to prevent null errors
+        if (!isset(\App::$http)) {
+            \App::$http = $this->createMock(\BO\Zmsclient\Http::class);
+        }
         $this->service = new OfficesServicesRelationsService();
     }
 
