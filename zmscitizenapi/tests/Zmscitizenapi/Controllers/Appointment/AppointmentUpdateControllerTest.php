@@ -111,8 +111,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
                 "activationDuration" => null,
-                "hint" => null,
-                "displayNumberPrefix" => null
+                "hint" => null
             ],
             "status" => "reserved",
             "subRequestCounts" => [],
@@ -120,6 +119,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             "serviceName" => "Adressänderung Personalausweis, Reisepass, eAT",
             "serviceCount" => 1,
             "slotCount" => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

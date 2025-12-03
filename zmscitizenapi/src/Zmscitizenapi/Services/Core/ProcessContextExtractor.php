@@ -50,6 +50,10 @@ class ProcessContextExtractor
 
         self::addIntFieldIfPresent($process, 'serviceId', $data, 'serviceId');
 
+        if (isset($data['displayNumber']) && is_string($data['displayNumber'])) {
+            $process['displayNumber'] = $data['displayNumber'];
+        }
+
         return $process;
     }
 

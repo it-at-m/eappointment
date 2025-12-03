@@ -111,14 +111,14 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => 15,
                 "activationDuration" => 15,
-                "hint"=> null,
-                "displayNumberPrefix" => null
+                "hint"=> null
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,
             "serviceName" => "Gewerbe anmelden",
             "serviceCount" => 1,
             "slotCount" => 1,
+            "displayNumber" => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

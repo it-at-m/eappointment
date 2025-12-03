@@ -136,13 +136,6 @@
           "description": "Duration of the activation time in minutes"
 
         },
-        "displayNumberPrefix": {
-            "type": [
-                "string",
-                "null"
-            ],
-            "description": "Appointment number prefix."
-        },
         "hint": {
             "type": [
                 "string",
