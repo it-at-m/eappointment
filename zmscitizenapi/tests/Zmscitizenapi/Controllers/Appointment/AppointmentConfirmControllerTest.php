@@ -112,8 +112,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
                 "activationDuration" => null,
-                "hint" => null,
-                "displayNumberPrefix" => null
+                "hint" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
@@ -121,6 +120,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             'serviceCount' => 1,
             'status' => 'confirmed',
             'slotCount' => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

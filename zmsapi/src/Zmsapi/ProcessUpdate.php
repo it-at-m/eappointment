@@ -85,6 +85,14 @@ class ProcessUpdate extends BaseController
             $this->syncOverviewCalendarFromProcess($entity, $process);
         }
 
+        $process = (new Process())->updateProcessStatus(
+            $process,
+            $process->status,
+            \App::$now,
+            $resolveReferences,
+            $workstation->getUseraccount()
+        );
+
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
 

@@ -110,8 +110,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
                 "activationDuration" => null,
-                "hint" => null,
-                "displayNumberPrefix" => null
+                "hint" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
@@ -119,6 +118,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
             'serviceCount' => 1,
             'status' => 'preconfirmed',
             'slotCount' => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
