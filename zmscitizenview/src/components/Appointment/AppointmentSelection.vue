@@ -5,8 +5,10 @@
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
+    :timeSlotsInDayPartByOffice="timeSlotsInDayPartByOffice"
     @update:selectedProviders="onUpdateSelectedProviders"
     :providerSelectionError="providerSelectionError"
+    v-if="hasAvailableDays"
   />
   <div
     v-if="
@@ -528,15 +530,43 @@ const hasAppointmentsForSelectedProviders = () => {
   );
 };
 
+// const providersWithAppointments = computed(() => {
+//   // Always return all selectable providers to maintain UI state
+//   // The filtering for calendar display happens in updateDateRangeForSelectedProviders
+//   return (selectableProviders.value || []).sort((a, b) => {
+//     const aPriority = a.priority ?? -Infinity;
+//     const bPriority = b.priority ?? -Infinity;
+//     return bPriority - aPriority;
+//   });
+// });
+
 const providersWithAppointments = computed(() => {
-  // Always return all selectable providers to maintain UI state
-  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
-  return (selectableProviders.value || []).sort((a, b) => {
-    const aPriority = a.priority ?? -Infinity;
-    const bPriority = b.priority ?? -Infinity;
-    return bPriority - aPriority;
-  });
+  if (!selectableProviders.value) return [];
+
+  // Providers that have at least one appointment
+  const providersHavingAppointments = new Set(
+    appointmentTimestampsByOffice.value
+      .filter(o => o.appointments && o.appointments.length > 0)
+      .map(o => String(o.officeId))
+  );
+
+  console.log("providersHavingAppointments", providersHavingAppointments);
+
+  return selectableProviders.value
+    .filter(p => providersHavingAppointments.has(String(p.id)))
+    .sort((a, b) => {
+      const aPriority = a.priority ?? -Infinity;
+      const bPriority = b.priority ?? -Infinity;
+      return bPriority - aPriority;
+    });
 });
+
+
+const hasAvailableDays = computed(() => {
+  return availableDays.value && availableDays.value.length > 0;
+});
+
+
 
 const hasSelectedProviderWithAppointments = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {

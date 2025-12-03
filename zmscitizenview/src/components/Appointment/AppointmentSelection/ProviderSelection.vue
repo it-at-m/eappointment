@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      v-if="providersWithAppointments && providersWithAppointments.length > 1"
+      v-if="providersWithAppointments && providersWithAppointments.length > 0"
     >
       <div class="m-component slider-no-margin">
         <div class="m-content">
@@ -13,7 +13,7 @@
           <MucCheckboxGroup :errorMsg="providerSelectionError">
             <template #checkboxes>
               <MucCheckbox
-                v-for="provider in selectableProviders"
+                v-for="provider in providersWithAppointments"
                 :key="provider.id"
                 :id="'checkbox-' + provider.id"
                 :label="provider.name"
@@ -88,12 +88,13 @@
 </template>
 
 <script setup lang="ts">
-import type { OfficeImpl } from "@/types/OfficeImpl";
+import { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucCheckbox, MucCheckboxGroup } from "@muenchen/muc-patternlab-vue";
-import { computed, inject } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import { watch } from "vue";
 
 const VARIANT_ID_TEL = 2;
 const VARIANT_ID_VIDEO = 3;
@@ -101,6 +102,10 @@ const VARIANT_ID_VIDEO = 3;
 const props = defineProps<{
   t: (key: string) => string;
   selectableProviders: OfficeImpl[] | undefined;
+  timeSlotsInDayPartByOffice: Map<
+    number,
+    { appointments: Map<string, number[]> }
+  >;
   providersWithAppointments: OfficeImpl[] | undefined;
   selectedProvider: OfficeImpl | null | undefined;
   selectedProviders: { [id: string]: boolean };
@@ -135,4 +140,32 @@ const detailIcon = computed<string>(() => {
   if (variantId.value === VARIANT_ID_VIDEO) return "icon-video-camera";
   return "icon-map-pin";
 });
+
+// const filteredProvidersWithAppointments = ref<OfficeImpl[]>([]);
+
+// watch(
+//   [() => props.providersWithAppointments, () => props.timeSlotsInDayPartByOffice],
+//   ([newProviders, newTimeSlots]) => {
+//     const availableProviderIds = Array.from(newTimeSlots.keys()).map(String);
+//     filteredProvidersWithAppointments.value = (newProviders || []).filter(provider =>
+//       availableProviderIds.includes(String(provider.id))
+//     );
+//   },
+//   { immediate: true }
+// );
+
+// watch(
+//   () => props.providersWithAppointments,
+//   (providers = []) => {
+//     const timeSlots = props.timeSlotsInDayPartByOffice;
+//     const availableIds = new Set([...timeSlots.keys()].map(String));
+
+//     filteredProvidersWithAppointments.value = providers.filter(p =>
+//       availableIds.has(String(p.id))
+//     );
+//   },
+//   { immediate: true }
+// );
+
+
 </script>
