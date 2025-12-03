@@ -37,14 +37,14 @@ jobs:
           mkdir -p public/security
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: 'coverage-*'
           path: public/coverage-temp
           merge-multiple: false
 
       - name: Download security reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: 'security-report-*'
           path: public/security-temp
@@ -79,7 +79,7 @@ jobs:
           ls -R public/security/
 
       - name: Upload aggregated reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: aggregated-reports
           path: public/
