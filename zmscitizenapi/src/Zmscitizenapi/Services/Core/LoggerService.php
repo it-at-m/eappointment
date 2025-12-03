@@ -245,35 +245,19 @@ class LoggerService
     {
         $process = [];
 
-        if (isset($data['processId']) && is_numeric($data['processId'])) {
-            $process['processId'] = (int)$data['processId'];
+        self::addIntFieldIfPresent($process, 'processId', $data, 'processId');
+        self::addIntFieldIfPresent($process, 'officeId', $data, 'officeId');
+
+        $scopeId = self::extractScopeId($data);
+        if ($scopeId !== null) {
+            $process['scopeId'] = $scopeId;
         }
 
-        if (isset($data['officeId']) && is_numeric($data['officeId'])) {
-            $process['officeId'] = (int)$data['officeId'];
-        }
+        self::addIntFieldIfPresent($process, 'serviceId', $data, 'serviceId');
 
-        if (isset($data['scope']['id']) && is_numeric($data['scope']['id'])) {
-            $process['scopeId'] = (int)$data['scope']['id'];
-        } elseif (isset($data['scopeId']) && is_numeric($data['scopeId'])) {
-            $process['scopeId'] = (int)$data['scopeId'];
-        }
-
-        if (isset($data['serviceId']) && is_numeric($data['serviceId'])) {
-            $process['serviceId'] = (int)$data['serviceId'];
-        }
-
-        if (isset($data['subRequestCounts']) && is_array($data['subRequestCounts'])) {
-            $subRequestIds = [];
-            foreach ($data['subRequestCounts'] as $sub) {
-                if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
-                    continue;
-                }
-                $subRequestIds[] = (int)$sub['id'];
-            }
-            if ($subRequestIds !== []) {
-                $process['subRequestCounts'] = $subRequestIds;
-            }
+        $subRequestIds = self::normalizeSubRequestCounts($data['subRequestCounts'] ?? null);
+        if ($subRequestIds !== null) {
+            $process['subRequestCounts'] = $subRequestIds;
         }
 
         if (isset($data['displayNumber']) && $data['displayNumber'] !== '') {
@@ -281,6 +265,43 @@ class LoggerService
         }
 
         return $process;
+    }
+
+    private static function addIntFieldIfPresent(array &$process, string $targetKey, array $source, string $sourceKey): void
+    {
+        if (isset($source[$sourceKey]) && is_numeric($source[$sourceKey])) {
+            $process[$targetKey] = (int)$source[$sourceKey];
+        }
+    }
+
+    private static function extractScopeId(array $data): ?int
+    {
+        if (isset($data['scope']['id']) && is_numeric($data['scope']['id'])) {
+            return (int)$data['scope']['id'];
+        }
+
+        if (isset($data['scopeId']) && is_numeric($data['scopeId'])) {
+            return (int)$data['scopeId'];
+        }
+
+        return null;
+    }
+
+    private static function normalizeSubRequestCounts(mixed $rawSubRequests): ?array
+    {
+        if (!is_array($rawSubRequests)) {
+            return null;
+        }
+
+        $ids = [];
+        foreach ($rawSubRequests as $sub) {
+            if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
+                continue;
+            }
+            $ids[] = (int)$sub['id'];
+        }
+
+        return $ids === [] ? null : $ids;
     }
 
     private static function filterSensitiveHeaders(array $headers): array
