@@ -150,7 +150,10 @@
       />
     </div>
   </div>
-  <div ref="nextButton" class="m-button-group">
+  <div
+    ref="nextButton"
+    class="m-button-group"
+  >
     <muc-button
       v-if="service"
       :disabled="isNextDisabled"
