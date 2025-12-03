@@ -255,11 +255,6 @@ class LoggerService
 
         self::addIntFieldIfPresent($process, 'serviceId', $data, 'serviceId');
 
-        $subRequestIds = self::normalizeSubRequestCounts($data['subRequestCounts'] ?? null);
-        if ($subRequestIds !== null) {
-            $process['subRequestCounts'] = $subRequestIds;
-        }
-
         if (isset($data['displayNumber']) && $data['displayNumber'] !== '') {
             $process['displayNumber'] = (string)$data['displayNumber'];
         }
@@ -290,23 +285,6 @@ class LoggerService
         }
 
         return null;
-    }
-
-    private static function normalizeSubRequestCounts(mixed $rawSubRequests): ?array
-    {
-        if (!is_array($rawSubRequests)) {
-            return null;
-        }
-
-        $ids = [];
-        foreach ($rawSubRequests as $sub) {
-            if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
-                continue;
-            }
-            $ids[] = (int)$sub['id'];
-        }
-
-        return $ids === [] ? null : $ids;
     }
 
     private static function filterSensitiveHeaders(array $headers): array
