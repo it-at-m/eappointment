@@ -168,6 +168,7 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { textfieldRows, updateWindowWidth } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
@@ -290,12 +291,6 @@ const errorDisplayTelephoneNumber = computed(
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
 
-const windowWidth = ref(typeof window !== "undefined" ? window.innerWidth : 0);
-
-const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
-
 onMounted(() => {
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateWindowWidth);
@@ -306,10 +301,6 @@ onBeforeUnmount(() => {
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateWindowWidth);
   }
-});
-
-const textfieldRows = computed(() => {
-  return windowWidth.value <= 500 ? 6 : 3;
 });
 
 const errorMessageCustomTextfield = computed(() => {
