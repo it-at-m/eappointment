@@ -181,12 +181,8 @@ class LoggerService
         ];
 
         // Read response body once so it can be reused for both process extraction and error logging
-        $rawBody = null;
-        try {
-            $rawBody = (string)$response->getBody();
-        } catch (\Throwable $e) {
-            // Ignore body read errors; logging should not break request handling
-        }
+        $bodyStream = $response->getBody();
+        $rawBody = $bodyStream !== null ? (string) $bodyStream : null;
 
         $processContext = ProcessContextExtractor::extractProcessContext($request, $rawBody);
         if (!empty($processContext)) {
