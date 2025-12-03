@@ -143,6 +143,9 @@ class LoggerService
         \App::$log->info($message, $context);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
     {
         if (!self::checkRateLimit()) {

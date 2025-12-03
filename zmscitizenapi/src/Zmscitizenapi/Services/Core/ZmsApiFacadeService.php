@@ -138,6 +138,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopes(): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
@@ -814,6 +817,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         $process = self::getProcessById($processId, $authKey, $user);
