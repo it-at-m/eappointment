@@ -112,8 +112,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
                 "activationDuration" => null,
-                "hint" => null,
-                "displayNumberPrefix" => null
+                "hint" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,

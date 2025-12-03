@@ -169,8 +169,7 @@ class MapperService
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
-                    hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null,
-                    displayNumberPrefix: isset($providerScope->displayNumberPrefix) ? ((string) $providerScope->displayNumberPrefix === '' ? null : (string) $providerScope->displayNumberPrefix) : null
+                    hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
                 maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
@@ -351,8 +350,7 @@ class MapperService
                 : (string) $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
-            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint(),
-            displayNumberPrefix: $scope->getPreference('queue', 'displayNumberPrefix') ?? null
+            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
         );
     }
 

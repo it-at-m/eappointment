@@ -88,8 +88,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "whitelistedMails" => null,
                         "reservationDuration" => null,
                         "activationDuration" => null,
-                        "hint" => null,
-                        "displayNumberPrefix" => null
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null,
                     "parentId" => null
@@ -167,8 +166,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "whitelistedMails" => null,
                         "reservationDuration" => null,
                         "activationDuration" => null,
-                        "hint" => null,
-                        "displayNumberPrefix" => null
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null,
                     "parentId" => null
@@ -223,8 +221,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "whitelistedMails" => null,
                         "reservationDuration" => null,
                         "activationDuration" => null,
-                        "hint" => null,
-                        "displayNumberPrefix" => null
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null,
                     "parentId" => null
