@@ -181,7 +181,8 @@ class MyAppointmentsControllerTest extends ControllerTestCase
                     "whitelistedMails" => '',
                     "reservationDuration" => 15,
                     "activationDuration" => 15,
-                    "hint" => ''
+                    "hint" => '',
+                    "displayNumberPrefix" => ''
                 ],
                 'subRequestCounts' => [],
                 'serviceId' => 1063424,
