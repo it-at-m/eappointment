@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57be8295d4adb5ab153e385921e405d9",
+    "content-hash": "0404c87b13a0c7eac97b9b13d7ecb5bd",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "eab6b69a6b18db19a6c9747c7067b620f6771a1d"
             },
             "require": {
                 "ext-json": ">=0",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "51740d778a154446362c3e7f7b386e6f5e599b65"
+                "reference": "19e96b8d1df258e4de1784f78c5b5b3fb32e730c"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -195,7 +195,6 @@
                 "twig/twig": "3.*"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.4",
                 "phpunit/phpunit": "^11",
@@ -235,7 +234,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "d21f7878d4766176392afacf79dd8dc5d4076eb3"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -254,7 +253,6 @@
                 "twig/twig": "3.*"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
@@ -293,7 +291,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "b69c55c780eb4aa684ae217e4a6535167a30766d"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -316,7 +314,6 @@
                 "psr/container-implementation": "2.0"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
@@ -7711,26 +7708,26 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.13.5",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "0ca86845ce43291e8f5692c7356fccf3bcf02bf4"
+                "reference": "0525c73950de35ded110cffafb9892946d7771b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/0ca86845ce43291e8f5692c7356fccf3bcf02bf4",
-                "reference": "0ca86845ce43291e8f5692c7356fccf3bcf02bf4",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/0525c73950de35ded110cffafb9892946d7771b5",
+                "reference": "0525c73950de35ded110cffafb9892946d7771b5",
                 "shasum": ""
             },
             "require": {
                 "ext-simplexml": "*",
                 "ext-tokenizer": "*",
                 "ext-xmlwriter": "*",
-                "php": ">=5.4.0"
+                "php": ">=7.2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
+                "phpunit/phpunit": "^8.4.0 || ^9.3.4 || ^10.5.32 || 11.3.3 - 11.5.28 || ^11.5.31"
             },
             "bin": [
                 "bin/phpcbf",
@@ -7755,7 +7752,7 @@
                     "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer/graphs/contributors"
                 }
             ],
-            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "description": "PHP_CodeSniffer tokenizes PHP files and detects violations of a defined set of coding standards.",
             "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
             "keywords": [
                 "phpcs",
@@ -7786,7 +7783,7 @@
                     "type": "thanks_dev"
                 }
             ],
-            "time": "2025-11-04T16:30:35+00:00"
+            "time": "2025-11-10T16:43:36+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
