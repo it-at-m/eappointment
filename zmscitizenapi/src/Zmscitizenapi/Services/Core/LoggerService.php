@@ -114,13 +114,6 @@ class LoggerService
                 'uri' => (string)$request->getUri(),
                 'headers' => self::filterSensitiveHeaders($request->getHeaders())
             ];
-
-            if ($request instanceof ServerRequestInterface) {
-                $processContext = self::extractProcessContextFromRequest($request);
-                if (!empty($processContext)) {
-                    $data = array_merge($data, $processContext);
-                }
-            }
         }
 
         if ($response) {
@@ -182,16 +175,7 @@ class LoggerService
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
-
-        $processContext = self::extractProcessContextFromRequest($request);
-        if ($response->getStatusCode() < 400) {
-            // Enrich with data from successful JSON responses (e.g. reserve-appointment result).
-            $responseContext = self::extractProcessContextFromResponse($response);
-            if (!empty($responseContext)) {
-                $processContext = array_replace_recursive($processContext, $responseContext);
-            }
-        }
-
+        $processContext = self::extractProcessContext($request, $response);
         if (!empty($processContext)) {
             $data = array_merge($data, $processContext);
         }
@@ -224,112 +208,79 @@ class LoggerService
         \App::$log->$level('HTTP Request', $data);
     }
 
-    private static function extractProcessContextFromRequest(ServerRequestInterface $request): array
+    private static function extractProcessContext(ServerRequestInterface $request, ResponseInterface $response): array
     {
         $process = [];
 
-        $parsedBody = $request->getParsedBody();
-        if (is_array($parsedBody)) {
-            if (isset($parsedBody['processId']) && is_numeric($parsedBody['processId'])) {
-                $process['processId'] = (int)$parsedBody['processId'];
-            }
-            if (isset($parsedBody['officeId']) && is_numeric($parsedBody['officeId'])) {
-                $process['officeId'] = (int)$parsedBody['officeId'];
-            }
-            if (isset($parsedBody['scopeId']) && is_numeric($parsedBody['scopeId'])) {
-                $process['scopeId'] = (int)$parsedBody['scopeId'];
-            }
-            if (isset($parsedBody['serviceId']) && is_numeric($parsedBody['serviceId'])) {
-                $process['serviceId'] = (int)$parsedBody['serviceId'];
-            }
-            if (isset($parsedBody['subRequestCounts']) && is_array($parsedBody['subRequestCounts'])) {
-                $subRequestIds = [];
-                foreach ($parsedBody['subRequestCounts'] as $sub) {
-                    if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
-                        continue;
+        // 1) Start with what the client sent (request body)
+        $bodyData = $request->getParsedBody();
+        if (is_array($bodyData)) {
+            $process = self::buildProcessContextFromArray($bodyData);
+        }
+
+        // 2) Overwrite with what the API returns (response JSON), if any
+        try {
+            $rawBody = (string)$response->getBody();
+            if ($rawBody !== '') {
+                $decoded = json_decode($rawBody, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $fromResponse = self::buildProcessContextFromArray($decoded);
+                    if (!empty($fromResponse)) {
+                        $process = array_replace($process, $fromResponse);
                     }
-                    $subRequestIds[] = (int)$sub['id'];
-                }
-                if ($subRequestIds !== []) {
-                    $process['subRequestCounts'] = $subRequestIds;
                 }
             }
+        } catch (\Throwable $e) {
+            // Ignore JSON / stream errors when extracting process context for logging
         }
 
-        $queryParams = $request->getQueryParams();
-        if (is_array($queryParams)) {
-            if (!isset($process['processId']) && isset($queryParams['processId']) && is_numeric($queryParams['processId'])) {
-                $process['processId'] = (int)$queryParams['processId'];
-            }
-            if (!isset($process['officeId']) && isset($queryParams['officeId']) && is_numeric($queryParams['officeId'])) {
-                $process['officeId'] = (int)$queryParams['officeId'];
-            }
-            if (!isset($process['scopeId']) && isset($queryParams['scopeId']) && is_numeric($queryParams['scopeId'])) {
-                $process['scopeId'] = (int)$queryParams['scopeId'];
-            }
-            if (!isset($process['serviceId']) && isset($queryParams['serviceId']) && is_numeric($queryParams['serviceId'])) {
-                $process['serviceId'] = (int)$queryParams['serviceId'];
-            }
-        }
-
-        if ($process === []) {
+        if (empty($process)) {
             return [];
         }
 
         return ['process' => $process];
     }
 
-    private static function extractProcessContextFromResponse(ResponseInterface $response): array
+    private static function buildProcessContextFromArray(array $data): array
     {
         $process = [];
 
-        try {
-            $body = (string)$response->getBody();
-            if ($body === '') {
-                return [];
-            }
-
-            $decoded = json_decode($body, true);
-            if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
-                return [];
-            }
-
-            if (isset($decoded['processId']) && is_numeric($decoded['processId'])) {
-                $process['processId'] = (int)$decoded['processId'];
-            }
-            if (isset($decoded['officeId']) && is_numeric($decoded['officeId'])) {
-                $process['officeId'] = (int)$decoded['officeId'];
-            }
-            if (isset($decoded['scope']['id']) && is_numeric($decoded['scope']['id'])) {
-                $process['scopeId'] = (int)$decoded['scope']['id'];
-            }
-            if (isset($decoded['serviceId']) && is_numeric($decoded['serviceId'])) {
-                $process['serviceId'] = (int)$decoded['serviceId'];
-            }
-            if (isset($decoded['subRequestCounts']) && is_array($decoded['subRequestCounts'])) {
-                $subRequestIds = [];
-                foreach ($decoded['subRequestCounts'] as $sub) {
-                    if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
-                        continue;
-                    }
-                    $subRequestIds[] = (int)$sub['id'];
-                }
-                if ($subRequestIds !== []) {
-                    $process['subRequestCounts'] = $subRequestIds;
-                }
-            }
-            if (isset($decoded['displayNumber']) && $decoded['displayNumber'] !== '') {
-                $process['displayNumber'] = (string)$decoded['displayNumber'];
-            }
-        } catch (\Throwable $e) {
-            // Ignore JSON / stream errors when extracting process context for logging
+        if (isset($data['processId']) && is_numeric($data['processId'])) {
+            $process['processId'] = (int)$data['processId'];
         }
 
-        if ($process === []) {
-            return [];
+        if (isset($data['officeId']) && is_numeric($data['officeId'])) {
+            $process['officeId'] = (int)$data['officeId'];
         }
 
-        return ['process' => $process];
+        if (isset($data['scope']['id']) && is_numeric($data['scope']['id'])) {
+            $process['scopeId'] = (int)$data['scope']['id'];
+        } elseif (isset($data['scopeId']) && is_numeric($data['scopeId'])) {
+            $process['scopeId'] = (int)$data['scopeId'];
+        }
+
+        if (isset($data['serviceId']) && is_numeric($data['serviceId'])) {
+            $process['serviceId'] = (int)$data['serviceId'];
+        }
+
+        if (isset($data['subRequestCounts']) && is_array($data['subRequestCounts'])) {
+            $subRequestIds = [];
+            foreach ($data['subRequestCounts'] as $sub) {
+                if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
+                    continue;
+                }
+                $subRequestIds[] = (int)$sub['id'];
+            }
+            if ($subRequestIds !== []) {
+                $process['subRequestCounts'] = $subRequestIds;
+            }
+        }
+
+        if (isset($data['displayNumber']) && $data['displayNumber'] !== '') {
+            $process['displayNumber'] = (string)$data['displayNumber'];
+        }
+
+        return $process;
     }
 
     private static function filterSensitiveHeaders(array $headers): array
