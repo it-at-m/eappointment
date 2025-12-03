@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Services\Core\ProcessContextExtractor;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -175,116 +176,39 @@ class LoggerService
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
-        $processContext = self::extractProcessContext($request, $response);
+
+        // Read response body once so it can be reused for both process extraction and error logging
+        $rawBody = null;
+        try {
+            $rawBody = (string)$response->getBody();
+        } catch (\Throwable $e) {
+            // Ignore body read errors; logging should not break request handling
+        }
+
+        $processContext = ProcessContextExtractor::extractProcessContext($request, $rawBody);
         if (!empty($processContext)) {
             $data = array_merge($data, $processContext);
         }
 
         if ($response->getStatusCode() >= 400) {
-            $stream = $response->getBody();
-            try {
-                $body = (string)$stream;
-
-                if (!empty($body)) {
-                    $decodedBody = json_decode($body, true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
-                        $englishErrors = [];
-                        foreach ($decodedBody['errors'] as $error) {
-                            if (isset($error['errorCode'])) {
-                                $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
-                            } else {
-                                $englishErrors[] = $error;
-                            }
+            if (!empty($rawBody)) {
+                $decodedBody = json_decode($rawBody, true);
+                if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
+                    $englishErrors = [];
+                    foreach ($decodedBody['errors'] as $error) {
+                        if (isset($error['errorCode'])) {
+                            $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
+                        } else {
+                            $englishErrors[] = $error;
                         }
-                        $data['errors'] = $englishErrors;
                     }
+                    $data['errors'] = $englishErrors;
                 }
-            } catch (\Exception $e) {
-                $data['stream_error'] = 'Unable to read response body: ' . $e->getMessage();
             }
         }
 
         $level = $response->getStatusCode() >= 400 ? 'error' : 'info';
         \App::$log->$level('HTTP Request', $data);
-    }
-
-    private static function extractProcessContext(ServerRequestInterface $request, ResponseInterface $response): array
-    {
-        $process = [];
-
-        // 1) Start with what the client sent (request body)
-        $bodyData = $request->getParsedBody();
-        if (is_array($bodyData)) {
-            $process = self::buildProcessContextFromArray($bodyData);
-        }
-
-        // 2) Overwrite with what the API returns (response JSON), if any
-        try {
-            $rawBody = (string)$response->getBody();
-            if ($rawBody !== '') {
-                $decoded = json_decode($rawBody, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $fromResponse = self::buildProcessContextFromArray($decoded);
-                    if (!empty($fromResponse)) {
-                        $process = array_replace($process, $fromResponse);
-                    }
-                }
-            }
-        } catch (\Throwable $e) {
-            // Ignore JSON / stream errors when extracting process context for logging
-        }
-
-        if (empty($process)) {
-            return [];
-        }
-
-        return ['process' => $process];
-    }
-
-    private static function buildProcessContextFromArray(array $data): array
-    {
-        $process = [];
-
-        self::addIntFieldIfPresent($process, 'processId', $data, 'processId');
-        self::addIntFieldIfPresent($process, 'officeId', $data, 'officeId');
-
-        $scopeId = self::extractScopeId($data);
-        if ($scopeId !== null) {
-            $process['scopeId'] = $scopeId;
-        }
-
-        self::addIntFieldIfPresent($process, 'serviceId', $data, 'serviceId');
-
-        if (isset($data['displayNumber']) && $data['displayNumber'] !== '') {
-            $process['displayNumber'] = (string)$data['displayNumber'];
-        }
-
-        if (isset($data['scope']['displayNumberPrefix']) && $data['scope']['displayNumberPrefix'] !== '' && isset($process['processId'])) {
-            $prefix = (string)$data['scope']['displayNumberPrefix'];
-            $process['processId'] = $prefix . $process['processId'];
-        }
-
-        return $process;
-    }
-
-    private static function addIntFieldIfPresent(array &$process, string $targetKey, array $source, string $sourceKey): void
-    {
-        if (isset($source[$sourceKey]) && is_numeric($source[$sourceKey])) {
-            $process[$targetKey] = (int)$source[$sourceKey];
-        }
-    }
-
-    private static function extractScopeId(array $data): ?int
-    {
-        if (isset($data['scope']['id']) && is_numeric($data['scope']['id'])) {
-            return (int)$data['scope']['id'];
-        }
-
-        if (isset($data['scopeId']) && is_numeric($data['scopeId'])) {
-            return (int)$data['scopeId'];
-        }
-
-        return null;
     }
 
     private static function filterSensitiveHeaders(array $headers): array
