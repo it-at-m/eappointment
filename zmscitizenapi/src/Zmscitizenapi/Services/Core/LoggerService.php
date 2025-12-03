@@ -114,6 +114,13 @@ class LoggerService
                 'uri' => (string)$request->getUri(),
                 'headers' => self::filterSensitiveHeaders($request->getHeaders())
             ];
+
+            if ($request instanceof ServerRequestInterface) {
+                $processContext = self::extractProcessContextFromRequest($request);
+                if (!empty($processContext)) {
+                    $data = array_merge($data, $processContext);
+                }
+            }
         }
 
         if ($response) {
@@ -176,6 +183,19 @@ class LoggerService
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
 
+        $processContext = self::extractProcessContextFromRequest($request);
+        if ($response->getStatusCode() < 400) {
+            // Enrich with data from successful JSON responses (e.g. reserve-appointment result).
+            $responseContext = self::extractProcessContextFromResponse($response);
+            if (!empty($responseContext)) {
+                $processContext = array_replace_recursive($processContext, $responseContext);
+            }
+        }
+
+        if (!empty($processContext)) {
+            $data = array_merge($data, $processContext);
+        }
+
         if ($response->getStatusCode() >= 400) {
             $stream = $response->getBody();
             try {
@@ -202,6 +222,114 @@ class LoggerService
 
         $level = $response->getStatusCode() >= 400 ? 'error' : 'info';
         \App::$log->$level('HTTP Request', $data);
+    }
+
+    private static function extractProcessContextFromRequest(ServerRequestInterface $request): array
+    {
+        $process = [];
+
+        $parsedBody = $request->getParsedBody();
+        if (is_array($parsedBody)) {
+            if (isset($parsedBody['processId']) && is_numeric($parsedBody['processId'])) {
+                $process['processId'] = (int)$parsedBody['processId'];
+            }
+            if (isset($parsedBody['officeId']) && is_numeric($parsedBody['officeId'])) {
+                $process['officeId'] = (int)$parsedBody['officeId'];
+            }
+            if (isset($parsedBody['scopeId']) && is_numeric($parsedBody['scopeId'])) {
+                $process['scopeId'] = (int)$parsedBody['scopeId'];
+            }
+            if (isset($parsedBody['serviceId']) && is_numeric($parsedBody['serviceId'])) {
+                $process['serviceId'] = (int)$parsedBody['serviceId'];
+            }
+            if (isset($parsedBody['subRequestCounts']) && is_array($parsedBody['subRequestCounts'])) {
+                $subRequestIds = [];
+                foreach ($parsedBody['subRequestCounts'] as $sub) {
+                    if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
+                        continue;
+                    }
+                    $subRequestIds[] = (int)$sub['id'];
+                }
+                if ($subRequestIds !== []) {
+                    $process['subRequestCounts'] = $subRequestIds;
+                }
+            }
+        }
+
+        $queryParams = $request->getQueryParams();
+        if (is_array($queryParams)) {
+            if (!isset($process['processId']) && isset($queryParams['processId']) && is_numeric($queryParams['processId'])) {
+                $process['processId'] = (int)$queryParams['processId'];
+            }
+            if (!isset($process['officeId']) && isset($queryParams['officeId']) && is_numeric($queryParams['officeId'])) {
+                $process['officeId'] = (int)$queryParams['officeId'];
+            }
+            if (!isset($process['scopeId']) && isset($queryParams['scopeId']) && is_numeric($queryParams['scopeId'])) {
+                $process['scopeId'] = (int)$queryParams['scopeId'];
+            }
+            if (!isset($process['serviceId']) && isset($queryParams['serviceId']) && is_numeric($queryParams['serviceId'])) {
+                $process['serviceId'] = (int)$queryParams['serviceId'];
+            }
+        }
+
+        if ($process === []) {
+            return [];
+        }
+
+        return ['process' => $process];
+    }
+
+    private static function extractProcessContextFromResponse(ResponseInterface $response): array
+    {
+        $process = [];
+
+        try {
+            $body = (string)$response->getBody();
+            if ($body === '') {
+                return [];
+            }
+
+            $decoded = json_decode($body, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+                return [];
+            }
+
+            if (isset($decoded['processId']) && is_numeric($decoded['processId'])) {
+                $process['processId'] = (int)$decoded['processId'];
+            }
+            if (isset($decoded['officeId']) && is_numeric($decoded['officeId'])) {
+                $process['officeId'] = (int)$decoded['officeId'];
+            }
+            if (isset($decoded['scope']['id']) && is_numeric($decoded['scope']['id'])) {
+                $process['scopeId'] = (int)$decoded['scope']['id'];
+            }
+            if (isset($decoded['serviceId']) && is_numeric($decoded['serviceId'])) {
+                $process['serviceId'] = (int)$decoded['serviceId'];
+            }
+            if (isset($decoded['subRequestCounts']) && is_array($decoded['subRequestCounts'])) {
+                $subRequestIds = [];
+                foreach ($decoded['subRequestCounts'] as $sub) {
+                    if (!is_array($sub) || !isset($sub['id']) || !is_numeric($sub['id'])) {
+                        continue;
+                    }
+                    $subRequestIds[] = (int)$sub['id'];
+                }
+                if ($subRequestIds !== []) {
+                    $process['subRequestCounts'] = $subRequestIds;
+                }
+            }
+            if (isset($decoded['displayNumber']) && $decoded['displayNumber'] !== '') {
+                $process['displayNumber'] = (string)$decoded['displayNumber'];
+            }
+        } catch (\Throwable $e) {
+            // Ignore JSON / stream errors when extracting process context for logging
+        }
+
+        if ($process === []) {
+            return [];
+        }
+
+        return ['process' => $process];
     }
 
     private static function filterSensitiveHeaders(array $headers): array
