@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Services\Core\ProcessContextExtractor;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -142,6 +143,9 @@ class LoggerService
         \App::$log->info($message, $context);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
     {
         if (!self::checkRateLimit()) {
@@ -176,27 +180,29 @@ class LoggerService
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
 
-        if ($response->getStatusCode() >= 400) {
-            $stream = $response->getBody();
-            try {
-                $body = (string)$stream;
+        // Read response body once so it can be reused for both process extraction and error logging
+        $bodyStream = $response->getBody();
+        $rawBody = $bodyStream !== null ? (string) $bodyStream : null;
 
-                if (!empty($body)) {
-                    $decodedBody = json_decode($body, true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
-                        $englishErrors = [];
-                        foreach ($decodedBody['errors'] as $error) {
-                            if (isset($error['errorCode'])) {
-                                $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
-                            } else {
-                                $englishErrors[] = $error;
-                            }
+        $processContext = ProcessContextExtractor::extractProcessContext($request, $rawBody);
+        if (!empty($processContext)) {
+            $data = array_merge($data, $processContext);
+        }
+
+        if ($response->getStatusCode() >= 400) {
+            if (!empty($rawBody)) {
+                $decodedBody = json_decode($rawBody, true);
+                if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
+                    $englishErrors = [];
+                    foreach ($decodedBody['errors'] as $error) {
+                        if (isset($error['errorCode'])) {
+                            $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
+                        } else {
+                            $englishErrors[] = $error;
                         }
-                        $data['errors'] = $englishErrors;
                     }
+                    $data['errors'] = $englishErrors;
                 }
-            } catch (\Exception $e) {
-                $data['stream_error'] = 'Unable to read response body: ' . $e->getMessage();
             }
         }
 
