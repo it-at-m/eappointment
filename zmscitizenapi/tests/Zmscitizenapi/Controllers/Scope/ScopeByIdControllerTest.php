@@ -74,8 +74,7 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "whitelistedMails" => null,
             "reservationDuration" => null,
             "activationDuration" => null,
-            "hint" => null,
-            "displayNumberPrefix" => null
+            "hint" => null
         ];               
         $responseBody = json_decode((string)$response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());

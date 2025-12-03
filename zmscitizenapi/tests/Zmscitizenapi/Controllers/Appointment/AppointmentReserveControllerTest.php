@@ -114,14 +114,14 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
                 "activationDuration" => null,
-                "hint" => null,
-                "displayNumberPrefix" => null
+                "hint" => null
             ],
             "subRequestCounts" => [],
             "serviceId" => 0,
             "serviceName" => null,
             "serviceCount" => 0,
             "slotCount" => 4,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

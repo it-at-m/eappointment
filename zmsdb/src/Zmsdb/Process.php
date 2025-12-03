@@ -610,10 +610,9 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function shouldUpdateDisplayNumber(Entity $process, $status): bool
     {
-        if ($status !== 'preconfirmed') {
+        if ($status !== 'preconfirmed' && $status !== 'reserved') {
             return false;
         }
-
         $displayNumberPrefix = $process->scope->getPreference('queue', 'displayNumberPrefix');
         if (empty($displayNumberPrefix)) {
             return false;

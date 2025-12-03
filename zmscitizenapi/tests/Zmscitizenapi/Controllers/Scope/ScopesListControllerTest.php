@@ -75,8 +75,7 @@ class ScopesListControllerTest extends ControllerTestCase
                     "whitelistedMails" => null,
                     "activationDuration" => null,
                     "reservationDuration" => null,
-                    "hint" => null,
-                    "displayNumberPrefix" => null
+                    "hint" => null
                 ],
                 [
                     "id" => 2,
@@ -116,8 +115,7 @@ class ScopesListControllerTest extends ControllerTestCase
                     "whitelistedMails" => null,
                     "reservationDuration" => null,
                     "activationDuration" => null,
-                    "hint" => null,
-                    "displayNumberPrefix" => null
+                    "hint" => null
                     ]
             ]
         ];
