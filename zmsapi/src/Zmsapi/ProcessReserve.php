@@ -64,12 +64,8 @@ class ProcessReserve extends BaseController
         $process = (new ProcessStatusFree())
             ->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired, $resolveReferences, $userAccount);
 
-        // Reload process with scope fully loaded (resolveReferences >= 1) to ensure scope preferences are available
-        // This is needed because writeEntityReserved may return a process with minimal scope data
         $process = (new Process())->readEntity($process->getId(), $process->authKey, max($resolveReferences, 1));
 
-        // Ensure displayNumber is assigned for reserved processes
-        // Pass resolveReferences >= 1 so that writeUpdatedStatus reloads with scope preferences
         $process = (new Process())->updateProcessStatus(
             $process,
             'reserved',
