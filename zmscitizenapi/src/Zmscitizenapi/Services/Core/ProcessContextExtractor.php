@@ -50,11 +50,6 @@ class ProcessContextExtractor
 
         self::addIntFieldIfPresent($process, 'serviceId', $data, 'serviceId');
 
-        if (isset($data['scope']['displayNumberPrefix']) && $data['scope']['displayNumberPrefix'] !== '' && isset($process['processId'])) {
-            $prefix = (string)$data['scope']['displayNumberPrefix'];
-            $process['processId'] = $prefix . $process['processId'];
-        }
-
         return $process;
     }
 
