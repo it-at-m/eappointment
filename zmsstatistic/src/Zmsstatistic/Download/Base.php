@@ -57,6 +57,8 @@ class Base extends \BO\Zmsstatistic\BaseController
         'missedwithappointment' => 'davon Terminkunden Nicht Erschienen',
         'noappointment' => 'davon Spontankunden Erschienen',
         'missednoappointment' => 'davon Spontankunden Nicht Erschienen',
+        'ticketprinter' => 'Erschienen (E-Kiosk)',
+        'ticketprintermissed' => 'Nicht Erschienen (E-Kiosk)',
         'requestscount' => 'Dienstleistungen',
         'organisationname' => 'Organisation',
         'departmentname' => 'Behörde',
