@@ -13,5 +13,7 @@ export const updateWindowWidth = () => {
 };
 
 export const textfieldRows = computed(() => {
-  return windowWidth.value <= pivotWidth ? smallScreenTextareaRows : bigScreenTextareaRows;
+  return windowWidth.value <= pivotWidth
+    ? smallScreenTextareaRows
+    : bigScreenTextareaRows;
 });
