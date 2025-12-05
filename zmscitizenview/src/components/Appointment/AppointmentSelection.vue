@@ -128,7 +128,7 @@
     />
     <div ref="summary">
       <AppointmentPreview
-        tabindex="0"
+        tabindex="-1"
         :t="t"
         :selectedProvider="selectedProvider"
         :selectedDay="selectedDay"
