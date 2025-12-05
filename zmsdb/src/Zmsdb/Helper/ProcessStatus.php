@@ -24,7 +24,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
             'reserved' => 'setStatusReserved',
             'confirmed' => 'setStatusConfirmed',
             'preconfirmed' => 'setStatusPreconfirmed',
-            'called' => 'setStatusCalled'
+            'called' => 'setStatusCalled',
+            'processing'  => 'setStatusProcessing'
         ];
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
@@ -112,6 +113,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
     protected function setStatusReserved($process)
     {
         $process['status'] = $process::STATUS_RESERVED;
+        return $process;
+    }
+
+    protected function setStatusProcessing($process)
+    {
+        $process['status'] = $process::STATUS_PROCESSING;
         return $process;
     }
 
