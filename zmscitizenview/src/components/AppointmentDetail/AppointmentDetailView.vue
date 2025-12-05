@@ -522,7 +522,7 @@ const loadAppointment = () => {
           if ((data as AppointmentDTO)?.processId !== undefined) {
             appointment.value = data;
 
-            setBreadcrumbAndTitle(appointment.value.processId);
+            setBreadcrumbAndTitle(appointment.value.displayNumber ?? appointment.value.processId);
 
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value?.serviceId
