@@ -34,8 +34,9 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?int $reservationDuration;
     public ?int $activationDuration;
     public ?string $hint;
+    public ?string $displayNumberPrefix;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null, ?string $displayNumberPrefix = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -59,6 +60,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->reservationDuration = $reservationDuration;
         $this->activationDuration = $activationDuration;
         $this->hint = $hint;
+        $this->displayNumberPrefix = $displayNumberPrefix;
         $this->ensureValid();
     }
 
@@ -174,6 +176,11 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->hint;
     }
 
+    public function getDisplayNumberPrefix(): ?string
+    {
+        return $this->displayNumberPrefix;
+    }
+
     public function toArray(): array
     {
         return [
@@ -198,7 +205,8 @@ class ThinnedScope extends Entity implements JsonSerializable
             'whitelistedMails' => $this->whitelistedMails,
             'reservationDuration' => $this->reservationDuration,
             'activationDuration' => $this->activationDuration,
-            'hint' => $this->hint
+            'hint' => $this->hint,
+            'displayNumberPrefix' => $this->displayNumberPrefix
         ];
     }
 

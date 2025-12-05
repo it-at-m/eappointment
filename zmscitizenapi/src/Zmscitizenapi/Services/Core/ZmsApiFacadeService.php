@@ -124,7 +124,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null,
+                    displayNumberPrefix:  ((string) $matchingScope->getDisplayNumberPrefix() === '' ? null : (string) $matchingScope->getDisplayNumberPrefix()),
                 ) : null,
                 maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -137,6 +138,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopes(): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
@@ -183,7 +187,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null,
+                    displayNumberPrefix: ((string) $matchingScope->getDisplayNumberPrefix() === '' ? null : (string) $matchingScope->getDisplayNumberPrefix())
                 );
             }
         }
@@ -323,6 +328,7 @@ class ZmsApiFacadeService
             'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
             'activationDuration' => MapperService::extractActivationDuration($matchingScope),
             'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint(),
+            'displayNumberPrefix' => ((string) $matchingScope->getDisplayNumberPrefix() === '' ? null : (string) $matchingScope->getDisplayNumberPrefix()),
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -346,7 +352,8 @@ class ZmsApiFacadeService
             whitelistedMails: $result['whitelistedMails'],
             reservationDuration: $result['reservationDuration'],
             activationDuration: $result['activationDuration'],
-            hint: $result['hint']
+            hint: $result['hint'],
+            displayNumberPrefix: $result['displayNumberPrefix']
         );
     }
 
@@ -480,7 +487,8 @@ class ZmsApiFacadeService
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
             reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
             activationDuration: MapperService::extractActivationDuration($matchingScope),
-            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()) ?? null
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()) ?? null,
+            displayNumberPrefix: ((string) $matchingScope->getDisplayNumberPrefix() === '' ? null : (string) $matchingScope->getDisplayNumberPrefix())
         );
     }
 
@@ -809,6 +817,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         $process = self::getProcessById($processId, $authKey, $user);
@@ -853,7 +864,8 @@ class ZmsApiFacadeService
                 whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
                 reservationDuration: (int) MapperService::extractReservationDuration($process->scope),
                 activationDuration: MapperService::extractActivationDuration($process->scope),
-                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint()) ?? null
+                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint()) ?? null,
+                displayNumberPrefix: ((string) $process->scope->getDisplayNumberPrefix() === '' ? null : (string) $process->scope->getDisplayNumberPrefix())
             );
         }
 
