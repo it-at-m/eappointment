@@ -340,7 +340,15 @@ import {
   MucCallout,
   MucStepper,
 } from "@muenchen/muc-patternlab-vue";
-import { ComponentPublicInstance, computed, nextTick, onMounted, provide, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -559,7 +567,8 @@ const focusActiveStepperItem = async () => {
 
   // Zugriff auf das gerenderte DOM des Steppers
   const rootEl =
-    (stepperRef.value as ComponentPublicInstance | null)?.$el ?? (stepperRef.value as HTMLElement | null);
+    (stepperRef.value as ComponentPublicInstance | null)?.$el ??
+    (stepperRef.value as HTMLElement | null);
 
   if (!rootEl) return;
 
