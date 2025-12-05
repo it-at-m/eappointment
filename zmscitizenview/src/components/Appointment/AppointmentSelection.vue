@@ -128,7 +128,6 @@
     />
     <div ref="summary">
       <AppointmentPreview
-        tabindex="-1"
         :t="t"
         :selectedProvider="selectedProvider"
         :selectedDay="selectedDay"
@@ -172,7 +171,10 @@
       </template>
     </muc-callout>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="buttons"
+    class="m-button-group"
+  >
     <muc-button
       v-if="!isRebooking"
       icon="arrow-left"
@@ -331,9 +333,10 @@ let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Reference to the appointment summary.
- * After selecting a time slot, the focus is placed on the appointment summary.
+ * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
  */
 const summary = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
@@ -556,8 +559,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    (summary.value.firstElementChild as HTMLElement | null)?.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+    (buttons.value.lastChild as HTMLElement | null)?.focus({
+      preventScroll: true,
+    });
   }
 };
 
