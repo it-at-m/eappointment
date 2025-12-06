@@ -128,6 +128,14 @@ class Department extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDepartmentIds(array $departmentIds)
+    {
+        if (!empty($departmentIds)) {
+            $this->query->whereIn('department.BehoerdenID', $departmentIds);
+        }
+        return $this;
+    }
+
     public function addConditionOrganisationId($organisationId)
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);

@@ -63,6 +63,15 @@ class ProcessReserve extends BaseController
         $userAccount = (isset($workstation)) ? $workstation->getUseraccount() : null;
         $process = (new ProcessStatusFree())
             ->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired, $resolveReferences, $userAccount);
+
+        $process = (new Process())->updateProcessStatus(
+            $process,
+            'reserved',
+            \App::$now,
+            max($resolveReferences, 1),
+            $userAccount
+        );
+
         $message = Response\Message::create($request);
         $message->data = $process;
 

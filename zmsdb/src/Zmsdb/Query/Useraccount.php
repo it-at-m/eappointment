@@ -36,23 +36,28 @@ class Useraccount extends Base implements MappingInterface
     ';
 
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
-        SELECT behoerde.`BehoerdenID` AS id,
-            organisation.Organisationsname as organisation__name
+        SELECT behoerde.`BehoerdenID` AS id
         FROM ' . Department::TABLE . '
-        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY behoerde.Name
     ';
 
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
-        SELECT userAssignment.`behoerdenid` AS id,
-            organisation.Organisationsname as organisation__name
+        SELECT userAssignment.`behoerdenid` AS id
         FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
         LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.Name = :useraccountName
-        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
-        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         WHERE
             useraccount.`NutzerID` = userAssignment.`nutzerid`
-        ORDER BY organisation.Organisationsname, behoerde.Name
+        ORDER BY userAssignment.`behoerdenid`
+    ';
+
+    const QUERY_READ_ASSIGNED_DEPARTMENTS_FOR_ALL = '
+        SELECT useraccount.Name as useraccountName,
+            userAssignment.`behoerdenid` AS id
+        FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
+        LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.NutzerID = userAssignment.nutzerid
+        WHERE
+            useraccount.Name IN (:useraccountNames)
+        ORDER BY useraccount.Name, userAssignment.`behoerdenid`
     ';
 
     public function getEntityMapping()
@@ -101,50 +106,9 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentAndSearch($departmentId, $queryString = null, $orWhere = false)
-    {
-
-        $this->leftJoin(
-            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
-            'useraccount.NutzerID',
-            '=',
-            'useraccount_department.nutzerid'
-        );
-
-        $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
-
-        if ($queryString) {
-            $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
-                $queryString = trim($queryString);
-                $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
-                $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
-            };
-
-            if ($orWhere) {
-                $this->query->orWhere($condition);
-            } else {
-                $this->query->where($condition);
-            }
-        }
-
-        return $this;
-    }
-
     public function addConditionRoleLevel($roleLevel)
     {
         $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
-        return $this;
-    }
-
-    public function addConditionDepartmentId($departmentId)
-    {
-        $this->leftJoin(
-            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
-            'useraccount.NutzerID',
-            '=',
-            'useraccount_department.nutzerid'
-        );
-        $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
         return $this;
     }
 
@@ -193,13 +157,70 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionDepartmentIds(array $departmentIds)
     {
-        $this->leftJoin(
+        $this->setDistinctSelect();
+        $this->innerJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
             'useraccount.NutzerID',
             '=',
             'useraccount_department.nutzerid'
         );
         $this->query->where('useraccount_department.behoerdenid', 'IN', $departmentIds);
+        return $this;
+    }
+
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false): self
+    {
+        $this->addConditionDepartmentIds($departmentIds);
+
+        if ($queryString) {
+            $this->addConditionSearch($queryString, $orWhere);
+        }
+
+        return $this;
+    }
+
+    public function addConditionExcludeSuperusers(): self
+    {
+        $this->query->where('useraccount.Berechtigung', '!=', 90);
+        return $this;
+    }
+
+    public function addOrderByName(): self
+    {
+        $this->query->orderBy('useraccount.Name', 'ASC');
+        return $this;
+    }
+
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false): self
+    {
+        // Superusers can access all useraccounts, no filtering needed
+        if ($isWorkstationSuperuser) {
+            return $this;
+        }
+
+        // Always exclude superusers for non-superuser workstation users
+        $this->query->where('useraccount.Berechtigung', '!=', 90);
+
+        // If no departments, only exclude superusers (already done above)
+        if (empty($workstationDepartmentIds)) {
+            return $this;
+        }
+
+        // Ensure we have a join to nutzerzuordnung for target useraccounts
+        $this->setDistinctSelect();
+        $this->innerJoin(
+            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+
+        // Target useraccount must share at least one department with workstation user
+        $this->query->where('useraccount_department.behoerdenid', 'IN', $workstationDepartmentIds);
+
         return $this;
     }
 }
