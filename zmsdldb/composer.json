@@ -16,7 +16,7 @@
     "require-dev": {
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^12",
         "seld/jsonlint": "*",
         "roave/security-advisories": "dev-latest"
     },
