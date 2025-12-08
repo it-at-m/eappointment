@@ -57,14 +57,14 @@ class Notification extends Base
                     $resolveReferences - 1
                 );
 
-                if ($process instanceof \BO\Zmsentities\Process && $process->hasId()) {
-                    $notification->process = $process;
-                }
+            if ($process instanceof \BO\Zmsentities\Process && $process->hasId()) {
+                $notification->process = $process;
+            }
 
-                if ($notification->toProperty()->department->id->isAvailable()) {
-                    $notification->department = (new \BO\Zmsdb\Department())
-                        ->readEntity($notification->department['id'], $resolveReferences - 1);
-                }
+            if ($notification->toProperty()->department->id->isAvailable()) {
+                $notification->department = (new \BO\Zmsdb\Department())
+                    ->readEntity($notification->department['id'], $resolveReferences - 1);
+            }
         }
         return $notification;
     }
