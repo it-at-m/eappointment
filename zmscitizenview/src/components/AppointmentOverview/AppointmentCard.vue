@@ -3,7 +3,7 @@
     class="multiline-text"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
-    @click="goToAppointmentLink(appointment.processId!)"
+    @click="goToAppointmentLink()"
   >
     <template #headerPrefix>
       <calendar-icon
@@ -51,7 +51,7 @@ const props = defineProps<{
 
 const selectedProvider = ref<Office>();
 
-const goToAppointmentLink = (appointmentNumber: string) => {
+const goToAppointmentLink = () => {
   const url = new URL(props.appointmentDetailUrl, window.location.origin);
   url.searchParams.set(
     QUERY_PARAM_APPOINTMENT_ID,
