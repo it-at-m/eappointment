@@ -324,12 +324,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  MucButton,
-  MucCallout,
-  MucIntro,
-  MucModal,
-} from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -393,6 +388,8 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
 
+const CLASS_NAME_HEADER = "m-page-header";
+
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
 const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
@@ -448,7 +445,7 @@ const getServiceSummary = () => {
     const subserviceSummary = appointment.value.subRequestCounts
       .map((subCount) => subCount.count + "x " + subCount.name)
       .join(", ");
-    return serviceSummary
+    return subserviceSummary
       ? serviceSummary + ", " + subserviceSummary
       : serviceSummary;
   } else {
@@ -459,9 +456,12 @@ const getServiceSummary = () => {
 const focusTimeTitle = () => {
   if (timeTitleElement.value) {
     timeTitleElement.value.focus();
-    timeTitleElement.value.scrollIntoView({
+    const scrollPosition =
+      getOffsetTop(timeTitleElement.value) - getOffsetHeader();
+    window.scroll({
       behavior: "smooth",
-      block: "start",
+      left: 0,
+      top: scrollPosition,
     });
   }
 };
@@ -469,11 +469,30 @@ const focusTimeTitle = () => {
 const focusLocationTitle = () => {
   if (locationTitleElement.value) {
     locationTitleElement.value.focus();
-    locationTitleElement.value.scrollIntoView({
+    const scrollPosition =
+      getOffsetTop(locationTitleElement.value) - getOffsetHeader();
+    window.scroll({
       behavior: "smooth",
-      block: "start",
+      left: 0,
+      top: scrollPosition,
     });
   }
+};
+
+const getOffsetTop = (element: HTMLElement | null) => {
+  if (!element) return 0;
+  const rec = element.getBoundingClientRect();
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+  return rec.top + scrollTop;
+};
+
+const getOffsetHeader = () => {
+  const elementHeader = document.getElementsByClassName(CLASS_NAME_HEADER);
+  if (elementHeader.length) {
+    return elementHeader[0].getBoundingClientRect().height;
+  }
+  return 0;
 };
 
 const checksMobile = () => {
@@ -630,17 +649,11 @@ onMounted(() => {
 
 .timeBox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 32px;
   margin-bottom: 32px;
 }
 .timeBox p {
   margin-bottom: 0 !important;
-}
-
-@media all and (max-width: 767px) {
-  :deep(dialog) {
-    min-width: 300px !important;
-  }
 }
 </style>

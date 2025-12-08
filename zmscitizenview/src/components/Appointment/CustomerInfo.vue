@@ -96,6 +96,7 @@
       "
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
+      autocomplete="tel"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"

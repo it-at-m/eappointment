@@ -100,7 +100,6 @@
         </div>
         <error-alert
           v-if="loadingError"
-          class="no-padding-top"
           :message="t('apiErrorLoadingAppointmentsText')"
           :header="t('apiErrorLoadingAppointmentsHeader')"
         />
@@ -275,11 +274,6 @@ onUnmounted(() => {
 /* Mobile link styles */
 .mobile-link {
   padding-top: 24px;
-}
-
-/* No padding-top on error message */
-.no-padding-top {
-  padding-top: 0 !important;
 }
 
 /* CSS for desktop */

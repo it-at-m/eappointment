@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y \
       python3-click python3-git python3-colorama \
       mariadb-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl gd pdo pdo_mysql zip \
+    && docker-php-ext-install intl gd pdo pdo_mysql zip calendar \
     && apt-get clean
 
 # —————————————————————————————————————————
