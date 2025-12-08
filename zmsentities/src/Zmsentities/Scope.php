@@ -207,11 +207,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->hint->get();
     }
 
-    public function getDisplayNumberPrefix()
-    {
-        return $this->toProperty()->preferences->queue->displayNumberPrefix->get();
-    }
-
     public function getAlternateRedirectUrl()
     {
         $alternateUrl = $this->toProperty()->preferences->client->alternateAppointmentUrl->get();
