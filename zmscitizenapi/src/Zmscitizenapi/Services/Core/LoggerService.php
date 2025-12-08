@@ -193,15 +193,15 @@ class LoggerService
             if (!empty($rawBody)) {
                 $decodedBody = json_decode($rawBody, true);
                 if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
-                    $englishErrors = [];
+                    $errorMessages = [];
                     foreach ($decodedBody['errors'] as $error) {
                         if (isset($error['errorCode'])) {
-                            $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
+                            $errorMessages[] = ErrorMessages::get($error['errorCode']);
                         } else {
-                            $englishErrors[] = $error;
+                            $errorMessages[] = $error;
                         }
                     }
-                    $data['errors'] = $englishErrors;
+                    $data['errors'] = $errorMessages;
                 }
             }
         }
