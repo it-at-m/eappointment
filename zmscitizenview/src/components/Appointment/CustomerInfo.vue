@@ -115,6 +115,7 @@
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
       :maxlength="100"
+      :rows="textfieldRows"
     />
     <muc-text-area
       v-if="
@@ -128,6 +129,7 @@
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
       :maxlength="100"
+      :rows="textfieldRows"
     />
   </form>
   <div class="m-button-group">
@@ -167,6 +169,7 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { textfieldRows, updateWindowWidth } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
@@ -288,6 +291,18 @@ const errorDisplayTelephoneNumber = computed(
   () =>
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
+
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    window.addEventListener("resize", updateWindowWidth);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("resize", updateWindowWidth);
+  }
+});
 
 const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
