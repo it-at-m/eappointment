@@ -385,6 +385,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -934,7 +935,18 @@ const saveAppointmentToLocalstorage = () => {
 };
 
 const viewAppointment = () => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
+  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  url.searchParams.set(
+    QUERY_PARAM_APPOINTMENT_ID,
+    appointment.value?.processId || ""
+  );
+  if (appointment.value?.displayNumber) {
+    url.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+      appointment.value.displayNumber
+    );
+  }
+  location.href = url.toString();
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
