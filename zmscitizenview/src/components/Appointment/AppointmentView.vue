@@ -68,6 +68,7 @@
     >
       <muc-stepper
         v-if="!isAppointmentInPast"
+        ref="stepperRef"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -339,7 +340,15 @@ import {
   MucCallout,
   MucStepper,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -550,6 +559,26 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
     currentErrorData.value
   );
 });
+
+type StepperInstance = ComponentPublicInstance | HTMLElement | null;
+const stepperRef = ref<StepperInstance>(null);
+
+const focusActiveStepperItem = async () => {
+  await nextTick();
+
+  // Zugriff auf das gerenderte DOM des Steppers
+  const rootEl =
+    (stepperRef.value as ComponentPublicInstance | null)?.$el ??
+    (stepperRef.value as HTMLElement | null);
+
+  if (!rootEl) return;
+
+  const activeIcon = rootEl.querySelector<HTMLElement>(
+    ".m-form-step__icon[aria-current='step']"
+  );
+
+  activeIcon?.focus();
+};
 
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
@@ -888,6 +917,7 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
+  focusActiveStepperItem();
 });
 
 /**
@@ -1281,6 +1311,7 @@ onMounted(() => {
   if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
     localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
+  focusActiveStepperItem();
 });
 </script>
 <style lang="scss" scoped>
