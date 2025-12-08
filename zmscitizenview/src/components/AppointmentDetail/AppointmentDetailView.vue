@@ -373,7 +373,7 @@ const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
-const appointmentId = ref<string | undefined>();
+const appointmentId = ref<string | null>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
@@ -514,6 +514,9 @@ function setBreadcrumbAndTitle(appointmentId: string) {
 const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
   appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
+  if (appointmentId.value) {
+    setBreadcrumbAndTitle(appointmentId.value);
+  }
   fetchServicesAndProviders(
     undefined,
     undefined,
@@ -540,8 +543,6 @@ const loadAppointment = () => {
         (data) => {
           if ((data as AppointmentDTO)?.processId !== undefined) {
             appointment.value = data;
-
-            setBreadcrumbAndTitle(appointment.value.processId);
 
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value?.serviceId
