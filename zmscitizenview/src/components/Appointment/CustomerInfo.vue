@@ -204,7 +204,8 @@ const { isExpired, timeLeftString } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern =
+  /^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() => {
