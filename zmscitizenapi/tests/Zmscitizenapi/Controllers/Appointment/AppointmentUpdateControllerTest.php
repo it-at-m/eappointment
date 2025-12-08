@@ -119,6 +119,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             "serviceName" => "Adressänderung Personalausweis, Reisepass, eAT",
             "serviceCount" => 1,
             "slotCount" => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
