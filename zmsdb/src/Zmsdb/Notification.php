@@ -57,14 +57,12 @@ class Notification extends Base
                     $resolveReferences - 1
                 );
 
-            if ($process instanceof \BO\Zmsentities\Process && $process->hasId()) {
+            // only overwrite process with resolved version if not dereferenced
+            if ($process && $notification->getScopeId() == $process->getScopeId()) {
                 $notification->process = $process;
             }
-
-            if ($notification->toProperty()->department->id->isAvailable()) {
-                $notification->department = (new \BO\Zmsdb\Department())
-                    ->readEntity($notification->department['id'], $resolveReferences - 1);
-            }
+            $notification->department = (new \BO\Zmsdb\Department())
+                ->readEntity($notification->department['id'], $resolveReferences - 1);
         }
         return $notification;
     }
