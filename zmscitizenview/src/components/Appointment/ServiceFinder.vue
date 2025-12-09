@@ -67,6 +67,7 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
+            :hint:="t(`locationVariantText.${variant.variantId}`)"
           />
         </muc-radio-button-group>
       </div>
