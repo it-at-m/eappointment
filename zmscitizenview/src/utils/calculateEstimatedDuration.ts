@@ -26,10 +26,7 @@ export function calculateEstimatedDuration(
     return null;
   }
 
-  total +=
-    service.count *
-    mainProvider.slots *
-    mainProvider.slotTimeInMinutes;
+  total += service.count * mainProvider.slots * mainProvider.slotTimeInMinutes;
 
   if (service.subServices) {
     for (const sub of service.subServices) {
@@ -44,10 +41,7 @@ export function calculateEstimatedDuration(
           return null;
         }
 
-        total +=
-          sub.count *
-          subProvider.slots *
-          subProvider.slotTimeInMinutes;
+        total += sub.count * subProvider.slots * subProvider.slotTimeInMinutes;
       }
     }
   }

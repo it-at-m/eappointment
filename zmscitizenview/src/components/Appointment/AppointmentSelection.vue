@@ -860,36 +860,45 @@ function getAvailableProviders(
 ): OfficeImpl[] {
   if (!selectedServices || selectedServices.length === 0) return [];
 
-  let allowedIds = new Set(selectedServices[0].providers.map(p => p.id));
+  let allowedIds = new Set(selectedServices[0].providers.map((p) => p.id));
   for (let i = 1; i < selectedServices.length; i++) {
-    const serviceIds = new Set(selectedServices[i].providers.map(p => p.id));
-    allowedIds = new Set([...allowedIds].filter(id => serviceIds.has(id)));
+    const serviceIds = new Set(selectedServices[i].providers.map((p) => p.id));
+    allowedIds = new Set([...allowedIds].filter((id) => serviceIds.has(id)));
   }
 
-  const allProviders = selectedServices.flatMap(s => s.providers);
+  const allProviders = selectedServices.flatMap((s) => s.providers);
   const filteredProvidersMap = new Map<number, OfficeImpl>();
-  allProviders.forEach(p => {
+  allProviders.forEach((p) => {
     if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
   });
   const filteredProviders = Array.from(filteredProvidersMap.values());
 
   return Object.values(
-    filteredProviders.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
-      (grouped[provider.name] ||= []).push(provider);
-      return grouped;
-    }, {})
-  ).map(group => {
+    filteredProviders.reduce<Record<string, OfficeImpl[]>>(
+      (grouped, provider) => {
+        (grouped[provider.name] ||= []).push(provider);
+        return grouped;
+      },
+      {}
+    )
+  ).map((group) => {
     if (group.length === 1) return group[0];
 
-    const clean = group.find(p => (p.disabledByServices ?? []).length === 0);
-    const restricted = group.find(p => (p.disabledByServices ?? []).length > 0);
+    const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
+    const restricted = group.find(
+      (p) => (p.disabledByServices ?? []).length > 0
+    );
 
     if (!clean && !restricted) return group[0];
     if (!restricted) return clean as OfficeImpl;
     if (!clean) return restricted as OfficeImpl;
 
-    const restrictedDisabled = (restricted.disabledByServices ?? []).map(Number);
-    const allDisabled = selectedServices.every(s => restrictedDisabled.includes(s.id));
+    const restrictedDisabled = (restricted.disabledByServices ?? []).map(
+      Number
+    );
+    const allDisabled = selectedServices.every((s) =>
+      restrictedDisabled.includes(s.id)
+    );
 
     return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
   });
@@ -1054,7 +1063,9 @@ function scheduleRefreshAfterProviderChange() {
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
     const mainService = selectedService.value;
-    const chosenSubservices = (mainService.subServices || []).filter(s => s.count > 0);
+    const chosenSubservices = (mainService.subServices || []).filter(
+      (s) => s.count > 0
+    );
     const allSelectedServices = [mainService, ...chosenSubservices];
     const availableProviders = getAvailableProviders(allSelectedServices);
 
