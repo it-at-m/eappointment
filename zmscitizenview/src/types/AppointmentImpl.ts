@@ -4,6 +4,7 @@ import { SubRequestCount } from "@/api/models/SubRequestCount";
 
 export class AppointmentImpl implements AppointmentDTO {
   processId: string;
+  displayNumber?: string | null;
 
   timestamp: number;
 
@@ -37,6 +38,7 @@ export class AppointmentImpl implements AppointmentDTO {
 
   constructor(
     processId: string,
+    displayNumber: string | null | undefined,
     timestamp: number,
     authKey: string,
     firstName: string | undefined,
@@ -54,6 +56,7 @@ export class AppointmentImpl implements AppointmentDTO {
     icsContent?: string
   ) {
     this.processId = processId;
+    this.displayNumber = displayNumber ?? undefined;
     this.timestamp = timestamp;
     this.authKey = authKey;
     this.firstName = firstName;

@@ -61,13 +61,13 @@
   >
     <no-login-warning
       v-if="!globalState.isLoggedIn"
-      :appointment-id="appointmentId"
+      :appointment-id="appointmentDisplayNumber ?? appointmentId"
       :t="t"
     />
     <div v-else-if="loadingError">
       <muc-intro
         :tagline="t('appointment')"
-        :title="appointmentId ? appointmentId : ''"
+        :title="appointmentDisplayNumber ?? appointmentId ?? ''"
         variant="detail"
       />
       <div class="m-component m-component-form">
@@ -351,6 +351,7 @@ import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   APPOINTMENT_ACTION_TYPE,
   getServiceBaseURL,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -374,6 +375,7 @@ const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
 const appointmentId = ref<string | undefined>();
+const appointmentDisplayNumber = ref<string | undefined>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
@@ -513,7 +515,17 @@ function setBreadcrumbAndTitle(appointmentId: string) {
 
 const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
+  appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID) ?? undefined;
+  appointmentDisplayNumber.value =
+    urlParams.get(QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER) ?? undefined;
+
+  // Set breadcrumb/title early if we have displayNumber from URL
+  if (appointmentDisplayNumber.value) {
+    setBreadcrumbAndTitle(appointmentDisplayNumber.value);
+  } else if (appointmentId.value) {
+    setBreadcrumbAndTitle(appointmentId.value);
+  }
+
   fetchServicesAndProviders(
     undefined,
     undefined,
@@ -541,7 +553,11 @@ const loadAppointment = () => {
           if ((data as AppointmentDTO)?.processId !== undefined) {
             appointment.value = data;
 
-            setBreadcrumbAndTitle(appointment.value.processId);
+            setBreadcrumbAndTitle(
+              appointment.value.displayNumber ??
+                appointmentDisplayNumber.value ??
+                appointment.value.processId
+            );
 
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value?.serviceId

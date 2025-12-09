@@ -8,7 +8,7 @@
     <div class="appointment-data">
       <p>
         <strong> {{ t("appointmentNumber") }}: </strong>
-        {{ appointment.processId }}
+        {{ appointment.displayNumber ?? appointment.processId }}
       </p>
       <muc-link
         :label="

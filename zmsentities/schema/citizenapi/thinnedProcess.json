@@ -152,6 +152,13 @@
       ],
       "description": "Count of slots in the process"
     },
+    "displayNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Appointment number that should be displayed"
+    },
     "icsContent": {
       "type": [
         "string",

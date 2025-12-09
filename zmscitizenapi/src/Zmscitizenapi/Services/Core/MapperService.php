@@ -424,6 +424,7 @@ class MapperService
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            displayNumber: ($myProcess->getDisplayNumber() ?: null),
             icsContent: isset($icsContent) ? $icsContent : null
         );
     }

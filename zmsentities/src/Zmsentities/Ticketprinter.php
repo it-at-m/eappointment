@@ -42,7 +42,11 @@ class Ticketprinter extends Schema\Entity
     {
         $ticketprinter = clone $this;
         $ticketprinter->buttons = array();
-        $buttonList = explode(',', $ticketprinter->buttonlist);
+        if (! $ticketprinter->toProperty()->buttonlist->isAvailable() || '' === trim((string) $ticketprinter->buttonlist)) {
+            return $ticketprinter;
+        }
+
+        $buttonList = explode(',', (string) $ticketprinter->buttonlist);
         foreach ($buttonList as $string) {
             $button = array();
             $button = $ticketprinter->getValidButtonWithType($string);

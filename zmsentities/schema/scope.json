@@ -818,7 +818,7 @@
                                     "type": "string"
                                 }
                             ],
-                            "description": "appointment number prefix"
+                            "description": "Appointment number prefix."
                         },
                         "maxNumberContingent": {
                             "oneOf": [

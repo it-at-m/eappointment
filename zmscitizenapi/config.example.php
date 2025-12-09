@@ -4,6 +4,7 @@ define('MAINTENANCE_MODE_ENABLED', filter_var(getenv('MAINTENANCE_ENABLED'), FIL
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscitizenapi');
 define('ZMS_API_PASSWORD_CITIZENAPI', getenv('ZMS_API_PASSWORD_CITIZENAPI'));
+define('ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME', 'lhmExtID');
 
 class App extends \BO\Zmscitizenapi\Application
 {
@@ -36,5 +37,10 @@ class App extends \BO\Zmscitizenapi\Application
      * Password for the upstream API
      */
     public static $httpPassword = ZMS_API_PASSWORD_CITIZENAPI;
+
+    /**
+     * Name of the OIDC claim that uniquely identifies a citizen user.
+     */
+    const ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME = ZMS_CITIZENLOGIN_EXTERNALUSERID_CLAIM_NAME;
 
 }

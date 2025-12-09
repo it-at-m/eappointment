@@ -25,6 +25,7 @@ class ValidationService
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
+    private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
 
@@ -464,7 +465,7 @@ class ValidationService
 
     private static function isValidEmail(?string $email): bool
     {
-        return !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        return !empty($email) && preg_match(self::EMAIL_PATTERN, $email) === 1;
     }
 
     private static function isValidTelephone(?string $telephone): bool
