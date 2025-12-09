@@ -11,34 +11,43 @@ import { SubService } from "@/types/SubService";
 export function calculateEstimatedDuration(
   service: ServiceImpl | undefined,
   provider: OfficeImpl | undefined
-): number {
-  if (!service || !provider) return 0;
+): number | null {
+  if (!service || !provider) return null;
 
   let total = 0;
-
-  // Main service
   const mainProvider = service.providers?.find((p) => p.id == provider.id);
+
   if (
-    mainProvider &&
-    service.count &&
-    mainProvider.slots &&
-    mainProvider.slotTimeInMinutes
+    !mainProvider ||
+    !service.count ||
+    !mainProvider.slots ||
+    !mainProvider.slotTimeInMinutes
   ) {
-    total +=
-      service.count * mainProvider.slots * mainProvider.slotTimeInMinutes;
+    return null;
   }
 
-  // Subservices
+  total +=
+    service.count *
+    mainProvider.slots *
+    mainProvider.slotTimeInMinutes;
+
   if (service.subServices) {
     for (const sub of service.subServices) {
-      const subProvider = sub.providers?.find((p) => p.id == provider.id);
-      if (
-        subProvider &&
-        sub.count &&
-        subProvider.slots &&
-        subProvider.slotTimeInMinutes
-      ) {
-        total += sub.count * subProvider.slots * subProvider.slotTimeInMinutes;
+      if (sub.count > 0) {
+        const subProvider = sub.providers?.find((p) => p.id == provider.id);
+
+        if (
+          !subProvider ||
+          !subProvider.slots ||
+          !subProvider.slotTimeInMinutes
+        ) {
+          return null;
+        }
+
+        total +=
+          sub.count *
+          subProvider.slots *
+          subProvider.slotTimeInMinutes;
       }
     }
   }
