@@ -52,7 +52,7 @@ class Organisation extends BaseController
 
         // If there was an error, use the submitted input data for form re-population
         $organisationData = (isset($result) && is_array($result) && isset($result['data']))
-            ? array_merge($entity->getArrayCopy(), $input ?? [])
+            ? new Entity(array_merge($entity->getArrayCopy(), $input ?? []))
             : $entity;
 
         return \BO\Slim\Render::withHtml(
