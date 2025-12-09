@@ -8,7 +8,6 @@ namespace BO\Slim\PhpUnit;
 
 use App;
 use BO\Slim\Middleware\Validator;
-use Helmich\Psr7Assert\Psr7Assertions;
 use PHPUnit\Framework\TestCase;
 use BO\Slim\Middleware\SessionMiddleware;
 use BO\Slim\Middleware\Session\SessionHuman;
@@ -27,8 +26,6 @@ use Slim\Psr7\Factory\StreamFactory;
  */
 abstract class Base extends TestCase
 {
-    use Psr7Assertions;
-
     /**
       * Arguments for callback render
       *
@@ -245,9 +242,7 @@ abstract class Base extends TestCase
 
     public function assertRedirect($response, $uri, $status = 302)
     {
-        $this->assertResponseHasStatus($response, $status);
-        $this->assertMessageHasHeaders($response, [
-            'Location' => $uri,
-        ]);
+        $this->assertEquals($status, $response->getStatusCode());
+        $this->assertEquals($uri, $response->getHeaderLine('Location'));
     }
 }

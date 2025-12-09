@@ -3,10 +3,9 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'queue-info-appointment-times'} %}
     {% block board_title %}
         Terminzeiten
-        {% if rights.availability %}
-            <a data-id="{{ item.id }}" data-scope-id="{{ item.scope.id }}" href="#" class="icon process-edit" title="Bearbeiten">
-                <i class="fas fa-edit" aria-hidden="true"></i>
-                <span class="aural">Bearbeiten</span>
+        {% if workstation.scope and workstation.useraccount.rights.scope %}
+            <a title="{% trans %}Öffnungszeit ändern{% endtrans %}" class="icon" href="{{ urlGet('scopeAvailabilityDay', {'id':workstation.scope.id, 'date': getNow()|date('Y-m-d')}, {}) }}">
+            <i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">{% trans %}Öffnungszeiten ändern{% endtrans %}</span>
             </a>
         {% endif %}
     {% endblock %}

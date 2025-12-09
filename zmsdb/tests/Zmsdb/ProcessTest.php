@@ -538,7 +538,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new Query();
-        $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
+        $processList = $query->readProcessListByScopesAndTime([141], $now); //Heerstraße
         $this->assertEquals(102, $processList->count(), "Scope 141 Heerstraße should have 105 assigned processes");
     }
 
