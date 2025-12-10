@@ -223,18 +223,41 @@ class Status extends Base
 
         $processStats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(CASE WHEN name = "dereferenced" THEN 1 ELSE NULL END) as blocked,
-                SUM(CASE WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as confirmed,
-                SUM(CASE WHEN (b.StandortID != 0 OR AbholortID != 0) AND vorlaeufigeBuchung = 0 AND Abholer = 1 THEN 1 ELSE NULL END) as pending,
-                SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
-                SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
-                SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
-                SUM(CASE WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
-                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
-                SUM(CASE WHEN IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
-                    AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
-                FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
+                COALESCE(SUM(CASE WHEN b.status = "blocked" THEN 1 ELSE 0 END), 0) AS blocked,
+                COALESCE(SUM(CASE WHEN b.status = "confirmed" THEN 1 ELSE 0 END), 0) AS confirmed,
+                COALESCE(SUM(CASE WHEN b.status = "pending" THEN 1 ELSE 0 END), 0) AS pending,
+                COALESCE(SUM(CASE WHEN b.status = "deleted" THEN 1 ELSE 0 END), 0) AS deleted,
+                COALESCE(SUM(CASE WHEN b.status = "missed" THEN 1 ELSE 0 END), 0) AS missed,
+                COALESCE(SUM(CASE WHEN b.status = "parked" THEN 1 ELSE 0 END), 0) AS parked,
+                COALESCE(SUM(CASE WHEN b.status = "reserved" THEN 1 ELSE 0 END), 0) AS reserved,
+                global.sinceMidnight,
+                global.last7days,
+                global.lastInsert
              FROM buerger AS b
+             CROSS JOIN (
+                SELECT
+                    COALESCE(SUM(
+                        CASE
+                            WHEN IPTimeStamp > ' . intval($midnight) . ' 
+                                 AND StandortID != 0
+                                 AND vorlaeufigeBuchung = 0
+                                 AND Abholer = 0
+                            THEN 1 ELSE 0
+                        END
+                    ), 0) AS sinceMidnight,
+                    COALESCE(SUM(
+                        CASE
+                            WHEN IPTimeStamp > ' . intval($last7days) . ' 
+                                 AND StandortID != 0
+                                 AND vorlaeufigeBuchung = 0
+                                 AND Abholer = 0
+                            THEN 1 ELSE 0
+                        END
+                    ), 0) AS last7days,
+                    FROM_UNIXTIME(MAX(IPTimeStamp)) AS lastInsert
+                FROM buerger
+                WHERE istFolgeterminvon IS NULL OR istFolgeterminvon = 0
+             ) AS global
              WHERE b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0'
         );
         return $processStats;

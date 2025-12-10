@@ -416,6 +416,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parent_id" => null,
                     "variant_id" => null,
+                    "showOnStartPage" => true
                 ],
                 [
                     "id" => 2,
@@ -424,6 +425,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parent_id" => null,
                     "variant_id" => null,
+                    "showOnStartPage" => true
                 ]
             ]
         ];
@@ -474,6 +476,7 @@ class MapperServiceTest extends TestCase
                     "combinable" => new Combinable(),
                     "parent_id" => null,
                     "variant_id" => null,
+                    "showOnStartPage" => true
                 ]
             ]
         ];

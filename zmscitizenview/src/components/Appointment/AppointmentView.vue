@@ -67,6 +67,8 @@
       "
     >
       <muc-stepper
+        v-if="!isAppointmentInPast"
+        ref="stepperRef"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -123,10 +125,12 @@
             <div v-if="currentView === 3">
               <appointment-summary
                 v-if="
-                  !hasUpdateAppointmentError && !hasPreconfirmAppointmentError
+                  !hasUpdateAppointmentError &&
+                  !hasPreconfirmAppointmentError &&
+                  !isAppointmentInPast
                 "
                 :is-rebooking="isRebooking"
-                :rebook-or-cancel-dialog="rebookOrCanelDialog"
+                :rebook-or-cancel-dialog="rebookOrCancelDialog"
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
@@ -134,6 +138,23 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
+              <div v-if="isAppointmentInPast">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("rescheduleErrorText") }}
+                  </template>
+
+                  <template #header>
+                    {{ t("rescheduleErrorHeader") }}
+                  </template>
+                </muc-callout>
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                >
+                  {{ t("newAppointmentButton") }}
+                </muc-button>
+              </div>
               <div v-if="hasUpdateAppointmentError">
                 <muc-callout
                   :type="toCalloutType(apiErrorTranslation.errorType)"
@@ -319,7 +340,15 @@ import {
   MucCallout,
   MucStepper,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -365,6 +394,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -379,6 +409,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -439,11 +470,11 @@ watch(
     if (!newAccessToken) return;
     const tokenData = getTokenData(newAccessToken);
     customerData.value.firstName =
-      customerData.value.firstName || tokenData.given_name;
+      customerData.value.firstName || tokenData.given_name || "";
     customerData.value.lastName =
-      customerData.value.lastName || tokenData.family_name;
+      customerData.value.lastName || tokenData.family_name || "";
     customerData.value.mailAddress =
-      customerData.value.mailAddress || tokenData.email;
+      customerData.value.mailAddress || tokenData.email || "";
   },
   { immediate: true }
 );
@@ -455,10 +486,14 @@ const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
-const rebookOrCanelDialog = ref<boolean>(false);
+const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
+const forcedPast = ref(false);
+const isAppointmentInPast = computed(() => {
+  return forcedPast.value || isExpired((appointment.value as any)?.timestamp);
+});
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -524,6 +559,26 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
     currentErrorData.value
   );
 });
+
+type StepperInstance = ComponentPublicInstance | HTMLElement | null;
+const stepperRef = ref<StepperInstance>(null);
+
+const focusActiveStepperItem = async () => {
+  await nextTick();
+
+  // Zugriff auf das gerenderte DOM des Steppers
+  const rootEl =
+    (stepperRef.value as ComponentPublicInstance | null)?.$el ??
+    (stepperRef.value as HTMLElement | null);
+
+  if (!rootEl) return;
+
+  const activeIcon = rootEl.querySelector<HTMLElement>(
+    ".m-form-step__icon[aria-current='step']"
+  );
+
+  activeIcon?.focus();
+};
 
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
@@ -673,7 +728,7 @@ const nextReserveAppointment = () => {
   isReservingAppointment.value = true;
   clearContextErrors(errorStateMap.value);
   captchaError.value = false;
-  rebookOrCanelDialog.value = false;
+  rebookOrCancelDialog.value = false;
 
   reserveAppointment(
     props.globalState,
@@ -835,6 +890,15 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
+
+  if (isExpired((appointment.value as any)?.timestamp)) {
+    forcedPast.value = true;
+    currentView.value = 3;
+    goToTop();
+    return;
+  }
+
+  // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -844,7 +908,7 @@ const nextRescheduleAppointment = () => {
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
-  rebookOrCanelDialog.value = true;
+  rebookOrCancelDialog.value = true;
 };
 
 /**
@@ -853,6 +917,7 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
+  focusActiveStepperItem();
 });
 
 /**
@@ -900,7 +965,18 @@ const saveAppointmentToLocalstorage = () => {
 };
 
 const viewAppointment = () => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
+  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  url.searchParams.set(
+    QUERY_PARAM_APPOINTMENT_ID,
+    appointment.value?.processId || ""
+  );
+  if (appointment.value?.displayNumber) {
+    url.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+      appointment.value.displayNumber
+    );
+  }
+  location.href = url.toString();
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
@@ -1069,7 +1145,7 @@ onMounted(() => {
 
   if (props.appointmentHash) {
     clearContextErrors(errorStateMap.value);
-    rebookOrCanelDialog.value = true;
+    rebookOrCancelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
@@ -1160,16 +1236,14 @@ onMounted(() => {
                 selectedService.value?.subServices?.push(subService);
               });
             }
-            if (appointmentData.action) {
-              if (
-                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-              ) {
-                nextRescheduleAppointment();
-              } else {
-                nextCancelAppointment();
-              }
-            } else {
+            if (!appointmentData.action || isAppointmentInPast.value) {
               currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
             }
           }
         } else {
@@ -1227,7 +1301,9 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = localStorageData.currentView;
+          currentView.value = isAppointmentInPast.value
+            ? 3
+            : localStorageData.currentView;
         });
       }
     }
@@ -1235,6 +1311,7 @@ onMounted(() => {
   if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
     localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
+  focusActiveStepperItem();
 });
 </script>
 <style lang="scss" scoped>

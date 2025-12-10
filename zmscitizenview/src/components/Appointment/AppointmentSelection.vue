@@ -44,15 +44,29 @@
       </template>
     </muc-callout>
   </div>
-  <div v-else-if="!error && hasSelectedProviderWithAppointments">
+  <div
+    v-else-if="
+      !error &&
+      (hasSelectedProviderWithAppointments ||
+        !availableDaysFetched ||
+        isSwitchingProvider)
+    "
+    class="m-component"
+  >
     <CalendarListToggle
       :t="t"
       :isListView="isListView"
       @update:isListView="isListView = $event"
     />
+    <div
+      v-if="!availableDaysFetched || isSwitchingProvider"
+      class="m-spinner-container"
+    >
+      <MucSpinner :text="t('spinnerText')" />
+    </div>
     <CalendarView
       ref="calendarViewRef"
-      v-if="!isListView"
+      v-else-if="!isListView"
       :t="t"
       :selectedDay="selectedDay"
       :calendarKey="calendarKey"
@@ -89,7 +103,7 @@
 
     <ListView
       ref="listViewRef"
-      v-if="isListView"
+      v-else-if="isListView"
       :t="t"
       :isLoadingAppointments="isLoadingAppointments"
       :availabilityInfoHtml="availabilityInfoHtml"
@@ -154,7 +168,10 @@
       </template>
     </muc-callout>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="buttons"
+    class="m-button-group"
+  >
     <muc-button
       v-if="!isRebooking"
       icon="arrow-left"
@@ -190,7 +207,11 @@ import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
-import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucSpinner,
+} from "@muenchen/muc-patternlab-vue";
 import {
   computed,
   inject,
@@ -309,9 +330,10 @@ let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Reference to the appointment summary.
- * After selecting a time slot, the focus is placed on the appointment summary.
+ * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
  */
 const summary = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
@@ -534,8 +556,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    summary.value.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+    (buttons.value.lastChild as HTMLElement | null)?.focus({
+      preventScroll: true,
+    });
   }
 };
 
@@ -1232,6 +1256,7 @@ watch(
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+@use "@/styles/style.scss";
 
 .m-button-group {
   margin-bottom: 20px;
