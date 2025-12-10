@@ -16,7 +16,9 @@ class Base extends \BO\Zmsstatistic\BaseController
         'subjectid',
         'scopeids',
         'max',
-        'sum'
+        'sum',
+        'ticketprinter',
+        'ticketprintermissed'
     ];
     public static $subjectTranslations = [
         'waitingscope' => 'Wartesituation',
