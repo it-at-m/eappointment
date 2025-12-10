@@ -477,7 +477,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  await refetchAvailableDaysForSelection();
+  await fetchAvailableDaysForSelection();
 };
 
 const TODAY = new Date();
@@ -761,7 +761,7 @@ const handleError = (data: any): void => {
 };
 
 // API calls
-const refetchAvailableDaysForSelection = async (): Promise<void> => {
+const fetchAvailableDaysForSelection = async (): Promise<void> => {
   // Always fetch available days for ALL providers to maintain the full list
   const allProviderIds = (selectableProviders.value || []).map((p) =>
     Number(p.id)
@@ -1067,7 +1067,11 @@ function scheduleRefreshAfterProviderChange() {
     const prevSelectedDay = selectedDay.value
       ? new Date(selectedDay.value)
       : undefined;
-    await refetchAvailableDaysForSelection();
+
+    // No need to refetch availableDays - we already have all provider data from initial fetch
+    // Just update the UI based on current selection
+    isSwitchingProvider.value = false;
+
     // Selection changed while awaiting? Abort this cycle.
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;

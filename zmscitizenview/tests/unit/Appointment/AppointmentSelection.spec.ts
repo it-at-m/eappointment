@@ -518,50 +518,35 @@ describe("AppointmentSelection", () => {
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
 
-      // Mock the availableDays to simulate what would be fetched for selected providers
+      // Mock availableDays where 2025-06-16 only has provider 10470, and 2025-06-17 has provider 10351880
+      // This means when we select only 10351880, the current date (2025-06-16) becomes invalid
       wrapper.vm.availableDays = [
-        { time: '2025-06-16', providerIDs: '10351880,10470' },
-        { time: '2025-06-17', providerIDs: '10351880,10470' },
+        { time: '2025-06-16', providerIDs: '10470' },
+        { time: '2025-06-17', providerIDs: '10351880' },
       ];
 
-      // Set current date explicitly to the one without appointments
+      // Set current date to 2025-06-16 (only available for provider 10470)
       wrapper.vm.selectedDay = new Date('2025-06-16');
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
 
-      // Control subsequent refetches: first refetch returns both days, final refetch returns only 2025-06-17
-      let refetchCall = 0;
-      (fetchAvailableDays as Mock).mockImplementation(() => {
-        refetchCall += 1;
-        if (refetchCall === 1) {
-          return Promise.resolve({
-            availableDays: [
-              { time: '2025-06-16', providerIDs: '10351880,10470' },
-              { time: '2025-06-17', providerIDs: '10351880,10470' }
-            ]
-          });
-        }
-        return Promise.resolve({
-          availableDays: [
-            { time: '2025-06-17', providerIDs: '10351880' }
-          ]
-        });
-      });
-
-      // Simulate provider change to trigger nearest-date selection pipeline with deep change
-      wrapper.vm.selectedProviders = { '10351880': false, '10470': true } as any;
+      // Initially both providers are selected
+      wrapper.vm.selectedProviders = { '10351880': true, '10470': true } as any;
       await nextTick();
       await flushPromises();
+
+      // Now deselect provider 10470, leaving only 10351880 selected
+      // Since 2025-06-16 only has 10470, the date should snap to 2025-06-17
       wrapper.vm.selectedProviders = { '10351880': true, '10470': false } as any;
       await nextTick();
       await flushPromises();
-      // Wait for debounced pipeline (150ms) + fetch/updates to complete
-      await new Promise(r => setTimeout(r, 900));
+      // Wait for debounced pipeline (150ms) + updates to complete
+      await new Promise(r => setTimeout(r, 300));
       await nextTick();
       await flushPromises();
 
-      // Should snap to 2025-06-17 as nearest available date after provider change
+      // Should snap to 2025-06-17 as nearest available date for selected provider
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-17'));
     });
 
