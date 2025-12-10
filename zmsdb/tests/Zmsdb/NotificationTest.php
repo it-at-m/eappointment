@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 
 namespace BO\Zmsdb\Tests;
 
@@ -91,7 +91,20 @@ class NotificationTest extends Base
                     [
                         "date"=>"1464339600",
                         "scope"=>[
-                            "id"=>"141"
+                            "id"=>"141",
+                            "provider" => [
+                                "id"   => 123456,
+                                "name" => "Bürgeramt 1",
+                                "displayName" => "001",
+                                "contact" => [
+                                    "name"        => "Bürgeramt 1",
+                                    "street"      => "Unter den Linden",
+                                    "streetNumber"=> "1",
+                                    "postalCode"  => "12345",
+                                    "city"        => "Berlin"
+                                ]
+                            ],
+                            "shortName" => "Zentrale"
                         ],
                         "slotCount"=>"1"
                     ]
@@ -107,7 +120,21 @@ class NotificationTest extends Base
                 "authKey" => "f22c",
                 "reminderTimestamp" => 1447931730000,
                 "scope" => [
-                    "id" => 141
+                    "id" => 141,
+                    "provider" => [
+                        // minimal schema-konforme Struktur gemäß provider.json
+                        "id"   => 123456,
+                        "name" => "Bürgeramt 1",
+                        "displayName" => "001",
+                        "contact" => [
+                            "name"        => "Bürgeramt 1",
+                            "street"      => "Unter den Linden",
+                            "streetNumber"=> "1",
+                            "postalCode"  => "12345",
+                            "city"        => "Berlin"
+                        ]
+                    ],
+                    "shortName" => "Zentrale"
                 ],
                 "status" => "confirmed"
             ],
