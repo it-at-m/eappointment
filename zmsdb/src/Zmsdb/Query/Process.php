@@ -349,6 +349,7 @@ class Process extends Base implements MappingInterface
             '__clientsCount' => 'process.AnzahlPersonen',
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
+            'isTicketprinter' => 'process.is_ticketprinter',
         ], 'strlen');
     }
 
