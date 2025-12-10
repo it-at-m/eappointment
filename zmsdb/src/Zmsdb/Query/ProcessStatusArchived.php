@@ -61,6 +61,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                     "finished"
                 )'
             ),
+            'isTicketprinter' => 'process.is_ticketprinter',
         ];
     }
 
