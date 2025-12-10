@@ -67,11 +67,7 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="
-              VARIANTS_WITH_LOCATION_HINTS.includes(variant.variantId)
-                ? t(`locationVariantText.${variant.variantId}`)
-                : undefined
-            "
+            :hint="getVariantHint(variant.variantId, t)"
           />
         </muc-radio-button-group>
       </div>
@@ -198,6 +194,7 @@ import {
   getServiceBaseURL,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
+  getVariantHint,
 } from "@/utils/Constants";
 import {
   createErrorStates,
@@ -205,8 +202,6 @@ import {
 } from "@/utils/errorHandler";
 
 const isCaptchaValid = ref<boolean>(false);
-
-const VARIANTS_WITH_LOCATION_HINTS = [1, 2, 3] as const;
 
 const props = defineProps<{
   globalState: GlobalState;
