@@ -24,7 +24,6 @@ class ClientReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $this->isSuperUser = $args['isSuperUser'] ?? false;
         $title = 'clientstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
