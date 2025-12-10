@@ -50,8 +50,9 @@ class Organisation extends BaseController
             }
         }
 
+        // If there was an error, use the submitted input data for form re-population
         $organisationData = (isset($result) && is_array($result) && isset($result['data']))
-            ? array_merge($entity->getArrayCopy(), $input ?? [])
+            ? new Entity(array_merge($entity->getArrayCopy(), $input ?? []))
             : $entity;
 
         return \BO\Slim\Render::withHtml(
@@ -72,7 +73,7 @@ class Organisation extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;
-        return $this->handleEntityWriteException(function () use ($entity) {
+        return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/organisation/' . $entity->id . '/', $entity)->getEntity();
         });
     }

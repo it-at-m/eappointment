@@ -41,6 +41,7 @@ class Department extends BaseController
             }
         }
 
+        // If there was an error, use the submitted input data for form re-population
         $departmentData = (isset($result) && is_array($result) && isset($result['data']))
             ? array_merge((new Schema($entity))->toSanitizedArray(), $input ?? [])
             : (new Schema($entity))->toSanitizedArray();
@@ -110,7 +111,7 @@ class Department extends BaseController
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;
         $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
-        return $this->handleEntityWriteException(function () use ($entity) {
+        return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult(
                 '/department/' . $entity->id . '/',
                 $entity

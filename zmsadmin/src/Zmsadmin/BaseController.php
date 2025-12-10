@@ -84,7 +84,14 @@ abstract class BaseController extends \BO\Slim\Controller
         return $transformed;
     }
 
-    protected function handleEntityWriteException(callable $httpCall)
+    /**
+     * Wraps an HTTP write operation with standardized exception handling.
+     *
+     * @param callable $httpCall
+     * @return mixed
+     * @throws \BO\Zmsclient\Exception
+     */
+    protected function handleEntityWrite(callable $httpCall)
     {
         try {
             return $httpCall();

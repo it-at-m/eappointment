@@ -97,7 +97,7 @@ class Scope extends BaseController
     protected function writeUpdatedEntity($input, $entityId = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        return $this->handleEntityWriteException(function () use ($entity, $entityId) {
+        return $this->handleEntityWrite(function () use ($entity, $entityId) {
             if ($entity->id) {
                 $entity->id = $entityId;
                 return \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();

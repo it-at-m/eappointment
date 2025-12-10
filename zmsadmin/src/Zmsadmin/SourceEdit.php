@@ -79,7 +79,7 @@ class SourceEdit extends BaseController
     protected function writeUpdatedEntity($input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        return $this->handleEntityWriteException(function () use ($entity) {
+        return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/source/', $entity)->getEntity();
         });
     }
