@@ -155,13 +155,13 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="truncate" title="{{ item.customTextfield|decodeEntities }}">
+									<td title="{{ item.customTextfield|decodeEntities }}">
 										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="truncate" title="{{ item.customTextfield2|decodeEntities }}">
+									<td title="{{ item.customTextfield2|decodeEntities }}">
 										{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
@@ -418,13 +418,13 @@
 										</p>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td class="truncate" title="{{ item.customTextfield|decodeEntities }}">
+										<td title="{{ item.customTextfield|decodeEntities }}">
 											{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 											{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td class="truncate" title="{{ item.customTextfield2|decodeEntities }}">
+										<td title="{{ item.customTextfield2|decodeEntities }}">
 											{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
 											{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
@@ -549,13 +549,13 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="truncate" title="{{ item.customTextfield|decodeEntities }}">
+									<td title="{{ item.customTextfield|decodeEntities }}">
 										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="truncate" title="{{ item.customTextfield2|decodeEntities }}">{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
+									<td title="{{ item.customTextfield2|decodeEntities }}">{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
 								{% endif %}
 								<td>
