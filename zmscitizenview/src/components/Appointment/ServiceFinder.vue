@@ -129,7 +129,7 @@
           aria-hidden="true"
           focusable="false"
         />
-        <div ref="durationInfo">
+        <div>
           <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
@@ -150,7 +150,10 @@
       />
     </div>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="nextButton"
+    class="m-button-group"
+  >
     <muc-button
       v-if="service"
       :disabled="isNextDisabled"
@@ -269,8 +272,8 @@ const shouldShowLessButton = computed(() => {
   );
 });
 
-const durationInfo = ref<HTMLElement | null>(null);
 const baseServiceId = ref<number | string | null>(null);
+const nextButton = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
 watch(service, (newService) => {
@@ -484,7 +487,7 @@ const setOftenSearchedService = (serviceId: string) => {
 const nextStep = () => emit("next");
 
 const skipSubservices = () => {
-  if (durationInfo.value) durationInfo.value.focus();
+  nextButton.value?.firstChild?.focus();
 };
 
 /**
