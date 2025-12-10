@@ -5,8 +5,8 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Notification as Query;
 use \BO\Zmsentities\Notification as Entity;
 
-// class NotificationTest extends Base
-// {
+class NotificationTest extends Base
+{
     // public function testBasic()
     // {
     //     $now = static::$now;
@@ -147,4 +147,4 @@ use \BO\Zmsentities\Notification as Entity;
 //         ));
 //         return $input;
 //     }
-// }
+}
