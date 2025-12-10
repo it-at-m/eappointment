@@ -68,7 +68,7 @@
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
             :hint="
-              [1, 2, 3].includes(variant.variantId)
+              VARIANTS_WITH_LOCATION_HINTS.includes(variant.variantId)
                 ? t(`locationVariantText.${variant.variantId}`)
                 : undefined
             "
@@ -205,6 +205,8 @@ import {
 } from "@/utils/errorHandler";
 
 const isCaptchaValid = ref<boolean>(false);
+
+const VARIANTS_WITH_LOCATION_HINTS = [1, 2, 3] as const;
 
 const props = defineProps<{
   globalState: GlobalState;
