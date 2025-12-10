@@ -32,119 +32,92 @@ class NotificationTest extends Base
     //     $this->assertFalse($entity2->hasId($entity->id), "Deleted Notification still exists in Database.");
     // }
 
-//     public function testWriteInCalculationTable()
-//     {
-//         $query = new Query();
-//         $input = $this->getTestEntity();
-//         $input->process = new \BO\Zmsentities\Process($input->process);
-//         $this->assertTrue($query->writeInCalculationTable($input));
-//     }
+    public function testWriteInCalculationTable()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process = new \BO\Zmsentities\Process($input->process);
+        $this->assertTrue($query->writeInCalculationTable($input));
+    }
 
-//     public function testWriteInCalculationTableWithoutProcess()
-//     {
-//         $query = new Query();
-//         $input = $this->getTestEntity();
-//         $input['process'] = new \BO\Zmsentities\Process(['id' => 141]);
-//         $this->assertFalse($query->writeInCalculationTable($input));
-//     }
+    public function testWriteInCalculationTableWithoutProcess()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input['process'] = new \BO\Zmsentities\Process(['id' => 141]);
+        $this->assertFalse($query->writeInCalculationTable($input));
+    }
 
-//     public function testExceptionWithoutTelephone()
-//     {
-//         $now = static::$now;
-//         $this->expectException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
-//         $query = new Query();
-//         $input = $this->getTestEntity();
-//         $input->process['clients'][0]['telephone'] = '';
-//         $query->writeInQueue($input, $now);
-//     }
+    public function testExceptionWithoutTelephone()
+    {
+        $now = static::$now;
+        $this->expectException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process['clients'][0]['telephone'] = '';
+        $query->writeInQueue($input, $now);
+    }
 
-//     public function testExceptionMissingProperty()
-//     {
-//         $now = static::$now;
-//         $this->expectException('\BO\Zmsentities\Exception\NotificationMissedProperty');
-//         $query = new Query();
-//         $input = $this->getTestEntity();
-//         unset($input->message);
-//         $query->writeInQueue($input, $now);
-//     }
+    public function testExceptionMissingProperty()
+    {
+        $now = static::$now;
+        $this->expectException('\BO\Zmsentities\Exception\NotificationMissedProperty');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        unset($input->message);
+        $query->writeInQueue($input, $now);
+    }
 
-//     protected function getTestEntity()
-//     {
-//         $input = new Entity(array(
-//             "id" => 1234,
-//             "createIP" => "145.15.3.10",
-//             "createTimestamp" => 1447931596,
-//             "department" => [
-//                 "id" => 72,
-//                 "preferences" => [
-//                     "notifications" => [
-//                         "enabled" => true,
-//                         "identification" => "terminvereinbarung@mitte.berlin.de",
-//                         "sendConfirmationEnabled" => true,
-//                         "sendReminderEnabled" => true
-//                     ]
-//                 ]
-//             ],
-//             "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
-//             "process" => [
-//                 "appointments"=>[
-//                     [
-//                         "date"=>"1464339600",
-//                         "scope"=>[
-//                             "id"=>"141",
-//                             "provider" => [
-//                                 "id"   => 123456,
-//                                 "name" => "Bürgeramt 1",
-//                                 "displayName" => "001",
-//                                 "contact" => [
-//                                     "name"        => "Bürgeramt 1",
-//                                     "street"      => "Unter den Linden",
-//                                     "streetNumber"=> "1",
-//                                     "postalCode"  => "12345",
-//                                     "city"        => "Berlin"
-//                                 ]
-//                             ],
-//                             "shortName" => "Zentrale"
-//                         ],
-//                         "slotCount"=>"1"
-//                     ]
-//                 ],
-//                 "clients" => [
-//                     [
-//                         "familyName" => "Max Mustermann",
-//                         "email" => "max@service.berlin.de",
-//                         "telephone" => "030 115"
-//                     ]
-//                 ],
-//                 "id" => 80410,
-//                 "authKey" => "f22c",
-//                 "reminderTimestamp" => 1447931730000,
-//                 "scope" => [
-//                     "id" => 141,
-//                     "provider" => [
-//                         // minimal schema-konforme Struktur gemäß provider.json
-//                         "id"   => 123456,
-//                         "name" => "Bürgeramt 1",
-//                         "displayName" => "001",
-//                         "contact" => [
-//                             "name"        => "Bürgeramt 1",
-//                             "street"      => "Unter den Linden",
-//                             "streetNumber"=> "1",
-//                             "postalCode"  => "12345",
-//                             "city"        => "Berlin"
-//                         ]
-//                     ],
-//                     "shortName" => "Zentrale"
-//                 ],
-//                 "status" => "confirmed"
-//             ],
-//             "client" => [
-//                 "familyName" => "Max Mustermann",
-//                 "email" => "max@service.berlin.de",
-//                 "telephone" => "030 115"
-//             ]
+    protected function getTestEntity()
+    {
+        $input = new Entity(array(
+            "id" => 1234,
+            "createIP" => "145.15.3.10",
+            "createTimestamp" => 1447931596,
+            "department" => [
+                "id" => 72,
+                "preferences" => [
+                    "notifications" => [
+                        "enabled" => true,
+                        "identification" => "terminvereinbarung@mitte.berlin.de",
+                        "sendConfirmationEnabled" => true,
+                        "sendReminderEnabled" => true
+                    ]
+                ]
+            ],
+            "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
+            "process" => [
+                "appointments"=>[
+                    [
+                        "date"=>"1464339600",
+                        "scope"=>[
+                            "id"=>"141"
+                        ],
+                        "slotCount"=>"1"
+                    ]
+                ],
+                "clients" => [
+                    [
+                        "familyName" => "Max Mustermann",
+                        "email" => "max@service.berlin.de",
+                        "telephone" => "030 115"
+                    ]
+                ],
+                "id" => 80410,
+                "authKey" => "f22c",
+                "reminderTimestamp" => 1447931730000,
+                "scope" => [
+                    "id" => 141
+                ],
+                "status" => "confirmed"
+            ],
+            "client" => [
+                "familyName" => "Max Mustermann",
+                "email" => "max@service.berlin.de",
+                "telephone" => "030 115"
+            ]
 
-//         ));
-//         return $input;
-//     }
+        ));
+        return $input;
+    }
 }
