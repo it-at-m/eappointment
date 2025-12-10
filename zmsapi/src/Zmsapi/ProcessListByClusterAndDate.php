@@ -85,7 +85,7 @@ class ProcessListByClusterAndDate extends BaseController
             ]);
         }
 
-        $queueList = $queueList->toProcessList()->withResolveLevel(2);
+        $queueList = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
         foreach ($queueList as $queue) {
             if (!$queue->scope->id) {
                 continue;
