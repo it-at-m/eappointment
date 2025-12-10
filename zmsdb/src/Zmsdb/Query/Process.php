@@ -497,6 +497,21 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds($scopeIds)
+    {
+        if (count($scopeIds) == 1) {
+            return $this->addConditionScopeId($scopeIds[0]);
+        }
+
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($scopeIds) {
+            $query
+                ->andWith('process.StandortID', 'IN', $scopeIds)
+                ->orWith('process.AbholortID', 'IN', $scopeIds);
+        });
+
+        return $this;
+    }
+
     public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
     {
         ($queueLimit > $queueNumber)
@@ -699,6 +714,9 @@ class Process extends Base implements MappingInterface
         ];
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
             $values['apiClientID'] = $process->apiclient->apiClientID;
+        }
+        if (isset($process->isTicketprinter) && $process->isTicketprinter) {
+            $values['is_ticketprinter'] = 1;
         }
         $this->addValues($values);
     }

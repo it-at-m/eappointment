@@ -40,6 +40,7 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 ]);
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
+export const QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER = "ap-display";
 
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 

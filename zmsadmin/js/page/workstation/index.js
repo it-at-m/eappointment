@@ -109,13 +109,9 @@ class View extends BaseView {
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
-        if (this.selectedProcess) {
-            // Editing an existing appointment -> full reload
-            this.loadAppointmentForm(true, false);
-        } else {
-            // Creating a new appointment -> partial reload
-            this.loadAppointmentForm(true, true);
-        }
+        this.loadAppointmentForm(true, !this.selectedProcess).loadFreeProcessList().loadList().then(() => {
+            this.bindEvents();
+        });
     }
 
     addFocusTrap(elem) {
