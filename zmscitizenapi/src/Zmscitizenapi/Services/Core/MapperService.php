@@ -241,7 +241,15 @@ class MapperService
             $variantId = isset($service->variant_id) ? (int)$service->variant_id : (isset($extra['variant_id']) ? (int)$extra['variant_id'] : null);
 
             if (!empty($servicesProviderIds[$service->getId()])) {
-                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable(), parentId: $parentId, variantId: $variantId);
+                $services[] = new Service(
+                    id: (int) $service->getId(),
+                    name: $service->getName(),
+                    maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1,
+                    combinable: $combinable ?? new Combinable(),
+                    parentId: $parentId,
+                    variantId: $variantId,
+                    showOnStartPage: $service->getAdditionalData()['showOnStartPage'] ?? true,
+                );
             }
         }
 
@@ -416,6 +424,7 @@ class MapperService
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            displayNumber: ($myProcess->getDisplayNumber() ?: null),
             icsContent: isset($icsContent) ? $icsContent : null
         );
     }

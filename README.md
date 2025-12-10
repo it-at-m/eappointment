@@ -247,10 +247,22 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
 
+**Using Docker:**
+
 ```bash
 cd zmsclient
 docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
+
+**Using Podman:**
+
+```bash
+cd zmsclient
+./zmsclient-test
+./zmsclient-test --filter "testSetKeyBasic"
+```
+
+The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
 
 #### Traditional Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
@@ -367,6 +379,93 @@ cd zmsapi
 * **Use when**: You want to clear all cached dependencies and start completely fresh
 * **What it does**: Runs `docker-compose down -v` to remove everything
 * **After reset**: Next run will be treated as a "first run" with full setup
+
+### API Testing (zmsapiautomation)
+
+**zmsapiautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
+
+**Using the test runner script (Recommended):**
+
+The `zmsapiautomation-test` script automatically handles database setup, migrations, and test execution:
+
+```bash
+cd zmsapiautomation
+./zmsapiautomation-test                    # Run all tests
+./zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+./zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+```
+
+**Maven Test Filtering:**
+
+The script supports Maven Surefire test filtering using the `-Dtest` parameter:
+
+```bash
+# Run a specific test class
+./zmsapiautomation-test -Dtest=StatusEndpointTest
+
+# Run a specific test method
+./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+
+# Run multiple test classes
+./zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+
+# Run tests matching a pattern
+./zmsapiautomation-test -Dtest=*EndpointTest
+
+# Run tests with additional Maven options
+./zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+```
+
+**Environment Configuration:**
+
+The script automatically detects Podman or DDEV environments and sets appropriate defaults:
+
+- **Podman**: Uses `http://zms-web/terminvereinbarung/api/2` for BASE_URI
+- **DDEV**: Uses `http://web/terminvereinbarung/api/2` for BASE_URI
+
+You can override these defaults:
+
+```bash
+BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsapiautomation-test
+CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsapiautomation-test
+```
+
+**What the Script Does:**
+
+1. Backs up the current database
+2. Clears application caches
+3. Drops all database tables for a clean state
+4. Imports base database schema from `.resources/zms.sql`
+5. Runs Flyway migrations for test data
+6. Runs PHP migrations
+7. Executes hourly cronjob to import Munich DLDB data (if configured)
+8. Performs health checks on both APIs
+9. Runs Maven tests with REST-assured
+10. Collects and displays test results
+11. Restores the original database
+12. Cleans up test artifacts
+
+**Data Preparation (Optional):**
+
+To import Munich DLDB data during test setup:
+
+```bash
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsapiautomation-test
+```
+
+**Running Tests Directly with Maven:**
+
+For local development without the full setup script:
+
+```bash
+cd zmsapiautomation
+mvn test -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+mvn test -Dtest=StatusEndpointTest -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+```
+
+**References:**
+- REST-assured: https://github.com/rest-assured/rest-assured
 
 ### Common Errors
 

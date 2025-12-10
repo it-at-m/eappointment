@@ -137,6 +137,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopes(): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
@@ -322,7 +325,7 @@ class ZmsApiFacadeService
             'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
             'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
             'activationDuration' => MapperService::extractActivationDuration($matchingScope),
-            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint(),
+            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint()
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -809,6 +812,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         $process = self::getProcessById($processId, $authKey, $user);

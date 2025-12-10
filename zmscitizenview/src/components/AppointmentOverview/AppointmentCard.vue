@@ -3,7 +3,7 @@
     class="multiline-text"
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
-    @click="goToAppointmentLink(appointment.processId!)"
+    @click="goToAppointmentLink()"
   >
     <template #headerPrefix>
       <calendar-icon
@@ -23,7 +23,7 @@
         {{ selectedProvider?.address.house_number }} <br />
       </p>
       <strong>{{ t("appointmentNumber") }}:</strong>
-      {{ appointment.processId }}
+      {{ appointment.displayNumber ?? appointment.processId }}
     </template>
   </muc-card>
 </template>
@@ -35,7 +35,10 @@ import { onMounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
-import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
+import {
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+  QUERY_PARAM_APPOINTMENT_ID,
+} from "@/utils/Constants";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
@@ -48,8 +51,19 @@ const props = defineProps<{
 
 const selectedProvider = ref<Office>();
 
-const goToAppointmentLink = (appointmentNumber: string) => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointmentNumber}`;
+const goToAppointmentLink = () => {
+  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  url.searchParams.set(
+    QUERY_PARAM_APPOINTMENT_ID,
+    props.appointment.processId!
+  );
+  if (props.appointment.displayNumber) {
+    url.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+      props.appointment.displayNumber
+    );
+  }
+  location.href = url.toString();
 };
 
 onMounted(() => {

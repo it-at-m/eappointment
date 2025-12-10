@@ -20,5 +20,10 @@
     {% endblock %}
     {% block board_footer %}
         <a title="{% trans %}den Wochenkalender (Übersicht) anzeigen{% endtrans %}" href="{{ urlGet('calendar_week', {year:selectedYear, weeknr:selectedWeek|number_format}, {}) }}">Wochenkalender</a>
+        {% if workstation.scope and workstation.useraccount.rights.scope %}
+            <br>
+            <br>
+            <a title="{% trans %}Öffnungszeiten{% endtrans %}" href="{{ urlGet('scopeAvailabilityMonth', {'id':workstation.scope.id}, {}) }}">{% trans %}Öffnungszeiten{% endtrans %}</a>
+        {% endif %}
     {% endblock %}
 {% endembed %}
