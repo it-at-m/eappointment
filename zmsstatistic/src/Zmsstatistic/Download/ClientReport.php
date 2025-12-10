@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class ClientReport extends Base
 {
-    protected $isSuperUser = false;
     /**
      * @SuppressWarnings(Param)
      * @return ResponseInterface
@@ -81,12 +80,8 @@ class ClientReport extends Base
         $end = array_splice($reportHeader, -1);  // get the last element
         $reportHeader[] = static::$headlines['noappointment'];
         $reportHeader[] = static::$headlines['missednoappointment'];
-
-        // Add E-Kiosk columns only for superusers
-        if ($this->isSuperUser) {
-            $reportHeader[] = static::$headlines['ticketprinter'];
-            $reportHeader[] = static::$headlines['ticketprintermissed'];
-        }
+        $reportHeader[] = static::$headlines['ticketprinter'];
+        $reportHeader[] = static::$headlines['ticketprintermissed'];
 
         $reportHeader = array_merge($reportHeader, $end);  // append them back after adding new headers
 
@@ -122,12 +117,8 @@ class ClientReport extends Base
 
             $reportTotal[] = $this->calculateNoAppointment($totals);
             $reportTotal[] = $this->calculateMissedNoAppointment($totals);
-
-            // Add E-Kiosk columns only for superusers
-            if ($this->isSuperUser) {
-                $reportTotal[] = (string)($totals['ticketprinter'] ?? 0);
-                $reportTotal[] = (string)($totals['ticketprintermissed'] ?? 0);
-            }
+            $reportTotal[] = (string)($totals['ticketprinter'] ?? 0);
+            $reportTotal[] = (string)($totals['ticketprintermissed'] ?? 0);
 
             $reportTotal = array_merge($reportTotal, $end);
 
@@ -164,12 +155,8 @@ class ClientReport extends Base
 
             $processedRow[] = $this->calculateNoAppointmentForRow($entry);
             $processedRow[] = $this->calculateMissedNoAppointmentForRow($entry);
-
-            // Add E-Kiosk columns only for superusers
-            if ($this->isSuperUser) {
-                $processedRow[] = (string)($entry['ticketprinter'] ?? 0);
-                $processedRow[] = (string)($entry['ticketprintermissed'] ?? 0);
-            }
+            $processedRow[] = (string)($entry['ticketprinter'] ?? 0);
+            $processedRow[] = (string)($entry['ticketprintermissed'] ?? 0);
 
             $processedRow = array_merge($processedRow, $end);
 
