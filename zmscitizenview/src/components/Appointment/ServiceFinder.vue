@@ -192,9 +192,9 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
+  getVariantHint,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
-  getVariantHint,
 } from "@/utils/Constants";
 import {
   createErrorStates,

@@ -105,7 +105,8 @@
 
             <template v-else>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong><br />
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                ><br />
               </p>
               <p>{{ getVariantHint(variantId, t) }}</p>
             </template>
@@ -316,10 +317,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import { 
-  getServiceBaseURL,
-  getVariantHint,
- } from "@/utils/Constants";
+import { getServiceBaseURL, getVariantHint } from "@/utils/Constants";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
