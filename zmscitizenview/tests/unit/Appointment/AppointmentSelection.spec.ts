@@ -297,8 +297,9 @@ describe("AppointmentSelection", () => {
     wrapper.vm.selectedProviders = {};
     await nextTick();
 
-    // When no providers are selected, availableDays should be empty
-    expect(wrapper.vm.availableDays).toEqual([]);
+    // With new behavior, availableDays still contains data for all providers (we always fetch all)
+    // The filtering happens in providersWithAvailableDays computed property
+    expect(wrapper.vm.availableDays).toEqual([{ time: "2025-06-17", providerIDs: "1,2" }]);
 
     // The error message should be shown when no provider with appointments is selected
     expect(wrapper.text()).toContain("errorMessageProviderSelection");
@@ -360,12 +361,17 @@ describe("AppointmentSelection", () => {
     await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }});
     await nextTick();
 
-    // When we uncheck a provider, availableDays becomes empty (only fetches for selected providers)
+    // Uncheck the provider - with new behavior, availableDays still contains data for all providers
     wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
     await nextTick();
 
-    // Since no providers are selected, availableDays is empty and all dates are disabled
-    expect(wrapper.vm.availableDays).toEqual([]);
+    // availableDays still has data (we always fetch all providers), but allowedDates
+    // checks if selected providers have appointments on that day
+    expect(wrapper.vm.availableDays).toEqual([
+      { time: '2025-05-14', providerIDs: '102522,54261,10489' },
+      { time: '2025-05-15', providerIDs: '102522' }
+    ]);
+    // With no providers selected, allowedDates returns false for all dates
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-17'))).toBeFalsy();
