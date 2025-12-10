@@ -1,5 +1,8 @@
 <template>
-  <div ref="summary">
+  <div
+    aria-live="polite"
+    ref="summary"
+  >
     <muc-callout
       v-if="
         selectedProvider &&

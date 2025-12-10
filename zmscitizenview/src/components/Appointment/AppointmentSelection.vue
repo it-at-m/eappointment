@@ -168,7 +168,10 @@
       </template>
     </muc-callout>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="buttons"
+    class="m-button-group"
+  >
     <muc-button
       v-if="!isRebooking"
       icon="arrow-left"
@@ -327,9 +330,10 @@ let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Reference to the appointment summary.
- * After selecting a time slot, the focus is placed on the appointment summary.
+ * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
  */
 const summary = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
@@ -552,8 +556,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    summary.value.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+    (buttons.value.lastChild as HTMLElement | null)?.focus({
+      preventScroll: true,
+    });
   }
 };
 
@@ -874,25 +880,39 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
 };
 
 function getAvailableProviders(
-  providers: OfficeImpl[],
-  selectedIds: number[]
+  selectedServices: { providers: OfficeImpl[]; id: number }[]
 ): OfficeImpl[] {
+  if (!selectedServices || selectedServices.length === 0) return [];
+
+  let allowedIds = new Set(selectedServices[0].providers.map((p) => p.id));
+  for (let i = 1; i < selectedServices.length; i++) {
+    const serviceIds = new Set(selectedServices[i].providers.map((p) => p.id));
+    allowedIds = new Set([...allowedIds].filter((id) => serviceIds.has(id)));
+  }
+
+  const allProviders = selectedServices.flatMap((s) => s.providers);
+  const filteredProvidersMap = new Map<number, OfficeImpl>();
+  allProviders.forEach((p) => {
+    if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
+  });
+  const filteredProviders = Array.from(filteredProvidersMap.values());
+
   return Object.values(
-    providers.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
-      (grouped[provider.name] ||= []).push(provider);
-      return grouped;
-    }, {})
+    filteredProviders.reduce<Record<string, OfficeImpl[]>>(
+      (grouped, provider) => {
+        (grouped[provider.name] ||= []).push(provider);
+        return grouped;
+      },
+      {}
+    )
   ).map((group) => {
     if (group.length === 1) return group[0];
 
-    // clean = passport provider
-    // restricted = default provider (hidden by passport related services)
     const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
     const restricted = group.find(
       (p) => (p.disabledByServices ?? []).length > 0
     );
 
-    // Fallbacks if one type is missing
     if (!clean && !restricted) return group[0];
     if (!restricted) return clean as OfficeImpl;
     if (!clean) return restricted as OfficeImpl;
@@ -900,8 +920,8 @@ function getAvailableProviders(
     const restrictedDisabled = (restricted.disabledByServices ?? []).map(
       Number
     );
-    const allDisabled = selectedIds.every((id) =>
-      restrictedDisabled.includes(id)
+    const allDisabled = selectedServices.every((s) =>
+      restrictedDisabled.includes(s.id)
     );
 
     return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
@@ -1066,33 +1086,15 @@ function scheduleRefreshAfterProviderChange() {
 
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
-    // Gather all selected service IDs (main + any chosen subservices)
-    const mainId = selectedService.value.id;
-    const chosenSubservices = (selectedService.value.subServices || []).filter(
-      (subservice) => subservice.count > 0
+    const mainService = selectedService.value;
+    const chosenSubservices = (mainService.subServices || []).filter(
+      (s) => s.count > 0
     );
-    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(
-      Number
-    );
-    const providers: OfficeImpl[] = selectedService.value.providers;
+    const allSelectedServices = [mainService, ...chosenSubservices];
+    const availableProviders = getAvailableProviders(allSelectedServices);
 
-    // Passport calendar functionality
-    const availableProviders = getAvailableProviders(providers, selectedIds);
+    selectableProviders.value = [...availableProviders];
 
-    // Checks whether there are restrictions on the providers due to the subservices.
-    if (selectedService.value.subServices) {
-      selectableProviders.value = availableProviders.filter((provider) => {
-        return chosenSubservices.every((subservice) =>
-          subservice.providers.some(
-            (subserviceProvider) => subserviceProvider.id == provider.id
-          )
-        );
-      });
-    } else {
-      selectableProviders.value = availableProviders;
-    }
-
-    // Checks whether a provider is already selected so that it is displayed first in the slider.
     let offices = selectableProviders.value.filter((office) => {
       if (props.preselectedOfficeId) {
         return office.id == props.preselectedOfficeId;
@@ -1103,7 +1105,6 @@ onMounted(() => {
       }
     });
 
-    // Add alternative locations to the slider if allowed
     const allowAlternativeLocations =
       offices.length === 0 ||
       offices[0].showAlternativeLocations === null ||
@@ -1126,7 +1127,6 @@ onMounted(() => {
       ];
     }
 
-    // Remember first office before sorting (preselected/selected stays first)
     const firstOfficeToShow = offices[0];
     if (selectableProviders.value) {
       selectableProviders.value = offices.sort((a, b) => {
@@ -1136,7 +1136,6 @@ onMounted(() => {
       });
     }
 
-    // If a preselected office ID is provided, only check the corresponding provider's checkbox
     if (props.preselectedOfficeId) {
       selectedProviders.value = selectableProviders.value.reduce(
         (acc, item) => {

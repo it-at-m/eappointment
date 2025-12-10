@@ -68,6 +68,7 @@
     >
       <muc-stepper
         v-if="!isAppointmentInPast"
+        ref="stepperRef"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -339,7 +340,15 @@ import {
   MucCallout,
   MucStepper,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -385,6 +394,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -549,6 +559,26 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
     currentErrorData.value
   );
 });
+
+type StepperInstance = ComponentPublicInstance | HTMLElement | null;
+const stepperRef = ref<StepperInstance>(null);
+
+const focusActiveStepperItem = async () => {
+  await nextTick();
+
+  // Zugriff auf das gerenderte DOM des Steppers
+  const rootEl =
+    (stepperRef.value as ComponentPublicInstance | null)?.$el ??
+    (stepperRef.value as HTMLElement | null);
+
+  if (!rootEl) return;
+
+  const activeIcon = rootEl.querySelector<HTMLElement>(
+    ".m-form-step__icon[aria-current='step']"
+  );
+
+  activeIcon?.focus();
+};
 
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
@@ -887,6 +917,7 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
+  focusActiveStepperItem();
 });
 
 /**
@@ -934,7 +965,18 @@ const saveAppointmentToLocalstorage = () => {
 };
 
 const viewAppointment = () => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
+  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  url.searchParams.set(
+    QUERY_PARAM_APPOINTMENT_ID,
+    appointment.value?.processId || ""
+  );
+  if (appointment.value?.displayNumber) {
+    url.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+      appointment.value.displayNumber
+    );
+  }
+  location.href = url.toString();
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
@@ -1269,6 +1311,7 @@ onMounted(() => {
   if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
     localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
+  focusActiveStepperItem();
 });
 </script>
 <style lang="scss" scoped>

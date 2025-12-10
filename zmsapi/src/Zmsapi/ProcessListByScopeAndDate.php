@@ -61,7 +61,7 @@ class ProcessListByScopeAndDate extends BaseController
             (new ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList()->sortByArrivalTime()->withResolveLevel(2);
+        $message->data = $queueList->toProcessList()->sortByEstimatedWaitingTime()->withResolveLevel(2);
         $message->data->addData($archivedProcesses);
 
         $response = Render::withLastModified($response, time(), '0');
