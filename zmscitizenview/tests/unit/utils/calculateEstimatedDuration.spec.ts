@@ -25,9 +25,9 @@ function makeProvider(id: string, slotTimeInMinutes = 10, slots = 1): OfficeImpl
 
 describe("calculateEstimatedDuration", () => {
   it("returns 0 if service or provider is undefined", () => {
-    expect(calculateEstimatedDuration(undefined, undefined)).toBe(0);
-    expect(calculateEstimatedDuration({} as ServiceImpl, undefined)).toBe(0);
-    expect(calculateEstimatedDuration(undefined, makeProvider("1"))).toBe(0);
+    expect(calculateEstimatedDuration(undefined, undefined)).toBe(null);
+    expect(calculateEstimatedDuration({} as ServiceImpl, undefined)).toBe(null);
+    expect(calculateEstimatedDuration(undefined, makeProvider("1"))).toBe(null);
   });
 
   it("calculates duration for main service only", () => {
@@ -64,7 +64,7 @@ describe("calculateEstimatedDuration", () => {
     expect(calculateEstimatedDuration(service, provider)).toBe(40);
   });
 
-  it("returns 0 if provider is not in service.providers", () => {
+  it("returns null if provider is not in service.providers", () => {
     const provider = makeProvider("1");
     const otherProvider = makeProvider("2");
     const service = {
@@ -74,10 +74,10 @@ describe("calculateEstimatedDuration", () => {
       providers: [otherProvider],
       count: 1,
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(0);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
-  it("returns 0 if counts or slots are zero or missing", () => {
+  it("returns null if counts or slots are zero or missing", () => {
     const provider = makeProvider("1", 10, 0);
     const service = {
       id: "s1",
@@ -86,7 +86,7 @@ describe("calculateEstimatedDuration", () => {
       providers: [provider],
       count: 0,
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(0);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
   it("sums durations for multiple subservices", () => {
@@ -116,7 +116,7 @@ describe("calculateEstimatedDuration", () => {
       count: 1,
       subServices: [sub],
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(10);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
   it("ignores subservices whose provider does not match", () => {
@@ -131,10 +131,10 @@ describe("calculateEstimatedDuration", () => {
       count: 1,
       subServices: [sub],
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(10);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
-  it("returns 0 if slotTimeInMinutes is missing", () => {
+  it("returns null if slotTimeInMinutes is missing", () => {
     const provider = { ...makeProvider("1"), slotTimeInMinutes: undefined } as OfficeImpl;
     const service = {
       id: "s1",
@@ -143,10 +143,10 @@ describe("calculateEstimatedDuration", () => {
       providers: [provider],
       count: 1,
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(0);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
-  it("returns 0 if slots is missing", () => {
+  it("returns null if slots is missing", () => {
     const provider = { ...makeProvider("1"), slots: undefined } as OfficeImpl;
     const service = {
       id: "s1",
@@ -155,7 +155,7 @@ describe("calculateEstimatedDuration", () => {
       providers: [provider],
       count: 1,
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(0);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
   it("ignores subservices with count 0", () => {
@@ -172,7 +172,7 @@ describe("calculateEstimatedDuration", () => {
     expect(calculateEstimatedDuration(service, provider)).toBe(10);
   });
 
-  it("returns 0 if service.providers is empty", () => {
+  it("returns null if service.providers is empty", () => {
     const provider = makeProvider("1", 10, 1);
     const service = {
       id: "s1",
@@ -181,7 +181,7 @@ describe("calculateEstimatedDuration", () => {
       providers: [],
       count: 1,
     } as ServiceImpl;
-    expect(calculateEstimatedDuration(service, provider)).toBe(0);
+    expect(calculateEstimatedDuration(service, provider)).toBe(null);
   });
 
   it("uses only matching provider if subservice has multiple providers", () => {
@@ -251,4 +251,4 @@ describe("calculateEstimatedDuration", () => {
     // Total: 30 + 20 + 20 = 70
     expect(calculateEstimatedDuration(service, provider)).toBe(70);
   });
-}); 
+});
