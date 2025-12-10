@@ -68,22 +68,10 @@ class UseraccountEdit extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->setPassword($input);
-        try {
-            $entity = \App::$http->readPostResult('/useraccount/' . $userAccountName . '/', $entity)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if (
-                '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
-            ) {
-                return [
-                    'template' => $template,
-                    'include' => true,
-                    'data' => $exception->data
-                ];
-            }
-            throw $exception;
-        }
-        return $entity;
+        return $this->handleEntityWrite(function () use ($entity, $userAccountName) {
+            return \App::$http
+                ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
+                ->getEntity();
+        });
     }
 }
