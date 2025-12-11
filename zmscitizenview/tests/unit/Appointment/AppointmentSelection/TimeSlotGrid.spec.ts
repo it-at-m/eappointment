@@ -6,7 +6,6 @@ vi.mock("@/utils/formatAppointmentDateTime", () => ({
 }));
 // @ts-expect-error: SFC import for test
 import TimeSlotGrid from "@/components/Appointment/AppointmentSelection/TimeSlotGrid.vue";
-import { tsModuleBlock } from "@babel/types";
 
 describe("TimeSlotGrid", () => {
   const MucButtonStub = {
