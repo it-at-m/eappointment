@@ -50,6 +50,7 @@ const props = defineProps<{
   showLocationTitle: boolean;
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
+  t: (key: string) => string;
 }>();
 
 defineEmits<{
@@ -59,15 +60,15 @@ defineEmits<{
   ): void;
 }>();
 
+const officeName = props.officeNameById(props.officeId) ?? "";
+const timeStampSuffix = props.t("timeStampSuffix");
+
 const timeSlotAriaLabel = (time: number): string => {
   const timeText = formatTimeFromUnix(time);
-  const officeName = props.officeNameById(props.officeId) ?? "";
-
   if (officeName) {
-    return `${timeText} Uhr, ${officeName}`;
+    return `${timeText} ${timeStampSuffix}, ${officeName}`;
   }
-
-  return `${timeText} Uhr`;
+  return `${timeText} ${timeStampSuffix}`;
 };
 </script>
 
