@@ -402,7 +402,7 @@ class Process extends Schema\Entity
         $this->customTextfield = (
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
-        $this->customTextfield = trim($this->customTextfield);;
+        $this->customTextfield = trim($this->customTextfield);
         return $this;
     }
 
@@ -416,7 +416,7 @@ class Process extends Schema\Entity
         $this->customTextfield2 = (
             isset($input['customTextfield2']) && $input['customTextfield2']
         ) ? $input['customTextfield2'] : '';
-        $this->customTextfield = trim($this->customTextfield);;
+        $this->customTextfield = trim($this->customTextfield);
         return $this;
     }
 
