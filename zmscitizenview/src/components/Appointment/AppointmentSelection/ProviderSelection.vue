@@ -4,7 +4,7 @@
       v-if="
         providersWithAppointments &&
         providersWithAppointments.length > 1 &&
-        selectableProviders.length > 0
+        selectableProviders.length > 1
       "
     >
       <div class="m-component slider-no-margin">
