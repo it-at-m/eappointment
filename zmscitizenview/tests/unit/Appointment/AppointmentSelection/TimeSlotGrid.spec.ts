@@ -6,6 +6,7 @@ vi.mock("@/utils/formatAppointmentDateTime", () => ({
 }));
 // @ts-expect-error: SFC import for test
 import TimeSlotGrid from "@/components/Appointment/AppointmentSelection/TimeSlotGrid.vue";
+import { tsModuleBlock } from "@babel/types";
 
 describe("TimeSlotGrid", () => {
   const MucButtonStub = {
@@ -16,6 +17,11 @@ describe("TimeSlotGrid", () => {
       '<button class="m-button" :data-variant="variant" @click="$emit(\'click\')"><slot/></button>',
   };
 
+  const tMock = (key: string) => {
+    if (key === "timeStampSuffix") return "Uhr";
+    return key;
+  };
+
   const baseProps = {
     officeId: 1,
     times: [1750915200, 1750918800, 1750922400],
@@ -23,6 +29,7 @@ describe("TimeSlotGrid", () => {
     showLocationTitle: true,
     officeNameById: (id: number | string) => (String(id) === "1" ? "Office X" : null),
     isSlotSelected: (officeId: number | string, time: number) => false,
+    t: tMock,
   };
 
   it("show/hide location title and uses officeNameById", async () => {
