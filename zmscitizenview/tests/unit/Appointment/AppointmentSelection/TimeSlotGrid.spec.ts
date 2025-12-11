@@ -90,4 +90,13 @@ describe("TimeSlotGrid", () => {
     expect(text).toContain('fmt-111');
     expect(text).toContain('fmt-222');
   });
+
+  it("renders aria-label with time, suffix, and office name", () => {
+    const wrapper = mount(TimeSlotGrid, {
+      global: { stubs: { MucButton: MucButtonStub } },
+      props: baseProps,
+    });
+    const buttons = wrapper.findAll('.timeslot');
+    expect(buttons[0].attributes('aria-label')).toBe('fmt-1750915200 Uhr, Office X');
+  });
 });

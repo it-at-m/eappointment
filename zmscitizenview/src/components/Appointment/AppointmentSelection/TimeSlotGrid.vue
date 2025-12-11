@@ -60,11 +60,11 @@ defineEmits<{
   ): void;
 }>();
 
-const officeName = props.officeNameById(props.officeId) ?? "";
-const timeStampSuffix = props.t("timeStampSuffix");
-
 const timeSlotAriaLabel = (time: number): string => {
   const timeText = formatTimeFromUnix(time);
+  const officeName = props.officeNameById(props.officeId) ?? "";
+  const timeStampSuffix = props.t("timeStampSuffix");
+
   if (officeName) {
     return `${timeText} ${timeStampSuffix}, ${officeName}`;
   }
