@@ -38,7 +38,8 @@ class Oidc extends BaseController
                 try {
                     $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
                     $username = $workstation->getUseraccount()->id;
-                    $sessionHash = hash('sha256', $workstation->authkey);
+                    $authkey = $workstation->authkey ?? Auth::getKey() ?? '';
+                    $sessionHash = hash('sha256', $authkey);
 
                     \App::$log->info('OIDC Login workstation access', [
                         'event' => 'oauth_login_workstation_access',
