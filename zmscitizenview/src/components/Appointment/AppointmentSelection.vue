@@ -899,6 +899,8 @@ function getAvailableProviders(
 ): OfficeImpl[] {
   if (!selectedServices || selectedServices.length === 0) return [];
 
+  const selectedServiceIds = selectedServices.map((s) => s.id);
+
   let allowedIds = new Set(selectedServices[0].providers.map((p) => p.id));
   for (let i = 1; i < selectedServices.length; i++) {
     const serviceIds = new Set(selectedServices[i].providers.map((p) => p.id));
@@ -910,8 +912,18 @@ function getAvailableProviders(
   allProviders.forEach((p) => {
     if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
   });
-  const filteredProviders = Array.from(filteredProvidersMap.values());
 
+  // Filter out providers where any selected service is in their disabledByServices
+  const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
+    (p) => {
+      const disabledServices = (p.disabledByServices ?? []).map(Number);
+      return !selectedServiceIds.some((serviceId) =>
+        disabledServices.includes(Number(serviceId))
+      );
+    }
+  );
+
+  // Group by name and return unique providers
   return Object.values(
     filteredProviders.reduce<Record<string, OfficeImpl[]>>(
       (grouped, provider) => {
@@ -920,27 +932,7 @@ function getAvailableProviders(
       },
       {}
     )
-  ).map((group) => {
-    if (group.length === 1) return group[0];
-
-    const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
-    const restricted = group.find(
-      (p) => (p.disabledByServices ?? []).length > 0
-    );
-
-    if (!clean && !restricted) return group[0];
-    if (!restricted) return clean as OfficeImpl;
-    if (!clean) return restricted as OfficeImpl;
-
-    const restrictedDisabled = (restricted.disabledByServices ?? []).map(
-      Number
-    );
-    const allDisabled = selectedServices.every((s) =>
-      restrictedDisabled.includes(s.id)
-    );
-
-    return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
-  });
+  ).map((group) => group[0]);
 }
 
 function updateDateRangeForSelectedProviders() {
