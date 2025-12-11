@@ -416,7 +416,7 @@ class Process extends Schema\Entity
         $this->customTextfield2 = (
             isset($input['customTextfield2']) && $input['customTextfield2']
         ) ? $input['customTextfield2'] : '';
-        $this->customTextfield = trim($this->customTextfield);
+        $this->customTextfield2 = trim($this->customTextfield2);
         return $this;
     }
 
