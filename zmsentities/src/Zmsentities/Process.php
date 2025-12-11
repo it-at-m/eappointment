@@ -388,7 +388,7 @@ class Process extends Schema\Entity
     {
         $this->amendment = $notice;
         $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
-        trim($this->amendment);
+        $this->amendment = trim($this->amendment);
         return $this;
     }
 
