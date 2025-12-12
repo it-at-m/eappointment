@@ -556,6 +556,21 @@ const providersWithAvailableDays = computed(() => {
     .sort((a, b) => (b.priority ?? -Infinity) - (a.priority ?? -Infinity));
 });
 
+// Effective selection: only count providers that actually have available days
+const effectiveSelectedProviders = computed(() => {
+  if (!providersWithAvailableDays.value?.length) return {};
+
+  const idsWithDays = new Set(
+    providersWithAvailableDays.value.map((p) => String(p.id))
+  );
+
+  return Object.fromEntries(
+    Object.entries(selectedProviders.value).filter(
+      ([id, isSelected]) => isSelected && idsWithDays.has(id)
+    )
+  );
+});
+
 const hasSelectedProviderWithAppointments = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
@@ -653,12 +668,8 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  // Check if any providers are selected
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
-  );
-
-  return selectedProviderIds.length === 0;
+  // Use effectiveSelectedProviders to only count providers that have available days
+  return Object.keys(effectiveSelectedProviders.value).length === 0;
 });
 
 // Threshold moved to constants
@@ -1200,31 +1211,6 @@ watch(selectableProviders, (newVal) => {
     initialized = true;
   }
 });
-
-// When providersWithAvailableDays changes, deselect providers that no longer have available days
-watch(
-  providersWithAvailableDays,
-  (providersWithDays) => {
-    if (!providersWithDays || providersWithDays.length === 0) return;
-
-    const idsWithDays = new Set(providersWithDays.map((p) => String(p.id)));
-    const updated = { ...selectedProviders.value };
-    let changed = false;
-
-    // Set providers without available days to false
-    for (const id of Object.keys(updated)) {
-      if (!idsWithDays.has(id) && updated[id] === true) {
-        updated[id] = false;
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      selectedProviders.value = updated;
-    }
-  },
-  { immediate: true }
-);
 
 watch(appointmentTimestampsByOffice, () => {
   // Only reset if we are in hourly view and a day is selected
