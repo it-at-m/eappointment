@@ -12,7 +12,7 @@ use BO\Zmsdb\Useraccount;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountList extends BaseController
+class UseraccountListByRole extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -23,12 +23,14 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $helper = new Helper\User($request, 1);
-        $helper->checkRights('useraccount');
-        $parameters = $request->getParams();
+        $roleLevel = $args['level'];
+        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
 
-        $workstation = Helper\User::$workstation;
-        $useraccountList = (new Useraccount())->readSearch($parameters, 0, $workstation);
+        $useraccountList = (new Useraccount())->readListRole($roleLevel, 0, $workstation);
+
+        if (! $useraccountList or count($useraccountList) === 0) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
+        }
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
