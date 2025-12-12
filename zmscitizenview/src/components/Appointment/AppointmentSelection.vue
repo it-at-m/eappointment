@@ -557,17 +557,15 @@ const providersWithAvailableDays = computed(() => {
 });
 
 // Effective selection: only count providers that actually have available days
-const effectiveSelectedProviders = computed(() => {
-  if (!providersWithAvailableDays.value?.length) return {};
+const effectiveSelectedProviderIds = computed(() => {
+  if (!providersWithAvailableDays.value?.length) return [];
 
   const idsWithDays = new Set(
     providersWithAvailableDays.value.map((p) => String(p.id))
   );
 
-  return Object.fromEntries(
-    Object.entries(selectedProviders.value).filter(
-      ([id, isSelected]) => isSelected && idsWithDays.has(id)
-    )
+  return Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id] && idsWithDays.has(id)
   );
 });
 
@@ -668,8 +666,7 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  // Use effectiveSelectedProviders to only count providers that have available days
-  return Object.keys(effectiveSelectedProviders.value).length === 0;
+  return effectiveSelectedProviderIds.value.length === 0;
 });
 
 // Threshold moved to constants
