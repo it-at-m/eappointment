@@ -39,6 +39,17 @@ class Useraccount extends Base
     /**
      * Register a cache key for one or more department IDs so we can invalidate
      * only the affected department-based caches later on.
+     *
+     * Note: This method uses a non-atomic read-modify-write pattern which may
+     * experience race conditions under high concurrency. Lost index entries are
+     * handled by the version-bump fallback in removeCache(), ensuring eventual
+     * consistency at the cost of a full cache invalidation.
+     *
+     * @see https://github.com/it-at-m/eappointment/issues/1804
+     *      Migration to Redis for atomic operations is tracked in issue #1804.
+     *
+     * @param array $departmentIds Department IDs to associate with the cache key
+     * @param string $cacheKey The cache key to register
      */
     protected function registerCacheKeyForDepartments(array $departmentIds, string $cacheKey): void
     {
