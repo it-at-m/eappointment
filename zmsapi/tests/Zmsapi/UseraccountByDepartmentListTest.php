@@ -4,7 +4,7 @@ namespace BO\Zmsapi\Tests;
 
 class UseraccountByDepartmentListTest extends Base
 {
-    protected $classname = "UseraccountByDepartmentList";
+    protected $classname = "UseraccountListByDepartments";
 
     public function testRendering()
     {
@@ -26,9 +26,12 @@ class UseraccountByDepartmentListTest extends Base
 
     public function testDepartmentNotFound()
     {
+        // Superusers skip department validation for performance, so non-existent departments
+        // will just return an empty user list instead of throwing an exception
         $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
-        $this->expectExceptionCode(403);
-        $this->render(['ids' => 99999], [], []);
+        $response = $this->render(['ids' => 99999], [], []);
+        $this->assertTrue(200 == $response->getStatusCode());
+        // Should return empty list for non-existent department
+        $this->assertStringNotContainsString('testuser', (string)$response->getBody());
     }
 }

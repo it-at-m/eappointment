@@ -94,9 +94,9 @@ class WorkstationSelectTest extends Base
             'workstation' => 12,
             'hint' => 'Test Aufrufzusatz',
             'workstation_select_form_validate' => 1,
-            'redirect' => 'useraccount'
+            'redirect' => 'useraccountList'
         ], [], 'POST');
-        $this->assertRedirect($response, '/useraccount/');
+        $this->assertRedirect($response, '/users/');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
