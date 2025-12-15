@@ -16,7 +16,7 @@
         <muc-select
           id="service-search"
           v-model="service"
-          :items="servicesWithoutParent"
+          :items="filteredServices"
           item-title="name"
           :label="t('serviceSearch')"
           :no-item-found-message="t('noServiceFound')"
@@ -67,6 +67,7 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
+            :hint="getVariantHint(variant.variantId, t)"
           />
         </muc-radio-button-group>
       </div>
@@ -129,7 +130,7 @@
           aria-hidden="true"
           focusable="false"
         />
-        <div ref="durationInfo">
+        <div>
           <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
@@ -150,7 +151,10 @@
       />
     </div>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="nextButton"
+    class="m-button-group"
+  >
     <muc-button
       v-if="service"
       :disabled="isNextDisabled"
@@ -188,6 +192,7 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
+  getVariantHint,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
@@ -269,8 +274,8 @@ const shouldShowLessButton = computed(() => {
   );
 });
 
-const durationInfo = ref<HTMLElement | null>(null);
 const baseServiceId = ref<number | string | null>(null);
+const nextButton = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
 watch(service, (newService) => {
@@ -419,8 +424,15 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 };
 
 const estimatedDuration = computed(() => {
-  const provider = service.value?.providers?.[0];
-  return calculateEstimatedDuration(service.value, provider);
+  const providers = service.value?.providers ?? [];
+
+  const validDurations = providers
+    .map((p) => calculateEstimatedDuration(service.value, p))
+    .filter((d): d is number => typeof d === "number" && d > 0);
+
+  if (validDurations.length === 0) return null;
+
+  return Math.min(...validDurations);
 });
 
 const showEstimatedDuration = computed(() => {
@@ -484,7 +496,7 @@ const setOftenSearchedService = (serviceId: string) => {
 const nextStep = () => emit("next");
 
 const skipSubservices = () => {
-  if (durationInfo.value) durationInfo.value.focus();
+  nextButton.value?.firstChild?.focus();
 };
 
 /**
@@ -609,8 +621,11 @@ onMounted(() => {
   }
 });
 
-const servicesWithoutParent = computed(() => {
-  return services.value.filter((service) => service.parentId === null);
+const hasNoParent = (service: Service) => service.parentId === null;
+const showOnStartPage = (service: Service) => service.showOnStartPage === true;
+
+const filteredServices = computed(() => {
+  return services.value.filter(hasNoParent).filter(showOnStartPage);
 });
 
 const variantServices = computed<Service[]>(() => {
@@ -669,6 +684,7 @@ function normalizeService(raw: any): Service {
     combinable: raw.combinable,
     parentId: raw.parent_id == null ? null : String(raw.parent_id),
     variantId: raw.variant_id == null ? null : Number(raw.variant_id),
+    showOnStartPage: raw.showOnStartPage,
   };
 }
 

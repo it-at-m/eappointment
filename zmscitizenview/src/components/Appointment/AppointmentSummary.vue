@@ -103,11 +103,19 @@
               <p>{{ t("locationVariantText.1") }}</p>
             </template>
 
-            <template v-else>
+            <template v-else-if="VARIANTS_WITH_HINTS.includes(variantId)">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t(`appointmentTypes.${variantId}`) }}:</strong><br />
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                ><br />
               </p>
-              <p>{{ t(`locationVariantText.${variantId}`) }}</p>
+              <p>{{ getVariantHint(variantId, t) }}</p>
+            </template>
+
+            <template v-else>
+              <p>
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                ><br />
+              </p>
             </template>
           </div>
 
@@ -316,7 +324,11 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import { getServiceBaseURL } from "@/utils/Constants";
+import {
+  getServiceBaseURL,
+  getVariantHint,
+  VARIANTS_WITH_HINTS,
+} from "@/utils/Constants";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 

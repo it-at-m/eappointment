@@ -96,6 +96,7 @@
       "
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
+      autocomplete="tel"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
@@ -113,7 +114,8 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
+      :rows="textfieldRows"
     />
     <muc-text-area
       v-if="
@@ -126,7 +128,8 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
+      :rows="textfieldRows"
     />
   </form>
   <div class="m-button-group">
@@ -166,6 +169,7 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { textfieldRows, updateWindowWidth } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 const props = defineProps<{
@@ -200,7 +204,8 @@ const { isExpired, timeLeftString } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern =
+  /^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() => {
@@ -288,6 +293,18 @@ const errorDisplayTelephoneNumber = computed(
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
 
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    window.addEventListener("resize", updateWindowWidth);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("resize", updateWindowWidth);
+  }
+});
+
 const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
@@ -301,8 +318,8 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 
@@ -324,8 +341,8 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield2 ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 

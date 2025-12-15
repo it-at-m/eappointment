@@ -297,8 +297,9 @@ describe("AppointmentSelection", () => {
     wrapper.vm.selectedProviders = {};
     await nextTick();
 
-    // When no providers are selected, availableDays should be empty
-    expect(wrapper.vm.availableDays).toEqual([]);
+    // With new behavior, availableDays still contains data for all providers (we always fetch all)
+    // The filtering happens in providersWithAvailableDays computed property
+    expect(wrapper.vm.availableDays).toEqual([{ time: "2025-06-17", providerIDs: "1,2" }]);
 
     // The error message should be shown when no provider with appointments is selected
     expect(wrapper.text()).toContain("errorMessageProviderSelection");
@@ -360,12 +361,17 @@ describe("AppointmentSelection", () => {
     await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }});
     await nextTick();
 
-    // When we uncheck a provider, availableDays becomes empty (only fetches for selected providers)
+    // Uncheck the provider - with new behavior, availableDays still contains data for all providers
     wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
     await nextTick();
 
-    // Since no providers are selected, availableDays is empty and all dates are disabled
-    expect(wrapper.vm.availableDays).toEqual([]);
+    // availableDays still has data (we always fetch all providers), but allowedDates
+    // checks if selected providers have appointments on that day
+    expect(wrapper.vm.availableDays).toEqual([
+      { time: '2025-05-14', providerIDs: '102522,54261,10489' },
+      { time: '2025-05-15', providerIDs: '102522' }
+    ]);
+    // With no providers selected, allowedDates returns false for all dates
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-17'))).toBeFalsy();
@@ -512,50 +518,35 @@ describe("AppointmentSelection", () => {
       await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
       await nextTick();
 
-      // Mock the availableDays to simulate what would be fetched for selected providers
+      // Mock availableDays where 2025-06-16 only has provider 10470, and 2025-06-17 has provider 10351880
+      // This means when we select only 10351880, the current date (2025-06-16) becomes invalid
       wrapper.vm.availableDays = [
-        { time: '2025-06-16', providerIDs: '10351880,10470' },
-        { time: '2025-06-17', providerIDs: '10351880,10470' },
+        { time: '2025-06-16', providerIDs: '10470' },
+        { time: '2025-06-17', providerIDs: '10351880' },
       ];
 
-      // Set current date explicitly to the one without appointments
+      // Set current date to 2025-06-16 (only available for provider 10470)
       wrapper.vm.selectedDay = new Date('2025-06-16');
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-16');
       await nextTick();
 
-      // Control subsequent refetches: first refetch returns both days, final refetch returns only 2025-06-17
-      let refetchCall = 0;
-      (fetchAvailableDays as Mock).mockImplementation(() => {
-        refetchCall += 1;
-        if (refetchCall === 1) {
-          return Promise.resolve({
-            availableDays: [
-              { time: '2025-06-16', providerIDs: '10351880,10470' },
-              { time: '2025-06-17', providerIDs: '10351880,10470' }
-            ]
-          });
-        }
-        return Promise.resolve({
-          availableDays: [
-            { time: '2025-06-17', providerIDs: '10351880' }
-          ]
-        });
-      });
-
-      // Simulate provider change to trigger nearest-date selection pipeline with deep change
-      wrapper.vm.selectedProviders = { '10351880': false, '10470': true } as any;
+      // Initially both providers are selected
+      wrapper.vm.selectedProviders = { '10351880': true, '10470': true } as any;
       await nextTick();
       await flushPromises();
+
+      // Now deselect provider 10470, leaving only 10351880 selected
+      // Since 2025-06-16 only has 10470, the date should snap to 2025-06-17
       wrapper.vm.selectedProviders = { '10351880': true, '10470': false } as any;
       await nextTick();
       await flushPromises();
-      // Wait for debounced pipeline (150ms) + fetch/updates to complete
-      await new Promise(r => setTimeout(r, 900));
+      // Wait for debounced pipeline (150ms) + updates to complete
+      await new Promise(r => setTimeout(r, 300));
       await nextTick();
       await flushPromises();
 
-      // Should snap to 2025-06-17 as nearest available date after provider change
+      // Should snap to 2025-06-17 as nearest available date for selected provider
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-17'));
     });
 
@@ -2249,5 +2240,44 @@ describe("AppointmentSelection", () => {
       expect(laterButton).toBeUndefined();
     });
   });
-});
+  describe("Loading UI – spinner instead of calendar", () => {
+    it("shows spinner during initial loading (availableDays pending) and hides the calendar", async () => {
+      // Promise for fetchAvailableDays to keep the loading status stable
+      let resolveDays!: (v: any) => void;
+      (fetchAvailableDays as Mock).mockImplementation(() => {
+        return new Promise((resolve) => {
+          resolveDays = resolve;
+        });
+      });
 
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({ offices: [] });
+
+      const wrapper = createWrapper({
+        // preselection forces a provider to be selected during the first fetch
+        props: { preselectedOfficeId: 1 },
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+          ],
+        },
+      });
+
+      await nextTick();
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
+      // calendar must not be rendered yet
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
+
+      // finish loading
+      resolveDays({
+        availableDays: [{ time: "2025-06-16", providerIDs: "1" }],
+      });
+      await flushPromises();
+      await nextTick();
+
+      // spinner disappears, calendar is displayed
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+    });
+  });
+});

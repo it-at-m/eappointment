@@ -1,7 +1,11 @@
 <template>
   <div>
     <div
-      v-if="providersWithAppointments && providersWithAppointments.length > 1"
+      v-if="
+        providersWithAppointments &&
+        providersWithAppointments.length > 1 &&
+        selectableProviders.length > 1
+      "
     >
       <div class="m-component slider-no-margin">
         <div class="m-content">
