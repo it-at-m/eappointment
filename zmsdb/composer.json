@@ -37,7 +37,7 @@
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
         "ext-pdo": "*",
-        "aura/sql": "^5",
+        "aura/sql": "^6",
         "roave/security-advisories": "dev-latest"
     },
     "bin": [
