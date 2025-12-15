@@ -82,7 +82,7 @@ class UseraccountAddTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/useraccount/unittest/?success=useraccount_added');
+        $this->assertRedirect($response, '/users/unittest/?success=useraccount_added');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

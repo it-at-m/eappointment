@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountByDepartment extends BaseController
+class UseraccountListByDepartment extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -23,28 +23,24 @@ class UseraccountByDepartment extends BaseController
         array $args
     ) {
         $departmentId = $args['id'];
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
+        $department = \App::$http->readGetResult("/department/$departmentId/", ['resolveReferences' => 0])->getEntity();
 
-        $useraccountList = new Collection();
-        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
-        $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
+        $result = \App::$http->readGetResult("/department/$departmentId/useraccount/", ['resolveReferences' => 0]);
+        $useraccountList = $result ? $result->getCollection() : new Collection();
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/useraccount.twig',
+            'page/useraccountList.twig',
             array(
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
                 'department' => $department,
-                'workstationList' => $workstationList,
-                'useraccountListByDepartment' => ($useraccountList) ?
-                    $useraccountList->sortByCustomStringKey('id') :
-                    new Collection(),
+                'useraccountListByDepartment' => $useraccountList,
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )
