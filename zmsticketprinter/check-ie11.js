@@ -21,7 +21,8 @@ const checks = [
   { pattern: /\bconst\s+[a-zA-Z_]/g, name: 'const declarations' },
   { pattern: /\blet\s+[a-zA-Z_]/g, name: 'let declarations' },
   { pattern: /\bclass\s+[A-Z][a-zA-Z0-9_]*\s*(extends|\{)/g, name: 'ES6 classes' },
-  { pattern: /`/g, name: 'Template literals' },
+  // Only match actual template literals with interpolation ${...}, not backticks in regex/strings
+  { pattern: /`[^`]*\$\{[^}]*\}[^`]*`/g, name: 'Template literals (with ${})' },
   { pattern: /\.\.\.[a-zA-Z_\[]/g, name: 'Spread operator' },
 ];
 
