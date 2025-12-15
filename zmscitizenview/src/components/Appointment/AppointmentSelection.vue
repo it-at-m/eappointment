@@ -1,7 +1,7 @@
 <template>
   <ProviderSelection
     :t="t"
-    :selectableProviders="selectableProviders"
+    :selectableProviders="providersWithAvailableDays"
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
@@ -168,7 +168,10 @@
       </template>
     </muc-callout>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="buttons"
+    class="m-button-group"
+  >
     <muc-button
       v-if="!isRebooking"
       icon="arrow-left"
@@ -327,9 +330,10 @@ let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Reference to the appointment summary.
- * After selecting a time slot, the focus is placed on the appointment summary.
+ * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
  */
 const summary = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 
 const getOfficeById = (id: number | string): OfficeImpl | undefined => {
   const idStr = String(id);
@@ -473,7 +477,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  await refetchAvailableDaysForSelection();
+  await fetchAvailableDaysForSelection();
 };
 
 const TODAY = new Date();
@@ -535,6 +539,23 @@ const providersWithAppointments = computed(() => {
   });
 });
 
+const providersWithAvailableDays = computed(() => {
+  if (!availableDays.value?.length || !selectableProviders.value?.length) {
+    return [];
+  }
+
+  // Collect all provider IDs that have at least one available day
+  const idsWithDays = new Set<string>();
+  availableDays.value.forEach((day) => {
+    day.providerIDs.split(",").forEach((id) => idsWithDays.add(id.trim()));
+  });
+
+  // Filter to only providers with available days and sort by priority
+  return selectableProviders.value
+    .filter((p) => idsWithDays.has(String(p.id)))
+    .sort((a, b) => (b.priority ?? -Infinity) - (a.priority ?? -Infinity));
+});
+
 const hasSelectedProviderWithAppointments = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
@@ -552,8 +573,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedProvider.value = getOfficeById(officeId);
   if (summary.value) {
     await nextTick();
-    summary.value.focus();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+    (buttons.value.lastChild as HTMLElement | null)?.focus({
+      preventScroll: true,
+    });
   }
 };
 
@@ -630,12 +653,15 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  // Check if any providers are selected
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+  if (!providersWithAvailableDays.value?.length) return true;
+
+  const idsWithDays = new Set(
+    providersWithAvailableDays.value.map((p) => String(p.id))
   );
 
-  return selectedProviderIds.length === 0;
+  return !Object.keys(selectedProviders.value).some(
+    (id) => selectedProviders.value[id] && idsWithDays.has(id)
+  );
 });
 
 // Threshold moved to constants
@@ -738,14 +764,14 @@ const handleError = (data: any): void => {
 };
 
 // API calls
-const refetchAvailableDaysForSelection = async (): Promise<void> => {
-  // Only fetch available days for currently selected providers
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+const fetchAvailableDaysForSelection = async (): Promise<void> => {
+  // Always fetch available days for ALL providers to maintain the full list
+  const allProviderIds = (selectableProviders.value || []).map((p) =>
+    Number(p.id)
   );
 
-  if (selectedProviderIds.length === 0) {
-    // No providers selected, clear available days but keep providers visible
+  if (allProviderIds.length === 0) {
+    // No providers available, clear available days
     availableDays.value = [];
     availableDaysFetched.value = true;
     error.value = false;
@@ -754,11 +780,9 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     return;
   }
 
-  const providerIdsToQuery = selectedProviderIds.map(Number);
-
   const data = await fetchAvailableDays(
     props.globalState,
-    providerIdsToQuery,
+    allProviderIds,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.captchaToken ?? undefined
@@ -874,38 +898,44 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
 };
 
 function getAvailableProviders(
-  providers: OfficeImpl[],
-  selectedIds: number[]
+  selectedServices: { providers: OfficeImpl[]; id: number }[]
 ): OfficeImpl[] {
-  return Object.values(
-    providers.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
-      (grouped[provider.name] ||= []).push(provider);
-      return grouped;
-    }, {})
-  ).map((group) => {
-    if (group.length === 1) return group[0];
+  if (!selectedServices || selectedServices.length === 0) return [];
 
-    // clean = passport provider
-    // restricted = default provider (hidden by passport related services)
-    const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
-    const restricted = group.find(
-      (p) => (p.disabledByServices ?? []).length > 0
-    );
+  const selectedServiceIds = selectedServices.map((s) => s.id);
 
-    // Fallbacks if one type is missing
-    if (!clean && !restricted) return group[0];
-    if (!restricted) return clean as OfficeImpl;
-    if (!clean) return restricted as OfficeImpl;
+  let allowedIds = new Set(selectedServices[0].providers.map((p) => p.id));
+  for (let i = 1; i < selectedServices.length; i++) {
+    const serviceIds = new Set(selectedServices[i].providers.map((p) => p.id));
+    allowedIds = new Set([...allowedIds].filter((id) => serviceIds.has(id)));
+  }
 
-    const restrictedDisabled = (restricted.disabledByServices ?? []).map(
-      Number
-    );
-    const allDisabled = selectedIds.every((id) =>
-      restrictedDisabled.includes(id)
-    );
-
-    return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
+  const allProviders = selectedServices.flatMap((s) => s.providers);
+  const filteredProvidersMap = new Map<number, OfficeImpl>();
+  allProviders.forEach((p) => {
+    if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
   });
+
+  // Filter out providers where any selected service is in their disabledByServices
+  const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
+    (p) => {
+      const disabledServices = (p.disabledByServices ?? []).map(Number);
+      return !selectedServiceIds.some((serviceId) =>
+        disabledServices.includes(Number(serviceId))
+      );
+    }
+  );
+
+  // Group by name and return unique providers
+  return Object.values(
+    filteredProviders.reduce<Record<string, OfficeImpl[]>>(
+      (grouped, provider) => {
+        (grouped[provider.name] ||= []).push(provider);
+        return grouped;
+      },
+      {}
+    )
+  ).map((group) => group[0]);
 }
 
 function updateDateRangeForSelectedProviders() {
@@ -1032,7 +1062,11 @@ function scheduleRefreshAfterProviderChange() {
     const prevSelectedDay = selectedDay.value
       ? new Date(selectedDay.value)
       : undefined;
-    await refetchAvailableDaysForSelection();
+
+    // No need to refetch availableDays - we already have all provider data from initial fetch
+    // Just update the UI based on current selection
+    isSwitchingProvider.value = false;
+
     // Selection changed while awaiting? Abort this cycle.
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
@@ -1066,33 +1100,15 @@ function scheduleRefreshAfterProviderChange() {
 
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
-    // Gather all selected service IDs (main + any chosen subservices)
-    const mainId = selectedService.value.id;
-    const chosenSubservices = (selectedService.value.subServices || []).filter(
-      (subservice) => subservice.count > 0
+    const mainService = selectedService.value;
+    const chosenSubservices = (mainService.subServices || []).filter(
+      (s) => s.count > 0
     );
-    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(
-      Number
-    );
-    const providers: OfficeImpl[] = selectedService.value.providers;
+    const allSelectedServices = [mainService, ...chosenSubservices];
+    const availableProviders = getAvailableProviders(allSelectedServices);
 
-    // Passport calendar functionality
-    const availableProviders = getAvailableProviders(providers, selectedIds);
+    selectableProviders.value = [...availableProviders];
 
-    // Checks whether there are restrictions on the providers due to the subservices.
-    if (selectedService.value.subServices) {
-      selectableProviders.value = availableProviders.filter((provider) => {
-        return chosenSubservices.every((subservice) =>
-          subservice.providers.some(
-            (subserviceProvider) => subserviceProvider.id == provider.id
-          )
-        );
-      });
-    } else {
-      selectableProviders.value = availableProviders;
-    }
-
-    // Checks whether a provider is already selected so that it is displayed first in the slider.
     let offices = selectableProviders.value.filter((office) => {
       if (props.preselectedOfficeId) {
         return office.id == props.preselectedOfficeId;
@@ -1103,7 +1119,6 @@ onMounted(() => {
       }
     });
 
-    // Add alternative locations to the slider if allowed
     const allowAlternativeLocations =
       offices.length === 0 ||
       offices[0].showAlternativeLocations === null ||
@@ -1126,7 +1141,6 @@ onMounted(() => {
       ];
     }
 
-    // Remember first office before sorting (preselected/selected stays first)
     const firstOfficeToShow = offices[0];
     if (selectableProviders.value) {
       selectableProviders.value = offices.sort((a, b) => {
@@ -1136,7 +1150,6 @@ onMounted(() => {
       });
     }
 
-    // If a preselected office ID is provided, only check the corresponding provider's checkbox
     if (props.preselectedOfficeId) {
       selectedProviders.value = selectableProviders.value.reduce(
         (acc, item) => {

@@ -123,6 +123,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'serviceCount' => 1,
             'status' => 'deleted',
             'slotCount' => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

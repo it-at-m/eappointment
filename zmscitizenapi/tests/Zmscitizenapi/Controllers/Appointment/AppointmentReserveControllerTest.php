@@ -121,6 +121,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "serviceName" => null,
             "serviceCount" => 0,
             "slotCount" => 4,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

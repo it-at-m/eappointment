@@ -12,6 +12,12 @@ export interface AppointmentDTO {
    * @type {string}
    * @memberof AppointmentDTO
    */
+  displayNumber?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
   processId: string;
   /**
    *
