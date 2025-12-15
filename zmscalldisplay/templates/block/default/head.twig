@@ -9,15 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="{{ includeUrl() }}/_css/images/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg" href="{{ includeUrl() }}/_css/images/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/favicon.svg" />
     <link rel="shortcut-icon" href="{{ includeUrl() }}/_css/images/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="{{ includeUrl() }}/_css/images/apple-touch-icon.png" />
-    <link rel="manifest" href="{{ includeUrl }}/_css/images/site.webmanifest" />
+    <link rel="manifest" href="{{ includeUrl() }}/_css/images/site.webmanifest" />
     <link rel="stylesheet" type="text/css" href="{{ includeUrl() }}/_css/calldisplay.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
     {% if getSystemStatus('ZMS_ENV') == 'dev' %}
-    <link rel="icon" type="image/svg" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Dev.svg" />
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Dev.svg" />
     {% elseif getSystemStatus('ZMS_ENV') == 'stage'%}
-     <link rel="icon" type="image/svg" href="{{ includeUrl() }}/_css/images/ZMS-Favicon_Test.svg" />
+     <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon_Test.svg" />
      {% endif %}
 
     <style>
