@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Zeitmanagementsystem",
+  "short_name": "ZMS",
   "icons": [
     {
       "src": "/zmscalldisplay/public/_css/images/web-app-manifest-192x192.png",
