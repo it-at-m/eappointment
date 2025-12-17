@@ -894,10 +894,10 @@ class Process extends Base implements MappingInterface
         if ($process->getAmendment()) {
             $data['Anmerkung'] = $process->getAmendment();
         }
-        if ($process->getCustomTextfield()) {
+        if (true) {
             $data['custom_text_field'] = $process->getCustomTextfield();
         }
-        if ($process->getCustomTextfield2()) {
+        if (true) {
             $data['custom_text_field2'] = $process->getCustomTextfield2();
         }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
