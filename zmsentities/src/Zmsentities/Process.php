@@ -386,7 +386,7 @@ class Process extends Schema\Entity
     {
         $this->amendment = $notice;
         $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
-        trim($this->amendment);
+        $this->amendment = trim($this->amendment);
         return $this;
     }
 
@@ -397,10 +397,10 @@ class Process extends Schema\Entity
 
     public function addCustomTextfield($input)
     {
-        $this->customTextfield .= (
+        $this->customTextfield = (
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
-        trim($this->customTextfield);
+        $this->customTextfield = trim($this->customTextfield);
         return $this;
     }
 
@@ -411,10 +411,10 @@ class Process extends Schema\Entity
 
     public function addCustomTextfield2($input)
     {
-        $this->customTextfield2 .= (
+        $this->customTextfield2 = (
             isset($input['customTextfield2']) && $input['customTextfield2']
         ) ? $input['customTextfield2'] : '';
-        trim($this->customTextfield2);
+        $this->customTextfield2 = trim($this->customTextfield2);
         return $this;
     }
 

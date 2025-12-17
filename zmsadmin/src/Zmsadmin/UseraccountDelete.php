@@ -29,7 +29,7 @@ class UseraccountDelete extends BaseController
         $loginName = Validator::value($args['loginname'])->isString()->getValue();
         \App::$http->readDeleteResult('/useraccount/' . $loginName . '/')->getEntity();
         return \BO\Slim\Render::redirect(
-            'useraccount',
+            'useraccountList',
             array(),
             array(
                 'success' => 'useraccount_deleted'

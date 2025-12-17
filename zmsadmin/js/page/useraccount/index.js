@@ -35,6 +35,7 @@ class View extends BaseView {
         window.location.href = ev.target.href;
     }
 
+    // TODO: Remove the password fields when password authentication is removed in the future
     adjustCredentialsToOidc() {
         const $oidcSelect = this.$main.find('#useOidcProvider');
         const $passwordInputs = this.$main.find('input[type="password"]');
