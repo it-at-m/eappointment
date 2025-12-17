@@ -139,14 +139,11 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/department/delete/{id:\d+}/', \BO\Zmsadmin\DepartmentDelete::class)
     ->setName("departmentDelete");
 
-\App::$slim->get('/department/{id:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByDepartment::class)
-    ->setName("useraccountByDepartment");
+\App::$slim->get('/users/department/{id:\d+}/', \BO\Zmsadmin\UseraccountListByDepartment::class)
+    ->setName("useraccountListByDepartment");
 
-\App::$slim->get('/role/{level:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByRole::class)
-    ->setName("useraccountByRole");
-
-\App::$slim->get('/useraccount/search/', \BO\Zmsadmin\UseraccountSearch::class)
-    ->setName("useraccountSearch");
+\App::$slim->get('/users/role/{level:\d+}/', \BO\Zmsadmin\UseraccountListByRole::class)
+    ->setName("useraccountListByRole");
 
 \App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
     ->setName("logoutBySuperuser");
@@ -340,16 +337,16 @@ use Slim\Routing\RouteCollectorProxy;
  * Useraccount
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/useraccount/', \BO\Zmsadmin\Useraccount::class)
-    ->setName("useraccount");
+\App::$slim->get('/users/', \BO\Zmsadmin\UseraccountList::class)
+    ->setName("useraccountList");
 
-\App::$slim->map(['GET', 'POST'], '/useraccount/add/', \BO\Zmsadmin\UseraccountAdd::class)
+\App::$slim->map(['GET', 'POST'], '/users/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
-\App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
+\App::$slim->map(['GET','POST'], '/users/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
-\App::$slim->get('/useraccount/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
+\App::$slim->get('/users/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
     ->setName("useraccountDelete");
 
 

@@ -23,7 +23,9 @@ class ExchangeClientscope extends Base
         SUM(missed) as missed,
         SUM(withappointment) as withappointment,
         SUM(missedwithappointment) as missedwithappointment,
-        SUM(requestcount) as requestcount
+        SUM(requestcount) as requestcount,
+        SUM(ticketprinter) as ticketprinter,
+        SUM(ticketprintermissed) as ticketprintermissed
 
     FROM (
           SELECT
@@ -35,7 +37,9 @@ class ExchangeClientscope extends Base
             0 AS missed,
             0 AS withappointment,
             0 AS missedwithappointment,
-            0 AS requestcount
+            0 AS requestcount,
+            0 AS ticketprinter,
+            0 AS ticketprintermissed
           FROM ' . self::NOTIFICATIONSTABLE . '
           WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
@@ -50,7 +54,9 @@ class ExchangeClientscope extends Base
             SUM(IF(`nicht_erschienen`=1,AnzahlPersonen,0)) as missed,
             SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
             SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment,
-            0 AS requestcount
+            0 AS requestcount,
+            SUM(IF(`nicht_erschienen`=0 AND mitTermin=0 AND is_ticketprinter=1,AnzahlPersonen,0)) as ticketprinter,
+            SUM(IF(`nicht_erschienen`=1 AND mitTermin=0 AND is_ticketprinter=1,AnzahlPersonen,0)) as ticketprintermissed
             FROM ' . ProcessStatusArchived::TABLE . '
             WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend
               GROUP BY date
@@ -65,7 +71,9 @@ class ExchangeClientscope extends Base
             0 AS missed,
             0 AS withappointment,
             0 AS missedwithappointment,
-            COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
+            COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount,
+            0 AS ticketprinter,
+            0 AS ticketprintermissed
             FROM ' . ProcessStatusArchived::TABLE . ' a
               LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
             WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0

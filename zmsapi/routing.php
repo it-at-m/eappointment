@@ -1540,55 +1540,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/department/{ids}/useraccount/":
- *      get:
- *          summary: Get a list of useraccounts for a department
- *          x-since: 2.10
- *          tags:
- *              - department
- *              - useraccount
- *          parameters:
- *              -   name: ids
- *                  description: department numbers
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/useraccount.json"
- *              403:
- *                  x-since: 2.12
- *                  description: "department is not assigned to logged in useraccount"
- *              404:
- *                  x-since: 2.12
- *                  description: "department does not exist"
- */
-\App::$slim->get(
-    '/department/{ids}/useraccount/',
-    '\BO\Zmsapi\UseraccountByDepartmentList'
-)
-    ->setName("UseraccountByDepartmentList");
-
-/**
- *  @swagger
  *  "/role/{level}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role
@@ -1632,17 +1583,17 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/role/{level:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\UseraccountByRoleList'
+    '\BO\Zmsapi\UseraccountListByRole'
 )
-    ->setName("UseraccountByRoleList");
+    ->setName("UseraccountListByRole");
 
 
 /**
  *  @swagger
- *  "/role/{level}/department/{id}/useraccount/":
+ *  "/role/{level}/department/{ids}/useraccount/":
  *      get:
- *          summary: Get a list of useraccounts for a role and department
- *          x-since: 2.10
+ *          summary: Get a list of useraccounts for a role and departments
+ *          x-since: 2.25
  *          tags:
  *              - role
  *              - department
@@ -1653,11 +1604,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: id
- *                  description: department number
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1687,19 +1638,19 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "role does not exist"
  */
 \App::$slim->get(
-    '/role/{level:\d{1,11}}/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\UseraccountByRoleAndDepartmentList'
+    '/role/{level:\d{1,11}}/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
-    ->setName("UseraccountByRoleAndDepartmentList");
+    ->setName("UseraccountListByRoleAndDepartments");
 
 /**
  *  @swagger
- *  "/useraccount/search/":
+ *  "/useraccount/":
  *      get:
- *          summary: Get a list of search results for user accounts
+ *          summary: Get a list of useraccounts (optionally filtered by search query)
  *          x-since: 2.11
  *          tags:
- *              - process
+ *              - useraccount
  *          parameters:
  *              -   name: X-Authkey
  *                  required: true
@@ -1711,9 +1662,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: query
  *                  type: integer
  *              -   name: query
- *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  description: "Optional query string for searching. Searches in useraccount.NutzerID and useraccount.Name. If omitted, returns all accessible useraccounts."
  *                  in: query
- *                  type: integer
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a list of user accounts
@@ -1726,23 +1677,35 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/useraccount.json"
+ *              401:
+ *                  description: "login required"
+ *                  x-since: 2.12
+ *              403:
+ *                  description: "missing or wrong access rights"
+ *                  x-since: 2.12
  */
 \App::$slim->get(
-    '/useraccount/search/',
-    '\BO\Zmsapi\UseraccountSearch'
+    '/useraccount/',
+    '\BO\Zmsapi\UseraccountList'
 )
-    ->setName("UseraccountSearch");
+    ->setName("UseraccountList");
 
 
 /**
  *  @swagger
- *  "/department/{id}/useraccount/search/":
+ *  "/department/{ids}/useraccount/":
  *      get:
- *          summary: Get a list of search results for user accounts by department
- *          x-since: 2.11
+ *          summary: Get a list of useraccounts for departments (optionally filtered by search query)
+ *          x-since: 2.10
  *          tags:
- *              - process
+ *              - department
+ *              - useraccount
  *          parameters:
+ *              -   name: ids
+ *                  description: department numbers (comma-separated)
+ *                  in: path
+ *                  required: true
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1753,9 +1716,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: query
  *                  type: integer
  *              -   name: query
- *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  description: "Optional query string for searching. Searches in useraccount.NutzerID and useraccount.Name. If omitted, returns all useraccounts for the departments."
  *                  in: query
- *                  type: integer
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a list of user accounts
@@ -1768,12 +1731,18 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "department does not exist"
  */
 \App::$slim->get(
-    '/department/{id:\d{1,11}}/useraccount/search/',
-    '\BO\Zmsapi\UseraccountSearchByDepartment'
+    '/department/{ids:\d{1,11}(?:,\d{1,11})*}/useraccount/',
+    '\BO\Zmsapi\UseraccountListByDepartments'
 )
-    ->setName("UseraccountSearchByDepartment");
+    ->setName("UseraccountByDepartmentList");
 
 /**
  *  @swagger
@@ -5772,53 +5741,6 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\Ticketprinter'
 )
     ->setName("Ticketprinter");
-
-/**
- *  @swagger
- *  "/useraccount/":
- *      get:
- *          summary: Get a list of useraccounts
- *          tags:
- *              - useraccount
- *          parameters:
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *              -   name: right
- *                  x-since: 2.13
- *                  description: "Only fetch users with the given right like 'superuser'"
- *                  in: query
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success, might be empty"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/useraccount.json"
- *              401:
- *                  description: "login required"
- *                  x-since: 2.12
- *              403:
- *                  description: "missing or wrong access rights"
- *                  x-since: 2.12
- */
-\App::$slim->get(
-    '/useraccount/',
-    '\BO\Zmsapi\UseraccountList'
-)
-    ->setName("UseraccountList");
 
 /**
  *  @swagger

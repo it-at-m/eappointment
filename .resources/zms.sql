@@ -812,6 +812,7 @@ INSERT INTO `nutzer` (`NutzerID`, `Name`, `Passworthash`, `Frage`, `Antworthash`
 (136, 'testadmin', '$2y$10$C2szb/GeBKp9EdyuI0KiaO1.GHS3A6DzQRP2rJlGa.un63MepwJzu', '', '', 70, 0, 74, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', '2022-03-16 15:01:46', NULL),
 (137, 'testuser', '128196aca512b2989d1d442455a57629', '', '', 10, 0, 0, '', 0, '', '0000-00-00', 0, 0, '', '', '', '2020-03-02 13:10:32', NULL),
 (138, 'superuser', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, 'd3da7d4d6c275f93c1fcdf4df496ac98562892c0a320aa227498db54ebdbcac0', 0, '', '2025-10-22', 0, 0, '0', '0', '', '2025-10-22 14:02:53', '2025-10-23 00:02:53'),
+(139, 'superuser@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, 'd3da7d4d6c275f93c1fcdf4df496ac98562892c0a320aa227498db54ebdbcac0', 0, '', '2025-10-22', 0, 0, '0', '0', '', '2025-10-22 14:02:53', '2025-10-23 00:02:53'),
 (5118, '_system_messenger', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:18', NULL),
 (5119, '_system_soap', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:20', NULL),
 (5120, '_system_115', '128196aca512b2989d1d442455a57629', '', '', 90, 0, 0, '', 0, '', '0000-00-00', 0, 0, '0', '0', NULL, '2020-03-02 13:10:23', NULL),

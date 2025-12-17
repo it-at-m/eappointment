@@ -1,8 +1,8 @@
 import { computed, ref } from "vue";
 
 const pivotWidth = 500;
-const smallScreenTextareaRows = 6;
-const bigScreenTextareaRows = 3;
+const smallScreenTextareaRows = 11;
+const bigScreenTextareaRows = 6;
 
 const windowWidth = ref(typeof window !== "undefined" ? window.innerWidth : 0);
 
