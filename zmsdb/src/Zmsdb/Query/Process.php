@@ -891,15 +891,9 @@ class Process extends Base implements MappingInterface
         if ($client && $client->offsetExists('notificationsSendCount')) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
-        if ($process->getAmendment()) {
-            $data['Anmerkung'] = $process->getAmendment();
-        }
-        if (true) {
-            $data['custom_text_field'] = $process->getCustomTextfield();
-        }
-        if (true) {
-            $data['custom_text_field2'] = $process->getCustomTextfield2();
-        }
+        $data['Anmerkung'] = $process->getAmendment();
+        $data['custom_text_field'] = $process->getCustomTextfield();
+        $data['custom_text_field2'] = $process->getCustomTextfield2();
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
