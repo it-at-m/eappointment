@@ -36,7 +36,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -50,10 +49,6 @@
                                             "headsUpContent": "Ihre Wartenummer im Bürgeramt\r\nKarow/Buch wird in ca. 10\r\nMinuten aufgerufen.",
                                             "headsUpTime": "15"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "1",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -61,7 +56,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "10",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -135,7 +129,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -149,10 +142,6 @@
                                             "headsUpContent": "Ihre Wartenummer im Bürgeramt Pankow wird in ca. 10 Minuten aufgerufen.",
                                             "headsUpTime": "15"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -160,7 +149,6 @@
                                             "lastNumber": "799",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "11",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -256,7 +244,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -270,10 +257,6 @@
                                                     "headsUpContent": "Ihre Wartenummer im Bürgeramt Prenzlauer Berg wird in ca. 10 Minuten aufgerufen.",
                                                     "headsUpTime": "15"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -281,7 +264,6 @@
                                                     "lastNumber": "599",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -353,7 +335,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -367,10 +348,6 @@
                                                     "headsUpContent": "Ihre Wartenummer im Bürgeramt Weißensee wird in ca. 10 Minuten aufgerufen.",
                                                     "headsUpTime": "15"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -378,7 +355,6 @@
                                                     "lastNumber": "599",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -492,7 +468,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -506,10 +481,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen im Bürgeramt 1 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nhttp://www.berlin.de\r\n\r\n                 Ihr Bürgeramt",
@@ -517,7 +488,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -589,7 +559,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -603,10 +572,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen im Bürgeramt 3 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nhttp://www.berlin.de\r\n\r\n                 Ihr Bürgeramt",
@@ -614,7 +579,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -714,7 +678,6 @@
                                                     "startInDaysDefault": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -728,10 +691,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Tresen",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n===================\r\nAn jedem Arbeitsplatz nur noch bargeldlos mit PIN. Halten Sie dafür unbedingt Ihre EC-Karte bereit.\r\n================================\r\nAM 14. und 15.01. sowie am 22. und 25.01.2016 sind die Bürgerämer von Marzahn-Hellersdorf geschlossen !!!!!!\r\n================================\r\n",
@@ -739,7 +698,6 @@
                                                     "lastNumber": "599",
                                                     "maxNumberContingent": "42",
                                                     "processingTimeAverage": "6",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -811,7 +769,6 @@
                                                     "startInDaysDefault": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -825,10 +782,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=============================\r\nPRO TERMIN UND WARTEMARKE NUR EIN KUNDE\r\n================================\r\nAb 01.11.2015 Anmeldung nur noch mit Einzugsbestätigung des Wohnungsgeber möglich !!!!",
@@ -836,7 +789,6 @@
                                                     "lastNumber": "599",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "6",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -908,7 +860,6 @@
                                                     "startInDaysDefault": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -922,10 +873,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n================================\r\nAb 01.11.2015 Anmeldung nur noch mit Einzugsbestätigung des Wohnungsgeber möglich !!!!",
@@ -933,7 +880,6 @@
                                                     "lastNumber": "599",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "6",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1069,7 +1015,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -1083,10 +1028,6 @@
                                                     "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
                                                     "headsUpTime": "15"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe\r\nunter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1094,7 +1035,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1168,7 +1108,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -1182,10 +1121,6 @@
                                                     "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
                                                     "headsUpTime": "15"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1193,7 +1128,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1267,7 +1201,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -1281,10 +1214,6 @@
                                                     "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
                                                     "headsUpTime": "20"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe\r\nunter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1292,7 +1221,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1366,7 +1294,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -1380,10 +1307,6 @@
                                                     "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
                                                     "headsUpTime": "15"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1391,7 +1314,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1476,7 +1398,6 @@
                                                     "startInDaysDefault": "2"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "0",
@@ -1490,10 +1411,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "3",
                                                     "callDisplayText": "Wir wünschen Ihnen frohe Festtage und einen guten Start in das Neue Jahr!",
@@ -1501,7 +1418,6 @@
                                                     "lastNumber": "99",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "20",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "0"
                                                 },
                                                 "survey": {
@@ -1603,7 +1519,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -1617,10 +1532,6 @@
                                             "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                             "headsUpTime": "30"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "2",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1628,7 +1539,6 @@
                                             "lastNumber": "799",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "0",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -1704,7 +1614,6 @@
                                             "notificationHeadsUpEnabled": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "0",
                                             "emailRequired": "0",
@@ -1718,10 +1627,6 @@
                                             "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
                                             "headsUpTime": "30"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
@@ -1729,7 +1634,6 @@
                                             "lastNumber": "499",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "5",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -1839,7 +1743,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -1853,10 +1756,6 @@
                                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
                                                     "headsUpTime": "30"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1864,7 +1763,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -1938,7 +1836,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -1952,10 +1849,6 @@
                                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                                     "headsUpTime": "30"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1963,7 +1856,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2037,7 +1929,6 @@
                                                     "notificationHeadsUpEnabled": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -2051,10 +1942,6 @@
                                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                                     "headsUpTime": "30"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -2062,7 +1949,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2146,7 +2032,6 @@
                                                     "startInDaysDefault": "2"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "1",
@@ -2160,10 +2045,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail",
@@ -2171,7 +2052,6 @@
                                                     "lastNumber": "999",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "7",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "0"
                                                 },
                                                 "survey": {
@@ -2271,7 +2151,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2285,10 +2164,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen im\r\nRathaus Mitte",
@@ -2296,7 +2171,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -2370,7 +2244,6 @@
                                             "startInDaysDefault": "1"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "0",
@@ -2384,10 +2257,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -2395,7 +2264,6 @@
                                             "lastNumber": "499",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -2481,7 +2349,6 @@
                                                     "startInDaysDefault": "1"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -2495,10 +2362,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -2506,7 +2369,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2710,7 +2572,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                                     "emailRequired": "1",
@@ -2724,10 +2585,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Tresen",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -2735,7 +2592,6 @@
                                                     "lastNumber": "200",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2798,7 +2654,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                                     "emailRequired": "1",
@@ -2812,10 +2667,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -2823,7 +2674,6 @@
                                                     "lastNumber": "300",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2895,7 +2745,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                                     "emailRequired": "1",
@@ -2909,10 +2758,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Tresen",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -2920,7 +2765,6 @@
                                                     "lastNumber": "300",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -2992,7 +2836,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen können nicht beantwortet werden.) ",
                                                     "emailRequired": "1",
@@ -3006,10 +2849,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Tresen",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -3017,7 +2856,6 @@
                                                     "lastNumber": "200",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -3107,7 +2945,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -3121,10 +2958,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3132,7 +2965,6 @@
                                             "lastNumber": "1999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3206,7 +3038,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -3220,10 +3051,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3231,7 +3058,6 @@
                                             "lastNumber": "1999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3305,7 +3131,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -3319,10 +3144,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3330,7 +3151,6 @@
                                             "lastNumber": "1999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3404,7 +3224,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -3418,10 +3237,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3429,7 +3244,6 @@
                                             "lastNumber": "1999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3503,7 +3317,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -3517,10 +3330,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3528,7 +3337,6 @@
                                             "lastNumber": "1999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3602,7 +3410,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "1",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "1",
@@ -3616,10 +3423,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "Ausgabe",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3627,7 +3430,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "0",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3701,7 +3503,6 @@
                                             "startInDaysDefault": "2"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -3715,10 +3516,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3726,7 +3523,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "0",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3800,7 +3596,6 @@
                                             "startInDaysDefault": "2"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -3814,10 +3609,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3825,7 +3616,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "0",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -3899,7 +3689,6 @@
                                             "startInDaysDefault": "2"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Anmerkung",
                                             "emailRequired": "0",
@@ -3913,10 +3702,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3924,7 +3709,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "0",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -4048,7 +3832,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "Das Bürgerbüro erreichen Sie über den Haupteingang der \"Stadtteilbibliothek Falkenhagener Feld\".",
                                             "emailRequired": "1",
@@ -4062,10 +3845,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -4073,7 +3852,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -4147,7 +3925,6 @@
                                             "startInDaysDefault": "0"
                                         },
                                         "client": {
-                                            "alternateAppointmentUrl": "",
                                             "amendmentActivated": "0",
                                             "amendmentLabel": "",
                                             "emailRequired": "1",
@@ -4161,10 +3938,6 @@
                                             "headsUpContent": "",
                                             "headsUpTime": "0"
                                         },
-                                        "pickup": {
-                                            "alternateName": "",
-                                            "isDefault": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -4172,7 +3945,6 @@
                                             "lastNumber": "999",
                                             "maxNumberContingent": "0",
                                             "processingTimeAverage": "15",
-                                            "publishWaitingTimeEnabled": "1",
                                             "statisticsEnabled": "1"
                                         },
                                         "survey": {
@@ -4264,7 +4036,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                                                     "emailRequired": "1",
@@ -4278,10 +4049,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Bürgeramt",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Vereinbarte Termine sind Richtwerte.\r\nEs kann mitunter zu zeitlichen Abweichungen kommen.",
@@ -4289,7 +4056,6 @@
                                                     "lastNumber": "499",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4361,7 +4127,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Bitte verstehen Sie die Terminzeiten als Richtwert.",
                                                     "emailRequired": "1",
@@ -4375,10 +4140,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Willkommen \r\nim Bürgerbüro Wasserstadt\r\n",
@@ -4386,7 +4147,6 @@
                                                     "lastNumber": "799",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "15",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4486,7 +4246,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "0",
@@ -4500,10 +4259,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTipp: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-neukoelln/org/buergeramt/",
@@ -4511,7 +4266,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4583,7 +4337,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "0",
@@ -4597,10 +4350,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -4608,7 +4357,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4680,7 +4428,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "0",
@@ -4694,10 +4441,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -4705,7 +4448,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4768,7 +4510,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "Anmerkung",
                                                     "emailRequired": "0",
@@ -4782,10 +4523,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -4793,7 +4530,6 @@
                                                     "lastNumber": "899",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -4865,7 +4601,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "0",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "0",
@@ -4879,10 +4614,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung\r\n\r\nAchtung:\r\nBezahlung nur mit EC Karte möglich,\r\nkeine Bargeldannahme \r\n ",
@@ -4890,7 +4621,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "10",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -5014,7 +4744,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "https://service.berlin.de",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -5028,10 +4757,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
@@ -5039,7 +4764,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "1",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {
@@ -5111,7 +4835,6 @@
                                                     "startInDaysDefault": "0"
                                                 },
                                                 "client": {
-                                                    "alternateAppointmentUrl": "",
                                                     "amendmentActivated": "1",
                                                     "amendmentLabel": "",
                                                     "emailRequired": "1",
@@ -5125,10 +4848,6 @@
                                                     "headsUpContent": "",
                                                     "headsUpTime": "0"
                                                 },
-                                                "pickup": {
-                                                    "alternateName": "Ausgabe",
-                                                    "isDefault": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
@@ -5136,7 +4855,6 @@
                                                     "lastNumber": "399",
                                                     "maxNumberContingent": "0",
                                                     "processingTimeAverage": "12",
-                                                    "publishWaitingTimeEnabled": "0",
                                                     "statisticsEnabled": "1"
                                                 },
                                                 "survey": {

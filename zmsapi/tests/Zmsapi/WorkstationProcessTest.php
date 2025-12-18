@@ -60,19 +60,6 @@ class WorkstationProcessTest extends Base
         ], []);
     }
 
-    public function testWorkstationWithPickupAssigned()
-    {
-        $this->setWorkstation();
-        User::$workstation->process = $this->getInput();
-        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
-        $response = $this->render([], [
-            '__body' => '{
-                "id": 10029,
-                "status": "pickup"
-            }'
-        ], []);
-    }
-
     public function testProcessAlreadyCalled()
     {
         $this->setWorkstation();

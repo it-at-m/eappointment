@@ -83,13 +83,14 @@ class ProcessRedirect extends BaseController
             $entity->addData($input);
             $process = (new Query())->updateEntity($entity, \App::$now, 0, null, $workstation->getUseraccount());
         } elseif ($entity->hasQueueNumber()) {
-        // Allow waitingnumbers over 1000 with the fourth parameter
+            // Allow waitingnumbers over 1000 with the fourth parameter
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
             if (! $process->id) {
-                $workstation = (new \BO\Zmsdb\Workstation())->readResolvedReferences($workstation, 1);
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number'], $workstation->getUseraccount());
+                $entity->testValid();
+                throw new Exception\Process\ProcessInvalid();
             }
+
             $process->testValid();
         } else {
             $entity->testValid();
