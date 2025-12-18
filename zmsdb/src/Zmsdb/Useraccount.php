@@ -30,7 +30,7 @@ class Useraccount extends Base
         $version = App::$cache->get(self::CACHE_VERSION_KEY);
         if (!is_int($version) || $version < 1) {
             $version = 1;
-            App::$cache->set(self::CACHE_VERSION_KEY, $version);
+            App::$cache->set(self::CACHE_VERSION_KEY, $version, \App::$SOURCE_CACHE_TTL);
         }
 
         return $version;
@@ -69,7 +69,7 @@ class Useraccount extends Base
             }
             if (!in_array($cacheKey, $existing, true)) {
                 $existing[] = $cacheKey;
-                App::$cache->set($indexKey, $existing);
+                App::$cache->set($indexKey, $existing, \App::$SOURCE_CACHE_TTL);
             }
         }
     }
@@ -275,7 +275,7 @@ class Useraccount extends Base
             $useraccount = $this->readResolvedReferences($useraccount, $resolveReferences);
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $useraccount);
+                App::$cache->set($cacheKey, $useraccount, \App::$SOURCE_CACHE_TTL);
                 if (App::$log) {
                     App::$log->info('Useraccount cache set', [
                         'cache_key' => $cacheKey,
@@ -352,7 +352,7 @@ class Useraccount extends Base
             $result = $collection;
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
                 $this->registerCacheKeyForDepartments([self::CACHE_INDEX_GLOBAL], $cacheKey);
                 if (App::$log) {
                     App::$log->info('Useraccount list cache set', [
@@ -616,7 +616,7 @@ class Useraccount extends Base
             $result = $collection;
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
                 $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
                 if (App::$log) {
                     App::$log->info('Useraccount department list cache set', [
@@ -741,7 +741,7 @@ class Useraccount extends Base
     protected function setCachedResult($cacheKey, $result, array $departmentIds, $logMessage, array $logContext = [])
     {
         if (App::$cache) {
-            App::$cache->set($cacheKey, $result);
+            App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
             $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
             if (App::$log) {
                 $logContext['cache_key'] = $cacheKey;
@@ -923,7 +923,7 @@ class Useraccount extends Base
             $result = $this->readListStatement($statement, $resolveReferences);
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
                 $this->registerCacheKeyForDepartments([self::CACHE_INDEX_GLOBAL], $cacheKey);
                 if (App::$log) {
                     App::$log->info('Useraccount role list cache set', [
@@ -986,7 +986,7 @@ class Useraccount extends Base
             $result = $this->readListStatement($statement, $resolveReferences);
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
                 $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
                 if (App::$log) {
                     App::$log->info('Useraccount role and department list cache set', [
@@ -1035,7 +1035,7 @@ class Useraccount extends Base
 
         if (!$removedDepartmentCaches) {
             $newVersion = $currentVersion + 1;
-            App::$cache->set(self::CACHE_VERSION_KEY, $newVersion);
+            App::$cache->set(self::CACHE_VERSION_KEY, $newVersion, \App::$SOURCE_CACHE_TTL);
             $versionBumped = true;
         }
 

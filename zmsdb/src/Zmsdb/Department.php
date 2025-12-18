@@ -35,7 +35,7 @@ class Department extends Base
             $department = $this->fetchOne($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $department);
+                App::$cache->set($cacheKey, $department, \App::$SOURCE_CACHE_TTL);
             }
         }
 

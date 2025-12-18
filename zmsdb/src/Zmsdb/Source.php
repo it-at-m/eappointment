@@ -42,7 +42,7 @@ class Source extends Base
             }
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $entity);
+                App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
             }
         }
 

@@ -27,7 +27,7 @@ class Provider extends Base
         $provider = $this->fetchOne($query, new Entity());
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $provider);
+            App::$cache->set($cacheKey, $provider, \App::$SOURCE_CACHE_TTL);
         }
 
         return $provider;

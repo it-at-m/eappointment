@@ -37,7 +37,7 @@ class Scope extends Base
             }
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $scope);
+                App::$cache->set($cacheKey, $scope, \App::$SOURCE_CACHE_TTL);
             }
         }
 
@@ -128,7 +128,7 @@ class Scope extends Base
             }
 
             if (App::$cache && !($result instanceof \PDOStatement)) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
             }
         }
 
@@ -174,7 +174,7 @@ class Scope extends Base
             $result = $this->fetchList($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
             }
         }
 
@@ -238,7 +238,7 @@ class Scope extends Base
                 $result = $this->fetchList($query, new Entity());
 
                 if (App::$cache) {
-                    App::$cache->set($cacheKey, $result);
+                    App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
                 }
             } else {
                 $result = $this->getReader()->perform(
@@ -314,7 +314,7 @@ class Scope extends Base
             $result = $this->fetchList($query, new Entity());
 
             if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+                App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
             }
         }
 
@@ -750,6 +750,34 @@ class Scope extends Base
 
             if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-2')) {
                 App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-2');
+            }
+        }
+
+        if (isset($scope->cluster) && isset($this->cluster->id)) {
+            if (App::$cache->has('scopeReadByClusterId-' . $scope->cluster->id . '-0')) {
+                App::$cache->delete('scopeReadByClusterId-' . $scope->cluster->id . '-0');
+            }
+
+            if (App::$cache->has('scopeReadByClusterId-' . $scope->cluster->id . '-1')) {
+                App::$cache->delete('scopeReadByClusterId-' . $scope->cluster->id . '-1');
+            }
+
+            if (App::$cache->has('scopeReadByClusterId-' . $scope->cluster->id . '-2')) {
+                App::$cache->delete('scopeReadByClusterId-' . $scope->cluster->id . '-2');
+            }
+        }
+
+        if (isset($scope->department) && isset($this->department->id)) {
+            if (App::$cache->has('scopeReadByDepartmentId-' . $scope->department->id . '-0')) {
+                App::$cache->delete('scopeReadByDepartmentId-' . $scope->department->id . '-0');
+            }
+
+            if (App::$cache->has('scopeReadByDepartmentId-' . $scope->department->id . '-1')) {
+                App::$cache->delete('scopeReadByDepartmentId-' . $scope->department->id . '-1');
+            }
+
+            if (App::$cache->has('scopeReadByDepartmentId-' . $scope->department->id . '-2')) {
+                App::$cache->delete('scopeReadByDepartmentId-' . $scope->department->id . '-2');
             }
         }
 

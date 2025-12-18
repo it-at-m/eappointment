@@ -23,7 +23,7 @@ class Config extends Base
         $config = $this->fetchData($query);
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $config);
+            App::$cache->set($cacheKey, $config, \App::$SOURCE_CACHE_TTL);
         }
 
         return $config;

@@ -36,7 +36,7 @@ class Link extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $linkList);
+            App::$cache->set($cacheKey, $linkList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $linkList;

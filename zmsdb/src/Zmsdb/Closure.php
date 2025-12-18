@@ -34,7 +34,7 @@ class Closure extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $closureList);
+            App::$cache->set($cacheKey, $closureList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $closureList;

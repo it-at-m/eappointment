@@ -53,7 +53,7 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            App::$cache->set($cacheKey, $dayOffList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $dayOffList;
@@ -84,7 +84,7 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            App::$cache->set($cacheKey, $dayOffList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $dayOffList;
@@ -117,7 +117,7 @@ class DayOff extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $dayOffList);
+            App::$cache->set($cacheKey, $dayOffList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $dayOffListCommon->addList($dayOffList);

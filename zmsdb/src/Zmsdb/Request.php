@@ -34,7 +34,7 @@ class Request extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $request);
+            App::$cache->set($cacheKey, $request, \App::$SOURCE_CACHE_TTL);
         }
 
         return $request;
@@ -125,7 +125,7 @@ class Request extends Base
         $requestList = ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $requestList);
+            App::$cache->set($cacheKey, $requestList, \App::$SOURCE_CACHE_TTL);
         }
 
         return $requestList;

@@ -46,7 +46,7 @@ class Cluster extends Base
         }
 
         if (App::$cache) {
-            App::$cache->set($cacheKey, $cluster);
+            App::$cache->set($cacheKey, $cluster, \App::$SOURCE_CACHE_TTL);
         }
 
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
