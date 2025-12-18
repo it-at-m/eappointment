@@ -85,26 +85,6 @@
                         }]
                     ) }}
                     </div>
-
-                    <div class="grid__item one-half">
-                    {% set pickupOptions = [{ 'value' : '0', 'name' : 'keine Abholung'}] %}
-                    {% for pickup in pickupList %}
-                        {% set selected="" %}
-                        {% if pickup.preferences.pickup.isDefault %}{% set selected="selected" %}{% endif %}
-                        {% set pickupOptions = pickupOptions|merge([{ "value": pickup.id, "name": pickup.contact.name  ~ " " ~ pickup.shortName, "selected": selected }]) %}
-                    {% endfor %}
-                    {{ formgroup(
-                        {"label": "Abholort:"},
-                        [{
-                            "type":"select",
-                            "parameter": {
-                                "name": "pickupScope",
-                                "options": pickupOptions
-                            }
-                        }]
-                    ) }}
-                    </div>
-
                 </div>
                 
                 <div class="form-actions">

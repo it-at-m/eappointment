@@ -26,7 +26,6 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
 * manage opening hours including closed days
 * login-system with different access levels
-* pickup for documents
 * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
 * calldisplay support
 * collecting statistics like waiting time or served clients per day

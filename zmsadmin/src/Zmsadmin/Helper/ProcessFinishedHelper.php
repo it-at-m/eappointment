@@ -14,21 +14,8 @@ class ProcessFinishedHelper extends \BO\Zmsentities\Process
     {
         parent::__construct($processData);
         $this->getFirstClient()->addData($input['process']['clients'][0]);
-        $this->setPickupData($input);
         $this->setRequestData($input, $requestList, $source);
         $this->setClientsCount($input['statistic']['clientsCount']);
-    }
-
-    public function setPickupData(array $input)
-    {
-        if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
-            $this->status = 'pending';
-            $this->scope['id'] = $input['pickupScope'];
-            $this->clients[0]['emailSendCount'] = "-1";
-            $this->clients[0]['notificationsSendCount'] = "-1";
-            $this->queue->callCount = 0;
-        }
-        return $this;
     }
 
     public function setRequestData(

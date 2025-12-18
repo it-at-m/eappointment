@@ -123,7 +123,6 @@
                   "notificationHeadsUpEnabled":"0"
                },
                "client":{
-                  "alternateAppointmentUrl":"",
                   "amendmentActivated":"0",
                   "amendmentLabel":"",
                   "emailFrom":"no-reply@muenchen.de",
@@ -148,10 +147,6 @@
                   "headsUpContent":"",
                   "headsUpTime":"10"
                },
-               "pickup":{
-                  "alternateName":"Ausgabe",
-                  "isDefault":"0"
-               },
                "queue":{
                   "callCountMax":"1",
                   "callDisplayText":"Herzlich Willkommen",
@@ -159,7 +154,6 @@
                   "lastNumber":"999",
                   "maxNumberContingent":"999",
                   "processingTimeAverage":"12",
-                  "publishWaitingTimeEnabled":"0",
                   "statisticsEnabled":"0"
                },
                "survey":{
