@@ -23,6 +23,9 @@ class ReportWaitingDepartment extends BaseController
         'waitingcalculated_termin',
         'waytime',
         'waytime_termin',
+        'waitingcount_total',
+        'waitingtime_total',
+        'waytime_total',
     ];
 
     protected $groupfields = [
@@ -48,7 +51,11 @@ class ReportWaitingDepartment extends BaseController
             $exchangeWaiting = \App::$http
             ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/' . $args['period'] . '/')
             ->getEntity()
-            ->toGrouped($this->groupfields, $this->hashset)
+            ->toGrouped($this->groupfields, $this->hashset);
+
+        $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
+
+        $exchangeWaiting = $exchangeWaiting
             ->withMaxByHour($this->hashset)
             ->withMaxAndAverageFromWaitingTime();
 
@@ -56,6 +63,11 @@ class ReportWaitingDepartment extends BaseController
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');
+
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_total');
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waytime_total');
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
