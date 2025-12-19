@@ -17,6 +17,10 @@ use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
+    private const CUSTOMER_TYPE_GESAMT = 'gesamt';
+    private const CUSTOMER_TYPE_TERMIN = 'termin';
+    private const CUSTOMER_TYPE_SPONTAN = 'spontan';
+
     protected $reportPartsGesamt = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
         'waitingcount_total' => 'Wartende Gesamtkunden',
@@ -39,6 +43,25 @@ class WaitingReport extends Base
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    private function createAndPopulateSheet(
+        Spreadsheet $spreadsheet,
+        string $sheetTitle,
+        array $args,
+        string $customerType,
+        bool $isFirstSheet = false
+    ): void {
+        if (!$isFirstSheet) {
+            $spreadsheet->createSheet()->setTitle($sheetTitle);
+        } else {
+            $spreadsheet->getActiveSheet()->setTitle($sheetTitle);
+        }
+        $spreadsheet->setActiveSheetIndexByName($sheetTitle);
+        $this->writeInfoHeader($args, $spreadsheet);
+        foreach ($args['reports'] as $report) {
+            $this->writeWaitingReport($report, $spreadsheet, $customerType, 'dd.MM.yyyy');
+        }
+    }
+
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -48,29 +71,9 @@ class WaitingReport extends Base
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
 
-        // Blatt 1: Gesamt
-        $spreadsheet->getActiveSheet()->setTitle('Gesamt');
-        $spreadsheet->setActiveSheetIndexByName('Gesamt');
-        $this->writeInfoHeader($args, $spreadsheet);
-        foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, 'gesamt', 'dd.MM.yyyy');
-        }
-
-        // Blatt 2: Terminkunden
-        $spreadsheet->createSheet()->setTitle('Terminkunden');
-        $spreadsheet->setActiveSheetIndexByName('Terminkunden');
-        $this->writeInfoHeader($args, $spreadsheet);
-        foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, 'termin', 'dd.MM.yyyy');
-        }
-
-        // Blatt 3: Spontankunden
-        $spreadsheet->createSheet()->setTitle('Spontankunden');
-        $spreadsheet->setActiveSheetIndexByName('Spontankunden');
-        $this->writeInfoHeader($args, $spreadsheet);
-        foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, 'spontan', 'dd.MM.yyyy');
-        }
+        $this->createAndPopulateSheet($spreadsheet, 'Gesamt', $args, self::CUSTOMER_TYPE_GESAMT, true);
+        $this->createAndPopulateSheet($spreadsheet, 'Terminkunden', $args, self::CUSTOMER_TYPE_TERMIN);
+        $this->createAndPopulateSheet($spreadsheet, 'Spontankunden', $args, self::CUSTOMER_TYPE_SPONTAN);
 
         // Für den Download das erste Blatt aktiv lassen
         $spreadsheet->setActiveSheetIndexByName('Gesamt');
@@ -78,20 +81,37 @@ class WaitingReport extends Base
         return $download->writeDownload($response);
     }
 
+    private function assertValidCustomerType(string $customerType): void
+    {
+        $validTypes = [
+            self::CUSTOMER_TYPE_GESAMT,
+            self::CUSTOMER_TYPE_TERMIN,
+            self::CUSTOMER_TYPE_SPONTAN,
+        ];
+
+        if (!in_array($customerType, $validTypes, true)) {
+            throw new \InvalidArgumentException(
+                "Invalid customer type: {$customerType}. Must be one of: " . implode(', ', $validTypes)
+            );
+        }
+    }
+
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        string $customerType, // 'gesamt' | 'termin' | 'spontan'
+        string $customerType,
         $datePatternCol = 'dd.MM.yyyy',
     ) {
+        $this->assertValidCustomerType($customerType);
+
         $sheet = $spreadsheet->getActiveSheet();
         $this->writeHeader($report, $sheet, $datePatternCol);
         $this->writeTotals($report, $sheet, $customerType);
-        if ($customerType === 'termin') {
+        if ($customerType === self::CUSTOMER_TYPE_TERMIN) {
             $parts = $this->reportPartsTermin;
-        } elseif ($customerType === 'spontan') {
+        } elseif ($customerType === self::CUSTOMER_TYPE_SPONTAN) {
             $parts = $this->reportPartsSpontan;
-        } else { // 'gesamt'
+        } else {
             $parts = $this->reportPartsGesamt;
         }
         foreach ($parts as $partName => $headline) {
@@ -125,31 +145,39 @@ class WaitingReport extends Base
         }
     }
 
+    private function getCustomerTypeKeys(string $customerType): array
+    {
+        $this->assertValidCustomerType($customerType);
+        $keyMappings = [
+            self::CUSTOMER_TYPE_TERMIN => [
+                'max' => 'max_waitingtime_termin',
+                'avg' => 'average_waitingtime_termin',
+                'avg_way' => 'average_waytime_termin',
+            ],
+            self::CUSTOMER_TYPE_SPONTAN => [
+                'max' => 'max_waitingtime',
+                'avg' => 'average_waitingtime',
+                'avg_way' => 'average_waytime',
+            ],
+            self::CUSTOMER_TYPE_GESAMT => [
+                'max' => 'max_waitingtime_total',
+                'avg' => 'average_waitingtime_total',
+                'avg_way' => 'average_waytime_total',
+            ],
+        ];
+
+        return $keyMappings[$customerType];
+    }
+
     public function writeTotals(ReportEntity $report, $sheet, string $customerType)
     {
+        $this->assertValidCustomerType($customerType);
+
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
 
-        if ($customerType === 'termin') {
-            $keys = [
-                'max' => 'max_waitingtime_termin',
-                'avg' => 'average_waitingtime_termin',
-                'avg_way' => 'average_waytime_termin',
-            ];
-        } elseif ($customerType === 'spontan') {
-            $keys = [
-                'max' => 'max_waitingtime',
-                'avg' => 'average_waitingtime',
-                'avg_way' => 'average_waytime',
-            ];
-        } else { // 'gesamt'
-            $keys = [
-                'max' => 'max_waitingtime_total',
-                'avg' => 'average_waitingtime_total',
-                'avg_way' => 'average_waytime_total',
-            ];
-        }
+        $keys = $this->getCustomerTypeKeys($customerType);
 
         $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
         $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
