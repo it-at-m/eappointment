@@ -30,6 +30,8 @@ class WorkstationProcessParked extends BaseController
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
+        $workstation->process->setParkedBy($workstation->name);
+        $process->parkedBy = $workstation->name;
         $workstation->process->setStatus("parked");
         $process->status = Process::STATUS_PARKED;
         $workstation->process->setStatusBySettings();

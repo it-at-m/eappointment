@@ -57,6 +57,7 @@ class Process extends Schema\Entity
             'wasMissed' => false,
             'priority' => null,
             'externalUserId' => null,
+            'parkedBy' => null,
         ];
     }
 
@@ -746,5 +747,14 @@ class Process extends Schema\Entity
     {
         $this->externalUserId = $externalUserId;
         return $this;
+    }
+
+    public function getParkedBy()
+    {
+        return $this->toProperty()->parkedBy->get();
+    }
+
+    public function setParkedBy($name){
+        $this->parkedBy = $name;
     }
 }

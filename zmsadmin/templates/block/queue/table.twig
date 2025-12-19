@@ -129,12 +129,7 @@
 									{% endif %}
 								</td>
 								<td>
-								unfertig
-								{% for key in item|keys %}
-            <p>{{ key }}: {{ item[key] }}</p>
-        {% endfor %}
-
-
+								{{ item.parkedBy }}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}

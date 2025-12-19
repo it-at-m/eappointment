@@ -488,6 +488,10 @@
     "externalUserId": {
       "type": ["string", "null"],
       "description": "External user identifier for linking process to authenticated citizen user"
-    }
+    },
+    "parkedBy": {
+            "type": ["string", "null"],
+            "description": "Roomnumber that parked the process"
+        }
   }
 }
