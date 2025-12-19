@@ -754,7 +754,8 @@ class Process extends Schema\Entity
         return $this->toProperty()->parkedBy->get();
     }
 
-    public function setParkedBy($name){
+    public function setParkedBy($name)
+    {
         $this->parkedBy = $name;
     }
 }
