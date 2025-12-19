@@ -49,15 +49,15 @@ class ReportWaitingDepartment extends BaseController
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/' . $args['period'] . '/')
-            ->getEntity()
-            ->toGrouped($this->groupfields, $this->hashset);
+                ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/' . $args['period'] . '/')
+                ->getEntity()
+                ->toGrouped($this->groupfields, $this->hashset);
 
-        $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
+            $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
 
-        $exchangeWaiting = $exchangeWaiting
-            ->withMaxByHour($this->hashset)
-            ->withMaxAndAverageFromWaitingTime();
+            $exchangeWaiting = $exchangeWaiting
+                ->withMaxByHour($this->hashset)
+                ->withMaxAndAverageFromWaitingTime();
 
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');

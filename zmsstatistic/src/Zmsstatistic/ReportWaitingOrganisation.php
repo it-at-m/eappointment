@@ -52,7 +52,7 @@ class ReportWaitingOrganisation extends BaseController
                 ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/' . $args['period'] . '/')
                 ->getEntity()
                 ->toGrouped($this->groupfields, $this->hashset);
-        
+
             $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
 
             $exchangeWaiting = $exchangeWaiting
