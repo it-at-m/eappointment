@@ -8,7 +8,7 @@
 <!-- [![EUPL License][license-shield]][license-url] -->
 
 # E-Appointment
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 This monorepo contains the Munich-specific adjustments to the original Berlin version. You can explore the original project here: https://gitlab.com/eappointment/eappointment
 
@@ -32,6 +32,7 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * emergency call for employees
 
 [Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
+
 
 ## Projects
 
@@ -66,7 +67,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
 
 ---
 
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 Dieses Monorepo enthält die München-spezifischen Anpassungen der ursprünglichen Berliner Version. Das ursprüngliche Projekt kannst du hier erkunden: https://gitlab.com/eappointment/eappointment
 
