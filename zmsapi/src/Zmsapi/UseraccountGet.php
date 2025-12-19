@@ -22,14 +22,20 @@ class UseraccountGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+
+        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
+
         $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
-        if (! $useraccount->hasId()) {
+        if (! $useraccount || ! $useraccount->hasId()) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
 
-        Helper\User::testWorkstationAccessRights($useraccount);
+        try {
+            Helper\User::testWorkstationAccessRights($useraccount);
+        } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
         $message = Response\Message::create($request);
         $message->data = $useraccount;
 

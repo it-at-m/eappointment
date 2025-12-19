@@ -23,14 +23,19 @@
                         <table class="table--base">
                         <thead>
                             <tr>
-                                <th rowspan="2" colspan="2">{% trans %}Datum{% endtrans %}</th>
-                                <th colspan="2">{% trans %}Kunden{% endtrans %}</th>
-                                <th colspan="2">{% trans %}davon Terminkunden{% endtrans %}</th>
-                                <th colspan="2">{% trans %}davon Spontankunden{% endtrans %}</th>
-                                <th rowspan="2">{% trans %}Dienstleistungen{% endtrans %}</th>
+                                <th rowspan="3" colspan="2">{% trans %}Datum{% endtrans %}</th>
+                                    <th rowspan="2" colspan="2" style="vertical-align: top !important">{% trans %}Kunden{% endtrans %}</th>
+                                    <th rowspan="2" colspan="2" style="vertical-align: top !important;">{% trans %}davon Terminkunden{% endtrans %}</th>
+                                <th colspan="4">{% trans %}davon Spontankunden{% endtrans %}</th>
+                                <th rowspan="3">{% trans %}Dienstleistungen{% endtrans %}</th>
                             </tr>
                             <tr>
-
+                                <th colspan="2"></th>
+                                <th colspan="2">{% trans %}davon E-Kiosk{% endtrans %}</th>
+                            </tr>
+                            <tr>
+                                <th>{% trans %}Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Nicht Erschienen{% endtrans %}</th>
                                 <th>{% trans %}Erschienen{% endtrans %}</th>
                                 <th>{% trans %}Nicht Erschienen{% endtrans %}</th>
                                 <th>{% trans %}Erschienen{% endtrans %}</th>
@@ -57,6 +62,8 @@
                                     <td class="colMitTerminNowShow report-board--summary">{{ exchangeClient.data|last.missedwithappointment }}</td>                                   
                                     <td class="colMitKeinTermin report-board--summary">{{ exchangeClient.data|last.clientscount - exchangeClient.data|last.withappointment }}</td>
                                     <td class="colMitKeinTerminNoShow report-board--summary">{{ exchangeClient.data|last.missed - exchangeClient.data|last.missedwithappointment }}</td>                                    
+                                    <td class="colTicketprinter report-board--summary">{{ exchangeClient.data|last.ticketprinter }}</td>
+                                    <td class="colTicketprinterMissed report-board--summary">{{ exchangeClient.data|last.ticketprintermissed }}</td>
                                     <td class="colDienstleistungen report-board--summary">{{ exchangeClient.data|last.requestscount }}</td>
                                 </tr>
                                 {% for item in exchangeClient.data  %}
@@ -76,13 +83,15 @@
                                             <td class="colMitTerminNoShow statistik">{{ item.missedwithappointment }}</td>
                                             <td class="colMitKeinTTermin statistik">{{ (item.clientscount - item.withappointment) }}</td>
                                             <td class="colMitKeinTTerminNoShow statistik">{{ (item.missed - item.missedwithappointment) }}</td>
+                                            <td class="colTicketprinter statistik">{{ item.ticketprinter }}</td>
+                                            <td class="colTicketprinterMissed statistik">{{ item.ticketprintermissed }}</td>
                                             <td class="colDienstleistungen statistik">{{ item.requestscount }}</td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
                             {% else %}
                             <tr>
-                                <td colspan="7">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                                <td colspan="11">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
                             </tr>
                             {% endif %}
                         </tbody>
@@ -98,3 +107,4 @@
         </div>
     </div>
 {% endblock %}
+

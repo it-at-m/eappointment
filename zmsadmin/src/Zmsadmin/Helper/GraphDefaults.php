@@ -362,39 +362,6 @@ EOS;
         return static::defaultFormat($default);
     }
 
-    /**
-     *  reduced process response data
-     */
-    public static function getPickup()
-    {
-        $default = <<< EOS
-{
-    amendment
-    customTextfield
-    customTextfield2
-    id
-    displayNumber
-    appointments{
-        date
-    }
-    clients{
-        familyName
-        email
-        telephone
-    }
-    queue{
-        arrivalTime,
-        withAppointment,
-        number
-    }
-    requests{
-        name
-    }
-}
-EOS;
-        return static::defaultFormat($default);
-    }
-
 /**
  *  reduced process response data
  */

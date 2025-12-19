@@ -114,7 +114,7 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
       :rows="textfieldRows"
     />
     <muc-text-area
@@ -128,7 +128,7 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
       :rows="textfieldRows"
     />
   </form>
@@ -318,8 +318,8 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 
@@ -341,8 +341,8 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield2 ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 

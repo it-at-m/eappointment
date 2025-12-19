@@ -78,7 +78,7 @@ class UserAccountTest extends Base
     public function testReadListByDepartment()
     {
         $query = new Query();
-        $entityList = $query->readCollectionByDepartmentId(74);
+        $entityList = $query->readCollectionByDepartmentIds([74]);
         foreach ($entityList as $entity) {
             $entity->departments[] = (new \BO\Zmsdb\Department())->readEntity(72);
         }

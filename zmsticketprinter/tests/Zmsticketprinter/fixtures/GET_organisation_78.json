@@ -58,7 +58,6 @@
                     "startInDaysDefault": "0"
                   },
                   "client": {
-                    "alternateAppointmentUrl": "https://service.berlin.de",
                     "amendmentActivated": 1,
                     "amendmentLabel": "",
                     "emailRequired": 1,
@@ -70,17 +69,12 @@
                     "headsUpContent": "",
                     "headsUpTime": 0
                   },
-                  "pickup": {
-                    "alternateName": "Ausgabe",
-                    "isDefault": 0
-                  },
                   "queue": {
                     "callCountMax": 0,
                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
                     "firstNumber": 1,
                     "lastNumber": 399,
                     "processingTimeAverage": 12,
-                    "publishWaitingTimeEnabled": 1,
                     "statisticsEnabled": 1
                   },
                   "survey": {
@@ -154,7 +148,6 @@
                     "startInDaysDefault": "0"
                   },
                   "client": {
-                    "alternateAppointmentUrl": "",
                     "amendmentActivated": 1,
                     "amendmentLabel": "",
                     "emailRequired": 1,
@@ -166,17 +159,12 @@
                     "headsUpContent": "",
                     "headsUpTime": 0
                   },
-                  "pickup": {
-                    "alternateName": "Ausgabe",
-                    "isDefault": 0
-                  },
                   "queue": {
                     "callCountMax": 0,
                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
                     "firstNumber": 1,
                     "lastNumber": 399,
                     "processingTimeAverage": 12,
-                    "publishWaitingTimeEnabled": 0,
                     "statisticsEnabled": 1
                   },
                   "survey": {

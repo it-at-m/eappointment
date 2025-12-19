@@ -1,3 +1,4 @@
+{% set textfieldDisplayLength = 50 %}
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless queue-table'} %}
 	{% use "block/calendar/navigation.twig" %}
 	{% use "block/workstation/scopeSwitch.twig" %}
@@ -154,13 +155,15 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td>
-										{{ item.customTextfield|decodeEntities }}
+									<td title="{{ item.customTextfield|decodeEntities }}">
+										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
+										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td>
-										{{ item.customTextfield2|decodeEntities }}
+									<td title="{{ item.customTextfield2|decodeEntities }}">
+										{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
+										{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								<td>
@@ -415,13 +418,15 @@
 										</p>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td>
-											{{ item.customTextfield|decodeEntities }}
+										<td title="{{ item.customTextfield|decodeEntities }}">
+											{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
+											{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td>
-											{{ item.customTextfield2|decodeEntities }}
+										<td title="{{ item.customTextfield2|decodeEntities }}">
+											{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
+											{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
 									{% endif %}
 							<td class="nowrap">
@@ -544,14 +549,16 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td>
-										{{ item.customTextfield|decodeEntities }}
+									<td title="{{ item.customTextfield|decodeEntities }}">
+										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
+										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td>
-										{{ item.customTextfield2|decodeEntities }}
-									</td>
+									<td title="{{ item.customTextfield2|decodeEntities }}">
+									{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
+									{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
+										</td>
 								{% endif %}
 								<td>
 									<p>
@@ -709,4 +716,3 @@ content.addClass('hidden')
         pointer-events: none;
     }
 </style>
-
