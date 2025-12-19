@@ -739,7 +739,7 @@ class Scope extends Base
             return;
         }
 
-        if (isset($scope->provider) && isset($this->provider->id)) {
+        if (isset($scope->provider) && isset($scope->provider->id)) {
             if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-0')) {
                 App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-0');
             }
@@ -753,7 +753,7 @@ class Scope extends Base
             }
         }
 
-        if (isset($scope->cluster) && isset($this->cluster->id)) {
+        if (isset($scope->cluster) && isset($scope->cluster->id)) {
             if (App::$cache->has('scopeReadByClusterId-' . $scope->cluster->id . '-0')) {
                 App::$cache->delete('scopeReadByClusterId-' . $scope->cluster->id . '-0');
             }
@@ -767,7 +767,7 @@ class Scope extends Base
             }
         }
 
-        if (isset($scope->department) && isset($this->department->id)) {
+        if (isset($scope->department) && isset($scope->department->id)) {
             if (App::$cache->has('scopeReadByDepartmentId-' . $scope->department->id . '-0')) {
                 App::$cache->delete('scopeReadByDepartmentId-' . $scope->department->id . '-0');
             }
