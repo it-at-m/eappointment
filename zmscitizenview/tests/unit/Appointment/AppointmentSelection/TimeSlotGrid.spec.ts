@@ -16,6 +16,11 @@ describe("TimeSlotGrid", () => {
       '<button class="m-button" :data-variant="variant" @click="$emit(\'click\')"><slot/></button>',
   };
 
+  const tMock = (key: string) => {
+    if (key === "timeStampSuffix") return "Uhr";
+    return key;
+  };
+
   const baseProps = {
     officeId: 1,
     times: [1750915200, 1750918800, 1750922400],
@@ -23,6 +28,7 @@ describe("TimeSlotGrid", () => {
     showLocationTitle: true,
     officeNameById: (id: number | string) => (String(id) === "1" ? "Office X" : null),
     isSlotSelected: (officeId: number | string, time: number) => false,
+    t: tMock,
   };
 
   it("show/hide location title and uses officeNameById", async () => {
@@ -83,5 +89,14 @@ describe("TimeSlotGrid", () => {
     const text = wrapper.text();
     expect(text).toContain('fmt-111');
     expect(text).toContain('fmt-222');
+  });
+
+  it("renders aria-label with time, suffix, and office name", () => {
+    const wrapper = mount(TimeSlotGrid, {
+      global: { stubs: { MucButton: MucButtonStub } },
+      props: baseProps,
+    });
+    const buttons = wrapper.findAll('.timeslot');
+    expect(buttons[0].attributes('aria-label')).toBe('fmt-1750915200 Uhr, Office X');
   });
 });

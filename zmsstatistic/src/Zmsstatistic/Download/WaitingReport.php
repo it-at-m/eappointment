@@ -17,6 +17,12 @@ use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
+    protected $reportPartsGesamt = [
+        'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
+        'waitingcount_total' => 'Wartende Gesamtkunden',
+        'waytime_total' => 'Durchschnittliche Wegezeit in Min. (Gesamt)',
+    ];
+
     protected $reportPartsTermin = [
         'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
         'waitingcount_termin' => 'Wartende Terminkunden',
@@ -42,24 +48,32 @@ class WaitingReport extends Base
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
 
-        // Blatt 1: Terminkunden
-        $spreadsheet->getActiveSheet()->setTitle('Terminkunden');
+        // Blatt 1: Gesamt
+        $spreadsheet->getActiveSheet()->setTitle('Gesamt');
+        $spreadsheet->setActiveSheetIndexByName('Gesamt');
+        $this->writeInfoHeader($args, $spreadsheet);
+        foreach ($args['reports'] as $report) {
+            $this->writeWaitingReport($report, $spreadsheet, 'gesamt', 'dd.MM.yyyy');
+        }
+
+        // Blatt 2: Terminkunden
+        $spreadsheet->createSheet()->setTitle('Terminkunden');
         $spreadsheet->setActiveSheetIndexByName('Terminkunden');
         $this->writeInfoHeader($args, $spreadsheet);
         foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ true, 'dd.MM.yyyy');
+            $this->writeWaitingReport($report, $spreadsheet, 'termin', 'dd.MM.yyyy');
         }
 
-        // Blatt 2: Spontankunden
+        // Blatt 3: Spontankunden
         $spreadsheet->createSheet()->setTitle('Spontankunden');
         $spreadsheet->setActiveSheetIndexByName('Spontankunden');
         $this->writeInfoHeader($args, $spreadsheet);
         foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, /*isTermin*/ false, 'dd.MM.yyyy');
+            $this->writeWaitingReport($report, $spreadsheet, 'spontan', 'dd.MM.yyyy');
         }
 
         // Für den Download das erste Blatt aktiv lassen
-        $spreadsheet->setActiveSheetIndexByName('Terminkunden');
+        $spreadsheet->setActiveSheetIndexByName('Gesamt');
 
         return $download->writeDownload($response);
     }
@@ -67,16 +81,18 @@ class WaitingReport extends Base
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        bool $isTermin,
+        string $customerType, // 'gesamt' | 'termin' | 'spontan'
         $datePatternCol = 'dd.MM.yyyy',
     ) {
         $sheet = $spreadsheet->getActiveSheet();
         $this->writeHeader($report, $sheet, $datePatternCol);
-        $this->writeTotals($report, $sheet, $isTermin);
-        if ($isTermin) {
+        $this->writeTotals($report, $sheet, $customerType);
+        if ($customerType === 'termin') {
             $parts = $this->reportPartsTermin;
-        } else {
+        } elseif ($customerType === 'spontan') {
             $parts = $this->reportPartsSpontan;
+        } else { // 'gesamt'
+            $parts = $this->reportPartsGesamt;
         }
         foreach ($parts as $partName => $headline) {
             $this->writeReportPart($report, $sheet, $partName, $headline);
@@ -109,25 +125,32 @@ class WaitingReport extends Base
         }
     }
 
-    public function writeTotals(ReportEntity $report, $sheet, bool $isTermin)
+    public function writeTotals(ReportEntity $report, $sheet, string $customerType)
     {
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
 
-        if ($isTermin) {
+        if ($customerType === 'termin') {
             $keys = [
                 'max' => 'max_waitingtime_termin',
                 'avg' => 'average_waitingtime_termin',
                 'avg_way' => 'average_waytime_termin',
             ];
-        } else {
+        } elseif ($customerType === 'spontan') {
             $keys = [
                 'max' => 'max_waitingtime',
                 'avg' => 'average_waitingtime',
                 'avg_way' => 'average_waytime',
             ];
+        } else { // 'gesamt'
+            $keys = [
+                'max' => 'max_waitingtime_total',
+                'avg' => 'average_waitingtime_total',
+                'avg_way' => 'average_waytime_total',
+            ];
         }
+
         $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
         $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
         $reportTotal['average_waytime'][] = 'Stundendurchschnitt (Spalten) der Wegezeit in Min.';
