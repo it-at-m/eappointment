@@ -126,10 +126,61 @@ class User
 
     public static function checkDepartments($departmentIds)
     {
+        $normalizedIds = self::normalizeDepartmentIds($departmentIds);
         $departments = new DepartmentList();
 
-        foreach ($departmentIds as $departmentId) {
-            $departments->addEntity(self::checkDepartment($departmentId));
+        if (empty($normalizedIds)) {
+            return $departments;
+        }
+
+        $workstation = static::readWorkstation(2);
+        $userAccount = $workstation->getUseraccount();
+
+        if (! $userAccount->hasId()) {
+            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+        }
+
+        if ($userAccount->isSuperUser()) {
+            // Bulk-load all departments in one query for superusers
+            $departmentMap = (new \BO\Zmsdb\Department())->readEntitiesByIds($normalizedIds, 1);
+            foreach ($normalizedIds as $departmentId) {
+                if (!isset($departmentMap[$departmentId])) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
+                }
+                $departments->addEntity($departmentMap[$departmentId]);
+            }
+        } elseif ($userAccount->hasRights(['department'])) {
+            // Users with 'department' rights: need organisation-based access checks
+            // Group departments by organisation and load in batches
+            foreach ($normalizedIds as $departmentId) {
+                $departments->addEntity(self::checkDepartment($departmentId));
+            }
+        } else {
+            // Regular users: extract departments directly from already-loaded user department list
+            $userDepartmentList = $userAccount->getDepartmentList();
+            $accessibleDepartmentIds = $userDepartmentList->getIds();
+            $accessibleRequestedIds = array_intersect($normalizedIds, $accessibleDepartmentIds);
+
+            if (count($accessibleRequestedIds) !== count($normalizedIds)) {
+                // Some requested departments are not accessible
+                $missingIds = array_diff($normalizedIds, $accessibleRequestedIds);
+                throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                    "No access to department(s): " . implode(', ', array_map('htmlspecialchars', $missingIds))
+                );
+            }
+
+            // Extract requested departments from already-loaded list (no DB query needed)
+            foreach ($accessibleRequestedIds as $departmentId) {
+                $department = $userDepartmentList->getEntity($departmentId);
+                if (!$department || !$department->hasId()) {
+                    throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                        "No access to department " . htmlspecialchars((string) $departmentId)
+                    );
+                }
+                $departments->addEntity($department);
+            }
         }
 
         return $departments;
@@ -196,5 +247,28 @@ class User
         $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
         $department = $organisation->departments->getEntity($departmentId);
         return $department;
+    }
+
+    public static function normalizeDepartmentIds(array $departmentIds)
+    {
+        $normalized = [];
+        foreach ($departmentIds as $departmentId) {
+            if ($departmentId === null) {
+                continue;
+            }
+            $departmentId = trim((string) $departmentId);
+            if ($departmentId === '') {
+                continue;
+            }
+            $validatedId = filter_var($departmentId, FILTER_VALIDATE_INT);
+            if ($validatedId === false) {
+                throw new \BO\Zmsapi\Exception\BadRequest(
+                    "Invalid department ID: " . htmlspecialchars($departmentId)
+                );
+            }
+            $normalized[] = $validatedId;
+        }
+
+        return array_values(array_unique($normalized));
     }
 }

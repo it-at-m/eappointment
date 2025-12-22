@@ -136,10 +136,6 @@ class ProcessTest extends EntityCommonTests
         $entity->queue['callCount'] = 4;
         $entity->setStatusBySettings();
         $this->assertEquals('missed', $entity->status);
-
-        $entity->status = 'pickup';
-        $entity->setStatusBySettings();
-        $this->assertEquals('queued', $entity->status);
     }
 
     public function testWithoutPersonalData()
@@ -464,18 +460,6 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(1, $collection->withOutScopeId(141)->count());
     }
 
-    public function testWithScopeIdForPickupWithDifferentScopeId()
-    {
-        $collection = new $this->collectionclass();
-        $entity = $this->getExample();
-        $collection->addEntity($entity);
-        $entity2 = $this->getExample();
-        $entity2->scope['id'] = 141;
-        $collection->addEntity($entity2);
-        $this->assertEquals(1, $collection->withScopeId(123)->count());
-        $this->assertEquals(1, $collection->withOutScopeId(141)->count());
-    }
-
     public function testToConflictListByDay()
     {
         $collection = new $this->collectionclass();
@@ -513,15 +497,6 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue($withoutAppointment->hasArrivalTime());
         $this->assertTrue($queueWith->withAppointment);
         $this->assertFalse($queueWithout->withAppointment);
-    }
-
-    public function testPickup()
-    {
-        $entity = $this->getExample();
-        $entity->scope['id'] = 456;
-        $this->assertEquals(456, $entity->getScopeId());
-        $entity->status = 'pending';
-        $this->assertEquals(456, $entity->getScopeId());
     }
 
     public function testMerge()
