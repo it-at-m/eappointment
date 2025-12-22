@@ -20,7 +20,8 @@ class ValidationHandler extends BaseView {
 
     render() {
         Object.keys(this.errors).forEach(key => {
-            this.$main.find(`input[name^="${key}"]`).each((index, element) => {
+            // Look for both input and textarea elements
+            this.$main.find(`input[name^="${key}"], textarea[name^="${key}"]`).each((index, element) => {
                 if (index > 0) {
                     return false;
                 }
