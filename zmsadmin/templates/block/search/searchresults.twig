@@ -59,8 +59,8 @@
                 {% for process in processList %}
                     <tr>
                         <td>
-                            {% if process.status == "pickup" or process.status == "pending" %}
-                                <a tabindex="1" href="{{ urlGet("pickup", {}, {}) }}">
+                            {% if process.status == "pending" %}
+                                <a tabindex="1">
                                     {{process.clients.0.familyName}} ({{process.displayNumber}})
                                 </a>
                             {% else %}

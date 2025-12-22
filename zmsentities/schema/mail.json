@@ -82,7 +82,6 @@
                         "startInDaysDefault": "0"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "",
                         "appointmentsPerMail": "",
                         "slotsPerAppointment": "",
                         "whitelistedMails": "",
@@ -106,17 +105,12 @@
                         "headsUpContent": "",
                         "headsUpTime": "0"
                     },
-                    "pickup": {
-                        "alternateName": "Ausgabe",
-                        "isDefault": "0"
-                    },
                     "queue": {
                         "callCountMax": "0",
                         "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
                         "firstNumber": "1000",
                         "lastNumber": "1999",
                         "processingTimeAverage": "00:15:00",
-                        "publishWaitingTimeEnabled": "1",
                         "statisticsEnabled": "1"
                     },
                     "survey": {

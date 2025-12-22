@@ -141,23 +141,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $processEntity;
     }
 
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
-    {
-        $process = Entity::createFromScope($scope, $dateTime);
-        $process->setStatus('pending');
-        if (!$newQueueNumber) {
-            $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
-        }
-        $process->addQueue($newQueueNumber, $dateTime);
-        Log::writeProcessLog(
-            "CREATE (Process::writeNewPickup) $process ",
-            Log::ACTION_NEW_PICKUP,
-            $process,
-            $useraccount
-        );
-        return $this->writeNewProcess($process, $dateTime);
-    }
-
     public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $datetime = \App::$now;

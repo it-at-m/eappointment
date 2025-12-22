@@ -321,7 +321,7 @@ class CallDisplayConfigView extends Component {
                     </Label>
                     <Controls>
                         <Select
-                            options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
+                            options={[{ name: 'Alle', value: 'all' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
                             value={this.state.queueStatus}
                             attributes={{ "id": "visibleCalls" }}
                             onChange={onQueueStatusChange} />

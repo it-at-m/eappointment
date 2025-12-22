@@ -298,7 +298,6 @@ class MailTest extends EntityCommonTests
             'queued',
             'appointment',
             'reminder',
-            'pickup',
             'deleted',
             'blocked',
             'survey'

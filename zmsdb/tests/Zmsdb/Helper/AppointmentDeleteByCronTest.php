@@ -51,25 +51,4 @@ class AppointmentDeleteByCronTest extends Base
         $helper->startProcessing(true, false);
         $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($expired, 'preconfirmed')));
     }
-
-    public function testStartProcessingBlockedPickup()
-    {
-        $now = static::$now;
-                
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
-        $process = (new Query())->writeNewPickup($scope, $now);
-        $process = (new Query())->readEntity($process->id, $process->authKey, 0);
-        $process->status = 'finished';
-        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId(100130, 2);
-        (new ProcessStatusArchived())->writeEntityFinished($process, $now);
-
-        $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
-
-        $helper->startProcessing(false, false);
-        $this->assertEquals(1, count((new Query())->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
-     
-        $helper->startProcessing(true, false);
-        $appointmentUnits = count((new Query())->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0));
-        $this->assertEquals(0, $appointmentUnits);
-    }
 }

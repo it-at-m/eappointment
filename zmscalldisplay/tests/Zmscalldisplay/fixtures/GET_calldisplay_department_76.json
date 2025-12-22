@@ -30,7 +30,6 @@
 					"startInDaysDefault": "0"
 				},
 				"client": {
-					"alternateAppointmentUrl": "",
 					"amendmentActivated": "1",
 					"amendmentLabel": "Ggf. weitere Dienstleistungen und Ihre Hinweise. (Fragen k\u00f6nnen nicht beantwortet werden.) ",
 					"emailRequired": "1",
@@ -42,17 +41,12 @@
 					"headsUpContent": "",
 					"headsUpTime": "0"
 				},
-				"pickup": {
-					"alternateName": "Tresen",
-					"isDefault": "0"
-				},
 				"queue": {
 					"callCountMax": "0",
 					"callDisplayText": "Herzlich Willkommen in Tempelhof-Sch\u00f6neberg.\r\n====================\r\nHinweis: In diesem B\u00fcrgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie \u00fcber das Beh\u00f6rdentelefon 115, zur Selbstbuchung \u00fcber die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
 					"firstNumber": "1",
 					"lastNumber": "200",
 					"processingTimeAverage": "10",
-					"publishWaitingTimeEnabled": "1",
 					"statisticsEnabled": "1"
 				},
 				"survey": {
