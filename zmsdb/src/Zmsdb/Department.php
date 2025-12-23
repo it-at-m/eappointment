@@ -13,10 +13,6 @@ use BO\Zmsentities\Collection\DepartmentList as Collection;
  */
 class Department extends Base
 {
-    /**
-     *
-     * @var Array \BO\Zmsentities\Department
-     */
     public static $departmentCache = array();
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
@@ -145,14 +141,6 @@ class Department extends Base
         return $departmentList;
     }
 
-    /**
-     * remove a department
-     *
-     * @param
-     *            departmentId
-     *
-     * @return Resource Status
-     */
     public function deleteEntity($departmentId)
     {
         $entity = $this->readEntity($departmentId, 1);
@@ -181,13 +169,6 @@ class Department extends Base
         return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
-    /**
-     * write a department
-     *
-     * @param Department $entity
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
     {
         self::$departmentCache = [];
@@ -223,14 +204,6 @@ class Department extends Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * update a department
-     *
-     * @param
-     *            departmentId
-     *
-     * @return Entity
-     */
     public function updateEntity($departmentId, \BO\Zmsentities\Department $entity)
     {
         self::$departmentCache = [];
@@ -258,15 +231,6 @@ class Department extends Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    /**
-     * create dayoff preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            dayoffs
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentDayoffs($departmentId, $dayoffList)
     {
         if (!$departmentId) {
@@ -293,15 +257,6 @@ class Department extends Base
         }
     }
 
-    /**
-     * create links preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            links
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentLinks($departmentId, $links)
     {
         if (!$departmentId) {
@@ -322,15 +277,6 @@ class Department extends Base
         }
     }
 
-    /**
-     * create mail preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            email
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentMail(
         $departmentId,
         $email,
@@ -347,15 +293,6 @@ class Department extends Base
         return $result;
     }
 
-    /**
-     * create notification preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            preferences
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
@@ -373,15 +310,6 @@ class Department extends Base
         return $result;
     }
 
-    /**
-     * update mail preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            email
-     *
-     * @return Boolean
-     */
     protected function updateDepartmentMail(
         $departmentId,
         $email,
@@ -398,15 +326,6 @@ class Department extends Base
         ));
     }
 
-    /**
-     * update notification preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            preferences
-     *
-     * @return Boolean
-     */
     protected function updateDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
