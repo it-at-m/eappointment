@@ -219,9 +219,21 @@ class Accordion extends Component
                 footer={<FooterButtons
                     hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
                     hasErrors={Object.values(this.props.errorList).some(error => {
-                        const hasPastTimeError = error.itemList?.flat(2)
-                            .some(item => item?.type === 'endTimePast');
-                        return !hasPastTimeError;
+                        // Check if this error belongs to a NEW availability (tempId but no real id)
+                        const errorAvailability = this.props.availabilityList.find(
+                            a => (a.id && a.id === error.id) || (a.tempId && a.tempId === error.id)
+                        );
+                        const isNewAvailability = errorAvailability && !errorAvailability.id && errorAvailability.tempId;
+                        
+                        // For NEW availabilities: include timePastToday errors (should block saving)
+                        // For EXISTING availabilities: filter out past-time errors (don't block saving other availabilities)
+                        const nonPastTimeErrors = error.itemList?.flat(2)
+                            .filter(item => {
+                                if (item?.type === 'endTimePast') return false;
+                                if (item?.type === 'timePastToday' && !isNewAvailability) return false;
+                                return true;
+                            });
+                        return nonPastTimeErrors && nonPastTimeErrors.length > 0;
                     })}
                     hasSlotCountError={hasSlotCountError(this.props)}
                     stateChanged={this.props.stateChanged}

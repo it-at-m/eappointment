@@ -326,6 +326,11 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     const endTimestamp = endDateTime.unix();
     const startTimestamp = startDateTime.unix();
     const isOrigin = (data.kind && 'origin' == data.kind)
+    
+    // Skip past-time validation if times are not set yet (empty or default 00:00)
+    const hasTimesSet = data.startTime && data.endTime && 
+        !(data.startTime === '00:00' && data.endTime === '00:00') &&
+        !(data.startTime === '00:00:00' && data.endTime === '00:00:00');
 
     if (!isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
         errorList.push({
@@ -335,12 +340,13 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     }
 
     // Check if dates are today but times are in the past
+    // Only validate if times have actually been set by the user
     const isStartDateToday = startTime.isSame(today, 'day');
     const isEndDateToday = endTime.isSame(today, 'day');
     const isStartTimePast = startTimestamp < today.unix();
     const isEndTimePast = endTimestamp < today.unix();
 
-    if (!isOrigin && isStartDateToday && isEndDateToday && isStartTimePast && isEndTimePast) {
+    if (!isOrigin && hasTimesSet && isStartDateToday && isEndDateToday && isStartTimePast && isEndTimePast) {
         errorList.push({
             type: 'timePastToday',
             message: 'Die ausgewählten Zeiten liegen in der Vergangenheit. '
@@ -350,7 +356,7 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
         })
     }
     // Check if dates are in the past (not today)
-    else if (!isOrigin && startTimestamp < today.startOf('day').unix() && endTimestamp < today.startOf('day').unix()) {
+    else if (!isOrigin && hasTimesSet && startTimestamp < today.startOf('day').unix() && endTimestamp < today.startOf('day').unix()) {
         errorList.push({
             type: 'endTimePast',
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
