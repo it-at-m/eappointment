@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@v6
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
