@@ -4,7 +4,6 @@ namespace BO\Zmsdb;
 
 use BO\Zmsentities\Scope as Entity;
 use BO\Zmsentities\Collection\ScopeList as Collection;
-use BO\Zmsdb\Application as App;
 
 /**
  *
@@ -22,8 +21,8 @@ class Scope extends Base
     {
         $cacheKey = "scope-$scopeId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $scope = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $scope = \App::$cache->get($cacheKey);
         }
 
         if (empty($scope)) {
@@ -36,8 +35,8 @@ class Scope extends Base
                 return null;
             }
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $scope);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $scope);
                 if (\App::$log) {
                     \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
                 }
@@ -112,8 +111,8 @@ class Scope extends Base
     ) {
         $cacheKey = "scopeReadByClusterId-$clusterId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $result = \App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
@@ -130,8 +129,8 @@ class Scope extends Base
                 );
             }
 
-            if (App::$cache && !($result instanceof \PDOStatement)) {
-                App::$cache->set($cacheKey, $result);
+            if (\App::$cache && !($result instanceof \PDOStatement)) {
+                \App::$cache->set($cacheKey, $result);
                 if (\App::$log) {
                     \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
                 }
@@ -168,8 +167,8 @@ class Scope extends Base
     {
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $result = \App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
@@ -179,8 +178,8 @@ class Scope extends Base
                 ->addConditionProviderId($providerId);
             $result = $this->fetchList($query, new Entity());
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $result);
                 if (\App::$log) {
                     \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
                 }
@@ -232,8 +231,8 @@ class Scope extends Base
     {
         $cacheKey = "scopeReadByDepartmentId-$departmentId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $result = \App::$cache->get($cacheKey);
         }
 
         $scopeList = new Collection();
@@ -246,8 +245,8 @@ class Scope extends Base
                     ->addConditionDepartmentId($departmentId);
                 $result = $this->fetchList($query, new Entity());
 
-                if (App::$cache) {
-                    App::$cache->set($cacheKey, $result);
+                if (\App::$cache) {
+                    \App::$cache->set($cacheKey, $result);
                     if (\App::$log) {
                         \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
                     }
@@ -315,8 +314,8 @@ class Scope extends Base
     {
         $cacheKey = "scopeReadList-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $result = \App::$cache->get($cacheKey);
         }
 
         if (empty($result)) {
@@ -325,8 +324,8 @@ class Scope extends Base
                 ->addResolvedReferences($resolveReferences);
             $result = $this->fetchList($query, new Entity());
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $result);
                 if (\App::$log) {
                     \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
                 }
@@ -650,7 +649,7 @@ class Scope extends Base
 
     public function removeCacheByContext($scope, $departmentId = null)
     {
-        if (!App::$cache) {
+        if (!\App::$cache) {
             return;
         }
 
@@ -660,8 +659,8 @@ class Scope extends Base
         if (isset($scope->id)) {
             for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
                 $key = "scope-{$scope->id}-{$resolveReferences}";
-                if (App::$cache->has($key)) {
-                    App::$cache->delete($key);
+                if (\App::$cache->has($key)) {
+                    \App::$cache->delete($key);
                     $invalidatedKeys[] = $key;
                 }
             }
@@ -670,8 +669,8 @@ class Scope extends Base
         // Invalidate scope list cache for all resolveReferences levels (0, 1, 2)
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
             $key = "scopeReadList-{$resolveReferences}";
-            if (App::$cache->has($key)) {
-                App::$cache->delete($key);
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
@@ -680,8 +679,8 @@ class Scope extends Base
         if ($departmentId) {
             for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
                 $key = "scopeReadByDepartmentId-{$departmentId}-{$resolveReferences}";
-                if (App::$cache->has($key)) {
-                    App::$cache->delete($key);
+                if (\App::$cache->has($key)) {
+                    \App::$cache->delete($key);
                     $invalidatedKeys[] = $key;
                 }
             }
@@ -693,8 +692,8 @@ class Scope extends Base
             foreach ($clusterIds as $clusterId) {
                 for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
                     $key = "scopeReadByClusterId-{$clusterId}-{$resolveReferences}";
-                    if (App::$cache->has($key)) {
-                        App::$cache->delete($key);
+                    if (\App::$cache->has($key)) {
+                        \App::$cache->delete($key);
                         $invalidatedKeys[] = $key;
                     }
                 }
@@ -706,8 +705,8 @@ class Scope extends Base
             $providerId = $scope->provider['id'];
             for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
                 $key = "scopeReadByProviderId-{$providerId}-{$resolveReferences}";
-                if (App::$cache->has($key)) {
-                    App::$cache->delete($key);
+                if (\App::$cache->has($key)) {
+                    \App::$cache->delete($key);
                     $invalidatedKeys[] = $key;
                 }
             }

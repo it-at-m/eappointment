@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Department as Entity;
 use BO\Zmsentities\Collection\DepartmentList as Collection;
 
@@ -19,8 +18,8 @@ class Department extends Base
     {
         $cacheKey = "department-$departmentId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $department = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $department = \App::$cache->get($cacheKey);
         }
 
         if (empty($department)) {
@@ -30,8 +29,8 @@ class Department extends Base
                 ->addConditionDepartmentId($departmentId);
             $department = $this->fetchOne($query, new Entity());
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $department);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $department);
                 if (\App::$log) {
                     \App::$log->info('Department cache set', ['cache_key' => $cacheKey]);
                 }
@@ -367,7 +366,7 @@ class Department extends Base
 
     public function removeCache($department)
     {
-        if (!App::$cache || !isset($department->id)) {
+        if (!\App::$cache || !isset($department->id)) {
             return;
         }
 
@@ -376,8 +375,8 @@ class Department extends Base
         // Invalidate department entity cache for all resolveReferences levels (0, 1, 2)
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
             $key = "department-{$department->id}-{$resolveReferences}";
-            if (App::$cache->has($key)) {
-                App::$cache->delete($key);
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
@@ -385,8 +384,8 @@ class Department extends Base
         // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
             $key = "scopeReadByDepartmentId-{$department->id}-{$resolveReferences}";
-            if (App::$cache->has($key)) {
-                App::$cache->delete($key);
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }

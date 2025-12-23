@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Cluster as Entity;
 use BO\Zmsentities\Collection\ClusterList as Collection;
 
@@ -20,8 +19,8 @@ class Cluster extends Base
         $cacheKey = "cluster-$itemId-$resolveReferences";
 
         $cluster = null;
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $cluster = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $cluster = \App::$cache->get($cacheKey);
         }
 
         if (empty($cluster)) {
@@ -35,8 +34,8 @@ class Cluster extends Base
                 return null;
             }
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $cluster);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $cluster);
                 if (\App::$log) {
                     \App::$log->info('Cluster cache set', ['cache_key' => $cacheKey]);
                 }
@@ -324,7 +323,7 @@ class Cluster extends Base
 
     public function removeCache($cluster)
     {
-        if (!App::$cache || !isset($cluster->id)) {
+        if (!\App::$cache || !isset($cluster->id)) {
             return;
         }
 
@@ -333,8 +332,8 @@ class Cluster extends Base
         // Invalidate cluster entity cache for all resolveReferences levels (0, 1, 2)
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
             $key = "cluster-{$cluster->id}-{$resolveReferences}";
-            if (App::$cache->has($key)) {
-                App::$cache->delete($key);
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
@@ -342,8 +341,8 @@ class Cluster extends Base
         // Invalidate scopeReadByClusterId cache for all resolveReferences levels (0, 1, 2)
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
             $key = "scopeReadByClusterId-{$cluster->id}-{$resolveReferences}";
-            if (App::$cache->has($key)) {
-                App::$cache->delete($key);
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
