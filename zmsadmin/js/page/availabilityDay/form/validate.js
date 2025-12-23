@@ -397,6 +397,40 @@ function validateSlotTime(data) {
 
 export default validate;
 
+/**
+ * Check if there are any blocking errors that should prevent saving.
+ * 
+ * For EXISTING availabilities: past-time errors (endTimePast, timePastToday) are ignored
+ * because they shouldn't block saving other availabilities.
+ * 
+ * For NEW availabilities: timePastToday errors ARE blocking because users shouldn't
+ * be able to create new availabilities with times in the past.
+ */
+export function hasBlockingErrors(errorList, availabilityList) {
+    if (!errorList || Object.keys(errorList).length === 0) {
+        return false;
+    }
+
+    return Object.values(errorList).some(error => {
+        // Find the availability this error belongs to
+        const errorAvailability = availabilityList?.find(
+            a => (a.id && a.id === error.id) || (a.tempId && a.tempId === error.id)
+        );
+        const isNewAvailability = errorAvailability && !errorAvailability.id && errorAvailability.tempId;
+
+        // Filter errors: 
+        // - Always exclude endTimePast (existing past availabilities)
+        // - Exclude timePastToday only for existing availabilities (not new ones)
+        const blockingErrors = error.itemList?.flat(2).filter(item => {
+            if (item?.type === 'endTimePast') return false;
+            if (item?.type === 'timePastToday' && !isNewAvailability) return false;
+            return true;
+        });
+
+        return blockingErrors && blockingErrors.length > 0;
+    });
+}
+
 export function hasSlotCountError(dataObject) {
     const errorList = dataObject?.errorList;
 

@@ -5,7 +5,7 @@ import AvailabilityForm from '../form'
 import FooterButtons from '../form/footerButtons'
 import {accordionTitle} from '../helpers'
 import Board from './board'
-import { hasSlotCountError } from '../form/validate';
+import { hasSlotCountError, hasBlockingErrors } from '../form/validate';
 moment.locale('de')
 
 class Accordion extends Component
@@ -218,20 +218,7 @@ class Accordion extends Component
                 body={renderAccordionBody()}
                 footer={<FooterButtons
                     hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
-                    hasErrors={Object.values(this.props.errorList).some(error => {                        
-                        const errorAvailability = this.props.availabilityList.find(
-                            a => (a.id && a.id === error.id) || (a.tempId && a.tempId === error.id)
-                        );
-                        const isNewAvailability = errorAvailability && !errorAvailability.id && errorAvailability.tempId;
-                        
-                        const nonPastTimeErrors = error.itemList?.flat(2)
-                            .filter(item => {
-                                if (item?.type === 'endTimePast') return false;
-                                if (item?.type === 'timePastToday' && !isNewAvailability) return false;
-                                return true;
-                            });
-                        return nonPastTimeErrors && nonPastTimeErrors.length > 0;
-                    })}
+                    hasErrors={hasBlockingErrors(this.props.errorList, this.props.availabilityList)}
                     hasSlotCountError={hasSlotCountError(this.props)}
                     stateChanged={this.props.stateChanged}
                     data={this.props.data}
