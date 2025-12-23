@@ -61,8 +61,6 @@ class AvailabilityPage extends Component {
         }
 
         window.addEventListener('beforeunload', this.unloadHandler)
-        
-        // Run initial validation to disable past availabilities on page load
         this.getValidationList()
     }
 
