@@ -762,8 +762,8 @@ class Scope extends Base
      */
     public function readDepartmentIdByScopeId($scopeId)
     {
-        $sql = 'SELECT BehoerdenID FROM standort WHERE StandortID = :scopeId';
-        return $this->getReader()->fetchValue($sql, ['scopeId' => $scopeId]);
+        $query = new Query\Scope(Query\Base::SELECT);
+        return $this->getReader()->fetchValue($query->getQueryDepartmentIdByScopeId(), [$scopeId]);
     }
 
     /**
@@ -774,8 +774,8 @@ class Scope extends Base
      */
     public function readClusterIdsByScopeId($scopeId)
     {
-        $sql = 'SELECT clusterID FROM clusterzuordnung WHERE standortID = :scopeId';
-        $result = $this->getReader()->fetchAll($sql, ['scopeId' => $scopeId]);
+        $query = new Query\Scope(Query\Base::SELECT);
+        $result = $this->getReader()->fetchAll($query->getQueryClusterIdsByScopeId(), [$scopeId]);
         return array_column($result, 'clusterID');
     }
 
