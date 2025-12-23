@@ -459,7 +459,6 @@ class Cluster extends Base
             }
         }
 
-        // Log invalidated cache keys
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Cluster cache invalidated', [
                 'cluster_id' => $cluster->id,

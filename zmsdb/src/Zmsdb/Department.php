@@ -472,7 +472,6 @@ class Department extends Base
             }
         }
 
-        // Log invalidated cache keys
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Department cache invalidated', [
                 'department_id' => $department->id,

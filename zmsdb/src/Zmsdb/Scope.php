@@ -567,7 +567,6 @@ class Scope extends Base
     {
         self::$cache = [];
 
-        // Get department ID before updating for cache invalidation
         $departmentId = $this->readDepartmentIdByScopeId($scopeId);
 
         $query = new Query\Scope(Query\Base::UPDATE);
@@ -593,8 +592,6 @@ class Scope extends Base
                     $preferenceQuery->replaceProperty($entityName, $entityId, $groupName, $name, $value);
                 }
             }
-
-            // Cache is already invalidated by the calling write/update method
         }
     }
 
@@ -733,7 +730,6 @@ class Scope extends Base
         }
         self::$cache = [];
 
-        // Get department ID before deleting for cache invalidation
         $departmentId = $this->readDepartmentIdByScopeId($scopeId);
 
         $entity = $this->readEntity($scopeId);
@@ -756,8 +752,6 @@ class Scope extends Base
                 $preferenceQuery->deleteProperty($entityName, $entityId, $groupName, $name);
             }
         }
-
-        // Cache is already invalidated by the calling delete method
     }
 
     /**
@@ -856,7 +850,6 @@ class Scope extends Base
             }
         }
 
-        // Log invalidated cache keys
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Scope cache invalidated', [
                 'scope_id' => isset($scope->id) ? $scope->id : 'unknown',
@@ -865,9 +858,6 @@ class Scope extends Base
         }
     }
 
-    /**
-     * @deprecated Use removeCacheByContext instead
-     */
     public function removeCache($scope)
     {
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
