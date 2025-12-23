@@ -36,6 +36,9 @@ class Department extends Base
 
             if (App::$cache) {
                 App::$cache->set($cacheKey, $department);
+                if (\App::$log) {
+                    \App::$log->info('Department cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -449,16 +452,32 @@ class Department extends Base
             return;
         }
 
-        if (App::$cache->has("department-$department->id-0")) {
-            App::$cache->delete("department-$department->id-0");
+        $invalidatedKeys = [];
+
+        // Invalidate department entity cache
+        for ($i = 0; $i <= 2; $i++) {
+            $key = "department-{$department->id}-{$i}";
+            if (App::$cache->has($key)) {
+                App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("department-$department->id-1")) {
-            App::$cache->delete("department-$department->id-1");
+        // Invalidate scopeReadByDepartmentId cache (scopes associated with this department)
+        for ($i = 0; $i <= 2; $i++) {
+            $key = "scopeReadByDepartmentId-{$department->id}-{$i}";
+            if (App::$cache->has($key)) {
+                App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("department-$department->id-2")) {
-            App::$cache->delete("department-$department->id-2");
+        // Log invalidated cache keys
+        if (!empty($invalidatedKeys) && \App::$log) {
+            \App::$log->info('Department cache invalidated', [
+                'department_id' => $department->id,
+                'invalidated_keys' => $invalidatedKeys
+            ]);
         }
     }
 }

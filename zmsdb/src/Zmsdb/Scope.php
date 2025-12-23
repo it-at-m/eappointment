@@ -38,6 +38,9 @@ class Scope extends Base
 
             if (App::$cache) {
                 App::$cache->set($cacheKey, $scope);
+                if (\App::$log) {
+                    \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -129,6 +132,9 @@ class Scope extends Base
 
             if (App::$cache && !($result instanceof \PDOStatement)) {
                 App::$cache->set($cacheKey, $result);
+                if (\App::$log) {
+                    \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -175,6 +181,9 @@ class Scope extends Base
 
             if (App::$cache) {
                 App::$cache->set($cacheKey, $result);
+                if (\App::$log) {
+                    \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -239,6 +248,9 @@ class Scope extends Base
 
                 if (App::$cache) {
                     App::$cache->set($cacheKey, $result);
+                    if (\App::$log) {
+                        \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
+                    }
                 }
             } else {
                 $result = $this->getReader()->perform(
@@ -315,6 +327,9 @@ class Scope extends Base
 
             if (App::$cache) {
                 App::$cache->set($cacheKey, $result);
+                if (\App::$log) {
+                    \App::$log->info('Scope cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -535,7 +550,7 @@ class Scope extends Base
             ->lastInsertId();
         $this->replacePreferences($entity);
 
-        $this->removeCache($entity);
+        $this->removeCacheByContext($entity, $parentId);
 
         return $this->readEntity($lastInsertId);
     }
@@ -551,6 +566,10 @@ class Scope extends Base
     public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $resolveReferences = 0)
     {
         self::$cache = [];
+
+        // Get department ID before updating for cache invalidation
+        $departmentId = $this->readDepartmentIdByScopeId($scopeId);
+
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
         $values = $query->reverseEntityMapping($entity);
@@ -558,7 +577,7 @@ class Scope extends Base
         $this->writeItem($query);
         $this->replacePreferences($entity);
 
-        $this->removeCache($entity);
+        $this->removeCacheByContext($entity, $departmentId);
 
         return $this->readEntity($scopeId, $resolveReferences, true);
     }
@@ -575,7 +594,7 @@ class Scope extends Base
                 }
             }
 
-            $this->removeCache($entity);
+            // Cache is already invalidated by the calling write/update method
         }
     }
 
@@ -591,13 +610,15 @@ class Scope extends Base
      */
     public function updateGhostWorkstationCount(\BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime)
     {
+        $departmentId = $this->readDepartmentIdByScopeId($entity->id);
+
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($entity->id);
         $values = $query->setGhostWorkstationCountEntityMapping($entity, $dateTime);
         $query->addValues($values);
         $this->writeItem($query);
 
-        $this->removeCache($entity);
+        $this->removeCacheByContext($entity, $departmentId);
 
         return $entity;
     }
@@ -614,13 +635,15 @@ class Scope extends Base
     public function updateEmergency($scopeId, \BO\Zmsentities\Scope $entity)
     {
         self::$cache = [];
+        $departmentId = $this->readDepartmentIdByScopeId($scopeId);
+
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
         $values = $query->setEmergencyEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
 
-        $this->removeCache($entity);
+        $this->removeCacheByContext($entity, $departmentId);
 
         return $this->readEntity($scopeId, 0, true);
     }
@@ -709,12 +732,16 @@ class Scope extends Base
             throw new Exception\Scope\ScopeHasProcesses();
         }
         self::$cache = [];
+
+        // Get department ID before deleting for cache invalidation
+        $departmentId = $this->readDepartmentIdByScopeId($scopeId);
+
         $entity = $this->readEntity($scopeId);
         $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
         $this->deletePreferences($entity);
 
-        $this->removeCache($entity);
+        $this->removeCacheByContext($entity, $departmentId);
 
         return ($this->deleteItem($query)) ? $entity : null;
     }
@@ -730,41 +757,120 @@ class Scope extends Base
             }
         }
 
-        $this->removeCache($entity);
+        // Cache is already invalidated by the calling delete method
     }
 
-    public function removeCache($scope)
+    /**
+     * Read department ID for a scope
+     *
+     * @param int $scopeId
+     * @return int|null
+     */
+    public function readDepartmentIdByScopeId($scopeId)
+    {
+        $sql = 'SELECT BehoerdenID FROM standort WHERE StandortID = :scopeId';
+        return $this->getReader()->fetchValue($sql, ['scopeId' => $scopeId]);
+    }
+
+    /**
+     * Read cluster IDs that contain this scope
+     *
+     * @param int $scopeId
+     * @return array
+     */
+    public function readClusterIdsByScopeId($scopeId)
+    {
+        $sql = 'SELECT clusterID FROM clusterzuordnung WHERE standortID = :scopeId';
+        $result = $this->getReader()->fetchAll($sql, ['scopeId' => $scopeId]);
+        return array_column($result, 'clusterID');
+    }
+
+    /**
+     * Remove cache entries with context information (department ID, cluster IDs)
+     *
+     * @param \BO\Zmsentities\Scope $scope
+     * @param int|null $departmentId
+     */
+    public function removeCacheByContext($scope, $departmentId = null)
     {
         if (!App::$cache) {
             return;
         }
 
-        if (isset($scope->provider) && isset($this->provider->id)) {
-            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-0')) {
-                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-0');
-            }
+        $invalidatedKeys = [];
 
-            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-1')) {
-                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-1');
-            }
-
-            if (App::$cache->has('scopeReadByProviderId-' . $scope->getProviderId() . '-2')) {
-                App::$cache->delete('scopeReadByProviderId-' . $scope->getProviderId() . '-2');
-            }
-        }
-
+        // Invalidate scope entity cache
         if (isset($scope->id)) {
-            if (App::$cache->has("scope-$scope->id-0")) {
-                App::$cache->delete("scope-$scope->id-0");
-            }
-
-            if (App::$cache->has("scope-$scope->id-1")) {
-                App::$cache->delete("scope-$scope->id-1");
-            }
-
-            if (App::$cache->has("scope-$scope->id-2")) {
-                App::$cache->delete("scope-$scope->id-2");
+            for ($i = 0; $i <= 2; $i++) {
+                $key = "scope-{$scope->id}-{$i}";
+                if (App::$cache->has($key)) {
+                    App::$cache->delete($key);
+                    $invalidatedKeys[] = $key;
+                }
             }
         }
+
+        // Invalidate scope list cache
+        for ($i = 0; $i <= 2; $i++) {
+            $key = "scopeReadList-{$i}";
+            if (App::$cache->has($key)) {
+                App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
+        }
+
+        // Invalidate scopeReadByDepartmentId cache
+        if ($departmentId) {
+            for ($i = 0; $i <= 2; $i++) {
+                $key = "scopeReadByDepartmentId-{$departmentId}-{$i}";
+                if (App::$cache->has($key)) {
+                    App::$cache->delete($key);
+                    $invalidatedKeys[] = $key;
+                }
+            }
+        }
+
+        // Invalidate scopeReadByClusterId cache for all clusters containing this scope
+        if (isset($scope->id)) {
+            $clusterIds = $this->readClusterIdsByScopeId($scope->id);
+            foreach ($clusterIds as $clusterId) {
+                for ($i = 0; $i <= 2; $i++) {
+                    $key = "scopeReadByClusterId-{$clusterId}-{$i}";
+                    if (App::$cache->has($key)) {
+                        App::$cache->delete($key);
+                        $invalidatedKeys[] = $key;
+                    }
+                }
+            }
+        }
+
+        // Invalidate scopeReadByProviderId cache
+        if (isset($scope->provider) && isset($scope->provider['id'])) {
+            $providerId = $scope->getProviderId();
+            for ($i = 0; $i <= 2; $i++) {
+                $key = "scopeReadByProviderId-{$providerId}-{$i}";
+                if (App::$cache->has($key)) {
+                    App::$cache->delete($key);
+                    $invalidatedKeys[] = $key;
+                }
+            }
+        }
+
+        // Log invalidated cache keys
+        if (!empty($invalidatedKeys) && \App::$log) {
+            \App::$log->info('Scope cache invalidated', [
+                'scope_id' => isset($scope->id) ? $scope->id : 'unknown',
+                'invalidated_keys' => $invalidatedKeys
+            ]);
+        }
+    }
+
+    /**
+     * @deprecated Use removeCacheByContext instead
+     */
+    public function removeCache($scope)
+    {
+        $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
+        $this->removeCacheByContext($scope, $departmentId);
     }
 }

@@ -47,6 +47,9 @@ class Cluster extends Base
 
         if (App::$cache) {
             App::$cache->set($cacheKey, $cluster);
+            if (\App::$log) {
+                \App::$log->info('Cluster cache set', ['cache_key' => $cacheKey]);
+            }
         }
 
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
@@ -436,16 +439,32 @@ class Cluster extends Base
             return;
         }
 
-        if (App::$cache->has("cluster-$cluster->id-0")) {
-            App::$cache->delete("cluster-$cluster->id-0");
+        $invalidatedKeys = [];
+
+        // Invalidate cluster entity cache
+        for ($i = 0; $i <= 2; $i++) {
+            $key = "cluster-{$cluster->id}-{$i}";
+            if (App::$cache->has($key)) {
+                App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("cluster-$cluster->id-1")) {
-            App::$cache->delete("cluster-$cluster->id-1");
+        // Invalidate scopeReadByClusterId cache (scopes associated with this cluster)
+        for ($i = 0; $i <= 2; $i++) {
+            $key = "scopeReadByClusterId-{$cluster->id}-{$i}";
+            if (App::$cache->has($key)) {
+                App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("cluster-$cluster->id-2")) {
-            App::$cache->delete("cluster-$cluster->id-2");
+        // Log invalidated cache keys
+        if (!empty($invalidatedKeys) && \App::$log) {
+            \App::$log->info('Cluster cache invalidated', [
+                'cluster_id' => $cluster->id,
+                'invalidated_keys' => $invalidatedKeys
+            ]);
         }
     }
 }
