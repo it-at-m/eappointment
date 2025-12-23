@@ -18,8 +18,6 @@ const FormContent = (props) => {
         setErrorRef
     } = props;
 
-    // Check if THIS specific availability has a past-time error (not any availability)
-    // Only disable inputs for EXISTING availabilities (with real id), not for new ones
     const currentAvailabilityId = data.id || data.tempId;
     const isNewAvailability = !data.id && data.tempId;
     const hasEndTimePastError = Object.values(errorList)
@@ -28,7 +26,6 @@ const FormContent = (props) => {
             error.itemList?.some(item => item.type === 'endTimePast' || item.type === 'timePastToday')
         );
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true;
-    // Don't disable inputs for new availabilities - let users fix the times
     const inputDisabled = (hasEndTimePastError && !isNewAvailability) || calenderDisabled;
 
     const isUnsafedSpontaneous = data.id == 0;
