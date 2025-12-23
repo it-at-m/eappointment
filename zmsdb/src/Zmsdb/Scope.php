@@ -345,15 +345,6 @@ class Scope extends Base
         return $scopeList;
     }
 
-    /**
-     * get a scope and return true if it is opened
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return Bool
-     */
     public function readIsOpened($scopeId, $now)
     {
         $isOpened = false;
@@ -378,15 +369,6 @@ class Scope extends Base
         );
     }
 
-    /**
-     * get last given waitingnumer and return updated (+1) waitingnumber
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return Bool
-     */
     public function readWaitingNumberUpdated($scopeId, $dateTime, $respectContingent = true)
     {
         if (! $this->readIsGivenNumberInContingent($scopeId) && $respectContingent) {
@@ -412,15 +394,6 @@ class Scope extends Base
         return $scope->getStatus('queue', 'lastDisplayNumber');
     }
 
-    /**
-     * get last given waitingnumer and return updated (+1) waitingnumber
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return Bool
-     */
     public function readIsGivenNumberInContingent($scopeId)
     {
         $isInContingent = $this->getReader()
@@ -429,15 +402,6 @@ class Scope extends Base
         return ($isInContingent) ? true : false;
     }
 
-    /**
-     * get list of queues on scope by daytime
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return number
-     */
     public function readQueueList($scopeIds, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         if ($resolveReferences > 0) {
@@ -457,15 +421,6 @@ class Scope extends Base
         return $queueList->withSortedArrival();
     }
 
-    /**
-     * get waitingtime of scope
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return \BO\Zmsentities\Scope
-     */
     public function readWithWorkstationCount($scopeId, $dateTime, $resolveReferences = 0, $withEntities = [])
     {
         $query = new Query\Scope(Query\Base::SELECT, '', false, null, $withEntities);
@@ -505,15 +460,6 @@ class Scope extends Base
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
-    /**
-     * get list of scopes with admin
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return number
-     */
     public function readListWithScopeAdminEmail($resolveReferences = 0)
     {
         $scopeList = new Collection();
@@ -534,11 +480,6 @@ class Scope extends Base
         return $scopeList;
     }
 
-    /**
-     * write a scope
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Scope $entity, $parentId)
     {
         self::$cache = [];
@@ -555,14 +496,6 @@ class Scope extends Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * update a scope
-     *
-     * @param
-     *            scopeId
-     *
-     * @return Entity
-     */
     public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $resolveReferences = 0)
     {
         self::$cache = [];
@@ -595,16 +528,6 @@ class Scope extends Base
         }
     }
 
-    /**
-     * update ghostWorkstationCount
-     *
-     * @param
-     *         scopeId
-     *         entity
-     *         dateTime (now)
-     *
-     * @return Entity
-     */
     public function updateGhostWorkstationCount(\BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime)
     {
         $departmentId = $this->readDepartmentIdByScopeId($entity->id);
@@ -620,15 +543,6 @@ class Scope extends Base
         return $entity;
     }
 
-    /**
-     * update emergency
-     *
-     * @param
-     *         scopeId
-     *         entity
-     *
-     * @return Entity
-     */
     public function updateEmergency($scopeId, \BO\Zmsentities\Scope $entity)
     {
         self::$cache = [];
@@ -645,15 +559,6 @@ class Scope extends Base
         return $this->readEntity($scopeId, 0, true);
     }
 
-    /**
-     * update image data for call display image
-     *
-     * @param
-     *         scopeId
-     *         Mimepart entity
-     *
-     * @return Mimepart entity
-     */
     public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity)
     {
         if ($entity->mime && $entity->content) {
@@ -675,14 +580,6 @@ class Scope extends Base
         return $entity;
     }
 
-    /**
-     * read image data
-     *
-     * @param
-     *         scopeId
-     *
-     * @return Mimepart entity
-     */
     public function readImageData($scopeId)
     {
         $imageName = 's_' . $scopeId . '_bild';
@@ -698,14 +595,6 @@ class Scope extends Base
         return $imageData;
     }
 
-    /**
-     * delete image data for call display image
-     *
-     * @param
-     *         scopeId
-     *
-     * @return Status
-     */
     public function deleteImage($scopeId)
     {
         $imageName = 's_' . $scopeId . '_bild';
@@ -714,14 +603,6 @@ class Scope extends Base
         ));
     }
 
-    /**
-     * remove a scope
-     *
-     * @param
-     *            scopeId
-     *
-     * @return Resource Status
-     */
     public function deleteEntity($scopeId)
     {
         $processListCount = (new Process())->readProcessListCountByScope($scopeId);
@@ -754,24 +635,12 @@ class Scope extends Base
         }
     }
 
-    /**
-     * Read department ID for a scope
-     *
-     * @param int $scopeId
-     * @return int|null
-     */
     public function readDepartmentIdByScopeId($scopeId)
     {
         $query = new Query\Scope(Query\Base::SELECT);
         return $this->getReader()->fetchValue($query->getQueryDepartmentIdByScopeId(), [$scopeId]);
     }
 
-    /**
-     * Read cluster IDs that contain this scope
-     *
-     * @param int $scopeId
-     * @return array
-     */
     public function readClusterIdsByScopeId($scopeId)
     {
         $query = new Query\Scope(Query\Base::SELECT);
@@ -779,12 +648,6 @@ class Scope extends Base
         return array_column($result, 'clusterID');
     }
 
-    /**
-     * Remove cache entries with context information (department ID, cluster IDs)
-     *
-     * @param \BO\Zmsentities\Scope $scope
-     * @param int|null $departmentId
-     */
     public function removeCacheByContext($scope, $departmentId = null)
     {
         if (!App::$cache) {
