@@ -441,18 +441,18 @@ class Cluster extends Base
 
         $invalidatedKeys = [];
 
-        // Invalidate cluster entity cache
-        for ($i = 0; $i <= 2; $i++) {
-            $key = "cluster-{$cluster->id}-{$i}";
+        // Invalidate cluster entity cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "cluster-{$cluster->id}-{$resolveReferences}";
             if (App::$cache->has($key)) {
                 App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
 
-        // Invalidate scopeReadByClusterId cache (scopes associated with this cluster)
-        for ($i = 0; $i <= 2; $i++) {
-            $key = "scopeReadByClusterId-{$cluster->id}-{$i}";
+        // Invalidate scopeReadByClusterId cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadByClusterId-{$cluster->id}-{$resolveReferences}";
             if (App::$cache->has($key)) {
                 App::$cache->delete($key);
                 $invalidatedKeys[] = $key;

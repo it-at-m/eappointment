@@ -799,10 +799,10 @@ class Scope extends Base
 
         $invalidatedKeys = [];
 
-        // Invalidate scope entity cache
+        // Invalidate scope entity cache for all resolveReferences levels (0, 1, 2)
         if (isset($scope->id)) {
-            for ($i = 0; $i <= 2; $i++) {
-                $key = "scope-{$scope->id}-{$i}";
+            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+                $key = "scope-{$scope->id}-{$resolveReferences}";
                 if (App::$cache->has($key)) {
                     App::$cache->delete($key);
                     $invalidatedKeys[] = $key;
@@ -810,19 +810,19 @@ class Scope extends Base
             }
         }
 
-        // Invalidate scope list cache
-        for ($i = 0; $i <= 2; $i++) {
-            $key = "scopeReadList-{$i}";
+        // Invalidate scope list cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadList-{$resolveReferences}";
             if (App::$cache->has($key)) {
                 App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
 
-        // Invalidate scopeReadByDepartmentId cache
+        // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
         if ($departmentId) {
-            for ($i = 0; $i <= 2; $i++) {
-                $key = "scopeReadByDepartmentId-{$departmentId}-{$i}";
+            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+                $key = "scopeReadByDepartmentId-{$departmentId}-{$resolveReferences}";
                 if (App::$cache->has($key)) {
                     App::$cache->delete($key);
                     $invalidatedKeys[] = $key;
@@ -834,8 +834,8 @@ class Scope extends Base
         if (isset($scope->id)) {
             $clusterIds = $this->readClusterIdsByScopeId($scope->id);
             foreach ($clusterIds as $clusterId) {
-                for ($i = 0; $i <= 2; $i++) {
-                    $key = "scopeReadByClusterId-{$clusterId}-{$i}";
+                for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+                    $key = "scopeReadByClusterId-{$clusterId}-{$resolveReferences}";
                     if (App::$cache->has($key)) {
                         App::$cache->delete($key);
                         $invalidatedKeys[] = $key;
@@ -844,11 +844,11 @@ class Scope extends Base
             }
         }
 
-        // Invalidate scopeReadByProviderId cache
+        // Invalidate scopeReadByProviderId cache for all resolveReferences levels (0, 1, 2)
         if (isset($scope->provider) && isset($scope->provider['id']) && $scope->provider['id']) {
             $providerId = $scope->provider['id'];
-            for ($i = 0; $i <= 2; $i++) {
-                $key = "scopeReadByProviderId-{$providerId}-{$i}";
+            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+                $key = "scopeReadByProviderId-{$providerId}-{$resolveReferences}";
                 if (App::$cache->has($key)) {
                     App::$cache->delete($key);
                     $invalidatedKeys[] = $key;

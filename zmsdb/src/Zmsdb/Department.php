@@ -454,18 +454,18 @@ class Department extends Base
 
         $invalidatedKeys = [];
 
-        // Invalidate department entity cache
-        for ($i = 0; $i <= 2; $i++) {
-            $key = "department-{$department->id}-{$i}";
+        // Invalidate department entity cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "department-{$department->id}-{$resolveReferences}";
             if (App::$cache->has($key)) {
                 App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
             }
         }
 
-        // Invalidate scopeReadByDepartmentId cache (scopes associated with this department)
-        for ($i = 0; $i <= 2; $i++) {
-            $key = "scopeReadByDepartmentId-{$department->id}-{$i}";
+        // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadByDepartmentId-{$department->id}-{$resolveReferences}";
             if (App::$cache->has($key)) {
                 App::$cache->delete($key);
                 $invalidatedKeys[] = $key;
