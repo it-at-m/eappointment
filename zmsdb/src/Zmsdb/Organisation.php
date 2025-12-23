@@ -85,14 +85,6 @@ class Organisation extends Base
         return $organisationList;
     }
 
-    /**
-     * read Organisation by Ticketprinter Hash
-     *
-     * @param
-     * hash
-     *
-     * @return Resource Entity
-     */
     public function readByHash($hash)
     {
         $organisationId = $this->getReader()
@@ -121,14 +113,6 @@ class Organisation extends Base
         return $organisationList;
     }
 
-    /**
-     * remove an organisation
-     *
-     * @param
-     *            itemId
-     *
-     * @return Resource Status
-     */
     public function deleteEntity($itemId)
     {
         $entity = $this->readEntity($itemId, 1);
@@ -140,14 +124,6 @@ class Organisation extends Base
         return ($this->deleteItem($query)) ? $entity : null;
     }
 
-    /**
-     * write a organisation
-     *
-     * @param
-     *            organisationId
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Organisation $entity, $parentId)
     {
         $query = new Query\Organisation(Query\Base::INSERT);
@@ -162,14 +138,6 @@ class Organisation extends Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * update a organisation
-     *
-     * @param
-     *            organisationId
-     *
-     * @return Entity
-     */
     public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
     {
         $query = new Query\Organisation(Query\Base::UPDATE);
@@ -183,15 +151,6 @@ class Organisation extends Base
         return $this->readEntity($organisationId, 1, true);
     }
 
-    /**
-     * create ticketprinters of an organisation
-     *
-     * @param
-     *            organisationID,
-     *            ticketprinterList
-     *
-     * @return Boolean
-     */
     protected function writeOrganisationTicketprinters($organisationId, $ticketprinterList)
     {
         $deleteQuery = new Query\Ticketprinter(Query\Base::DELETE);
@@ -205,15 +164,6 @@ class Organisation extends Base
         }
     }
 
-    /**
-     * update ticketprinters of an organisation
-     *
-     * @param
-     *            organisationID,
-     *            ticketprinterList
-     *
-     * @return Boolean
-     */
     protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId)
     {
         foreach ($ticketprinterList as $item) {

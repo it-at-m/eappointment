@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Cluster as Entity;
 use BO\Zmsentities\Collection\ClusterList as Collection;
 
@@ -15,22 +14,13 @@ use BO\Zmsentities\Collection\ClusterList as Collection;
  */
 class Cluster extends Base
 {
-    /**
-    * read entity
-    *
-    * @param
-    * itemId
-    * resolveReferences
-    *
-    * @return Resource Entity
-    */
     public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
 
         $cluster = null;
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $cluster = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $cluster = \App::$cache->get($cacheKey);
         }
 
         if (empty($cluster)) {
@@ -43,10 +33,13 @@ class Cluster extends Base
             if (! $cluster->hasId()) {
                 return null;
             }
-        }
 
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $cluster);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $cluster);
+                if (\App::$log) {
+                    \App::$log->info('Cluster cache set', ['cache_key' => $cacheKey]);
+                }
+            }
         }
 
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
@@ -71,14 +64,6 @@ class Cluster extends Base
         return $entity;
     }
 
-    /**
-    * read list of clusters
-    *
-    * @param
-    * resolveReferences
-    *
-    * @return Resource Collection
-    */
     public function readList($resolveReferences = 0)
     {
         $clusterList = new Collection();
@@ -133,15 +118,6 @@ class Cluster extends Base
         return $clusterList;
     }
 
-    /**
-     * get a queueList by cluster id and dateTime
-     *
-     ** @param
-     *            clusterId
-     *            now
-     *
-     * @return Bool
-     */
     public function readQueueList(
         $clusterId,
         \DateTimeInterface $dateTime,
@@ -155,15 +131,6 @@ class Cluster extends Base
             ->withSortedWaitingTime();
     }
 
-    /**
-     * get a scopeList with opened scopes
-     *
-     ** @param
-     *            clusterId
-     *            now
-     *
-     * @return Bool
-     */
     public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime)
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
@@ -191,15 +158,6 @@ class Cluster extends Base
         return $scopeList;
     }
 
-    /**
-     * get the scope with shortest estimated waitingtime
-     *
-     ** @param
-     *            clusterId
-     *            now
-     *
-     * @return Bool
-     */
     public function readScopeWithShortestWaitingTime($clusterId, \DateTimeInterface $dateTime)
     {
         $scopeList = $this->readOpenedScopeList($clusterId, $dateTime)->getArrayCopy();
@@ -226,15 +184,6 @@ class Cluster extends Base
         return $preferedScope;
     }
 
-    /**
-     * get cluster with scopes workstation count
-     *
-     * * @param
-     * scopeId
-     * now
-     *
-     * @return number
-     */
     public function readWithScopeWorkstationCount($clusterId, $dateTime, $resolveReferences = 0)
     {
         $scopeQuery = new Scope();
@@ -252,15 +201,6 @@ class Cluster extends Base
         return $cluster;
     }
 
-    /**
-     * update image data for call display image
-     *
-     * @param
-     *         clusterId
-     *         Mimepart entity
-     *
-     * @return Mimepart entity
-     */
     public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
     {
         if ($entity->mime && $entity->content) {
@@ -282,14 +222,6 @@ class Cluster extends Base
         return $entity;
     }
 
-    /**
-     * read image data
-     *
-     * @param
-     *         clusterId
-     *
-     * @return Mimepart entity
-     */
     public function readImageData($clusterId)
     {
         $imageName = 'c_' . $clusterId . '_bild';
@@ -305,14 +237,6 @@ class Cluster extends Base
         return $imageData;
     }
 
-    /**
-     * delete image data for calldisplay image
-     *
-     * @param
-     *         clusterId
-     *
-     * @return Status
-     */
     public function deleteImage($clusterId)
     {
         $imageName = 'c_' . $clusterId . '_bild';
@@ -325,14 +249,6 @@ class Cluster extends Base
         return $result;
     }
 
-    /**
-    * remove an cluster
-    *
-    * @param
-    * itemId
-    *
-    * @return Resource Status
-    */
     public function deleteEntity($itemId)
     {
         $result = false;
@@ -351,14 +267,6 @@ class Cluster extends Base
         return $result;
     }
 
-    /**
-     * write an cluster
-     *
-     * @param
-     * entity
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Cluster $entity)
     {
         $query = new Query\Cluster(Query\Base::INSERT);
@@ -375,14 +283,6 @@ class Cluster extends Base
         return $this->readEntity($lastInsertId, 1, true);
     }
 
-    /**
-     * update an cluster
-     *
-     * @param
-     * clusterId, entity
-     *
-     * @return Entity
-     */
     public function updateEntity($clusterId, \BO\Zmsentities\Cluster $entity)
     {
         $query = new Query\Cluster(Query\Base::UPDATE);
@@ -399,15 +299,6 @@ class Cluster extends Base
         return $this->readEntity($clusterId, 1, true);
     }
 
-    /**
-     * create links preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            links
-     *
-     * @return Boolean
-     */
     protected function writeAssignedScopes($clusterId, $scopeList)
     {
         $cluster = $this->readEntity($clusterId);
@@ -432,20 +323,35 @@ class Cluster extends Base
 
     public function removeCache($cluster)
     {
-        if (!App::$cache || !isset($cluster->id)) {
+        if (!\App::$cache || !isset($cluster->id)) {
             return;
         }
 
-        if (App::$cache->has("cluster-$cluster->id-0")) {
-            App::$cache->delete("cluster-$cluster->id-0");
+        $invalidatedKeys = [];
+
+        // Invalidate cluster entity cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "cluster-{$cluster->id}-{$resolveReferences}";
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("cluster-$cluster->id-1")) {
-            App::$cache->delete("cluster-$cluster->id-1");
+        // Invalidate scopeReadByClusterId cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadByClusterId-{$cluster->id}-{$resolveReferences}";
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("cluster-$cluster->id-2")) {
-            App::$cache->delete("cluster-$cluster->id-2");
+        if (!empty($invalidatedKeys) && \App::$log) {
+            \App::$log->info('Cluster cache invalidated', [
+                'cluster_id' => $cluster->id,
+                'invalidated_keys' => $invalidatedKeys
+            ]);
         }
     }
 }
