@@ -43,12 +43,12 @@ class Cluster extends Base
             if (! $cluster->hasId()) {
                 return null;
             }
-        }
 
-        if (App::$cache) {
-            App::$cache->set($cacheKey, $cluster);
-            if (\App::$log) {
-                \App::$log->info('Cluster cache set', ['cache_key' => $cacheKey]);
+            if (App::$cache) {
+                App::$cache->set($cacheKey, $cluster);
+                if (\App::$log) {
+                    \App::$log->info('Cluster cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
