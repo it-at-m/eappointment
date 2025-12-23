@@ -25,7 +25,6 @@ class Log extends Base
     const ACTION_CALLED = 'Termin wurde aufgerufen';
     const ACTION_ARCHIVED = 'Termin wurde archiviert';
     const ACTION_EDITED = 'Termin wurde geändert';
-    const ACTION_NEW_PICKUP = 'Abholtermin wurde erstellt';
     const ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
     const ACTION_NEW = 'Neuer Termin wurde erstellt';
     const ACTION_DELETED = 'Termin wurde gelöscht';
