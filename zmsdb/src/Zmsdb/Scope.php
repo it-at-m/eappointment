@@ -845,8 +845,8 @@ class Scope extends Base
         }
 
         // Invalidate scopeReadByProviderId cache
-        if (isset($scope->provider) && isset($scope->provider['id'])) {
-            $providerId = $scope->getProviderId();
+        if (isset($scope->provider) && isset($scope->provider['id']) && $scope->provider['id']) {
+            $providerId = $scope->provider['id'];
             for ($i = 0; $i <= 2; $i++) {
                 $key = "scopeReadByProviderId-{$providerId}-{$i}";
                 if (App::$cache->has($key)) {
