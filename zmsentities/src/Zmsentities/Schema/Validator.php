@@ -50,11 +50,11 @@ class Validator
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
 
-        // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
-
+        // Use Loader::asJson() which includes PSR Cache for persistent caching across processes
         foreach ($schemaFiles as $schemaFile) {
-            $schemaContent = file_get_contents($schemaFile);
-            $schemaName = 'schema://' . basename($schemaFile);
+            $schemaFilename = basename($schemaFile);
+            $schemaContent = Loader::asJson($schemaFilename);
+            $schemaName = 'schema://' . $schemaFilename;
             $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
         }
     }
