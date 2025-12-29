@@ -338,6 +338,7 @@ class Process extends Base implements MappingInterface
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
             'isTicketprinter' => 'process.is_ticketprinter',
+            'parkedBy' => 'process.parkedBy',
         ], 'strlen');
     }
 
@@ -849,6 +850,7 @@ class Process extends Base implements MappingInterface
             $data['bestaetigt'] = 0;
         }
         $data['status'] = $process['status'] ?? $process->status;
+        $data['parkedBy'] = $process->getParkedBy();
 
         $this->addValues($data);
     }

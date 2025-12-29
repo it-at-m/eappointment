@@ -330,6 +330,7 @@ EOS;
     processingTime
     waitingTime
     wayTime
+    parkedBy
     services
     name
     withAppointment
