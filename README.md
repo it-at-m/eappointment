@@ -410,16 +410,16 @@ ddev ssh                      # DDEV
 
 ```bash
 # Run specific test with verbose output
-./zmsdb-test --filter="StatusTest::testBasic" --verbose
+bash zmsdb-test --filter="StatusTest::testBasic" --verbose
 
 # Run all tests in a class and stop on first failure
-./zmsapi-test --filter="StatusGetTest" --stop-on-failure
+bash zmsapi-test --filter="StatusGetTest" --stop-on-failure
 
 # Run tests with coverage report
-./zmsdb-test --coverage-text
+bash zmsdb-test --coverage-text
 
 # Run tests excluding a specific group
-./zmsapi-test --exclude-group="slow"
+bash zmsapi-test --exclude-group="slow"
 ```
 
 ### API Testing (zmsapiautomation)
@@ -437,10 +437,10 @@ ddev ssh                      # DDEV
 
 # Run zmsapiautomation tests
 cd zmsapiautomation
-./zmsapiautomation-test                    # Run all tests
-./zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
-./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
-./zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+bash zmsapiautomation-test                    # Run all tests
+bash zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+bash zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
 ```
 
 **Maven Test Filtering:**
@@ -449,19 +449,19 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 ```bash
 # Run a specific test class
-./zmsapiautomation-test -Dtest=StatusEndpointTest
+bash zmsapiautomation-test -Dtest=StatusEndpointTest
 
 # Run a specific test method
-./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
 
 # Run multiple test classes
-./zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+bash zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
 
 # Run tests matching a pattern
-./zmsapiautomation-test -Dtest=*EndpointTest
+bash zmsapiautomation-test -Dtest=*EndpointTest
 
 # Run tests with additional Maven options
-./zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+bash zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
 ```
 
 **Environment Configuration:**
@@ -474,8 +474,8 @@ The script runs natively inside the container and uses environment variables. De
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost/terminvereinbarung/api/2 ./zmsapiautomation-test
-CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen ./zmsapiautomation-test
+BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsapiautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapiautomation-test
 ```
 
 **What the Script Does:**
@@ -498,7 +498,7 @@ CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen ./zmsapiaut
 To import Munich DLDB data during test setup:
 
 ```bash
-ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsapiautomation-test
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomation-test
 ```
 
 **Running Tests Directly with Maven (inside container):**
