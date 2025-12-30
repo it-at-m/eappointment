@@ -67,6 +67,7 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
+            :hint="getVariantHint(variant.variantId, t)"
           />
         </muc-radio-button-group>
       </div>
@@ -191,6 +192,7 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
+  getVariantHint,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
@@ -422,8 +424,15 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 };
 
 const estimatedDuration = computed(() => {
-  const provider = service.value?.providers?.[0];
-  return calculateEstimatedDuration(service.value, provider);
+  const providers = service.value?.providers ?? [];
+
+  const validDurations = providers
+    .map((p) => calculateEstimatedDuration(service.value, p))
+    .filter((d): d is number => typeof d === "number" && d > 0);
+
+  if (validDurations.length === 0) return null;
+
+  return Math.min(...validDurations);
 });
 
 const showEstimatedDuration = computed(() => {

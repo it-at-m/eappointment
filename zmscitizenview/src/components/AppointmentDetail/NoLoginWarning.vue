@@ -24,7 +24,7 @@
 import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
 
 defineProps<{
-  appointmentId: string | undefined;
+  appointmentId: string | null | undefined;
   t: (key: string) => string;
 }>();
 

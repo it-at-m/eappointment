@@ -8,15 +8,24 @@
         <p>
             {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Bei der Eingabe der Daten scheint Ihnen ein Fehler unterlaufen zu sein. Bitte prüfen Sie die Hinweise an den markierten Formularfeldern.{% endtrans %}
         </p>
-        <dl>
+        <div class="schema-validation-errors">
         {% for pointer, item in data %}
-            <dt>{{ item.headline }}</dt>
+            {# Filter out noisy schema pointer messages #}
+            {% set filteredMessages = [] %}
             {% for message in item.messages %}
-            <dd>{{ message }}</dd>
+                {% if 'The properties must match schema' not in message %}
+                    {% set filteredMessages = filteredMessages|merge([message]) %}
+                {% endif %}
             {% endfor %}
-            {#{ errormessage(item.messages) }#}
+            {% if filteredMessages is not empty %}
+                <ul class="list--clean">
+                    {% for message in filteredMessages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
-        </dl>
+        </div>
     {% endblock %}
 
 {% endembed %}

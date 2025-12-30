@@ -34,6 +34,8 @@ class ExchangeClientscope extends Base
         $entity->addDictionaryEntry('withappointment', 'number', 'Amount of clients with an appointment');
         $entity->addDictionaryEntry('missedwithappointment', 'number', 'Amount of missed clients with an appointment');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
+        $entity->addDictionaryEntry('ticketprinter', 'number', 'Amount of spontaneous clients via E-Kiosk (appeared)');
+        $entity->addDictionaryEntry('ticketprintermissed', 'number', 'Amount of spontaneous clients via E-Kiosk (missed)');
         $subjectIdList = explode(',', $subjectid);
         $aggregatedData = [];
 
@@ -61,7 +63,9 @@ class ExchangeClientscope extends Base
                     'missed' => 0,
                     'withappointment' => 0,
                     'missedwithappointment' => 0,
-                    'requestscount' => 0
+                    'requestscount' => 0,
+                    'ticketprinter' => 0,
+                    'ticketprintermissed' => 0
                 ];
             }
 
@@ -71,6 +75,8 @@ class ExchangeClientscope extends Base
             $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
             $aggregatedData[$date]['missedwithappointment'] += $entry['missedwithappointment'];
             $aggregatedData[$date]['requestscount'] += $entry['requestcount'];
+            $aggregatedData[$date]['ticketprinter'] += $entry['ticketprinter'] ?? 0;
+            $aggregatedData[$date]['ticketprintermissed'] += $entry['ticketprintermissed'] ?? 0;
 
             if (!in_array($scopeId, $aggregatedData[$date]['scopeids'])) {
                 $aggregatedData[$date]['scopeids'][] = $scopeId;
