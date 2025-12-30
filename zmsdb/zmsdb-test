@@ -47,7 +47,7 @@ trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
 
 # 1. Test Database Setup
 section "1. Test Database Setup"
-mysql --ssl=0 -h "$MYSQL_DATABASE" -P "$DB_PORT" -u root -proot \
+mysql --ssl=0 -h "$MYSQL_DATABASE" -P "$DB_PORT" -u root --password="${MYSQL_ROOT_PASSWORD:-root}" \
   -e "CREATE DATABASE IF NOT EXISTS \`$TEST_DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
       GRANT ALL PRIVILEGES ON \`$TEST_DB\`.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
 info "Test database '$TEST_DB' ready"
