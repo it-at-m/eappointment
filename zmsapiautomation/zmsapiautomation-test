@@ -1,61 +1,8 @@
 #!/usr/bin/env bash
-# Detect if script is being sourced (vs executed directly)
-IS_SOURCED=false
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-  IS_SOURCED=true
-fi
-
-# Only set strict mode if not sourced (to avoid closing terminal on errors)
-if [[ "$IS_SOURCED" == false ]]; then
-  set -euo pipefail
-else
-  # When sourced, disable all strict modes to prevent terminal from closing
-  set +e  # Don't exit on error
-  set +u  # Don't error on unset variables
-  set +o pipefail  # Don't fail pipelines if any command fails
-fi
+set -euo pipefail
 
 # Capture Maven arguments (e.g., -Dtest=StatusEndpointTest to run a specific test)
 MAVEN_ARGS=("$@")
-
-# Configurable endpoints (override via env)
-# When running on ddev network, use 'web' service name instead of 'zms.ddev.site'
-# When running on podman, use 'zms-web' service name
-# BASE_URI should include the full path prefix and be HTTP to avoid TLS trust issues inside container
-BASE_URI="${BASE_URI:-}"
-# CITIZEN_API_BASE_URI should include full path prefix; both APIs are served by the same site
-CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-}"
-
-# Maven image and caches
-MAVEN_IMAGE="maven:3.9-eclipse-temurin-17"
-ALPINE_IMAGE="docker.io/library/alpine:3.20"
-M2_CACHE_VOLUME="zmsapiautomation-cache"
-TARGET_VOLUME="zmsapiautomation-target"
-# Detect script directory - works with both ./script.sh and source script.sh
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-  # Script is being sourced
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-else
-  # Script is being executed
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-fi
-WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$WORKSPACE_ROOT"
-
-# Temporary backup file inside host
-BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
-BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
-
-require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "ERROR: '$1' is required but not installed." >&2
-    if [[ "$IS_SOURCED" == true ]]; then
-      return 1
-    else
-      exit 1
-    fi
-  fi
-}
 
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
@@ -95,582 +42,227 @@ section() {
   echo ""
 }
 
-# Function to detect if podman command is available
-detect_podman_command() {
-  command -v podman >/dev/null 2>&1
-}
+# Paths and variables
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-# Function to get list of podman containers
-get_podman_containers() {
-  local containers
-  containers=$(podman ps --format "{{.Names}}" 2>/dev/null || echo "")
-  if [[ -z "$containers" ]]; then
-    # Fallback: try inspect for known containers
-    for name in zms-web zms-db; do
-      if podman inspect "$name" >/dev/null 2>&1; then
-        containers="${containers}${containers:+$'\n'}${name}"
-      fi
-    done
+# Validate required environment variables
+: "${MYSQL_PORT:?MYSQL_PORT must be set}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
+: "${MYSQL_USER:?MYSQL_USER must be set}"
+: "${MYSQL_PASSWORD:?MYSQL_PASSWORD must be set}"
+: "${CACHE_DIR:?CACHE_DIR must be set}"
+
+DB_NAME="${MYSQL_DATABASE}"
+DB_USER="${MYSQL_USER}"
+DB_PASSWORD="${MYSQL_PASSWORD}"
+DB_HOST="db"
+DB_PORT="${MYSQL_PORT##*:}"
+
+# File paths
+BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
+BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
+FLYWAY_DIR="$PROJECT_ROOT/zmsapiautomation/flyway"
+
+# API endpoints (for health checks from inside container)
+BASE_URI="${BASE_URI:-http://localhost/terminvereinbarung/api/2}"
+CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarung/api/citizen}"
+
+# Cleanup function to clear zmsapi/data folder (preserve .gitignore)
+cleanup_data_folder() {
+  if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
+    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
   fi
-  echo "$containers"
 }
 
-# Function to detect if we're in a Podman environment
-detect_podman_environment() {
-  detect_podman_command || return 1
-  local containers
-  containers=$(get_podman_containers)
-  [[ "$containers" == *"zms-web"* ]] && [[ "$containers" == *"zms-db"* ]]
-}
-
-# Detect if we're using Podman or DDEV
-USE_PODMAN=false
-if detect_podman_environment; then
-  USE_PODMAN=true
-  info "Using Podman containers (zms-web, zms-db)"
-  # Set default endpoints for Podman
-  BASE_URI="${BASE_URI:-http://zms-web/terminvereinbarung/api/2}"
-  CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://zms-web/terminvereinbarung/api/citizen}"
-fi
-
-if [[ "$USE_PODMAN" == false ]]; then
-  require_cmd ddev
-  info "Using DDEV"
-  # Set default endpoints for DDEV
-  BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
-  CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
-fi
-
-require_cmd docker
-
-DB_NAME="${DB_NAME:-db}"
-if [[ "$USE_PODMAN" == true ]]; then
-  DB_USER="${DB_USER:-root}"
-  DB_PASSWORD="${DB_PASSWORD:-${MARIADB_ROOT_PASSWORD:-root}}"
-else
-  DEFAULT_MYSQL_USER="${MYSQL_USER:-db}"
-  DB_USER="${DB_USER:-$DEFAULT_MYSQL_USER}"
-  DB_PASSWORD="${DB_PASSWORD:-${MYSQL_PASSWORD:-db}}"
-fi
-
-# Execute command in web container (abstraction for podman/ddev)
-exec_in_web() {
-  local cmd="$1"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec zms-web bash -lc "$cmd")
+# Clear caches
+clear_caches() {
+  if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
+    info "Clearing caches in $CACHE_DIR..."
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
   else
-    # Use stdin approach for DDEV to avoid unbound variable issues with login shell profiles
-    (cd "$PROJECT_ROOT" && printf 'set +u\n%s\n' "$cmd" | ddev exec bash -s)
+    warn "CACHE_DIR not set or does not exist"
   fi
 }
 
-# Execute SQL in database (abstraction for podman/ddev, supports stdin)
+# Database helper function
 exec_sql() {
-  local sql="$1"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME")
-  else
-    (cd "$PROJECT_ROOT" && printf "%s" "$sql" | ddev mysql "$DB_NAME")
-  fi
+  mysql --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" "$@"
 }
 
-# Execute SQL command in database (for simple commands without stdin)
-exec_sql_cmd() {
-  local sql="$1"
-  local db="${2:-$DB_NAME}"
-  if [[ "$USE_PODMAN" == true ]]; then
-    (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$db" -e "$sql")
-  else
-    (cd "$PROJECT_ROOT" && ddev mysql "$db" -e "$sql")
-  fi
+exec_sql_root() {
+  mysql --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u root --password="${MYSQL_ROOT_PASSWORD:-root}" "$@"
 }
 
+# Backup database
+backup_db() {
+  info "Backing up database to $BACKUP_FILE..."
+  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" | gzip > "$BACKUP_FILE"
+  info "Backup completed."
+}
+
+# Restore database
 restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
-    info "Restoring database from $BACKUP_FILE ..."
-    if [[ "$USE_PODMAN" == true ]]; then
-      gunzip < "$BACKUP_FILE" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" >/dev/null
-    else
-      (cd "$PROJECT_ROOT" && ddev import-db -f "$BACKUP_FILE" >/dev/null)
-    fi
+    info "Restoring database from $BACKUP_FILE..."
+    gunzip < "$BACKUP_FILE" | exec_sql
     info "Database restored."
   else
     warn "No backup file found to restore."
   fi
 }
 
-# Cleanup function to clear zmsapi/data folder (preserve .gitignore)
-cleanup_data_folder() {
-  exec_in_web '
-    if [ -d /var/www/html/zmsapi/data ]; then
-      if ! find /var/www/html/zmsapi/data -mindepth 1 -not -name ".gitignore" -delete; then
-        echo "[WARN] Failed to clean /var/www/html/zmsapi/data" >&2
-      fi
-      if [ ! -f /var/www/html/zmsapi/data/.gitignore ]; then
-        printf "*\n!.gitignore\n" > /var/www/html/zmsapi/data/.gitignore || echo "[WARN] Failed to create /var/www/html/zmsapi/data/.gitignore" >&2
-      fi
-    fi
-  ' || warn "cleanup_data_folder exec failed"
-}
-
-# Function to get Podman network name
-get_podman_network() {
-  local network
-  network=$(podman inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}' zms-db 2>/dev/null || true)
-  if [[ -z "$network" ]]; then
-    network="eappointment_devcontainer_default"
-  fi
-  echo "$network"
-}
-
-# Function to get DDEV network name
-get_ddev_network() {
-  local network
-  network=$(cd "$PROJECT_ROOT" && ddev describe -j 2>/dev/null | grep -o '"network": "[^"]*"' | cut -d '"' -f4 || echo "ddev_default")
-  if [[ -z "$network" ]]; then
-    network="ddev_default"
-  fi
-  echo "$network"
-}
-
-# Function to clear application caches
-clear_caches() {
-  info "Clearing application caches (zmsapi, zmsdb, zmscitizenapi) using CACHE_DIR..."
-  CACHE_DIR=$(exec_in_web 'echo "$CACHE_DIR"' 2>/dev/null || echo "")
-  if [[ -n "$CACHE_DIR" ]]; then
-    # Validate CACHE_DIR is absolute and sensible
-    if [[ "$CACHE_DIR" != /* ]] || [[ "$CACHE_DIR" == *..* ]]; then
-      warn "CACHE_DIR '$CACHE_DIR' looks suspicious, skipping cache clear"
-      return
-    fi
-    info "CACHE_DIR=$CACHE_DIR"
-    for dir in zmsapi zmsdb zmscitizenapi; do
-      FULL_PATH="$CACHE_DIR/$dir"
-      if exec_in_web "
-        if [ -d \"$FULL_PATH\" ]; then
-          if find \"$FULL_PATH\" -mindepth 1 -delete 2>/dev/null; then
-            echo \"[CACHE] cleared $FULL_PATH\"
-          else
-            echo \"[CACHE] failed to clear $FULL_PATH\" >&2
-            exit 1
-          fi
-        fi
-      "; then
-        : # Success
-      else
-        warn "Failed to clear cache directory $FULL_PATH in container"
-      fi
-    done
-    # Also clear host-side cache that corresponds to container path (\"/var/www/html\" maps to project root)
-    HOST_CACHE_DIR="$CACHE_DIR"
-    if [[ "$HOST_CACHE_DIR" == /var/www/html/* ]]; then
-      HOST_CACHE_DIR="$PROJECT_ROOT${HOST_CACHE_DIR#/var/www/html}"
-      # Validate host cache dir path
-      if [[ "$HOST_CACHE_DIR" == *..* ]]; then
-        warn "HOST_CACHE_DIR '$HOST_CACHE_DIR' looks suspicious, skipping host cache clear"
-      elif [[ -d "$HOST_CACHE_DIR" ]]; then
-        if find "$HOST_CACHE_DIR" -mindepth 1 -delete 2>/dev/null; then
-          info "[CACHE][host] cleared $HOST_CACHE_DIR"
-        else
-          warn "[CACHE][host] failed to clear $HOST_CACHE_DIR"
-        fi
-      fi
-      for dir in zmsapi zmsdb zmscitizenapi; do
-        HOST_FULL_PATH="$HOST_CACHE_DIR/$dir"
-        if [[ -d "$HOST_FULL_PATH" ]]; then
-          if find "$HOST_FULL_PATH" -mindepth 1 -delete 2>/dev/null; then
-            info "[CACHE][host] cleared $HOST_FULL_PATH"
-          else
-            warn "[CACHE][host] failed to clear $HOST_FULL_PATH"
-          fi
-        fi
-      done
-    fi
-  else
-    warn "CACHE_DIR not found in container"
-  fi
-}
-
-# ERR trap - restore DB on error
-# When sourced, clear any existing ERR trap and don't set a new one
-# This prevents the trap from affecting commands after the script finishes
-if [[ "$IS_SOURCED" == false ]]; then
-  trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
-  # Set up EXIT trap to cleanup caches and zmsapi/data folder on script exit (normal, error, or Ctrl+C)
-  trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
-else
-  # When sourced, clear any existing ERR trap to prevent it from affecting future commands
-  trap - ERR
-fi
-
-# 1) Backup current DB
-section "1. Database Backup"
-info "Exporting current database to $BACKUP_FILE ..."
-if [[ "$USE_PODMAN" == true ]]; then
-  (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysqldump -u "$DB_USER" "$DB_NAME" | gzip > "$BACKUP_FILE")
-else
-  (cd "$PROJECT_ROOT" && ddev export-db -f "$BACKUP_FILE" >/dev/null)
-fi
-info "Backup completed."
-echo ""
-
-# 1.5) Clear application caches inside container (zmsapi, zmsdb, zmscitizenapi)
-section "2. Cache Clearing"
-clear_caches
-echo ""
-
-# 2) Drop all tables to ensure clean state (removes tables created by migrations from previous runs)
-section "3. Database Tables Drop"
-info "Dropping all existing tables to ensure clean state..."
-drop_tables() {
-  local client="$1" # podman or ddev
-  local table_count
-
-  if [[ "$client" == "podman" ]]; then
-    table_count=$(cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -N -B -u "$DB_USER" "$DB_NAME" -e "
-      SELECT COUNT(*)
-      FROM information_schema.tables
-      WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
-    " 2>/dev/null | tr -d '\r')
-  else
-    table_count=$(cd "$PROJECT_ROOT" && ddev exec -T env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME" -N -B -e "
-      SELECT COUNT(*)
-      FROM information_schema.tables
-      WHERE table_schema = 'db' AND table_type = 'BASE TABLE';
-    " 2>/dev/null | tr -d '\r')
-  fi
-
-  if [[ -z "$table_count" || "$table_count" == "0" ]]; then
-    echo "No tables to drop or database is empty"
-    return
-  fi
-
+# Drop all tables
+drop_all_tables() {
+  info "Dropping all existing tables..."
   local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
-SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = 'db' AND table_type = 'BASE TABLE');
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
 SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;"
-
-  if [[ "$client" == "podman" ]]; then
-    (cd "$PROJECT_ROOT" && printf '%s\n' "$drop_sql" | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME")
-  else
-    (cd "$PROJECT_ROOT" && printf '%s\n' "$drop_sql" | ddev exec env MYSQL_PWD="$DB_PASSWORD" mysql -u "$DB_USER" "$DB_NAME")
-  fi
+  echo "$drop_sql" | exec_sql
+  info "Tables dropped."
 }
 
-if [[ "$USE_PODMAN" == true ]]; then
-  drop_tables "podman" || warn "Failed to drop tables (podman)"
-else
-  drop_tables "ddev" || warn "Failed to drop tables (ddev)"
-fi
-info "Tables dropped (if any existed)."
+# Ensure cleanup on exit
+trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
+trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
 
-# Log database tables after reset to confirm drop
+# 1. Database Backup
+section "1. Database Backup"
+backup_db
+
+# 2. Cache Clearing
+section "2. Cache Clearing"
+clear_caches
+
+# 3. Drop Tables
+section "3. Database Tables Drop"
+drop_all_tables
+
+# Log database tables after reset
 info "Database tables after reset (should be empty):"
-exec_sql_cmd "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" db || true
-echo ""
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
-# 3) Import base database
+# 4. Import Base Database
 section "4. Base Database Import"
 if [[ -f "$BASE_SQL_FILE" ]]; then
-  info "Importing base database from $BASE_SQL_FILE ..."
-  if [[ "$USE_PODMAN" == true ]]; then
-    # Disable foreign key checks during import to avoid constraint errors
-    (cd "$PROJECT_ROOT" && {
-      echo "SET FOREIGN_KEY_CHECKS = 0;"
-      cat "$BASE_SQL_FILE"
-      echo "SET FOREIGN_KEY_CHECKS = 1;"
-    } | podman exec -e MYSQL_PWD="$DB_PASSWORD" -i zms-db mysql -u "$DB_USER" "$DB_NAME" >/dev/null)
-  else
-    (cd "$PROJECT_ROOT" && ddev import-db --file="$BASE_SQL_FILE" >/dev/null)
-  fi
+  info "Importing base database from $BASE_SQL_FILE..."
+  {
+    echo "SET FOREIGN_KEY_CHECKS = 0;"
+    cat "$BASE_SQL_FILE"
+    echo "SET FOREIGN_KEY_CHECKS = 1;"
+  } | exec_sql
   info "Base database import completed."
   
-  # Log database tables after initial import
-  info "Database tables after initial SQL import:"
-  exec_sql_cmd "
-    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-    FROM information_schema.tables
-    WHERE table_schema = 'db'
-    ORDER BY table_name;
-  " db || true
-  echo ""
+  info "Database tables after import:"
+  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
-  echo ""
 fi
 
-# 4) Flyway BEFORE PHP migrations
+# 5. Flyway Migrations
 section "5. Flyway Migrations"
-# Clear test data migrations from flyway_schema_history after import so they re-run
 info "Clearing test data migrations from flyway_schema_history..."
-exec_sql_cmd "DELETE FROM flyway_schema_history WHERE version > 1;" db 2>/dev/null || true
+exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
 info "Running Flyway migrations..."
-if [[ "$USE_PODMAN" == true ]]; then
-  # Discover the actual podman network used by zms-db
-  PODMAN_NETWORK=$(get_podman_network)
+flyway -url="jdbc:mariadb://$DB_HOST:$DB_PORT/$DB_NAME" -user="$DB_USER" -password="$DB_PASSWORD" \
+  -locations="filesystem:$FLYWAY_DIR" -baselineOnMigrate=true migrate || warn "Flyway failed; continuing."
 
-  # Wait for MySQL to be ready inside zms-db (max ~30s)
-  info "Waiting for MySQL (zms-db) to become ready..."
-  for i in {1..30}; do
-    if (cd "$PROJECT_ROOT" && podman exec -e MYSQL_PWD="$DB_PASSWORD" zms-db mysqladmin ping -u"$DB_USER" --silent >/dev/null 2>&1); then
-      break
-    fi
-    sleep 1
-  done
+info "Database tables after Flyway:"
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
-  # Run Flyway in a podman container on the discovered network
-  FLYWAY_DIR="$PROJECT_ROOT/zmsapiautomation/flyway"
-  # Ensure we have an absolute path
-  FLYWAY_DIR=$(cd "$FLYWAY_DIR" 2>/dev/null && pwd || echo "$FLYWAY_DIR")
-  if [[ ! -d "$FLYWAY_DIR" ]]; then
-    warn "Flyway directory not found: $FLYWAY_DIR"
-    warn "Flyway (Podman) skipped; continuing."
-  else
-    info "Running Flyway via Podman on network ($PODMAN_NETWORK)..."
-    podman run --rm \
-      --network "$PODMAN_NETWORK" \
-      -v "$FLYWAY_DIR:/flyway/sql:ro" \
-      -e FLYWAY_PASSWORD="$DB_PASSWORD" \
-      docker.io/flyway/flyway:9 \
-      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
-      -locations=filesystem:/flyway/sql \
-      -baselineOnMigrate=true \
-      migrate || warn "Flyway (Podman) failed; continuing."
-  fi
-else
-  # Try ddev service 'flyway' first (if you add one); otherwise run Flyway via Docker
-  if (cd "$PROJECT_ROOT" && ddev exec -s flyway flyway -v >/dev/null 2>&1); then
-    info "Using ddev flyway service"
-    (cd "$PROJECT_ROOT" && ddev exec -s flyway env FLYWAY_PASSWORD="$DB_PASSWORD" flyway \
-      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
-      -locations=filesystem:/var/www/html/zmsapiautomation/flyway \
-      -baselineOnMigrate=true migrate)
-  else
-    # Get ddev network name
-    DDEV_NETWORK=$(get_ddev_network)
-    
-    # Run Flyway in a Docker container on the ddev network
-    info "Running Flyway via Docker on ddev network ($DDEV_NETWORK)..."
-    docker run --rm \
-      --network "$DDEV_NETWORK" \
-      -v "$PROJECT_ROOT/zmsapiautomation/flyway:/flyway/sql" \
-      -e FLYWAY_PASSWORD="$DB_PASSWORD" \
-      flyway/flyway:9 \
-      -url=jdbc:mysql://db:3306/db -user="$DB_USER" \
-      -locations=filesystem:/flyway/sql \
-      -baselineOnMigrate=true \
-      migrate || warn "Flyway (Docker on ddev network) failed; continuing."
-  fi
-fi
-
-# Log database tables after Flyway
-info "Database tables after Flyway (before PHP migrations):"
-exec_sql_cmd "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" db || true
-info "flyway_schema_history (post-flyway):"
-exec_sql_cmd "
-  SELECT installed_rank, version, description, type, installed_by, success, installed_on
-  FROM flyway_schema_history
-  ORDER BY installed_rank;
-" db || true
-echo ""
-
-# 5) Run PHP migrations
+# 6. PHP Migrations
 section "6. PHP Migrations"
 info "Running zmsapi PHP migrations..."
-if [[ "$USE_PODMAN" == true ]]; then
-  exec_in_web "cd zmsapi && vendor/bin/migrate --update"
-else
-  (cd "$PROJECT_ROOT" && ddev exec zmsapi/vendor/bin/migrate --update)
-fi
+cd "$PROJECT_ROOT/zmsapi"
+vendor/bin/migrate --update
 info "PHP migrations completed."
-echo ""
 
-# Log database tables after PHP migrations
 info "Database tables after PHP migrations:"
-exec_sql_cmd "
-  SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-  FROM information_schema.tables
-  WHERE table_schema = 'db'
-  ORDER BY table_name;
-" db || true
-info "flyway_schema_history (post-php-migrations):"
-exec_sql_cmd "
-  SELECT installed_rank, version, description, type, installed_by, success, installed_on
-  FROM flyway_schema_history
-  ORDER BY installed_rank;
-" db || true
-echo ""
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
-# 6) Run hourly (best-effort)
+# 7. Hourly Cronjob
 section "7. Hourly Cronjob"
-info "Running hourly (best-effort)..."
-if ! exec_in_web "zmsapi/cron/cronjob.hourly --city=munich"; then
-  warn "Hourly command failed or not available; continuing."
+info "Running hourly cron..."
+if "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null; then
+  info "Hourly cron completed."
 else
-  info "Hourly command completed."
-  
-  # Log database tables after hourly
-  info "Database tables after hourly cron:"
-  exec_sql_cmd "
-    SELECT table_name AS 'Table Name', table_rows AS 'Row Count'
-    FROM information_schema.tables
-    WHERE table_schema = 'db'
-    ORDER BY table_name;
-  " db || true
+  warn "Hourly cron failed or not available; continuing."
 fi
-echo ""
 
-# 7) Pings for readiness
+# 8. Health Checks
 section "8. Health Checks"
-if [[ "$USE_PODMAN" == true ]]; then
-  # Note: These pings run from the host, so use localhost with port
-  info "Pinging citizenapi: http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/"
-  if curl -sf --max-time 10 "http://localhost:8090/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
-    info "✓ citizenapi offices-and-services responding"
-  else
-    warn "✗ citizenapi offices-and-services NOT responding"
-  fi
-
-  info "Pinging zmsapi: http://localhost:8090/terminvereinbarung/api/2/status/"
-  if curl -sf --max-time 10 "http://localhost:8090/terminvereinbarung/api/2/status/" >/dev/null; then
-    info "✓ zmsapi status responding"
-  else
-    warn "✗ zmsapi status NOT responding"
-  fi
+info "Pinging citizenapi: $CITIZEN_API_BASE_URI/offices-and-services/"
+if curl -sf --max-time 10 "$CITIZEN_API_BASE_URI/offices-and-services/" >/dev/null; then
+  info "✓ citizenapi offices-and-services responding"
 else
-  # Note: These pings run from the host, so use zms.ddev.site
-  info "Pinging citizenapi: http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/"
-  if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/citizen/offices-and-services/" >/dev/null; then
-    info "✓ citizenapi offices-and-services responding"
-  else
-    warn "✗ citizenapi offices-and-services NOT responding"
-  fi
-
-  info "Pinging zmsapi: http://zms.ddev.site/terminvereinbarung/api/2/status/"
-  if curl -sf --max-time 10 "http://zms.ddev.site/terminvereinbarung/api/2/status/" >/dev/null; then
-    info "✓ zmsapi status responding"
-  else
-    warn "✗ zmsapi status NOT responding"
-  fi
+  warn "✗ citizenapi offices-and-services NOT responding"
 fi
-echo ""
 
-# 8) Run tests (in a throwaway Maven container, using cached ~/.m2)
+info "Pinging zmsapi: $BASE_URI/status/"
+if curl -sf --max-time 10 "$BASE_URI/status/" >/dev/null; then
+  info "✓ zmsapi status responding"
+else
+  warn "✗ zmsapi status NOT responding"
+fi
+
+# 9. Running Tests
 section "9. Running Tests"
 info "Running REST-assured tests..."
-if [[ "$USE_PODMAN" == true ]]; then
-  podman volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
-  podman volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
-else
-  docker volume create "$M2_CACHE_VOLUME" >/dev/null 2>&1 || true
-  docker volume create "$TARGET_VOLUME" >/dev/null 2>&1 || true
-fi
 
-# Clear target directory to remove old surefire reports
-if [[ "$USE_PODMAN" == true ]]; then
-  if podman run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -c 'rm -rf /t/surefire-reports' 2>/dev/null; then
-    info "Cleared old surefire reports"
-  fi
-else
-  if docker run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -c 'rm -rf /t/surefire-reports' 2>/dev/null; then
-    info "Cleared old surefire reports"
-  fi
-fi
+# Clear old surefire reports
+rm -rf "$PROJECT_ROOT/zmsapiautomation/target/surefire-reports" 2>/dev/null || true
 
 TEST_EXIT=0
-if [[ "$USE_PODMAN" == true ]]; then
-  # Discover the actual podman network used by zms-db (same logic as Flyway)
-  PODMAN_NETWORK=$(get_podman_network)
-  
-  # Run tests on podman network so container can reach podman services
-  if podman run --rm \
-    --network "$PODMAN_NETWORK" \
-    -e BASE_URI="$BASE_URI" \
-    -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
-    -v "$PROJECT_ROOT:/workspace:ro" \
-    -v "$M2_CACHE_VOLUME:/root/.m2" \
-    -v "$TARGET_VOLUME:/workspace/zmsapiautomation/target" \
-    -w /workspace/zmsapiautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
-    TEST_EXIT=0
-  else
-    TEST_EXIT=$?
-  fi
-else
-  # Get ddev network name (same logic as Flyway)
-  DDEV_NETWORK=$(get_ddev_network)
-  
-  # Run tests on ddev network so container can reach ddev services
-  if docker run --rm \
-    --network "$DDEV_NETWORK" \
-    -e BASE_URI="$BASE_URI" \
-    -e CITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
-    -v "$PROJECT_ROOT:/workspace:ro" \
-    -v "$M2_CACHE_VOLUME:/root/.m2" \
-    -v "$TARGET_VOLUME:/workspace/zmsapiautomation/target" \
-    -w /workspace/zmsapiautomation \
-    "$MAVEN_IMAGE" mvn -B -DtrimStackTrace=false test "${MAVEN_ARGS[@]}"; then
-    TEST_EXIT=0
-  else
-    TEST_EXIT=$?
-  fi
-fi
-echo ""
+cd "$PROJECT_ROOT/zmsapiautomation"
 
-# Print surefire reports (if any)
+if mvn -B -DtrimStackTrace=false \
+  -Dbase.uri="$BASE_URI" \
+  -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+  test "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; then
+  TEST_EXIT=0
+else
+  TEST_EXIT=$?
+fi
+
+# 10. Test Results
 section "10. Test Results"
 info "Collecting surefire reports..."
-if [[ "$USE_PODMAN" == true ]]; then
-  RUNTIME="podman"
+if [[ -d "$PROJECT_ROOT/zmsapiautomation/target/surefire-reports" ]]; then
+  ls -la "$PROJECT_ROOT/zmsapiautomation/target/surefire-reports"
+  for f in "$PROJECT_ROOT/zmsapiautomation/target/surefire-reports"/*.txt; do
+    if [[ -f "$f" ]]; then
+      echo "==== $f ===="
+      cat "$f"
+      echo
+    fi
+  done
 else
-  RUNTIME="docker"
+  info "No surefire-reports found"
 fi
-$RUNTIME run --rm -v "$TARGET_VOLUME:/t" "$ALPINE_IMAGE" sh -lc '
-  if [ -d /t/surefire-reports ]; then
-    ls -la /t/surefire-reports;
-    for f in /t/surefire-reports/*.txt; do
-      echo "==== $f ===="; cat "$f"; echo; done || true;
-  else
-    echo "No surefire-reports found";
-  fi'
-echo ""
 
-# Clear caches after tests
+# 11. Final Cache Clearing
 section "11. Final Cache Clearing"
 clear_caches
-echo ""
 
-# 9) Restore DB regardless of test result
+# 12. Database Restore
 section "12. Database Restore"
 info "Restoring original database..."
 restore_db
 
-# Clear test data migrations from flyway_schema_history after restore to keep restored DB clean
+# Clear test data migrations from flyway_schema_history after restore
 info "Clearing test data migrations from flyway_schema_history after restore..."
-exec_sql_cmd "DELETE FROM flyway_schema_history WHERE version > 1;" db 2>/dev/null || true
-echo ""
+exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
-# Clean up zmsapi/data folder after tests (preserve .gitignore)
-# Note: Cleanup also runs via EXIT trap on error or Ctrl+C
+# 13. Cleanup
 section "13. Cleanup"
 info "Cleaning up zmsapi/data folder..."
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"
-echo ""
 
 if [[ $TEST_EXIT -eq 0 ]]; then
   info "Tests completed successfully."
@@ -678,12 +270,4 @@ else
   warn "Tests failed (exit $TEST_EXIT)."
 fi
 
-# Use return when sourced to avoid closing terminal, exit when executed directly
-# Also clear ERR trap when sourced to prevent it from affecting future commands
-if [[ "$IS_SOURCED" == true ]]; then
-  trap - ERR  # Clear ERR trap to prevent it from affecting future commands
-  return "$TEST_EXIT" 2>/dev/null || exit "$TEST_EXIT"
-else
-  exit "$TEST_EXIT"
-fi
-
+exit "$TEST_EXIT"

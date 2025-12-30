@@ -58,7 +58,32 @@ RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer
 
 # —————————————————————————————————————————
-# 8. Set working directory & permissions
+# 8. Install Java 17 (Eclipse Temurin) & Maven
+# —————————————————————————————————————————
+RUN apt-get update && apt-get install -y gnupg \
+ && curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/adoptium.gpg \
+ && echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+    > /etc/apt/sources.list.d/adoptium.list \
+ && apt-get update && apt-get install -y temurin-17-jdk \
+ && apt-get clean \
+ && echo "export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)" >> /etc/profile.d/java.sh \
+ && echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> /etc/profile.d/java.sh \
+ && ln -sf /usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)/bin/java /usr/local/bin/java \
+ && ln -sf /usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)/bin/javac /usr/local/bin/javac
+
+RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz \
+    | tar -xz -C /opt \
+ && ln -s /opt/apache-maven-3.9.6/bin/mvn /usr/local/bin/mvn
+
+# —————————————————————————————————————————
+# 9. Install Flyway CLI
+# —————————————————————————————————————————
+RUN curl -fsSL https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz \
+    | tar -xz -C /opt \
+ && ln -s /opt/flyway-9.22.3/flyway /usr/local/bin/flyway
+
+# —————————————————————————————————————————
+# 10. Set working directory & permissions
 # —————————————————————————————————————————
 WORKDIR /var/www/html
 
@@ -66,7 +91,7 @@ RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 755 /var/www/html
 
 # —————————————————————————————————————————
-# 9. Expose
+# 11. Expose
 # —————————————————————————————————————————
 EXPOSE 80
 
