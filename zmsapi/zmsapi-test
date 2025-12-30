@@ -20,6 +20,7 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 : "${MYSQL_PORT:?MYSQL_PORT must be set}"
 : "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
 : "${MYSQL_USER:?MYSQL_USER must be set}"
+: "${CACHE_DIR:?CACHE_DIR must be set}"
 
 TEST_DB="zmsapi_test"
 DB_PORT="${MYSQL_PORT##*:}"
