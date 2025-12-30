@@ -15,6 +15,12 @@ section() {
 
 # Paths and variables
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Validate required environment variables
+: "${MYSQL_PORT:?MYSQL_PORT must be set}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
+: "${MYSQL_USER:?MYSQL_USER must be set}"
+
 TEST_DB="zmsdb_test"
 DB_PORT="${MYSQL_PORT##*:}"
 
