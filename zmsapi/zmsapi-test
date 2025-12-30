@@ -36,7 +36,7 @@ cleanup_data_folder() {
 clear_caches() {
   if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
     info "Clearing caches in $CACHE_DIR..."
-    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear container caches"
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
   else
     warn "CACHE_DIR not set or does not exist"
   fi
