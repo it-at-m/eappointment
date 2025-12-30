@@ -62,7 +62,7 @@ section "3. Fixture Setup"
 mkdir -p "$PROJECT_ROOT/zmsapi/data"
 find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || true
 for f in services_de.json locations_de.json topic_de.json; do
-  cp -f "$PROJECT_ROOT/zmsdb/tests/Zmsdb/fixtures/$f" "$PROJECT_ROOT/zmsapi/data/$f" 2>/dev/null || true
+  cp -f "$PROJECT_ROOT/zmsdb/tests/Zmsdb/fixtures/$f" "$PROJECT_ROOT/zmsapi/data/$f" 2>/dev/null || warn "Failed to copy fixture: $f"
 done
 [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
 
