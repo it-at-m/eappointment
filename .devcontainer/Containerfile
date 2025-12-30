@@ -83,7 +83,7 @@ RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-
 # —————————————————————————————————————————
 # 9. Install Flyway CLI with checksum verification
 # —————————————————————————————————————————
-ARG FLYWAY_VERSION=11.19.0
+ARG FLYWAY_VERSION=11.1.1
 RUN curl -fsSL -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz \
  && curl -fsSL -o /tmp/flyway.tar.gz.sha1 https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz.sha1 \
  && echo "$(cat /tmp/flyway.tar.gz.sha1)  /tmp/flyway.tar.gz" | sha1sum -c - \

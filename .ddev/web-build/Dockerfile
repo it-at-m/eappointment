@@ -32,7 +32,7 @@ RUN wget -q https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binar
  && ln -s /opt/maven/bin/mvn /usr/local/bin/mvn
 
 # Install Flyway CLI with checksum verification
-ARG FLYWAY_VERSION=11.19.0
+ARG FLYWAY_VERSION=11.1.1
 RUN wget -q -O /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz \
  && wget -q -O /tmp/flyway.tar.gz.sha1 https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz.sha1 \
  && echo "$(cat /tmp/flyway.tar.gz.sha1)  /tmp/flyway.tar.gz" | sha1sum -c - \
