@@ -20,6 +20,7 @@ hooks:
     - exec: "sed -i 's/^pm\\.max_children.*/pm.max_children = 30/' /etc/php/*/fpm/pool.d/www.conf && supervisorctl restart php-fpm"
     - exec: "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
+    - exec: "git config --global --add safe.directory /var/www/html"
 
 timezone: Europe/Berlin
 
