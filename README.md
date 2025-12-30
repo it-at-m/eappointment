@@ -428,9 +428,14 @@ ddev ssh                      # DDEV
 
 **Using the test runner script (Recommended):**
 
-The `zmsapiautomation-test` script automatically handles database setup, migrations, and test execution:
+The `zmsapiautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
 
 ```bash
+# Enter your web container first
+podman exec -it zms-web bash  # Podman
+ddev ssh                      # DDEV
+
+# Run zmsapiautomation tests
 cd zmsapiautomation
 ./zmsapiautomation-test                    # Run all tests
 ./zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
@@ -461,16 +466,16 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 **Environment Configuration:**
 
-The script automatically detects Podman or DDEV environments and sets appropriate defaults:
+The script runs natively inside the container and uses environment variables. Default endpoints:
 
-- **Podman**: Uses `http://zms-web/terminvereinbarung/api/2` for BASE_URI
-- **DDEV**: Uses `http://web/terminvereinbarung/api/2` for BASE_URI
+- `BASE_URI`: `http://localhost/terminvereinbarung/api/2`
+- `CITIZEN_API_BASE_URI`: `http://localhost/terminvereinbarung/api/citizen`
 
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsapiautomation-test
-CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsapiautomation-test
+BASE_URI=http://localhost/terminvereinbarung/api/2 ./zmsapiautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen ./zmsapiautomation-test
 ```
 
 **What the Script Does:**
@@ -496,14 +501,14 @@ To import Munich DLDB data during test setup:
 ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsapiautomation-test
 ```
 
-**Running Tests Directly with Maven:**
+**Running Tests Directly with Maven (inside container):**
 
-For local development without the full setup script:
+For development without the full setup script (assumes database is already prepared):
 
 ```bash
 cd zmsapiautomation
-mvn test -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
-mvn test -Dtest=StatusEndpointTest -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+mvn test
+mvn test -Dtest=StatusEndpointTest
 ```
 
 **References:**
