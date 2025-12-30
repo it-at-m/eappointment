@@ -71,9 +71,8 @@ RUN apt-get update && apt-get install -y gnupg \
  && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/java /usr/local/bin/java \
  && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/javac /usr/local/bin/javac
 
-# Install Maven 3.9.9 with checksum verification
+# Install Maven 3.9.9 with checksum verification (downloads .sha512 from Apache)
 ARG MAVEN_VERSION=3.9.9
-ARG MAVEN_SHA512=a555254d6b53d267965a3404ecb14e53c3c5a09b92eb1405a4bf92c2dd7c92f30ef9a6334a5eca0b6a5dcea6a1c3d9b9f8b5e3f8ec9e8b1ff9a1a9a9a0d7e8b7c
 RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
  && curl -fsSL -o /tmp/maven.tar.gz.sha512 https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512 \
  && echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
