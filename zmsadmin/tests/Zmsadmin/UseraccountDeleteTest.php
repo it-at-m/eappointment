@@ -25,7 +25,7 @@ class UseraccountDeleteTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/useraccount/?success=useraccount_deleted');
+        $this->assertRedirect($response, '/users/?success=useraccount_deleted');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

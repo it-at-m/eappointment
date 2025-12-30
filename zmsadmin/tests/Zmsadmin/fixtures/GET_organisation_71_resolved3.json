@@ -35,7 +35,6 @@
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
@@ -49,10 +48,6 @@
                                 "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                 "headsUpTime": "30"
                             },
-                            "pickup": {
-                                "alternateName": "Ausgabe",
-                                "isDefault": "0"
-                            },
                             "queue": {
                                 "callCountMax": "2",
                                 "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -60,7 +55,6 @@
                                 "lastNumber": "799",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "15",
-                                "publishWaitingTimeEnabled": "0",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {
@@ -136,7 +130,6 @@
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "0",
                                 "emailRequired": "0",
@@ -150,10 +143,6 @@
                                 "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
                                 "headsUpTime": "30"
                             },
-                            "pickup": {
-                                "alternateName": "Ausgabe",
-                                "isDefault": "0"
-                            },
                             "queue": {
                                 "callCountMax": "0",
                                 "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
@@ -161,7 +150,6 @@
                                 "lastNumber": "499",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "5",
-                                "publishWaitingTimeEnabled": "1",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {
@@ -271,7 +259,6 @@
                                         "notificationHeadsUpEnabled": "1"
                                     },
                                     "client": {
-                                        "alternateAppointmentUrl": "",
                                         "amendmentActivated": "0",
                                         "amendmentLabel": "",
                                         "emailRequired": "0",
@@ -285,10 +272,6 @@
                                         "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
                                         "headsUpTime": "30"
                                     },
-                                    "pickup": {
-                                        "alternateName": "Ausgabe",
-                                        "isDefault": "0"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -296,7 +279,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "15",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -370,7 +352,6 @@
                                         "notificationHeadsUpEnabled": "1"
                                     },
                                     "client": {
-                                        "alternateAppointmentUrl": "",
                                         "amendmentActivated": "0",
                                         "amendmentLabel": "",
                                         "emailRequired": "0",
@@ -384,10 +365,6 @@
                                         "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                         "headsUpTime": "30"
                                     },
-                                    "pickup": {
-                                        "alternateName": "Ausgabe",
-                                        "isDefault": "0"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -395,7 +372,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "15",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -469,7 +445,6 @@
                                         "notificationHeadsUpEnabled": "1"
                                     },
                                     "client": {
-                                        "alternateAppointmentUrl": "",
                                         "amendmentActivated": "0",
                                         "amendmentLabel": "",
                                         "emailRequired": "0",
@@ -483,10 +458,6 @@
                                         "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                         "headsUpTime": "30"
                                     },
-                                    "pickup": {
-                                        "alternateName": "Ausgabe",
-                                        "isDefault": "0"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -494,7 +465,6 @@
                                         "lastNumber": "499",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "10",
-                                        "publishWaitingTimeEnabled": "1",
                                         "statisticsEnabled": "1"
                                     },
                                     "survey": {
@@ -578,7 +548,6 @@
                                         "startInDaysDefault": "2"
                                     },
                                     "client": {
-                                        "alternateAppointmentUrl": "",
                                         "amendmentActivated": "1",
                                         "amendmentLabel": "Anmerkung",
                                         "emailRequired": "1",
@@ -592,10 +561,6 @@
                                         "headsUpContent": "",
                                         "headsUpTime": "0"
                                     },
-                                    "pickup": {
-                                        "alternateName": "",
-                                        "isDefault": "0"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail",
@@ -603,7 +568,6 @@
                                         "lastNumber": "999",
                                         "maxNumberContingent": "0",
                                         "processingTimeAverage": "7",
-                                        "publishWaitingTimeEnabled": "0",
                                         "statisticsEnabled": "0"
                                     },
                                     "survey": {

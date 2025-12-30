@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ref, nextTick } from "vue";
 // Mount parent to exercise logic and assert ProviderSelection UI
@@ -7,7 +7,11 @@ import AppointmentSelection from "@/components/Appointment/AppointmentSelection.
 
 // Mock API to avoid real network calls
 vi.mock("@/api/ZMSAppointmentAPI", () => ({
-  fetchAvailableDays: vi.fn().mockResolvedValue({ availableDays: [] }),
+  fetchAvailableDays: vi.fn().mockResolvedValue({ 
+    availableDays: [
+      { time: '2025-06-17', providerIDs: '1,2,3,4,102522,102523,102524,102526,10489,10502,54261' }
+    ] 
+  }),
   fetchAvailableTimeSlots: vi.fn().mockResolvedValue({ offices: [] }),
 }));
 
@@ -84,6 +88,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         ],
       },
     });
+    await flushPromises(); // Wait for API call to complete
     await nextTick();
     const checkboxes = wrapper.findAll('input[type="checkbox"]');
     expect(checkboxes.length).toBe(2);
@@ -121,17 +126,19 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       expect(resultIds).toEqual(expectedIds.sort());
     };
 
-    // 1. service 1063453 disables 10489
+    // 1. service 1063453 disables 10489 (1063453 is in 10489's disabledByServices)
     await runTest([1063453], [102522, 102523, 102524, 102526, 10502, 54261]);
 
-    // 2. service 1234567 doesn't disable 10489
+    // 2. service 1234567 doesn't disable 10489 (1234567 is not in anyone's disabledByServices)
+    // Both 10489 and 10502 pass, but 10489 comes first so it's returned for the "Bürgerbüro Ruppertstraße" group
     await runTest([1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
 
-    // 3. services 1063453 + 1063441 fully match disabledByServices of 10489
+    // 3. services 1063453 + 1063441 - 10489 is filtered out (has 1063453 in disabledByServices)
     await runTest([1063453, 1063441], [102522, 102523, 102524, 102526, 10502, 54261]);
 
-    // 4. services 1063453 + 1234567 don't fully match disabledByServices of 10489
-    await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
+    // 4. services 1063453 + 1234567 - 10489 is filtered out (has 1063453 in disabledByServices)
+    // If ANY selected service is in disabledByServices, provider is filtered out
+    await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10502, 54261]);
   });
 
   it("shows providers in correct prio", async () => {
@@ -165,6 +172,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         ] }
     });
 
+    await flushPromises(); // Wait for API call to complete
     await nextTick();
 
     expect(wrapper.text()).toContain("Office ABC");

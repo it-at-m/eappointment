@@ -8,7 +8,7 @@
 <!-- [![EUPL License][license-shield]][license-url] -->
 
 # E-Appointment
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 This monorepo contains the Munich-specific adjustments to the original Berlin version. You can explore the original project here: https://gitlab.com/eappointment/eappointment
 
@@ -26,13 +26,13 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
 * manage opening hours including closed days
 * login-system with different access levels
-* pickup for documents
 * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
 * calldisplay support
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
 [Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
+
 
 ## Projects
 
@@ -67,7 +67,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
 
 ---
 
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 Dieses Monorepo enthält die München-spezifischen Anpassungen der ursprünglichen Berliner Version. Das ursprüngliche Projekt kannst du hier erkunden: https://gitlab.com/eappointment/eappointment
 
@@ -155,6 +155,58 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run build`
 - `npm run dev`
 - `npm run test`
+
+## Keycloak Setup
+
+Keycloak is configured to use the hostname `keycloak.local` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
+
+- **Browser** (running on your host machine) needs to access Keycloak via a hostname that resolves to `127.0.0.1`
+- **PHP code** (running inside the container) needs to access Keycloak via a hostname that resolves through Docker/Podman network DNS
+
+Using `localhost` doesn't work because inside the container, `localhost` refers to the container itself, not the host machine where Keycloak is exposed.
+
+### Adding keycloak.local to /etc/hosts
+
+You need to add `keycloak.local` to your system's hosts file so it resolves to `127.0.0.1`:
+
+**macOS:**
+```bash
+echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+```
+Enter your Mac password when prompted.
+
+**Ubuntu/Linux:**
+```bash
+echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+```
+
+**Windows:**
+1. Open Notepad as Administrator (Right-click → Run as administrator)
+2. Open `C:\Windows\System32\drivers\etc\hosts`
+3. Add this line at the end:
+   ```
+   127.0.0.1 keycloak.local
+   ```
+4. Save the file
+
+**Verify it worked:**
+```bash
+# macOS/Linux
+ping -c 1 keycloak.local
+
+# Windows
+ping keycloak.local
+```
+You should see it resolve to `127.0.0.1`.
+
+After adding the entry, restart the Keycloak container:
+```bash
+# Podman
+podman restart zms-keycloak
+
+# DDEV
+ddev restart
+```
 
 ## Import Database
 
