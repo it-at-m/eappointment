@@ -17,7 +17,7 @@
   "postStartCommand": [
     // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
     // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
-    "bash", "-c", "for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chown -R www-data:www-data /var/www/html/$dir/cache; done"
+    "bash", "-c", "for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chmod 777 /var/www/html/$dir/cache; done"
   ],
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway"]
 }
