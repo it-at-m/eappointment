@@ -382,7 +382,7 @@ ddev ssh                      # DDEV
 **Available PHPUnit Flags:**
 
 ```bash
-# Test Selection
+# Test Selection (filter is a regex matching against "Namespace\TestClass::testMethod")
 --filter="TestClass::testMethod"  # Run specific test method
 --filter="TestClass"              # Run all tests in a class
 --filter="testMethod"             # Run all tests with matching method name
