@@ -21,8 +21,8 @@ RUN JAVA_HOME="/usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)" \
  && update-alternatives --install /usr/bin/java java "${JAVA_HOME}/bin/java" 1 \
  && update-alternatives --install /usr/bin/javac javac "${JAVA_HOME}/bin/javac" 1
 
-# Install Maven 3.9.9 with checksum verification
-ARG MAVEN_VERSION=3.9.9
+# Install Maven with checksum verification
+ARG MAVEN_VERSION=3.9.12
 RUN wget -q https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -P /tmp \
  && wget -q https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512 -P /tmp \
  && echo "$(cat /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512)  /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz" | sha512sum -c - \
@@ -31,8 +31,8 @@ RUN wget -q https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binar
  && rm /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512 \
  && ln -s /opt/maven/bin/mvn /usr/local/bin/mvn
 
-# Install Flyway CLI 9.22.3 with checksum verification
-ARG FLYWAY_VERSION=9.22.3
+# Install Flyway CLI with checksum verification
+ARG FLYWAY_VERSION=11.20.0
 RUN wget -q -O /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz \
  && wget -q -O /tmp/flyway.tar.gz.sha1 https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz.sha1 \
  && echo "$(cat /tmp/flyway.tar.gz.sha1)  /tmp/flyway.tar.gz" | sha1sum -c - \

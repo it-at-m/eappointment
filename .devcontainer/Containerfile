@@ -71,8 +71,8 @@ RUN apt-get update && apt-get install -y gnupg \
  && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/java /usr/local/bin/java \
  && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/javac /usr/local/bin/javac
 
-# Install Maven 3.9.9 with checksum verification (downloads .sha512 from Apache)
-ARG MAVEN_VERSION=3.9.9
+# Install Maven with checksum verification (downloads .sha512 from Apache)
+ARG MAVEN_VERSION=3.9.12
 RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
  && curl -fsSL -o /tmp/maven.tar.gz.sha512 https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512 \
  && echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
@@ -83,7 +83,7 @@ RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-
 # —————————————————————————————————————————
 # 9. Install Flyway CLI with checksum verification
 # —————————————————————————————————————————
-ARG FLYWAY_VERSION=9.22.3
+ARG FLYWAY_VERSION=11.20.0
 RUN curl -fsSL -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz \
  && curl -fsSL -o /tmp/flyway.tar.gz.sha1 https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz.sha1 \
  && echo "$(cat /tmp/flyway.tar.gz.sha1)  /tmp/flyway.tar.gz" | sha1sum -c - \
