@@ -76,7 +76,7 @@ cd "$PROJECT_ROOT/zmsdb"
 php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsdldb\\FileAccess")?0:42);' \
   || (composer update eappointment/zmsdldb -W --no-progress --prefer-dist && composer dump-autoload -o)
 
-php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" -d auto_prepend_file="$PROJECT_ROOT/zmsdb/vendor/autoload.php" \
+php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" \
     bin/importTestData --commit
 
 # 5. Running Tests

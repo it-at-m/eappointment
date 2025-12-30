@@ -70,7 +70,7 @@ done
 section "4. Test Data Import"
 export MYSQL_DATABASE="$TEST_DB"
 export TZ="UTC"
-php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" -d auto_prepend_file="$PROJECT_ROOT/zmsapi/vendor/autoload.php" \
+php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" \
   "$PROJECT_ROOT/zmsdb/bin/importTestData" --commit
 
 # 5. Running Tests
