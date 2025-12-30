@@ -56,7 +56,7 @@ DB_NAME="${MYSQL_DATABASE}"
 DB_USER="${MYSQL_USER}"
 DB_PASSWORD="${MYSQL_PASSWORD}"
 DB_HOST="${MYSQL_HOST:-db}"  # Defaults to 'db' (docker-compose service name)
-DB_PORT="${MYSQL_PORT##*:}"
+DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
 # File paths
 BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
