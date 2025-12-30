@@ -1,6 +1,10 @@
 # Custom Dockerfile additions for DDEV web container
 # Installs Java 17, Maven, and Flyway for zmsapiautomation tests
 
+# Set timezone at OS level (matches dev container)
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Install Java 17 (Eclipse Temurin)
 RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null \
  && echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print $2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list \
@@ -17,11 +21,11 @@ RUN JAVA_HOME="/usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)" \
  && update-alternatives --install /usr/bin/java java "${JAVA_HOME}/bin/java" 1 \
  && update-alternatives --install /usr/bin/javac javac "${JAVA_HOME}/bin/javac" 1
 
-# Install Maven 3.9.6
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -P /tmp \
- && tar xf /tmp/apache-maven-3.9.6-bin.tar.gz -C /opt \
- && mv /opt/apache-maven-3.9.6 /opt/maven \
- && rm /tmp/apache-maven-3.9.6-bin.tar.gz \
+# Install Maven 3.9.9
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -P /tmp \
+ && tar xf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt \
+ && mv /opt/apache-maven-3.9.9 /opt/maven \
+ && rm /tmp/apache-maven-3.9.9-bin.tar.gz \
  && ln -s /opt/maven/bin/mvn /usr/local/bin/mvn
 
 # Install Flyway CLI 9.22.3

@@ -71,9 +71,9 @@ RUN apt-get update && apt-get install -y gnupg \
  && ln -sf /usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)/bin/java /usr/local/bin/java \
  && ln -sf /usr/lib/jvm/temurin-17-jdk-$(dpkg --print-architecture)/bin/javac /usr/local/bin/javac
 
-RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz \
+RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz \
     | tar -xz -C /opt \
- && ln -s /opt/apache-maven-3.9.6/bin/mvn /usr/local/bin/mvn
+ && ln -s /opt/apache-maven-3.9.9/bin/mvn /usr/local/bin/mvn
 
 # —————————————————————————————————————————
 # 9. Install Flyway CLI

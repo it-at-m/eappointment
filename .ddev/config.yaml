@@ -11,7 +11,8 @@ database:
   version: "10.4"
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+web_environment:
+  - TZ=Europe/Berlin
 nodejs_version: "18"
 hooks:
   pre-start:
