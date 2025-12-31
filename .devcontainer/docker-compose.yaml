@@ -18,7 +18,7 @@ services:
       - default
 
   db:
-    image: mariadb:10.11
+    image: mariadb:12.1
     container_name: zms-db
     restart: unless-stopped
     env_file:
