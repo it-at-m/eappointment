@@ -921,7 +921,7 @@ function getAvailableProviders(
       Number
     );
     const allDisabled = selectedServices.every((s) =>
-      restrictedDisabled.includes(s.id)
+      restrictedDisabled.includes(Number(s.id))
     );
 
     return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
