@@ -32,7 +32,7 @@ class View extends BaseView {
     getCalledQueueIds() {
         let queueIds = [];
         $('#queueImport td.wartenummer span[data-status]').each(function () {
-            if ('called' == $(this).attr('data-status') || 'pickup' == $(this).attr('data-status')) {
+            if ('called' == $(this).attr('data-status')) {
                 queueIds.push($(this).attr('data-appointment'));
             }
             

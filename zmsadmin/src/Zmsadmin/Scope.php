@@ -48,7 +48,7 @@ class Scope extends BaseController
         $callDisplayImage = \App::$http->readGetResult('/scope/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if ($request->getMethod() === 'POST') {
-            $result = $this->testUpdateEntity($input, $entityId);
+            $result = $this->writeUpdatedEntity($input, $entityId);
             if ($result instanceof Entity) {
                 $this->writeUploadedImage($request, $entityId, $input);
                 return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
@@ -94,31 +94,18 @@ class Scope extends BaseController
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
      * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
-    protected function testUpdateEntity($input, $entityId = null)
+    protected function writeUpdatedEntity($input, $entityId = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        try {
+        return $this->handleEntityWrite(function () use ($entity, $entityId) {
             if ($entity->id) {
                 $entity->id = $entityId;
-                $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            } else {
-                $entity = \App::$http->readPostResult('/department/' . $entityId . '/scope/', $entity)
-                                     ->getEntity();
+                return \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             }
-        } catch (\BO\Zmsclient\Exception $exception) {
-            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if (
-                '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
-            ) {
-                return [
-                    'template' => $template,
-                    'data' => $exception->data
-                ];
-            }
-            throw $exception;
-        }
-        return $entity;
+            return \App::$http
+                ->readPostResult('/department/' . $entityId . '/scope/', $entity)
+                ->getEntity();
+        });
     }
 
     protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, $input)
