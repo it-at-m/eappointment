@@ -1,0 +1,163 @@
+# Reihenfolge für die Ausführung der Schritte
+stages:
+  - build
+  - test
+  - deploy-dev
+  - deploy-pages
+
+# Auswahl der Runner
+default:
+  tags:
+    - openshift
+
+variables:
+  #Maven Image, was verwendet wird.
+  MAVEN_IMAGE: dockerhub.muenchen.de/library/maven:3.9-eclipse-temurin-17
+
+  # Legt das locale .m2-Repository fest - wird für den cache genutzt.
+  # Unterdrückt die Download-Meldungen von Artefakten.
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+
+  # Pfad der settings.xml wird angegeben
+  # '--batch-mode' verhindert das Auftauchen von Benutzereingabeaufforderungen
+  MAVEN_CLI_OPTS: >-
+    -s $MAVEN_SETTINGS
+    --batch-mode
+
+  JAVA_TOOL_OPTIONS: >-
+    -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+
+  # Deprecated: Link zum Downloaden des Truststores, sodass bestehende Projekte noch funktionieren
+  TRUST_STORE_LINK: "https://git.muenchen.de/openshift/java-truststore/-/raw/main/cacerts-lhm"
+
+
+  # Variablen zum Hinzufügen von Maven-OPTs zu den Standard Ops. Variable kann auch nur Job-Spezifik definiert werden.
+  MAVEN_CLI_PRJ_OPTS: ""
+
+  APP_PATH: .
+
+  # zeitzone setzen
+  TZ: Europe/Berlin
+
+
+###########################
+# Gitlab-Instanz-Variable #
+###########################
+#  MAVEN_REPO_USER: [MASKED]
+#  MAVEN_SETTINGS: [File_With_Settings]
+
+build-mvn:
+  image: $MAVEN_IMAGE
+  stage: build
+  script:
+    - echo "dummy step"
+  rules:
+    - when: never
+
+# Führt Tests durch und erstellt einen Build
+unit-test:
+  image: $MAVEN_IMAGE
+  stage: test
+  coverage:  /Total.*?([0-9]{1,3})%/
+  cache:
+    key: mvn
+    paths:
+      - .m2/repository
+  # Führt die obengeannten Schritte mit Angabe eines Truststores durch
+  rules:
+    - if: $DO_RELEASE != "true"
+  script:
+    - mvn $MAVEN_CLI_OPTS install $MAVEN_CLI_PRJ_OPTS
+    # Ermittelt den Namen der .jar-Datei der Anwendung und gibt ihn über eine .env-Datei für andere Jobs frei
+    - MVN_VERSION=$(mvn -f $APP_PATH/pom.xml $MAVEN_CLI_OPTS org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+    - echo $MVN_VERSION
+    - MVN_ARTIFACT_ID=$(mvn -f $APP_PATH/pom.xml $MAVEN_CLI_OPTS org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+    - echo $MVN_ARTIFACT_ID
+    - MVN_GROUP_ID=$(mvn -f $APP_PATH/pom.xml $MAVEN_CLI_OPTS org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout)
+    - echo $MVN_GROUP_ID
+    # Schreibt den aus 'version' und 'artifactId' zusammengesetzten Namen der finalen .jar-Datei in die 'build.env'
+    - echo "APP_JAR_FILE=$MVN_ARTIFACT_ID-$MVN_VERSION.jar" >> build.env
+    - echo "MVN_VERSION=$MVN_VERSION" >> build.env
+    - echo "MVN_ARTIFACT_ID=$MVN_ARTIFACT_ID" >> build.env
+    - echo "MVN_GROUP_ID=$MVN_GROUP_ID" >> build.env
+    # job artifact url
+    - echo "DOWNLOAD_URL_GITLAB=$CI_API_V4_URL/projects/${CI_PROJECT_ID}/jobs/${CI_JOB_ID}/artifacts/target/${MVN_ARTIFACT_ID}-${MVN_VERSION}.jar" >> build.env
+  artifacts:
+    expire_in: 2 week
+    when: always
+    reports:
+      dotenv: build.env
+      junit:
+        - "**/target/*-reports/TEST-*.xml"
+    paths:
+      - "**/target/*.jar"
+      - "**/target/*.html"
+
+# Lädt den Build ins Artifactory hoch
+deploy:artifactory:
+  image: $MAVEN_IMAGE
+  stage: deploy-dev
+  cache:
+    key: mvn
+    paths:
+      - .m2/repository
+  rules:
+   - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
+   - if: $CI_COMMIT_TAG
+
+  variables:
+    ARTIFACTORY_HOST: https://artifactory.muenchen.de
+    CLI_VERSION: "2.71.0"
+    MAX_SNAPSHOTS_TO_KEEP: 2
+    # MAX_RELEASES_TO_KEEP: 5
+    # Von der JFrog CLI genutzt
+    JFROG_CLI_HOME_DIR: .jfrog
+    JFROG_CLI_RELEASES_REPO: artifactory/jfrog-releases
+    JFROG_CLI_BUILD_NAME: $MVN_ARTIFACT_ID
+    JFROG_CLI_BUILD_NUMBER: $CI_JOB_ID
+    JFROG_CLI_BUILD_URL: $CI_JOB_URL
+  before_script:
+    # Lädt die JFrog CLI herunter.
+    - curl -sSf -u $MAVEN_REPO_USER:$MAVEN_REPO_PASS -O $ARTIFACTORY_HOST/artifactory/jfrog-releases/artifactory/jfrog-cli/v2-jf/$CLI_VERSION/jfrog-cli-linux-amd64/jf
+    - chmod u+x jf
+  script:
+    # Falls ein Snapshot hochgeladen werden soll, bekommt dessen Build Name einen "-snapshot"-Suffix und es wird MAX_SNAPSHOTS_TO_KEEP genutzt. Ansonsten wird MAX_RELEASES_TO_KEEP genutzt.
+    - |
+      if [[ $MVN_VERSION == *-SNAPSHOT ]]
+      then
+        export JFROG_CLI_BUILD_NAME=$MVN_ARTIFACT_ID-snapshot
+        MAX_BUILDS_TO_KEEP=$MAX_SNAPSHOTS_TO_KEEP
+      else
+        MAX_BUILDS_TO_KEEP=$MAX_RELEASES_TO_KEEP
+      fi
+    # Konfiguriert die Verbindung zum Artifactory, sowie welche Repositories zu verwenden sind.
+    - ./jf config add artifactory --url=$ARTIFACTORY_HOST --user=$MAVEN_REPO_USER --password=$MAVEN_REPO_PASS
+    - ./jf mvnc --server-id-resolve=artifactory --repo-resolve-snapshots=mvn-repos --repo-resolve-releases=mvn-repos --server-id-deploy=artifactory --repo-deploy-snapshots=mvn-snapshot-local --repo-deploy-releases=mvn-release-local
+    # Lädt alle relevanten Dateien als Artifacts hoch und ordnet sie dem derzeitigen Build zu.
+    # Einige Phasen von Maven werden übersprungen, weil sie in den Jobs davor schon ausgeführt wurden.
+    - ./jf mvn $MAVEN_CLI_OPTS install -DskipTests $MAVEN_CLI_PRJ_OPTS
+    # Lädt den Build hoch und löscht dann den ältesten Build und seine Artifacts, falls MAX_BUILDS_TO_KEEP definiert wurde und mehr als MAX_BUILDS_TO_KEEP Builds im Artifactory vorhanden sind.
+    - ./jf rt build-publish
+    # Deaktiviert, um ältere Versionen zu erhalten!
+    # - ./jf rt build-discard --max-builds=$MAX_BUILDS_TO_KEEP --delete-artifacts=true
+
+pages:
+  image: $MAVEN_IMAGE
+  stage: deploy-pages
+  cache:
+    key: mvn
+    paths:
+      - .m2/repository
+  rules:
+    - if: $DO_RELEASE == "true"
+      when: never
+    - if: $CI_DEFAULT_BRANCH == $CI_COMMIT_BRANCH
+  script:
+    - mvn $MAVEN_CLI_OPTS install -DskipTests javadoc:aggregate $MAVEN_CLI_PRJ_OPTS
+    - mkdir -p public
+    - cp -r target/reports/apidocs/* public/
+  artifacts:
+    paths:
+      - public
