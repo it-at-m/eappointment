@@ -1,0 +1,65 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
+stages:
+  - test
+
+# sast:
+#   stage: test
+# include:
+# - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  CREATE_TEST_EXECUTION:
+    value: "true"
+    options:
+      - "true"
+      - "false"
+    description: "Select true if pipeline should create a new test execution. Warning Jira keys most contain valid issue keys!"
+  JIRA_KEYS:
+    value: "MZM-2289,MZM-2315,MZM-2316"
+    description: "The jira issue key(s) of either test, test set, test plan or test execution issues. Use comma , as a separator for multiple keys."
+  JIRA_FILTER_ID:
+    value: "37600"
+    description: "The ID of the Jira filter to be used to search for test execution issues."
+  TEST_PLAN_KEY:
+    value: "MZM-2290"
+    description: "The issue key of the test plan which will be associated to the generated test execution."
+
+Test:
+  timeout: 3h
+  stage: test
+  tags:
+    - openshift
+  image: "dockerhub.muenchen.de/library/maven:3.9-eclipse-temurin-17"
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN"
+    MAVEN_CLI_OPTS: >
+      -s $MAVEN_SETTINGS
+      --batch-mode
+
+  script:
+    - echo "MAVEN_OPTS is set to $MAVEN_OPTS"
+    - echo "MAVEN_CLI_OPTS is set to $MAVEN_CLI_OPTS"
+    - |
+      mvn $MAVEN_CLI_OPTS clean test \
+        -Dtaf.testDataEncryptionPassword="$DATA_PASSWORD" \
+        -Dauth_token="$JIRA_AUTH_TOKEN" \
+        -Dsso.username="$SSO_USERNAME" \
+        -Dsso.password="$SSO_PASSWORD" \
+        -Djira.boolean.createTestExecution="$CREATE_TEST_EXECUTION" \
+        -Djira.testPlanKey="$TEST_PLAN_KEY" \
+        -Djira.issueKeys="$JIRA_KEYS" \
+        -Djira.filterId="$JIRA_FILTER_ID" \
+        -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts \
+        -Djavax.net.ssl.trustStorePassword=changeit
+
+  cache:
+    key: mvn
+    paths:
+      - .m2/repository
