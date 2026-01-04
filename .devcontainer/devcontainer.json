@@ -4,7 +4,7 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443],
+  "forwardPorts": [8091, 8036, 8084, 8080, 8443],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -16,7 +16,7 @@
       ]
     }
   },
-  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ ! -f zmsadmin/.env ]; then cp zmsadmin/.env.example zmsadmin/.env; fi'",
   // Note: To make keycloak.local work from your browser, add this to your Mac's /etc/hosts:
   // 127.0.0.1 keycloak.local
   "postCreateCommand": "bash -c './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build && cd zmsapi && vendor/bin/migrate --update && cd ../zmscitizenview && npm install'",

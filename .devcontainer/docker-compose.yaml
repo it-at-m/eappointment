@@ -7,8 +7,7 @@ services:
     volumes:
       - ..:/var/www/html:cached
     ports:
-      - "8090:80"
-      - "8091:443"
+      - "8091:80"
     env_file:
       - .env
     depends_on:
