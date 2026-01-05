@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ac0364f9464eb23805fd40c8205a802",
+    "content-hash": "b98b4dd98e81cca71050021676cea1b0",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -56,21 +56,21 @@
         },
         {
             "name": "aura/sql",
-            "version": "5.0.3",
+            "version": "6.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auraphp/Aura.Sql.git",
-                "reference": "fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7"
+                "reference": "0f4ac7a11b435a9854a28d686e7269ebe7582ec8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7",
-                "reference": "fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7",
+                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/0f4ac7a11b435a9854a28d686e7269ebe7582ec8",
+                "reference": "0f4ac7a11b435a9854a28d686e7269ebe7582ec8",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": ">=8.1",
+                "php": "^8.4",
                 "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
@@ -108,9 +108,9 @@
             ],
             "support": {
                 "issues": "https://github.com/auraphp/Aura.Sql/issues",
-                "source": "https://github.com/auraphp/Aura.Sql/tree/5.0.3"
+                "source": "https://github.com/auraphp/Aura.Sql/tree/6.0.1"
             },
-            "time": "2025-01-22T06:39:17+00:00"
+            "time": "2026-01-05T05:21:45+00:00"
         },
         {
             "name": "clue/stream-filter",
