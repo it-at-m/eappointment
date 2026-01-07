@@ -22,11 +22,11 @@ export const countLines = (text) => {
 
 export const updateInputLines = (text, inputLines) => {
   const lineCount = countLines(text);
-  inputLines.value = lineCount; // Aktualisiere die Zeilenanzahl
+  inputLines.value = lineCount;
 };
 
 export const handleInput = (customerData, inputLines, event) => {
-  const fieldName = event.target.name; // Angenommen, das Textfeld hat ein "name"-Attribut
-  customerData.value[fieldName] = event.target.value; // Aktualisiere den entsprechenden Wert
-  updateInputLines(event.target.value, inputLines); // Aktualisiere die Zeilenanzahl
+  const fieldName = event.target.name;
+  customerData.value[fieldName] = event.target.value;
+  updateInputLines(event.target.value, inputLines);
 };
