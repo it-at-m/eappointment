@@ -32,7 +32,7 @@ class LogoutBySuperuserTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/department/74/useraccount/');
+        $this->assertRedirect($response, '/users/department/74/');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

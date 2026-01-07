@@ -303,6 +303,16 @@ abstract class Base
         return $this->query;
     }
 
+    protected function innerJoin($alias, $left = null, $operator = null, $right = null)
+    {
+        $aliasId = $alias->getAliasIdentifier();
+        if (!in_array($aliasId, $this->joinedAliasList)) {
+            $this->joinedAliasList[] = $aliasId;
+            $this->query->join($alias, $left, $operator, $right);
+        }
+        return $this->query;
+    }
+
     /**
      * get SQL-String
      * Implement a simple caching routine to prevent multiple rebuilds

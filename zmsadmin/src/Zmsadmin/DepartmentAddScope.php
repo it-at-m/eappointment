@@ -34,7 +34,7 @@ class DepartmentAddScope extends Scope
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
-            $result = $this->testUpdateEntity($input, $department->id);
+            $result = $this->writeUpdatedEntity($input, $department->id);
             if ($result instanceof Entity) {
                 $this->writeUploadedImage($request, $result->id, $input);
                 return \BO\Slim\Render::redirect('scope', ['id' => $result->id], [

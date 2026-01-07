@@ -18,16 +18,20 @@ const FormContent = (props) => {
         setErrorRef
     } = props;
 
+    const currentAvailabilityId = data.id || data.tempId;
+    const isNewAvailability = !data.id && data.tempId;
     const hasEndTimePastError = Object.values(errorList)
-        .some(error => error.itemList?.some(item => item.type === 'endTimePast')
+        .some(error => 
+            error.id === currentAvailabilityId && 
+            error.itemList?.some(item => item.type === 'endTimePast' || item.type === 'timePastToday')
         );
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true;
-    const inputDisabled = hasEndTimePastError || calenderDisabled;
+    const inputDisabled = (hasEndTimePastError && !isNewAvailability) || calenderDisabled;
 
     const isUnsafedSpontaneous = data.id == 0;
 
     const filteredErrorList = Object.values(errorList)
-        .filter(error => !error.itemList?.some(item => item.type === 'endTimePast'))
+        .filter(error => !error.itemList?.some(item => item.type === 'endTimePast' || item.type === 'timePastToday'))
         .reduce((acc, error) => {
             acc[error.id] = error;
             return acc;
@@ -68,9 +72,9 @@ const FormContent = (props) => {
                         </section> : null
                     }
                     {hasEndTimePastError && Object.values(errorList).map(error => {
-                        const endTimePastError = error.itemList?.find(item => item.type === 'endTimePast');
+                        const pastTimeError = error.itemList?.find(item => item.type === 'endTimePast' || item.type === 'timePastToday');
                         
-                        if (endTimePastError) {
+                        if (pastTimeError && error.id === currentAvailabilityId) {
                             return (
                                 <section
                                     key={error.id}
@@ -97,7 +101,7 @@ const FormContent = (props) => {
                                     </div>
                                     <h2 className="message__heading">Öffnungszeit liegt in der Vergangenheit</h2>
                                     <div className="message__body">
-                                        {endTimePastError.message}
+                                        {pastTimeError.message}
                                     </div>
                                 </section>
                             );
