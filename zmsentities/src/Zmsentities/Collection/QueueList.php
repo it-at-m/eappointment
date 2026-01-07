@@ -13,11 +13,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const FAKE_WAITINGNUMBER = -1;
 
-    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked', 'pickup'];
+    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
 
     public const STATUS_APPEND = ['missed', 'parked'];
 
-    public const STATUS_CALLED = ['called', 'processing', 'pickup'];
+    public const STATUS_CALLED = ['called', 'processing'];
 
     public const STATUS_FAKE = ['fake'];
 
@@ -330,20 +330,6 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         foreach ($queueList as $entity) {
             if ($cluster->shortNameEnabled && $scope->shortName) {
                 $entity->destinationHint = $scope->shortName;
-            }
-            $list->addEntity($entity);
-        }
-        $listWithPickups = $list->withPickupDestination($scope);
-        return $listWithPickups;
-    }
-
-    public function withPickupDestination(\BO\Zmsentities\Scope $scope)
-    {
-        $queueList = $this;
-        $list = new self();
-        foreach ($queueList as $entity) {
-            if (! $entity->toProperty()->destination->get()) {
-                $entity->destination = $scope->toProperty()->preferences->pickup->alternateName->get();
             }
             $list->addEntity($entity);
         }

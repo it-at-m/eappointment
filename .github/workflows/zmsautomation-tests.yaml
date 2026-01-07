@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Set up Node (for Dev Containers CLI)
         uses: actions/setup-node@v6
@@ -38,6 +40,7 @@ jobs:
         run: |
           docker exec zms-web bash -lc '
             set -e
+            git config --global --add safe.directory /var/www/html
             modules=("zmsapi" "zmsdb" "zmscitizenapi")
             for module in "${modules[@]}"; do
               echo "Installing Composer dependencies for $module"
@@ -238,7 +241,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/maven-image.tar
-          key: ${{ runner.os }}-maven-image-3.9-eclipse-temurin-17
+          key: ${{ runner.os }}-maven-image-3.9-eclipse-temurin-21
 
       - name: Load or pull Maven Docker image
         run: |
@@ -247,9 +250,9 @@ jobs:
             docker load -i /tmp/maven-image.tar
           else
             echo "Pulling Maven Docker image..."
-            docker pull maven:3.9-eclipse-temurin-17
+            docker pull maven:3.9-eclipse-temurin-21
             echo "Saving Maven Docker image for future runs..."
-            docker save maven:3.9-eclipse-temurin-17 -o /tmp/maven-image.tar
+            docker save maven:3.9-eclipse-temurin-21 -o /tmp/maven-image.tar
           fi
 
       - name: Cache Maven dependencies
@@ -268,7 +271,7 @@ jobs:
             -v "$PWD:/workspace" \
             -v "$HOME/.m2:/root/.m2" \
             -w /workspace/zmsapiautomation \
-            maven:3.9-eclipse-temurin-17 mvn spotless:check
+            maven:3.9-eclipse-temurin-21 mvn spotless:check
 
       - name: Run REST-assured tests
         run: |
@@ -280,7 +283,7 @@ jobs:
             -v "$PWD:/workspace" \
             -v "$HOME/.m2:/root/.m2" \
             -w /workspace/zmsapiautomation \
-            maven:3.9-eclipse-temurin-17 mvn -B -DtrimStackTrace=false test
+            maven:3.9-eclipse-temurin-21 mvn -B -DtrimStackTrace=false test
 
       - name: Upload surefire reports
         if: always()

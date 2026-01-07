@@ -1,32 +1,55 @@
-export const countLines = (text) => {
-  const tempDiv = document.createElement("div");
+import type { Ref } from "vue";
 
-  const viewportWidth = window.innerWidth * 0.8;
-  const width = Math.min(558, viewportWidth);
+const MIN_ROWS = 2;
+const WIDTH_FACTOR = 0.8;
+const MAX_WIDTH = 558;
+const FALLBACK_LINE_HEIGHT = 16;
 
-  tempDiv.style.width = `${width}px`;
-  tempDiv.style.visibility = "hidden";
-  tempDiv.style.position = "absolute";
-  tempDiv.style.whiteSpace = "pre-wrap";
-  tempDiv.style.font = "inherit";
-  document.body.appendChild(tempDiv);
+let measurer: HTMLDivElement | null = null;
 
-  tempDiv.innerText = text;
+// Returns the shared hidden element we use to measure rendered text height
+const getMeasurer = (): HTMLDivElement | null => {
+  if (measurer) return measurer;
+  if (typeof document === "undefined") return null;
 
-  const lineHeight = parseInt(getComputedStyle(tempDiv).lineHeight);
-  const lines = Math.ceil(tempDiv.scrollHeight / lineHeight);
+  const el = document.createElement("div");
+  el.style.visibility = "hidden";
+  el.style.position = "absolute";
+  el.style.whiteSpace = "pre-wrap";
+  el.style.font = "inherit";
+  el.setAttribute("aria-hidden", "true");
+  document.body.appendChild(el);
 
-  document.body.removeChild(tempDiv);
-  return lines + 2 || 2;
+  measurer = el;
+  return measurer;
 };
 
-export const updateInputLines = (text, inputLines) => {
-  const lineCount = countLines(text);
-  inputLines.value = lineCount;
+export const countLines = (text: string): number => {
+  if (typeof window === "undefined") return MIN_ROWS;
+
+  const el = getMeasurer();
+  if (!el) return MIN_ROWS;
+
+  el.style.width = `${Math.min(MAX_WIDTH, window.innerWidth * WIDTH_FACTOR)}px`;
+  el.textContent = text ?? "";
+
+  const lineHeight =
+    parseFloat(getComputedStyle(el).lineHeight) || FALLBACK_LINE_HEIGHT;
+  const lines =
+    lineHeight > 0 ? Math.ceil(el.scrollHeight / lineHeight) : MIN_ROWS;
+
+  return Math.max(MIN_ROWS, lines + 2);
 };
 
-export const handleInput = (customerData, inputLines, event) => {
-  const fieldName = event.target.name;
-  customerData.value[fieldName] = event.target.value;
-  updateInputLines(event.target.value, inputLines);
+export const updateInputLines = (
+  text: string,
+  inputLines: Ref<number>
+): void => {
+  inputLines.value = countLines(text);
+};
+
+export const handleInput = (inputLines: Ref<number>, event: Event): void => {
+  const target = event.target as HTMLTextAreaElement | null;
+  if (!target) return;
+  updateInputLines(target.value ?? "", inputLines);
 };

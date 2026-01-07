@@ -83,11 +83,12 @@
 	</div>
 {% endblock %}
 
+{# TODO: Remove SMS notification block - https://github.com/it-at-m/eappointment/issues/1807 #}
 {# 2 append notification to process #}
 {% block button_append_notification %}
 	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	{% set label = "Handynummer nachträglich eintragen" %}
-	{% set notificationsDelay = config.notifications.benachrichtigungsfrist|round() %}
+	{% set notificationsDelay = config.notifications.benachrichtigungsfrist|default(0)|round() %}
 	{% if scope.preferences.ticketprinter.notificationsDelay %}
 		{% set notificationsDelay = scope.preferences.ticketprinter.notificationsDelay|round() %}
 	{% endif %}

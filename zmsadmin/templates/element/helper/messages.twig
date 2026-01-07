@@ -50,17 +50,6 @@
 				Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
 			{{ block('error_end') }}
 		{% endblock %}
-		{% block has_called_pickup %}
-			{% set errorTitle = "Es ist schon ein Abholer in Bearbeitung" %}
-			{{ block('error_start') }}
-				Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.
-				<div class="form-actions">
-					<div class="right">
-						<a class="button" href="{{ urlGet('pickup', {}, {'selectedprocess':workstation.process.id}) }}">Zur Abholerverwaltung</a>
-					</div>
-				</div>
-			{{ block('error_end') }}
-		{% endblock %}
     {% endif %}
 {% endblock %}
 

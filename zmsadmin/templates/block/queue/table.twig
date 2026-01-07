@@ -85,6 +85,7 @@
 								{% endif %}
 								<th>Uhrzeit</th>
 								<th>Nr.</th>
+								<th>Zimmernummer</th>
 								<th>Name
 									<small>(Aufrufe)</small>
 								</th>
@@ -127,6 +128,9 @@
 									{% else %}
 										{{ item.displayNumber }}
 									{% endif %}
+								</td>
+								<td>
+								{{ item.parkedBy }}
 								</td>
 								<td>
 									{% if item.clients|first.familyName %}
