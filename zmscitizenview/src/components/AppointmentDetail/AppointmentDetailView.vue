@@ -374,8 +374,8 @@ const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
-const appointmentId = ref<string | undefined>();
-const appointmentDisplayNumber = ref<string | undefined>();
+const appointmentId = ref<string | null>();
+const appointmentDisplayNumber = ref<string | null>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);

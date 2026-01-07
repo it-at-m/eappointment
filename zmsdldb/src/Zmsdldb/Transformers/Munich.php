@@ -43,6 +43,10 @@ class Munich
         [
             "locations" => [10489], // Bürgerbüro Ruppertstraße
             "services" => [1063453, 1063441, 1080582] // Reisepass, Personalausweis, Vorläufiger Reisepass
+        ],
+        [
+            "locations" => [10286848, 10286849, 10181770, 10204387, 10204388, 10227989, 1060068], // Bürgerbüros ohne Abholung Personalausweis, Reisepass oder eID-Karte
+            "services" => [10295182] // Abholung Personalausweis, Reisepass oder eID-Karte - only available at Ruppertstraße (10489)
         ]
     ];
 

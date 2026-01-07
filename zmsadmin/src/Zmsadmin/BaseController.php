@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsadmin\Helper\TwigExceptionHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -45,5 +46,77 @@ abstract class BaseController extends \BO\Slim\Controller
             }
         }
         return $list;
+    }
+
+    /**
+     * Transform validation error data from JSON pointer format to field names
+     * Maps pointers like "/id" to "id", "/changePassword" to "changePassword", etc.
+     * Handles nested paths like "/contact/email" by flattening them.
+     * Also handles data that's already in field name format (for test compatibility).
+     *
+     * @param array|null $errorData The exception data with JSON pointers as keys, or field names
+     * @return array Transformed data with field names as keys
+     */
+    protected function transformValidationErrors($errorData)
+    {
+        if (!is_array($errorData) && !($errorData instanceof \Traversable)) {
+            return [];
+        }
+        $transformed = [];
+        foreach ($errorData as $pointer => $item) {
+            // Extract field name from JSON pointer (e.g., "/id" -> "id", "/contact/email" -> "contact/email")
+            // If the key doesn't start with "/", it's already a field name, so use it as-is
+            $fieldName = (strpos($pointer, '/') === 0) ? ltrim($pointer, '/') : $pointer;
+            // Handle root level errors
+            if ($fieldName === '' || $fieldName === null) {
+                $fieldName = '_root';
+            }
+            // Ensure the item structure is correct (has 'messages' array)
+            if (is_array($item) && isset($item['messages'])) {
+                $transformed[$fieldName] = $item;
+            } elseif (is_array($item)) {
+                // If item is an array but doesn't have 'messages', wrap it
+                $transformed[$fieldName] = $item;
+            } else {
+                $transformed[$fieldName] = $item;
+            }
+        }
+        return $transformed;
+    }
+
+    /**
+     * Wraps an HTTP write operation with standardized exception handling.
+     *
+     * @param callable $httpCall
+     * @return mixed
+     * @throws \BO\Zmsclient\Exception
+     */
+    protected function handleEntityWrite(callable $httpCall)
+    {
+        try {
+            return $httpCall();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+
+            $template = TwigExceptionHandler::getExceptionTemplate($exception);
+            if (
+                '' != $exception->template
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
+            ) {
+                return [
+                    'template' => $template,
+                    'include' => true,
+                    'data' => $this->transformValidationErrors($exception->data)
+                ];
+            }
+
+            throw $exception;
+        }
     }
 }

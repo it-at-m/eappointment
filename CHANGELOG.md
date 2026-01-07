@@ -1,3 +1,59 @@
+## Release Muc-35 (12.12.2025)
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-719'>ZMSKVR-719</a>] -         Schritt 3: Kontakt – Überlappung Input mit Counter auf Mobile
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-919'>ZMSKVR-919</a>] -         Terminverschiebung soll nur bis zum Terminzeitpunkt möglich sein
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1012'>ZMSKVR-1012</a>] -         Screenreader: &quot;Kombinierbare Leistungen überspringen&quot; nicht mehr möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1066'>ZMSKVR-1066</a>] -         Hotfix Übersichtsseite - keine Reservierung möglich Typing int/string
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1085'>ZMSKVR-1085</a>] -         Fehlerhafte Anzeige Umlaute bei Anmeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1090'>ZMSKVR-1090</a>] -         BayernID Login ohne Vornamen ermöglichen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1116'>ZMSKVR-1116</a>] -         Hotfix: Clusteransicht Sortierung nach Uhrzeit 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1117'>ZMSKVR-1117</a>] -         Hotfix: Kundensuche als Sachbearbeiter ohne Ergebnis kommt zur Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1119'>ZMSKVR-1119</a>] -         Hotfix: ZMS-Admin-Warteschlange: Platz der abgesagten Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1134'>ZMSKVR-1134</a>] -         Hotfix: Fehlende Buchstaben in display_number bei Terminen, die über Bund-ID/Bayern-ID gebucht werden
+</li>
+</ul>
+                                                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-238'>ZMSKVR-238</a>] -         E-mail mit + nicht erlauben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-604'>ZMSKVR-604</a>] -         Schritt 2: Termin – Anzeige während Ladezeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-686'>ZMSKVR-686</a>] -         Setup REST-assured Test-Infrastruktur mit /status Endpunkt-Test
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-752'>ZMSKVR-752</a>] -         Link zu den Öffnungszeiten aus Tresen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-781'>ZMSKVR-781</a>] -         Nutzungszahlen E-Kiosk Backend in der DB Sammeln
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-874'>ZMSKVR-874</a>] -         DL &quot;Meldebescheinigung&quot;: Standort im Bürgerfrontend richtig anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-890'>ZMSKVR-890</a>] -         Datenbankindizes für wartenrstatistik Tabelle hinzufügen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-901'>ZMSKVR-901</a>] -         Pfennigparade #19: Fehlerhafte Kennzeichnung des Zwecks für Eingabefelder zu Nutzerdaten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-902'>ZMSKVR-902</a>] -         Pfennigparade #5: Nur durch Farbe unterscheidbare Inhalte (patternlab einbauen)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1001'>ZMSKVR-1001</a>] -         Barrierefreiheit: Bei Auswahl Uhrzeit Fokus auf Callout setzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1074'>ZMSKVR-1074</a>] -         Konfigurierbare Sichtbarkeit von Dienstleistungen auf der Einstiegsseite (Schritt 0)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1129'>ZMSKVR-1129</a>] -         Prozess-ID im Request-Logging der zmscitizenapi-Terminendpoints
+</li>
+</ul>
+
 ## Release Muc-34 (21.11.2025)
 <h2>        Bug
 </h2>

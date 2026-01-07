@@ -22,12 +22,6 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ]
@@ -50,12 +44,6 @@ class WorkstationProcessFinishedTest extends Base
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_without_process.json")
                 ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ]
             ]
         );
         $this->render($this->arguments, $this->parameters, []);
@@ -77,12 +65,6 @@ class WorkstationProcessFinishedTest extends Base
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -99,7 +81,6 @@ class WorkstationProcessFinishedTest extends Base
                     ]
                 ]
             ],
-            'pickupScope' => 141,
             'statistic' => [
                 'clientsCount' => 1
             ],
@@ -125,12 +106,6 @@ class WorkstationProcessFinishedTest extends Base
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -147,7 +122,6 @@ class WorkstationProcessFinishedTest extends Base
                     ]
                 ]
             ],
-            'pickupScope' => 141,
             'statistic' => [
                 'clientsCount' => 1
             ],
@@ -173,12 +147,6 @@ class WorkstationProcessFinishedTest extends Base
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -195,7 +163,6 @@ class WorkstationProcessFinishedTest extends Base
                     ]
                 ]
             ],
-            'pickupScope' => 141,
             'statistic' => [
                 'clientsCount' => 1
             ],
@@ -203,37 +170,6 @@ class WorkstationProcessFinishedTest extends Base
         ], [], 'POST');
         $this->assertRedirect($response, '/workstation/');
         $this->assertEquals(302, $response->getStatusCode());
-    }
-
-    public function testRenderingStatisticDisabledWithPickup()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_statistic_disabled_default_pickup.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [], []);
-        $this->assertStringContainsString('Kundendaten für Statistik', (string)$response->getBody());
-        $this->assertStringNotContainsString('Bearbeitete Dienstleistungen des Kunden', (string)$response->getBody());
-        $this->assertStringContainsString('ignoreRequests', (string)$response->getBody());
-        $this->assertStringContainsString('selected="selected"', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testRenderingStatisticDisabledWithoutPickup()
@@ -251,12 +187,6 @@ class WorkstationProcessFinishedTest extends Base
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ]
             ]
         );
         $response = $this->render($this->arguments, [], []);
@@ -279,12 +209,6 @@ class WorkstationProcessFinishedTest extends Base
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ]
             ]
         );
         $response = $this->render($this->arguments, [], []);

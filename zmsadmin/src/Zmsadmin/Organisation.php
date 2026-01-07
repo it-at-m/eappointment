@@ -34,20 +34,26 @@ class Organisation extends BaseController
         )->getEntity();
 
         $input = $request->getParsedBody();
+        $result = null;
         if (array_key_exists('save', (array) $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->id = $entityId;
-            $entity = \App::$http->readPostResult('/organisation/' . $entity->id . '/', $entity)->getEntity();
-            return \BO\Slim\Render::redirect(
-                'organisation',
-                [
-                    'id' => $entityId
-                ],
-                [
-                    'success' => 'organisation_saved'
-                ]
-            );
+            $result = $this->writeUpdatedEntity($input, $entityId);
+            if ($result instanceof Entity) {
+                return \BO\Slim\Render::redirect(
+                    'organisation',
+                    [
+                        'id' => $entityId
+                    ],
+                    [
+                        'success' => 'organisation_saved'
+                    ]
+                );
+            }
         }
+
+        // If there was an error, use the submitted input data for form re-population
+        $organisationData = (isset($result) && is_array($result) && isset($result['data']))
+            ? new Entity(array_merge($entity->getArrayCopy(), $input ?? []))
+            : $entity;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -55,10 +61,20 @@ class Organisation extends BaseController
             array(
                 'title' => 'Bezirk - Einrichtung und Administration',
                 'workstation' => $workstation,
-                'organisation' => $entity,
+                'organisation' => $organisationData,
                 'menuActive' => 'owner',
-                'success' => $success
+                'success' => $success,
+                'exception' => (isset($result) && !($result instanceof Entity)) ? $result : null,
             )
         );
+    }
+
+    protected function writeUpdatedEntity($input, $entityId)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity->id = $entityId;
+        return $this->handleEntityWrite(function () use ($entity) {
+            return \App::$http->readPostResult('/organisation/' . $entity->id . '/', $entity)->getEntity();
+        });
     }
 }

@@ -21,6 +21,8 @@ class ReportClientService
         'missedwithappointment',
         'noappointment',
         'missednoappointment',
+        'ticketprinter',
+        'ticketprintermissed',
         'requestscount'
     ];
 

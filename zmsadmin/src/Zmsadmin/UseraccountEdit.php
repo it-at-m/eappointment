@@ -67,23 +67,12 @@ class UseraccountEdit extends BaseController
     protected function writeUpdatedEntity($input, $userAccountName)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
+        // TODO: Remove the password fields when password authentication is removed in the future
         $entity->setPassword($input);
-        try {
-            $entity = \App::$http->readPostResult('/useraccount/' . $userAccountName . '/', $entity)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if (
-                '' != $exception->template
-                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
-            ) {
-                return [
-                    'template' => $template,
-                    'include' => true,
-                    'data' => $exception->data
-                ];
-            }
-            throw $exception;
-        }
-        return $entity;
+        return $this->handleEntityWrite(function () use ($entity, $userAccountName) {
+            return \App::$http
+                ->readPostResult('/useraccount/' . $userAccountName . '/', $entity)
+                ->getEntity();
+        });
     }
 }

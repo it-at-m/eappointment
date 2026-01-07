@@ -32,6 +32,8 @@ jobs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Configure PHP
         run: |
           mkdir -p /tmp/php/conf.d
@@ -133,6 +135,8 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -201,6 +205,8 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Install Composer Dependencies
         run: |
           echo "Installing Composer dependencies for zmsdb"

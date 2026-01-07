@@ -12,6 +12,16 @@
     <title>{{ title }} - ZMS Statistik</title>
     <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl() }}/_css/statistic.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
     {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css">#}
+    <link rel="icon" type="image/png" href="{{ includeUrl() }}/_css/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/favicon.svg" />
+    <link rel="shortcut-icon" href="{{ includeUrl() }}/_css/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ includeUrl() }}/_css/images/apple-touch-icon.png" />
+    <link rel="manifest" href="{{ includeUrl() }}/_css/images/site.webmanifest" />
+    {% if getSystemStatus('ZMS_ENV') == 'dev' %}
+    <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Dev.svg" />
+    {% elseif getSystemStatus('ZMS_ENV') == 'stage'%}
+     <link rel="icon" type="image/svg+xml" href="{{ includeUrl() }}/_css/images/ZMS-Favicon-Stage.svg" />
+     {% endif %}
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
 <body>

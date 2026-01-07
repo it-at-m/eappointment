@@ -77,8 +77,7 @@ class CalldisplayQueue extends BaseController
             $query->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
 
         return $query
-            ->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences)
-            ->withPickupDestination($scope);
+            ->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences);
     }
 
     // full queueList for calculation optimistic and estimated waiting Time and number of waiting clients
@@ -97,11 +96,10 @@ class CalldisplayQueue extends BaseController
         return $query
             ->readProcessListByScopeAndStatus($scope->getId(), $status, $resolveReferences)
             ->withinExactDate(\App::$now)
-            ->toQueueList(\App::$now)
-            ->withPickupDestination($scope);
+            ->toQueueList(\App::$now);
     }
 
-    // short queueList only with status called, pickup and processing
+    // short queueList only with status called and processing
     protected function readQueueListByStatus($calldisplay, $statusList, $resolveReferences)
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
