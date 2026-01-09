@@ -4,15 +4,15 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443],
-  // "customizations": {
-  //   "vscode": {
-  //     "extensions": [
-  //       "felixfbecker.php-debug",
-  //       "bmewburn.vscode-intelephense-client"
-  //     ]
-  //   }
-  // },
+  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443, 9003],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "xdebug.php-debug",
+        "bmewburn.vscode-intelephense-client"
+      ]
+    }
+  },
   "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
   // Note: To make keycloak.local work from your browser, add this to your Mac's /etc/hosts:
   // 127.0.0.1 keycloak.local
