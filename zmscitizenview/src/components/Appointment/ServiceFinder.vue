@@ -527,9 +527,11 @@ const showCaptcha = computed(() => {
 
 const scrollToTop = () => {
   setTimeout(() => {
-    servicesRef.value.scrollIntoView({
-      behavior: "smooth",
-    });
+    if(servicesRef.value){
+      servicesRef.value.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
   }, 1);
 };
 
