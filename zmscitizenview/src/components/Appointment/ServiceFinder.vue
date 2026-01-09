@@ -527,13 +527,13 @@ const showCaptcha = computed(() => {
 
 const scrollToTop = () => {
   setTimeout(() => {
-    if (servicesRef.value) {
-      servicesRef.value.scrollIntoView({
-        behavior: "smooth",
-      });
-    } else {
-      console.error("servicesRef is undefined or not a valid element");
-    }
+    if (typeof servicesRef.value.scrollIntoView === 'function') {
+        servicesRef.value.scrollIntoView({
+          behavior: 'smooth',
+        });
+      } else {
+        console.error('scrollIntoView is not a function on the referenced element');
+      }
   }, 1);
 };
 
