@@ -1,5 +1,5 @@
 <template>
-  <div class="m-content">
+  <div class="m-content" ref="servicesRef">
     <h2>{{ t("service") }}</h2>
   </div>
 
@@ -114,7 +114,7 @@
           <muc-button
             icon="chevron-up"
             variant="secondary"
-            @click="showAllServices = false"
+            @click="showAllServices = false; scrollToTop()"
           >
             <template #default>{{ t("showLessServices") }}</template>
           </muc-button>
@@ -202,6 +202,7 @@ import {
 } from "@/utils/errorHandler";
 
 const isCaptchaValid = ref<boolean>(false);
+const servicesRef = ref(null);
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -517,6 +518,14 @@ const showCaptcha = computed(() => {
       office.scope?.captchaActivatedRequired === true
   );
 });
+
+const scrollToTop = () => {
+  setTimeout(() => {
+    servicesRef.value.scrollIntoView({
+       behavior: 'smooth'
+    });
+  }, 1);
+};
 
 onMounted(() => {
   if (service.value) {
