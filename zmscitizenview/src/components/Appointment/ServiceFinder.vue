@@ -531,6 +531,8 @@ const scrollToTop = () => {
       servicesRef.value.scrollIntoView({
         behavior: "smooth",
       });
+    } else {
+      console.error("servicesRef is undefined or not a valid element");
     }
   }, 1);
 };
