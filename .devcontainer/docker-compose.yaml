@@ -6,6 +6,7 @@ services:
       dockerfile: Containerfile
     volumes:
       - ..:/var/www/html:cached
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro
     ports:
       - "8090:80"
       - "8091:443"
