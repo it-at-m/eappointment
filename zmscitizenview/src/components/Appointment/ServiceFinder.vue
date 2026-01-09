@@ -1,5 +1,8 @@
 <template>
-  <div class="m-content" ref="servicesRef">
+  <div
+    class="m-content"
+    ref="servicesRef"
+  >
     <h2>{{ t("service") }}</h2>
   </div>
 
@@ -114,7 +117,10 @@
           <muc-button
             icon="chevron-up"
             variant="secondary"
-            @click="showAllServices = false; scrollToTop()"
+            @click="
+              showAllServices = false;
+              scrollToTop();
+            "
           >
             <template #default>{{ t("showLessServices") }}</template>
           </muc-button>
@@ -522,7 +528,7 @@ const showCaptcha = computed(() => {
 const scrollToTop = () => {
   setTimeout(() => {
     servicesRef.value.scrollIntoView({
-       behavior: 'smooth'
+      behavior: "smooth",
     });
   }, 1);
 };
