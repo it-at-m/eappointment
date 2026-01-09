@@ -167,29 +167,22 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
-import {
-  countLines,
-  handleInput,
-  updateInputLines,
-} from "@/utils/textfieldRows";
+import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
-const inputLines1 = ref(3);
-const inputLines2 = ref(3);
-
+const inputLines1 = ref<number>(3);
+const inputLines2 = ref<number>(3);
 const textfieldRows1 = computed(() => inputLines1.value);
 const textfieldRows2 = computed(() => inputLines2.value);
-
-const handleInput1 = (event) => {
-  handleInput(customerData, inputLines1, event);
+const handleInput1 = (event: Event) => {
+  handleInput(inputLines1, event);
 };
-
-const handleInput2 = (event) => {
-  handleInput(customerData, inputLines2, event);
+const handleInput2 = (event: Event) => {
+  handleInput(inputLines2, event);
 };
 
 const props = defineProps<{
@@ -220,7 +213,7 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired, timeLeftString } = useReservationTimer();
+const { isExpired } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 
@@ -358,6 +351,11 @@ const errorDisplayCustomTextfield2 = computed(
   () =>
     errorMessageCustomTextfield2.value ?? maxLengthMessageCustomTextfield2.value
 );
+
+onMounted(() => {
+  inputLines1.value = countLines(customerData.value.customTextfield ?? "");
+  inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
+});
 
 const validForm = computed(
   () =>
