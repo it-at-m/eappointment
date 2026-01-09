@@ -104,5 +104,11 @@ RUN chown -R www-data:www-data /var/www/html \
 # —————————————————————————————————————————
 EXPOSE 80
 
+# —————————————————————————————————————————
+# 12. xdebug
+# —————————————————————————————————————————
+RUN pecl install xdebug \
+  && docker-php-ext-enable xdebug
+
 # Copy PHP overrides (upload limits etc.)
 COPY php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
