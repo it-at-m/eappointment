@@ -531,10 +531,6 @@ const scrollToTop = () => {
       servicesRef.value.scrollIntoView({
         behavior: "smooth",
       });
-    } else {
-      console.error(
-        "scrollIntoView is not a function on the referenced element"
-      );
     }
   }, 1);
 };
