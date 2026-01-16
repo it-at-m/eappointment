@@ -527,11 +527,9 @@ const showCaptcha = computed(() => {
 
 const scrollToTop = () => {
   setTimeout(() => {
-    if (typeof servicesRef.value.scrollIntoView === "function") {
-      servicesRef.value.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
+    servicesRef.value?.scrollIntoView?.({
+      behavior: "smooth",
+    });
   }, 1);
 };
 
