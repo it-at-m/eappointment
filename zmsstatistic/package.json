@@ -41,6 +41,7 @@
   "dependencies": {
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
     "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#2.24.14",
-    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14"
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14",
+    "moment": "^2.30.1"
   }
 }
