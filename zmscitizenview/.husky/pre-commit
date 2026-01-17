@@ -1,8 +1,9 @@
 # ---- Vue code style check ----
-cd zmscitizenview
-npm run lint
+if ! (cd zmscitizenview && npm run lint); then
+  echo "❌ Vue lint failed. Please fix the errors before committing."
+  exit 1
+fi
 echo "✅ Vue code style OK (no errors found)."
-cd ..
 
 # ---- PHP code style check ----
 echo "Running PHP CodeSniffer..."
