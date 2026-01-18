@@ -12,7 +12,7 @@
     "format": "prettier --write src/",
     "test": "vitest run",
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\"",
-    "prepare": "cd .. && husky zmscitizenview/.husky"
+    "prepare": "cd .. && husky .husky"
   },
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "6.0.0",
