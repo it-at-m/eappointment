@@ -96,6 +96,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
                     }
 
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
+                    $availability->version = $availability->version + 1;
                     (new \BO\Zmsdb\Availability())
                         ->updateEntity($availability->getId(), $availability, 2);
                 }

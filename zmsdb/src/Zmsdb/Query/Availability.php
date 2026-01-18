@@ -51,6 +51,7 @@ class Availability extends Base implements MappingInterface
                 'IF(`availability`.`Terminanfangszeit`, `availability`.`Terminendzeit`, `availability`.`Endzeit`)'
             ),
             'lastChange' => 'availability.updateTimestamp',
+            'version' => 'availability.version',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
@@ -222,6 +223,7 @@ class Availability extends Base implements MappingInterface
         $data['kommentar'] = $entity->description;
         $data['Startdatum'] = $entity->getStartDateTime()->format('Y-m-d');
         $data['Endedatum'] = $entity->getEndDateTime()->format('Y-m-d');
+        $data['version'] = $entity->version;
         if ('openinghours' == $entity->type) {
             $data['Anfangszeit'] = $entity->startTime;
             $data['Endzeit'] = $entity->endTime;

@@ -99,10 +99,16 @@ class Slot extends Base
     public function isAvailabilityOutdated(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \DateTimeInterface $slotLastChange = null
+        \DateTimeInterface $slotLastChange = null,
+        int $oldestSlotVersion = 1
     ) {
         $proposedChange = new Helper\AvailabilitySnapShot($availability, $now);
         $formerChange = new Helper\AvailabilitySnapShot($availability, $slotLastChange);
+
+        if ($availability->version > $oldestSlotVersion) {
+            $availability['processingNote'][] = 'outdated: availability version change';
+            return true;
+        }
 
         if ($formerChange->hasOutdatedAvailability()) {
             $availability['processingNote'][] = 'outdated: availability change';
@@ -183,21 +189,29 @@ class Slot extends Base
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
         $lastGeneratedSlotDate = $this->getLastGeneratedSlotDate($availability);
-
+        $oldestSlotVersion = $this->getOldestSlotVersionByAvailability($availability);
         $availability['processingNote'][] = 'lastchange=' . $slotLastChange->format('c');
-        if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
+        if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange, $oldestSlotVersion)) {
             return false;
         }
         $startDate = $availability->getBookableStart($now)->modify('00:00:00');
         $stopDate = $availability->getBookableEnd($now);
-        $generateNew = $availability->isNewerThan($slotLastChange);
+        $generateNew = empty($lastGeneratedSlotDate) || $availability->version > $oldestSlotVersion;
         (new Availability())->readLock($availability->id);
-        $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
+        $cancelledSlots = 0;
+        $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
             'availabilityID' => $availability->id,
             'providedDate' => $startDate->format('Y-m-d')
         ]);
+        // Cancel slots only if previously generated beyond new bookable end
+        if ($lastGeneratedSlotDate && $lastGeneratedSlotDate->getTimestamp() > $stopDate->getTimestamp()) {
+            $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE, [
+                'availabilityID' => $availability->id,
+                'providedDate' => $stopDate->format('Y-m-d')
+            ]);
+        }
         if ($generateNew) {
-            $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+            $cancelledSlots += $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
             ]);
 
@@ -205,6 +219,15 @@ class Slot extends Base
                 $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
                 return ($cancelledSlots > 0) ? true : false;
             }
+
+            \App::$log->info('availability: ', [
+                'generate_new' => $generateNew,
+                'availability_id' => $availability->id,
+                'cancelledSlots' => $cancelledSlots
+            ]);
+
+            $availability['processingNote'][] = "cancelled $cancelledSlots slots";
+        } elseif ($cancelledSlots > 0) {
             $availability['processingNote'][] = "cancelled $cancelledSlots slots";
         }
 
@@ -486,7 +509,6 @@ class Slot extends Base
 
     private function getLastGeneratedSlotDate(AvailabilityEntity $availability)
     {
-        $date = '1970-01-01 12:00';
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_IN_AVAILABILITY,
             [
@@ -494,10 +516,22 @@ class Slot extends Base
             ]
         );
 
-        if (isset($last['dateString'])) {
-            $date = $last['dateString'];
+        if (!isset($last['dateString'])) {
+            return null;
         }
 
-        return new \DateTimeImmutable($date . \BO\Zmsdb\Connection\Select::$connectionTimezone);
+        return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
+    }
+
+    private function getOldestSlotVersionByAvailability(AvailabilityEntity $availability)
+    {
+        $last = $this->fetchRow(
+            Query\Slot::QUERY_OLDEST_VERSION_IN_AVAILABILITY,
+            [
+                'availabilityID' => $availability->id,
+            ]
+        );
+
+        return $last['version'] ?? 1;
     }
 }

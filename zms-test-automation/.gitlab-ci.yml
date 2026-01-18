@@ -1,0 +1,37 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
+stages:
+  - test
+
+# sast:
+#   stage: test
+# include:
+# - template: Security/SAST.gitlab-ci.yml
+
+Test:
+  timeout: 3h
+  stage: test
+  tags:
+    - openshift
+  image: "dockerhub.muenchen.de/library/maven:3.9-eclipse-temurin-17"
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN"
+    MAVEN_CLI_OPTS: >
+      -s $MAVEN_SETTINGS
+      --batch-mode
+
+  script:
+    - echo "MAVEN_OPTS is set to $MAVEN_OPTS"
+    - echo "MAVEN_CLI_OPTS is set to $MAVEN_CLI_OPTS"
+    - mvn $MAVEN_CLI_OPTS clean test -Dtaf.logLevel=INFO -Dtaf.testDataEncryptionPassword=$DATA_PASSWORD -Dauth_token=$JIRA_AUTH_TOKEN -Djira.boolean.createTestExecution=$CREATE_TEST_EXECUTION -Djira.testPlanKey=$TEST_PLAN_KEY -Djira.issueKeys=$JIRA_KEYS -Djira.filterId=$JIRA_FILTER_ID -Dsso.username=$SSO_USER -Dsso.password=$SSO_PASSWORD -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit
+
+  cache:
+    key: mvn
+    paths:
+      - .m2/repository

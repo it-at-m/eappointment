@@ -68,6 +68,7 @@ class Availability extends Schema\Entity
             'startTime' => '0:00',
             'endTime' => '23:59',
             'type' => 'appointment',
+            'version' => 1,
             'scope' => [
                 'id' => 123,
                 'provider' => [

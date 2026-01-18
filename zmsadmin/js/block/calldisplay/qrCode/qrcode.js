@@ -7,7 +7,10 @@ const QrCodeComponent = props => {
     const canvasRef = useRef(null)
 
     const drawQrCode = (canvas, options) => {
-        qrGenerator.stringToBytes = qrGenerator.stringToBytesFuncs['UTF-8']
+        // Use UTF-8 encoding if available, otherwise fall back to default
+        if (qrGenerator.stringToBytesFuncs && qrGenerator.stringToBytesFuncs['UTF-8']) {
+            qrGenerator.stringToBytes = qrGenerator.stringToBytesFuncs['UTF-8']
+        }
         const codeObj = qrGenerator(options.version, options.ecLevel)
         codeObj.addData(options.text)
         codeObj.make()

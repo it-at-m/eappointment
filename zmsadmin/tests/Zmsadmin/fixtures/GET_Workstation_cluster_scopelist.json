@@ -1061,7 +1061,6 @@
             "startInDaysDefault": "0"
           },
           "client": {
-            "alternateAppointmentUrl": "",
             "amendmentActivated": "0",
             "amendmentLabel": "Anmerkung",
             "emailFrom": "test@example.com",
@@ -1074,10 +1073,6 @@
             "headsUpContent": "",
             "headsUpTime": "0"
           },
-          "pickup": {
-            "alternateName": "Ausgabe",
-            "isDefault": "0"
-          },
           "queue": {
             "callCountMax": "0",
             "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1085,7 +1080,6 @@
             "lastNumber": "399",
             "maxNumberContingent": "0",
             "processingTimeAverage": "10",
-            "publishWaitingTimeEnabled": "0",
             "statisticsEnabled": "1"
           },
           "survey": {

@@ -1,0 +1,1 @@
+INSERT INTO `config` SET `name` = "cron__deleteArchivedProcessForToday", `value` = "prod,stage,dev";

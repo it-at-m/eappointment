@@ -33,7 +33,7 @@ class ProcessNextByScope extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueList($scope->id, $dateTime, 1);
+        $queueList = $query->readQueueList([$scope->id], $dateTime, 1);
 
         $message = Response\Message::create($request);
         $message->data = static::getProcess($queueList, $dateTime, $exclude);

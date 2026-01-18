@@ -1,5 +1,8 @@
 <template>
-  <div ref="summary">
+  <div
+    aria-live="polite"
+    ref="summary"
+  >
     <muc-callout
       v-if="
         selectedProvider &&
@@ -15,8 +18,20 @@
           <p class="m-teaser-contained-contact__summary">
             {{ selectedProvider.name }}
             <br />
-            {{ selectedProvider.address.street }}
-            {{ selectedProvider.address.house_number }}
+            <span v-if="detailIcon">
+              <br />
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
+                <use :xlink:href="`#${detailIcon}`"></use>
+              </svg>
+              {{ t(`appointmentTypes.${variantId}`) }}
+            </span>
+            <span v-else>
+              {{ selectedProvider.address.street }}
+              {{ selectedProvider.address.house_number }}
+            </span>
           </p>
         </div>
         <div v-if="selectedDay">
@@ -83,4 +98,15 @@ const localEstimatedDuration = computed(() =>
     (props.selectedProvider ?? undefined) as OfficeImpl | undefined
   )
 );
+
+const variantId = computed<number | null>(() => {
+  const id = (props.selectedService as any)?.variantId;
+  return Number.isFinite(id) ? id : null;
+});
+
+const detailIcon = computed<string | null>(() => {
+  if (variantId.value === 2) return "icon-telephone";
+  if (variantId.value === 3) return "icon-video-camera";
+  return null;
+});
 </script>

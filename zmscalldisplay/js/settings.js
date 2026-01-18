@@ -13,7 +13,7 @@ export default {
         'calledIds' : '',
         'timeUntilOld': 60,
         'timeWaitingInfo': 20,
-        'status': 'called,pickup',
+        'status': 'called',
         'showOnlyNumeric':false
     },
     'reloadInterval': 10,

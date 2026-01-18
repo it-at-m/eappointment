@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# zmsclient-test - Run zmsclient unit tests using Docker or Podman
+# Usage: ./zmsclient-test [PHPUnit arguments...]
+# Note: This script restarts the containers to ensure clean state
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || { echo "ERROR: '$1' is required" >&2; exit 1; }
+}
+
+info() { echo "[INFO] $*"; }
+warn() { echo "[WARN] $*"; }
+
+SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+SECTION_COLOR_RESET=$'\033[0m'
+SECTION_COLOR_INDEX=0
+SECTION_COLORS=()
+USE_SECTION_COLORS=false
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  SECTION_COLORS=(
+    $'\033[38;5;196m'
+    $'\033[38;5;208m'
+    $'\033[38;5;226m'
+    $'\033[38;5;46m'
+    $'\033[38;5;51m'
+    $'\033[38;5;21m'
+    $'\033[38;5;201m'
+  )
+  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
+    USE_SECTION_COLORS=true
+  fi
+fi
+
+section() {
+  local title="$*"
+  local prefix="" suffix=""
+  if [[ "$USE_SECTION_COLORS" == true ]]; then
+    prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
+    suffix="$SECTION_COLOR_RESET"
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
+  fi
+  echo ""
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo "${prefix}[SECTION] $title${suffix}"
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo ""
+}
+
+PHPUNIT_ARGS=("$@")
+PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
+COMPOSE_CMD=""
+
+# Performance optimization: disable Xdebug for faster tests (unless explicitly enabled or in CI)
+# In CI environments, enable Xdebug for coverage collection
+if [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]] || [[ -n "${GITLAB_CI:-}" ]]; then
+  export XDEBUG_MODE=coverage
+  info "CI environment detected - enabling Xdebug for coverage"
+elif [[ "${ENABLE_XDEBUG:-false}" == "true" ]]; then
+  export XDEBUG_MODE=coverage
+  info "Xdebug enabled via ENABLE_XDEBUG=true"
+else
+  export XDEBUG_MODE=off
+fi
+
+section "1. Environment Detection"
+# Detect if we're using Podman or Docker
+USE_PODMAN=false
+if command -v podman >/dev/null 2>&1; then
+  # Verify Podman is actually running and can list containers
+  if podman ps >/dev/null 2>&1; then
+    # Check if podman compose is available or if we should use docker compose with podman
+    if command -v podman-compose >/dev/null 2>&1 || docker compose version >/dev/null 2>&1; then
+      USE_PODMAN=true
+      info "Using Podman"
+    fi
+  fi
+fi
+
+if [[ "$USE_PODMAN" == false ]]; then
+  require_cmd docker
+  # Check for docker compose v2 (space) or v1 (hyphen)
+  if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+  elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+  else
+    echo "ERROR: docker compose or docker-compose is required" >&2
+    exit 1
+  fi
+  info "Using Docker ($COMPOSE_CMD)"
+fi
+
+# Function to run compose commands
+compose_cmd() {
+  if [[ "$USE_PODMAN" == true ]]; then
+    # Use podman compose if available, otherwise use docker compose with DOCKER_HOST
+    if command -v podman-compose >/dev/null 2>&1; then
+      podman-compose -f "$COMPOSE_FILE" "$@"
+    else
+      docker compose -f "$COMPOSE_FILE" "$@"
+    fi
+  else
+    $COMPOSE_CMD -f "$COMPOSE_FILE" "$@"
+  fi
+}
+
+# Function to get container name
+get_test_container() {
+  local container_name=""
+  if [[ "$USE_PODMAN" == true ]]; then
+    # Podman compose uses different naming conventions
+    # Try common patterns: zmsclient_test_1, zmsclient-test-1, zmsclient-test, etc.
+    container_name=$(podman ps --format "{{.Names}}" 2>/dev/null | grep -E "(zmsclient.*test|zmsclient-test)" | head -1 || echo "")
+  else
+    # Docker compose default naming: directory_service_index (e.g., zmsclient-test-1)
+    container_name=$(docker ps --format "{{.Names}}" 2>/dev/null | grep -E "(zmsclient.*test|zmsclient-test)" | head -1 || echo "")
+  fi
+  echo "$container_name"
+}
+
+# Function to run exec commands
+exec_cmd() {
+  local container="$1"
+  shift
+  if [[ "$USE_PODMAN" == true ]]; then
+    podman exec "$container" "$@"
+  else
+    docker exec "$container" "$@"
+  fi
+}
+
+section "2. Container Reset"
+info "Stopping and removing existing containers..."
+compose_cmd down
+
+section "3. Container Startup"
+info "Starting containers..."
+if [[ "${XDEBUG_MODE:-off}" == "off" ]]; then
+  info "Xdebug disabled for faster test execution (set ENABLE_XDEBUG=true or run in CI to enable)"
+fi
+compose_cmd up -d
+
+# Wait for containers to be ready
+section "4. Container Readiness"
+info "Waiting for containers to be ready..."
+sleep 2
+
+# Get the test container name
+section "5. Locate Test Container"
+TEST_CONTAINER=$(get_test_container)
+if [[ -z "$TEST_CONTAINER" ]]; then
+  echo "[ERROR] Could not find test container. Available containers:"
+  if [[ "$USE_PODMAN" == true ]]; then
+    podman ps --format "{{.Names}}" 2>/dev/null || docker ps --format "{{.Names}}" 2>/dev/null
+  else
+    docker ps --format "{{.Names}}" 2>/dev/null
+  fi
+  echo ""
+  info "Trying to find container by service name 'test'..."
+  # Try alternative: look for any container with 'test' in the name from this project
+  if [[ "$USE_PODMAN" == true ]]; then
+    TEST_CONTAINER=$(podman ps --format "{{.Names}}" 2>/dev/null | grep -i "test" | head -1 || echo "")
+  else
+    TEST_CONTAINER=$(docker ps --format "{{.Names}}" 2>/dev/null | grep -i "test" | head -1 || echo "")
+  fi
+  if [[ -z "$TEST_CONTAINER" ]]; then
+    echo "[ERROR] Still could not find test container. Please check container status."
+    exit 1
+  fi
+  info "Using container: $TEST_CONTAINER"
+fi
+
+info "Found test container: $TEST_CONTAINER"
+
+# Run PHPUnit tests
+section "6. Running Tests"
+info "Running PHPUnit tests..."
+if [[ ${#PHPUNIT_ARGS[@]} -gt 0 ]]; then
+  if [[ "$USE_PODMAN" == true ]]; then
+    podman exec "$TEST_CONTAINER" php vendor/bin/phpunit "${PHPUNIT_ARGS[@]}"
+  else
+    docker exec "$TEST_CONTAINER" php vendor/bin/phpunit "${PHPUNIT_ARGS[@]}"
+  fi
+else
+  exec_cmd "$TEST_CONTAINER" php vendor/bin/phpunit
+fi
+
+EXIT_CODE=$?
+
+section "7. Summary"
+info "Tests completed with exit code: $EXIT_CODE"
+
+# Cleanup: stop containers (optional, uncomment if you want to stop after tests)
+# echo "[INFO] Stopping containers..."
+# compose_cmd down
+
+exit $EXIT_CODE
+

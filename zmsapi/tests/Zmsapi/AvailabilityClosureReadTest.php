@@ -13,7 +13,7 @@ class AvailabilityClosureReadTest extends Base
     private function auth()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('useraccount');
+        User::$workstation->useraccount->setRights('scope');
     }
 
     /**

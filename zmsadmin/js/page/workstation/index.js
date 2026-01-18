@@ -15,7 +15,7 @@ import ValidationHandler from '../../lib/validationHandler'
 class View extends BaseView {
     constructor(element, options) {
         super(element);
-        this.page = 'workstation';
+        this.page = options.page ?? 'workstation';
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedTime = options['selected-time'];
@@ -109,13 +109,9 @@ class View extends BaseView {
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
-        if (this.selectedProcess) {
-            // Editing an existing appointment -> full reload
-            this.loadAppointmentForm(true, false);
-        } else {
-            // Creating a new appointment -> partial reload
-            this.loadAppointmentForm(true, true);
-        }
+        this.loadAppointmentForm(true, !this.selectedProcess).loadFreeProcessList().loadList().then(() => {
+            this.bindEvents();
+        });
     }
 
     addFocusTrap(elem) {
@@ -273,6 +269,10 @@ class View extends BaseView {
         if ($(event.currentTarget).data('id')) {
             this.selectedProcess = $(event.currentTarget).data('id');
         }
+
+        if ($('select#process_time').val() !== "00-00") {
+            this.$.find('select[name=priority]').val('');
+        }
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadCall(`${this.includeUrl}/process/${this.selectedProcess}/save/`, 'POST', sendData, false, scope.$main).then((response) => {
@@ -385,7 +385,6 @@ class View extends BaseView {
     }
 
     onNextProcess() {
-        //this.calledProcess = null;
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -468,7 +467,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -488,7 +486,6 @@ class View extends BaseView {
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
-                        this.loadQueueTable();
                     }, null, event.currentTarget)
                 );
             }), null, event.currentTarget)
@@ -505,7 +502,6 @@ class View extends BaseView {
         }
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
             (response) => this.loadMessage(response, () => {
-                this.loadQueueTable();
             }, null, event.currentTarget)
         );
     }

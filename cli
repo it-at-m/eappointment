@@ -142,6 +142,7 @@ def cli_modules_loop(commands):
     specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
     
     is_npm_command = commands[0] == "npm"
+    is_composer_install = len(commands) >= 2 and commands[0] == "composer" and commands[1] == "install"
     
     build_commands = {
         "zmsadmin": ["npm run build"],
@@ -166,6 +167,15 @@ def cli_modules_loop(commands):
                 os.system(build_command)
         else:
             os.system(" ".join(commands))
+        
+        # Fix vendor/bin permissions after composer install
+        if is_composer_install:
+            vendor_bin = os.path.join(module_dir, "vendor", "bin")
+            if os.path.isdir(vendor_bin):
+                for script in os.listdir(vendor_bin):
+                    script_path = os.path.join(vendor_bin, script)
+                    if os.path.isfile(script_path):
+                        os.chmod(script_path, 0o755)
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@
         <muc-select
           id="service-search"
           v-model="service"
-          :items="servicesWithoutParent"
+          :items="filteredServices"
           item-title="name"
           :label="t('serviceSearch')"
           :no-item-found-message="t('noServiceFound')"
@@ -49,7 +49,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
-        :link="getServiceBaseURL() + (service?.id || '')"
+        :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
       />
@@ -67,6 +67,7 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId.toString()"
             :label="t(`appointmentTypes.${variant.variantId}`)"
+            :hint="getVariantHint(variant.variantId, t)"
           />
         </muc-radio-button-group>
       </div>
@@ -120,13 +121,16 @@
         </div>
       </div>
     </div>
-    <div class="m-component">
+    <div
+      class="m-component"
+      v-if="showEstimatedDuration"
+    >
       <div class="wrapper">
         <clock-svg
           aria-hidden="true"
           focusable="false"
         />
-        <div ref="durationInfo">
+        <div>
           <strong>{{ t("estimatedDuration") }}</strong>
           <br />
           {{ estimatedDuration }} {{ t("minutes") }}
@@ -147,10 +151,13 @@
       />
     </div>
   </div>
-  <div class="m-button-group">
+  <div
+    ref="nextButton"
+    class="m-button-group"
+  >
     <muc-button
       v-if="service"
-      :disabled="showCaptcha && !isCaptchaValid"
+      :disabled="isNextDisabled"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -185,6 +192,7 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
+  getVariantHint,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
@@ -266,8 +274,8 @@ const shouldShowLessButton = computed(() => {
   );
 });
 
-const durationInfo = ref<HTMLElement | null>(null);
 const baseServiceId = ref<number | string | null>(null);
+const nextButton = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
 watch(service, (newService) => {
@@ -285,6 +293,8 @@ watch(service, (newService) => {
   }
   setServiceData(newService);
   updateSelectedService(newService);
+
+  countOfService.value = newService.count ?? 1;
 });
 
 /**
@@ -302,7 +312,7 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = 1;
+  service.value!.count = Math.max(1, countOfService.value || 1);
   currentSlots.value = getMinSlotOfProvider(service.value!.providers);
 
   if (selectedService.combinable) {
@@ -414,8 +424,19 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 };
 
 const estimatedDuration = computed(() => {
-  const provider = service.value?.providers?.[0];
-  return calculateEstimatedDuration(service.value, provider);
+  const providers = service.value?.providers ?? [];
+
+  const validDurations = providers
+    .map((p) => calculateEstimatedDuration(service.value, p))
+    .filter((d): d is number => typeof d === "number" && d > 0);
+
+  if (validDurations.length === 0) return null;
+
+  return Math.min(...validDurations);
+});
+
+const showEstimatedDuration = computed(() => {
+  return !(variantServices.value.length > 1 && !selectedVariant.value);
 });
 
 /**
@@ -475,7 +496,7 @@ const setOftenSearchedService = (serviceId: string) => {
 const nextStep = () => emit("next");
 
 const skipSubservices = () => {
-  if (durationInfo.value) durationInfo.value.focus();
+  nextButton.value?.firstChild?.focus();
 };
 
 /**
@@ -487,7 +508,7 @@ const showCaptcha = computed(() => {
   if (!service.value || !relations.value || !offices.value) return false;
 
   const relatedOfficeIds = relations.value
-    .filter((relation) => relation.serviceId === service.value?.id)
+    .filter((relation) => relation.serviceId == service.value?.id)
     .map((relation) => relation.officeId);
 
   return offices.value.some(
@@ -594,14 +615,31 @@ onMounted(() => {
         );
         if (!hasValidRelation) {
           emit("invalidJumpinLink");
+          return;
+        }
+
+        // Check if the service is disabled for this office via disabledByServices
+        const foundOffice = offices.value.find(
+          (office) => office.id == props.preselectedOfficeId
+        );
+        if (foundOffice) {
+          const disabledServices = (foundOffice.disabledByServices ?? []).map(
+            Number
+          );
+          if (disabledServices.includes(Number(props.preselectedServiceId))) {
+            emit("invalidJumpinLink");
+          }
         }
       }
     });
   }
 });
 
-const servicesWithoutParent = computed(() => {
-  return services.value.filter((service) => service.parentId === null);
+const hasNoParent = (service: Service) => service.parentId === null;
+const showOnStartPage = (service: Service) => service.showOnStartPage === true;
+
+const filteredServices = computed(() => {
+  return services.value.filter(hasNoParent).filter(showOnStartPage);
 });
 
 const variantServices = computed<Service[]>(() => {
@@ -660,8 +698,18 @@ function normalizeService(raw: any): Service {
     combinable: raw.combinable,
     parentId: raw.parent_id == null ? null : String(raw.parent_id),
     variantId: raw.variant_id == null ? null : Number(raw.variant_id),
+    showOnStartPage: raw.showOnStartPage,
   };
 }
+
+const hasVariants = computed(() => variantServices.value.length > 1);
+const needsVariantSelection = computed(
+  () => hasVariants.value && !selectedVariant.value
+);
+const isNextDisabled = computed(() => {
+  const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
+  return captchaBlocks || needsVariantSelection.value;
+});
 </script>
 
 <style lang="scss" scoped>

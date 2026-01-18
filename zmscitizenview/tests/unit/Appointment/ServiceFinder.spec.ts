@@ -13,6 +13,7 @@ interface ServiceImpl {
   count?: number;
   subServices?: any[];
   combinable?: any;
+  showOnStartPage?: boolean;
 }
 
 describe("ServiceFinder", () => {
@@ -22,24 +23,28 @@ describe("ServiceFinder", () => {
       name: "Gewerbe-Ummeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "2",
       name: "Gewerbe-Anmeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "3",
       name: "Führerschein-Ummeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "4",
       name: "Führerschein-Anmeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: false,
     },
   ];
 
@@ -145,6 +150,7 @@ describe("ServiceFinder", () => {
             template: '<li class="subservice-stub"></li>',
           },
           MucSelect: {
+            name: "MucSelect",
             template: '<div class="muc-select-stub"></div>',
             props: ['id', 'items', 'label', 'hint', 'multiple', 'noItemFoundMessage', 'itemTitle', 'modelValue'],
             emits: ['update:modelValue'],
@@ -189,6 +195,25 @@ describe("ServiceFinder", () => {
 
       expect(wrapper.vm.service).toStrictEqual(gewerbeService);
       expect(wrapper.text()).toContain(gewerbeService.name);
+    });
+
+    it("should only show services with showOnStartPage === true in the selection", async () => {
+      const wrapper = createWrapper(null);
+
+      await new Promise((r) => setTimeout(r, 0));
+      await nextTick();
+
+      const select = wrapper.findComponent({ name: "MucSelect" });
+      expect(select.exists()).toBe(true);
+
+      const items: any[] = select.props("items") as any[] || [];
+
+      const visibleServices = items.filter((s: any) => s.showOnStartPage === true);
+      expect(visibleServices).toHaveLength(3);
+
+      const visibleIds = visibleServices.map((s: any) => s.id);
+      expect(visibleIds).toEqual(expect.arrayContaining(["1", "2", "3"]));
+      expect(visibleIds).not.toContain("4");
     });
 
     it("should show no results message when no matches found", async () => {

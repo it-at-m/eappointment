@@ -136,6 +136,7 @@ class ProcessStatusFree extends Process
 
         return [
             'scopeId' => $scopeId,
+            'source' => $scope->getSource(),
             'providerId' => $providerId,
             'date' => $date
         ];
@@ -152,8 +153,10 @@ class ProcessStatusFree extends Process
             '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
             'scope' => [
                 'id' => $processInfo['scopeId'],
+                'source' => $processInfo['source'],
                 'provider' => [
-                    'id' => $processInfo['providerId']
+                    'id' => $processInfo['providerId'],
+                    'source' => $processInfo['source'],
                 ]
             ],
             'appointments' => [
@@ -161,8 +164,10 @@ class ProcessStatusFree extends Process
                     'date' => (string)$processInfo['date'],
                     'scope' => [
                         'id' => $processInfo['scopeId'],
+                        'source' => $processInfo['source'],
                         'provider' => [
-                            'id' => $processInfo['providerId']
+                            'id' => $processInfo['providerId'],
+                            'source' => $processInfo['source'],
                         ]
                     ]
                 ]

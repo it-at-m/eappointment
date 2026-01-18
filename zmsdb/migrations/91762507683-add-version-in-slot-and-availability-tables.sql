@@ -1,0 +1,5 @@
+ALTER TABLE oeffnungszeit
+    ADD COLUMN `version` INT(5) NOT NULL DEFAULT 1;
+
+ALTER TABLE slot
+    ADD COLUMN `version` INT(5) NOT NULL DEFAULT 1;

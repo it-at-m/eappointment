@@ -161,7 +161,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "maxQuantity" => 1,
                     "combinable" => [],
                     "parent_id" => null,
-                    "variant_id" => null
+                    "variant_id" => null,
+                    "showOnStartPage" => true,
                 ]
             ],
             "relations" => [
@@ -335,7 +336,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "maxQuantity" => 1,
                     "combinable" => [],
                     "parent_id" => null,
-                    "variant_id" => null
+                    "variant_id" => null,
+                    "showOnStartPage" => true
                 ],
                 [
                     "id" => 2,
@@ -346,7 +348,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "2" => ["2" => [9999999]]
                     ],
                     "parent_id" => null,
-                    "variant_id" => null
+                    "variant_id" => null,
+                    "showOnStartPage" => true
                 ]
             ],
             "relations" => [

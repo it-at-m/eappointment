@@ -46,7 +46,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
-        if (1 <= $resolveReferences) {
+        if (0 <= $resolveReferences) {
             if ($process->archiveId) {
                 $process['requests'] = (new Request())
                     ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
@@ -139,23 +139,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ", Log::ACTION_EDITED, $process, $userAccount);
         return $processEntity;
-    }
-
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
-    {
-        $process = Entity::createFromScope($scope, $dateTime);
-        $process->setStatus('pending');
-        if (!$newQueueNumber) {
-            $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
-        }
-        $process->addQueue($newQueueNumber, $dateTime);
-        Log::writeProcessLog(
-            "CREATE (Process::writeNewPickup) $process ",
-            Log::ACTION_NEW_PICKUP,
-            $process,
-            $useraccount
-        );
-        return $this->writeNewProcess($process, $dateTime);
     }
 
     public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
@@ -375,13 +358,17 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
-    {
-        $query = new Query\Process(Query\Base::SELECT);
+    public function readProcessListByScopesAndTime(
+        $scopeIds,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0,
+        $withEntities = []
+    ) {
+        $query = new Query\Process(Query\Base::SELECT, '', false, null, $withEntities);
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionScopeId($scopeId)
+            ->addConditionScopeIds($scopeIds)
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addConditionTime($dateTime)
@@ -509,14 +496,15 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
     {
-        $processList = new Collection();
         $cluster = (new Cluster())->readEntity($clusterId, 1);
+        $scopeIds = [];
         if ($cluster->scopes->count()) {
             foreach ($cluster->scopes as $scope) {
-                $processList->addList($this->readProcessListByScopeAndTime($scope->id, $dateTime));
+                $scopeIds[] = $scope->id;
             }
         }
-        return $processList;
+
+        return $this->readProcessListByScopesAndTime($scopeIds, $dateTime);
     }
 
     /**
@@ -605,10 +593,9 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     public function shouldUpdateDisplayNumber(Entity $process, $status): bool
     {
-        if ($status !== 'preconfirmed') {
+        if ($status !== 'preconfirmed' && $status !== 'confirmed') {
             return false;
         }
-
         $displayNumberPrefix = $process->scope->getPreference('queue', 'displayNumberPrefix');
         if (empty($displayNumberPrefix)) {
             return false;

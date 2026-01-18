@@ -34,7 +34,8 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 
-\BO\Zmsdb\Source\Zmsdldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
+$customImportPath = getenv('ZMS_DLDB_PATH') ?: realpath(dirname(__FILE__) . '/../zmsapi/data/');
+\BO\Zmsdb\Source\Zmsdldb::setImportPath($customImportPath ?: realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/'));
 
 class App extends \BO\Zmsdb\Application {
     /**

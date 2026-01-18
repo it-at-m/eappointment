@@ -29,36 +29,35 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
 
-        foreach ($subjectIdList as $subjectid) {
-            $raw = $this
-                ->getReader()
-                ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . strtoupper($period)),
-                    [
-                        'scopeid' => $subjectid,
-                        'datestart' => $datestart->format('Y-m-d'),
-                        'dateend' => $dateend->format('Y-m-d')
-                    ]
-                );
+        $raw = $this
+            ->getReader()
+            ->fetchAll(
+                constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . strtoupper($period)),
+                [
+                    'scopeid' => $subjectIdList,
+                    'datestart' => $datestart->format('Y-m-d'),
+                    'dateend' => $dateend->format('Y-m-d')
+                ]
+            );
 
-            foreach ($raw as $entry) {
-                foreach (range(0, 23) as $hour) {
-                    $entity->addDataSet([
-                        $subjectid,
-                        $entry['datum'],
-                        $hour,
-                        $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('wegezeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('wartende_ab_%02s_termin', $hour)],
-                        $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
-                        $entry[sprintf('wegezeit_ab_%02s_termin', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
-                    ]);
-                }
+        foreach ($raw as $entry) {
+            foreach (range(7, 19) as $hour) {
+                $entity->addDataSet([
+                    $entry['standortid'],
+                    $entry['datum'],
+                    $hour,
+                    $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
+                    $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
+                    $entry[sprintf('wegezeit_ab_%02s_spontan', $hour)],
+                    $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
+                    $entry[sprintf('wartende_ab_%02s_termin', $hour)],
+                    $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
+                    $entry[sprintf('wegezeit_ab_%02s_termin', $hour)],
+                    $entry[sprintf('zeit_ab_%02s_termin', $hour)],
+                ]);
             }
         }
+
         return $entity;
     }
 

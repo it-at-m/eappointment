@@ -40,6 +40,7 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 ]);
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
+export const QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER = "ap-display";
 
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 
@@ -62,6 +63,16 @@ function getRawApiBaseURL(baseUrl: string | undefined): string {
     return new URL(import.meta.url).origin;
   }
 }
+
+export const VARIANTS_WITH_HINTS = [1, 2, 3] as const;
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string
+) => {
+  return VARIANTS_WITH_HINTS.includes(variantId)
+    ? t(`locationVariantText.${variantId}`)
+    : undefined;
+};
 
 export function getAPIBaseURL(
   baseUrl: string | undefined,
