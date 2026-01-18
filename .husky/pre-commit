@@ -8,10 +8,10 @@ NC='\033[0m' # No Color
 # ---- Vue code style check ----
 echo "Running Vue code style check..."
 if ! (cd zmscitizenview && npm run lint); then
-  echo -e "${RED}✗ Vue lint failed. Please fix the errors before committing.${NC}"
+  printf "${RED}✗ Vue lint failed. Please fix the errors before committing.${NC}\n"
   exit 1
 fi
-echo -e "${GREEN}✓ Vue code style OK.${NC}"
+printf "${GREEN}✓ Vue code style OK.${NC}\n"
 
 # ---- PHP code style check ----
 container_engine=""
@@ -27,13 +27,13 @@ if [ -n "$container_engine" ]; then
   total_error_count=$(echo "$phpcs_output" | grep -Eo "FOUND [0-9]+ ERROR" | awk '{sum+=$2} END {print sum+0}')
 
   if [ "$total_error_count" -gt 0 ]; then
-    echo -e "${RED}✗ PHP CodeSniffer found $total_error_count error(s).${NC}"
+    printf "${RED}✗ PHP CodeSniffer found $total_error_count error(s).${NC}\n"
     echo "You can fix them with:"
     echo "  $container_engine exec -it zms-web bash -lc \"./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'\""
     exit 1
   else
-    echo -e "${GREEN}✓ PHP code style OK.${NC}"
+    printf "${GREEN}✓ PHP code style OK.${NC}\n"
   fi
 else
-  echo -e "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style check.${NC}"
+  printf "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style check.${NC}\n"
 fi
