@@ -41,7 +41,7 @@ The PHP check automatically detects your container environment:
 Validates commit message format to ensure consistency across the repository.
 
 **Format Required:**
-```
+```txt
 type(PROJECT-123): commit message
 type(PROJECT): commit message
 ```
