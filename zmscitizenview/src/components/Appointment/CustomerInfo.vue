@@ -115,7 +115,8 @@
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
       :maxlength="250"
-      :rows="textfieldRows"
+      :rows="textfieldRows1"
+      @input="handleInput1"
     />
     <muc-text-area
       v-if="
@@ -129,7 +130,8 @@
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
       :maxlength="250"
-      :rows="textfieldRows"
+      :rows="textfieldRows2"
+      @input="handleInput2"
     />
   </form>
   <div class="m-button-group">
@@ -165,12 +167,23 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
-import { textfieldRows, updateWindowWidth } from "@/utils/textfieldRows";
+import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+
+const inputLines1 = ref<number>(3);
+const inputLines2 = ref<number>(3);
+const textfieldRows1 = computed(() => inputLines1.value);
+const textfieldRows2 = computed(() => inputLines2.value);
+const handleInput1 = (event: Event) => {
+  handleInput(inputLines1, event);
+};
+const handleInput2 = (event: Event) => {
+  handleInput(inputLines2, event);
+};
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -200,7 +213,7 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired, timeLeftString } = useReservationTimer();
+const { isExpired } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 
@@ -293,18 +306,6 @@ const errorDisplayTelephoneNumber = computed(
     errorMessageTelephoneNumber.value ?? maxLengthMessageTelephoneNumber.value
 );
 
-onMounted(() => {
-  if (typeof window !== "undefined") {
-    window.addEventListener("resize", updateWindowWidth);
-  }
-});
-
-onBeforeUnmount(() => {
-  if (typeof window !== "undefined") {
-    window.removeEventListener("resize", updateWindowWidth);
-  }
-});
-
 const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
@@ -350,6 +351,11 @@ const errorDisplayCustomTextfield2 = computed(
   () =>
     errorMessageCustomTextfield2.value ?? maxLengthMessageCustomTextfield2.value
 );
+
+onMounted(() => {
+  inputLines1.value = countLines(customerData.value.customTextfield ?? "");
+  inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
+});
 
 const validForm = computed(
   () =>
