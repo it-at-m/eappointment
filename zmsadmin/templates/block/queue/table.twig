@@ -159,13 +159,13 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td title="{{ item.customTextfield|decodeEntities }}">
+									<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
 										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td title="{{ item.customTextfield2|decodeEntities }}">
+									<td title="{{ item.customTextfield2|decodeEntities }}" class="limited-width">
 										{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
@@ -422,13 +422,13 @@
 										</p>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td title="{{ item.customTextfield|decodeEntities }}">
+										<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
 											{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 											{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td title="{{ item.customTextfield2|decodeEntities }}">
+										<td title="{{ item.customTextfield2|decodeEntities }}" class ="limited-width">
 											{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
 											{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
@@ -553,13 +553,13 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td title="{{ item.customTextfield|decodeEntities }}">
+									<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
 										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
 										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td title="{{ item.customTextfield2|decodeEntities }}">
+									<td title="{{ item.customTextfield2|decodeEntities }}" class="limited-width">
 									{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
 									{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
 										</td>
@@ -719,4 +719,9 @@ content.addClass('hidden')
         cursor: not-allowed;
         pointer-events: none;
     }
+	.limited-width {
+		overflow-wrap: break-word;
+		hyphens: auto;
+		max-width: 300px;
+	}
 </style>
