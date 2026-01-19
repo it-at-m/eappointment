@@ -69,7 +69,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
             [$hour, $type] = $this->determineHourAndType($br);
 
             $waitMins = $this->timeToMinutes($br['wartezeit']);
-            $wayMins = is_numeric($br['wegezeit']) ? round($br['wegezeit'] / 60, 2) : 0.0;
+            $wayMins = is_numeric($br['wegezeit']) ? $br['wegezeit'] : 0.0;
 
             $dateStr = $br['Datum'];
             $this->initializeStatsIfNeeded($statsByScopeDate, $scopeId, $dateStr);

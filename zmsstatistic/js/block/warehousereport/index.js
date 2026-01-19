@@ -1,5 +1,5 @@
 import BaseView from "../../lib/baseview"
-import Chartjs from "chart.js"
+import Chart from "chart.js/auto"
 
 class View extends BaseView {
 
@@ -75,7 +75,7 @@ class View extends BaseView {
         const $canvas = this.$.find(".chartist canvas");
         const canvascontext = $canvas[0].getContext('2d');
         //console.log(datasets);
-        new Chartjs(canvascontext, {
+        new Chart(canvascontext, {
             type: 'line',
             data: {
                 labels: labels,
