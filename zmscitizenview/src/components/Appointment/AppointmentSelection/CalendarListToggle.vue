@@ -6,6 +6,7 @@
     <button
       class="m-toggle-switch"
       type="button"
+      :aria-checked="localIsListView"
       :aria-label="toggleAriaLabel"
       @click="toggleView"
     >
