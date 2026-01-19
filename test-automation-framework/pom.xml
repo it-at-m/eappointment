@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.muenchen</groupId>
+        <artifactId>muenchen-pom</artifactId>
+        <version>2.2.0</version>
+    </parent>
+
+    <groupId>de.muenchen.ataf.java</groupId>
+    <artifactId>test-automation-framework</artifactId>
+    <version>0.2</version>
+    <name>test-automation-framework</name>
+    <description>
+        Dies ist die generierte Dokumentation zum Agile Test Automation Framework (ATAF)
+    </description>
+    <packaging>pom</packaging>
+
+    <issueManagement>
+        <system>ATAF Jira</system>
+        <url>https://jira.muenchen.de/secure/RapidBoard.jspa?rapidView=3287&amp;projectKey=ATAF&amp;view=planning</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>ex.haas02</id>
+            <name>Ludwig Haas</name>
+            <email>ludwig.haas@digital-at-m.de</email>
+            <organization>digital@M</organization>
+        </developer>
+
+        <developer>
+            <id>daniel.basaran</id>
+            <name>Daniel Basaran</name>
+            <email>daniel.basaran@muenchen.de</email>
+            <organization>it@M</organization>
+        </developer>
+
+        <developer>
+            <id>claudio.grieco</id>
+            <name>Claudio Grieco</name>
+            <email>claudio.grieco@muenchen.de</email>
+            <organization>it@M</organization>
+        </developer>
+
+        <developer>
+            <id>mohamad.daaeboul</id>
+            <name>Mohamad Daaeboul</name>
+            <email>mohamad.daaeboul@muenchen.de</email>
+            <organization>it@M</organization>
+        </developer>
+
+        <developer>
+            <id>ex.lehmann08</id>
+            <name>Philipp Lehmann</name>
+            <email>philipp.lehmann@cgi.com</email>
+            <organization>CGI Deutschland B.V. &amp; Co. KG</organization>
+        </developer>
+
+        <developer>
+            <id>ex.pelzl</id>
+            <name>Titus Pelzl</name>
+            <email>titus.pelzl@cgi.com</email>
+            <organization>CGI Deutschland B.V. &amp; Co. KG</organization>
+        </developer>
+    </developers>
+
+    <properties>
+        <java.version>17</java.version>
+        <cucumber.version>7.33.0</cucumber.version>
+        <junit.version>5.14.1</junit.version>
+        <junit.platform.version>1.14.1</junit.platform.version>
+        <log4j.version>2.25.2</log4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>core</module>
+        <module>rest</module>
+        <module>web</module>
+    </modules>
+
+    <scm>
+        <connection>
+            scm:git:http://git.muenchen.de/test-tool-projects/agile-test-automation-framework/java/test-automation-framework
+        </connection>
+        <developerConnection>
+            scm:git:http://git.muenchen.de/test-tool-projects/agile-test-automation-framework/java/test-automation-framework
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <build>
+        <plugins>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
+                <configuration>
+                    <release>${java.version}</release>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <trimStackTrace>false</trimStackTrace>
+                </configuration>
+                <dependencies>
+                    <!-- https://mvnrepository.com/artifact/org.apache.maven.surefire/surefire-testng -->
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.5.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <doctitle>Agile Test Automation Framework</doctitle>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- https://mvnrepository.com/artifact/com.diffplug.spotless/spotless-maven-plugin -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.46.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.muenchen.oss</groupId>
+                        <artifactId>itm-java-codeformat</artifactId>
+                        <version>1.0.10</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <java>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <eclipse>
+                            <file>itm-java-codeformat/java_codestyle_formatter.xml</file>
+                            <p2Mirrors>
+                                <p2Mirror>
+                                    <prefix>https://download.eclipse.org</prefix>
+                                    <url>https://${p2.username}:${p2.password}@${p2.mirror}</url>
+                                </p2Mirror>
+                            </p2Mirrors>
+                        </eclipse>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

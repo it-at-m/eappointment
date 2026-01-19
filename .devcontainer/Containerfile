@@ -58,7 +58,41 @@ RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer
 
 # —————————————————————————————————————————
-# 8. Set working directory & permissions
+# 8. Install Java 21 (Eclipse Temurin LTS) & Maven
+# —————————————————————————————————————————
+RUN apt-get update && apt-get install -y gnupg \
+ && curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/adoptium.gpg \
+ && echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+    > /etc/apt/sources.list.d/adoptium.list \
+ && apt-get update && apt-get install -y temurin-21-jdk \
+ && apt-get clean \
+ && echo "export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)" >> /etc/profile.d/java.sh \
+ && echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> /etc/profile.d/java.sh \
+ && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/java /usr/local/bin/java \
+ && ln -sf /usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)/bin/javac /usr/local/bin/javac
+
+# Install Maven with checksum verification (downloads .sha512 from Apache)
+ARG MAVEN_VERSION=3.9.12
+RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+ && curl -fsSL -o /tmp/maven.tar.gz.sha512 https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512 \
+ && echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
+ && tar -xzf /tmp/maven.tar.gz -C /opt \
+ && ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn \
+ && rm -f /tmp/maven.tar.gz /tmp/maven.tar.gz.sha512
+
+# —————————————————————————————————————————
+# 9. Install Flyway CLI with checksum verification
+# —————————————————————————————————————————
+ARG FLYWAY_VERSION=11.1.1
+RUN curl -fsSL -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz \
+ && curl -fsSL -o /tmp/flyway.tar.gz.sha1 https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz.sha1 \
+ && echo "$(cat /tmp/flyway.tar.gz.sha1)  /tmp/flyway.tar.gz" | sha1sum -c - \
+ && tar -xzf /tmp/flyway.tar.gz -C /opt \
+ && ln -s /opt/flyway-${FLYWAY_VERSION}/flyway /usr/local/bin/flyway \
+ && rm -f /tmp/flyway.tar.gz /tmp/flyway.tar.gz.sha1
+
+# —————————————————————————————————————————
+# 10. Set working directory & permissions
 # —————————————————————————————————————————
 WORKDIR /var/www/html
 
@@ -66,9 +100,15 @@ RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 755 /var/www/html
 
 # —————————————————————————————————————————
-# 9. Expose
+# 11. Expose
 # —————————————————————————————————————————
 EXPOSE 80
+
+# —————————————————————————————————————————
+# 12. xdebug
+# —————————————————————————————————————————
+RUN pecl install xdebug \
+  && docker-php-ext-enable xdebug
 
 # Copy PHP overrides (upload limits etc.)
 COPY php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
