@@ -9,10 +9,6 @@
             <ul>
                 <li><a href="{{ urlGet('useraccountList', {}, {}) }}">Gesamtnutzerliste</a></li>
             </ul>        
-            <h3>{% if workstation.useraccount.rights.superuser %}Suche{% else %}Suche für Ihren Bereich{% endif %}</h3>
-            <ul>
-                <li><a href="{{ urlGet('useraccountList', {}, {}) }}">Nutzersuche</a></li>
-            </ul>
                 <h3>Nach Nutzerrolle</h3>
                 <ul>
                     {% if workstation.useraccount.rights.superuser %}<li><a href="{{ urlGet('useraccountListByRole', {level: '90'}, {}) }}">Technische Administration Superuser (Rolle: 90)</a></li>{% endif %}
