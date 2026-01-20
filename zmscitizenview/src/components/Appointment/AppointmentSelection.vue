@@ -935,7 +935,27 @@ function getAvailableProviders(
       },
       {}
     )
-  ).map((group) => group[0]);
+  ).map((group) => {
+    if (group.length === 1) return group[0];
+
+    const clean = group.find((p) => (p.disabledByServices ?? []).length === 0);
+    const restricted = group.find(
+      (p) => (p.disabledByServices ?? []).length > 0
+    );
+
+    if (!clean && !restricted) return group[0];
+    if (!restricted) return clean as OfficeImpl;
+    if (!clean) return restricted as OfficeImpl;
+
+    const restrictedDisabled = (restricted.disabledByServices ?? []).map(
+      Number
+    );
+    const allDisabled = selectedServices.every((s) =>
+      restrictedDisabled.includes(Number(s.id))
+    );
+
+    return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
+  });
 }
 
 function updateDateRangeForSelectedProviders() {

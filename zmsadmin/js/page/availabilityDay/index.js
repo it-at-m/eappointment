@@ -61,6 +61,7 @@ class AvailabilityPage extends Component {
         }
 
         window.addEventListener('beforeunload', this.unloadHandler)
+        this.getValidationList()
     }
 
     componentDidUnMount() {
@@ -516,7 +517,7 @@ class AvailabilityPage extends Component {
                     () => {
                         if (list.length > 0) {
                             const nonPastTimeErrors = list.filter(error =>
-                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
+                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast' || item?.type === 'timePastToday')
                             );
 
                             if (nonPastTimeErrors.length > 0) {
