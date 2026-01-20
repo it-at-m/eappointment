@@ -5,8 +5,8 @@
     </h2>
     <button
       class="m-toggle-switch"
+      :class="{ 'm-toggle-switch--pressed': localIsListView }"
       type="button"
-      :aria-checked="localIsListView"
       :aria-label="toggleAriaLabel"
       @click="toggleView"
     >
