@@ -615,6 +615,20 @@ onMounted(() => {
         );
         if (!hasValidRelation) {
           emit("invalidJumpinLink");
+          return;
+        }
+
+        // Check if the service is disabled for this office via disabledByServices
+        const foundOffice = offices.value.find(
+          (office) => office.id == props.preselectedOfficeId
+        );
+        if (foundOffice) {
+          const disabledServices = (foundOffice.disabledByServices ?? []).map(
+            Number
+          );
+          if (disabledServices.includes(Number(props.preselectedServiceId))) {
+            emit("invalidJumpinLink");
+          }
         }
       }
     });

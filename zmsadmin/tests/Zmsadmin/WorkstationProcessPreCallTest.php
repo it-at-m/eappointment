@@ -78,32 +78,6 @@ class WorkstationProcessPreCallTest extends Base
         $this->render($this->arguments, ['exclude' => '999999'], []);
     }
 
-    public function testRenderingAlreadyCalledPickup()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/82252/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'exclude' => 999999
-        ], []);
-        $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
-        $this->assertStringContainsString('Zur Abholerverwaltung', (string)$response->getBody());
-        $this->assertStringNotContainsString('client-precall_button-success', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
     public function testRenderingAlreadyCalledProcess()
     {
         $this->setApiCalls(

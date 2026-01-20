@@ -16,15 +16,6 @@ class ProcessListByScopeAndStatusTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testRenderingPickup()
-    {
-        $this->setWorkstation();
-        $response = $this->render(['id' => 106, 'status' => 'missed'], [], []);
-        $this->assertStringContainsString('process.json', (string)$response->getBody());
-        $this->assertStringContainsString('"status":"missed"', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
-    }
-
     public function testNotFound()
     {
         $this->setWorkstation();

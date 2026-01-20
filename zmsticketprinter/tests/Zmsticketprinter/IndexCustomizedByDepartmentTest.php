@@ -33,14 +33,16 @@ class IndexCustomizedByDepartmentTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/scope/141/department/',
                 'response' => $this->readFixture("GET_department_74.json"),
-            ],
+            ]
+            // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
+            /*,
             [
                 'function' => 'readGetResult',
                 'url' => '/config/',
                 'parameters' => [],
                 'xtoken' => 'secure-token',
                 'response' => $this->readFixture("GET_config.json"),
-            ]
+            ]*/
         ];
     }
 

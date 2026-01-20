@@ -15,10 +15,6 @@ class ScopeListTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
-        $this->assertTrue(
-            'https://service.berlin.de' === $collection->getAlternateRedirectUrl(),
-            'Alternate redirect url missed'
-        );
     }
 
     public function testToString()

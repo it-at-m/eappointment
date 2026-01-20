@@ -4,22 +4,22 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443],
-  // "customizations": {
-  //   "vscode": {
-  //     "extensions": [
-  //       "felixfbecker.php-debug",
-  //       "bmewburn.vscode-intelephense-client"
-  //     ]
-  //   }
-  // },
+  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443, 9003],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "xdebug.php-debug",
+        "bmewburn.vscode-intelephense-client"
+      ]
+    }
+  },
   "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
   // Note: To make keycloak.local work from your browser, add this to your Mac's /etc/hosts:
   // 127.0.0.1 keycloak.local
   "postStartCommand": [
     // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
     // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
-    "bash", "-c", "for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chown -R www-data:www-data /var/www/html/$dir/cache; done"
+    "bash", "-c", "git config --global --add safe.directory '*' && for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chmod 777 /var/www/html/$dir/cache; done"
   ],
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway", "keycloak", "init-keycloak"]
 }
