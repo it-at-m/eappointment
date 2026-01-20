@@ -40,7 +40,6 @@
               "startInDaysDefault": "2"
             },
             "client": {
-              "alternateAppointmentUrl": "",
               "amendmentActivated": "1",
               "amendmentLabel": "1",
               "emailRequired": "1",
@@ -52,17 +51,12 @@
               "headsUpContent": "",
               "headsUpTime": "0"
             },
-            "pickup": {
-              "alternateName": "",
-              "isDefault": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail: ordnungsamt@charlottenburg-wilmersdorf.de",
               "firstNumber": "1",
               "lastNumber": "999",
               "processingTimeAverage": "7",
-              "publishWaitingTimeEnabled": "0",
               "statisticsEnabled": "0"
             },
             "survey": {

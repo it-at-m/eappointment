@@ -77,7 +77,6 @@ class ReservedDataDeleteByCronTest extends Base
                         "startInDaysDefault"=>"0"
                     ],
                     "client"=>[
-                        "alternateAppointmentUrl"=>"",
                         "amendmentActivated"=>"0",
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",
@@ -90,16 +89,11 @@ class ReservedDataDeleteByCronTest extends Base
                         "headsUpContent"=>"",
                         "headsUpTime"=>"0"
                     ],
-                    "pickup"=>[
-                        "alternateName"=>"Ausgabe",
-                        "isDefault"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",
                         "lastNumber"=>"1999",
                         "processingTimeAverage"=>"15",
-                        "publishWaitingTimeEnabled"=>"1",
                         "statisticsEnabled"=>"1"
                     ],
                     "survey"=>[

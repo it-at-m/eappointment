@@ -21,7 +21,6 @@ class Process extends Schema\Entity
     public const STATUS_CALLED = 'called';
     public const STATUS_PROCESSING = 'processing';
     public const STATUS_PENDING = 'pending';
-    public const STATUS_PICKUP = 'pickup';
     public const STATUS_FINISHED = 'finished';
     public const STATUS_MISSED = 'missed';
     public const STATUS_PARKED = 'parked';
@@ -57,6 +56,7 @@ class Process extends Schema\Entity
             'wasMissed' => false,
             'priority' => null,
             'externalUserId' => null,
+            'parkedBy' => null,
         ];
     }
 
@@ -338,7 +338,6 @@ class Process extends Schema\Entity
      */
     public function getScopeId()
     {
-        //TK 2020-09-28 changed because pickup and pending processes have assigned pickup scope
         //as current scope - see zmsdb Query/Process EntityMapping
         return $this->toProperty()->scope->id->get();
     }
@@ -491,8 +490,6 @@ class Process extends Schema\Entity
             $this->status = 'missed';
         } elseif ('parked' == $this->status) {
             $this->status = 'parked';
-        } elseif ('pickup' == $this->status) {
-            $this->status = 'queued';
         } else {
             $this->status = 'confirmed';
         }
@@ -746,5 +743,15 @@ class Process extends Schema\Entity
     {
         $this->externalUserId = $externalUserId;
         return $this;
+    }
+
+    public function getParkedBy()
+    {
+        return $this->toProperty()->parkedBy->get();
+    }
+
+    public function setParkedBy($name)
+    {
+        $this->parkedBy = $name;
     }
 }

@@ -43,7 +43,7 @@
   },
   "overrides": {
     "vite-plugin-vuetify": {
-      "make-dir": "5.0.0"
+      "make-dir": "5.1.0"
     }
   }
 }
