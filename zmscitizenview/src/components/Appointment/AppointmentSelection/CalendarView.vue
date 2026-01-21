@@ -96,6 +96,7 @@
                 :showLocationTitle="(selectableProviders?.length || 0) > 1"
                 :officeNameById="officeNameById"
                 :isSlotSelected="isSlotSelected"
+                :t="t"
                 @selectTimeSlot="$emit('selectTimeSlot', $event)"
               />
             </template>
@@ -219,6 +220,7 @@
                 :showLocationTitle="(selectableProviders?.length || 0) > 1"
                 :officeNameById="officeNameById"
                 :isSlotSelected="isSlotSelected"
+                :t="t"
                 @selectTimeSlot="$emit('selectTimeSlot', $event)"
               />
             </template>

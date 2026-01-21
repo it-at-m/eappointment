@@ -92,8 +92,7 @@ class ProcessConfirmationMail extends BaseController
             $processList = (new ProcessRepository())->readListByMailAndStatusList(
                 $process->getFirstClient()->email,
                 [
-                    Process::STATUS_CONFIRMED,
-                    Process::STATUS_PICKUP
+                    Process::STATUS_CONFIRMED
                 ],
                 2,
                 50
