@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Application as App;
 use BO\Zmsentities\Department as Entity;
 use BO\Zmsentities\Collection\DepartmentList as Collection;
 
@@ -13,18 +12,14 @@ use BO\Zmsentities\Collection\DepartmentList as Collection;
  */
 class Department extends Base
 {
-    /**
-     *
-     * @var Array \BO\Zmsentities\Department
-     */
     public static $departmentCache = array();
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "department-$departmentId-$resolveReferences";
 
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $department = App::$cache->get($cacheKey);
+        if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
+            $department = \App::$cache->get($cacheKey);
         }
 
         if (empty($department)) {
@@ -34,8 +29,11 @@ class Department extends Base
                 ->addConditionDepartmentId($departmentId);
             $department = $this->fetchOne($query, new Entity());
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $department);
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $department);
+                if (\App::$log) {
+                    \App::$log->info('Department cache set', ['cache_key' => $cacheKey]);
+                }
             }
         }
 
@@ -85,6 +83,32 @@ class Department extends Base
         return $departmentList;
     }
 
+    public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0)
+    {
+        if (empty($departmentIds)) {
+            return [];
+        }
+
+        $query = new Query\Department(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentIds($departmentIds);
+
+        $departments = [];
+        $result = $this->fetchList($query, new Entity());
+
+        foreach ($result as $department) {
+            if ($department instanceof Entity) {
+                $department = $this->readResolvedReferences($department, $resolveReferences);
+                if ($department instanceof Entity) {
+                    $departments[$department->id] = $department->withOutClusterDuplicates();
+                }
+            }
+        }
+
+        return $departments;
+    }
+
     public function readByScopeId($scopeId, $resolveReferences = 0)
     {
         $query = new Query\Department(Query\Base::SELECT);
@@ -116,14 +140,6 @@ class Department extends Base
         return $departmentList;
     }
 
-    /**
-     * remove a department
-     *
-     * @param
-     *            departmentId
-     *
-     * @return Resource Status
-     */
     public function deleteEntity($departmentId)
     {
         $entity = $this->readEntity($departmentId, 1);
@@ -152,13 +168,6 @@ class Department extends Base
         return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
-    /**
-     * write a department
-     *
-     * @param Department $entity
-     *
-     * @return Entity
-     */
     public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
     {
         self::$departmentCache = [];
@@ -194,14 +203,6 @@ class Department extends Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * update a department
-     *
-     * @param
-     *            departmentId
-     *
-     * @return Entity
-     */
     public function updateEntity($departmentId, \BO\Zmsentities\Department $entity)
     {
         self::$departmentCache = [];
@@ -229,15 +230,6 @@ class Department extends Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    /**
-     * create dayoff preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            dayoffs
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentDayoffs($departmentId, $dayoffList)
     {
         if (!$departmentId) {
@@ -264,15 +256,6 @@ class Department extends Base
         }
     }
 
-    /**
-     * create links preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            links
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentLinks($departmentId, $links)
     {
         if (!$departmentId) {
@@ -293,15 +276,6 @@ class Department extends Base
         }
     }
 
-    /**
-     * create mail preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            email
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentMail(
         $departmentId,
         $email,
@@ -318,15 +292,6 @@ class Department extends Base
         return $result;
     }
 
-    /**
-     * create notification preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            preferences
-     *
-     * @return Boolean
-     */
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
@@ -344,15 +309,6 @@ class Department extends Base
         return $result;
     }
 
-    /**
-     * update mail preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            email
-     *
-     * @return Boolean
-     */
     protected function updateDepartmentMail(
         $departmentId,
         $email,
@@ -369,15 +325,6 @@ class Department extends Base
         ));
     }
 
-    /**
-     * update notification preferences of a department
-     *
-     * @param
-     *            departmentId,
-     *            preferences
-     *
-     * @return Boolean
-     */
     protected function updateDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
@@ -419,20 +366,35 @@ class Department extends Base
 
     public function removeCache($department)
     {
-        if (!App::$cache || !isset($department->id)) {
+        if (!\App::$cache || !isset($department->id)) {
             return;
         }
 
-        if (App::$cache->has("department-$department->id-0")) {
-            App::$cache->delete("department-$department->id-0");
+        $invalidatedKeys = [];
+
+        // Invalidate department entity cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "department-{$department->id}-{$resolveReferences}";
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("department-$department->id-1")) {
-            App::$cache->delete("department-$department->id-1");
+        // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadByDepartmentId-{$department->id}-{$resolveReferences}";
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
         }
 
-        if (App::$cache->has("department-$department->id-2")) {
-            App::$cache->delete("department-$department->id-2");
+        if (!empty($invalidatedKeys) && \App::$log) {
+            \App::$log->info('Department cache invalidated', [
+                'department_id' => $department->id,
+                'invalidated_keys' => $invalidatedKeys
+            ]);
         }
     }
 }

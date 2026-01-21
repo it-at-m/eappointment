@@ -64,6 +64,16 @@ function getRawApiBaseURL(baseUrl: string | undefined): string {
   }
 }
 
+export const VARIANTS_WITH_HINTS = [1, 2, 3] as const;
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string
+) => {
+  return VARIANTS_WITH_HINTS.includes(variantId)
+    ? t(`locationVariantText.${variantId}`)
+    : undefined;
+};
+
 export function getAPIBaseURL(
   baseUrl: string | undefined,
   authenticated: boolean

@@ -121,18 +121,6 @@
                             </pre>
                         </div>
                     </fieldset>
-                    
-                    <fieldset>
-                        <div class="panel--light">
-                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
-                                "status": "pickup", 
-                                "process": {"requests": processExample.requests}
-                            } %}</h3>
-                            <pre>
-                                {% include "@zmsentities/messaging/mail_pickup.twig" with {"process": processExample, "client": processExample.clients|first} %}
-                            </pre>
-                        </div>
-                    </fieldset>
 
                     <fieldset>
                         <div class="panel--light">

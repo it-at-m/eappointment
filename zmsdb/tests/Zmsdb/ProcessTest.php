@@ -49,17 +49,6 @@ class ProcessTest extends Base
         $this->assertEquals(10029, $process->id);
     }
 
-    public function testPending()
-    {
-        $now = static::$now;
-        $query = new Query();
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
-        $process = $query->writeNewPickup($scope, $now);
-        $process = $query->readEntity($process->id, $process->authKey, 0);
-        $this->assertEquals('pending', $process->status);
-        $this->assertEquals($now->getTimestamp(), $process->queue['arrivalTime']);
-    }
-
     public function testExceptionCreate()
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessCreateFailed');
@@ -363,7 +352,6 @@ class ProcessTest extends Base
     {
         $statusArray = [
             'pending',
-            'pickup',
             'called',
             'missed',
             'queued',
@@ -750,7 +738,6 @@ class ProcessTest extends Base
                         "notificationHeadsUpEnabled"=>"1"
                     ],
                     "client"=>[
-                        "alternateAppointmentUrl"=>"",
                         "amendmentActivated"=>"0",
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",
@@ -764,16 +751,11 @@ class ProcessTest extends Base
                         "headsUpContent"=>"",
                         "headsUpTime"=>"0"
                     ],
-                    "pickup"=>[
-                        "alternateName"=>"Ausgabe",
-                        "isDefault"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",
                         "lastNumber"=>"1999",
                         "processingTimeAverage"=>"15",
-                        "publishWaitingTimeEnabled"=>"1",
                         "statisticsEnabled"=>"1"
                     ],
                     "survey"=>[

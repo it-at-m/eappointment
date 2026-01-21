@@ -122,6 +122,7 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
+                        :t="t"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
                     </template>
@@ -193,6 +194,7 @@
                         "
                         :officeNameById="officeNameById"
                         :isSlotSelected="isSlotSelected"
+                        :t="t"
                         @selectTimeSlot="$emit('selectTimeSlot', $event)"
                       />
                     </template>

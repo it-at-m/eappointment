@@ -112,7 +112,11 @@ class AvailabilityListUpdate extends BaseController
                     'id' => $availability->id,
                     'scope_id' => $availability->scope['id'],
                     'version' => $availability->version,
-                    'data' => json_encode($availability->withLessData(['workstationCount'])),
+                    'startDate' => $availability->startDate,
+                    'endDate' => $availability->endDate,
+                    'startTime' => $availability->startTime,
+                    'endTime' => $availability->endTime,
+                    'type' => $availability->type,
                     'operation' => 'update'
                 ]);
             }
@@ -121,7 +125,11 @@ class AvailabilityListUpdate extends BaseController
             App::$log->info('Created new availability', [
                 'id' => $updatedAvailability->id,
                 'scope_id' => $availability->scope['id'],
-                'data' => json_encode($availability->withLessData(['workstationCount'])),
+                'startDate' => $availability->startDate,
+                'endDate' => $availability->endDate,
+                'startTime' => $availability->startTime,
+                'endTime' => $availability->endTime,
+                'type' => $availability->type,
                 'operation' => 'create'
             ]);
         }

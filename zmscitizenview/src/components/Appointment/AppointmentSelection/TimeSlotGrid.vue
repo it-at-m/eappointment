@@ -28,6 +28,7 @@
             class="timeslot"
             :variant="isSlotSelected(officeId, time) ? 'primary' : 'secondary'"
             @click="$emit('selectTimeSlot', { officeId, time })"
+            :aria-label="timeSlotAriaLabel(time)"
           >
             <template #default>{{ formatTimeFromUnix(time) }}</template>
           </muc-button>
@@ -49,6 +50,7 @@ const props = defineProps<{
   showLocationTitle: boolean;
   officeNameById: (id: number | string) => string | null;
   isSlotSelected: (officeId: number | string, time: number) => boolean;
+  t: (key: string) => string;
 }>();
 
 defineEmits<{
@@ -57,6 +59,17 @@ defineEmits<{
     payload: { officeId: number | string; time: number }
   ): void;
 }>();
+
+const timeSlotAriaLabel = (time: number): string => {
+  const timeText = formatTimeFromUnix(time);
+  const officeName = props.officeNameById(props.officeId) ?? "";
+  const timeStampSuffix = props.t("timeStampSuffix");
+
+  if (officeName) {
+    return `${timeText} ${timeStampSuffix}, ${officeName}`;
+  }
+  return `${timeText} ${timeStampSuffix}`;
+};
 </script>
 
 <style lang="scss" scoped>

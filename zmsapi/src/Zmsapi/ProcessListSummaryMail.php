@@ -51,8 +51,7 @@ class ProcessListSummaryMail extends BaseController
         $collection = (new ProcessRepository())->readListByMailAndStatusList(
             $mailAddress,
             [
-                Process::STATUS_CONFIRMED,
-                Process::STATUS_PICKUP
+                Process::STATUS_CONFIRMED
             ],
             2,
             $limit

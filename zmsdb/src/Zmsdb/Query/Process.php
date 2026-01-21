@@ -205,13 +205,6 @@ class Process extends Base implements MappingInterface
         }
 
         if (
-            $this->query->value('AbholortID') != 0
-            && $this->query->value('NutzerID') != 0
-        ) {
-            return 'pickup';
-        }
-
-        if (
             $this->query->value('AbholortID') == 0
             && $this->query->value('aufruferfolgreich') != 0
             && $this->query->value('NutzerID') != 0
@@ -326,14 +319,9 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => $this->shouldLoadEntity('processscope')
-                && $this->shouldLoadEntity('processuser')
-                ? self::expression(
-                    'IF(`process`.`AbholortID`,
-                    `processscope`.`ausgabeschaltername`,
-                    `processuser`.`Arbeitsplatznr`
-                )'
-                ) : '',
+            'queue__destination' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.Arbeitsplatznr'
+                : '',
             'queue__destinationHint' => $this->shouldLoadEntity('processuser')
                 ? 'processuser.aufrufzusatz'
                 : '',
@@ -350,6 +338,7 @@ class Process extends Base implements MappingInterface
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
             'isTicketprinter' => 'process.is_ticketprinter',
+            'parkedBy' => 'process.parkedBy',
         ], 'strlen');
     }
 
@@ -838,13 +827,6 @@ class Process extends Base implements MappingInterface
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
         }
-        if ($process->status == 'pickup') {
-            $data['AbholortID'] = $process->scope['id'];
-            $data['Abholer'] = 1;
-            $data['Timestamp'] = 0;
-            $data['nicht_erschienen'] = 0;
-            $data['parked'] = 0;
-        }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
@@ -868,6 +850,7 @@ class Process extends Base implements MappingInterface
             $data['bestaetigt'] = 0;
         }
         $data['status'] = $process['status'] ?? $process->status;
+        $data['parkedBy'] = $process->getParkedBy();
 
         $this->addValues($data);
     }
@@ -892,15 +875,9 @@ class Process extends Base implements MappingInterface
         if ($client && $client->offsetExists('notificationsSendCount')) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
-        if ($process->getAmendment()) {
-            $data['Anmerkung'] = $process->getAmendment();
-        }
-        if ($process->getCustomTextfield()) {
-            $data['custom_text_field'] = $process->getCustomTextfield();
-        }
-        if ($process->getCustomTextfield2()) {
-            $data['custom_text_field2'] = $process->getCustomTextfield2();
-        }
+        $data['Anmerkung'] = $process->getAmendment();
+        $data['custom_text_field'] = $process->getCustomTextfield();
+        $data['custom_text_field2'] = $process->getCustomTextfield2();
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();

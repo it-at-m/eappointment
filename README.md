@@ -26,7 +26,6 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
 * manage opening hours including closed days
 * login-system with different access levels
-* pickup for documents
 * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
 * calldisplay support
 * collecting statistics like waiting time or served clients per day
@@ -156,6 +155,58 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run build`
 - `npm run dev`
 - `npm run test`
+
+## Keycloak Setup
+
+Keycloak is configured to use the hostname `keycloak.local` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
+
+- **Browser** (running on your host machine) needs to access Keycloak via a hostname that resolves to `127.0.0.1`
+- **PHP code** (running inside the container) needs to access Keycloak via a hostname that resolves through Docker/Podman network DNS
+
+Using `localhost` doesn't work because inside the container, `localhost` refers to the container itself, not the host machine where Keycloak is exposed.
+
+### Adding keycloak.local to /etc/hosts
+
+You need to add `keycloak.local` to your system's hosts file so it resolves to `127.0.0.1`:
+
+**macOS:**
+```bash
+echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+```
+Enter your Mac password when prompted.
+
+**Ubuntu/Linux:**
+```bash
+echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+```
+
+**Windows:**
+1. Open Notepad as Administrator (Right-click → Run as administrator)
+2. Open `C:\Windows\System32\drivers\etc\hosts`
+3. Add this line at the end:
+   ```
+   127.0.0.1 keycloak.local
+   ```
+4. Save the file
+
+**Verify it worked:**
+```bash
+# macOS/Linux
+ping -c 1 keycloak.local
+
+# Windows
+ping keycloak.local
+```
+You should see it resolve to `127.0.0.1`.
+
+After adding the entry, restart the Keycloak container:
+```bash
+# Podman
+podman restart zms-keycloak
+
+# DDEV
+ddev restart
+```
 
 ## Import Database
 
@@ -311,75 +362,65 @@ bin/importTestData --commit
 ```
 
 #### Containerized Testing (Recommended - isolated environment)
-To run isolated, repeatable tests without touching your local database, use Docker Compose:
 
-**Smart Testing Scripts (Recommended):**
+Run your tests in clean, disposable containers to ensure they don’t affect your local system or database:
+
 ```bash
-# For zmsdb
-cd zmsdb
-./zmsdb-test                    # Run all tests
-./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
-./zmsdb-test --reset            # Reset all containers and volumes
+# Enter your web container
+podman exec -it zms-web bash  # Podman
+ddev ssh                      # DDEV
 
-# For zmsapi  
-cd zmsapi
-./zmsapi-test                   # Run all tests
-./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
-./zmsapi-test --reset           # Reset all containers and volumes
+# Run zmsdb tests
+./zmsdb/zmsdb-test                    # Run all tests
+./zmsdb/zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
+
+# Run zmsapi tests
+./zmsapi/zmsapi-test                   # Run all tests
+./zmsapi/zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
 ```
 
 **Available PHPUnit Flags:**
+
 ```bash
-# Test Selection
---filter="TestClass::testMethod"    # Run specific test method
---filter="TestClass"                # Run all tests in a class
---filter="testMethod"               # Run all tests with matching method name
---filter="pattern"                  # Run tests matching regex pattern
+# Test Selection (filter is a regex matching against "Namespace\TestClass::testMethod")
+--filter="TestClass::testMethod"  # Run specific test method
+--filter="TestClass"              # Run all tests in a class
+--filter="testMethod"             # Run all tests with matching method name
+--filter="pattern"                # Run tests matching regex pattern
 
 # Output & Verbosity
---verbose                           # More detailed output
---debug                            # Debug information
---stop-on-failure                  # Stop on first failure
---stop-on-error                    # Stop on first error
---stop-on-warning                  # Stop on first warning
+--verbose                         # More detailed output
+--debug                           # Debug information
+--stop-on-failure                 # Stop on first failure
+--stop-on-error                   # Stop on first error
+--stop-on-warning                 # Stop on first warning
 
 # Coverage & Reports
---coverage-text                    # Text coverage report
+--coverage-text                   # Text coverage report
 --coverage-html=dir               # HTML coverage report
 --coverage-clover=file.xml        # XML coverage report
 
 # Test Execution
---group="groupName"                # Run tests in specific group
---exclude-group="groupName"        # Exclude tests in group
---testsuite="suiteName"            # Run specific test suite
+--group="groupName"               # Run tests in specific group
+--exclude-group="groupName"       # Exclude tests in group
+--testsuite="suiteName"           # Run specific test suite
 ```
 
 **Examples:**
+
 ```bash
 # Run specific test with verbose output
-./zmsdb-test --filter="StatusTest::testBasic" --verbose
+bash zmsdb-test --filter="StatusTest::testBasic" --verbose
 
 # Run all tests in a class and stop on first failure
-./zmsapi-test --filter="StatusGetTest" --stop-on-failure
+bash zmsapi-test --filter="StatusGetTest" --stop-on-failure
 
 # Run tests with coverage report
-./zmsdb-test --coverage-text
+bash zmsdb-test --coverage-text
 
 # Run tests excluding a specific group
-./zmsapi-test --exclude-group="slow"
+bash zmsapi-test --exclude-group="slow"
 ```
-
-**How the Scripts Work:**
-* **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
-* **Subsequent runs**: Reuses existing setup for fast test execution
-* **Filter support**: Accepts all PHPUnit arguments for flexible test execution
-* **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
-
-**Reset Functionality:**
-* **`--reset`**: Completely removes all containers, volumes, and networks for a fresh start
-* **Use when**: You want to clear all cached dependencies and start completely fresh
-* **What it does**: Runs `docker-compose down -v` to remove everything
-* **After reset**: Next run will be treated as a "first run" with full setup
 
 ### API Testing (zmsapiautomation)
 
@@ -387,14 +428,19 @@ cd zmsapi
 
 **Using the test runner script (Recommended):**
 
-The `zmsapiautomation-test` script automatically handles database setup, migrations, and test execution:
+The `zmsapiautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
 
 ```bash
+# Enter your web container first
+podman exec -it zms-web bash  # Podman
+ddev ssh                      # DDEV
+
+# Run zmsapiautomation tests
 cd zmsapiautomation
-./zmsapiautomation-test                    # Run all tests
-./zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
-./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
-./zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+bash zmsapiautomation-test                    # Run all tests
+bash zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+bash zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
 ```
 
 **Maven Test Filtering:**
@@ -403,33 +449,33 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 ```bash
 # Run a specific test class
-./zmsapiautomation-test -Dtest=StatusEndpointTest
+bash zmsapiautomation-test -Dtest=StatusEndpointTest
 
 # Run a specific test method
-./zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
 
 # Run multiple test classes
-./zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+bash zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
 
 # Run tests matching a pattern
-./zmsapiautomation-test -Dtest=*EndpointTest
+bash zmsapiautomation-test -Dtest=*EndpointTest
 
 # Run tests with additional Maven options
-./zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+bash zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
 ```
 
 **Environment Configuration:**
 
-The script automatically detects Podman or DDEV environments and sets appropriate defaults:
+The script runs natively inside the container and uses environment variables. Default endpoints:
 
-- **Podman**: Uses `http://zms-web/terminvereinbarung/api/2` for BASE_URI
-- **DDEV**: Uses `http://web/terminvereinbarung/api/2` for BASE_URI
+- `BASE_URI`: `http://localhost/terminvereinbarung/api/2`
+- `CITIZEN_API_BASE_URI`: `http://localhost/terminvereinbarung/api/citizen`
 
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost:8080/terminvereinbarung/api/2 ./zmsapiautomation-test
-CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsapiautomation-test
+BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsapiautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapiautomation-test
 ```
 
 **What the Script Does:**
@@ -452,17 +498,17 @@ CITIZEN_API_BASE_URI=http://localhost:8080/terminvereinbarung/api/citizen ./zmsa
 To import Munich DLDB data during test setup:
 
 ```bash
-ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" ./zmsapiautomation-test
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomation-test
 ```
 
-**Running Tests Directly with Maven:**
+**Running Tests Directly with Maven (inside container):**
 
-For local development without the full setup script:
+For development without the full setup script (assumes database is already prepared):
 
 ```bash
 cd zmsapiautomation
-mvn test -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
-mvn test -Dtest=StatusEndpointTest -DBASE_URI=http://localhost:8080/terminvereinbarung/api/2
+mvn test
+mvn test -Dtest=StatusEndpointTest
 ```
 
 **References:**

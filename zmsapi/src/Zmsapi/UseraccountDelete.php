@@ -25,11 +25,17 @@ class UseraccountDelete extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
         (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
-        $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
-        if (! $useraccount->hasId() || ! (new Useraccount())->deleteEntity($useraccount->getId())) {
+        $useraccountModel = new Useraccount();
+        $useraccount = $useraccountModel->readEntity($args['loginname'], $resolveReferences);
+        if (! $useraccount || ! $useraccount->hasId()) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
+
         Helper\User::testWorkstationAccessRights($useraccount);
+
+        if (! $useraccountModel->deleteEntity($useraccount->getId())) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
 
         $message = Response\Message::create($request);
         $message->data = $useraccount;

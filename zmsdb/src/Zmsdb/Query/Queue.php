@@ -25,8 +25,6 @@ class Queue extends Process implements MappingInterface
                     THEN "missed"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
-                WHEN process.AbholortID != 0 AND process.NutzerID != 0
-                    THEN "pickup"
                 WHEN process.AbholortID = 0 AND process.aufruferfolgreich != 0 AND process.NutzerID != 0
                     THEN "processing"
                 WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
@@ -72,12 +70,7 @@ class Queue extends Process implements MappingInterface
                     `process`.`BuergerID`
 )'
             ),
-            'destination' => self::expression(
-                'IF(`process`.`AbholortID`,
-                    `processscope`.`ausgabeschaltername`,
-                    `processuser`.`Arbeitsplatznr`
-)'
-            ),
+            'destination' => 'processuser.Arbeitsplatznr',
             'destinationHint' => 'processuser.aufrufzusatz',
             'waitingTime' => 'process.wartezeit',
             'wayTime' => 'process.wegezeit',
