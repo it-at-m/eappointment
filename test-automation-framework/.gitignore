@@ -1,0 +1,65 @@
+# Compiled code
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Application-specific files
+*.sublime-workspace
+
+# IDEs and Editors
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Build artifacts
+*/build/
+*/dist/
+*/target/
+/target/
+*.out
+
+# Images and media files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.mp3
+*.puml
+
+# Archives
+*.tar.gz
+
+# Python compiled files
+*.pyc
+*.pyo
+
+# Office documents
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx

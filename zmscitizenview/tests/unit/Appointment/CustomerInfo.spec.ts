@@ -270,7 +270,7 @@ describe("CustomerInfo", () => {
   });
 
   const MAX_LENGTH_STANDARD = 50;
-  const MAX_LENGTH_CUSTOM = 100;
+  const MAX_LENGTH_CUSTOM = 250;
   const setupValidCustomerData = () => {
     mockCustomerData.value.firstName = "Max";
     mockCustomerData.value.lastName = "Mustermann";
@@ -305,7 +305,7 @@ describe("CustomerInfo", () => {
 
     it("should show max length error when telephoneNumber exceeds maximum length", async () => {
       setupValidCustomerData();
-      mockCustomerData.value.telephoneNumber = "1".repeat(MAX_LENGTH_CUSTOM + 1);
+      mockCustomerData.value.telephoneNumber = "1".repeat(MAX_LENGTH_STANDARD + 1);
       mockSelectedProvider.value.scope.telephoneActivated = true;
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();

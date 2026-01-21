@@ -73,6 +73,16 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
+    public function getQueryDepartmentIdByScopeId()
+    {
+        return 'SELECT BehoerdenID FROM standort WHERE StandortID = ?';
+    }
+
+    public function getQueryClusterIdsByScopeId()
+    {
+        return 'SELECT clusterID FROM clusterzuordnung WHERE standortID = ?';
+    }
+
     public function getQueryReadImageData()
     {
         return '
@@ -183,7 +193,6 @@ class Scope extends Base implements MappingInterface
                 $this->shouldLoadEntity('scopesms')
                 ? self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung')
                 : '',
-            'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailFrom' => $this->shouldLoadEntity('scopemail')
@@ -210,8 +219,6 @@ class Scope extends Base implements MappingInterface
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
-            'preferences__pickup__alternateName' => 'scope.ausgabeschaltername',
-            'preferences__pickup__isDefault' => 'scope.defaultabholerstandort',
             'preferences__queue__callCountMax' => 'scope.anzahlwiederaufruf',
             'preferences__queue__callDisplayText' => 'scope.aufrufanzeigetext',
             'preferences__queue__firstNumber' => 'scope.startwartenr',
@@ -221,7 +228,6 @@ class Scope extends Base implements MappingInterface
             'preferences__queue__processingTimeAverage' => self::expression(
                 'FLOOR(TIME_TO_SEC(`scope`.`Bearbeitungszeit`) / 60)'
             ),
-            'preferences__queue__publishWaitingTimeEnabled' => 'scope.wartezeitveroeffentlichen',
             'preferences__queue__statisticsEnabled' => self::expression('NOT `scope`.`ohnestatistik`'),
             'preferences__survey__emailContent' => 'scope.kundenbef_emailtext',
             'preferences__survey__enabled' => 'scope.kundenbefragung',
@@ -349,7 +355,6 @@ class Scope extends Base implements MappingInterface
         // notificationConfirmationEnabled and notificationHeadsUpEnabled are saved in department!
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
-        $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
@@ -374,8 +379,6 @@ class Scope extends Base implements MappingInterface
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
-        $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
-        $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault', true);
         $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText', false, '');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
@@ -385,7 +388,6 @@ class Scope extends Base implements MappingInterface
             ? strtoupper($entity->getPreference('queue', 'displayNumberPrefix'))
             : '';
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
-        $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);

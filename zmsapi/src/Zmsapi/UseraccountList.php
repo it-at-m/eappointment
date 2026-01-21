@@ -7,10 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsdb\Useraccount;
-use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -25,23 +23,12 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 1))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $helper = new Helper\User($request, 1);
+        $helper->checkRights('useraccount');
+        $parameters = $request->getParams();
 
-        /** @var Useraccount $useraccount */
-        $useraccountList = new Collection();
-        $useraccountList = (new Useraccount())->readList($resolveReferences)->withLessData();
-
-        $validUserAccounts = [];
-        foreach ($useraccountList as $useraccount) {
-            try {
-                Helper\User::testWorkstationAccessRights($useraccount);
-                $validUserAccounts[] = $useraccount;
-            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
-                continue;
-            }
-        }
-        $useraccountList = $validUserAccounts;
+        $workstation = Helper\User::$workstation;
+        $useraccountList = (new Useraccount())->readSearch($parameters, 0, $workstation);
 
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
