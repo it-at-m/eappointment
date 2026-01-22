@@ -1,9 +1,6 @@
 <template>
   <div class="add-card">
-    <a
-      class="no-link-style"
-      :href="newAppointmentUrl"
-    >
+    <a :href="newAppointmentUrl">
       <div class="add-card-content">
         <div class="add-card-header">
           <h3>{{ title }}</h3>
@@ -14,6 +11,7 @@
             class="add-card-muc-button"
             icon="arrow-right"
             variant="primary"
+            tabindex="-1"
             >{{ t("arrangeAppointment") }}</muc-button
           >
         </div>
@@ -40,17 +38,19 @@ defineSlots<{
 </script>
 
 <style scoped>
-.no-link-style {
-  text-decoration: none !important;
-  color: var(--color-neutrals-grey) !important;
-}
-
 .add-card {
   cursor: pointer;
   border: solid 1px var(--color-neutrals-blue);
   border-bottom: solid 5px var(--color-brand-main-blue);
   transition: background-color ease-in 150ms;
   background-color: var(--color-neutrals-blue-xlight);
+}
+
+.add-card a {
+  text-decoration: none !important;
+  color: var(--color-neutrals-grey) !important;
+  display: block;
+  height: 100%;
 }
 
 .add-card:hover {
