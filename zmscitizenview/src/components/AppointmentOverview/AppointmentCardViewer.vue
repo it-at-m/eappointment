@@ -26,7 +26,6 @@
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
           :t="t"
-          tabindex="0"
         />
       </muc-slider-item>
       <muc-slider-item v-if="!displayedOnDetailScreen">
@@ -57,7 +56,6 @@
           :class="{ 'card-color': displayedOnDetailScreen }"
           class="mobile-card-height"
           :t="t"
-          tabindex="0"
         />
       </muc-slider-item>
     </muc-slider>
@@ -72,7 +70,6 @@
         :offices="offices"
         :class="{ 'card-color': displayedOnDetailScreen }"
         :t="t"
-        tabindex="0"
       />
       <add-appointment-card
         v-if="!displayedOnDetailScreen"
@@ -94,7 +91,6 @@
         :offices="offices"
         :class="{ 'card-color': displayedOnDetailScreen }"
         :t="t"
-        tabindex="0"
       />
     </muc-card-container>
   </div>
