@@ -102,7 +102,6 @@
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
           :t="t"
-          tabindex="0"
         >
         </appointment-card>
         <add-appointment-card
