@@ -37,6 +37,7 @@
                     <thead>
                         <tr>
                             <th>Loginname</th>
+                            <th>Berechtigung</th>
                             <th>Letzter Login</th>
                             <th>Aktion</th>
                         </tr>
@@ -45,6 +46,24 @@
                     {% for useraccount in useraccountList %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
+                            {% set rights = useraccount.rights|default({}) %} 
+                            {% set roles = ['Sachbearbeitung'] %} 
+                            {% if rights.audit|default(false) %}
+                                {% set roles = roles|merge(['Innenrevision']) %}
+                            {% endif %}
+
+                            {% if rights.scope|default(false) %}
+                                {% set roles = roles|merge(['Terminadministration']) %}  
+                            {% endif %}
+
+                            {% if rights.cluster|default(false) %}
+                                {% set roles = roles|merge(['Fachliche Administration']) %}
+                            {% endif %}
+
+                            {% if rights.superuser|default(false) %}
+                                {% set roles = roles|merge(['Technische Administration']) %}
+                            {% endif %}
+                            <td>{{ roles|join('<br>')|raw  }} </td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
                             <td>
                                 {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
