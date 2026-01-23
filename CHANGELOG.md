@@ -1,3 +1,71 @@
+
+       
+    
+## Release Muc-36 (23.01.2026)
+                    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-431'>ZMSKVR-431</a>] -         Wartestatistik - Wegezeit wird falsch berechnet 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-936'>ZMSKVR-936</a>] -         Abholung von Ausweisdokumenten mit/ohne Termin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1015'>ZMSKVR-1015</a>] -         Filter nach Nutzerrolle im ZMS-Admin funktioniert nicht mehr / Benutzeranzahl fehlt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1056'>ZMSKVR-1056</a>] -         Freitextfeld in ZMS-Admin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1058'>ZMSKVR-1058</a>] -         Der neu erstellte Standort erscheint nicht in der Standort- und Behördenliste
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1159'>ZMSKVR-1159</a>] -         Abgelaufene Öffnungszeiten Blockieren Anlegen von Neue; UI Validierung zu Streng
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1206'>ZMSKVR-1206</a>] -         Terminkunden werden nicht in Warteschlange angelegt (keine Bestätigung) NEXT
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1208'>ZMSKVR-1208</a>] -         Externe Buchung  bucht falschen Kalender: Pass-/Ausweis-Termine landen im Hauptkalender statt Passkalender II/221
+</li>
+</ul>
+                                                    
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-660'>ZMSKVR-660</a>] -         Neues Rollen- und Rechte-Konzept
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1132'>ZMSKVR-1132</a>] -         Analyse der wiederkehrenden EKiosk-Ausfälle in der SZE
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-319'>ZMSKVR-319</a>] -         Optimierung der Abschnittsstruktur in den Standorteinstellungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-900'>ZMSKVR-900</a>] -         Pfennigparade #18: Fehlende Verknüpfung zusätzlicher Beschriftungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-963'>ZMSKVR-963</a>] -         Zeichenlänge Custom Text Feld
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1050'>ZMSKVR-1050</a>] -         Neuer Endpunkt Nutzer(verwaltung) für besseren Performance
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1084'>ZMSKVR-1084</a>] -         Fehlende Hinweistexte zu Varianten-Arten auf der Leistungs-Seite (Schritt 1)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1103'>ZMSKVR-1103</a>] -         Einführung einheitlicher Favicons für ZMS-Module (Beginner Ticket)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1113'>ZMSKVR-1113</a>] -         Geparkte Termine mit Zimmernummer anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1114'>ZMSKVR-1114</a>] -         Spalte Berechtigung in die Benutzerliste ergänzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1126'>ZMSKVR-1126</a>] -         Nutzungszahlen E‑Kiosk in der Kundenstatistik (Frontend &amp; Export)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1176'>ZMSKVR-1176</a>] -         Nutzer*innen-Seite:  Überflüssigen Link entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1185'>ZMSKVR-1185</a>] -         Unerwartetes Scrollen nach Klick auf „Weniger Leistungen anzeigen“ 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1197'>ZMSKVR-1197</a>] -         Manueller Pipeline-Button zum Löschen des Shared-Cache ohne Rollout
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/MUXDBS-370'>MUXDBS-370</a>] -         Aktualisierung von muc-patternlab-vue und Verwendung des neuen Teaser-Designs
+</li>
+</ul>
+                                                        
+
+
 ## Release Muc-35 (12.12.2025)
                                 
 <h2>        Bug
