@@ -51,7 +51,12 @@ const rawHash = window.location.hash.startsWith("#")
   ? window.location.hash.substring(1)
   : window.location.hash;
 
-const decodedHash = decodeURIComponent(rawHash);
+let decodedHash: string;
+try {
+  decodedHash = decodeURIComponent(rawHash);
+} catch {
+  decodedHash = rawHash;
+}
 const urlElements = decodedHash.split("/");
 const url = new URL(window.location.href);
 const params = new URLSearchParams(url.search);
