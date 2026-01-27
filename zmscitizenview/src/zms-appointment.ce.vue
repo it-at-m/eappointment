@@ -57,7 +57,9 @@ try {
 } catch {
   decodedHash = rawHash;
 }
-const normalized = decodedHash.startsWith("/") ? decodedHash : `/${decodedHash}`;
+const normalized = decodedHash.startsWith("/")
+  ? decodedHash
+  : `/${decodedHash}`;
 const urlElements = normalized.split("/");
 const url = new URL(window.location.href);
 const params = new URLSearchParams(url.search);
