@@ -892,6 +892,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
+        error_log('entity->scope: ' . json_encode($entity->scope));
         error_log('maxSlotsPerAppointment: ' . $maxSlotsPerAppointment);
         if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
             return true;
