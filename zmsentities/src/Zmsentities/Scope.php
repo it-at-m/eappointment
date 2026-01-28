@@ -104,7 +104,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getSlotsPerAppointment()
     {
-        return $this->getPreference('client', 'slotsPerAppointment', null);
+        $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
+
+        return ($slotsPerAppointment) ? $slotsPerAppointment : null;
     }
 
     public function getProvider()
