@@ -817,7 +817,6 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     // Update date range based on selected providers
     updateDateRangeForSelectedProviders();
   } else {
-    console.log("Error fetching available days", data);
     handleError(data);
     isSwitchingProvider.value = false;
   }
