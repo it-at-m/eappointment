@@ -166,6 +166,7 @@ class MapperService
                         ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
@@ -479,6 +480,7 @@ class MapperService
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
+                    'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
                     'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,
