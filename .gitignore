@@ -1,3 +1,8 @@
+# Prevent accidental commit
+test-automation-framework-example
+test-automation-framework
+zms-test-automation
+
 # =============== ddev =================
 .ddev/.env
 .ddev/.env.template
