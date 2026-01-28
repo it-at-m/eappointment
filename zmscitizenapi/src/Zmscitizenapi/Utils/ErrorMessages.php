@@ -348,6 +348,12 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
             'errorType' => 'error'
         ],
+        'tooManySlotsPerAppointment' => [
+            'errorCode' => 'tooManySlotsPerAppointment',
+            'errorMessage' => 'The number of slots exceeds the maximum allowed slots per appointment.',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'error'
+        ],
         'scopesNotFound' => [
             'errorCode' => 'scopesNotFound',
             'errorMessage' => 'No scopes found.',

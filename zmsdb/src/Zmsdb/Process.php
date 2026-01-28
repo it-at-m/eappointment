@@ -857,6 +857,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+        error_log('maxAppointmentsPerMail: ' . $maxAppointmentsPerMail);
         $emailToCheck = $entity->getClients()->getFirst()->email;
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
             return true;
@@ -882,6 +883,31 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         return true;
+    }
+
+    public function isAppointmentSlotCountAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope)) {
+            return true;
+        }
+
+        $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
+        error_log('maxSlotsPerAppointment: ' . $maxSlotsPerAppointment);
+        if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
+            return true;
+        }
+
+        $appointment = $entity->getFirstAppointment();
+        if (!$appointment) {
+            return true;
+        }
+
+        $slotCount = (int) ($appointment->slotCount ?? 0);
+        if ($slotCount <= 0) {
+            return true;
+        }
+
+        return $slotCount <= (int) $maxSlotsPerAppointment;
     }
 
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool

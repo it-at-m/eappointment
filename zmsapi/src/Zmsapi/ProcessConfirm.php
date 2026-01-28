@@ -108,5 +108,9 @@ class ProcessConfirm extends BaseController
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
+
+        if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
+            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
+        }
     }
 }

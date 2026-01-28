@@ -62,6 +62,10 @@ class ProcessPreconfirm extends BaseController
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
+        if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
+            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
