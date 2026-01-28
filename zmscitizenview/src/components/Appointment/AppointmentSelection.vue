@@ -134,7 +134,7 @@
     </div>
   </div>
   <div
-    v-if="!noProviderSelected && showError && !isSwitchingProvider"
+    v-if="showError && !isSwitchingProvider"
     class="m-component"
   >
     <h2>{{ t("time") }}</h2>
@@ -817,6 +817,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     // Update date range based on selected providers
     updateDateRangeForSelectedProviders();
   } else {
+    console.log("Error fetching available days", data);
     handleError(data);
     isSwitchingProvider.value = false;
   }
