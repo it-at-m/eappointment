@@ -134,7 +134,7 @@
     </div>
   </div>
   <div
-    v-if="!noProviderSelected && showError && !isSwitchingProvider"
+    v-if="showError && !isSwitchingProvider"
     class="m-component"
   >
     <h2>{{ t("time") }}</h2>

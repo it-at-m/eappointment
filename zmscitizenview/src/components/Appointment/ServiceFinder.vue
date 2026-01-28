@@ -560,14 +560,15 @@ onMounted(() => {
       fetchServicesAndProviders(
         props.preselectedServiceId ?? undefined,
         props.preselectedOfficeId ?? undefined,
-        props.baseUrl ?? undefined
+        props.globalState.baseUrl ?? undefined
       ).then((data) => {
         handleErrorApiResponse(
           data,
           errorStates.errorStateMap,
           currentErrorData.value
         );
-        if (handleApiResponseForDownTime(data, props.baseUrl)) return;
+        if (handleApiResponseForDownTime(data, props.globalState.baseUrl))
+          return;
 
         services.value = (data as any).services.map(normalizeService);
         relations.value = (data as any).relations;
