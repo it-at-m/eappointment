@@ -891,7 +891,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
-        
+
         // Use MAX_SLOTS (25) as default limit if slotsPerAppointment is not configured
         if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
             $maxSlotsPerAppointment = Slot::MAX_SLOTS;
