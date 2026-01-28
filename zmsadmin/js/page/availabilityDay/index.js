@@ -101,40 +101,29 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
+        const payload = this.prepareAvailabilityPayload();
+        $.ajax({
+            url: `${this.props.links.includeurl}/availability/checkdayoff/`,
+            method: 'POST',
+            data: JSON.stringify(payload),
+            contentType: 'application/json',
+            success: response => {
+                if (response.overridesDayOff) {
+                    const sure = confirm(
+                        'Dies öffnet an einem Feiertag. Möchten sie trotzdem fortfahren?'
+                    );
+                    if (!sure) return;
+                }
+                this.doSaveUpdates();
+            },
+        });
+    }
+
+    doSaveUpdates() {
         const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
         if (ok) {
             showSpinner();
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendData = this.state.availabilitylist
-                .filter((availability) => {
-                    return (
-                        (availability.__modified ||
-                            (availability.tempId && availability.tempId.includes('__temp__'))) &&
-                        !this.hasErrors(availability)
-                    );
-                })
-                .map(availability => {
-                    const sendAvailability = Object.assign({}, availability);
-                    if (availability.tempId) {
-                        delete sendAvailability.tempId;
-                    }
-                    if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
-                        sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
-                    }
-                    if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
-                        sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
-                    }
-                    return {
-                        ...sendAvailability,
-                        kind: availability.kind || 'default',
-                    };
-                })
-                .map(cleanupAvailabilityForSave);
-
-            const payload = {
-                availabilityList: sendData,
-                selectedDate: selectedDate
-            };
+            const payload = this.prepareAvailabilityPayload();
 
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
@@ -164,6 +153,25 @@ class AvailabilityPage extends Component {
         } else {
             hideSpinner();
         }
+    }
+
+    prepareAvailabilityPayload() {
+    const selectedDate = formatTimestampDate(this.props.timestamp);
+    const sendData = this.state.availabilitylist
+        .filter(av => (av.__modified || av.tempId?.includes('__temp__')) && !this.hasErrors(av))
+        .map(av => {
+            const sendAv = { ...av };
+            delete sendAv.tempId;
+
+            const prefs = this.props.scope.preferences.appointment;
+            sendAv.bookable.startInDays = sendAv.bookable.startInDays ?? prefs.startInDaysDefault ?? 0;
+            sendAv.bookable.endInDays   = sendAv.bookable.endInDays   ?? prefs.endInDaysDefault   ?? 60;
+
+            return { ...sendAv, kind: av.kind || 'default' };
+        })
+        .map(cleanupAvailabilityForSave);
+
+        return { availabilityList: sendData, selectedDate };
     }
 
     updateSaveBarState(type, success) {

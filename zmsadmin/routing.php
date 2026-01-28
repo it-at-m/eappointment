@@ -27,6 +27,9 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
      ->setName("AvailabilityConflicts");
 
+ \App::$slim->post('/availability/checkdayoff/', \BO\Zmsadmin\Helper\AvailabilityCheckDayOff::class)
+     ->setName("AvailabilityCheckDayOff");
+
  /*
   * ---------------------------------------------------------------------------
   * Calldisplay
