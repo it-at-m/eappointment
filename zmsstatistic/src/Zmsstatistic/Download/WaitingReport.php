@@ -95,7 +95,7 @@ class WaitingReport extends Base
             );
         }
     }
-    
+
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
