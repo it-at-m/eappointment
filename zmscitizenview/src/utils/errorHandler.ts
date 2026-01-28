@@ -70,6 +70,7 @@ export function createErrorStateMap(): ErrorStateMap {
     "apiErrorSourceNotFound",
     "apiErrorTelephoneIsRequired",
     "apiErrorTooManyAppointmentsWithSameMail",
+    "apiErrorTooManySlotsPerAppointment",
     "apiErrorUnknownError",
     "apiErrorZmsClientCommunicationError",
     "apiErrorInvalidJumpinLink",

@@ -135,6 +135,8 @@
   "apiErrorTelephoneIsRequiredText": "Please enter your telephone number.",
   "apiErrorTooManyAppointmentsWithSameMailHeader": "You have already booked too many appointments.",
   "apiErrorTooManyAppointmentsWithSameMailText": "You can only book a limited number of appointments with your e-mail address. Please cancel another appointment before you book a new one.",
+  "apiErrorTooManySlotsPerAppointmentHeader": "Too many services selected.",
+  "apiErrorTooManySlotsPerAppointmentText": "You can only book a limited number of services in one appointment. Please reduce your selection and try again.",
   "apiErrorUnknownErrorHeader": "An unknown error occurred.",
   "apiErrorUnknownErrorText": "Please try again later or contact support.",
   "apiErrorZmsClientCommunicationErrorHeader": "Service is temporarily unavailable.",
