@@ -857,7 +857,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
-        error_log('maxAppointmentsPerMail: ' . $maxAppointmentsPerMail);
         $emailToCheck = $entity->getClients()->getFirst()->email;
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
             return true;
@@ -892,8 +891,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
-        error_log('entity->scope: ' . json_encode($entity->scope));
-        error_log('maxSlotsPerAppointment: ' . $maxSlotsPerAppointment);
         if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
             return true;
         }
