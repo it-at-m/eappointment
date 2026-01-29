@@ -135,7 +135,7 @@ class Availability extends Schema\Entity
             || ($type !== false && $this->type != $type)
             || !$this->hasDay($dateTime)
             || !$this->hasWeek($dateTime)
-            || ($this->getDuration() > 2 && $this->hasDayOff($dateTime))
+            || ($this->getDuration() > 1 && $this->hasDayOff($dateTime))
         ) {
             // Out of date range
             return false;
