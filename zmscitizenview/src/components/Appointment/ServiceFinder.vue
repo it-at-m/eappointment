@@ -350,7 +350,7 @@ watch(
 watch(countOfService, (newCountOfService) => {
   if (!service.value) return;
 
-  const mainServiceSlots = getMinSlotOfProvider(service.value.providers || []);
+  const mainServiceSlots = getMaxSlotOfProvider(service.value.providers || []);
   const newMainServiceSlots = mainServiceSlots * newCountOfService;
 
   // Calculate current slots from subservices
@@ -359,7 +359,7 @@ watch(countOfService, (newCountOfService) => {
     service.value.subServices.forEach((subservice) => {
       if (subservice.count > 0) {
         subServiceSlots +=
-          getMinSlotOfProvider(subservice.providers) * subservice.count;
+          getMaxSlotOfProvider(subservice.providers) * subservice.count;
       }
     });
   }
@@ -461,12 +461,12 @@ const setServiceData = (selectedService: ServiceImpl) => {
 
   // Calculate currentSlots including main service and all subservices
   let slots =
-    getMinSlotOfProvider(service.value!.providers) *
+    getMaxSlotOfProvider(service.value!.providers) *
     (service.value!.count || 0);
   if (service.value!.subServices) {
     service.value!.subServices.forEach((subservice) => {
       if (subservice.count > 0) {
-        slots += getMinSlotOfProvider(subservice.providers) * subservice.count;
+        slots += getMaxSlotOfProvider(subservice.providers) * subservice.count;
       }
     });
   }
@@ -481,7 +481,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
     let remainingSlots = maxSlotsPerAppointment.value;
 
     // First, ensure main service has at least 1
-    const mainServiceSlots = getMinSlotOfProvider(service.value!.providers);
+    const mainServiceSlots = getMaxSlotOfProvider(service.value!.providers);
     if (remainingSlots >= mainServiceSlots) {
       const maxMainCount = Math.floor(remainingSlots / mainServiceSlots);
       service.value!.count = Math.min(service.value!.count || 1, maxMainCount);
@@ -492,7 +492,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
     // Then adjust subservices
     if (service.value!.subServices && remainingSlots > 0) {
       service.value!.subServices.forEach((subservice) => {
-        const subServiceSlots = getMinSlotOfProvider(subservice.providers);
+        const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
         if (remainingSlots >= subServiceSlots) {
           const maxSubCount = Math.floor(remainingSlots / subServiceSlots);
           subservice.count = Math.min(subservice.count, maxSubCount);
@@ -510,13 +510,13 @@ const setServiceData = (selectedService: ServiceImpl) => {
 
     // Recalculate currentSlots after adjustments
     slots =
-      getMinSlotOfProvider(service.value!.providers) *
+      getMaxSlotOfProvider(service.value!.providers) *
       (service.value!.count || 0);
     if (service.value!.subServices) {
       service.value!.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
           slots +=
-            getMinSlotOfProvider(subservice.providers) * subservice.count;
+            getMaxSlotOfProvider(subservice.providers) * subservice.count;
         }
       });
     }
@@ -571,9 +571,9 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
   );
 
   if (subservice != undefined) {
-    const subServiceSlots = getMinSlotOfProvider(subservice.providers);
+    const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
     const mainServiceSlots =
-      getMinSlotOfProvider(service.value!.providers || []) *
+      getMaxSlotOfProvider(service.value!.providers || []) *
       (service.value!.count || 0);
 
     // Calculate current slots from other subservices
@@ -581,7 +581,7 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
     if (service.value!.subServices) {
       service.value!.subServices.forEach((s) => {
         if (s.id !== id && s.count > 0) {
-          otherSubServiceSlots += getMinSlotOfProvider(s.providers) * s.count;
+          otherSubServiceSlots += getMaxSlotOfProvider(s.providers) * s.count;
         }
       });
     }
@@ -631,29 +631,52 @@ const showEstimatedDuration = computed(() => {
 });
 
 /**
- * Calculates whether the count of selected service may be increased, depending on the maxQuantity of the service and the maxSlotsPerAppointment.
+ * Calculates the maximum count of the selected service, considering both:
+ * - maxQuantity: the service's own limit on how many can be selected
+ * - maxSlotsPerAppointment: the total slot limit across all services (main + sub)
+ *
+ * The effective max is the minimum of these two constraints.
  */
 const maxValueOfService = computed(() => {
   if (!service.value) return 0;
-  return checkPlusEndabled.value
-    ? service.value.maxQuantity
-    : service.value.count || 0;
+
+  const mainServiceSlots = getMaxSlotOfProvider(service.value.providers || []);
+  if (mainServiceSlots <= 0) return service.value.maxQuantity;
+
+  // Calculate slots used by subservices
+  let subServiceSlots = 0;
+  if (service.value.subServices) {
+    service.value.subServices.forEach((subservice) => {
+      if (subservice.count > 0) {
+        subServiceSlots +=
+          getMaxSlotOfProvider(subservice.providers) * subservice.count;
+      }
+    });
+  }
+
+  // Calculate max count based on available slots after subservices
+  const availableSlots = maxSlotsPerAppointment.value - subServiceSlots;
+  const maxCountBySlots = Math.floor(availableSlots / mainServiceSlots);
+
+  // Return the minimum of maxQuantity and what's allowed by slots, but at least 1
+  return Math.max(1, Math.min(service.value.maxQuantity, maxCountBySlots));
 });
 
-const checkPlusEndabled = computed(
-  () =>
-    currentSlots.value + getMinSlotOfProvider(service.value!.providers || []) <=
-    maxSlotsPerAppointment.value
-);
-
-const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
-  let minSlot = MAX_SLOTS;
+/**
+ * Gets the maximum slots required for a service across all providers.
+ * We use MAX (not min) because we need to ensure the booking works at
+ * providers with higher slot requirements. If a service takes 3 slots
+ * at most providers but 1 slot at one provider, we count 3 slots to be
+ * conservative with the slot limit.
+ */
+const getMaxSlotOfProvider = (provider: OfficeImpl[]) => {
+  let maxSlot = 1; // Default to 1 slot minimum
   provider.forEach((provider) => {
-    if (provider.slots) {
-      minSlot = Math.min(minSlot, provider.slots);
+    if (provider.slots && provider.slots > maxSlot) {
+      maxSlot = provider.slots;
     }
   });
-  return minSlot;
+  return maxSlot;
 };
 
 const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
@@ -729,13 +752,13 @@ onMounted(() => {
       ? service.value.count
       : countOfService.value;
     slots =
-      getMinSlotOfProvider(service.value.providers || []) *
+      getMaxSlotOfProvider(service.value.providers || []) *
       (service.value.count || 0);
     if (service.value.subServices) {
       service.value.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
           slots +=
-            getMinSlotOfProvider(subservice.providers) * subservice.count;
+            getMaxSlotOfProvider(subservice.providers) * subservice.count;
         }
       });
     }

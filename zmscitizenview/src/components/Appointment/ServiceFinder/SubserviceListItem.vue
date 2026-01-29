@@ -34,28 +34,46 @@ watch(count, (newCount) => {
   emit("change", props.subService.id, newCount);
 });
 
+/**
+ * Calculates the maximum count for this subservice, considering both:
+ * - maxQuantity: the subservice's own limit
+ * - maxSlotsPerAppointment: remaining slots after accounting for main service and other subservices
+ */
 const maxValue = computed(() => {
-  return checkPlusEndabled.value ? props.subService.maxQuantity : count.value;
+  const subServiceSlots = getMaxSlotOfProvider(props.subService.providers);
+  if (subServiceSlots <= 0) return props.subService.maxQuantity;
+
+  // Calculate slots currently used by this subservice
+  const thisSlotsUsed = subServiceSlots * count.value;
+
+  // Available slots = maxSlotsPerAppointment - (currentSlots - this subservice's contribution)
+  const slotsUsedByOthers = props.currentSlots - thisSlotsUsed;
+  const availableSlots = props.maxSlotsPerAppointment - slotsUsedByOthers;
+
+  // Calculate max count based on available slots
+  const maxCountBySlots = Math.floor(availableSlots / subServiceSlots);
+
+  // Return the minimum of maxQuantity and what's allowed by slots
+  return Math.max(0, Math.min(props.subService.maxQuantity, maxCountBySlots));
 });
 
 const disabled = computed(() => {
-  return !checkPlusEndabled.value && count.value === 0;
+  return maxValue.value === 0 && count.value === 0;
 });
 
-const checkPlusEndabled = computed(
-  () =>
-    props.currentSlots + getMinSlotOfProvider(props.subService.providers) <=
-    props.maxSlotsPerAppointment
-);
-
-const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
-  let minSlot = MAX_SLOTS;
+/**
+ * Gets the maximum slots required for a service across all providers.
+ * We use MAX (not min) because we need to ensure the booking works at
+ * providers with higher slot requirements.
+ */
+const getMaxSlotOfProvider = (provider: OfficeImpl[]) => {
+  let maxSlot = 1; // Default to 1 slot minimum
   provider.forEach((provider) => {
-    if (provider.slots) {
-      minSlot = Math.min(minSlot, provider.slots);
+    if (provider.slots && provider.slots > maxSlot) {
+      maxSlot = provider.slots;
     }
   });
-  return minSlot;
+  return maxSlot;
 };
 </script>
 
