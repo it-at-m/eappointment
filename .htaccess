@@ -3,8 +3,8 @@ RewriteEngine On
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 # webroot
-RewriteCond %{QUERY_STRING} ^$
-RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^ /terminvereinbarung/admin [L]
 
 
 # zmsapi
