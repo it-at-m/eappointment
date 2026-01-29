@@ -323,22 +323,6 @@ watch(
           ? Math.min(minSlotsOfProvider, MAX_SLOTS)
           : MAX_SLOTS;
       minSlotsPerAppointment.value = nextMaxSlotsPerAppointment;
-
-      console.debug(
-        "[ServiceFinder] watch([offices, relations]) - minSlotsPerAppointment",
-        {
-          selectedServiceId: service.value.id,
-          providerMinSlots: minSlotsOfProvider,
-          effectiveMinSlotsPerAppointment: nextMaxSlotsPerAppointment,
-          usingFallbackMAX_SLOTS: minSlotsOfProvider <= 0,
-          MAX_SLOTS,
-          providersCount: service.value.providers?.length || 0,
-          providers: (service.value.providers || []).map((p) => ({
-            id: p.id,
-            slotsPerAppointment: p.slotsPerAppointment,
-          })),
-        }
-      );
     }
   },
   { immediate: false }
@@ -400,19 +384,6 @@ const setServiceData = (selectedService: ServiceImpl) => {
       ? Math.min(minSlotsOfProvider, MAX_SLOTS)
       : MAX_SLOTS;
   minSlotsPerAppointment.value = nextMaxSlotsPerAppointment;
-
-  console.debug("[ServiceFinder] setServiceData - minSlotsPerAppointment", {
-    selectedServiceId: selectedService.id,
-    providerMinSlots: minSlotsOfProvider,
-    effectiveMinSlotsPerAppointment: nextMaxSlotsPerAppointment,
-    usingFallbackMAX_SLOTS: minSlotsOfProvider <= 0,
-    MAX_SLOTS,
-    providersCount: service.value!.providers.length,
-    providers: service.value!.providers.map((p) => ({
-      id: p.id,
-      slotsPerAppointment: p.slotsPerAppointment,
-    })),
-  });
 
   if (selectedService.combinable) {
     const combinable = selectedService.combinable;
@@ -825,22 +796,6 @@ onMounted(() => {
               ? Math.min(minSlotsOfProvider, MAX_SLOTS)
               : MAX_SLOTS;
           minSlotsPerAppointment.value = nextMaxSlotsPerAppointment;
-
-          console.debug(
-            "[ServiceFinder] fetchServicesAndProviders (back navigation) - minSlotsPerAppointment",
-            {
-              selectedServiceId: service.value.id,
-              providerMinSlots: minSlotsOfProvider,
-              effectiveMinSlotsPerAppointment: nextMaxSlotsPerAppointment,
-              usingFallbackMAX_SLOTS: minSlotsOfProvider <= 0,
-              MAX_SLOTS,
-              providersCount: service.value.providers?.length || 0,
-              providers: (service.value.providers || []).map((p) => ({
-                id: p.id,
-                slotsPerAppointment: p.slotsPerAppointment,
-              })),
-            }
-          );
         }
       });
     }
