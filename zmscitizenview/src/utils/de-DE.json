@@ -139,6 +139,8 @@
   "apiErrorTelephoneIsRequiredText": "Bitte geben Sie Ihre Telefonnummer an.",
   "apiErrorTooManyAppointmentsWithSameMailHeader": "Sie haben bereits zu viele Termine gebucht.",
   "apiErrorTooManyAppointmentsWithSameMailText": "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.",
+  "apiErrorTooManyServicesPerAppointmentHeader": "Zu viele gleiche Leistungen ausgewählt.",
+  "apiErrorTooManyServicesPerAppointmentText": "Sie haben mehr von einer Leistung ausgewählt als erlaubt. Bitte reduzieren Sie die Anzahl und versuchen Sie es erneut.",
   "apiErrorTooManySlotsPerAppointmentHeader": "Zu viele Leistungen ausgewählt.",
   "apiErrorTooManySlotsPerAppointmentText": "Sie können pro Termin nur eine begrenzte Anzahl an Leistungen buchen. Bitte reduzieren Sie Ihre Auswahl und versuchen Sie es erneut.",
   "apiErrorUnknownErrorHeader": "Ein unbekannter Fehler ist aufgetreten.",

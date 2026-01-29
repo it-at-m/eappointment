@@ -107,6 +107,10 @@ class ExceptionService
                 $error = self::getError('tooManySlotsPerAppointment');
 
                 break;
+            case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedQuantityPerService':
+                $error = self::getError('tooManyServicesPerAppointment');
+
+                break;
             case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':
                 $error = self::getError('preconfirmationExpired');
 

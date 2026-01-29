@@ -113,6 +113,10 @@ class ProcessUpdate extends BaseController
             throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
         }
 
+        if (! (new Process())->isServiceQuantityAllowed($entity)) {
+            throw new Exception\Process\MoreThanAllowedQuantityPerService();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {

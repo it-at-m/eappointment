@@ -354,6 +354,12 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorType' => 'error'
         ],
+        'tooManyServicesPerAppointment' => [
+            'errorCode' => 'tooManyServicesPerAppointment',
+            'errorMessage' => 'The quantity of a service exceeds the maximum allowed quantity.',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'error'
+        ],
         'scopesNotFound' => [
             'errorCode' => 'scopesNotFound',
             'errorMessage' => 'No scopes found.',

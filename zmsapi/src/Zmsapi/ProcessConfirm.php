@@ -112,5 +112,9 @@ class ProcessConfirm extends BaseController
         if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
             throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
         }
+
+        if (! (new Process())->isServiceQuantityAllowed($entity)) {
+            throw new Exception\Process\MoreThanAllowedQuantityPerService();
+        }
     }
 }

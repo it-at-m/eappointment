@@ -910,6 +910,48 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $slotCount <= (int) $maxSlotsPerAppointment;
     }
 
+    /**
+     * Check if service quantities in the appointment exceed maxQuantity limits.
+     * maxQuantity is defined per request-provider relation.
+     */
+    public function isServiceQuantityAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope) || empty($entity->requests)) {
+            return true;
+        }
+
+        // Get provider ID from scope
+        $providerId = $entity->scope->getProviderId();
+        if (!$providerId) {
+            return true;
+        }
+
+        // Count occurrences of each request (service) in the process
+        $requestCounts = [];
+        foreach ($entity->requests as $request) {
+            $requestId = $request->getId();
+            if (!isset($requestCounts[$requestId])) {
+                $requestCounts[$requestId] = 0;
+            }
+            $requestCounts[$requestId]++;
+        }
+
+        // Validate each request count against its maxQuantity
+        $requestRelationDb = new RequestRelation();
+        foreach ($requestCounts as $requestId => $count) {
+            $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
+            if ($requestRelation) {
+                $maxQuantity = $requestRelation->getMaxQuantity();
+                // maxQuantity of null means unlimited
+                if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
