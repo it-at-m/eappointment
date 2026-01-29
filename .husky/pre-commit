@@ -1,0 +1,43 @@
+#!/bin/sh
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# ---- Vue code style check ----
+echo "Running Vue code style check..."
+if ! (cd zmscitizenview && npm run lint); then
+  printf "${RED}✗ Vue lint failed. Please fix the errors before committing.${NC}\n"
+  exit 1
+fi
+printf "${GREEN}✓ Vue code style OK.${NC}\n"
+
+# ---- PHP code style check ----
+container_engine=""
+if command -v podman >/dev/null 2>&1 && podman ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+  container_engine="podman"
+elif command -v docker >/dev/null 2>&1 && docker ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+  container_engine="docker"
+fi
+
+if [ -n "$container_engine" ]; then
+  echo "Running PHP code style check..."
+  if ! phpcs_output=$($container_engine exec zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" 2>&1); then
+    printf "${RED}✗ PHP CodeSniffer failed to run (container exec error).${NC}\n"
+    echo "$phpcs_output"
+    exit 1
+  fi
+  total_error_count=$(echo "$phpcs_output" | grep -Eo "FOUND [0-9]+ ERROR" | awk '{sum+=$2} END {print sum+0}')
+
+  if [ "$total_error_count" -gt 0 ]; then
+    printf "${RED}✗ PHP CodeSniffer found $total_error_count error(s).${NC}\n"
+    echo "You can fix them with:"
+    echo "  $container_engine exec -it zms-web bash -lc \"./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'\""
+    exit 1
+  else
+    printf "${GREEN}✓ PHP code style OK.${NC}\n"
+  fi
+else
+  printf "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style check.${NC}\n"
+fi
