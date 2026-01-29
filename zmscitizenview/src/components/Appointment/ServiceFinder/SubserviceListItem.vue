@@ -23,7 +23,7 @@ import { getServiceBaseURL, MAX_SLOTS } from "@/utils/Constants";
 const props = defineProps<{
   subService: SubService;
   currentSlots: number;
-  maxSlotsPerAppointment: number;
+  minSlotsPerAppointment: number;
 }>();
 
 const emit = defineEmits<(e: "change", id: string, count: number) => void>();
@@ -37,7 +37,7 @@ watch(count, (newCount) => {
 /**
  * Calculates the maximum count for this subservice, considering both:
  * - maxQuantity: the subservice's own limit
- * - maxSlotsPerAppointment: remaining slots after accounting for main service and other subservices
+ * - minSlotsPerAppointment: remaining slots after accounting for main service and other subservices
  */
 const maxValue = computed(() => {
   const subServiceSlots = getMaxSlotOfProvider(props.subService.providers);
@@ -46,9 +46,9 @@ const maxValue = computed(() => {
   // Calculate slots currently used by this subservice
   const thisSlotsUsed = subServiceSlots * count.value;
 
-  // Available slots = maxSlotsPerAppointment - (currentSlots - this subservice's contribution)
+  // Available slots = minSlotsPerAppointment - (currentSlots - this subservice's contribution)
   const slotsUsedByOthers = props.currentSlots - thisSlotsUsed;
-  const availableSlots = props.maxSlotsPerAppointment - slotsUsedByOthers;
+  const availableSlots = props.minSlotsPerAppointment - slotsUsedByOthers;
 
   // Calculate max count based on available slots
   const maxCountBySlots = Math.floor(availableSlots / subServiceSlots);
