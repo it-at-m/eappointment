@@ -7,6 +7,9 @@ config.php
 .parcel-cache
 .DS_*
 bower_components
+.env
+.env.local
+.env.*.local
 cache/
 vendor.old
 vendor.update
