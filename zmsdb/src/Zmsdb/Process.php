@@ -920,8 +920,12 @@ class Process extends Base implements Interfaces\ResolveReferences
             return true;
         }
 
-        // Get provider ID from scope
-        $providerId = $entity->scope->getProviderId();
+        // Get provider ID from scope - return true if no provider available
+        try {
+            $providerId = $entity->scope->getProviderId();
+        } catch (\Exception $e) {
+            return true;
+        }
         if (!$providerId) {
             return true;
         }
