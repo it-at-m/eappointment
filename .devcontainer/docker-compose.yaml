@@ -26,6 +26,7 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/mysql
+      - ../.resources/zms.sql:/docker-entrypoint-initdb.d/01-zms.sql:ro
     ports:
       - "3306:3306"
 
