@@ -462,6 +462,10 @@ class MapperService
             $processEntity->status = $thinnedProcess->status;
         }
 
+        if (isset($thinnedProcess->displayNumber)) {
+            $processEntity->displayNumber = $thinnedProcess->displayNumber;
+        }
+
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
