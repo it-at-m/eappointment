@@ -16,9 +16,12 @@
 import { MucCounter } from "@muenchen/muc-patternlab-vue";
 import { computed, ref, watch } from "vue";
 
-import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
-import { getServiceBaseURL, MAX_SLOTS } from "@/utils/Constants";
+import { getServiceBaseURL } from "@/utils/Constants";
+import {
+  calculateMaxCountBySlots,
+  getMaxSlotOfProvider,
+} from "@/utils/slotCalculations";
 
 const props = defineProps<{
   subService: SubService;
@@ -41,40 +44,24 @@ watch(count, (newCount) => {
  */
 const maxValue = computed(() => {
   const subServiceSlots = getMaxSlotOfProvider(props.subService.providers);
-  if (subServiceSlots <= 0) return props.subService.maxQuantity;
 
   // Calculate slots currently used by this subservice
   const thisSlotsUsed = subServiceSlots * count.value;
 
-  // Available slots = minSlotsPerAppointment - (currentSlots - this subservice's contribution)
+  // Slots used by others = currentSlots - this subservice's contribution
   const slotsUsedByOthers = props.currentSlots - thisSlotsUsed;
-  const availableSlots = props.minSlotsPerAppointment - slotsUsedByOthers;
 
-  // Calculate max count based on available slots
-  const maxCountBySlots = Math.floor(availableSlots / subServiceSlots);
-
-  // Return the minimum of maxQuantity and what's allowed by slots
-  return Math.max(0, Math.min(props.subService.maxQuantity, maxCountBySlots));
+  return calculateMaxCountBySlots(
+    subServiceSlots,
+    props.subService.maxQuantity,
+    props.minSlotsPerAppointment,
+    slotsUsedByOthers
+  );
 });
 
 const disabled = computed(() => {
   return maxValue.value === 0 && count.value === 0;
 });
-
-/**
- * Gets the maximum slots required for a service across all providers.
- * We use MAX (not min) because we need to ensure the booking works at
- * providers with higher slot requirements.
- */
-const getMaxSlotOfProvider = (provider: OfficeImpl[]) => {
-  let maxSlot = 1; // Default to 1 slot minimum
-  provider.forEach((provider) => {
-    if (provider.slots && provider.slots > maxSlot) {
-      maxSlot = provider.slots;
-    }
-  });
-  return maxSlot;
-};
 </script>
 
 <style lang="scss" scoped>
