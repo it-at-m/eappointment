@@ -315,9 +315,11 @@ watch(service, (newService) => {
 
 /**
  * Calculation of the currently required slots by changing the count of the selected service.
+ * Uses a flag to prevent double-execution when clamping the value.
  */
+let isAdjustingCount = false;
 watch(countOfService, (newCountOfService) => {
-  if (!service.value) return;
+  if (!service.value || isAdjustingCount) return;
 
   const subServiceSlots = calculateSubserviceSlots(service.value.subServices);
   const { adjustedCount, totalSlots } = adjustMainServiceCount(
@@ -328,7 +330,9 @@ watch(countOfService, (newCountOfService) => {
   );
 
   if (adjustedCount !== newCountOfService) {
+    isAdjustingCount = true;
     countOfService.value = adjustedCount;
+    isAdjustingCount = false;
   }
   service.value.count = adjustedCount;
   currentSlots.value = totalSlots;
