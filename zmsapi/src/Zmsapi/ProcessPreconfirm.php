@@ -34,7 +34,10 @@ class ProcessPreconfirm extends BaseController
         $this->testProcessData($entity);
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
-        $process = (new Process())->readEntity($entity->id, $entity->authKey);
+        $process = (new Process())->readEntity($entity->id, $entity->authKey, 2);
+        
+        // Validate limits against persisted process (not client payload) to prevent bypass
+        $this->validateProcessLimits($process);
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
@@ -62,18 +65,25 @@ class ProcessPreconfirm extends BaseController
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
-        if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
-            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
-        }
-
-        if (! (new Process())->isServiceQuantityAllowed($entity)) {
-            throw new Exception\Process\MoreThanAllowedQuantityPerService();
-        }
-
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
+        }
+    }
+
+    /**
+     * Validate limits against persisted process from DB (not client payload)
+     * to prevent bypass by omitting scope/requests from request.
+     */
+    protected function validateProcessLimits(\BO\Zmsentities\Process $process)
+    {
+        if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
+            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
+        }
+
+        if (! (new Process())->isServiceQuantityAllowed($process)) {
+            throw new Exception\Process\MoreThanAllowedQuantityPerService();
         }
     }
 }
