@@ -39,7 +39,6 @@
                     },
                     "workstationCount": {
                         "public": "1",
-                        "callcenter": "0",
                         "intern": "1"
                     },
                     "lastChange": 1727247741,

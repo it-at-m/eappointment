@@ -31,7 +31,6 @@ class SlotTest extends EntityCommonTests
         $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
-            'callcenter' => 5,
             'time' => '12:50'
         ));
         $collection->addEntity($entity);
@@ -96,7 +95,6 @@ class SlotTest extends EntityCommonTests
         $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
-            'callcenter' => 5,
             'time' => '12:50'
         ));
         $collection->addEntity($entity);
@@ -107,7 +105,6 @@ class SlotTest extends EntityCommonTests
         $entity3 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
-            'callcenter' => 5,
             'time' => '13:00'
         ));
         $collection->addEntity($entity3);
@@ -128,7 +125,6 @@ class SlotTest extends EntityCommonTests
         $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
-            'callcenter' => 5,
             'time' => '12:50'
         ));
         $collection->addEntity($entity);
@@ -143,7 +139,6 @@ class SlotTest extends EntityCommonTests
         $entity2 = new $this->entityclass(array(
             'public' => 0,
             'intern' => 9,
-            'callcenter' => 5,
             'time' => '12:50'
         ));
         $collection->addEntity($entity);

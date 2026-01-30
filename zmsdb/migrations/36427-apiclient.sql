@@ -3,7 +3,7 @@ CREATE TABLE `apiclient` (
     `apiClientID` INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
     `clientKey` VARCHAR(32) NOT NULL, 
     `shortname` VARCHAR(32) NOT NULL, 
-    `accesslevel` ENUM("public", "callcenter", "intern", "blocked") DEFAULT "public",
+    `accesslevel` ENUM("public", "intern", "blocked") DEFAULT "public",
     `updateTimestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     INDEX (`clientKey`, `accesslevel`)

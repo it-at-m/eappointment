@@ -25,7 +25,6 @@ class CompareFreeProcessesTest extends Base
         $now = static::$now;
         $dateTime = new \DateTimeImmutable("2016-05-30");
         $freeProcessesDay = 0;
-        $freeProcessesDayCallcenter = 0;
         $freeProcessesDayIntern = 0;
         $freeProcessesTime = 0;
         $scopeList = (new Scope())->readList();
@@ -44,7 +43,6 @@ class CompareFreeProcessesTest extends Base
             $day = $calendar->getDayByDateTime($dateTime);
 
             $freeProcessesDay += $day->freeAppointments->public;
-            $freeProcessesDayCallcenter += $day->freeAppointments->callcenter;
             $freeProcessesDayIntern += $day->freeAppointments->intern;
 
             $input2 = $this->getTestEntity();

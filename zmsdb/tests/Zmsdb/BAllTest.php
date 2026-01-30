@@ -33,7 +33,6 @@ class BAllTest extends Base
                 $testSlots = $testDay->freeAppointments;
                 $daySlots = $day->freeAppointments;
                 $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
-                $this->assertEquals($testSlots->callcenter, $daySlots->callcenter, $message . "callcenter");
                 $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
             }
         }
@@ -65,7 +64,6 @@ class BAllTest extends Base
             $testSlots = $testDay->freeAppointments;
             $daySlots = $day->freeAppointments;
             $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
-            $this->assertEquals($testSlots->callcenter, $daySlots->callcenter, $message . "callcenter");
             $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
             $this->assertEquals($testSlots->type, $daySlots->type, $message . "type");
             $this->assertEquals($testDay->status, $day->status, $message . "status");
@@ -83,7 +81,6 @@ class BAllTest extends Base
                 $day->day = str_pad($day->day, 2, '0', STR_PAD_LEFT);
                 $day->freeAppointments->intern = intval($day->freeAppointments->intern);
                 $day->freeAppointments->public = intval($day->freeAppointments->public);
-                $day->freeAppointments->callcenter = intval($day->freeAppointments->callcenter);
                 $day->freeAppointments = $day->freeAppointments->getArrayCopy();
                 $testExport[$key] = $day->getArrayCopy();
             }

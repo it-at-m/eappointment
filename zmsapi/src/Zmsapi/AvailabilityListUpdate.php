@@ -144,7 +144,6 @@ class AvailabilityListUpdate extends BaseController
         $doubleTypeAvailability = (new AvailabilityRepository())->readEntityDoubleTypes($availability->id);
         if ($doubleTypeAvailability) {
             $doubleTypeAvailability->workstationCount['intern'] = 0;
-            $doubleTypeAvailability->workstationCount['callcenter'] = 0;
             $doubleTypeAvailability->workstationCount['public'] = 0;
             $doubleTypeAvailability['description'] = '';
             $doubleTypeAvailability['type'] = 'openinghours';

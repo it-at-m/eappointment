@@ -4,17 +4,11 @@
     "example": {
         "public": 3,
         "intern": 10,
-        "callcenter": 8,
         "type": "sum",
         "time": "11:50"
     },
     "additionalProperties": false,
     "properties": {
-        "callcenter": {
-            "type": "number",
-            "default": 0,
-            "description": "Appointments of this type are usually only available via human agents, usually by phone"
-        },
         "intern": {
             "type": "number",
             "default": 0,

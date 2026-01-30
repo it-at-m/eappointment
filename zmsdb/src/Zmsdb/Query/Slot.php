@@ -250,8 +250,6 @@ class Slot extends Base implements MappingInterface
         $data['day'] = $date->format('d');
         $data['time'] = $slot->getTimeString();
         $data['public'] = isset($slot['public']) ? $slot['public'] : $availability->workstationCount['public'];
-        $data['callcenter'] = isset($slot['callcenter']) ?
-            $slot['callcenter'] : $availability->workstationCount['callcenter'];
         $data['intern'] = isset($slot['intern']) ? $slot['intern'] : $availability->workstationCount['intern'];
         $data['status'] = $slot->status;
         $data['slotTimeInMinutes'] = $availability->slotTimeInMinutes;

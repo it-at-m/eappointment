@@ -12,13 +12,11 @@ return array (
     array (
       'public' => 0,
       'intern' => -1,
-      'callcenter' => 0,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '32',
-      'callcenter' => '32',
       'intern' => '32',
       'type' => 'free',
     ),
@@ -33,13 +31,11 @@ return array (
     array (
       'public' => 1,
       'intern' => -1,
-      'callcenter' => 1,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '32',
-      'callcenter' => '32',
       'intern' => '32',
       'type' => 'free',
     ),
@@ -54,13 +50,11 @@ return array (
     array (
       'public' => 0,
       'intern' => 0,
-      'callcenter' => 0,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '32',
-      'callcenter' => '32',
       'intern' => '32',
       'type' => 'free',
     ),
@@ -75,13 +69,11 @@ return array (
     array (
       'public' => 0,
       'intern' => 0,
-      'callcenter' => 0,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '32',
-      'callcenter' => '32',
       'intern' => '32',
       'type' => 'free',
     ),

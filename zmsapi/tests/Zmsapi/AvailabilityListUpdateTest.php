@@ -34,7 +34,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                     }
                 },
@@ -59,7 +58,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                     }
                 }
@@ -102,7 +100,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                     }
                 },
@@ -127,7 +124,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                     }
                 }
@@ -184,7 +180,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                   }
                 }
@@ -222,7 +217,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
@@ -274,7 +268,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": 60,
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
@@ -327,7 +320,6 @@ class AvailabilityListUpdateTest extends Base
                         "slotTimeInMinutes": "invalid",
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
@@ -368,7 +360,6 @@ class AvailabilityListUpdateTest extends Base
                         },
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
@@ -422,7 +413,6 @@ class AvailabilityListUpdateTest extends Base
                         "type": "invalid_type",
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
@@ -463,7 +453,6 @@ class AvailabilityListUpdateTest extends Base
                         },
                         "workstationCount": {
                             "public": 1,
-                            "callcenter": 0,
                             "intern": 0
                         }
                     }
