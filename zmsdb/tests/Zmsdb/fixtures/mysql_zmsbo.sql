@@ -978,6 +978,7 @@ CREATE TABLE `oeffnungszeit` (
   `kommentar` varchar(200) DEFAULT NULL,
   `reduktionTermineImInternet` int(2) DEFAULT 0,
   `erlaubemehrfachslots` tinyint(1) NOT NULL DEFAULT 0,
+  `reduktionTermineCallcenter` int(11) NOT NULL DEFAULT 0,
   `Offen_ab` int(11) NOT NULL DEFAULT 0,
   `Offen_bis` int(11) NOT NULL DEFAULT 0,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
