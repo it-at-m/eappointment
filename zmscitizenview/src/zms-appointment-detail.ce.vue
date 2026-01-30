@@ -2,8 +2,9 @@
   <link
     href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     rel="stylesheet"
+    @load="onStylesheetLoaded"
   />
-  <main>
+  <main :class="{ 'styles-loading': !stylesLoaded }">
     <div>
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
@@ -43,6 +44,12 @@ const props = defineProps({
 
 const { t } = useI18n();
 const globalState = useGlobalState(props);
+
+// Prevent flickering: hide content until external stylesheet is loaded
+const stylesLoaded = ref(false);
+const onStylesheetLoaded = () => {
+  stylesLoaded.value = true;
+};
 </script>
 
 <style>
@@ -57,5 +64,10 @@ const globalState = useGlobalState(props);
 
 main {
   padding-bottom: 32px;
+}
+
+/* Hide content until external stylesheet is loaded to prevent icon flickering */
+main.styles-loading {
+  visibility: hidden;
 }
 </style>
