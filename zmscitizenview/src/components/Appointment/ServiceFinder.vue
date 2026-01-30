@@ -304,30 +304,6 @@ watch(service, (newService) => {
   countOfService.value = newService.count ?? 1;
 });
 
-// Watch for when offices/relations are loaded to recalculate minSlotsPerAppointment
-watch(
-  [offices, relations],
-  () => {
-    if (
-      service.value &&
-      offices.value.length > 0 &&
-      relations.value.length > 0
-    ) {
-      // Recalculate providers and minSlotsPerAppointment
-      service.value.providers = getProviders(service.value.id, null);
-      const minSlotsOfProvider = getMinSlotsPerAppointmentOfProvider(
-        service.value.providers || []
-      );
-      const nextMaxSlotsPerAppointment =
-        minSlotsOfProvider > 0
-          ? Math.min(minSlotsOfProvider, MAX_SLOTS)
-          : MAX_SLOTS;
-      minSlotsPerAppointment.value = nextMaxSlotsPerAppointment;
-    }
-  },
-  { immediate: false }
-);
-
 /**
  * Calculation of the currently required slots by changing the count of the selected service.
  */
