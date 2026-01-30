@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  adjustMainServiceCount,
+  adjustSubserviceCount,
   calculateMaxCountBySlots,
+  calculateOtherSubserviceSlots,
   calculateSubserviceSlots,
+  calculateTotalSlots,
+  exceedsSlotLimit,
   getEffectiveMinSlotsPerAppointment,
   getMaxSlotOfProvider,
   getMinSlotsPerAppointmentOfProvider,
@@ -178,6 +183,128 @@ describe("slotCalculations", () => {
       // maxCountBySlots = floor(-5 / 3) = -2
       // max(0, min(5, -2)) = 0
       expect(calculateMaxCountBySlots(3, 5, 10, 15)).toBe(0);
+    });
+  });
+
+  describe("calculateTotalSlots", () => {
+    it("calculates main service slots only when no subservices", () => {
+      const providers = [{ slots: 3 }] as any[];
+      expect(calculateTotalSlots(providers, 2, undefined)).toBe(6);
+    });
+
+    it("calculates main + subservice slots", () => {
+      const mainProviders = [{ slots: 3 }] as any[];
+      const subservices = [
+        { count: 1, providers: [{ slots: 2 }] },
+        { count: 2, providers: [{ slots: 4 }] },
+      ] as any[];
+      // main: 3*2=6, sub: 1*2 + 2*4 = 10, total: 16
+      expect(calculateTotalSlots(mainProviders, 2, subservices)).toBe(16);
+    });
+  });
+
+  describe("exceedsSlotLimit", () => {
+    it("returns false when under limit", () => {
+      expect(exceedsSlotLimit(5, 10)).toBe(false);
+    });
+
+    it("returns false when at limit", () => {
+      expect(exceedsSlotLimit(10, 10)).toBe(false);
+    });
+
+    it("returns true when over limit", () => {
+      expect(exceedsSlotLimit(11, 10)).toBe(true);
+    });
+
+    it("returns false when limit is 0 (disabled)", () => {
+      expect(exceedsSlotLimit(100, 0)).toBe(false);
+    });
+  });
+
+  describe("adjustMainServiceCount", () => {
+    it("returns requested count when within limit", () => {
+      const providers = [{ slots: 3 }] as any[];
+      const result = adjustMainServiceCount(2, providers, 0, 10);
+      expect(result.adjustedCount).toBe(2);
+      expect(result.totalSlots).toBe(6);
+    });
+
+    it("adjusts count when exceeding limit", () => {
+      const providers = [{ slots: 3 }] as any[];
+      // requested: 5, subSlots: 0, limit: 10
+      // 5*3=15 > 10, max allowed = floor(10/3) = 3
+      const result = adjustMainServiceCount(5, providers, 0, 10);
+      expect(result.adjustedCount).toBe(3);
+      expect(result.totalSlots).toBe(9);
+    });
+
+    it("ensures minimum count of 1", () => {
+      const providers = [{ slots: 5 }] as any[];
+      // requested: 3, subSlots: 8, limit: 10
+      // available = 10-8 = 2, max = floor(2/5) = 0, but min is 1
+      const result = adjustMainServiceCount(3, providers, 8, 10);
+      expect(result.adjustedCount).toBe(1);
+    });
+
+    it("accounts for subservice slots", () => {
+      const providers = [{ slots: 3 }] as any[];
+      // requested: 3, subSlots: 5, limit: 10
+      // 3*3+5=14 > 10, available = 10-5 = 5, max = floor(5/3) = 1
+      const result = adjustMainServiceCount(3, providers, 5, 10);
+      expect(result.adjustedCount).toBe(1);
+      expect(result.totalSlots).toBe(8);
+    });
+  });
+
+  describe("adjustSubserviceCount", () => {
+    it("returns requested count when within limit", () => {
+      const providers = [{ slots: 2 }] as any[];
+      const result = adjustSubserviceCount(2, providers, 3, 0, 10);
+      expect(result.adjustedCount).toBe(2);
+      expect(result.totalSlots).toBe(7); // 3 + 0 + 2*2
+    });
+
+    it("adjusts count when exceeding limit", () => {
+      const providers = [{ slots: 3 }] as any[];
+      // mainSlots: 4, otherSubSlots: 2, requested: 3, limit: 10
+      // 4 + 2 + 3*3 = 15 > 10
+      // available = 10 - 4 - 2 = 4, max = floor(4/3) = 1
+      const result = adjustSubserviceCount(3, providers, 4, 2, 10);
+      expect(result.adjustedCount).toBe(1);
+      expect(result.totalSlots).toBe(9);
+    });
+
+    it("allows count of 0", () => {
+      const providers = [{ slots: 5 }] as any[];
+      // mainSlots: 8, otherSubSlots: 2, limit: 10
+      // available = 10 - 8 - 2 = 0, max = 0
+      const result = adjustSubserviceCount(2, providers, 8, 2, 10);
+      expect(result.adjustedCount).toBe(0);
+    });
+  });
+
+  describe("calculateOtherSubserviceSlots", () => {
+    it("returns 0 for undefined subservices", () => {
+      expect(calculateOtherSubserviceSlots(undefined, "1")).toBe(0);
+    });
+
+    it("excludes the specified subservice", () => {
+      const subservices = [
+        { id: "1", count: 2, providers: [{ slots: 3 }] },
+        { id: "2", count: 1, providers: [{ slots: 5 }] },
+        { id: "3", count: 3, providers: [{ slots: 2 }] },
+      ] as any[];
+      // Exclude id="2", total = 2*3 + 3*2 = 12
+      expect(calculateOtherSubserviceSlots(subservices, "2")).toBe(12);
+    });
+
+    it("ignores subservices with count 0", () => {
+      const subservices = [
+        { id: "1", count: 0, providers: [{ slots: 3 }] },
+        { id: "2", count: 2, providers: [{ slots: 5 }] },
+      ] as any[];
+      // Exclude id="2", only id="1" left but count=0
+      expect(calculateOtherSubserviceSlots(subservices, "2")).toBe(0);
     });
   });
 });

@@ -206,11 +206,14 @@ import {
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
 import {
+  adjustMainServiceCount,
+  adjustSubserviceCount,
   calculateMaxCountBySlots,
+  calculateOtherSubserviceSlots,
   calculateSubserviceSlots,
+  calculateTotalSlots,
   getEffectiveMinSlotsPerAppointment,
   getMaxSlotOfProvider,
-  getMinSlotsPerAppointmentOfProvider,
 } from "@/utils/slotCalculations";
 
 const isCaptchaValid = ref<boolean>(false);
@@ -316,42 +319,19 @@ watch(service, (newService) => {
 watch(countOfService, (newCountOfService) => {
   if (!service.value) return;
 
-  const mainServiceSlots = getMaxSlotOfProvider(service.value.providers || []);
-  const newMainServiceSlots = mainServiceSlots * newCountOfService;
+  const subServiceSlots = calculateSubserviceSlots(service.value.subServices);
+  const { adjustedCount, totalSlots } = adjustMainServiceCount(
+    newCountOfService,
+    service.value.providers || [],
+    subServiceSlots,
+    minSlotsPerAppointment.value
+  );
 
-  // Calculate current slots from subservices
-  let subServiceSlots = 0;
-  if (service.value.subServices) {
-    service.value.subServices.forEach((subservice) => {
-      if (subservice.count > 0) {
-        subServiceSlots +=
-          getMaxSlotOfProvider(subservice.providers) * subservice.count;
-      }
-    });
-  }
-
-  const totalSlots = newMainServiceSlots + subServiceSlots;
-
-  // Validate against minSlotsPerAppointment
-  if (
-    totalSlots > minSlotsPerAppointment.value &&
-    minSlotsPerAppointment.value > 0
-  ) {
-    // Calculate maximum allowed count for main service
-    const maxMainCount = Math.floor(
-      (minSlotsPerAppointment.value - subServiceSlots) / mainServiceSlots
-    );
-    const adjustedCount = Math.max(
-      1,
-      Math.min(newCountOfService, maxMainCount)
-    );
+  if (adjustedCount !== newCountOfService) {
     countOfService.value = adjustedCount;
-    service.value.count = adjustedCount;
-    currentSlots.value = mainServiceSlots * adjustedCount + subServiceSlots;
-  } else {
-    service.value.count = newCountOfService;
-    currentSlots.value = totalSlots;
   }
+  service.value.count = adjustedCount;
+  currentSlots.value = totalSlots;
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
@@ -408,11 +388,11 @@ const setServiceData = (selectedService: ServiceImpl) => {
   }
 
   // Calculate currentSlots including main service and all subservices
-  const mainSlots =
-    getMaxSlotOfProvider(service.value!.providers) *
-    (service.value!.count || 0);
-  const subSlots = calculateSubserviceSlots(service.value!.subServices);
-  currentSlots.value = mainSlots + subSlots;
+  currentSlots.value = calculateTotalSlots(
+    service.value!.providers,
+    service.value!.count || 0,
+    service.value!.subServices
+  );
 
   // Validate and adjust counts if they exceed minSlotsPerAppointment
   if (
@@ -451,13 +431,11 @@ const setServiceData = (selectedService: ServiceImpl) => {
     }
 
     // Recalculate currentSlots after adjustments
-    const adjustedMainSlots =
-      getMaxSlotOfProvider(service.value!.providers) *
-      (service.value!.count || 0);
-    const adjustedSubSlots = calculateSubserviceSlots(
+    currentSlots.value = calculateTotalSlots(
+      service.value!.providers,
+      service.value!.count || 0,
       service.value!.subServices
     );
-    currentSlots.value = adjustedMainSlots + adjustedSubSlots;
   }
 };
 
@@ -508,46 +486,24 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
   );
 
   if (subservice != undefined) {
-    const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
     const mainServiceSlots =
       getMaxSlotOfProvider(service.value!.providers || []) *
       (service.value!.count || 0);
+    const otherSubServiceSlots = calculateOtherSubserviceSlots(
+      service.value!.subServices,
+      id
+    );
 
-    // Calculate current slots from other subservices
-    let otherSubServiceSlots = 0;
-    if (service.value!.subServices) {
-      service.value!.subServices.forEach((s) => {
-        if (s.id !== id && s.count > 0) {
-          otherSubServiceSlots += getMaxSlotOfProvider(s.providers) * s.count;
-        }
-      });
-    }
+    const { adjustedCount, totalSlots } = adjustSubserviceCount(
+      count,
+      subservice.providers,
+      mainServiceSlots,
+      otherSubServiceSlots,
+      minSlotsPerAppointment.value
+    );
 
-    const totalSlots =
-      mainServiceSlots + otherSubServiceSlots + subServiceSlots * count;
-
-    // Validate against minSlotsPerAppointment
-    if (
-      totalSlots > minSlotsPerAppointment.value &&
-      minSlotsPerAppointment.value > 0
-    ) {
-      // Calculate maximum allowed count for this subservice
-      const maxSubCount = Math.floor(
-        (minSlotsPerAppointment.value -
-          mainServiceSlots -
-          otherSubServiceSlots) /
-          subServiceSlots
-      );
-      const adjustedCount = Math.max(0, Math.min(count, maxSubCount));
-      subservice.count = adjustedCount;
-      currentSlots.value =
-        mainServiceSlots +
-        otherSubServiceSlots +
-        subServiceSlots * adjustedCount;
-    } else {
-      subservice.count = count;
-      currentSlots.value = totalSlots;
-    }
+    subservice.count = adjustedCount;
+    currentSlots.value = totalSlots;
   }
 };
 
@@ -647,22 +603,14 @@ onMounted(() => {
     if (typeof variantId === "number" && Number.isFinite(variantId)) {
       selectedVariant.value = String(variantId);
     }
-    let slots = 0;
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    slots =
-      getMaxSlotOfProvider(service.value.providers || []) *
-      (service.value.count || 0);
-    if (service.value.subServices) {
-      service.value.subServices.forEach((subservice) => {
-        if (subservice.count > 0) {
-          slots +=
-            getMaxSlotOfProvider(subservice.providers) * subservice.count;
-        }
-      });
-    }
-    currentSlots.value = slots;
+    currentSlots.value = calculateTotalSlots(
+      service.value.providers || [],
+      service.value.count || 0,
+      service.value.subServices
+    );
 
     // Calculate minSlotsPerAppointment if providers are available
     if (service.value.providers && service.value.providers.length > 0) {

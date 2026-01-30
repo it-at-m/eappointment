@@ -1,6 +1,13 @@
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { MAX_SLOTS } from "@/utils/Constants";
 
+/** Subservice type used in slot calculations */
+export interface SlotSubservice {
+  id?: string;
+  count: number;
+  providers: OfficeImpl[];
+}
+
 /**
  * Gets the maximum slots required for a service across all providers.
  * We use MAX (not min) because we need to ensure the booking works at
@@ -58,7 +65,7 @@ export const getEffectiveMinSlotsPerAppointment = (
  * Calculates the total slots used by a list of subservices.
  */
 export const calculateSubserviceSlots = (
-  subServices: Array<{ count: number; providers: OfficeImpl[] }> | undefined
+  subServices: SlotSubservice[] | undefined
 ): number => {
   if (!subServices) return 0;
   let slots = 0;
@@ -68,6 +75,20 @@ export const calculateSubserviceSlots = (
     }
   });
   return slots;
+};
+
+/**
+ * Calculates the total slots for an appointment (main service + all subservices).
+ */
+export const calculateTotalSlots = (
+  mainServiceProviders: OfficeImpl[],
+  mainServiceCount: number,
+  subServices: SlotSubservice[] | undefined
+): number => {
+  const mainSlots =
+    getMaxSlotOfProvider(mainServiceProviders) * mainServiceCount;
+  const subSlots = calculateSubserviceSlots(subServices);
+  return mainSlots + subSlots;
 };
 
 /**
@@ -91,4 +112,87 @@ export const calculateMaxCountBySlots = (
   const maxCountBySlots = Math.floor(availableSlots / serviceSlots);
 
   return Math.max(0, Math.min(maxQuantity, maxCountBySlots));
+};
+
+/**
+ * Checks if total slots exceed the limit.
+ */
+export const exceedsSlotLimit = (
+  totalSlots: number,
+  minSlotsPerAppointment: number
+): boolean => {
+  return minSlotsPerAppointment > 0 && totalSlots > minSlotsPerAppointment;
+};
+
+/**
+ * Adjusts the main service count to fit within slot limits.
+ * Returns the adjusted count and updated total slots.
+ */
+export const adjustMainServiceCount = (
+  requestedCount: number,
+  mainServiceProviders: OfficeImpl[],
+  subServiceSlots: number,
+  minSlotsPerAppointment: number
+): { adjustedCount: number; totalSlots: number } => {
+  const mainServiceSlots = getMaxSlotOfProvider(mainServiceProviders);
+  const totalSlots = mainServiceSlots * requestedCount + subServiceSlots;
+
+  if (!exceedsSlotLimit(totalSlots, minSlotsPerAppointment)) {
+    return { adjustedCount: requestedCount, totalSlots };
+  }
+
+  const maxMainCount = Math.floor(
+    (minSlotsPerAppointment - subServiceSlots) / mainServiceSlots
+  );
+  const adjustedCount = Math.max(1, Math.min(requestedCount, maxMainCount));
+  const adjustedTotalSlots = mainServiceSlots * adjustedCount + subServiceSlots;
+
+  return { adjustedCount, totalSlots: adjustedTotalSlots };
+};
+
+/**
+ * Adjusts a subservice count to fit within slot limits.
+ * Returns the adjusted count and updated total slots.
+ */
+export const adjustSubserviceCount = (
+  requestedCount: number,
+  subserviceProviders: OfficeImpl[],
+  mainServiceSlots: number,
+  otherSubserviceSlots: number,
+  minSlotsPerAppointment: number
+): { adjustedCount: number; totalSlots: number } => {
+  const subServiceSlots = getMaxSlotOfProvider(subserviceProviders);
+  const totalSlots =
+    mainServiceSlots + otherSubserviceSlots + subServiceSlots * requestedCount;
+
+  if (!exceedsSlotLimit(totalSlots, minSlotsPerAppointment)) {
+    return { adjustedCount: requestedCount, totalSlots };
+  }
+
+  const maxSubCount = Math.floor(
+    (minSlotsPerAppointment - mainServiceSlots - otherSubserviceSlots) /
+      subServiceSlots
+  );
+  const adjustedCount = Math.max(0, Math.min(requestedCount, maxSubCount));
+  const adjustedTotalSlots =
+    mainServiceSlots + otherSubserviceSlots + subServiceSlots * adjustedCount;
+
+  return { adjustedCount, totalSlots: adjustedTotalSlots };
+};
+
+/**
+ * Calculates slots used by other subservices (excluding a specific one).
+ */
+export const calculateOtherSubserviceSlots = (
+  subServices: SlotSubservice[] | undefined,
+  excludeId: string
+): number => {
+  if (!subServices) return 0;
+  let slots = 0;
+  subServices.forEach((s) => {
+    if (s.id !== excludeId && s.count > 0) {
+      slots += getMaxSlotOfProvider(s.providers) * s.count;
+    }
+  });
+  return slots;
 };
