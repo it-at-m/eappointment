@@ -109,7 +109,6 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         },
         workstationCount: {
             intern: 0,
-            callcenter: 0,
             'public': 0
         },
         repeat: {
@@ -194,7 +193,6 @@ export const getDataValuesFromForm = (form, scope) => {
         },
         workstationCount: {
             intern: form.workstationCount_intern,
-            callcenter: form.workstationCount_callcenter,
             "public": form.workstationCount_public
         },
         weekday: form.weekday.reduce((carry, current) => {
@@ -209,12 +207,9 @@ export const getDataValuesFromForm = (form, scope) => {
 
 export const cleanupFormData = data => {
     let internCount = parseInt(data.workstationCount_intern, 10);
-    let callcenterCount = parseInt(data.workstationCount_callcenter, 10);
-    callcenterCount = (callcenterCount > internCount) ? internCount : callcenterCount;
     let publicCount = parseInt(data.workstationCount_public, 10);
     publicCount = (publicCount > internCount) ? internCount : publicCount;
     return Object.assign({}, data, {
-        workstationCount_callcenter: callcenterCount,
         workstationCount_public: publicCount,
         open_from: (data.open_from === data.openFromDefault) ? "" : data.open_from,
         open_to: (data.open_to === data.openToDefault) ? "" : data.open_to
@@ -258,10 +253,6 @@ export const getFirstLevelValues = data => {
 export const getFormValuesFromData = data => {
     const workstations = Object.assign({}, data.workstationCount)
 
-    if (parseInt(workstations.callcenter, 10) > parseInt(workstations.intern, 10)) {
-        workstations.callcenter = workstations.intern
-    }
-
     if (parseInt(workstations.public, 10) > parseInt(workstations.intern, 10)) {
         workstations.public = workstations.intern
     }
@@ -279,7 +270,6 @@ export const getFormValuesFromData = data => {
         openToDefault,
         repeat: repeatSeries,
         workstationCount_intern: workstations.intern,
-        workstationCount_callcenter: workstations.callcenter,
         workstationCount_public: workstations.public,
         weekday: Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
     }))
