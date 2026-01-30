@@ -97,7 +97,7 @@ INSERT INTO `oeffnungszeit`
  `Timeslot`,
  `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
  `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
- `Offen_ab`,`Offen_bis`,`updateTimestamp`)
+ `reduktionTermineCallcenter`,`Offen_ab`,`Offen_bis`,`updateTimestamp`)
 VALUES
     (965202, 65202, '2025-05-14','2025-05-14',
      0,1,32,
