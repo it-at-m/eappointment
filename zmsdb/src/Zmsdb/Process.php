@@ -892,13 +892,10 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
 
-        // Use MAX_SLOTS (25) as default limit if slotsPerAppointment is not configured
         if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
             $maxSlotsPerAppointment = Slot::MAX_SLOTS;
         }
 
-        // Use getAppointments()->getFirst() to avoid side effects
-        // (getFirstAppointment() creates an appointment if none exists)
         $appointment = $entity->getAppointments()->getFirst();
         if (!$appointment) {
             return true;
@@ -912,17 +909,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $slotCount <= (int) $maxSlotsPerAppointment;
     }
 
-    /**
-     * Check if service quantities in the appointment exceed maxQuantity limits.
-     * maxQuantity is defined per request-provider relation.
-     */
     public function isServiceQuantityAllowed(Entity $entity): bool
     {
         if (empty($entity->scope) || empty($entity->requests)) {
             return true;
         }
 
-        // Get provider ID from scope - return true if no provider available
         try {
             $providerId = $entity->scope->getProviderId();
         } catch (\Exception $e) {
@@ -932,7 +924,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             return true;
         }
 
-        // Count occurrences of each request (service) in the process
         $requestCounts = [];
         foreach ($entity->requests as $request) {
             $requestId = $request->getId();
@@ -942,13 +933,11 @@ class Process extends Base implements Interfaces\ResolveReferences
             $requestCounts[$requestId]++;
         }
 
-        // Validate each request count against its maxQuantity
         $requestRelationDb = new RequestRelation();
         foreach ($requestCounts as $requestId => $count) {
             $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
             if ($requestRelation) {
                 $maxQuantity = $requestRelation->getMaxQuantity();
-                // maxQuantity of null means unlimited
                 if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
                     return false;
                 }
@@ -994,11 +983,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readResolvedReferences($process, 1);
     }
 
-    /**
-     * Read processList by external user id
-     *
-     * @return Collection processList
-     */
     public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
