@@ -36,7 +36,6 @@ class ProcessPreconfirm extends BaseController
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new Process())->readEntity($entity->id, $entity->authKey, 2);
 
-        // Validate limits against persisted process (not client payload) to prevent bypass
         $this->validateProcessLimits($process);
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
@@ -72,10 +71,6 @@ class ProcessPreconfirm extends BaseController
         }
     }
 
-    /**
-     * Validate limits against persisted process from DB (not client payload)
-     * to prevent bypass by omitting scope/requests from request.
-     */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
