@@ -17,13 +17,11 @@
             "freeAppointments": {
                 "public": 0,
                 "intern": 0,
-                "callcenter": 0,
                 "type": "free"
             },
             "allAppointments": {
                 "public": 0,
                 "intern": 0,
-                "callcenter": 0,
                 "type": "free"
             }
         },
@@ -35,13 +33,11 @@
             "freeAppointments": {
                 "public": 0,
                 "intern": 0,
-                "callcenter": 0,
                 "type": "free"
             },
             "allAppointments": {
                 "public": 0,
                 "intern": 0,
-                "callcenter": 0,
                 "type": "free"
             }
         },

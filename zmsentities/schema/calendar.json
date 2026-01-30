@@ -8,13 +8,11 @@
                 "month": 11,
                 "day": 19,
                 "freeAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 2,
                     "type": "free"
                 },
                 "allAppointments": {
-                    "callcenter": 0,
                     "intern": 9,
                     "public": 6,
                     "type": "sum"
@@ -32,7 +30,6 @@
             "month": 11,
             "day": 19,
             "freeAppointments": {
-                "callcenter": 0,
                 "intern": 3,
                 "public": 0
             },
@@ -48,7 +45,6 @@
             "month": 11,
             "day": 19,
             "freeAppointments": {
-                "callcenter": 0,
                 "intern": 3,
                 "public": 0
             },

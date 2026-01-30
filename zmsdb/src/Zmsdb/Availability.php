@@ -90,7 +90,6 @@ class Availability extends Base implements Interfaces\ResolveReferences
             foreach ($result as $entity) {
                 $entity['scope'] = $scope;
                 $entity->workstationCount['intern'] = 0;
-                $entity->workstationCount['callcenter'] = 0;
                 $entity->workstationCount['public'] = 0;
                 if ($entity['type'] == 'appointment') {
                     $entity['description'] = '';

@@ -23,7 +23,7 @@ class SlotList extends Base
         $slotB = $this[$indexB];
         if (null !== $slotA && null !== $slotB) {
             $slotA->type = Slot::REDUCED;
-            foreach (['public', 'intern', 'callcenter'] as $type) {
+            foreach (['public', 'intern'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
             }
         }
@@ -36,7 +36,6 @@ class SlotList extends Base
         if (null !== $slot) {
             $slot['public'] = 0;
             $slot['intern'] = 0;
-            $slot['callcenter'] = 0;
             $slot->type = Slot::REDUCED;
         }
         return $this;
@@ -174,7 +173,6 @@ class SlotList extends Base
             //error_log("$slot");
             $sum['public'] += $slot['public'];
             $sum['intern'] += $slot['intern'];
-            $sum['callcenter'] += $slot['callcenter'];
         }
         return $sum;
     }
@@ -203,7 +201,7 @@ class SlotList extends Base
      * @param String $selectedDate of format "YYYY-MM-DD"
      * @param \BO\Zmsentities\Scope $scope
      * @param \BO\Zmsentities\Availability $availability
-     * @param String $slotType one of "public", "callcenter", "intern"
+     * @param String $slotType one of "public", "intern"
      * @param Array $requests to add to process
      * @param $slotsRequired Number of slots required
      *
