@@ -754,19 +754,6 @@ onMounted(() => {
           ? Math.min(minSlotsOfProvider, MAX_SLOTS)
           : MAX_SLOTS;
       minSlotsPerAppointment.value = nextMaxSlotsPerAppointment;
-
-      console.log("[ServiceFinder] onMounted - minSlotsPerAppointment", {
-        selectedServiceId: service.value.id,
-        providerMinSlots: minSlotsOfProvider,
-        effectiveMinSlotsPerAppointment: nextMaxSlotsPerAppointment,
-        usingFallbackMAX_SLOTS: minSlotsOfProvider <= 0,
-        MAX_SLOTS,
-        providersCount: service.value.providers.length,
-        providers: service.value.providers.map((p) => ({
-          id: p.id,
-          slotsPerAppointment: p.slotsPerAppointment,
-        })),
-      });
     }
     if (services.value.length === 0) {
       fetchServicesAndProviders(
