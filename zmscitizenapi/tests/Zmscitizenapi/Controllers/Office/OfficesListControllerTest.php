@@ -92,7 +92,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
+                    "slotsPerAppointment" => null,
                     "parentId" => null
                 ],
                 [
@@ -150,7 +150,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
+                    "slotsPerAppointment" => null,
                     "parentId" => null
                 ]
             ]

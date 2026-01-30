@@ -34,7 +34,9 @@ class ProcessPreconfirm extends BaseController
         $this->testProcessData($entity);
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
-        $process = (new Process())->readEntity($entity->id, $entity->authKey);
+        $process = (new Process())->readEntity($entity->id, $entity->authKey, 2);
+
+        $this->validateProcessLimits($process);
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
@@ -66,6 +68,17 @@ class ProcessPreconfirm extends BaseController
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
+        }
+    }
+
+    protected function validateProcessLimits(\BO\Zmsentities\Process $process)
+    {
+        if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
+            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
+        }
+
+        if (! (new Process())->isServiceQuantityAllowed($process)) {
+            throw new Exception\Process\MoreThanAllowedQuantityPerService();
         }
     }
 }
