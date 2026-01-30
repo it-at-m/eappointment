@@ -109,6 +109,13 @@ class ProcessUpdate extends BaseController
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
+        if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
+            throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
+        }
+
+        // Note: isServiceQuantityAllowed is only checked in ProcessPreconfirm/ProcessConfirm
+        // to reduce DB queries on this frequently-called endpoint
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {

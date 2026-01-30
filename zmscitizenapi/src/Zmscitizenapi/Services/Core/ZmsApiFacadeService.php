@@ -126,7 +126,7 @@ class ZmsApiFacadeService
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
                     hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
                 ) : null,
-                maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
+                slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
         }
 
@@ -409,7 +409,7 @@ class ZmsApiFacadeService
                     address: $provider->address ?? null,
                     geo: $provider->geo ?? null,
                     scope: $scope,
-                    maxSlotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
+                    slotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
                 );
             }
         }

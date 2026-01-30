@@ -19,7 +19,7 @@ describe("SubserviceListItem", () => {
       props: {
         subService: mockSubService,
         currentSlots: 0,
-        maxSlotsPerAppointment: 10,
+        minSlotsPerAppointment: 10,
         ...props,
       },
     });
@@ -46,75 +46,104 @@ describe("SubserviceListItem", () => {
   });
 
   describe("Computed Properties", () => {
-    it("computes maxValue correctly", () => {
+    it("computes maxValue correctly based on slots", () => {
+      // slots: 3, minSlotsPerAppointment: 10, currentSlots: 0
+      // availableSlots = 10 - 0 = 10
+      // maxCountBySlots = floor(10 / 3) = 3
+      // maxValue = min(maxQuantity=5, maxCountBySlots=3) = 3
       const wrapper = createWrapper();
+      expect(wrapper.vm.maxValue).toBe(3);
+    });
+
+    it("computes maxValue as maxQuantity when slots allow more", () => {
+      // slots: 2, minSlotsPerAppointment: 20, currentSlots: 0, maxQuantity: 5
+      // availableSlots = 20 - 0 = 20
+      // maxCountBySlots = floor(20 / 2) = 10
+      // maxValue = min(maxQuantity=5, maxCountBySlots=10) = 5
+      const wrapper = createWrapper({
+        subService: { ...mockSubService, providers: [{ slots: 2 }] },
+        minSlotsPerAppointment: 20,
+      });
       expect(wrapper.vm.maxValue).toBe(mockSubService.maxQuantity);
     });
 
-    it("computes disabled correctly", () => {
+    it("computes disabled correctly when maxValue > 0", () => {
       const wrapper = createWrapper();
       expect(wrapper.vm.disabled).toBe(false);
+    });
+
+    it("computes disabled correctly when maxValue = 0 and count = 0", () => {
+      // currentSlots: 10, minSlotsPerAppointment: 10
+      // availableSlots = 10 - 10 = 0
+      // maxCountBySlots = floor(0 / 3) = 0
+      // maxValue = 0, count = 0 -> disabled = true
+      const wrapper = createWrapper({
+        currentSlots: 10,
+        minSlotsPerAppointment: 10,
+      });
+      expect(wrapper.vm.disabled).toBe(true);
     });
   });
 
   describe("Business Logic", () => {
-    it("maxValue equals count when checkPlusEndabled is false", () => {
+    it("maxValue is limited by remaining available slots", () => {
+      // currentSlots: 8, minSlotsPerAppointment: 10, slots: 3
+      // availableSlots = 10 - 8 = 2
+      // maxCountBySlots = floor(2 / 3) = 0
+      // maxValue = max(0, min(5, 0)) = 0
       const wrapper = createWrapper({
-        currentSlots: 10, // will make checkPlusEndabled false
-        maxSlotsPerAppointment: 5,
+        currentSlots: 8,
+        minSlotsPerAppointment: 10,
       });
-      wrapper.vm.count = 2;
+      expect(wrapper.vm.maxValue).toBe(0);
+    });
+
+    it("maxValue considers slots already used by this subservice", async () => {
+      // currentSlots: 6 (includes 3 from this subservice with count=1)
+      // minSlotsPerAppointment: 10, slots: 3, count: 1
+      // thisSlotsUsed = 3 * 1 = 3
+      // slotsUsedByOthers = 6 - 3 = 3
+      // availableSlots = 10 - 3 = 7
+      // maxCountBySlots = floor(7 / 3) = 2
+      // maxValue = min(5, 2) = 2
+      const wrapper = createWrapper({
+        subService: { ...mockSubService, count: 1 },
+        currentSlots: 6,
+        minSlotsPerAppointment: 10,
+      });
+      wrapper.vm.count = 1;
+      await nextTick();
       expect(wrapper.vm.maxValue).toBe(2);
     });
 
-    it("maxValue equals subService.maxQuantity when checkPlusEndabled is true", () => {
+    it("disabled is true when maxValue is 0 and count is 0", () => {
       const wrapper = createWrapper({
-        currentSlots: 0, // will make checkPlusEndabled true
-        maxSlotsPerAppointment: 10,
-      });
-      expect(wrapper.vm.maxValue).toBe(mockSubService.maxQuantity);
-    });
-
-    it("disabled is true when checkPlusEndabled is false and count is 0", () => {
-      const wrapper = createWrapper({
-        currentSlots: 10, // will make checkPlusEndabled false
-        maxSlotsPerAppointment: 5,
+        currentSlots: 10,
+        minSlotsPerAppointment: 10,
       });
       wrapper.vm.count = 0;
       expect(wrapper.vm.disabled).toBe(true);
     });
 
-    it("disabled is false when checkPlusEndabled is true", () => {
+    it("disabled is false when maxValue > 0", () => {
       const wrapper = createWrapper({
-        currentSlots: 0, // will make checkPlusEndabled true
-        maxSlotsPerAppointment: 10,
+        currentSlots: 0,
+        minSlotsPerAppointment: 10,
       });
       expect(wrapper.vm.disabled).toBe(false);
     });
 
-    it("checkPlusEndabled is true when currentSlots + minProviderSlots <= maxSlotsPerAppointment", () => {
-      const wrapper = createWrapper({
-        currentSlots: 0,
-        maxSlotsPerAppointment: 10,
-        subService: { ...mockSubService, providers: [{ slots: 3 }, { slots: 2 }] },
-      });
-      expect(wrapper.vm.checkPlusEndabled).toBe(true);
-    });
-
-    it("checkPlusEndabled is false when currentSlots + minProviderSlots > maxSlotsPerAppointment", () => {
-      const wrapper = createWrapper({
-        currentSlots: 9,
-        maxSlotsPerAppointment: 10,
-        subService: { ...mockSubService, providers: [{ slots: 3 }, { slots: 2 }] },
-      });
-      expect(wrapper.vm.checkPlusEndabled).toBe(false);
-    });
-
-    it("getMinSlotOfProvider returns the minimum slot value", () => {
+    it("uses maximum slot value from providers (not minimum)", () => {
+      // With providers having slots [5, 2, 8], getMaxSlotOfProvider returns 8
+      // availableSlots = 10 - 0 = 10
+      // maxCountBySlots = floor(10 / 8) = 1
+      // maxValue = min(5, 1) = 1
       const wrapper = createWrapper({
         subService: { ...mockSubService, providers: [{ slots: 5 }, { slots: 2 }, { slots: 8 }] },
+        currentSlots: 0,
+        minSlotsPerAppointment: 10,
       });
-      expect(wrapper.vm.getMinSlotOfProvider(wrapper.vm.$props.subService.providers)).toBe(2);
+      expect(wrapper.vm.maxValue).toBe(1);
     });
 
     it("emits correct id and count when count changes", async () => {
@@ -128,36 +157,40 @@ describe("SubserviceListItem", () => {
       }
     });
 
-    it("disables subservice when adding it would exceed maxSlotsPerAppointment", () => {
-      // Simulate a scenario where current slots + subservice slots > maxSlotsPerAppointment
+    it("disables subservice when adding it would exceed minSlotsPerAppointment", () => {
+      // currentSlots: 8, minSlotsPerAppointment: 10, slots: 3
+      // availableSlots = 10 - 8 = 2
+      // maxCountBySlots = floor(2 / 3) = 0
+      // maxValue = 0, count = 0 -> disabled = true
       const wrapper = createWrapper({
-        currentSlots: 8, // Current slots used
-        maxSlotsPerAppointment: 10, // Maximum allowed
+        currentSlots: 8,
+        minSlotsPerAppointment: 10,
         subService: { 
           ...mockSubService, 
-          providers: [{ slots: 3 }] // This subservice needs 3 slots
+          providers: [{ slots: 3 }]
         },
       });
       
-      // 8 + 3 = 11, which exceeds maxSlotsPerAppointment of 10
-      expect(wrapper.vm.checkPlusEndabled).toBe(false);
-      expect(wrapper.vm.disabled).toBe(true); // Should be disabled when count is 0
+      expect(wrapper.vm.maxValue).toBe(0);
+      expect(wrapper.vm.disabled).toBe(true);
     });
 
-    it("enables subservice when adding it would not exceed maxSlotsPerAppointment", () => {
-      // Simulate a scenario where current slots + subservice slots <= maxSlotsPerAppointment
+    it("enables subservice when adding it would not exceed minSlotsPerAppointment", () => {
+      // currentSlots: 7, minSlotsPerAppointment: 10, slots: 3
+      // availableSlots = 10 - 7 = 3
+      // maxCountBySlots = floor(3 / 3) = 1
+      // maxValue = min(5, 1) = 1, count = 0 -> disabled = false
       const wrapper = createWrapper({
-        currentSlots: 7, // Current slots used
-        maxSlotsPerAppointment: 10, // Maximum allowed
+        currentSlots: 7,
+        minSlotsPerAppointment: 10,
         subService: { 
           ...mockSubService, 
-          providers: [{ slots: 3 }] // This subservice needs 3 slots
+          providers: [{ slots: 3 }]
         },
       });
       
-      // 7 + 3 = 10, which equals maxSlotsPerAppointment of 10
-      expect(wrapper.vm.checkPlusEndabled).toBe(true);
-      expect(wrapper.vm.disabled).toBe(false); // Should be enabled when count is 0
+      expect(wrapper.vm.maxValue).toBe(1);
+      expect(wrapper.vm.disabled).toBe(false);
     });
   });
-}); 
+});
