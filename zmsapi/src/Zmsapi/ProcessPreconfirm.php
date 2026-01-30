@@ -35,7 +35,7 @@ class ProcessPreconfirm extends BaseController
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new Process())->readEntity($entity->id, $entity->authKey, 2);
-        
+
         // Validate limits against persisted process (not client payload) to prevent bypass
         $this->validateProcessLimits($process);
         if ('reserved' != $process->status) {
