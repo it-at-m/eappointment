@@ -487,8 +487,8 @@ class SlotTest extends Base
         (new Slot())->perform(
             "INSERT INTO slot (scopeID, year, month, day, time, availabilityID, public, intern, status, slotTimeInMinutes, createTimestamp, updateTimestamp) 
             VALUES 
-            (141, 2016, 4, 6, '07:50:00', 68985, 3, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30'),
-            (141, 2016, 4, 6, '07:55:00', 68985, 3, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30')"
+            (141, 2016, 4, 6, '07:50:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30'),
+            (141, 2016, 4, 6, '07:55:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30')"
         );
         
         // First verify we have slots
