@@ -897,7 +897,9 @@ class Process extends Base implements Interfaces\ResolveReferences
             $maxSlotsPerAppointment = Slot::MAX_SLOTS;
         }
 
-        $appointment = $entity->getFirstAppointment();
+        // Use getAppointments()->getFirst() to avoid side effects
+        // (getFirstAppointment() creates an appointment if none exists)
+        $appointment = $entity->getAppointments()->getFirst();
         if (!$appointment) {
             return true;
         }
