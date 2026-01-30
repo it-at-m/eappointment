@@ -53,7 +53,7 @@ CREATE TABLE `apiclient` (
   `apiClientID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `clientKey` varchar(32) NOT NULL,
   `shortname` varchar(32) NOT NULL,
-  `accesslevel` enum('public','intern','blocked') DEFAULT 'public',
+  `accesslevel` enum('public','callcenter','intern','blocked') DEFAULT 'public',
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`apiClientID`),
   KEY `clientKey` (`clientKey`,`accesslevel`)
@@ -1225,6 +1225,7 @@ CREATE TABLE `slot` (
   `time` time DEFAULT NULL,
   `availabilityID` int(5) unsigned DEFAULT NULL,
   `public` tinyint(5) unsigned DEFAULT NULL,
+  `callcenter` tinyint(5) unsigned DEFAULT NULL,
   `intern` tinyint(5) unsigned DEFAULT NULL,
   `status` enum('free','full','cancelled') DEFAULT 'free',
   `slotTimeInMinutes` smallint(5) unsigned DEFAULT NULL,
