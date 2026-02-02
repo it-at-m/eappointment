@@ -114,9 +114,9 @@ class ProcessConfirm extends BaseController
 
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
-        if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
+        /*if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
             throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
-        }
+        } Should be moved to zmscitizenapi. */
 
         if (! (new Process())->isServiceQuantityAllowed($process)) {
             throw new Exception\Process\MoreThanAllowedQuantityPerService();
