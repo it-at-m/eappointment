@@ -32,7 +32,7 @@ export function getProviders(
           office.slotTimeInMinutes,
           office.disabledByServices,
           office.scope,
-          office.maxSlotsPerAppointment,
+          office.slotsPerAppointment,
           office.slots,
           office.priority || 1
         );

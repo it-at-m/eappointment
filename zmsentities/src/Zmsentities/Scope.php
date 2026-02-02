@@ -102,10 +102,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getPreference('appointment', 'infoForAllAppointments', null);
     }
 
-    public function getSlotsPerAppointment()
-    {
-        return $this->getPreference('client', 'slotsPerAppointment', null);
-    }
 
     public function getProvider()
     {
@@ -224,6 +220,13 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
 
         return ($appointmentsPerMail) ? $appointmentsPerMail : null;
+    }
+
+    public function getSlotsPerAppointment()
+    {
+        $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
+
+        return ($slotsPerAppointment) ? $slotsPerAppointment : null;
     }
 
     public function getWhitelistedMails()

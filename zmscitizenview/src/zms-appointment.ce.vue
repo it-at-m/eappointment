@@ -47,7 +47,21 @@ const props = withDefaults(
 );
 
 // START Routing
-const urlElements = window.location.hash.split("/");
+const rawHash = window.location.hash.startsWith("#")
+  ? window.location.hash.substring(1)
+  : window.location.hash;
+
+let decodedHash: string;
+try {
+  decodedHash = decodeURIComponent(rawHash);
+} catch {
+  decodedHash = rawHash;
+}
+const cleanedHash = decodedHash.replace(/=+$/, "");
+const normalized = cleanedHash.startsWith("/")
+  ? cleanedHash
+  : `/${cleanedHash}`;
+const urlElements = normalized.split("/");
 const url = new URL(window.location.href);
 const params = new URLSearchParams(url.search);
 
