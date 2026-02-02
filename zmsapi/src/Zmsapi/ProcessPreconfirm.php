@@ -36,7 +36,7 @@ class ProcessPreconfirm extends BaseController
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new Process())->readEntity($entity->id, $entity->authKey, 2);
 
-        $this->validateProcessLimits($process);
+        //$this->validateProcessLimits($process); Should be moved to zmscitizenapi.
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
@@ -73,9 +73,9 @@ class ProcessPreconfirm extends BaseController
 
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
-        /*if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
+        if (! (new Process())->isAppointmentSlotCountAllowed($process)) {
             throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
-        } Should be moved to zmscitizenapi. */
+        }
 
         if (! (new Process())->isServiceQuantityAllowed($process)) {
             throw new Exception\Process\MoreThanAllowedQuantityPerService();
