@@ -45,7 +45,7 @@ class Day extends Base
             "sum" AS freeAppointments__type,
             "free" AS allAppointments__type,
             "bookable" AS status,
-            GROUP_CONCAT(DISTINCT scopeID SEPARATOR ",") AS scopeIDs
+            GROUP_CONCAT(DISTINCT CASE WHEN public > 0 THEN scopeID END SEPARATOR ",") AS scopeIDs
         FROM
         (
             SELECT
