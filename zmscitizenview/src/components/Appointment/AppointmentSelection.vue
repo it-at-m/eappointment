@@ -625,22 +625,18 @@ const handleDaySelection = async (day: any) => {
 };
 
 const providerSelectionError = computed(() => {
-  // If available days is empty (no data fetched), don't show error yet
   if (!availableDays?.value || availableDays.value.length === 0) {
     return "";
   }
 
-  // Only consider providers that actually have available days (shown as checkboxes)
   const selectableIds = new Set(
     providersWithAvailableDays.value.map((p) => String(p.id))
   );
 
-  // Check if any selectable provider is selected
   const hasSelection = Object.entries(selectedProviders.value).some(
     ([id, isSelected]) => isSelected && selectableIds.has(id)
   );
 
-  // Show error if there are selectable providers but none are selected
   return !hasSelection && selectableIds.size > 0
     ? props.t("errorMessageProviderSelection")
     : "";
