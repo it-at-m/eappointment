@@ -625,31 +625,21 @@ const handleDaySelection = async (day: any) => {
 };
 
 const providerSelectionError = computed(() => {
-  // Check if any providers are selected
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
-  );
-
-  // If no providers are selected at all, show error
-  if (
-    selectedProviderIds.length === 0 &&
-    providersWithAppointments.value.length > 0
-  ) {
-    return props.t("errorMessageProviderSelection");
-  }
-
-  // If available days is empty (no data fetched), don't show error yet
   if (!availableDays?.value || availableDays.value.length === 0) {
     return "";
   }
 
-  const hasSelection = Object.entries(selectedProviders.value).some(
-    ([id, isSelected]) =>
-      isSelected &&
-      providersWithAppointments.value.some((p) => p.id.toString() === id)
+  const selectableIds = new Set(
+    providersWithAvailableDays.value.map((p) => String(p.id))
   );
 
-  return hasSelection ? "" : props.t("errorMessageProviderSelection");
+  const hasSelection = Object.entries(selectedProviders.value).some(
+    ([id, isSelected]) => isSelected && selectableIds.has(id)
+  );
+
+  return !hasSelection && selectableIds.size > 0
+    ? props.t("errorMessageProviderSelection")
+    : "";
 });
 
 const noProviderSelected = computed(() => {
