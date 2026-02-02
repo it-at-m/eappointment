@@ -49,8 +49,8 @@ public class Office {
     @JsonProperty("disabledByServices")
     private List<Integer> disabledByServices;
 
-    @JsonProperty("maxSlotsPerAppointment")
-    private String maxSlotsPerAppointment;
+    @JsonProperty("slotsPerAppointment")
+    private String slotsPerAppointment;
 
     public Integer getId() {
         return id;
@@ -156,12 +156,12 @@ public class Office {
         this.disabledByServices = disabledByServices;
     }
 
-    public String getMaxSlotsPerAppointment() {
-        return maxSlotsPerAppointment;
+    public String getSlotsPerAppointment() {
+        return slotsPerAppointment;
     }
 
-    public void setMaxSlotsPerAppointment(String maxSlotsPerAppointment) {
-        this.maxSlotsPerAppointment = maxSlotsPerAppointment;
+    public void setSlotsPerAppointment(String slotsPerAppointment) {
+        this.slotsPerAppointment = slotsPerAppointment;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
