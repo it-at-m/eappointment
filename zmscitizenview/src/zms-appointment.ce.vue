@@ -117,7 +117,11 @@ const extractRouteParams = (urlElements: string[]) => {
 const initialUrlElements = parseUrlHash();
 console.log("[ZMS] Initial parse:", window.location.hash, initialUrlElements);
 extractRouteParams(initialUrlElements);
-console.log("[ZMS] After initial:", appointmentHash.value, confirmAppointmentHash.value);
+console.log(
+  "[ZMS] After initial:",
+  appointmentHash.value,
+  confirmAppointmentHash.value
+);
 
 // Re-parse in onMounted to handle Safari timing issues
 // This ensures the hash is read after the component is fully connected to the DOM
@@ -133,7 +137,11 @@ onMounted(() => {
     const urlElements = parseUrlHash();
     console.log("[ZMS] onMounted parse:", hash, urlElements);
     extractRouteParams(urlElements);
-    console.log("[ZMS] After onMounted:", appointmentHash.value, confirmAppointmentHash.value);
+    console.log(
+      "[ZMS] After onMounted:",
+      appointmentHash.value,
+      confirmAppointmentHash.value
+    );
   }
 });
 // END Routing
