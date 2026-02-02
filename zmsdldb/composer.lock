@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "eab6b69a6b18db19a6c9747c7067b620f6771a1d"
             },
             "require": {
                 "ext-json": ">=0",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "ac00c96aabca9e9083999edfd23627b71f26a72c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -252,7 +252,6 @@
             },
             "require-dev": {
                 "aronduby/dump": "*",
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "mockery/mockery": "^1.0.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
@@ -313,7 +312,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "51740d778a154446362c3e7f7b386e6f5e599b65"
+                "reference": "19e96b8d1df258e4de1784f78c5b5b3fb32e730c"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -333,7 +332,6 @@
                 "twig/twig": "3.*"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.4",
                 "phpunit/phpunit": "^11",
@@ -373,7 +371,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "3511fdba33928df2ba72d73491d1ebdf079a6c65"
             },
             "require": {
                 "aura/sql": "^5",
@@ -398,7 +396,7 @@
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "^3.5"
+                "squizlabs/php_codesniffer": "^4.0"
             },
             "bin": [
                 "bin/archiveStatisticData",
@@ -462,7 +460,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "d21f7878d4766176392afacf79dd8dc5d4076eb3"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -481,7 +479,6 @@
                 "twig/twig": "3.*"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
@@ -520,7 +517,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "b69c55c780eb4aa684ae217e4a6535167a30766d"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -543,7 +540,6 @@
                 "psr/container-implementation": "2.0"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
@@ -4041,16 +4037,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.4.28",
+            "version": "v6.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "31628f36fc97c5714d181b3a8d29efb85c6a7677"
+                "reference": "5b088fa41eb9568748dc255c45e4054c387ba73b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/31628f36fc97c5714d181b3a8d29efb85c6a7677",
-                "reference": "31628f36fc97c5714d181b3a8d29efb85c6a7677",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/5b088fa41eb9568748dc255c45e4054c387ba73b",
+                "reference": "5b088fa41eb9568748dc255c45e4054c387ba73b",
                 "shasum": ""
             },
             "require": {
@@ -4117,7 +4113,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.4.28"
+                "source": "https://github.com/symfony/cache/tree/v6.4.33"
             },
             "funding": [
                 {
@@ -4137,7 +4133,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-30T08:37:02+00:00"
+            "time": "2026-01-27T15:05:20+00:00"
         },
         {
             "name": "symfony/cache-contracts",
