@@ -51,12 +51,26 @@ const rawHash = window.location.hash.startsWith("#")
   ? window.location.hash.substring(1)
   : window.location.hash;
 
-let decodedHash: string;
-try {
-  decodedHash = decodeURIComponent(rawHash);
-} catch {
-  decodedHash = rawHash;
-}
+// Decode repeatedly to handle double/triple URL encoding (Safari iOS issue)
+// Some browsers/email clients may encode the hash multiple times
+let decodedHash: string = rawHash;
+let prevHash: string;
+let iterations = 0;
+const maxIterations = 5; // Safety limit to prevent infinite loops
+
+do {
+  prevHash = decodedHash;
+  try {
+    decodedHash = decodeURIComponent(decodedHash);
+  } catch {
+    // Stop if decoding fails (e.g., malformed URI)
+    break;
+  }
+  iterations++;
+} while (decodedHash !== prevHash && iterations < maxIterations);
+
+// Only remove trailing = from the overall path, not from base64 hashes
+// The trailing = at the end of the full hash is typically an artifact from URL handling
 const cleanedHash = decodedHash.replace(/=+$/, "");
 const normalized = cleanedHash.startsWith("/")
   ? cleanedHash

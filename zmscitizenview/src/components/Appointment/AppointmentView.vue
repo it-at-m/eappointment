@@ -1016,7 +1016,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
 
 const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   try {
-    const appointmentData = JSON.parse(window.atob(hash));
+    // Add missing base64 padding if needed (padding may be stripped from URL)
+    const padding = (4 - (hash.length % 4)) % 4;
+    const paddedHash = padding > 0 ? hash + "=".repeat(padding) : hash;
+    const appointmentData = JSON.parse(window.atob(paddedHash));
     if (
       appointmentData.id == undefined ||
       appointmentData.authKey == undefined
