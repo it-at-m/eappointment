@@ -109,9 +109,9 @@ class ProcessUpdate extends BaseController
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
-        if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
+        /*if (! (new Process())->isAppointmentSlotCountAllowed($entity)) {
             throw new Exception\Process\MoreThanAllowedSlotsPerAppointment();
-        }
+        } Should be moved to zmscitizenapi. */
 
         // Note: isServiceQuantityAllowed is only checked in ProcessPreconfirm/ProcessConfirm
         // to reduce DB queries on this frequently-called endpoint
