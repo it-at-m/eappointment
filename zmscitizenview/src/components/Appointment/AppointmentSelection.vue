@@ -643,7 +643,7 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  if (!providersWithAvailableDays.value?.length) return true;
+  if (!providersWithAvailableDays.value?.length) return false;
 
   const idsWithDays = new Set(
     providersWithAvailableDays.value.map((p) => String(p.id))
