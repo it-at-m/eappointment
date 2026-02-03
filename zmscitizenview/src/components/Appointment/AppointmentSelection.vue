@@ -1,7 +1,7 @@
 <template>
   <ProviderSelection
     :t="t"
-    :selectableProviders="providersWithAvailableDays"
+    :selectableProviders="providerSelectionProviders"
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
@@ -530,13 +530,22 @@ const hasAppointmentsForSelectedProviders = () => {
 };
 
 const providersWithAppointments = computed(() => {
-  // Always return all selectable providers to maintain UI state
-  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
   return (selectableProviders.value || []).sort((a, b) => {
     const aPriority = a.priority ?? -Infinity;
     const bPriority = b.priority ?? -Infinity;
     return bPriority - aPriority;
   });
+});
+
+const providerSelectionProviders = computed(() => {
+  const available = providersWithAvailableDays.value;
+  const allSelectable = selectableProviders.value || [];
+
+  if ((!available || available.length === 0) && allSelectable.length === 1) {
+    return allSelectable;
+  }
+
+  return available || [];
 });
 
 const providersWithAvailableDays = computed(() => {
