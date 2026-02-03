@@ -2241,7 +2241,7 @@ describe("AppointmentSelection", () => {
     });
   });
   describe("Loading UI – spinner instead of calendar", () => {
-    it("shows spinner during initial loading (availableDays pending) and hides the calendar", async () => {
+    it("shows spinner while fetching availableDays and hides the calendar until fetch completes", async () => {
       // Promise for fetchAvailableDays to keep the loading status stable
       let resolveDays!: (v: any) => void;
       (fetchAvailableDays as Mock).mockImplementation(() => {
