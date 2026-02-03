@@ -627,21 +627,19 @@ const handleDaySelection = async (day: any) => {
 };
 
 const providerSelectionError = computed(() => {
-  if (!availableDays?.value || availableDays.value.length === 0) {
-    return "";
-  }
-
   const selectableIds = new Set(
     providerSelectionProviders.value.map((p) => String(p.id))
   );
+
+  if (selectableIds.size === 0) {
+    return "";
+  }
 
   const hasSelection = Object.entries(selectedProviders.value).some(
     ([id, isSelected]) => isSelected && selectableIds.has(id)
   );
 
-  return !hasSelection && selectableIds.size > 0
-    ? props.t("errorMessageProviderSelection")
-    : "";
+  return !hasSelection ? props.t("errorMessageProviderSelection") : "";
 });
 
 const noProviderSelected = computed(() => {
