@@ -538,7 +538,7 @@ const providersWithAppointments = computed(() => {
 });
 
 const providerSelectionProviders = computed(() => {
-  return providersWithAppointments.value;
+  return providersWithAppointments.value.filter((p) => p.scope != null);
 });
 
 const providersWithAvailableDays = computed(() => {
