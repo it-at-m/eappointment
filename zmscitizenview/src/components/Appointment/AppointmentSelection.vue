@@ -538,14 +538,7 @@ const providersWithAppointments = computed(() => {
 });
 
 const providerSelectionProviders = computed(() => {
-  const available = providersWithAvailableDays.value;
-  const allSelectable = selectableProviders.value || [];
-
-  if ((!available || available.length === 0) && allSelectable.length === 1) {
-    return allSelectable;
-  }
-
-  return available || [];
+  return providersWithAppointments.value;
 });
 
 const providersWithAvailableDays = computed(() => {
