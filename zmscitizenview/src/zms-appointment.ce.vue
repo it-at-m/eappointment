@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -47,66 +47,103 @@ const props = withDefaults(
 );
 
 // START Routing
-const rawHash = window.location.hash.startsWith("#")
-  ? window.location.hash.substring(1)
-  : window.location.hash;
+// Helper function to parse the URL hash with Safari iOS encoding support
+const parseUrlHash = () => {
+  const rawHash = window.location.hash.startsWith("#")
+    ? window.location.hash.substring(1)
+    : window.location.hash;
 
-// Decode repeatedly to handle double/triple URL encoding (Safari iOS issue)
-// Some browsers/email clients may encode the hash multiple times
-let decodedHash: string = rawHash;
-let prevHash: string;
-let iterations = 0;
-const maxIterations = 5; // Safety limit to prevent infinite loops
+  // Decode repeatedly to handle double/triple URL encoding (Safari iOS issue)
+  // Some browsers/email clients may encode the hash multiple times
+  let decodedHash: string = rawHash;
+  let prevHash: string;
+  let iterations = 0;
+  const maxIterations = 5; // Safety limit to prevent infinite loops
 
-do {
-  prevHash = decodedHash;
-  try {
-    decodedHash = decodeURIComponent(decodedHash);
-  } catch {
-    // Stop if decoding fails (e.g., malformed URI)
-    break;
-  }
-  iterations++;
-} while (decodedHash !== prevHash && iterations < maxIterations);
+  do {
+    prevHash = decodedHash;
+    try {
+      decodedHash = decodeURIComponent(decodedHash);
+    } catch {
+      // Stop if decoding fails (e.g., malformed URI)
+      break;
+    }
+    iterations++;
+  } while (decodedHash !== prevHash && iterations < maxIterations);
 
-// Only remove trailing = from the overall path, not from base64 hashes
-// The trailing = at the end of the full hash is typically an artifact from URL handling
-const cleanedHash = decodedHash.replace(/=+$/, "");
-const normalized = cleanedHash.startsWith("/")
-  ? cleanedHash
-  : `/${cleanedHash}`;
-const urlElements = normalized.split("/");
+  // Remove trailing = (URL artifact) and normalize
+  const cleanedHash = decodedHash.replace(/=+$/, "");
+  const normalized = cleanedHash.startsWith("/")
+    ? cleanedHash
+    : `/${cleanedHash}`;
+
+  return normalized.split("/");
+};
+
 const url = new URL(window.location.href);
 const params = new URLSearchParams(url.search);
 
+// Initialize refs
 const serviceId = ref<string | undefined>(undefined);
-if (urlElements.length >= 3 && urlElements[1] === "services") {
-  serviceId.value = urlElements[2];
-}
-
 const locationId = ref<string | undefined>(undefined);
-if (urlElements.length >= 5 && urlElements[3] === "locations") {
-  locationId.value = urlElements[4];
-}
-
 const confirmAppointmentHash = ref<string | undefined>(undefined);
-if (
-  urlElements.length === 4 &&
-  urlElements[1] === "appointment" &&
-  urlElements[2] === "confirm"
-) {
-  confirmAppointmentHash.value = urlElements[3];
-}
-
 const appointmentHash = ref<string | undefined>(undefined);
-if (urlElements.length === 3 && urlElements[1] === "appointment") {
-  appointmentHash.value = urlElements[2];
-}
-
 const exclusiveLocation = ref<string | undefined>(undefined);
-if (params.get("exclusiveLocation")) {
-  exclusiveLocation.value = "1";
-}
+
+// Function to extract route parameters from URL elements
+const extractRouteParams = (urlElements: string[]) => {
+  if (urlElements.length >= 3 && urlElements[1] === "services") {
+    serviceId.value = urlElements[2];
+  }
+  if (urlElements.length >= 5 && urlElements[3] === "locations") {
+    locationId.value = urlElements[4];
+  }
+  if (
+    urlElements.length === 4 &&
+    urlElements[1] === "appointment" &&
+    urlElements[2] === "confirm"
+  ) {
+    confirmAppointmentHash.value = urlElements[3];
+  }
+  if (urlElements.length === 3 && urlElements[1] === "appointment") {
+    appointmentHash.value = urlElements[2];
+  }
+  if (params.get("exclusiveLocation")) {
+    exclusiveLocation.value = "1";
+  }
+};
+
+// Parse hash immediately (works most of the time)
+const initialUrlElements = parseUrlHash();
+console.log("[ZMS] Initial parse:", window.location.hash, initialUrlElements);
+extractRouteParams(initialUrlElements);
+console.log(
+  "[ZMS] After initial:",
+  appointmentHash.value,
+  confirmAppointmentHash.value
+);
+
+// Re-parse in onMounted to handle Safari timing issues
+// This ensures the hash is read after the component is fully connected to the DOM
+onMounted(() => {
+  // Only re-parse if we didn't get appointment hash but URL contains "appointment"
+  const hash = window.location.hash;
+  if (
+    !appointmentHash.value &&
+    !confirmAppointmentHash.value &&
+    hash.includes("appointment")
+  ) {
+    console.log("[ZMS] onMounted re-parse triggered");
+    const urlElements = parseUrlHash();
+    console.log("[ZMS] onMounted parse:", hash, urlElements);
+    extractRouteParams(urlElements);
+    console.log(
+      "[ZMS] After onMounted:",
+      appointmentHash.value,
+      confirmAppointmentHash.value
+    );
+  }
+});
 // END Routing
 
 // i18n & Global State
