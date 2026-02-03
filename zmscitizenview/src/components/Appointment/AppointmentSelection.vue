@@ -632,7 +632,7 @@ const providerSelectionError = computed(() => {
   }
 
   const selectableIds = new Set(
-    providersWithAvailableDays.value.map((p) => String(p.id))
+    providerSelectionProviders.value.map((p) => String(p.id))
   );
 
   const hasSelection = Object.entries(selectedProviders.value).some(
