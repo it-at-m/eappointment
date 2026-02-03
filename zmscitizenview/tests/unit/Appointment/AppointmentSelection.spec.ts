@@ -2169,7 +2169,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
-      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Elm", house_number: "100" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Elm", house_number: "100" }, scope: { id: "2" } });
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
