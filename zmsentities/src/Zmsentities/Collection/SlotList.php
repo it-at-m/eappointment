@@ -195,18 +195,6 @@ class SlotList extends Base
         return $slotList;
     }
 
-    /**
-     * Creates a ProcessList for free processes
-     *
-     * @param String $selectedDate of format "YYYY-MM-DD"
-     * @param \BO\Zmsentities\Scope $scope
-     * @param \BO\Zmsentities\Availability $availability
-     * @param String $slotType one of "public", "intern"
-     * @param Array $requests to add to process
-     * @param $slotsRequired Number of slots required
-     *
-     * @return ProcessList
-     */
     public function getFreeProcesses(
         $selectedDate,
         \BO\Zmsentities\Scope $scope,
