@@ -47,7 +47,7 @@ CREATE TABLE `apiclient` (
   `apiClientID` int(5) UNSIGNED NOT NULL,
   `clientKey` varchar(32) NOT NULL,
   `shortname` varchar(32) NOT NULL,
-  `accesslevel` enum('public','intern','blocked') DEFAULT 'public',
+  `accesslevel` enum('public','callcenter','intern','blocked') DEFAULT 'public',
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -868,6 +868,7 @@ CREATE TABLE `oeffnungszeit` (
   `kommentar` varchar(200) DEFAULT NULL,
   `reduktionTermineImInternet` int(2) DEFAULT 0,
   `erlaubemehrfachslots` tinyint(1) NOT NULL DEFAULT 0,
+  `reduktionTermineCallcenter` int(11) NOT NULL DEFAULT 0,
   `Offen_ab` int(11) NOT NULL DEFAULT 0,
   `Offen_bis` int(11) NOT NULL DEFAULT 0,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -1100,7 +1101,8 @@ CREATE TABLE `slot` (
   `time` time DEFAULT NULL,
   `availabilityID` int(5) UNSIGNED DEFAULT NULL,
   `public` tinyint(5) UNSIGNED DEFAULT NULL,
-  `intern` tinyint(5) UNSIGNED DEFAULT NULL,
+  `callcenter` tinyint(5) UNSIGNED DEFAULT NULL,
+  `intern` tinyint(5) UNSIGNED DEFAULT NULL, 
   `status` enum('free','full','cancelled') DEFAULT 'free',
   `slotTimeInMinutes` smallint(5) UNSIGNED DEFAULT NULL,
   `createTimestamp` bigint(20) DEFAULT NULL,
