@@ -141,23 +141,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $processEntity;
     }
 
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
-    {
-        $process = Entity::createFromScope($scope, $dateTime);
-        $process->setStatus('pending');
-        if (!$newQueueNumber) {
-            $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
-        }
-        $process->addQueue($newQueueNumber, $dateTime);
-        Log::writeProcessLog(
-            "CREATE (Process::writeNewPickup) $process ",
-            Log::ACTION_NEW_PICKUP,
-            $process,
-            $useraccount
-        );
-        return $this->writeNewProcess($process, $dateTime);
-    }
-
     public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $datetime = \App::$now;
@@ -901,6 +884,69 @@ class Process extends Base implements Interfaces\ResolveReferences
         return true;
     }
 
+    public function isAppointmentSlotCountAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope)) {
+            return true;
+        }
+
+        $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
+
+        if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
+            $maxSlotsPerAppointment = Slot::MAX_SLOTS;
+        }
+
+        $appointment = $entity->getAppointments()->getFirst();
+        if (!$appointment) {
+            return true;
+        }
+
+        $slotCount = (int) ($appointment->slotCount ?? 0);
+        if ($slotCount <= 0) {
+            return true;
+        }
+
+        return $slotCount <= (int) $maxSlotsPerAppointment;
+    }
+
+    public function isServiceQuantityAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope) || empty($entity->requests)) {
+            return true;
+        }
+
+        try {
+            $providerId = $entity->scope->getProviderId();
+        } catch (\Exception $e) {
+            return true;
+        }
+        if (!$providerId) {
+            return true;
+        }
+
+        $requestCounts = [];
+        foreach ($entity->requests as $request) {
+            $requestId = $request->getId();
+            if (!isset($requestCounts[$requestId])) {
+                $requestCounts[$requestId] = 0;
+            }
+            $requestCounts[$requestId]++;
+        }
+
+        $requestRelationDb = new RequestRelation();
+        foreach ($requestCounts as $requestId => $count) {
+            $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
+            if ($requestRelation) {
+                $maxQuantity = $requestRelation->getMaxQuantity();
+                if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
@@ -937,11 +983,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readResolvedReferences($process, 1);
     }
 
-    /**
-     * Read processList by external user id
-     *
-     * @return Collection processList
-     */
     public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);

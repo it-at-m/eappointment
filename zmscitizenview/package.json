@@ -14,7 +14,7 @@
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "7.0.0",
+    "@muenchen/muc-patternlab-vue": "7.3.0",
     "altcha": "^1.2.0",
     "jsdom": "^26.0.0",
     "vue": "^3.5.12",
@@ -43,7 +43,7 @@
   },
   "overrides": {
     "vite-plugin-vuetify": {
-      "make-dir": "5.0.0"
+      "make-dir": "5.1.0"
     }
   }
 }

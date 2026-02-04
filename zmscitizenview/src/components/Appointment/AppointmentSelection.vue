@@ -1,7 +1,7 @@
 <template>
   <ProviderSelection
     :t="t"
-    :selectableProviders="selectableProviders"
+    :selectableProviders="providerSelectionProviders"
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
@@ -134,7 +134,7 @@
     </div>
   </div>
   <div
-    v-if="!noProviderSelected && showError && !isSwitchingProvider"
+    v-if="showError && !isSwitchingProvider && !noProviderSelected"
     class="m-component"
   >
     <h2>{{ t("time") }}</h2>
@@ -477,7 +477,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  await refetchAvailableDaysForSelection();
+  await fetchAvailableDaysForSelection();
 };
 
 const TODAY = new Date();
@@ -530,13 +530,32 @@ const hasAppointmentsForSelectedProviders = () => {
 };
 
 const providersWithAppointments = computed(() => {
-  // Always return all selectable providers to maintain UI state
-  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
   return (selectableProviders.value || []).sort((a, b) => {
     const aPriority = a.priority ?? -Infinity;
     const bPriority = b.priority ?? -Infinity;
     return bPriority - aPriority;
   });
+});
+
+const providerSelectionProviders = computed(() => {
+  return providersWithAppointments.value.filter((p) => p.scope != null);
+});
+
+const providersWithAvailableDays = computed(() => {
+  if (!availableDays.value?.length || !selectableProviders.value?.length) {
+    return [];
+  }
+
+  // Collect all provider IDs that have at least one available day
+  const idsWithDays = new Set<string>();
+  availableDays.value.forEach((day) => {
+    day.providerIDs.split(",").forEach((id) => idsWithDays.add(id.trim()));
+  });
+
+  // Filter to only providers with available days and sort by priority
+  return selectableProviders.value
+    .filter((p) => idsWithDays.has(String(p.id)))
+    .sort((a, b) => (b.priority ?? -Infinity) - (a.priority ?? -Infinity));
 });
 
 const hasSelectedProviderWithAppointments = computed(() => {
@@ -608,40 +627,40 @@ const handleDaySelection = async (day: any) => {
 };
 
 const providerSelectionError = computed(() => {
-  // Check if any providers are selected
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+  const selectableIds = new Set(
+    providerSelectionProviders.value.map((p) => String(p.id))
   );
 
-  // If no providers are selected at all, show error
-  if (
-    selectedProviderIds.length === 0 &&
-    providersWithAppointments.value.length > 0
-  ) {
-    return props.t("errorMessageProviderSelection");
-  }
-
-  // If available days is empty (no data fetched), don't show error yet
-  if (!availableDays?.value || availableDays.value.length === 0) {
+  if (selectableIds.size === 0) {
     return "";
   }
 
   const hasSelection = Object.entries(selectedProviders.value).some(
-    ([id, isSelected]) =>
-      isSelected &&
-      providersWithAppointments.value.some((p) => p.id.toString() === id)
+    ([id, isSelected]) => isSelected && selectableIds.has(id)
   );
 
-  return hasSelection ? "" : props.t("errorMessageProviderSelection");
+  return !hasSelection ? props.t("errorMessageProviderSelection") : "";
 });
 
 const noProviderSelected = computed(() => {
-  // Check if any providers are selected
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+  // Check if any providers are selected at all
+  const hasAnySelection = Object.values(selectedProviders.value).some(
+    (selected) => selected
   );
 
-  return selectedProviderIds.length === 0;
+  // If no providers are selected at all, return true
+  if (!hasAnySelection) return true;
+
+  // If there are no providers with available days, we can't determine selection
+  if (!providersWithAvailableDays.value?.length) return false;
+
+  const idsWithDays = new Set(
+    providersWithAvailableDays.value.map((p) => String(p.id))
+  );
+
+  return !Object.keys(selectedProviders.value).some(
+    (id) => selectedProviders.value[id] && idsWithDays.has(id)
+  );
 });
 
 // Threshold moved to constants
@@ -744,14 +763,14 @@ const handleError = (data: any): void => {
 };
 
 // API calls
-const refetchAvailableDaysForSelection = async (): Promise<void> => {
-  // Only fetch available days for currently selected providers
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+const fetchAvailableDaysForSelection = async (): Promise<void> => {
+  // Always fetch available days for ALL providers to maintain the full list
+  const allProviderIds = (selectableProviders.value || []).map((p) =>
+    Number(p.id)
   );
 
-  if (selectedProviderIds.length === 0) {
-    // No providers selected, clear available days but keep providers visible
+  if (allProviderIds.length === 0) {
+    // No providers available, clear available days
     availableDays.value = [];
     availableDaysFetched.value = true;
     error.value = false;
@@ -760,11 +779,9 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     return;
   }
 
-  const providerIdsToQuery = selectedProviderIds.map(Number);
-
   const data = await fetchAvailableDays(
     props.globalState,
-    providerIdsToQuery,
+    allProviderIds,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.captchaToken ?? undefined
@@ -800,6 +817,7 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     updateDateRangeForSelectedProviders();
   } else {
     handleError(data);
+    availableDaysFetched.value = true;
     isSwitchingProvider.value = false;
   }
 };
@@ -884,6 +902,8 @@ function getAvailableProviders(
 ): OfficeImpl[] {
   if (!selectedServices || selectedServices.length === 0) return [];
 
+  const selectedServiceIds = selectedServices.map((s) => s.id);
+
   let allowedIds = new Set(selectedServices[0].providers.map((p) => p.id));
   for (let i = 1; i < selectedServices.length; i++) {
     const serviceIds = new Set(selectedServices[i].providers.map((p) => p.id));
@@ -895,8 +915,18 @@ function getAvailableProviders(
   allProviders.forEach((p) => {
     if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
   });
-  const filteredProviders = Array.from(filteredProvidersMap.values());
 
+  // Filter out providers where any selected service is in their disabledByServices
+  const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
+    (p) => {
+      const disabledServices = (p.disabledByServices ?? []).map(Number);
+      return !selectedServiceIds.some((serviceId) =>
+        disabledServices.includes(Number(serviceId))
+      );
+    }
+  );
+
+  // Group by name and return unique providers
   return Object.values(
     filteredProviders.reduce<Record<string, OfficeImpl[]>>(
       (grouped, provider) => {
@@ -921,7 +951,7 @@ function getAvailableProviders(
       Number
     );
     const allDisabled = selectedServices.every((s) =>
-      restrictedDisabled.includes(s.id)
+      restrictedDisabled.includes(Number(s.id))
     );
 
     return allDisabled ? (clean as OfficeImpl) : (restricted as OfficeImpl);
@@ -995,7 +1025,6 @@ async function validateAndUpdateSelectedDate(
     if (nextAvailableDay) {
       const newDate = new Date(nextAvailableDay.time);
       selectedDay.value = newDate;
-      // Set viewMonth to the first day of the month containing the new date
       viewMonth.value = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
       calendarKey.value++;
       await nextTick();
@@ -1052,15 +1081,15 @@ function scheduleRefreshAfterProviderChange() {
     const prevSelectedDay = selectedDay.value
       ? new Date(selectedDay.value)
       : undefined;
-    await refetchAvailableDaysForSelection();
-    // Selection changed while awaiting? Abort this cycle.
+
+    isSwitchingProvider.value = false;
+
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
     }
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
 
-    // Validate and update selected date to ensure it's available for selected providers
     if (availableDaysForSelectedProviders.length > 0) {
       await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     }
@@ -1078,7 +1107,6 @@ function scheduleRefreshAfterProviderChange() {
       await getAppointmentsOfDay(currentSelectedDateString);
     }
 
-    // Snap inside day
     await validateCurrentDateHasAppointments();
     await snapToNearestForCurrentView();
   }, 150);
@@ -1235,10 +1263,21 @@ watch(
       selectedProvider.value = undefined;
     }
 
-    // Pre-hook: set switching state and clear errors immediately
-    isSwitchingProvider.value = true;
-    error.value = false;
-    Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+    const hasAvailableDays =
+      availableDays.value && availableDays.value.length > 0;
+    const daysWereFetched = availableDays.value !== undefined;
+
+    if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
+      availableDaysFetched.value = true;
+    }
+
+    if (hasAvailableDays) {
+      isSwitchingProvider.value = true;
+      error.value = false;
+      Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+    } else {
+      isSwitchingProvider.value = false;
+    }
 
     // Debounced pipeline
     scheduleRefreshAfterProviderChange();

@@ -38,7 +38,6 @@
               "startInDaysDefault": "0"
             },
             "client": {
-              "alternateAppointmentUrl": "https://service.berlin.de",
               "amendmentActivated": 1,
               "amendmentLabel": "",
               "emailRequired": 1,
@@ -50,17 +49,12 @@
               "headsUpContent": "",
               "headsUpTime": 0
             },
-            "pickup": {
-              "alternateName": "Ausgabe",
-              "isDefault": 0
-            },
             "queue": {
               "callCountMax": 0,
               "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
               "firstNumber": 1,
               "lastNumber": 399,
               "processingTimeAverage": 12,
-              "publishWaitingTimeEnabled": 1,
               "statisticsEnabled": 1
             },
             "survey": {
