@@ -201,7 +201,8 @@ class AvailabilityList extends Base
         return $processList;
     }
 
-    public function hasDayOffOverride(): bool {
+    public function hasDayOffOverride(): bool
+    {
         foreach ($this as $availability) {
             if ($availability->overridesDayOff()) {
                 return true;

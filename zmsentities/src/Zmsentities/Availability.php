@@ -143,7 +143,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function overridesDayOff(): bool 
+    public function overridesDayOff(): bool
     {
         if ($this->getDuration() >= 2) {
             return false;
