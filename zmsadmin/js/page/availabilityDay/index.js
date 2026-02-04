@@ -110,7 +110,7 @@ class AvailabilityPage extends Component {
             success: response => {
                 if (response.overridesDayOff) {
                     const sure = confirm(
-                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind. Möchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?'
+                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind. \n\nMöchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?'
                     );
                     if (!sure) return;
                 }
