@@ -110,7 +110,7 @@ class AvailabilityPage extends Component {
             success: response => {
                 if (response.overridesDayOff) {
                     const sure = confirm(
-                        'Dies öffnet an einem Feiertag. Möchten sie trotzdem fortfahren?'
+                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind. Möchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?'
                     );
                     if (!sure) return;
                 }
@@ -157,22 +157,39 @@ class AvailabilityPage extends Component {
 
     prepareAvailabilityPayload() {
     const selectedDate = formatTimestampDate(this.props.timestamp);
-    const sendData = this.state.availabilitylist
-        .filter(av => (av.__modified || av.tempId?.includes('__temp__')) && !this.hasErrors(av))
-        .map(av => {
-            const sendAv = { ...av };
-            delete sendAv.tempId;
 
-            const prefs = this.props.scope.preferences.appointment;
-            sendAv.bookable.startInDays = sendAv.bookable.startInDays ?? prefs.startInDaysDefault ?? 0;
-            sendAv.bookable.endInDays   = sendAv.bookable.endInDays   ?? prefs.endInDaysDefault   ?? 60;
+    const appointmentPreferences = this.props.scope.preferences.appointment;
+    const defaultStartInDays = appointmentPreferences.startInDaysDefault ?? 0;
+    const defaultEndInDays   = appointmentPreferences.endInDaysDefault   ?? 60;
 
-            return { ...sendAv, kind: av.kind || 'default' };
-        })
-        .map(cleanupAvailabilityForSave);
+    const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
+        const isModified = availability.__modified === true;
+        const isTemporary = availability.tempId?.includes('__temp__');
+        const hasErrors = this.hasErrors(availability);
 
-        return { availabilityList: sendData, selectedDate };
-    }
+        return (isModified || isTemporary) && !hasErrors;
+    });
+
+    const availabilityPayload = modifiedAvailabilities.map(availability => {
+
+        const availabilityForBackend = { ...availability };
+        delete availabilityForBackend.tempId;
+        availabilityForBackend.bookable.startInDays =
+            availabilityForBackend.bookable.startInDays ?? defaultStartInDays;
+
+        availabilityForBackend.bookable.endInDays =
+            availabilityForBackend.bookable.endInDays ?? defaultEndInDays;
+
+        availabilityForBackend.kind = availability.kind || 'default';
+
+        return cleanupAvailabilityForSave(availabilityForBackend);
+    });
+
+    return {
+        availabilityList: availabilityPayload,
+        selectedDate
+    };
+}
 
     updateSaveBarState(type, success) {
 

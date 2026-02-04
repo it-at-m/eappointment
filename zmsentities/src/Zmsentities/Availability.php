@@ -143,6 +143,28 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    public function overridesDayOff(): bool 
+    {
+        if ($this->getDuration() >= 2) {
+            return false;
+        }
+
+        $start = $this->getStartDateTime()->modify('00:00:00');
+        $end   = $this->getEndDateTime()->modify('23:59:59');
+        $current = clone $start;
+
+        while ($current <= $end) {
+            try {
+                if ($this->hasDayOff($current)) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+            }
+            $current = $current->modify('+1 day');
+        }
+        return false;
+    }
+
     /**
      * Check if date and time is in availability
      * Compared to hasDate() the time of the day is checked, but not booking time
