@@ -3,7 +3,6 @@ let clockIntervalId = null;
 
 class View {
     constructor () {
-        // FIX: Clear existing interval to prevent stacking
         if (clockIntervalId) {
             clearInterval(clockIntervalId);
         }
