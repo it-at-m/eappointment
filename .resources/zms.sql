@@ -1102,7 +1102,7 @@ CREATE TABLE `slot` (
   `availabilityID` int(5) UNSIGNED DEFAULT NULL,
   `public` tinyint(5) UNSIGNED DEFAULT NULL,
   `callcenter` tinyint(5) UNSIGNED DEFAULT NULL,
-  `intern` tinyint(5) UNSIGNED DEFAULT NULL, 
+  `intern` tinyint(5) UNSIGNED DEFAULT NULL,
   `status` enum('free','full','cancelled') DEFAULT 'free',
   `slotTimeInMinutes` smallint(5) UNSIGNED DEFAULT NULL,
   `createTimestamp` bigint(20) DEFAULT NULL,
