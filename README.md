@@ -155,6 +155,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run build`
 - `npm run dev`
 - `npm run test`
+- Run once to enable husky hooks (optional): `npm run prepare`
 
 ## Keycloak Setup
 
