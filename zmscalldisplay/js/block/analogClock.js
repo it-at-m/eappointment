@@ -1,21 +1,13 @@
 
-// DEBUG: Track interval stacking
-let instanceCount = 0;
-let tickCount = 0;
-let lastSecond = -1;
 let clockIntervalId = null;
 
 class View {
     constructor () {
-        instanceCount++;
-        
         // FIX: Clear existing interval to prevent stacking
         if (clockIntervalId) {
             clearInterval(clockIntervalId);
-            console.log(`✅ Cleared previous interval before creating instance #${instanceCount}`);
         }
         
-        console.warn(`⚠️ AnalogClock instance #${instanceCount} created - NEW setInterval started!`);
         clockIntervalId = setInterval(this.setClock, 1000);
         this.setDate();
 
@@ -23,17 +15,6 @@ class View {
 
     setClock() {
         const now = new Date();
-        const currentSecond = now.getSeconds();
-        
-        // Count ticks per second
-        if (currentSecond !== lastSecond) {
-            if (tickCount > 0) {
-                console.log(`🔥 setClock ran ${tickCount} times in the last second (should be 1)`);
-            }
-            tickCount = 0;
-            lastSecond = currentSecond;
-        }
-        tickCount++;
 
         if (document.querySelector('.second-hand')) {
             this.setAnalogClock();
