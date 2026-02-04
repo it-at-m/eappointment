@@ -11,7 +11,6 @@ class View extends BaseView {
 
     reloadPage () {
         console.log('reload...')
-        // Use full page redirect instead of AJAX body replacement to prevent memory leaks
         window.location.href = this.getUrl('/home/');
     }
 
