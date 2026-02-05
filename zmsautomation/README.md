@@ -18,21 +18,62 @@ This module contains API tests for ZMS using the ATAF (Test Automation Framework
 
 ## Running Tests
 
+### Using the Test Script (Recommended for City Laptop)
+
+The `zmsautomation-test` script handles database setup, migrations, and test execution:
+
+```bash
+# Set required environment variables
+export MYSQL_HOST="db"
+export MYSQL_PORT="3306"
+export MYSQL_DATABASE="zmsbo"
+export MYSQL_USER="zmsbo"
+export MYSQL_PASSWORD="zmsbo"
+export CACHE_DIR="/path/to/cache"
+export BASE_URI="http://localhost/terminvereinbarung/api/2"
+export CITIZEN_API_BASE_URI="http://localhost/terminvereinbarung/api/citizen"
+
+# Run all ATAF tests
+./zmsautomation/zmsautomation-test
+
+# Run specific tags
+./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
+
+# Run specific feature
+./zmsautomation/zmsautomation-test -Dcucumber.features="src/test/resources/features/zmsapi/status.feature"
+```
+
+The script will:
+1. Backup the database
+2. Clear caches
+3. Reset database (drop tables)
+4. Import base database
+5. Run Flyway migrations
+6. Run PHP migrations
+7. Run hourly cronjob
+8. Perform health checks
+9. Run ATAF tests with `-Pataf` profile
+10. Display test results
+11. Restore database
+12. Cleanup
+
 ### Standalone Profile (Default - CI)
 
 Runs the original JUnit-based REST-assured tests:
 
 ```bash
+cd zmsautomation
 mvn test
 ```
 
 This profile is used in GitHub Actions CI.
 
-### ATAF Profile (Local Development)
+### ATAF Profile (Local Development - Manual)
 
-Runs Cucumber/ATAF tests. Requires Artifactory access:
+Runs Cucumber/ATAF tests manually. Requires Artifactory access:
 
 ```bash
+cd zmsautomation
 mvn test -Pataf
 ```
 
