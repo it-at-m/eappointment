@@ -157,7 +157,6 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `zmsautomation` is the new module with ATAF integration and Cucumber
 - GitHub Actions workflow is set up but disabled until ATAF becomes open source
 - ATAF tests require Artifactory access (city laptop only) until Phase 7
-- The old `zmsapiautomation` module remains for reference but is no longer actively maintained
 
 ## Phase 6: Migration Examples
 
