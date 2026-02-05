@@ -1,6 +1,7 @@
 <template>
   <div
     aria-live="polite"
+    aria-atomic="true"
     ref="summary"
   >
     <muc-callout
@@ -53,9 +54,9 @@
         >
           <strong>{{ t("hint") }}</strong>
           <br />
-          <div
+          <p
             v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></div>
+          ></p>
         </div>
       </template>
 
