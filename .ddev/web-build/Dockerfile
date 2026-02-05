@@ -1,5 +1,5 @@
 # Custom Dockerfile additions for DDEV web container
-# Installs Java 21, Maven, and Flyway for zmsapiautomation tests
+# Installs Java 21, Maven, and Flyway for zmsautomation tests
 
 # Set timezone at OS level (matches dev container)
 ENV TZ=Europe/Berlin
