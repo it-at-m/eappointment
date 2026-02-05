@@ -255,7 +255,7 @@ class Mail extends BaseController
                 $icsPart,
                 "Termin.ics",
                 $encoding,
-                "application/octet-stream"
+                "text/calendar; charset=utf-8; method=REQUEST"
             );
         }
 
