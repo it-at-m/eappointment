@@ -1,18 +1,18 @@
 package zms.ataf.steps;
 
-import ataf.rest.steps.BaseRestSteps;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
-import io.restassured.response.Response;
-
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import ataf.rest.steps.BaseRestSteps;
 import config.TestConfig;
 import dto.common.ApiResponse;
 import dto.zmscitizenapi.collections.OfficesAndServicesResponse;
-import com.fasterxml.jackson.core.type.TypeReference;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.restassured.response.Response;
 
 public class CitizenApiSteps extends BaseRestSteps {
     

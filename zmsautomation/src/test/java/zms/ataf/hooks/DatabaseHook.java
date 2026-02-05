@@ -1,7 +1,7 @@
 package zms.ataf.hooks;
 
-import org.testng.annotations.BeforeSuite;
 import org.flywaydb.core.Flyway;
+import org.testng.annotations.BeforeSuite;
 
 public class DatabaseHook {
     

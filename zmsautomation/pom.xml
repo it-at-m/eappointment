@@ -81,6 +81,7 @@
         <version>${surefire.version}</version>
         <configuration>
           <useSystemClassLoader>true</useSystemClassLoader>
+          <!-- No JUnit tests - all tests are Cucumber/ATAF based -->
           <includes>
             <include>**/*Test.java</include>
           </includes>
@@ -90,13 +91,14 @@
   </build>
 
   <profiles>
-    <!-- Default: Current REST-assured tests (GitHub Actions) -->
+    <!-- Default: No tests run (tests migrated to Cucumber/ATAF) -->
+    <!-- Use -Pataf profile to run Cucumber/ATAF tests -->
     <profile>
       <id>standalone</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <!-- Keep existing dependencies - no additional configuration needed -->
+      <!-- All tests have been migrated to Cucumber/ATAF - use -Pataf profile to run tests -->
     </profile>
 
     <!-- ATAF profile: City laptop only -->
