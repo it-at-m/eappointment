@@ -422,25 +422,25 @@ bash zmsdb-test --coverage-text
 bash zmsapi-test --exclude-group="slow"
 ```
 
-### API Testing (zmsapiautomation)
+### API Testing (zmsautomation)
 
-**zmsapiautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
+**zmsautomation** provides Java-based API tests for ZMS APIs using Cucumber, ATAF (Test Automation Framework), and REST-assured. These tests validate the REST API endpoints using behavior-driven development (BDD) with feature files.
 
 **Using the test runner script (Recommended):**
 
-The `zmsapiautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
+The `zmsautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
 
 ```bash
 # Enter your web container first
 podman exec -it zms-web bash  # Podman
 ddev ssh                      # DDEV
 
-# Run zmsapiautomation tests
-cd zmsapiautomation
-bash zmsapiautomation-test                    # Run all tests
-bash zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
-bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
-bash zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+# Run zmsautomation tests
+cd zmsautomation
+bash zmsautomation-test                    # Run all tests
+bash zmsautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+bash zmsautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
 ```
 
 **Maven Test Filtering:**
@@ -449,19 +449,19 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 ```bash
 # Run a specific test class
-bash zmsapiautomation-test -Dtest=StatusEndpointTest
+bash zmsautomation-test -Dtest=StatusEndpointTest
 
 # Run a specific test method
-bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
 
 # Run multiple test classes
-bash zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+bash zmsautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
 
 # Run tests matching a pattern
-bash zmsapiautomation-test -Dtest=*EndpointTest
+bash zmsautomation-test -Dtest=*EndpointTest
 
 # Run tests with additional Maven options
-bash zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+bash zmsautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
 ```
 
 **Environment Configuration:**
@@ -474,8 +474,8 @@ The script runs natively inside the container and uses environment variables. De
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsapiautomation-test
-CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapiautomation-test
+BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsautomation-test
 ```
 
 **What the Script Does:**
@@ -488,7 +488,7 @@ CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapi
 6. Runs PHP migrations
 7. Executes hourly cronjob to import Munich DLDB data (if configured)
 8. Performs health checks on both APIs
-9. Runs Maven tests with REST-assured
+9. Runs Cucumber tests with ATAF and REST-assured
 10. Collects and displays test results
 11. Restores the original database
 12. Cleans up test artifacts
@@ -498,7 +498,7 @@ CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapi
 To import Munich DLDB data during test setup:
 
 ```bash
-ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomation-test
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsautomation-test
 ```
 
 **Running Tests Directly with Maven (inside container):**
@@ -506,13 +506,25 @@ ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomatio
 For development without the full setup script (assumes database is already prepared):
 
 ```bash
-cd zmsapiautomation
+cd zmsautomation
 mvn test
 mvn test -Dtest=StatusEndpointTest
 ```
 
+**Running Cucumber Feature Files:**
+
+Tests are organized as Cucumber feature files in `src/test/resources/features/`. You can run specific feature files:
+
+```bash
+cd zmsautomation
+mvn test -Dcucumber.filter.tags="@api"  # Run tests tagged with @api
+mvn test -Dcucumber.features="src/test/resources/features/zmsapi/availability.feature"  # Run specific feature file
+```
+
 **References:**
+- Cucumber: https://cucumber.io/
 - REST-assured: https://github.com/rest-assured/rest-assured
+- ATAF: Test Automation Framework (will be open source)
 
 ### Common Errors
 
