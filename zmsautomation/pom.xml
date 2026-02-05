@@ -131,15 +131,15 @@
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-testng</artifactId>
+          <artifactId>cucumber-junit-platform-engine</artifactId>
           <version>${cucumber.version}</version>
           <scope>test</scope>
         </dependency>
-        <!-- TestNG -->
+        <!-- JUnit Platform Suite API for @Suite annotation -->
         <dependency>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-          <version>${testng.version}</version>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-suite-api</artifactId>
+          <version>1.10.2</version>
           <scope>test</scope>
         </dependency>
         <!-- Flyway for database migrations -->
@@ -168,9 +168,14 @@
             <version>${surefire.version}</version>
             <configuration>
               <useSystemClassLoader>true</useSystemClassLoader>
-              <suiteXmlFiles>
-                <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-              </suiteXmlFiles>
+              <!-- Exclude JUnit test classes - only run Cucumber tests via JUnit Platform -->
+              <excludes>
+                <exclude>**/*Test.java</exclude>
+              </excludes>
+              <!-- Include Cucumber JUnit Platform engine -->
+              <includes>
+                <include>**/TestRunner.java</include>
+              </includes>
             </configuration>
           </plugin>
         </plugins>
