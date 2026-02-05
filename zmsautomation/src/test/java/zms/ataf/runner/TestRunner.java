@@ -8,6 +8,7 @@ import zms.ataf.data.TestData;
 /**
  * JUnit Platform test suite for running Cucumber tests with ATAF.
  * Feature files are discovered from the features directory on the classpath.
+ * The cucumber.properties file also specifies the features path.
  */
 @Suite
 @IncludeEngines("cucumber")

@@ -148,6 +148,13 @@
           <version>1.10.2</version>
           <scope>test</scope>
         </dependency>
+        <!-- Explicitly include suite engine to ensure it's available -->
+        <dependency>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-suite-engine</artifactId>
+          <version>1.10.2</version>
+          <scope>test</scope>
+        </dependency>
         <!-- Flyway for database migrations -->
         <dependency>
           <groupId>org.flywaydb</groupId>
@@ -174,14 +181,17 @@
             <version>${surefire.version}</version>
             <configuration>
               <useSystemClassLoader>true</useSystemClassLoader>
-              <!-- Exclude JUnit test classes - only run Cucumber tests via JUnit Platform Suite -->
-              <excludes>
-                <exclude>**/*Test.java</exclude>
-              </excludes>
-              <!-- Include TestRunner suite class -->
+              <!-- Only include the TestRunner suite class - let the suite engine handle test discovery -->
               <includes>
                 <include>**/TestRunner.java</include>
               </includes>
+              <!-- Exclude abstract base test classes and any other test classes -->
+              <excludes>
+                <exclude>**/base/*.java</exclude>
+                <exclude>**/*Test.java</exclude>
+              </excludes>
+              <!-- Don't fail if JUnit Jupiter can't discover tests - suite engine handles discovery -->
+              <failIfNoTests>false</failIfNoTests>
             </configuration>
           </plugin>
         </plugins>
