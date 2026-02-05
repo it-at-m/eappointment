@@ -213,6 +213,8 @@ if curl -sf --max-time 10 "$BASE_URI/status/" >/dev/null; then
 # 9. Running Tests
 section "9. Running ATAF Tests"
 info "Running Cucumber/ATAF tests with -Pataf profile..."
+info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
+info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
 # Clear old surefire reports and cucumber reports
 rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports" 2>/dev/null || true
@@ -223,6 +225,7 @@ TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
 # Run with ATAF profile
+# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS
 if mvn -B -DtrimStackTrace=false \
   -Pataf \
   -Dbase.uri="$BASE_URI" \
