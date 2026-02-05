@@ -1,19 +1,14 @@
 package zms.ataf.runner;
 
-import org.junit.platform.suite.api.IncludeEngines;
-import org.junit.platform.suite.api.SelectClasspathResource;
-import org.junit.platform.suite.api.Suite;
+import ataf.core.runner.BasicTestNGRunner;
 import zms.ataf.data.TestData;
 
 /**
- * JUnit Platform test suite for running Cucumber tests with ATAF.
- * Feature files are discovered from the features directory on the classpath.
- * The cucumber.properties file also specifies the features path.
+ * TestNG runner for running Cucumber tests with ATAF.
+ * Feature files are discovered from the features directory on the classpath via cucumber.properties.
+ * This follows the same pattern as zms-test-automation.
  */
-@Suite
-@IncludeEngines("cucumber")
-@SelectClasspathResource("features")
-public class TestRunner {
+public class TestRunner extends BasicTestNGRunner {
     static {
         TestData.init();
     }

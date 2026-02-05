@@ -131,28 +131,15 @@
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-junit-platform-engine</artifactId>
+          <artifactId>cucumber-testng</artifactId>
           <version>${cucumber.version}</version>
           <scope>test</scope>
         </dependency>
-        <!-- JUnit Platform Suite API and runtime for @Suite annotation -->
+        <!-- TestNG -->
         <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-suite-api</artifactId>
-          <version>1.10.2</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-suite</artifactId>
-          <version>1.10.2</version>
-          <scope>test</scope>
-        </dependency>
-        <!-- Explicitly include suite engine to ensure it's available -->
-        <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-suite-engine</artifactId>
-          <version>1.10.2</version>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+          <version>${testng.version}</version>
           <scope>test</scope>
         </dependency>
         <!-- Flyway for database migrations -->
@@ -181,18 +168,16 @@
             <version>${surefire.version}</version>
             <configuration>
               <useSystemClassLoader>true</useSystemClassLoader>
-              <!-- Only include the TestRunner suite class - let the suite engine handle test discovery -->
-              <includes>
-                <include>**/TestRunner.java</include>
-              </includes>
-              <!-- Exclude abstract base test classes and any other test classes -->
-              <excludes>
-                <exclude>**/base/*.java</exclude>
-                <exclude>**/*Test.java</exclude>
-              </excludes>
-              <!-- Don't fail if JUnit Jupiter can't discover tests - suite engine handles discovery -->
-              <failIfNoTests>false</failIfNoTests>
+              <trimStackTrace>false</trimStackTrace>
             </configuration>
+            <dependencies>
+              <!-- Use TestNG provider like zms-test-automation -->
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>
