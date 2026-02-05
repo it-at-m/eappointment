@@ -135,10 +135,16 @@
           <version>${cucumber.version}</version>
           <scope>test</scope>
         </dependency>
-        <!-- JUnit Platform Suite API for @Suite annotation -->
+        <!-- JUnit Platform Suite API and runtime for @Suite annotation -->
         <dependency>
           <groupId>org.junit.platform</groupId>
           <artifactId>junit-platform-suite-api</artifactId>
+          <version>1.10.2</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-suite</artifactId>
           <version>1.10.2</version>
           <scope>test</scope>
         </dependency>
@@ -168,11 +174,11 @@
             <version>${surefire.version}</version>
             <configuration>
               <useSystemClassLoader>true</useSystemClassLoader>
-              <!-- Exclude JUnit test classes - only run Cucumber tests via JUnit Platform -->
+              <!-- Exclude JUnit test classes - only run Cucumber tests via JUnit Platform Suite -->
               <excludes>
                 <exclude>**/*Test.java</exclude>
               </excludes>
-              <!-- Include Cucumber JUnit Platform engine -->
+              <!-- Include TestRunner suite class -->
               <includes>
                 <include>**/TestRunner.java</include>
               </includes>
