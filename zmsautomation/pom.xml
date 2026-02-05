@@ -169,6 +169,10 @@
             <configuration>
               <useSystemClassLoader>true</useSystemClassLoader>
               <trimStackTrace>false</trimStackTrace>
+              <!-- Include TestRunner class for TestNG discovery -->
+              <includes>
+                <include>**/TestRunner.java</include>
+              </includes>
             </configuration>
             <dependencies>
               <!-- Use TestNG provider like zms-test-automation -->
