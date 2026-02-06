@@ -55,6 +55,7 @@ class Munich
         1063648, // Anmeldung einer Eheschließung ohne Auslandsbezug
         1063731, // Kirchenaustritt
         1071907, // Einbürgerung
+        10502137
     ];
 
     const SERVICE_COMBINATIONS = [
