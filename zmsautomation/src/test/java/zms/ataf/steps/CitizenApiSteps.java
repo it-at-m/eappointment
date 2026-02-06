@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import ataf.rest.steps.BaseRestSteps;
 import config.TestConfig;
 import dto.common.ApiResponse;
 import dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -14,7 +13,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
-public class CitizenApiSteps extends BaseRestSteps {
+public class CitizenApiSteps {
     
     private Response response;
     private String baseUri;
@@ -45,6 +44,7 @@ public class CitizenApiSteps extends BaseRestSteps {
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
         .when()
             .get("/offices-and-services/");
+        CommonApiSteps.setResponse(response);
     }
     
     @When("I submit a booking request with valid data")
@@ -57,12 +57,9 @@ public class CitizenApiSteps extends BaseRestSteps {
             .body("{}") // Placeholder - needs actual booking data
         .when()
             .post("/appointments/");
+        CommonApiSteps.setResponse(response);
     }
     
-    @Then("the response status code should be {int}")
-    public void theResponseStatusCodeShouldBe(int statusCode) {
-        response.then().statusCode(statusCode);
-    }
     
     @Then("the response should contain offices and services")
     public void theResponseShouldContainOfficesAndServices() {
@@ -123,6 +120,7 @@ public class CitizenApiSteps extends BaseRestSteps {
             .body("{\"confirmationNumber\": \"placeholder\"}") // Placeholder - needs actual confirmation number
         .when()
             .delete("/appointments/");
+        CommonApiSteps.setResponse(response);
     }
     
     @Then("the appointment should be cancelled")

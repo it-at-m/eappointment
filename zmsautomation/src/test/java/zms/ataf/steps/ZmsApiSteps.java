@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import ataf.rest.steps.BaseRestSteps;
 import config.TestConfig;
 import dto.common.ApiResponse;
 import dto.zmsapi.StatusResponse;
@@ -14,7 +13,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
-public class ZmsApiSteps extends BaseRestSteps {
+public class ZmsApiSteps {
     
     private Response response;
     private String baseUri;
@@ -44,6 +43,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
         .when()
             .get("/status/");
+        CommonApiSteps.setResponse(response);
     }
     
     @When("I request available appointments for scope {int}")
@@ -53,12 +53,9 @@ public class ZmsApiSteps extends BaseRestSteps {
             .pathParam("scopeId", scopeId)
         .when()
             .get("/scope/{scopeId}/availability/");
+        CommonApiSteps.setResponse(response);
     }
     
-    @Then("the response status code should be {int}")
-    public void theResponseStatusCodeShouldBe(int statusCode) {
-        response.then().statusCode(statusCode);
-    }
     
     @Then("the response should contain status information")
     public void theResponseShouldContainStatusInformation() {
@@ -87,6 +84,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             .pathParam("scopeId", scopeId)
         .when()
             .get("/scope/{scopeId}/");
+        CommonApiSteps.setResponse(response);
     }
     
     @Then("the response should contain scope details")
@@ -101,6 +99,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
         .when()
             .get(endpoint);
+        CommonApiSteps.setResponse(response);
     }
     
     @When("I send a {string} request to {string}")
@@ -128,6 +127,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             default:
                 throw new IllegalArgumentException("Unsupported HTTP method: " + method);
         }
+        CommonApiSteps.setResponse(response);
     }
     
     @When("I request availability without scope ID")
@@ -136,6 +136,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
         .when()
             .get("/scope//availability/");
+        CommonApiSteps.setResponse(response);
     }
     
     @When("I submit an invalid request body to {string}")
@@ -146,6 +147,7 @@ public class ZmsApiSteps extends BaseRestSteps {
             .body("{\"invalid\": \"data\"}")
         .when()
             .post(endpoint);
+        CommonApiSteps.setResponse(response);
     }
     
     @Then("the response should contain an error message")
