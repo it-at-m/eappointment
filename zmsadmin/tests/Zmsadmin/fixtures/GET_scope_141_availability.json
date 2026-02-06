@@ -29,7 +29,6 @@
       },
       "workstationCount": {
         "public": "3",
-        "callcenter": "3",
         "intern": "3"
       },
       "multipleSlotsAllowed": "0",
@@ -377,7 +376,6 @@
       },
       "workstationCount": {
         "public": "3",
-        "callcenter": "3",
         "intern": "3"
       },
       "multipleSlotsAllowed": "0",
@@ -725,7 +723,6 @@
       },
       "workstationCount": {
         "public": "3",
-        "callcenter": "3",
         "intern": "3"
       },
       "multipleSlotsAllowed": "0",
@@ -1073,7 +1070,6 @@
       },
       "workstationCount": {
         "public": "0",
-        "callcenter": "0",
         "intern": "0"
       },
       "multipleSlotsAllowed": "0",
@@ -1421,7 +1417,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -1769,7 +1764,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -2117,7 +2111,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -2465,7 +2458,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -2813,7 +2805,6 @@
       },
       "workstationCount": {
         "public": "3",
-        "callcenter": "3",
         "intern": "3"
       },
       "multipleSlotsAllowed": "0",
@@ -3161,7 +3152,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -3509,7 +3499,6 @@
       },
       "workstationCount": {
         "public": "3",
-        "callcenter": "3",
         "intern": "3"
       },
       "multipleSlotsAllowed": "0",
@@ -3857,7 +3846,6 @@
       },
       "workstationCount": {
         "public": "2",
-        "callcenter": "2",
         "intern": "2"
       },
       "multipleSlotsAllowed": "0",
@@ -4205,7 +4193,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -4553,7 +4540,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -4901,7 +4887,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -5249,7 +5234,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -5597,7 +5581,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -5945,7 +5928,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -6293,7 +6275,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -6641,7 +6622,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -6989,7 +6969,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -7337,7 +7316,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -7685,7 +7663,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",
@@ -8033,7 +8010,6 @@
       },
       "workstationCount": {
         "public": 0,
-        "callcenter": 0,
         "intern": 0
       },
       "multipleSlotsAllowed": "0",

@@ -251,25 +251,6 @@ const FormContent = (props) => {
                                 </FormGroup>
 
                                 <FormGroup>
-                                    <Label attributes={{ "htmlFor": "WsCountCallcenter" }}>Callcenter</Label>
-                                    <Controls>
-                                        <Inputs.Select name="workstationCount_callcenter"
-                                            value={data.workstationCount_callcenter}
-                                            attributes={{ "id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter", "disabled": inputDisabled }}
-                                            {...{ onChange }}
-                                            options={range(0, data.workstationCount_intern).map(n => {
-                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
-                                                return {
-                                                    title: `${n} ${workstation}`,
-                                                    value: `${n}`,
-                                                    name: `${n} ${workstation}`
-                                                }
-                                            })} />
-                                        <Description attributes={{ "id": "help_WsCountCallcenter" }}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
-                                    </Controls>
-                                </FormGroup>
-
-                                <FormGroup>
                                     <Label attributes={{ "htmlFor": "WsCountPublic" }}>Internet</Label>
                                     <Controls>
                                         <Inputs.Select name="workstationCount_public"

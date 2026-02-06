@@ -18,6 +18,6 @@ class ExchangeAvailabilityreviewTest extends Base
         $this->assertEquals('2016-04-05', $entity->data[0][3]); // Startdatum
         $this->assertEquals('2030-12-31', $entity->data[0][4]); // Enddatum
         $this->assertEquals('00:12:00', $entity->data[0][16]); // Slotlänge
-        $this->assertEquals('56', $entity->data[0][22]); // Buchbar bis Tage voraus
+        $this->assertEquals('56', $entity->data[0][21]); // Buchbar bis Tage voraus
     }
 }
