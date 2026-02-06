@@ -2,8 +2,14 @@
   <link
     href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     rel="stylesheet"
+    @load="onStylesheetLoaded"
   />
-  <main :class="{ 'details-background': displayOptionDetailScreen }">
+  <main
+    :class="{
+      'details-background': displayOptionDetailScreen,
+      'styles-loading': !stylesLoaded,
+    }"
+  >
     <div>
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
@@ -23,6 +29,7 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
@@ -58,6 +65,12 @@ const displayOptionDetailScreen =
 
 const { t } = useI18n();
 const globalState = useGlobalState(props);
+
+// Prevent flickering: hide content until external stylesheet is loaded
+const stylesLoaded = ref(false);
+const onStylesheetLoaded = () => {
+  stylesLoaded.value = true;
+};
 </script>
 
 <style>
@@ -73,5 +86,10 @@ const globalState = useGlobalState(props);
 /* Background color on details page */
 .details-background {
   background-color: var(--color-neutrals-blue-xlight);
+}
+
+/* Hide content until external stylesheet is loaded to prevent icon flickering */
+main.styles-loading {
+  visibility: hidden;
 }
 </style>

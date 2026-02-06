@@ -2,8 +2,9 @@
   <link
     href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     rel="stylesheet"
+    @load="onStylesheetLoaded"
   />
-  <main>
+  <main :class="{ 'styles-loading': !stylesLoaded }">
     <div>
       <div v-html="mucIconsSprite"></div>
       <div v-html="customIconsSprit"></div>
@@ -20,6 +21,7 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
@@ -43,6 +45,12 @@ const props = defineProps({
 
 const { t } = useI18n();
 const globalState = useGlobalState(props);
+
+// Prevent flickering: hide content until external stylesheet is loaded
+const stylesLoaded = ref(false);
+const onStylesheetLoaded = () => {
+  stylesLoaded.value = true;
+};
 </script>
 
 <style>
@@ -57,5 +65,10 @@ const globalState = useGlobalState(props);
 
 main {
   padding-bottom: 32px;
+}
+
+/* Hide content until external stylesheet is loaded to prevent icon flickering */
+main.styles-loading {
+  visibility: hidden;
 }
 </style>
