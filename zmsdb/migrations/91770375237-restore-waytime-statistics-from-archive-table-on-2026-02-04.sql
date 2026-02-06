@@ -17,7 +17,6 @@ DROP TEMPORARY TABLE IF EXISTS tmp_pivot;
 -- 2) Pull relevant archive rows for the date range
 --    We approximate cron logic:
 --    - exclude missed (nicht_erschienen)
---    - exclude rows with wegezeit = 0 or NULL
 --    - use mitTermin to distinguish buckets
 --    - map Timestamp hour to buckets
 --    - round similar to cron
@@ -31,9 +30,7 @@ SELECT
   COALESCE(wegezeit, 0) AS way_minutes
 FROM buergerarchiv
 WHERE Datum = @start_date
-  AND (nicht_erschienen IS NULL OR nicht_erschienen = 0)
-  AND wegezeit IS NOT NULL
-  AND wegezeit > 0;
+  AND (nicht_erschienen IS NULL OR nicht_erschienen = 0);
 
 -- 3) Aggregate per scope/date/hour/type
 CREATE TEMPORARY TABLE tmp_ba_agg ENGINE=Aria AS
