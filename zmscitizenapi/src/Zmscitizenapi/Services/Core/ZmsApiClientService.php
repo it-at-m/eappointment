@@ -467,24 +467,61 @@ class ZmsApiClientService
      */
     private static function getSourceNames(): array
     {
-        $raw = \App::$source_name ?? 'dldb';
+        $raw = \App::$source_name ?? 'null';
 
-        if (is_array($raw)) {
-            $names = array_values(array_filter(array_map('strval', $raw)));
-        } else {
-            $s = (string)$raw;
-            $names = preg_split('/[,\;\|\s]+/', $s, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if ($raw !== null && $raw !== '') {
+            if (is_array($raw)) {
+                $names = array_values(array_filter(array_map('strval', $raw)));
+            } else {
+                $s = (string)$raw;
+                $names = preg_split('/[,\;\|\s]+/', $s, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            }
+
+            $out = [];
+            foreach ($names as $n) {
+                $n = trim($n);
+                if ($n !== '' && !in_array($n, $out, true)) {
+                    $out[] = $n;
+                }
+            }
+
+            return $out;
+        }
+        return self::fetchSourceNamesFromApi();
+    }
+
+    private static function fetchSourceNamesFromApi(): array
+    {
+        $cacheKey = 'sources_list';
+
+        if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
+            return $data;
         }
 
-        $out = [];
-        foreach ($names as $n) {
-            $n = trim($n);
-            if ($n !== '' && !in_array($n, $out, true)) {
-                $out[] = $n;
+        $result = \App::$http->readGetResult('/source/');
+        $collection = $result?->getCollection();
+
+        $names = [];
+        foreach ($collection ?? [] as $item) {
+            $name = is_array($item) ? ($item['source'] ?? null) : ($item->source ?? null);
+            $name = trim((string)($name ?? ''));
+            if ($name !== '') {
+                $names[] = $name;
             }
         }
 
-        return $out ?: ['dldb'];
+        $names = array_values(array_unique($names));
+
+        if (\App::$cache) {
+            $ok = \App::$cache->set($cacheKey, $names, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Cache SET', [
+                'key' => $cacheKey,
+                'ok'  => $ok,
+                'count' => count($names),
+            ]);
+        }
+
+        return $names;
     }
 
     public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null): ProcessList
