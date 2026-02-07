@@ -495,7 +495,7 @@ class ZmsApiClientService
         $cacheKey = 'sources_list';
 
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
-            return $data;
+            return is_array($data) ? $data : [];
         }
 
         $result = \App::$http->readGetResult('/source/');
