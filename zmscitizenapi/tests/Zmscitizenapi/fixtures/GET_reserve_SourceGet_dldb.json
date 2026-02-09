@@ -86,7 +86,6 @@
         "freeAppointments": {
           "public": 10,
           "intern": 5,
-          "callcenter": 0,
           "type": "sum"
         }
       },
@@ -99,7 +98,6 @@
         "freeAppointments": {
           "public": 15,
           "intern": 10,
-          "callcenter": 0,
           "type": "sum"
         }
       },
@@ -112,7 +110,6 @@
         "freeAppointments": {
           "public": 12,
           "intern": 7,
-          "callcenter": 0,
           "type": "sum"
         }
       }
