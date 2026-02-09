@@ -66,10 +66,31 @@ jobs:
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
             
-            # Get all runs from this page
-            PAGE_DATA=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE")
-            TOTAL_ON_PAGE=$(echo "$PAGE_DATA" | jq '.workflow_runs | length')
+            # Get all runs from this page with error handling
+            PAGE_DATA=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" 2>&1)
+            API_EXIT_CODE=$?
+            
+            if [ $API_EXIT_CODE -ne 0 ] || [ -z "$PAGE_DATA" ]; then
+              echo "Error: Failed to fetch page $PAGE from GitHub API (exit code: $API_EXIT_CODE)"
+              echo "API response: $PAGE_DATA"
+              TOTAL_ON_PAGE=0
+            else
+              # Validate JSON and extract count
+              TOTAL_ON_PAGE=$(echo "$PAGE_DATA" | jq -r '.workflow_runs | length' 2>/dev/null || echo "0")
+              if [ -z "$TOTAL_ON_PAGE" ] || [ "$TOTAL_ON_PAGE" = "null" ] || ! [ "$TOTAL_ON_PAGE" -eq "$TOTAL_ON_PAGE" ] 2>/dev/null; then
+                echo "Warning: Invalid JSON response for page $PAGE, setting count to 0"
+                TOTAL_ON_PAGE=0
+              fi
+            fi
+            
             echo "Total runs on page $PAGE: $TOTAL_ON_PAGE"
+            
+            # Skip processing if API call failed
+            if [ $API_EXIT_CODE -ne 0 ]; then
+              echo "Skipping page $PAGE due to API error"
+              CONSECUTIVE_EMPTY_PAGES=$((CONSECUTIVE_EMPTY_PAGES + 1))
+              continue
+            fi
             
             # Show sample of what we're getting (for debugging)
             if [ "$TOTAL_ON_PAGE" -gt 0 ]; then
