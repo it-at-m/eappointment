@@ -98,6 +98,11 @@
             />
           </template>
         </ul>
+        <span
+          ref="showAllFocusAnchor"
+          tabindex="-1"
+          aria-hidden="true"
+        />
         <div
           v-if="shouldShowMoreButton"
           class="m-button-group m-button-group--secondary"
@@ -218,6 +223,7 @@ import {
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
+const showAllFocusAnchor = ref(null);
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -597,6 +603,7 @@ const scrollToTop = () => {
     servicesRef.value?.scrollIntoView?.({
       behavior: "smooth",
     });
+    showAllFocusAnchor.value?.focus?.({ preventScroll: true });
   }, 1);
 };
 
