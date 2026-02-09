@@ -467,9 +467,9 @@ class ZmsApiClientService
      */
     private static function getSourceNames(): array
     {
-        $raw = \App::$source_name ?? 'null';
+        $raw = \App::$source_name ?? '';
 
-        if ($raw !== null && $raw !== '') {
+        if ($raw !== '') {
             if (is_array($raw)) {
                 $names = array_values(array_filter(array_map('strval', $raw)));
             } else {
