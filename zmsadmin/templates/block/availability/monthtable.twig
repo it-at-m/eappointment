@@ -61,9 +61,9 @@
 
                         {% if day.status == 'notBookable' %}
                             {% set bookableState="closed" %}
-                        {% elseif day.freeAppointments.intern > 0 or day.freeAppointments.callcenter > 0 or day.freeAppointments.public > 0  %}
+                        {% elseif day.freeAppointments.intern > 0 or day.freeAppointments.public > 0  %}
                             {% set bookableState="mark" %}
-                        {% elseif day.freeAppointments.intern <= 0 and day.freeAppointments.callcenter <= 0 and day.freeAppointments.public <= 0 %}
+                        {% elseif day.freeAppointments.intern <= 0 and day.freeAppointments.public <= 0 %}
                             {% set bookableState="mark mark--destructive" %}
                         {% endif %}
                         <td>
@@ -95,7 +95,6 @@
                                         {{ openingCalendarIcon('X', 'red daystatus--conflict', 1, 'Gesperrt') }}
                                     {% endif %}
                                     {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img"  title="Buchbar per Internet"></i>{% endif %}
-                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img"  title="Buchbar per Callcenter"></i>{% endif %}
                                 </div>
                                 <div class="row holiday palm-hide">
                                     {% if dayoffList.hasEntityByDate(day.toDateTime()) %}
@@ -127,13 +126,10 @@
 
 
     {% set monthSecondsIntern = 0 %}
-    {% set monthSecondsCallcenter = 0 %}
     {% set monthSecondsPublic = 0 %}
     {% for day in month.days %}
         {% set daySecondsIntern = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime()) %}
         {% set monthSecondsIntern = monthSecondsIntern + daySecondsIntern %}
-        {% set daySecondsCallcenter = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime(), 'callcenter') %}
-        {% set monthSecondsCallcenter = monthSecondsCallcenter + daySecondsCallcenter %}
         {% set daySecondsPublic = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime(), 'public') %}
         {% set monthSecondsPublic = monthSecondsPublic + daySecondsPublic %}
     {% endfor %}
@@ -145,10 +141,6 @@
             <li>
                 <div class="cell">Geplante Terminkapazitäten</div>
                 <div class="cell">{{ (monthSecondsIntern/60/60)|round(0,'floor') }} Stunden und {{ ((monthSecondsIntern%3600)/60)|round(0,'floor') }} Minuten</div>
-            </li>
-            <li>
-                <div class="cell">davon für das Callcenter D115 verfügbar</div>
-                <div class="cell">{{ (monthSecondsCallcenter/60/60)|round(0,'floor') }} Stunden und {{ ((monthSecondsCallcenter%3600)/60)|round(0,'floor') }} Minuten</div>
             </li>
             <li>
                 <div class="cell">davon öffentlich im Internet verfügbar</div>

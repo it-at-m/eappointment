@@ -42,7 +42,6 @@ class Slot extends Schema\Entity
         return [
             'public' => 0,
             'intern' => 0,
-            'callcenter' => 0,
             'type' => self::FREE,
         ];
     }
@@ -74,9 +73,6 @@ class Slot extends Schema\Entity
             throw new Exception\SlotFull("Could not remove another appointment from $this");
         }
         $this->intern = $this->intern - 1;
-        if ($this->callcenter > 0) {
-            $this->callcenter = $this->callcenter - 1;
-        }
         if ($this->public > 0) {
             $this->public = $this->public - 1;
         }
@@ -88,7 +84,6 @@ class Slot extends Schema\Entity
         $slot = clone $slot;
         $slot->type = 'sum';
         $slot->intern = (($slot->intern > 0) ? $slot->intern : 0) + (($this->intern > 0) ? $this->intern : 0);
-        $slot->callcenter = $slot->callcenter + $this->callcenter;
         $slot->public = $slot->public + $this->public;
         return $slot;
     }
@@ -97,7 +92,7 @@ class Slot extends Schema\Entity
     {
         return "slot#{$this->type}@"
             . "{$this->getTimeString()}"
-            . " p/c/i={$this->public}/{$this->callcenter}/{$this->intern}";
+            . " p/i={$this->public}/{$this->intern}";
     }
 
     /**
