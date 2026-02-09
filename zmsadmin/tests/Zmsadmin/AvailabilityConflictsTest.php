@@ -35,7 +35,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -493,7 +492,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": 0,
-                            "callcenter": 0,
                             "intern": 0
                         },
                         "lastChange": 1566566532,
@@ -952,7 +950,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -1413,7 +1410,6 @@ class AvailabilityConflictsTest extends Base
                     },
                     "workstationCount": {
                         "public": "3",
-                        "callcenter": "3",
                         "intern": "3"
                     },
                     "lastChange": 1566566532,

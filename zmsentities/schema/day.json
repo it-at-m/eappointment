@@ -1,19 +1,17 @@
 {
     "type": "object",
-    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While public values might be positive, the intern value can be negative. This is due to calculation. The public values are calculated per slot whereas the intern value is calculated for the whole day/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
     "example": {
         "year": 2015,
         "month": 11,
         "day": 19,
         "scopeIDs": "141",
         "freeAppointments": {
-            "callcenter": 0,
             "intern": 3,
             "public": 0,
             "type": "sum"
         },
         "allAppointments": {
-            "callcenter": 0,
             "intern": 3,
             "public": 3,
             "type": "sum"
