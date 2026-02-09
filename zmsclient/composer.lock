@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "eab6b69a6b18db19a6c9747c7067b620f6771a1d"
             },
             "require": {
                 "ext-json": ">=0",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "d21f7878d4766176392afacf79dd8dc5d4076eb3"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "566725ea41f102e8f7fb5a6618dc0cee54217f09"
+                "reference": "b69c55c780eb4aa684ae217e4a6535167a30766d"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4333,16 +4333,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.11.0",
+            "version": "v2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "eec57bcf2ff11d79f519a19da9d7ae1e2c63c42e"
+                "reference": "c4a03c921af532b74c63edd8bf3f68a99dec7e77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/eec57bcf2ff11d79f519a19da9d7ae1e2c63c42e",
-                "reference": "eec57bcf2ff11d79f519a19da9d7ae1e2c63c42e",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/c4a03c921af532b74c63edd8bf3f68a99dec7e77",
+                "reference": "c4a03c921af532b74c63edd8bf3f68a99dec7e77",
                 "shasum": ""
             },
             "require": {
@@ -4358,9 +4358,9 @@
                 "nette/di": "^3.0",
                 "nette/http": "^3.0",
                 "nette/mail": "^3.0 || ^4.0",
-                "nette/tester": "^2.2",
+                "nette/tester": "^2.6",
                 "nette/utils": "^3.0 || ^4.0",
-                "phpstan/phpstan-nette": "^2.0@stable",
+                "phpstan/phpstan": "^2.0@stable",
                 "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
             "type": "library",
@@ -4405,9 +4405,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.11.0"
+                "source": "https://github.com/nette/tracy/tree/v2.11.1"
             },
-            "time": "2025-10-31T00:12:50+00:00"
+            "time": "2026-02-08T02:51:45+00:00"
         },
         {
             "name": "twig/intl-extra",
