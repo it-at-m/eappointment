@@ -33,7 +33,6 @@
                 },
                 "workstationCount": {
                     "public": 1,
-                    "callcenter": 2,
                     "intern": 2
                 },
                 "multipleSlotsAllowed": 1,
