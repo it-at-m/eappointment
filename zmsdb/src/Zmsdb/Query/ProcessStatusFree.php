@@ -25,10 +25,8 @@ class ProcessStatusFree extends Base
             FROM (SELECT
                 IFNULL(COUNT(p.slotID), 0) confirmed,
                 IF(:slotType = "intern", s.intern,
-                  IF(:slotType = "callcenter", s.callcenter,
-                    IF (:slotType = "public", s.`public`, 0 )
-                  )
-                ) available,
+                    IF(:slotType = "public", s.`public`, 0)
+                    ) available,
                 IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
                 s.*,
                 cc.id

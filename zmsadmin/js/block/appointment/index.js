@@ -77,7 +77,16 @@ class View extends RequestView {
                     this.$main.find('select#process_time');
                     this.loadDatePicker();
                     this.bindEvents();
-                    this.calculateSlotCount(true);
+                    this.calculateSlotCount(!this.selectedProcess);
+                    if (this.selectedProcess && this.selectedDate) {
+                        new FormButtons(this.$main.find('[data-form-buttons]'), {
+                            includeUrl: this.includeUrl,
+                            selectedDate: this.selectedDate,
+                            selectedProcess: this.selectedProcess,
+                            hasFreeAppointments: this.selectedTime !== '00-00',
+                            selectedTime: this.selectedTime
+                        }).loadButtons();
+                    }
                 });
             });
     }

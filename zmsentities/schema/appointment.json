@@ -53,7 +53,6 @@
                 "thursday": true
             },
             "workstationCount": {
-                "callcenter": 8,
                 "intern": 10,
                 "public": 3
             }
