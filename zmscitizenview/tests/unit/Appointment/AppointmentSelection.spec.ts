@@ -142,13 +142,13 @@ describe("AppointmentSelection", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } },
-          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } },
+          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
         ] }
     });
 
     // Wait for availableDays to be loaded
-    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } });
+    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
@@ -195,13 +195,13 @@ describe("AppointmentSelection", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } },
-          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } },
+          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
         ] }
     });
 
     // Wait for availableDays to be loaded
-    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } });
+    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
@@ -248,14 +248,14 @@ describe("AppointmentSelection", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } },
-          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } },
-          { name: "Office CCC", id: 3, priority: 8, address: { street: "Elm", house_number: "99" } },
+          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
+          { name: "Office CCC", id: 3, priority: 8, address: { street: "Elm", house_number: "99" }, scope: { id: "3" } },
         ] }
     });
 
     // Wait for availableDays to be loaded
-    await wrapper.vm.showSelectionForProvider({ name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } });
+    await wrapper.vm.showSelectionForProvider({ name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } });
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
@@ -285,8 +285,8 @@ describe("AppointmentSelection", () => {
       selectedService: {
         id: "service1",
         providers: [
-          { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } },
-          { name: "Office B", id: 2, address: { street: "Main", house_number: "2" } }
+          { name: "Office A", id: 1, address: { street: "Main", house_number: "1" }, scope: { id: "1" } },
+          { name: "Office B", id: 2, address: { street: "Main", house_number: "2" }, scope: { id: "2" } }
         ]
       }
     });
@@ -318,14 +318,14 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: "service1", providers: [
-            { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } },
-            { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } },
-            { name: "Office CCC", id: 3, priority: 8, address: { street: "Elm", house_number: "99" } },
+            { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+            { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
+            { name: "Office CCC", id: 3, priority: 8, address: { street: "Elm", house_number: "99" }, scope: { id: "3" } },
           ] }
       });
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -352,13 +352,13 @@ describe("AppointmentSelection", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" } },
-          { name: "Office BBB", id: 54261, address: { street: "Elm", house_number: "99" } },
-          { name: "Office CCC", id: 10489, address: { street: "Elm", house_number: "99" } }
+          { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }, scope: { id: "102522" } },
+          { name: "Office BBB", id: 54261, address: { street: "Elm", house_number: "99" }, scope: { id: "54261" } },
+          { name: "Office CCC", id: 10489, address: { street: "Elm", house_number: "99" }, scope: { id: "10489" } }
         ] }
     });
 
-    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }});
+    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }, scope: { id: "102522" }});
     await nextTick();
 
     // Uncheck the provider - with new behavior, availableDays still contains data for all providers
@@ -381,7 +381,7 @@ describe("AppointmentSelection", () => {
     it("handles calendar navigation correctly", async () => {
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-        { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" } }
+        { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }, scope: { id: "102522" } }
       ] }
     });
 
@@ -448,8 +448,8 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -468,7 +468,7 @@ describe("AppointmentSelection", () => {
       });
 
       // Now show selection for provider (this will fetch available days)
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // After provider change, only 2025-06-17 should remain available
@@ -504,8 +504,8 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -515,7 +515,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Now show selection for provider (this will fetch available days)
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock availableDays where 2025-06-16 only has provider 10470, and 2025-06-17 has provider 10351880
@@ -564,8 +564,8 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -575,7 +575,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Now show selection for provider (this will fetch available days)
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -596,8 +596,8 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -627,8 +627,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -638,7 +638,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -670,8 +670,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -681,7 +681,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -713,8 +713,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -724,7 +724,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -756,8 +756,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -767,7 +767,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -804,8 +804,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -815,7 +815,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -864,8 +864,8 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' }, scope: { id: "10470" } }
         ] }
       });
 
@@ -875,7 +875,7 @@ describe("AppointmentSelection", () => {
       await nextTick();
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' }, scope: { id: "10351880" } });
       await nextTick();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -946,12 +946,12 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
 
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
 
       // Set initial date to 2025-06-17
@@ -1014,14 +1014,14 @@ describe("AppointmentSelection", () => {
         selectedService: {
           id: 'service1',
           providers: [
-            { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-            { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+            { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+            { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
           ]
         }
       });
 
       // Simulate selecting provider 2 initially
-      await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } });
       await nextTick();
       await flushPromises();
 
@@ -1092,12 +1092,12 @@ describe("AppointmentSelection", () => {
 
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } }
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } }
         ] }
       });
 
       // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await flushPromises();
 
@@ -1152,10 +1152,10 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: "service1", providers: [
-          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } });
       await flushPromises();
       wrapper.vm.selectedDay = new Date("2025-06-17");
       wrapper.vm.selectedHour = 13;
@@ -1179,10 +1179,10 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: "service1", providers: [
-          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } });
       await flushPromises();
       await wrapper.vm.handleDaySelection(new Date("2025-06-19"));
       await flushPromises();
@@ -1219,10 +1219,10 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: "service1", providers: [
-          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" }, scope: { id: "1" } });
       await flushPromises();
       wrapper.vm.selectedDay = new Date("2025-06-20");
       wrapper.vm.selectedDayPart = "pm";
@@ -1249,7 +1249,7 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: "service1", providers: [
-          { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } }
+          { name: "Office A", id: 1, address: { street: "Test", house_number: "1" }, scope: { id: "1" } }
         ] }
       });
 
@@ -1257,7 +1257,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders[1] = true;
       await nextTick();
 
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" }, scope: { id: "1" } });
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -1292,11 +1292,11 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -1322,11 +1322,11 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -1365,11 +1365,11 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -1408,11 +1408,11 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -1438,11 +1438,11 @@ describe("AppointmentSelection", () => {
       });
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } }
         ] }
       });
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
       await nextTick();
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
@@ -1577,7 +1577,7 @@ describe("AppointmentSelection", () => {
           provide: {
             selectedServiceProvider: {
               selectedService: ref({ id: 'service1', providers: [
-                { name: 'Office A', id: 1, address: { street: 'Elm', house_number: '99' } }
+                { name: 'Office A', id: 1, address: { street: 'Elm', house_number: '99' }, scope: { id: "1" } }
               ] }),
             },
             selectedTimeslot: {
@@ -1652,8 +1652,8 @@ describe("AppointmentSelection", () => {
         selectedService: {
           id: "service1",
           providers: [
-            { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } },
-            { name: "Office B", id: 2, address: { street: "Main", house_number: "2" } }
+            { name: "Office A", id: 1, address: { street: "Main", house_number: "1" }, scope: { id: "1" } },
+            { name: "Office B", id: 2, address: { street: "Main", house_number: "2" }, scope: { id: "2" } }
           ]
         },
         props: {
@@ -1666,7 +1666,7 @@ describe("AppointmentSelection", () => {
       // Set up provider selection and available days to ensure the component renders properly
       wrapper.vm.selectedProviders = { '1': true, '2': true };
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
-      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
+      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" }, scope: { id: "1" } };
       wrapper.vm.availableDaysFetched = true;
 
       // Wait for the watcher to finish and reset isSwitchingProvider
@@ -1705,7 +1705,7 @@ describe("AppointmentSelection", () => {
       // Set up provider selection and available days to ensure the component renders properly
       wrapper.vm.selectedProviders = { '1': true, '2': true };
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
-      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
+      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" }, scope: { id: "1" } };
       wrapper.vm.availableDaysFetched = true;
 
       // Wait for the watcher to finish and reset isSwitchingProvider
@@ -1745,7 +1745,7 @@ describe("AppointmentSelection", () => {
       // Set up provider selection and available days to ensure the component renders properly
       wrapper.vm.selectedProviders = { '1': true, '2': true };
       wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
-      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } };
+      wrapper.vm.selectedProvider = { name: "Office A", id: 1, address: { street: "Main", house_number: "1" }, scope: { id: "1" } };
       wrapper.vm.availableDaysFetched = true;
 
       // Wait for the watcher to finish and reset isSwitchingProvider
@@ -1800,7 +1800,7 @@ describe("AppointmentSelection", () => {
         wrapper.vm.selectedProviders = { '1': true, '2': true };
         // Ensure component state is in a rendered state similar to other callout tests
         wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
-        wrapper.vm.selectedProvider = { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' } } as any;
+        wrapper.vm.selectedProvider = { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { id: "1" } } as any;
         wrapper.vm.availableDaysFetched = true;
         await nextTick();
         await nextTick();
@@ -1829,8 +1829,8 @@ describe("AppointmentSelection", () => {
           selectedService: {
             id: 'service1',
             providers: [
-              { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' } },
-              { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' } },
+              { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { id: "1" } },
+              { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { id: "2" } },
             ]
           }
         });
@@ -2100,7 +2100,7 @@ describe("AppointmentSelection", () => {
         selectedService: {
           id: "service1",
           providers: [
-            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } }
           ]
         }
       });
@@ -2109,7 +2109,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders[1] = true;
       await nextTick();
 
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -2157,8 +2157,8 @@ describe("AppointmentSelection", () => {
         selectedService: {
           id: "service1",
           providers: [
-            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
-            { name: "Office B", id: 2, address: { street: "Elm", house_number: "100" } }
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+            { name: "Office B", id: 2, address: { street: "Elm", house_number: "100" }, scope: { id: "2" } }
           ]
         }
       });
@@ -2168,8 +2168,8 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders[2] = true;
       await nextTick();
 
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
-      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Elm", house_number: "100" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Elm", house_number: "100" }, scope: { id: "2" } });
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -2210,7 +2210,7 @@ describe("AppointmentSelection", () => {
         selectedService: {
           id: "service1",
           providers: [
-            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } }
           ]
         }
       });
@@ -2219,7 +2219,7 @@ describe("AppointmentSelection", () => {
       wrapper.vm.selectedProviders[1] = true;
       await nextTick();
 
-      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
       await flushPromises();
 
       // Mock the availableDays to simulate what would be fetched for selected providers
@@ -2241,7 +2241,7 @@ describe("AppointmentSelection", () => {
     });
   });
   describe("Loading UI – spinner instead of calendar", () => {
-    it("shows spinner during initial loading (availableDays pending) and hides the calendar", async () => {
+    it("shows spinner while fetching availableDays and hides the calendar until fetch completes", async () => {
       // Promise for fetchAvailableDays to keep the loading status stable
       let resolveDays!: (v: any) => void;
       (fetchAvailableDays as Mock).mockImplementation(() => {
