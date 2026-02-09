@@ -37,10 +37,8 @@ class Day extends Base
             LPAD(month, 2, "0") AS month,
             LPAD(day, 2, "0") AS day,
             SUM(public) AS freeAppointments__public,
-            SUM(callcenter) AS freeAppointments__callcenter,
             SUM(intern) AS freeAppointments__intern,
             SUM(publicall) AS allAppointments__public,
-            SUM(callcenterall) AS allAppointments__callcenter,
             SUM(internall) AS allAppointments__intern,
             "sum" AS freeAppointments__type,
             "free" AS allAppointments__type,
@@ -56,10 +54,8 @@ class Day extends Base
                 slotsRequired,
                 COUNT(slotID) AS ancestorCount,
                 MIN(IF(public > confirmed, public - confirmed, 0)) AS public,
-                MIN(IF(callcenter > confirmed, callcenter - confirmed, 0)) AS callcenter,
                 MIN(CAST(intern AS SIGNED) - confirmed) AS intern,
                 MIN(public) AS publicall,
-                MIN(callcenter) AS callcenterall,
                 MIN(intern) AS internall,
                 scopeID
             FROM
@@ -73,7 +69,6 @@ class Day extends Base
                     s.day,
                     s.time,
                     s.public,
-                    s.callcenter,
                     s.intern,
                     cc.id,
                     s.scopeID
