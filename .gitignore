@@ -3,6 +3,8 @@ test-automation-framework-example
 test-automation-framework
 zms-test-automation
 
+dldb-mapper
+
 # =============== ddev =================
 .ddev/.env
 .ddev/.env.template

@@ -20,6 +20,16 @@ class Munich
         103666, 103633, 101905,
     ];
 
+    /**
+     * Offices where disabledByServices are interpreted with special
+     * "exclusive vs mixed" semantics in the frontend (allowDisabledMix=true).
+     * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper/app/map.php.
+     */
+    const LOCATIONS_ALLOW_DISABLED_MIX = [
+        10489,
+        10502,
+    ];
+
     const LOCATION_PRIO_BY_DISPLAY_NAME = [
         'Bürgerbüro Ruppertstraße' => 100,
         'Bürgerbüro Orleansplatz' => 90,
@@ -351,6 +361,11 @@ class Munich
                 $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
                 break;
             }
+        }
+
+        // Mark locations that participate in the "exclusive vs mixed" disabled-services logic.
+        if (in_array((int) $mappedLocation['id'], self::LOCATIONS_ALLOW_DISABLED_MIX, true)) {
+            $mappedLocation['allowDisabledMix'] = true;
         }
     }
 

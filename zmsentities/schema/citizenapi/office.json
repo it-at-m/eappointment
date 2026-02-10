@@ -132,6 +132,13 @@
             ],
             "description": "Array of service-IDs for which a provider is unavailable"
         },
+        "allowDisabledMix": {
+            "type": [
+                "boolean",
+                "null"
+            ],
+            "description": "If true, frontend may keep this office even when selected services intersect disabledByServices and rely on grouping logic instead"
+        },
         "slotsPerAppointment": {
             "type": [
                 "string",

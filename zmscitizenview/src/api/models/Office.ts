@@ -62,6 +62,14 @@ export interface Office {
    */
   disabledByServices?: string[];
   /**
+   * If true, frontend may keep this office even when selected services intersect disabledByServices
+   * and rely on grouping logic instead (used for exclusive vs mixed handling).
+   *
+   * @type {boolean}
+   * @memberof Office
+   */
+  allowDisabledMix?: boolean;
+  /**
    *
    * @type {Scope}
    * @memberof Office

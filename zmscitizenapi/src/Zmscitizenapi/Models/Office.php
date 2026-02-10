@@ -26,6 +26,7 @@ class Office extends Entity implements JsonSerializable
     public ?ThinnedScope $scope = null;
     public ?string $slotsPerAppointment = null;
     public ?int $parentId = null;
+    public ?bool $allowDisabledMix = null;
 
     public function __construct(
         int $id,
@@ -41,7 +42,8 @@ class Office extends Entity implements JsonSerializable
         int $priority = 1,
         ?ThinnedScope $scope = null,
         ?string $slotsPerAppointment = null,
-        ?int $parentId = null
+        ?int $parentId = null,
+        ?bool $allowDisabledMix = null
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -57,6 +59,7 @@ class Office extends Entity implements JsonSerializable
         $this->disabledByServices = $disabledByServices;
         $this->slotsPerAppointment = $slotsPerAppointment;
         $this->parentId = $parentId;
+        $this->allowDisabledMix = $allowDisabledMix;
         $this->ensureValid();
     }
 
@@ -88,7 +91,8 @@ class Office extends Entity implements JsonSerializable
             'priority' => $this->priority,
             'scope' => $this->scope?->toArray(),
             'slotsPerAppointment' => $this->slotsPerAppointment,
-            'parentId' => $this->parentId
+            'parentId' => $this->parentId,
+            'allowDisabledMix' => $this->allowDisabledMix,
         ];
     }
 

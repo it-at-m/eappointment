@@ -173,7 +173,8 @@ class MapperService
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
-                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
+                allowDisabledMix: isset($provider->data['allowDisabledMix']) ? (bool) $provider->data['allowDisabledMix'] : null
             );
         }
 
