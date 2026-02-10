@@ -924,15 +924,15 @@ function getAvailableProviders(
       if (disabledServices.length === 0) {
         return true; // No restrictions, always show
       }
-      
+
       const hasAnyDisabled = selectedServiceIds.some((serviceId) =>
         disabledServices.includes(Number(serviceId))
       );
-      
+
       if (!hasAnyDisabled) {
         return true; // No selected services are disabled, show it
       }
-      
+
       // Special handling for Ruppertstraße locations (10489, 10502)
       // These need to be kept for grouping logic to decide between exclusive vs mixed
       const providerId = Number(p.id);
@@ -941,13 +941,13 @@ function getAvailableProviders(
         const allSelectedAreDisabled = selectedServiceIds.every((serviceId) =>
           disabledServices.includes(Number(serviceId))
         );
-        
+
         // For 10489: Show when mixed (not all disabled), hide when exclusive (all disabled) - handled by grouping
         // For 10502: Hide when mixed (not all disabled), show when exclusive (all disabled) - handled by grouping
         // Keep both in the list for grouping logic to decide
         return true;
       }
-      
+
       // For other providers: filter out if any selected service is disabled
       return false;
     }
