@@ -916,8 +916,8 @@ function getAvailableProviders(
     if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
   });
 
-  // Filter out providers where any selected service is in their disabledByServices
-  // Special case: For offices with allowDisabledMix=true, let grouping logic handle exclusive vs mixed selection
+  // Filter out providers where any selected service is in their disabledByServices.
+  // Offices with allowDisabledMix=true are kept and resolved later by grouping logic.
   const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
     (p) => {
       const disabledServices = (p.disabledByServices ?? []).map(Number);
@@ -933,28 +933,15 @@ function getAvailableProviders(
         return true; // No selected services are disabled, show it
       }
 
-      // Special case: For Ruppertstraße locations (10489, 10502), handle exclusive vs mixed service selection
-      // Special handling for Ruppertstraße locations (10489, 10502)
-      // These need to be kept for grouping logic to decide between exclusive vs mixed
-      const providerId = Number(p.id);
-      if (providerId === 10489 || providerId === 10502) {
-        // Check if ALL selected services are in disabledByServices (exclusive match)
+      // Offices marked as allowDisabledMix participate in the exclusive-vs-mixed
+      // logic in the grouping step and must not be filtered out here.
+      if (p.allowDisabledMix === true) {
         selectedServiceIds.every((serviceId) =>
           disabledServices.includes(Number(serviceId))
         );
 
-        // For 10489: Show when mixed (not all disabled), hide when exclusive (all disabled) - handled by grouping
-        // For 10502: Hide when mixed (not all disabled), show when exclusive (all disabled) - handled by grouping
-        // Keep both in the list for grouping logic to decide
-      }
-
-      console.log("allowDisabledMix: " + p.allowDisabledMix);
-
-      // Offices marked as allowDisabledMix participate in the exclusive-vs-mixed
-      // logic in the grouping step and must not be filtered out here.
-      /*if (p.allowDisabledMix && p.allowDisabledMix === true) {
         return true;
-      }*/
+      }
 
       // For other providers: filter out if any selected service is disabled
       return false;

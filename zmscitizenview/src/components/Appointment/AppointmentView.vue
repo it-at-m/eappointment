@@ -997,6 +997,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
           office.organizationUnit,
           office.slotTimeInMinutes,
           office.disabledByServices,
+          office.allowDisabledMix,
           office.scope,
           office.slotsPerAppointment,
           office.slots,
@@ -1211,6 +1212,7 @@ onMounted(() => {
                 foundOffice.organizationUnit,
                 foundOffice.slotTimeInMinutes,
                 undefined, // disabledByServices
+                foundOffice.allowDisabledMix,
                 foundOffice.scope,
                 foundOffice.slotsPerAppointment,
                 undefined, // slots
