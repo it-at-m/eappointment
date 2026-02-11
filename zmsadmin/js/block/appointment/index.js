@@ -111,6 +111,16 @@ class View extends RequestView {
                 this.auralMessage(this.auralMessages.chooseRequestFirst)
             this.onDatePick(value)
             this.selectedDate = value;
+            this.$main.find('select#process_time').trigger('change');
+            new FormButtons(this.$main.find('[data-form-buttons]'), {
+                includeUrl: this.includeUrl,
+                selectedDate: this.selectedDate,
+                selectedProcess: this.selectedProcess,
+                hasFreeAppointments: hasFreeAppointments,
+                selectedTime: this.selectedTime
+            }).loadButtons().then(() => {
+                this.bindEvents();
+            });
         }
         return (
             calendarElement.render(
