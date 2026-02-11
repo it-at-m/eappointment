@@ -68,7 +68,7 @@ export interface Office {
    * @type {boolean}
    * @memberof Office
    */
-  allowDisabledMix?: boolean;
+  allowDisabledServicesMix?: boolean;
   /**
    *
    * @type {Scope}

@@ -31,7 +31,7 @@ export function getProviders(
           office.organizationUnit,
           office.slotTimeInMinutes,
           office.disabledByServices,
-          office.allowDisabledMix,
+          office.allowDisabledServicesMix,
           office.scope,
           office.slotsPerAppointment,
           office.slots,

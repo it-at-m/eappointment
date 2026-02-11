@@ -94,7 +94,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ],
                 [
                     "id" => 9999999,
@@ -153,7 +153,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ]
             ],
             "services" => [
@@ -271,7 +271,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ],
                 [
                     "id" => 9999999,
@@ -330,7 +330,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ]
             ],
             "services" => [

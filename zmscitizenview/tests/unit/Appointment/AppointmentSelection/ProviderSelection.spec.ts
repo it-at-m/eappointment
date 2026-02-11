@@ -96,20 +96,20 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     expect(wrapper.text()).toContain("Office B");
   });
 
-  /*it("filters providers correctly based on disabledByServices and allowDisabledMix for Ruppertstraße", async () => {
+  /*it("filters providers correctly based on disabledByServices and allowDisabledServicesMix for Ruppertstraße", async () => {
     const testProviders = [
       { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [], address: { street: 'Test', house_number: '1' }, scope: { id: "102522" } },
       { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [], address: { street: 'Test', house_number: '2' }, scope: { id: "102523" } },
       { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [], address: { street: 'Test', house_number: '3' }, scope: { id: "102524" } },
       { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [], address: { street: 'Test', house_number: '4' }, scope: { id: "102526" } },
       // Realistic Ruppertstraße pair: 10489 is restricted, 10502 is clean.
-      // Both carry allowDisabledMix so they are kept through the initial filter
+      // Both carry allowDisabledServicesMix so they are kept through the initial filter
       // and resolved by the grouping logic (exclusive vs mixed core services).
       {
         id: 10489,
         name: 'Bürgerbüro Ruppertstraße',
         disabledByServices: ['1063453', '1063441', '1080582'],
-        allowDisabledMix: true,
+        allowDisabledServicesMix: true,
         address: { street: 'Test', house_number: '5' },
         scope: { id: "10489" },
       },
@@ -117,7 +117,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         id: 10502,
         name: 'Bürgerbüro Ruppertstraße',
         disabledByServices: [],
-        allowDisabledMix: true,
+        allowDisabledServicesMix: true,
         address: { street: 'Test', house_number: '6' },
         scope: { id: "10502" },
       },

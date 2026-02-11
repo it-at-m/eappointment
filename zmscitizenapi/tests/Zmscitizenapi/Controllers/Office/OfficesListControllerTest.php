@@ -94,7 +94,7 @@ class OfficesListControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ],
                 [
                     "id" => 9999999,
@@ -153,7 +153,7 @@ class OfficesListControllerTest extends ControllerTestCase
                     ],
                     "slotsPerAppointment" => null,
                     "parentId" => null,
-                    "allowDisabledMix" => null,
+                    "allowDisabledServicesMix" => null,
                 ]
             ]
         ];

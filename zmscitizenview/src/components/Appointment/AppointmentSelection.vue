@@ -62,7 +62,7 @@
       v-if="!availableDaysFetched || isSwitchingProvider"
       class="m-spinner-container"
     >
-      <MucSpinner :text="t('spinnerText')" />
+      <MucSpinner :text="t('spinnerText')" size="100" />
     </div>
     <CalendarView
       ref="calendarViewRef"
@@ -576,7 +576,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   if (summary.value) {
     await nextTick();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
-    (buttons.value.lastChild as HTMLElement | null)?.focus({
+    (buttons.value?.lastChild as HTMLElement | null)?.focus({
       preventScroll: true,
     });
   }
@@ -913,11 +913,11 @@ function getAvailableProviders(
   const allProviders = selectedServices.flatMap((s) => s.providers);
   const filteredProvidersMap = new Map<number, OfficeImpl>();
   allProviders.forEach((p) => {
-    if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
+    if (allowedIds.has(p.id)) filteredProvidersMap.set(Number(p.id), p);
   });
 
   // Filter out providers where any selected service is in their disabledByServices.
-  // Offices with allowDisabledMix=true are kept and resolved later by grouping logic.
+  // Offices with allowDisabledServicesMix=true are kept and resolved later by grouping logic.
   const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
     (p) => {
       const disabledServices = (p.disabledByServices ?? []).map(Number);
@@ -933,9 +933,9 @@ function getAvailableProviders(
         return true; // No selected services are disabled, show it
       }
 
-      // Offices marked as allowDisabledMix participate in the exclusive-vs-mixed
+      // Offices marked as allowDisabledServicesMix participate in the exclusive-vs-mixed
       // logic in the grouping step and must not be filtered out here.
-      if (p.allowDisabledMix === true) {
+      if (p.allowDisabledServicesMix === true) {
         selectedServiceIds.every((serviceId) =>
           disabledServices.includes(Number(serviceId))
         );

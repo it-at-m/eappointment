@@ -132,7 +132,7 @@
             ],
             "description": "Array of service-IDs for which a provider is unavailable"
         },
-        "allowDisabledMix": {
+        "allowDisabledServicesMix": {
             "type": [
                 "boolean",
                 "null"

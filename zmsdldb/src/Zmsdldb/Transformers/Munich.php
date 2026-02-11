@@ -22,7 +22,7 @@ class Munich
 
     /**
      * Offices where disabledByServices are interpreted with special
-     * "exclusive vs mixed" semantics in the frontend (allowDisabledMix=true).
+     * "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
      * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper/app/map.php.
      */
     const LOCATIONS_ALLOW_DISABLED_MIX = [
@@ -365,7 +365,7 @@ class Munich
 
         // Mark locations that participate in the "exclusive vs mixed" disabled-services logic.
         if (in_array((int) $mappedLocation['id'], self::LOCATIONS_ALLOW_DISABLED_MIX, true)) {
-            $mappedLocation['allowDisabledMix'] = true;
+            $mappedLocation['allowDisabledServicesMix'] = true;
         }
     }
 

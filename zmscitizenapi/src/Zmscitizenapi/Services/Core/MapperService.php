@@ -174,7 +174,7 @@ class MapperService
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
-                allowDisabledMix: isset($provider->data['allowDisabledMix']) ? (bool) $provider->data['allowDisabledMix'] : null
+                allowDisabledServicesMix: isset($provider->data['allowDisabledServicesMix']) ? (bool) $provider->data['allowDisabledServicesMix'] : null
             );
         }
 
