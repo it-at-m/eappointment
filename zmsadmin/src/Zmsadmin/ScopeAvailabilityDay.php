@@ -58,7 +58,6 @@ class ScopeAvailabilityDay extends BaseController
                 'timeString' => $slot->getTimeString(),
                 'public' => $slot->public,
                 'intern' => $slot->intern,
-                'callcenter' => $slot->callcenter,
                 'occupiedCount' => 0,
             ];
         }

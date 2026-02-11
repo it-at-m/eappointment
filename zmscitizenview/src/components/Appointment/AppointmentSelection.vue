@@ -1,7 +1,7 @@
 <template>
   <ProviderSelection
     :t="t"
-    :selectableProviders="providersWithAvailableDays"
+    :selectableProviders="providerSelectionProviders"
     :providersWithAppointments="providersWithAppointments"
     :selectedProvider="selectedProvider"
     :selectedProviders="selectedProviders"
@@ -530,13 +530,15 @@ const hasAppointmentsForSelectedProviders = () => {
 };
 
 const providersWithAppointments = computed(() => {
-  // Always return all selectable providers to maintain UI state
-  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
   return (selectableProviders.value || []).sort((a, b) => {
     const aPriority = a.priority ?? -Infinity;
     const bPriority = b.priority ?? -Infinity;
     return bPriority - aPriority;
   });
+});
+
+const providerSelectionProviders = computed(() => {
+  return providersWithAppointments.value.filter((p) => p.scope != null);
 });
 
 const providersWithAvailableDays = computed(() => {
@@ -625,25 +627,32 @@ const handleDaySelection = async (day: any) => {
 };
 
 const providerSelectionError = computed(() => {
-  if (!availableDays?.value || availableDays.value.length === 0) {
+  const selectableIds = new Set(
+    providerSelectionProviders.value.map((p) => String(p.id))
+  );
+
+  if (selectableIds.size === 0) {
     return "";
   }
-
-  const selectableIds = new Set(
-    providersWithAvailableDays.value.map((p) => String(p.id))
-  );
 
   const hasSelection = Object.entries(selectedProviders.value).some(
     ([id, isSelected]) => isSelected && selectableIds.has(id)
   );
 
-  return !hasSelection && selectableIds.size > 0
-    ? props.t("errorMessageProviderSelection")
-    : "";
+  return !hasSelection ? props.t("errorMessageProviderSelection") : "";
 });
 
 const noProviderSelected = computed(() => {
-  if (!providersWithAvailableDays.value?.length) return true;
+  // Check if any providers are selected at all
+  const hasAnySelection = Object.values(selectedProviders.value).some(
+    (selected) => selected
+  );
+
+  // If no providers are selected at all, return true
+  if (!hasAnySelection) return true;
+
+  // If there are no providers with available days, we can't determine selection
+  if (!providersWithAvailableDays.value?.length) return false;
 
   const idsWithDays = new Set(
     providersWithAvailableDays.value.map((p) => String(p.id))
@@ -808,6 +817,7 @@ const fetchAvailableDaysForSelection = async (): Promise<void> => {
     updateDateRangeForSelectedProviders();
   } else {
     handleError(data);
+    availableDaysFetched.value = true;
     isSwitchingProvider.value = false;
   }
 };
@@ -1015,7 +1025,6 @@ async function validateAndUpdateSelectedDate(
     if (nextAvailableDay) {
       const newDate = new Date(nextAvailableDay.time);
       selectedDay.value = newDate;
-      // Set viewMonth to the first day of the month containing the new date
       viewMonth.value = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
       calendarKey.value++;
       await nextTick();
@@ -1073,18 +1082,14 @@ function scheduleRefreshAfterProviderChange() {
       ? new Date(selectedDay.value)
       : undefined;
 
-    // No need to refetch availableDays - we already have all provider data from initial fetch
-    // Just update the UI based on current selection
     isSwitchingProvider.value = false;
 
-    // Selection changed while awaiting? Abort this cycle.
     if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
       return;
     }
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
 
-    // Validate and update selected date to ensure it's available for selected providers
     if (availableDaysForSelectedProviders.length > 0) {
       await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     }
@@ -1102,7 +1107,6 @@ function scheduleRefreshAfterProviderChange() {
       await getAppointmentsOfDay(currentSelectedDateString);
     }
 
-    // Snap inside day
     await validateCurrentDateHasAppointments();
     await snapToNearestForCurrentView();
   }, 150);
@@ -1259,10 +1263,21 @@ watch(
       selectedProvider.value = undefined;
     }
 
-    // Pre-hook: set switching state and clear errors immediately
-    isSwitchingProvider.value = true;
-    error.value = false;
-    Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+    const hasAvailableDays =
+      availableDays.value && availableDays.value.length > 0;
+    const daysWereFetched = availableDays.value !== undefined;
+
+    if (daysWereFetched && !hasAvailableDays && !availableDaysFetched.value) {
+      availableDaysFetched.value = true;
+    }
+
+    if (hasAvailableDays) {
+      isSwitchingProvider.value = true;
+      error.value = false;
+      Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+    } else {
+      isSwitchingProvider.value = false;
+    }
 
     // Debounced pipeline
     scheduleRefreshAfterProviderChange();

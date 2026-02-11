@@ -12,13 +12,11 @@ return array (
     array (
       'public' => 0,
       'intern' => 0,
-      'callcenter' => 0,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '36',
-      'callcenter' => '36',
       'intern' => '36',
       'type' => 'free',
     ),
@@ -33,13 +31,11 @@ return array (
     array (
       'public' => 0,
       'intern' => -1,
-      'callcenter' => 0,
       'type' => 'sum',
     ),
     'allAppointments' => 
     array (
       'public' => '36',
-      'callcenter' => '36',
       'intern' => '36',
       'type' => 'free',
     ),

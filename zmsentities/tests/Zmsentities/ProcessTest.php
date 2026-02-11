@@ -555,7 +555,6 @@ class ProcessTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '1',
-                'callcenter' => '1',
                 'intern' => '1'
             ),
             'slotTimeInMinutes' => '15',
