@@ -116,7 +116,6 @@ class View extends RequestView {
                 includeUrl: this.includeUrl,
                 selectedDate: this.selectedDate,
                 selectedProcess: this.selectedProcess,
-                hasFreeAppointments: hasFreeAppointments,
                 selectedTime: this.selectedTime
             }).loadButtons().then(() => {
                 this.bindEvents();
