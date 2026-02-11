@@ -74,7 +74,7 @@ jobs:
 
       - name: Cache Flyway Docker image
         id: cache-flyway-image
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /tmp/flyway-image.tar
           key: ${{ runner.os }}-flyway-image-9
@@ -238,7 +238,7 @@ jobs:
 
       - name: Cache Maven Docker image
         id: cache-maven-image
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /tmp/maven-image.tar
           key: ${{ runner.os }}-maven-image-3.9-eclipse-temurin-21
@@ -256,7 +256,7 @@ jobs:
           fi
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('zmsapiautomation/pom.xml') }}
