@@ -197,6 +197,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     });
 
     await nextTick();
+    await flushPromises();
     const renderedProviders = wrapper.vm.selectableProviders as typeof testProviders;
     const resultIds = renderedProviders.map((p) => p.id).sort();
 
