@@ -51,6 +51,8 @@ jobs:
           
           DELETED_COUNT=0
           MAX_DELETIONS=300  # Rate limit: 1000 requests per hour, cap at 300 for safety
+          CONSECUTIVE_EMPTY_PAGES=0
+          MAX_CONSECUTIVE_EMPTY=5  # Stop after 5 consecutive pages with no matches
           
           for PAGE in $(seq $START_PAGE -1 1); do
             # Check if we've reached the rate limit BEFORE processing
@@ -63,27 +65,78 @@ jobs:
             
             # Get runs from this page using GitHub API
             echo "Fetching page $PAGE from GitHub API..."
-            RUNS_JSON=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" --jq '.workflow_runs[] | select(.status == "completed" and .created_at < "'$CUTOFF_DATE'" and .name != "Prune Old Workflow Runs" and (.head_branch | test("^[0-9]+\\.[0-9]+\\.[0-9]+(-.*)?$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}')
             
-            if [ -z "$RUNS_JSON" ] || [ "$RUNS_JSON" = "null" ]; then
-              echo "No more old runs found on page $PAGE. Stopping."
-              break
+            # Get all runs from this page with error handling
+            PAGE_DATA=$(gh api "repos/${{ github.repository }}/actions/runs?per_page=100&page=$PAGE" 2>&1)
+            API_EXIT_CODE=$?
+            
+            if [ $API_EXIT_CODE -ne 0 ] || [ -z "$PAGE_DATA" ]; then
+              echo "Error: Failed to fetch page $PAGE from GitHub API (exit code: $API_EXIT_CODE)"
+              echo "API response: $PAGE_DATA"
+              TOTAL_ON_PAGE=0
+            else
+              # Validate JSON and extract count
+              TOTAL_ON_PAGE=$(echo "$PAGE_DATA" | jq -r '.workflow_runs | length' 2>/dev/null || echo "0")
+              if [ -z "$TOTAL_ON_PAGE" ] || [ "$TOTAL_ON_PAGE" = "null" ] || ! [ "$TOTAL_ON_PAGE" -eq "$TOTAL_ON_PAGE" ] 2>/dev/null; then
+                echo "Warning: Invalid JSON response for page $PAGE, setting count to 0"
+                TOTAL_ON_PAGE=0
+              fi
             fi
             
-            # Extract run IDs
-            RUN_IDS=$(echo "$RUNS_JSON" | jq -r '.id')  # Process all runs found on this page
+            echo "Total runs on page $PAGE: $TOTAL_ON_PAGE"
             
-            RUN_COUNT=$(echo "$RUN_IDS" | wc -l)
-            echo "Found $RUN_COUNT old runs on page $PAGE"
+            # Skip processing if API call failed
+            if [ $API_EXIT_CODE -ne 0 ]; then
+              echo "Skipping page $PAGE due to API error"
+              CONSECUTIVE_EMPTY_PAGES=$((CONSECUTIVE_EMPTY_PAGES + 1))
+              continue
+            fi
+            
+            # Show sample of what we're getting (for debugging)
+            if [ "$TOTAL_ON_PAGE" -gt 0 ]; then
+              echo "Sample runs on this page:"
+              echo "$PAGE_DATA" | jq -r '.workflow_runs[0:3] | .[] | "  - \(.name) (\(.head_branch)) - Status: \(.status) - Created: \(.created_at)"'
+            fi
+            
+            # Filter runs using jq with proper variable passing
+            # Collect matching runs as an array for easier processing
+            # Debug: Show oldest run on this page for comparison
+            if [ "$TOTAL_ON_PAGE" -gt 0 ]; then
+              OLDEST_ON_PAGE=$(echo "$PAGE_DATA" | jq -r '.workflow_runs | sort_by(.created_at) | .[0].created_at')
+              echo "Oldest run on page $PAGE: $OLDEST_ON_PAGE (cutoff: $CUTOFF_DATE)"
+            fi
+            
+            RUNS_JSON=$(echo "$PAGE_DATA" | jq --arg cutoff "$CUTOFF_DATE" '[.workflow_runs[] | select(.status == "completed" and .created_at < $cutoff and .name != "Prune Old Workflow Runs" and (.head_branch | test("^[0-9]+\\.[0-9]+\\.[0-9]+(-.*)?$") | not)) | {id: .id, created_at: .created_at, name: .name, head_branch: .head_branch}]')
+            
+            # Extract run IDs
+            RUN_IDS=$(echo "$RUNS_JSON" | jq -r '.[].id' 2>/dev/null | grep -v '^$' | grep -v '^null$' || true)
+            
+            if [ -z "$RUN_IDS" ]; then
+              RUN_COUNT=0
+            else
+              RUN_COUNT=$(echo "$RUN_IDS" | wc -l | tr -d ' ')
+            fi
+            
+            echo "Found $RUN_COUNT old runs on page $PAGE matching criteria"
             
             if [ "$RUN_COUNT" -eq 0 ]; then
-              echo "No runs to delete on this page. Moving to next page."
+              CONSECUTIVE_EMPTY_PAGES=$((CONSECUTIVE_EMPTY_PAGES + 1))
+              echo "No runs to delete on this page. Consecutive empty pages: $CONSECUTIVE_EMPTY_PAGES"
+              
+              # If we've checked enough consecutive pages with no matches, we're likely done
+              if [ $CONSECUTIVE_EMPTY_PAGES -ge $MAX_CONSECUTIVE_EMPTY ]; then
+                echo "Checked $MAX_CONSECUTIVE_EMPTY consecutive pages with no matches. Stopping."
+                break
+              fi
               continue
+            else
+              # Reset counter when we find matches
+              CONSECUTIVE_EMPTY_PAGES=0
             fi
             
             # Show some sample runs we're about to delete
             echo "Sample runs to delete:"
-            echo "$RUNS_JSON" | jq -r '. | "  - \(.name) (\(.head_branch)) (\(.created_at))"' | head -5
+            echo "$RUNS_JSON" | jq -r '.[0:5] | .[] | "  - \(.name) (\(.head_branch)) (\(.created_at))"'
             
             # Delete runs one by one with delays
             for run_id in $RUN_IDS; do
