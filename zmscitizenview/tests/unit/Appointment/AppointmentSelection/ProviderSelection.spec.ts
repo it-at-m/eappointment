@@ -96,7 +96,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     expect(wrapper.text()).toContain("Office B");
   });
 
-  /*it("filters providers correctly based on disabledByServices and allowDisabledServicesMix for Ruppertstraße", async () => {
+  it("filters providers correctly based on disabledByServices and allowDisabledServicesMix for Ruppertstraße", async () => {
     const testProviders = [
       { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [], address: { street: 'Test', house_number: '1' }, scope: { id: "102522" } },
       { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [], address: { street: 'Test', house_number: '2' }, scope: { id: "102523" } },
@@ -161,7 +161,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     // 4. Mixed core + harmless: 1063453 + 1234567.
     //    Only some selected services are in 10489.disabledByServices → mixed → keep 10489 for Ruppertstraße.
     await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
-  });*/
+  });
 
   it("filters providers correctly for pickup service 10295182 (only bookable at 10492)", async () => {
     const testProviders = [
