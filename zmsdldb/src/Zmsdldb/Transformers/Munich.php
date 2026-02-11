@@ -20,16 +20,6 @@ class Munich
         103666, 103633, 101905,
     ];
 
-    /**
-     * Offices where disabledByServices are interpreted with special
-     * "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
-     * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper/app/map.php.
-     */
-    const LOCATIONS_ALLOW_DISABLED_MIX = [
-        10489,
-        10502,
-    ];
-
     const LOCATION_PRIO_BY_DISPLAY_NAME = [
         'Bürgerbüro Ruppertstraße' => 100,
         'Bürgerbüro Orleansplatz' => 90,
@@ -58,6 +48,16 @@ class Munich
             "locations" => [10286848, 10286849, 10181770, 10204387, 10204388, 10227989, 1060068], // Bürgerbüros ohne Abholung Personalausweis, Reisepass oder eID-Karte
             "services" => [10295182] // Abholung Personalausweis, Reisepass oder eID-Karte - only available at Ruppertstraße (10489)
         ]
+    ];
+
+    /**
+     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+     * "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
+     * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper/app/map.php.
+     */
+    const LOCATIONS_ALLOW_DISABLED_MIX = [
+        10489,
+        10502,
     ];
 
     const DONT_SHOW_SERVICE_ON_START_PAGE = [

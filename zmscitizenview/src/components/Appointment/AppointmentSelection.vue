@@ -62,7 +62,10 @@
       v-if="!availableDaysFetched || isSwitchingProvider"
       class="m-spinner-container"
     >
-      <MucSpinner :text="t('spinnerText')" size="100" />
+      <MucSpinner
+        :text="t('spinnerText')"
+        size="100"
+      />
     </div>
     <CalendarView
       ref="calendarViewRef"
@@ -922,7 +925,7 @@ function getAvailableProviders(
     (p) => {
       const disabledServices = (p.disabledByServices ?? []).map(Number);
       if (disabledServices.length === 0) {
-        return true; // No restrictions, always show
+        return true;
       }
 
       const hasAnyDisabled = selectedServiceIds.some((serviceId) =>
@@ -930,7 +933,7 @@ function getAvailableProviders(
       );
 
       if (!hasAnyDisabled) {
-        return true; // No selected services are disabled, show it
+        return true;
       }
 
       // Offices marked as allowDisabledServicesMix participate in the exclusive-vs-mixed
@@ -943,7 +946,6 @@ function getAvailableProviders(
         return true;
       }
 
-      // For other providers: filter out if any selected service is disabled
       return false;
     }
   );
