@@ -158,9 +158,18 @@
     </div>
   </div>
   <div
-    ref="nextButton"
+    ref="buttons"
     class="m-button-group"
   >
+    <muc-button
+      v-if="service"
+      icon="arrow-left"
+      icon-shown-left
+      variant="secondary"
+      @click="reload"
+    >
+      <template #default>{{ t("change") }}</template>
+    </muc-button>
     <muc-button
       v-if="service"
       :disabled="isNextDisabled"
@@ -291,7 +300,7 @@ const shouldShowLessButton = computed(() => {
 });
 
 const baseServiceId = ref<number | string | null>(null);
-const nextButton = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
 watch(service, (newService) => {
@@ -568,9 +577,10 @@ const setOftenSearchedService = (serviceId: string) => {
 };
 
 const nextStep = () => emit("next");
+const reload = () => location.reload();
 
 const skipSubservices = () => {
-  nextButton.value?.firstChild?.focus();
+  buttons.value?.lastChild?.focus();
 };
 
 /**
