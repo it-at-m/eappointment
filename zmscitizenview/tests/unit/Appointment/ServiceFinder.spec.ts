@@ -284,7 +284,7 @@ describe("ServiceFinder", () => {
       await nextTick();
       const buttons = wrapper.findAll(".m-button-group button");
       const nextButton = buttons.find(b => b.text().includes("next"));
-      expect(nextButton.exists()).toBe(false);
+      expect(nextButton.toBeUndefined());
     });
   });
 
