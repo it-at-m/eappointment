@@ -19,7 +19,7 @@
               <MucCheckbox
                 v-for="provider in selectableProviders"
                 :key="provider.id"
-                :id="'checkbox-' + provider.id"
+                :id="`provider-${provider.id}`"
                 :label="provider.name"
                 :hint="
                   provider.address.street + ' ' + provider.address.house_number
@@ -57,7 +57,10 @@
                   <use xlink:href="#icon-place"></use>
                 </svg>
               </div>
-              <h3 class="m-teaser-contained-contact__headline">
+              <h3
+                :id="`provider-${selectedProvider.id}`"
+                class="m-teaser-contained-contact__headline"
+              >
                 {{ selectedProvider.name }}
               </h3>
               <div class="m-teaser-contained-contact__details">
