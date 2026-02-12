@@ -717,6 +717,9 @@ onMounted(() => {
             Number
           );
           if (disabledServices.includes(Number(props.preselectedServiceId))) {
+            if (foundOffice.allowDisabledServicesMix) {
+              return;
+            }
             emit("invalidJumpinLink");
           }
         }

@@ -34,6 +34,22 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
+    /**
+     * Office IDs that participate in "exclusive vs mixed" disabled-services logic.
+     * When provider->data lacks allowDisabledServicesMix, default to true for these.
+     * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper and zmsdldb Munich transformer.
+     */
+    private const OFFICE_IDS_ALLOW_DISABLED_MIX = [10489, 10502];
+
+    private static function resolveAllowDisabledServicesMix(Provider $provider): ?bool
+    {
+        if (isset($provider->data['allowDisabledServicesMix'])) {
+            return (bool) $provider->data['allowDisabledServicesMix'];
+        }
+        $id = isset($provider->id) ? (int) $provider->id : 0;
+        return in_array($id, self::OFFICE_IDS_ALLOW_DISABLED_MIX, true) ? true : null;
+    }
+
     public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
@@ -174,7 +190,7 @@ class MapperService
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
-                allowDisabledServicesMix: isset($provider->data['allowDisabledServicesMix']) ? (bool) $provider->data['allowDisabledServicesMix'] : null
+                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider)
             );
         }
 
