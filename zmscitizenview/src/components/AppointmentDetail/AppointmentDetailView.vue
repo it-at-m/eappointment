@@ -103,6 +103,7 @@
           </p>
           <p
             v-if="appointment && selectedProvider"
+            :id="`appointment-${appointment.processId}-displayNumber-${appointment.displayNumber}-provider-${selectedProvider.id}`"
             style="margin-bottom: 0"
           >
             <strong>{{ t("affectedAppointment") }}</strong>
@@ -138,7 +139,7 @@
         <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
         <template #body>
           <p style="margin-bottom: 16px">
-            {{ t("cancleAppointmentModalText") }}
+            {{ t("cancelAppointmentModalText") }}
           </p>
           <p
             v-if="appointment && selectedProvider"
@@ -219,6 +220,7 @@
               <div
                 v-if="selectedProvider"
                 class="m-content location-text-margin-top"
+                :id="`provider-${selectedProvider.id}`"
               >
                 <p>
                   {{ selectedProvider.organization }}<br />
@@ -277,6 +279,7 @@
                       class="m-linklist-element m-linklist-element--external"
                       :href="getServiceBaseURL() + appointment.serviceId"
                       target="_blank"
+                      :id="`service-${appointment.serviceId}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
@@ -299,6 +302,7 @@
                     <a
                       class="m-linklist-element m-linklist-element"
                       :href="getServiceBaseURL() + subrequest.id"
+                      :id="`subservice-${subrequest.id}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{

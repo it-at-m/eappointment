@@ -52,6 +52,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
+        :id="`service-${service?.id}`"
         :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
@@ -66,11 +67,11 @@
         >
           <muc-radio-button
             v-for="variant in variantServices"
-            :key="variant.variantId"
+            :key="variant.variantId ?? ''"
             :id="'variant-' + variant.variantId"
-            :value="variant.variantId.toString()"
+            :value="variant.variantId?.toString() ?? ''"
             :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="getVariantHint(variant.variantId, t)"
+            :hint="getVariantHint(variant.variantId ?? 0, t)"
           />
         </muc-radio-button-group>
       </div>
