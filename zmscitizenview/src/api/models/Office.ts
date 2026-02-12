@@ -62,6 +62,14 @@ export interface Office {
    */
   disabledByServices?: string[];
   /**
+   * Group of office IDs; JumpIn with one auto-selects equivalent in group.
+   * Legacy: boolean true = participates in mix (no group for cross-office preselection).
+   *
+   * @type {boolean | number[]}
+   * @memberof Office
+   */
+  allowDisabledServicesMix?: boolean | number[];
+  /**
    *
    * @type {Scope}
    * @memberof Office

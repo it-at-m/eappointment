@@ -3,6 +3,7 @@
     <div class="list-item">
       <muc-counter
         v-model="count"
+        :id="`service-${subService.id}`"
         :label="subService.name"
         :link="getServiceBaseURL() + subService.id"
         :max="maxValue"

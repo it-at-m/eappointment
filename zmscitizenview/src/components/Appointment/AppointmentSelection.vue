@@ -62,7 +62,10 @@
       v-if="!availableDaysFetched || isSwitchingProvider"
       class="m-spinner-container"
     >
-      <MucSpinner :text="t('spinnerText')" />
+      <MucSpinner
+        :text="t('spinnerText')"
+        size="100"
+      />
     </div>
     <CalendarView
       ref="calendarViewRef"
@@ -576,7 +579,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   if (summary.value) {
     await nextTick();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
-    (buttons.value.lastChild as HTMLElement | null)?.focus({
+    (buttons.value?.lastChild as HTMLElement | null)?.focus({
       preventScroll: true,
     });
   }
@@ -913,16 +916,37 @@ function getAvailableProviders(
   const allProviders = selectedServices.flatMap((s) => s.providers);
   const filteredProvidersMap = new Map<number, OfficeImpl>();
   allProviders.forEach((p) => {
-    if (allowedIds.has(p.id)) filteredProvidersMap.set(p.id, p);
+    if (allowedIds.has(p.id)) filteredProvidersMap.set(Number(p.id), p);
   });
 
-  // Filter out providers where any selected service is in their disabledByServices
+  // Filter out providers where any selected service is in their disabledByServices.
+  // Offices with allowDisabledServicesMix=true are kept and resolved later by grouping logic.
   const filteredProviders = Array.from(filteredProvidersMap.values()).filter(
     (p) => {
       const disabledServices = (p.disabledByServices ?? []).map(Number);
-      return !selectedServiceIds.some((serviceId) =>
+      if (disabledServices.length === 0) {
+        return true;
+      }
+
+      const hasAnyDisabled = selectedServiceIds.some((serviceId) =>
         disabledServices.includes(Number(serviceId))
       );
+
+      if (!hasAnyDisabled) {
+        return true;
+      }
+
+      // Offices with allowDisabledServicesMix (array or legacy true) participate in
+      // exclusive-vs-mixed logic in the grouping step and must not be filtered out.
+      const participatesInMix =
+        (Array.isArray(p.allowDisabledServicesMix) &&
+          p.allowDisabledServicesMix.length > 0) ||
+        p.allowDisabledServicesMix === true;
+      if (participatesInMix) {
+        return true;
+      }
+
+      return false;
     }
   );
 
@@ -1123,9 +1147,17 @@ onMounted(() => {
 
     selectableProviders.value = [...availableProviders];
 
+    const preselectedMatches = (office: OfficeImpl) =>
+      props.preselectedOfficeId &&
+      (Number(office.id) === Number(props.preselectedOfficeId) ||
+        (Array.isArray(office.allowDisabledServicesMix) &&
+          office.allowDisabledServicesMix.includes(
+            Number(props.preselectedOfficeId)
+          )));
+
     let offices = selectableProviders.value.filter((office) => {
       if (props.preselectedOfficeId) {
-        return office.id == props.preselectedOfficeId;
+        return preselectedMatches(office);
       } else if (selectedProvider.value) {
         return office.id == selectedProvider.value.id;
       } else {
@@ -1167,7 +1199,7 @@ onMounted(() => {
     if (props.preselectedOfficeId) {
       selectedProviders.value = selectableProviders.value.reduce(
         (acc, item) => {
-          acc[item.id] = String(item.id) === String(props.preselectedOfficeId);
+          acc[item.id] = Boolean(preselectedMatches(item));
           return acc;
         },
         {} as { [id: string]: boolean }

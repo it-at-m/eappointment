@@ -132,6 +132,14 @@
             ],
             "description": "Array of service-IDs for which a provider is unavailable"
         },
+        "allowDisabledServicesMix": {
+            "type": [
+                "boolean",
+                "array",
+                "null"
+            ],
+            "description": "If array of office IDs: JumpIn with one auto-selects equivalent in group. Legacy boolean=true treated as participates in mix."
+        },
         "slotsPerAppointment": {
             "type": [
                 "string",

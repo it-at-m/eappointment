@@ -15,7 +15,10 @@
       <template #content>
         <div v-if="selectedProvider">
           <strong>{{ t("location") }}</strong>
-          <p class="m-teaser-contained-contact__summary">
+          <p
+            :id="`provider-${selectedProvider.id}`"
+            class="m-teaser-contained-contact__summary"
+          >
             {{ selectedProvider.name }}
             <br />
             <span v-if="detailIcon">
