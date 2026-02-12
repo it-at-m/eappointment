@@ -580,7 +580,7 @@ const nextStep = () => emit("next");
 const reload = () => location.reload();
 
 const skipSubservices = () => {
-  buttons.value?.lastChild?.focus();
+  buttons.value?.lastElementChild?.focus();
 };
 
 /**
