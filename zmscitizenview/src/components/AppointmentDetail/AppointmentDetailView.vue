@@ -302,7 +302,7 @@
                     <a
                       class="m-linklist-element m-linklist-element"
                       :href="getServiceBaseURL() + subrequest.id"
-                      :id="`subservice-${subrequest.id}`"
+                      :id="`service-${subrequest.id}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
