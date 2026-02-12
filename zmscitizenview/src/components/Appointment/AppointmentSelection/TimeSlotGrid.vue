@@ -1,5 +1,5 @@
 <template>
-  <div :id="`timeslot-grid-office-${officeId}`">
+  <div :id="`timeslot-grid-provider-${officeId}`">
     <!-- Location title for multiple providers -->
     <h5
       v-if="showLocationTitle"
@@ -27,7 +27,7 @@
         >
           <muc-button
             class="timeslot"
-            :id="`office-${officeId}-timeslot-${time}`"
+            :id="`provider-${officeId}-timeslot-${time}`"
             :variant="isSlotSelected(officeId, time) ? 'primary' : 'secondary'"
             @click="$emit('selectTimeSlot', { officeId, time })"
             :aria-label="timeSlotAriaLabel(time)"
