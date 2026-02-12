@@ -943,10 +943,6 @@ function getAvailableProviders(
           p.allowDisabledServicesMix.length > 0) ||
         p.allowDisabledServicesMix === true;
       if (participatesInMix) {
-        selectedServiceIds.every((serviceId) =>
-          disabledServices.includes(Number(serviceId))
-        );
-
         return true;
       }
 
