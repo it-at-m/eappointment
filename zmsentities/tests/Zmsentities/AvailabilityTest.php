@@ -399,7 +399,6 @@ class AvailabilityTest extends EntityCommonTests
                     array(
                         'time' => '12:00',
                         'public' => 0,
-                        'callcenter' => 0,
                         'intern' => 3
                     )
                 ),
@@ -407,7 +406,6 @@ class AvailabilityTest extends EntityCommonTests
                     array(
                         'time' => '13:30',
                         'public' => 0,
-                        'callcenter' => 0,
                         'intern' => 3
                     )
                 ),
@@ -415,7 +413,6 @@ class AvailabilityTest extends EntityCommonTests
                     array(
                         'time' => '15:00',
                         'public' => 0,
-                        'callcenter' => 0,
                         'intern' => 3
                     )
                 ),
@@ -423,7 +420,6 @@ class AvailabilityTest extends EntityCommonTests
                     array(
                         'time' => '16:30',
                         'public' => 0,
-                        'callcenter' => 0,
                         'intern' => 3
                     )
                 )
@@ -432,7 +428,6 @@ class AvailabilityTest extends EntityCommonTests
             // 4 => array (
             // 'time' => '18:00',
             // 'public' => 0,
-            // 'callcenter' => 0,
             // 'intern' => 3,
             // ),
         );
@@ -478,7 +473,6 @@ class AvailabilityTest extends EntityCommonTests
                 ),
                 'workstationCount' => array(
                     'public' => '2',
-                    'callcenter' => '2',
                     'intern' => '2'
                 ),
                 'slotTimeInMinutes' => '15',
@@ -723,7 +717,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '15',
@@ -748,7 +741,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '15',
@@ -773,7 +765,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '25',
@@ -798,7 +789,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '15',
@@ -823,7 +813,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '15',
@@ -848,7 +837,6 @@ class AvailabilityTest extends EntityCommonTests
             ),
             'workstationCount' => array(
                 'public' => '2',
-                'callcenter' => '2',
                 'intern' => '2'
             ),
             'slotTimeInMinutes' => '15',
@@ -933,7 +921,6 @@ class AvailabilityTest extends EntityCommonTests
                 ),
                 'workstationCount' => array(
                     'public' => '2',
-                    'callcenter' => '2',
                     'intern' => '2'
                 ),
                 'slotTimeInMinutes' => '15',

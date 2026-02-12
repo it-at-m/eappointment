@@ -28,7 +28,6 @@ class AvailabilityListUpdateTest extends Base
             },
             "workstationCount": {
                 "public": "3",
-                "callcenter": "3",
                 "intern": "3"
             },
             "multipleSlotsAllowed": "0",
