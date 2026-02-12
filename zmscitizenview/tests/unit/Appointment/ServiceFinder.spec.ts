@@ -273,7 +273,8 @@ describe("ServiceFinder", () => {
     it("should emit next event when next button is clicked", async () => {
       const wrapper = createWrapper(makeService(0));
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button");
+      const buttons = wrapper.findAll(".m-button-group button");
+      const nextButton = buttons.find(b => b.text().includes("next"));
       await nextButton.trigger("click");
       expect(wrapper.emitted("next")).toBeTruthy();
     });
@@ -281,7 +282,8 @@ describe("ServiceFinder", () => {
     it("should not show next button when no service is selected", async () => {
       const wrapper = createWrapper(null);
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button");
+      const buttons = wrapper.findAll(".m-button-group button");
+      const nextButton = buttons.find(b => b.text().includes("next"));
       expect(nextButton.exists()).toBe(false);
     });
   });
