@@ -52,12 +52,11 @@ class Munich
 
     /**
      * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
-     * "exclusive vs mixed" semantics in the frontend (allowDisabledServicesMix=true).
-     * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper/app/map.php.
+     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
+     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
      */
     const LOCATIONS_ALLOW_DISABLED_MIX = [
-        10489,
-        10502,
+        [10489, 10502],
     ];
 
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
@@ -364,8 +363,12 @@ class Munich
         }
 
         // Mark locations that participate in the "exclusive vs mixed" disabled-services logic.
-        if (in_array((int) $mappedLocation['id'], self::LOCATIONS_ALLOW_DISABLED_MIX, true)) {
-            $mappedLocation['allowDisabledServicesMix'] = true;
+        // Output group IDs so JumpIn with one office can auto-select the equivalent.
+        foreach (self::LOCATIONS_ALLOW_DISABLED_MIX as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['allowDisabledServicesMix'] = $group;
+                break;
+            }
         }
     }
 

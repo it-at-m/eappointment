@@ -103,13 +103,13 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [], address: { street: 'Test', house_number: '3' }, scope: { id: "102524" } },
       { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [], address: { street: 'Test', house_number: '4' }, scope: { id: "102526" } },
       // Realistic Ruppertstraße pair: 10489 is restricted, 10502 is clean.
-      // Both carry allowDisabledServicesMix so they are kept through the initial filter
-      // and resolved by the grouping logic (exclusive vs mixed core services).
+      // Both carry allowDisabledServicesMix group [10489, 10502] so they are kept
+      // and resolved by grouping. JumpIn with 10489 auto-selects 10502 when exclusive.
       {
         id: 10489,
         name: 'Bürgerbüro Ruppertstraße',
         disabledByServices: ['1063453', '1063441', '1080582'],
-        allowDisabledServicesMix: true,
+        allowDisabledServicesMix: [10489, 10502],
         address: { street: 'Test', house_number: '5' },
         scope: { id: "10489" },
       },
@@ -117,7 +117,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
         id: 10502,
         name: 'Bürgerbüro Ruppertstraße',
         disabledByServices: [],
-        allowDisabledServicesMix: true,
+        allowDisabledServicesMix: [10489, 10502],
         address: { street: 'Test', house_number: '6' },
         scope: { id: "10502" },
       },
@@ -161,6 +161,45 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     // 4. Mixed core + harmless: 1063453 + 1234567.
     //    Only some selected services are in 10489.disabledByServices → mixed → keep 10489 for Ruppertstraße.
     await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
+  });
+
+  it("auto-selects equivalent office in mix group when JumpIn has different ID (10489 vs 10502)", async () => {
+    const testProviders = [
+      { id: 102522, name: 'Other', disabledByServices: [], address: { street: 'Test', house_number: '1' }, scope: { id: "102522" } },
+      {
+        id: 10489,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: ['1063441'],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '5' },
+        scope: { id: "10489" },
+      },
+      {
+        id: 10502,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: [],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '6' },
+        scope: { id: "10502" },
+      },
+    ];
+    const wrapper = createWrapper({
+      props: { preselectedOfficeId: '10489' },
+      selectedService: {
+        id: 1063441,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+    await nextTick();
+    await flushPromises();
+    // Exclusive mode: only 10502 shown (10489 restricted for 1063441)
+    const selectableIds = wrapper.vm.selectableProviders.map((p: { id: number }) => p.id);
+    expect(selectableIds).toContain(10502);
+    expect(selectableIds).not.toContain(10489);
+    // 10502 should be auto-selected because JumpIn had 10489 (same mix group)
+    const selectedProviders = wrapper.vm.selectedProviders as Record<string, boolean>;
+    expect(selectedProviders['10502']).toBe(true);
   });
 
   it("filters providers correctly for pickup service 10295182 (only bookable at 10492)", async () => {

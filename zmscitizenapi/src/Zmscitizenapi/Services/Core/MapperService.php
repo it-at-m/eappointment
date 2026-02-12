@@ -35,19 +35,31 @@ use BO\Zmsentities\Collection\RequestRelationList;
 class MapperService
 {
     /**
-     * Office IDs that participate in "exclusive vs mixed" disabled-services logic.
-     * When provider->data lacks allowDisabledServicesMix, default to true for these.
+     * Office groups for "exclusive vs mixed" disabled-services logic.
+     * Fallback when provider->data lacks allowDisabledServicesMix.
      * Mirrors LOCATIONS_ALLOW_DISABLED_MIX in dldb-mapper and zmsdldb Munich transformer.
      */
-    private const OFFICE_IDS_ALLOW_DISABLED_MIX = [10489, 10502];
+    private const OFFICE_GROUPS_ALLOW_DISABLED_MIX = [[10489, 10502]];
 
-    private static function resolveAllowDisabledServicesMix(Provider $provider): ?bool
+    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
     {
         if (isset($provider->data['allowDisabledServicesMix'])) {
-            return (bool) $provider->data['allowDisabledServicesMix'];
+            $val = $provider->data['allowDisabledServicesMix'];
+            if (is_array($val)) {
+                return array_map('intval', $val);
+            }
+            if ($val === true) {
+                return [10489, 10502];
+            }
+            return null;
         }
         $id = isset($provider->id) ? (int) $provider->id : 0;
-        return in_array($id, self::OFFICE_IDS_ALLOW_DISABLED_MIX, true) ? true : null;
+        foreach (self::OFFICE_GROUPS_ALLOW_DISABLED_MIX as $group) {
+            if (in_array($id, $group, true)) {
+                return $group;
+            }
+        }
+        return null;
     }
 
     public static function mapScopeForProvider(

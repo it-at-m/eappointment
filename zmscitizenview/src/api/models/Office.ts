@@ -62,13 +62,13 @@ export interface Office {
    */
   disabledByServices?: string[];
   /**
-   * If true, frontend may keep this office even when selected services intersect disabledByServices
-   * and rely on grouping logic instead (used for exclusive vs mixed handling).
+   * Group of office IDs; JumpIn with one auto-selects equivalent in group.
+   * Legacy: boolean true = participates in mix (no group for cross-office preselection).
    *
-   * @type {boolean}
+   * @type {boolean | number[]}
    * @memberof Office
    */
-  allowDisabledServicesMix?: boolean;
+  allowDisabledServicesMix?: boolean | number[];
   /**
    *
    * @type {Scope}

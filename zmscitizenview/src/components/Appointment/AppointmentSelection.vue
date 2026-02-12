@@ -936,9 +936,13 @@ function getAvailableProviders(
         return true;
       }
 
-      // Offices marked as allowDisabledServicesMix participate in the exclusive-vs-mixed
-      // logic in the grouping step and must not be filtered out here.
-      if (p.allowDisabledServicesMix === true) {
+      // Offices with allowDisabledServicesMix (array or legacy true) participate in
+      // exclusive-vs-mixed logic in the grouping step and must not be filtered out.
+      const participatesInMix =
+        (Array.isArray(p.allowDisabledServicesMix) &&
+          p.allowDisabledServicesMix.length > 0) ||
+        p.allowDisabledServicesMix === true;
+      if (participatesInMix) {
         selectedServiceIds.every((serviceId) =>
           disabledServices.includes(Number(serviceId))
         );
@@ -1147,9 +1151,17 @@ onMounted(() => {
 
     selectableProviders.value = [...availableProviders];
 
+    const preselectedMatches = (office: OfficeImpl) =>
+      props.preselectedOfficeId &&
+      (Number(office.id) === Number(props.preselectedOfficeId) ||
+        (Array.isArray(office.allowDisabledServicesMix) &&
+          office.allowDisabledServicesMix.includes(
+            Number(props.preselectedOfficeId)
+          )));
+
     let offices = selectableProviders.value.filter((office) => {
       if (props.preselectedOfficeId) {
-        return office.id == props.preselectedOfficeId;
+        return preselectedMatches(office);
       } else if (selectedProvider.value) {
         return office.id == selectedProvider.value.id;
       } else {
@@ -1191,7 +1203,7 @@ onMounted(() => {
     if (props.preselectedOfficeId) {
       selectedProviders.value = selectableProviders.value.reduce(
         (acc, item) => {
-          acc[item.id] = String(item.id) === String(props.preselectedOfficeId);
+          acc[item.id] = Boolean(preselectedMatches(item));
           return acc;
         },
         {} as { [id: string]: boolean }

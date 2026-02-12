@@ -135,9 +135,10 @@
         "allowDisabledServicesMix": {
             "type": [
                 "boolean",
+                "array",
                 "null"
             ],
-            "description": "If true, frontend may keep this office even when selected services intersect disabledByServices and rely on grouping logic instead"
+            "description": "If array of office IDs: JumpIn with one auto-selects equivalent in group. Legacy boolean=true treated as participates in mix."
         },
         "slotsPerAppointment": {
             "type": [

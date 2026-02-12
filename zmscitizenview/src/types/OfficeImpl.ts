@@ -21,7 +21,8 @@ export class OfficeImpl implements Office {
 
   disabledByServices?: string[];
 
-  allowDisabledServicesMix?: boolean;
+  /** Group of office IDs; JumpIn with one auto-selects equivalent in group. Legacy: boolean true. */
+  allowDisabledServicesMix?: boolean | number[];
 
   scope?: Scope;
 
@@ -41,7 +42,7 @@ export class OfficeImpl implements Office {
     organizationUnit: string | undefined,
     slotTimeInMinutes: number,
     disabledByServices: string[] | undefined,
-    allowDisabledServicesMix: boolean | undefined,
+    allowDisabledServicesMix: boolean | number[] | undefined,
     scope: Scope | undefined,
     slotsPerAppointment: string | undefined,
     slots: number | undefined,
