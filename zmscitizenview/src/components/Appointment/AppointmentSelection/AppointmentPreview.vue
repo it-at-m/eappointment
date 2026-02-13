@@ -15,7 +15,8 @@
     >
       <template #content>
         <span v-if="selectedProvider">
-          <strong>{{ t("location") }}</strong><br />
+          <strong>{{ t("location") }}</strong
+          ><br />
           <span class="m-teaser-contained-contact__summary">
             {{ selectedProvider.name }}
             <br />
@@ -45,8 +46,8 @@
             {{ t("clock") }}
             <br />
             {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
-            {{ t("minutes") }}
-          </span><br />
+            {{ t("minutes") }} </span
+          ><br />
         </span>
         <span
           v-if="
