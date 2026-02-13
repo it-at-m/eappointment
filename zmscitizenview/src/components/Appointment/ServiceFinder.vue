@@ -52,6 +52,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service?.name || ''"
+        :id="`service-${service?.id}`"
         :link="getServiceBaseURL() + (baseServiceId || '')"
         :max="maxValueOfService"
         :min="1"
@@ -66,11 +67,11 @@
         >
           <muc-radio-button
             v-for="variant in variantServices"
-            :key="variant.variantId"
+            :key="variant.variantId ?? ''"
             :id="'variant-' + variant.variantId"
-            :value="variant.variantId.toString()"
+            :value="variant.variantId?.toString() ?? ''"
             :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="getVariantHint(variant.variantId, t)"
+            :hint="getVariantHint(variant.variantId ?? 0, t)"
           />
         </muc-radio-button-group>
       </div>
@@ -98,6 +99,11 @@
             />
           </template>
         </ul>
+        <span
+          ref="showAllFocusAnchor"
+          tabindex="-1"
+          aria-hidden="true"
+        />
         <div
           v-if="shouldShowMoreButton"
           class="m-button-group m-button-group--secondary"
@@ -218,6 +224,7 @@ import {
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
+const showAllFocusAnchor = ref(null);
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -462,6 +469,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         office.organizationUnit,
         office.slotTimeInMinutes,
         office.disabledByServices,
+        office.allowDisabledServicesMix,
         office.scope,
         office.slotsPerAppointment,
         office.slots,
@@ -597,6 +605,7 @@ const scrollToTop = () => {
     servicesRef.value?.scrollIntoView?.({
       behavior: "smooth",
     });
+    showAllFocusAnchor.value?.focus?.({ preventScroll: true });
   }, 1);
 };
 
@@ -716,6 +725,13 @@ onMounted(() => {
             Number
           );
           if (disabledServices.includes(Number(props.preselectedServiceId))) {
+            const allowsMix =
+              (Array.isArray(foundOffice.allowDisabledServicesMix) &&
+                foundOffice.allowDisabledServicesMix.length > 0) ||
+              foundOffice.allowDisabledServicesMix === true;
+            if (allowsMix) {
+              return;
+            }
             emit("invalidJumpinLink");
           }
         }
