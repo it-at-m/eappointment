@@ -1,5 +1,33 @@
-
-       
+## Release Muc-37 (13.02.2026)
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1162'>ZMSKVR-1162</a>] -         Fehlerhafte Smart-Features und Antwortlogik in Termin-E-Mails
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1258'>ZMSKVR-1258</a>] -         ZMS Bürgeransicht – Kombination von Pass-Leistungen mit anderen Leistungen (RUP)
+</li>
+</ul>
+                                            
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-168'>ZMSKVR-168</a>] -         Slow PHP Queries
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-774'>ZMSKVR-774</a>] -         BF2: Braille-Zeile: Schalterauswahl Listenansicht/Kalenderansicht unklar bezeichnet
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1123'>ZMSKVR-1123</a>] -         Zusammenführung der Warte- und Wegezeiten für Termin- &amp; Spontankunden (GUI + Excel)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1164'>ZMSKVR-1164</a>] -         Callcenter-Arbeitsplätze aus der Öffnungszeiten-Konfiguration entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1221'>ZMSKVR-1221</a>] -         Barrierefreiheit: Button &quot;Alle Leistungen anzeigen&quot; ein- und ausklappen
+</li>
+</ul>
+                                                     
     
 ## Release Muc-36 (23.01.2026)
                     
