@@ -14,9 +14,9 @@
       type="info"
     >
       <template #content>
-        <div v-if="selectedProvider">
-          <strong>{{ t("location") }}</strong>
-          <p class="m-teaser-contained-contact__summary">
+        <span v-if="selectedProvider">
+          <strong>{{ t("location") }}</strong><br />
+          <span class="m-teaser-contained-contact__summary">
             {{ selectedProvider.name }}
             <br />
             <span v-if="detailIcon">
@@ -33,31 +33,32 @@
               {{ selectedProvider.address.street }}
               {{ selectedProvider.address.house_number }}
             </span>
-          </p>
-        </div>
-        <div v-if="selectedDay">
+          </span>
+        </span>
+        <span v-if="selectedDay">
+          <br /><br />
           <strong>{{ t("time") }}</strong>
           <br />
-          <p class="m-teaser-contained-contact__detail">
+          <span class="m-teaser-contained-contact__detail">
             {{ formatDayFromDate(selectedDay) }},
             {{ formatTimeFromUnix(selectedTimeslot) }}
             {{ t("clock") }}
             <br />
             {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
             {{ t("minutes") }}
-          </p>
-        </div>
-        <div
+          </span><br />
+        </span>
+        <span
           v-if="
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
           <strong>{{ t("hint") }}</strong>
           <br />
-          <p
+          <span
             v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></p>
-        </div>
+          ></span>
+        </span>
       </template>
 
       <template #header>{{ t("selectedAppointment") }}</template>
