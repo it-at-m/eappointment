@@ -60,6 +60,7 @@ export function request<TResponse>(
   }
   const requestInit: RequestInit = {
     method: request.method,
+    credentials: "include",
   };
   if (request.method === "POST") {
     headers["Content-Type"] = "application/json";
@@ -99,7 +100,7 @@ export function fetchServicesAndProviders(
     apiUrl += "?" + params.toString();
   }
 
-  return fetch(apiUrl)
+  return fetch(apiUrl, { credentials: "include" })
     .then((response) => {
       if (response.status >= 400 && response.status < 600) {
         return response
