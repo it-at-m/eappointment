@@ -14,52 +14,53 @@
       type="info"
     >
       <template #content>
-        <div v-if="selectedProvider">
-          <strong>{{ t("location") }}</strong>
-          <p
-            :id="`provider-${selectedProvider.id}`"
-            class="m-teaser-contained-contact__summary"
-          >
-            {{ selectedProvider.name }}
-            <br />
-            <span v-if="detailIcon">
+        <div>
+          <div v-if="selectedProvider">
+            <h3>{{ t("location") }}</h3>
+            <div
+              :id="`provider-${selectedProvider.id}`"
+              class="m-teaser-contained-contact__summary"
+            >
+              {{ selectedProvider.name }}
               <br />
-              <svg
-                aria-hidden="true"
-                class="icon icon--before"
-              >
-                <use :xlink:href="`#${detailIcon}`"></use>
-              </svg>
-              {{ t(`appointmentTypes.${variantId}`) }}
-            </span>
-            <span v-else>
-              {{ selectedProvider.address.street }}
-              {{ selectedProvider.address.house_number }}
-            </span>
-          </p>
-        </div>
-        <div v-if="selectedDay">
-          <strong>{{ t("time") }}</strong>
-          <br />
-          <p class="m-teaser-contained-contact__detail">
-            {{ formatDayFromDate(selectedDay) }},
-            {{ formatTimeFromUnix(selectedTimeslot) }}
-            {{ t("clock") }}
-            <br />
-            {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
-            {{ t("minutes") }}
-          </p>
-        </div>
-        <div
-          v-if="
-            selectedProvider.scope && selectedProvider.scope.infoForAppointment
-          "
-        >
-          <strong>{{ t("hint") }}</strong>
-          <br />
+              <span v-if="detailIcon">
+                <br />
+                <svg
+                  aria-hidden="true"
+                  class="icon icon--before"
+                >
+                  <use :xlink:href="`#${detailIcon}`"></use>
+                </svg>
+                {{ t(`appointmentTypes.${variantId}`) }}
+              </span>
+              <span v-else>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}
+              </span>
+            </div>
+          </div>
+          <div v-if="selectedDay">
+            <h3>{{ t("time") }}</h3>
+            <p class="m-teaser-contained-contact__detail">
+              {{ formatDayFromDate(selectedDay) }},
+              {{ formatTimeFromUnix(selectedTimeslot) }}
+              {{ t("clock") }}
+              <br />
+              {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
+              {{ t("minutes") }}
+            </p>
+          </div>
           <div
-            v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></div>
+            v-if="
+              selectedProvider.scope &&
+              selectedProvider.scope.infoForAppointment
+            "
+          >
+            <h3>{{ t("hint") }}</h3>
+            <div
+              v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+            ></div>
+          </div>
         </div>
       </template>
 
