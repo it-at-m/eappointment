@@ -50,6 +50,15 @@ class Munich
         ]
     ];
 
+    /**
+     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
+     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
+     */
+    const LOCATIONS_ALLOW_DISABLED_MIX = [
+        [10489, 10502],
+    ];
+
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
         10396802, // Anmeldung einer Eheschließung mit Auslandsbezug
         1063648, // Anmeldung einer Eheschließung ohne Auslandsbezug
@@ -349,6 +358,15 @@ class Munich
         foreach (self::DONT_SHOW_LOCATION_BY_SERVICES as $avoidByServices) {
             if (in_array((int) $mappedLocation['id'], $avoidByServices['locations'])) {
                 $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
+                break;
+            }
+        }
+
+        // Mark locations that participate in the "exclusive vs mixed" disabled-services logic.
+        // Output group IDs so JumpIn with one office can auto-select the equivalent.
+        foreach (self::LOCATIONS_ALLOW_DISABLED_MIX as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['allowDisabledServicesMix'] = $group;
                 break;
             }
         }

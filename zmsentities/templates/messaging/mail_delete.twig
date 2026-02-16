@@ -7,39 +7,4 @@ Ihr Termin am <strong>{{ (date|default(getNow))|format_date(locale="de", pattern
 <br />
 {{ block("sendoff_german") }}
 </div>
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "EventReservation",
-  "reservationNumber": "{{ process.displayNumber }}",
-  "reservationStatus": "http://schema.org/Cancelled",
-  "modifyReservationUrl": "{{ config.appointments.urlChange }}",
-  "underName": {
-    "@type": "Person",
-    "name": "{{ client.familyName }}"
-  },
-  "reservationFor": {
-    "@type": "Event",
-    "name": "{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}",
-    "startDate": "{{ date|date('c') }}",
-    "location": {
-      "@type": "Place",
-      "name": "{{ process.scope.provider.displayName }}",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "{{process.scope.provider.contact.lat}}",
-        "longitude": "{{process.scope.provider.contact.lon}}"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "{{process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber}}",
-        "addressLocality": "{{process.scope.provider.contact.city}}",
-        "addressRegion": "{{process.scope.provider.contact.city}}",
-        "postalCode": "{{process.scope.provider.contact.postalCode}}",
-        "addressCountry": "DE"
-      }
-    }
-  }
-}
-</script>
 {% endblock %}

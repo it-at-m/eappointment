@@ -14,7 +14,7 @@
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "7.3.0",
+    "@muenchen/muc-patternlab-vue": "7.4.1",
     "altcha": "^1.2.0",
     "jsdom": "^26.0.0",
     "vue": "^3.5.12",
@@ -33,7 +33,7 @@
     "@vue/eslint-config-typescript": "14.6.0",
     "@vue/test-utils": "^2.4.1",
     "eslint": "9.39.1",
-    "eslint-plugin-vue": "10.6.2",
+    "eslint-plugin-vue": "10.7.0",
     "local-web-server": "^5.4.0",
     "sass": "^1.90.0",
     "typescript": "^5.4.2",
