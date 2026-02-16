@@ -38,19 +38,18 @@
             </span>
           </p>
         </div>
-        <span v-if="selectedDay">
-          <br /><br />
+        <div v-if="selectedDay">
           <strong>{{ t("time") }}</strong>
           <br />
-          <span class="m-teaser-contained-contact__detail">
+          <p class="m-teaser-contained-contact__detail">
             {{ formatDayFromDate(selectedDay) }},
             {{ formatTimeFromUnix(selectedTimeslot) }}
             {{ t("clock") }}
             <br />
             {{ t("estimatedDuration") }} {{ localEstimatedDuration }}
-            {{ t("minutes") }} </span
-          ><br />
-        </span>
+            {{ t("minutes") }}
+          </p>
+        </div>
         <div
           v-if="
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
