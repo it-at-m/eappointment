@@ -194,8 +194,16 @@ else
   warn "Hourly cron failed or not available; continuing."
 fi
 
-# 8. Health Checks
-section "8. Health Checks"
+section "8. Minutly Cronjob"
+info "Running minutly cron..."
+if "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null; then
+  info "Minutly cron completed."
+else
+  warn "Minutly cron failed or not available; continuing."
+fi
+
+# 9. Health Checks
+section "9. Health Checks"
 info "Pinging citizenapi: $CITIZEN_API_BASE_URI/offices-and-services/"
 if curl -sf --max-time 10 "$CITIZEN_API_BASE_URI/offices-and-services/" >/dev/null; then
     info "✓ citizenapi offices-and-services responding"
@@ -210,8 +218,8 @@ if curl -sf --max-time 10 "$BASE_URI/status/" >/dev/null; then
     warn "✗ zmsapi status NOT responding"
   fi
 
-# 9. Running Tests
-section "9. Running ATAF Tests"
+# 10. Running Tests
+section "10. Running ATAF Tests"
 info "Running Cucumber/ATAF tests with -Pataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
@@ -236,8 +244,8 @@ if mvn -B -DtrimStackTrace=false \
     TEST_EXIT=$?
   fi
 
-# 10. Test Results
-section "10. Test Results"
+# 11. Test Results
+section "11. Test Results"
 info "Collecting surefire reports..."
 if [[ -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports" ]]; then
   ls -la "$PROJECT_ROOT/zmsautomation/target/surefire-reports"
@@ -256,12 +264,12 @@ info "Cucumber reports available at:"
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
-# 11. Final Cache Clearing
-section "11. Final Cache Clearing"
+# 12. Final Cache Clearing
+section "12. Final Cache Clearing"
 clear_caches
 
-# 12. Database Restore
-section "12. Database Restore"
+# 13. Database Restore
+section "13. Database Restore"
 info "Restoring original database..."
 restore_db
 
@@ -269,8 +277,8 @@ restore_db
 info "Clearing test data migrations from flyway_schema_history after restore..."
 exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
-# 13. Cleanup
-section "13. Cleanup"
+# 14. Cleanup
+section "14. Cleanup"
 info "Cleaning up zmsapi/data folder..."
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"
