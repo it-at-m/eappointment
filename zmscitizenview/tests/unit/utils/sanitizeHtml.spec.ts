@@ -160,6 +160,31 @@ describe("sanitizeHtml", () => {
     const input = "<span>First</span><span>Second</span>";
     expect(sanitizeHtml(input)).toBe("<p><span>First</span><span>Second</span></p>");
   });
+
+  it("should wrap content with leading text before block element", () => {
+    const input = "Some text<div>content</div>";
+    const result = sanitizeHtml(input);
+    // Should wrap because of leading text
+    expect(result).toMatch(/^<p>/);
+    expect(result).toContain("Some text");
+    expect(result).toContain("<div>content</div>");
+  });
+
+  it("should NOT wrap content with only whitespace before block element", () => {
+    const input = "   <div>content</div>";
+    const result = sanitizeHtml(input);
+    // Whitespace-only leading text should not cause wrapping
+    expect(result).toContain("<div>content</div>");
+    expect(result).not.toMatch(/^<p>/);
+  });
+
+  it("should wrap content with leading text before inline element", () => {
+    const input = "Leading text<span>inline</span>";
+    const result = sanitizeHtml(input);
+    // Should wrap because of leading text
+    expect(result).toMatch(/^<p>/);
+    expect(result).toContain("Leading text");
+  });
 });
 
 
