@@ -55,7 +55,6 @@
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
-          <br /><br />
           <strong>{{ t("hint") }}</strong>
           <br />
           <div
