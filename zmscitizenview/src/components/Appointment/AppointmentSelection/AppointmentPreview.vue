@@ -36,8 +36,8 @@
               {{ selectedProvider.address.street }}
               {{ selectedProvider.address.house_number }}
             </span>
-          </span>
-        </span>
+          </p>
+        </div>
         <span v-if="selectedDay">
           <br /><br />
           <strong>{{ t("time") }}</strong>
