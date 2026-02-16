@@ -144,10 +144,10 @@
               <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <p
+              <div
                 tabindex="0"
                 v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
-              ></p>
+              ></div>
             </div>
           </div>
           <div class="m-content">

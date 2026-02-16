@@ -49,17 +49,18 @@
             {{ t("minutes") }} </span
           ><br />
         </span>
-        <span
+        <div
           v-if="
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
+          <br /><br />
           <strong>{{ t("hint") }}</strong>
           <br />
-          <span
+          <div
             v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></span>
-        </span>
+          ></div>
+        </div>
       </template>
 
       <template #header>{{ t("selectedAppointment") }}</template>

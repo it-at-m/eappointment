@@ -75,6 +75,91 @@ describe("sanitizeHtml", () => {
     // Should only contain whitespace
     expect(clean.trim()).toBe("");
   });
+
+  // This is the important test for the issue we are facing when the content is text but not wrapped in a block-level element
+  it("should auto-wrap plain text in <p> tag", () => {
+    const input = "Viel Glück bei deinem Termin!";
+    const expected = "<p>Viel Glück bei deinem Termin!</p>";
+    expect(sanitizeHtml(input)).toBe(expected);
+  });
+
+  it("should auto-wrap inline-only content in <p> tag", () => {
+    const input = "Hello <strong>world</strong>!";
+    const expected = "<p>Hello <strong>world</strong>!</p>";
+    expect(sanitizeHtml(input)).toBe(expected);
+  });
+
+  it("should NOT auto-wrap content that starts with block element", () => {
+    const input = "<p>Already wrapped</p>";
+    expect(sanitizeHtml(input)).toBe("<p>Already wrapped</p>");
+  });
+
+  it("should NOT auto-wrap content with div", () => {
+    const input = "<div>Already wrapped</div>";
+    expect(sanitizeHtml(input)).toBe("<div>Already wrapped</div>");
+  });
+
+  it("should NOT auto-wrap content with ul", () => {
+    const input = "<ul><li>Item</li></ul>";
+    expect(sanitizeHtml(input)).toBe("<ul><li>Item</li></ul>");
+  });
+
+  it("should NOT auto-wrap content with heading", () => {
+    const input = "<h1>Heading</h1>";
+    expect(sanitizeHtml(input)).toBe("<h1>Heading</h1>");
+  });
+
+  it("should NOT auto-wrap content with blockquote", () => {
+    const input = "<blockquote>Quote text</blockquote>";
+    expect(sanitizeHtml(input)).toBe("<blockquote>Quote text</blockquote>");
+  });
+
+  it("should NOT auto-wrap content with pre", () => {
+    const input = "<pre>Code block</pre>";
+    expect(sanitizeHtml(input)).toBe("<pre>Code block</pre>");
+  });
+
+  it("should NOT auto-wrap content with table", () => {
+    const input = "<table><tr><td>Cell</td></tr></table>";
+    const result = sanitizeHtml(input);
+    // DOMPurify normalizes tables by adding <tbody>
+    expect(result).toContain("<table>");
+    expect(result).toContain("<td>Cell</td>");
+    expect(result).not.toMatch(/^<p>/);
+  });
+
+  it("should NOT auto-wrap content with hr", () => {
+    const input = "<hr />";
+    const result = sanitizeHtml(input);
+    // DOMPurify normalizes self-closing tags
+    expect(result).toContain("<hr");
+    expect(result).not.toMatch(/^<p>/);
+  });
+
+  it("should NOT auto-wrap content with address", () => {
+    const input = "<address>123 Main St</address>";
+    expect(sanitizeHtml(input)).toBe("<address>123 Main St</address>");
+  });
+
+  it("should NOT auto-wrap content with section", () => {
+    const input = "<section>Content</section>";
+    expect(sanitizeHtml(input)).toBe("<section>Content</section>");
+  });
+
+  it("should NOT auto-wrap content with dl", () => {
+    const input = "<dl><dt>Term</dt><dd>Definition</dd></dl>";
+    expect(sanitizeHtml(input)).toBe("<dl><dt>Term</dt><dd>Definition</dd></dl>");
+  });
+
+  it("should wrap inline elements like span", () => {
+    const input = "<span>Inline content</span>";
+    expect(sanitizeHtml(input)).toBe("<p><span>Inline content</span></p>");
+  });
+
+  it("should wrap multiple inline elements", () => {
+    const input = "<span>First</span><span>Second</span>";
+    expect(sanitizeHtml(input)).toBe("<p><span>First</span><span>Second</span></p>");
+  });
 });
 
 
