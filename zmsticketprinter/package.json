@@ -37,7 +37,7 @@
     "@babel/preset-env": "^7.28.5",
     "@parcel/transformer-sass": "^2.16.0",
     "core-js": "^3.47.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.0",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.0",
     "parcel-bundler-v2": "git+https://gitlab+deploy-token-134:LvrEUypzSw6XBd1xDNXD@gitlab.berlinonline.net/module/parcel-bunder-v2.git#master"
