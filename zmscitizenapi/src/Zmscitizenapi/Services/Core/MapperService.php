@@ -34,6 +34,14 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
+    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
+    {
+        if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
+            return null;
+        }
+        return array_map('intval', $provider->data['allowDisabledServicesMix']);
+    }
+
     public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
@@ -173,7 +181,8 @@ class MapperService
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
-                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
+                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider)
             );
         }
 

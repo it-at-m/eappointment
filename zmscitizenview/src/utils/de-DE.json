@@ -169,7 +169,7 @@
   "cancelButton": "Abbrechen",
   "cancelAppointment": "Termin absagen",
   "cancleAppointmentModalHeading": "Absage Ihres Termins",
-  "cancleAppointmentModalText": "Ihnen ist etwas dazwischengekommen? Klicken Sie auf „Absagen“, um Ihren Termin aus dem System zu löschen.",
+  "cancelAppointmentModalText": "Ihnen ist etwas dazwischengekommen? Klicken Sie auf „Absagen“, um Ihren Termin aus dem System zu löschen.",
   "cancelReschedule": "Verschieben abbrechen",
   "clock": "Uhr",
   "closeDialog": "Dialog schließen",
