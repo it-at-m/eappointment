@@ -3,6 +3,7 @@
     href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     rel="stylesheet"
     @load="onStylesheetLoaded"
+    @error="onStylesheetLoaded"
   />
   <main :class="{ 'styles-loading': !stylesLoaded }">
     <div>
@@ -157,6 +158,13 @@ const stylesLoaded = ref(false);
 const onStylesheetLoaded = () => {
   stylesLoaded.value = true;
 };
+
+// Fallback: reveal content after 3s even if stylesheet fails or never loads
+onMounted(() => {
+  setTimeout(() => {
+    stylesLoaded.value = true;
+  }, 3000);
+});
 </script>
 
 <style>
