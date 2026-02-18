@@ -57,7 +57,6 @@ class Availability extends Schema\Entity
             ],
             'workstationCount' => [
                 'public' => 0,
-                'callcenter' => 0,
                 'intern' => 0,
             ],
             'lastChange' => 0,
@@ -440,7 +439,7 @@ class Availability extends Schema\Entity
     /**
      * Check, if a day between two dates is included
      *
-     * @return Array of arrays with the keys time, public, callcenter, intern
+     * @return Array of arrays with the keys time, public, intern
      */
     public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
@@ -691,7 +690,7 @@ class Availability extends Schema\Entity
     /**
      * Creates a list of slots available on a valid day
      *
-     * @return Array of arrays with the keys time, public, callcenter, intern
+     * @return Array of arrays with the keys time, public, intern
      */
     public function getSlotList()
     {
@@ -956,7 +955,6 @@ class Availability extends Schema\Entity
         $slot = new Slot([
             'type' => Slot::FREE,
             'intern' => $this['workstationCount']['intern'] * $slices,
-            'callcenter' => $this['workstationCount']['callcenter'] * $slices,
             'public' => $this['workstationCount']['public'] * $slices,
         ]);
         $availability['workstationCount'] = $slot;
@@ -992,7 +990,6 @@ class Availability extends Schema\Entity
         $info .= " to " . $this->getEndDateTime()->format('H:i');
         $info .= " using " . $this['slotTimeInMinutes'] . "min slots";
         $info .= " with p{$this['workstationCount']['public']}/";
-        $info .= "c{$this['workstationCount']['callcenter']}/";
         $info .= "i{$this['workstationCount']['intern']}";
         $day = $this->getSlotList()->getSummerizedSlot();
         $info .= " day $day";

@@ -132,12 +132,20 @@
             ],
             "description": "Array of service-IDs for which a provider is unavailable"
         },
-        "maxSlotsPerAppointment": {
+        "allowDisabledServicesMix": {
+            "type": [
+                "boolean",
+                "array",
+                "null"
+            ],
+            "description": "If array of office IDs: JumpIn with one auto-selects equivalent in group. Legacy boolean=true treated as participates in mix."
+        },
+        "slotsPerAppointment": {
             "type": [
                 "string",
                 "null"
             ],
-            "description": "Maximum number of slots that can be booked per appointment"
+            "description": "Number of slots that can be booked per appointment at this office"
         }
     },
     "required": [

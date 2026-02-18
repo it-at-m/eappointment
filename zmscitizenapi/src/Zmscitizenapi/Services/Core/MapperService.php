@@ -34,6 +34,14 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
+    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
+    {
+        if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
+            return null;
+        }
+        return array_map('intval', $provider->data['allowDisabledServicesMix']);
+    }
+
     public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
@@ -166,13 +174,15 @@ class MapperService
                         ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
-                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
-                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
+                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
+                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider)
             );
         }
 
@@ -461,6 +471,10 @@ class MapperService
             $processEntity->status = $thinnedProcess->status;
         }
 
+        if (isset($thinnedProcess->displayNumber)) {
+            $processEntity->displayNumber = $thinnedProcess->displayNumber;
+        }
+
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
@@ -479,6 +493,7 @@ class MapperService
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
+                    'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
                     'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,
