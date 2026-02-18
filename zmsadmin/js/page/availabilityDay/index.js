@@ -133,18 +133,18 @@ class AvailabilityPage extends Component {
                     );
                     BaseView.loadDialogStatic(
                         dialogHtml,
-                        () => this.doSaveUpdates(),
+                        () => this.doSaveUpdates(payload),
                         () => {},
                         { $main: $('body') }
                     );
                     return;
                 }
-                this.doSaveUpdates();
+                this.doSaveUpdates(payload);
             },
         });
     }
 
-    doSaveUpdates() {
+    doSaveUpdates(payload) {
         const dialogHtml = buildConfirmDialogHtml(
             'Öffnungszeiten speichern',
             'Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?',
@@ -154,7 +154,6 @@ class AvailabilityPage extends Component {
             dialogHtml,
             () => {
                 showSpinner();
-                const payload = this.prepareAvailabilityPayload();
 
                 $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
