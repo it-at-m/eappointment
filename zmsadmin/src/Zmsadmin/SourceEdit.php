@@ -35,30 +35,7 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
-        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 0])->getCollection();
-        $parentProviders = [];
-        $parentRequests  = [];
-        foreach ($sourceList as $src) {
-            $srcName = $src->source;
-            $fullSource = \App::$http
-                ->readGetResult('/source/' . $srcName . '/', ['resolveReferences' => 2])
-                ->getEntity();
-
-            foreach (($fullSource->providers ?? []) as $provider) {
-                $parentProviders[] = $provider;
-            }
-            foreach (($fullSource->requests ?? []) as $req) {
-                $parentRequests[] = $req;
-            }
-        }
-
-        usort($parentProviders, function ($a, $b) {
-            return strcasecmp($a->name ?? '', $b->name ?? '');
-        });
-
-        usort($parentRequests, function ($a, $b) {
-            return strcasecmp($a->name ?? '', $b->name ?? '');
-        });
+        [$parentProviders, $parentRequests] = $this->loadParentsFromAllSources();
 
         try {
             $apiRes  = \App::$http->readGetResult('/requestvariants/');
@@ -103,5 +80,36 @@ class SourceEdit extends BaseController
         return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/source/', $entity)->getEntity();
         });
+    }
+
+    private function loadParentsFromAllSources(): array
+    {
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 0])->getCollection();
+
+        $parentProviders = [];
+        $parentRequests  = [];
+
+        foreach ($sourceList as $src) {
+            $srcName = $src->source ?? null;
+            if (!$srcName) {
+                continue;
+            }
+
+            $fullSource = \App::$http
+                ->readGetResult('/source/' . $srcName . '/', ['resolveReferences' => 2])
+                ->getEntity();
+
+            foreach (($fullSource->providers ?? []) as $provider) {
+                $parentProviders[] = $provider;
+            }
+            foreach (($fullSource->requests ?? []) as $req) {
+                $parentRequests[] = $req;
+            }
+        }
+
+        usort($parentProviders, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+        usort($parentRequests,  fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+
+        return [$parentProviders, $parentRequests];
     }
 }
