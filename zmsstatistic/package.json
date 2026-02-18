@@ -35,7 +35,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jquery": "^3.4.1",
     "parcel": "^2.7.0",
-    "react-datepicker": "^4.2.1",
+    "react-datepicker": "^9.0.0",
     "svgo": "^4.0.0"
   },
   "dependencies": {
