@@ -18,13 +18,14 @@ describe('AvailabilityInfoModal', () => {
         stubs: {
           MucModal: {
             props: ['open', 'closeAriaLabel', 'dialogAriaLabel'],
+            emits: ['update:open'],
               template: `
-                <div class="modal" role="dialog" aria-modal="true">
-                  <div class="modal-content">
+                <div class="modal" role="dialog" aria-modal="true" v-if="open">
+                  <div class="modal-content" v-show="open">
                     <div class="modal-header">
                       <h2 class="standard-headline"><slot name="title"/></h2>
                       <!-- props direkt verwenden, nicht props.closeAriaLabel -->
-                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button"></button>
+                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button" @click="$emit('update:open', false)"></button>
                     </div>
                   <div class="modal-body"><slot name="body"/></div>
                   <div class="modal-footer"><slot name="footer"/></div>
@@ -49,7 +50,7 @@ describe('AvailabilityInfoModal', () => {
 
     it('does not render when open is false', () => {
       wrapper = createWrapper({ open: false, html: 'Test content' });
-      expect(wrapper.props('open')).toBe(false);
+      expect(wrapper.find('.modal-content').exists()).toBe(false);
     });
 
     it('displays html content correctly', () => {
@@ -82,7 +83,7 @@ describe('AvailabilityInfoModal', () => {
       expect(modal.attributes('aria-modal')).toBe('true');
     });
 
-    it('has modal-dialog with centered class', () => {
+    it('has modal-content element', () => {
       expect(wrapper.find('.modal-content').exists()).toBe(true);
     });
 
@@ -119,11 +120,10 @@ describe('AvailabilityInfoModal', () => {
       wrapper = createWrapper({ open: true, html: 'Test content' });
     });
 
-    it('emits close event when close button is clicked', async () => {
+    it('emits update:open false when close button is clicked', async () => {
       const closeButton = wrapper.find('.modal-button-close');
       await closeButton.trigger('click');
       
-      await wrapper.vm.$emit('update:open', false);
       expect(wrapper.emitted('update:open')).toBeTruthy();
       expect(wrapper.emitted('update:open')![0]).toEqual([false]);
     });
