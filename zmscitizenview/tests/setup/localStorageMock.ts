@@ -33,8 +33,8 @@ class LocalStorageMock implements Storage {
 }
 
 const isValidLocalStorage =
-  typeof globalThis.localStorage === 'object' &&
-  typeof globalThis.localStorage?.getItem === 'function';
+  typeof globalThis.localStorage === "object" &&
+  typeof globalThis.localStorage?.getItem === "function";
 
 if (!isValidLocalStorage) {
   globalThis.localStorage = new LocalStorageMock();
