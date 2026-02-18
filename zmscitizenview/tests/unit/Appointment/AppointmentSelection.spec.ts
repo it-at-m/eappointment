@@ -1813,7 +1813,7 @@ describe("AppointmentSelection", () => {
 
         // Programmatically set modal HTML and open
         (wrapper.vm as any).availabilityInfoHtmlOverride = 'Same info message';
-        (wrapper.vm as any).showAvailabilityInfoModal = true;
+        wrapper.setProps({ open: true });
         await nextTick();
 
         // Modal should open and show the aggregated info
@@ -1857,7 +1857,7 @@ describe("AppointmentSelection", () => {
 
         // Programmatically set modal HTML and open (use computed grouped html)
         (wrapper.vm as any).availabilityInfoHtmlOverride = (wrapper.vm as any).noneSelectedAvailabilityInfoHtml;
-        (wrapper.vm as any).showAvailabilityInfoModal = true;
+        wrapper.setProps({ open: true });
         await nextTick();
 
         // Modal should open and show the grouped info
@@ -1889,7 +1889,7 @@ describe("AppointmentSelection", () => {
         expect(callout.html()).not.toContain('newAppointmentsInfoLink');
         expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
         // No modal should open from warning callout
-        expect(wrapper.find('.modal-body').exists()).toBe(false);
+        expect(wrapper.find('.modal-body').isVisible()).toBe(false);
       });
 
       it('should fallback to translation key when infoForAllAppointments is null', async () => {
@@ -2064,7 +2064,7 @@ describe("AppointmentSelection", () => {
         const trigger = callout.find('.m-button.m-button--ghost');
         // Warning callout no longer has a trigger; modal cannot be opened here
         expect(trigger.exists()).toBe(false);
-        expect(wrapper.find('.modal-body').exists()).toBe(false);
+        expect(wrapper.find('.modal-body').isVisible()).toBe(false);
       });
 
       it('should maintain existing functionality when infoForAllAppointments is not set', async () => {
