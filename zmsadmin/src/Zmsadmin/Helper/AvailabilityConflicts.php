@@ -5,8 +5,9 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Zmsadmin;
+namespace BO\Zmsadmin\Helper;
 
+use BO\Zmsadmin\BaseController;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
