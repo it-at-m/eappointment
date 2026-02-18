@@ -35,9 +35,30 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
-        $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
-        $parentProviders = $parents->providers ?? [];
-        $parentRequests  = $parents->requests  ?? [];
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 0])->getCollection();
+        $parentProviders = [];
+        $parentRequests  = [];
+        foreach ($sourceList as $src) {
+            $srcName = $src->source;
+            $fullSource = \App::$http
+                ->readGetResult('/source/' . $srcName . '/', ['resolveReferences' => 2])
+                ->getEntity();
+
+            foreach (($fullSource->providers ?? []) as $provider) {
+                $parentProviders[] = $provider;
+            }
+            foreach (($fullSource->requests ?? []) as $req) {
+                $parentRequests[] = $req;
+            }
+        }
+
+        usort($parentProviders, function ($a, $b) {
+            return strcasecmp($a->name ?? '', $b->name ?? '');
+        });
+
+        usort($parentRequests, function ($a, $b) {
+            return strcasecmp($a->name ?? '', $b->name ?? '');
+        });
 
         try {
             $apiRes  = \App::$http->readGetResult('/requestvariants/');
