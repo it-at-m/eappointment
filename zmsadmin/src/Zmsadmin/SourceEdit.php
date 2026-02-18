@@ -108,7 +108,7 @@ class SourceEdit extends BaseController
         }
 
         usort($parentProviders, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
-        usort($parentRequests,  fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+        usort($parentRequests, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
 
         return [$parentProviders, $parentRequests];
     }
