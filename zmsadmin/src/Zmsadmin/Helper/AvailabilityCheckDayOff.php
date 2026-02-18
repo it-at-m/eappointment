@@ -3,6 +3,7 @@
 namespace BO\Zmsadmin\Helper;
 
 use BO\Zmsadmin\BaseController;
+use BO\Zmsadmin\Exception\BadRequest;
 use BO\Zmsentities\Collection\AvailabilityList;
 
 class AvailabilityCheckDayOff extends BaseController
@@ -14,6 +15,10 @@ class AvailabilityCheckDayOff extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequest();
+        }
 
         $collection = (new AvailabilityList())->addData($input['availabilityList']);
 
