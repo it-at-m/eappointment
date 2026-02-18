@@ -12,6 +12,7 @@ import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 import ExceptionHandler from '../../lib/exceptionHandler';
+import BaseView from '../../lib/baseview';
 
 import {
     getInitialState,
@@ -34,6 +35,22 @@ const tempId = (() => {
         return `__temp__${lastId}`
     }
 })()
+
+function buildConfirmDialogHtml(title, message, okButtonText = 'Bestätigen') {
+    return '<div class="lightbox__content" role="dialog" aria-modal="true"><section tabindex="0" class="board dialog" data-reload="">' +
+        '<div class="header board__header">' +
+        '<h2 tabindex="0" class="board__heading">' +
+        '<i aria-hidden="true" title="' + title + '" class="fas fa-info-circle"></i> ' + title + '</h2>' +
+        '</div>' +
+        '<div tabindex="0" class="body board__body">' +
+        '<p>' + message + '</p>' +
+        '<div class="form-actions">' +
+        '<a data-action-abort="" class="button button--diamond button-abort" href="#">Abbruch</a>' +
+        '<a data-action-ok="" class="button button--destructive button-ok" href="#">' + okButtonText + '</a>' +
+        '</div>' +
+        '</div>' +
+        '</section></div>';
+}
 
 class AvailabilityPage extends Component {
     constructor(props) {
@@ -109,10 +126,18 @@ class AvailabilityPage extends Component {
             contentType: 'application/json',
             success: response => {
                 if (response.overridesDayOff) {
-                    const sure = confirm(
-                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind. \n\nMöchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?'
+                    const dialogHtml = buildConfirmDialogHtml(
+                        'Öffnungszeit für Feiertag',
+                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind.<br><br>Möchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?',
+                        'Fortfahren'
                     );
-                    if (!sure) return;
+                    BaseView.loadDialogStatic(
+                        dialogHtml,
+                        () => this.doSaveUpdates(),
+                        () => {},
+                        { $main: $('body') }
+                    );
+                    return;
                 }
                 this.doSaveUpdates();
             },
@@ -120,12 +145,18 @@ class AvailabilityPage extends Component {
     }
 
     doSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
-        if (ok) {
-            showSpinner();
-            const payload = this.prepareAvailabilityPayload();
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeiten speichern',
+            'Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?',
+            'Speichern'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
+                const payload = this.prepareAvailabilityPayload();
 
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
@@ -150,9 +181,10 @@ class AvailabilityPage extends Component {
                 this.getValidationList();
                 hideSpinner();
             });
-        } else {
-            hideSpinner();
-        }
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
 
     prepareAvailabilityPayload() {
@@ -216,56 +248,63 @@ class AvailabilityPage extends Component {
     }
 
     onDeleteAvailability(availability) {
-        showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
-        const id = availability.id
-        if (ok) {
-            $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                method: 'GET'
-            }).done(() => {
-                const newState = deleteAvailabilityInState(this.state, availability);
+        const id = availability.id;
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeit löschen',
+            'Soll diese Öffnungszeit wirklich gelöscht werden?',
+            'Löschen'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
+                $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
+                    method: 'GET'
+                }).done(() => {
+                    const newState = deleteAvailabilityInState(this.state, availability);
 
-                if (this.state.fullAvailabilityList) {
-                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
-                        item => item.id !== availability.id
-                    );
-                }
-
-                if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
-                    newState.selectedAvailability = null;
-                }
-
-                this.setState(newState, () => {
-                    this.refreshData();
-                    if (newState.availabilitylist.length > 0) {
-                        this.getConflictList();
+                    if (this.state.fullAvailabilityList) {
+                        newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
+                            item => item.id !== availability.id
+                        );
                     }
-                    this.getValidationList();
-                });
 
-                this.updateSaveBarState('delete', true);
+                    if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
+                        newState.selectedAvailability = null;
+                    }
 
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
-                hideSpinner();
-            }).fail(err => {
-                console.log('delete error', err);
-                let isException = err.responseText.toLowerCase().includes('exception');
-                if (err.status >= 400 && isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
+                    this.setState(newState, () => {
+                        this.refreshData();
+                        if (newState.availabilitylist.length > 0) {
+                            this.getConflictList();
+                        }
+                        this.getValidationList();
                     });
-                } else {
+
+                    this.updateSaveBarState('delete', true);
+
+                    if (this.successElement) {
+                        this.successElement.scrollIntoView();
+                    }
+                    hideSpinner();
+                }).fail(err => {
                     console.log('delete error', err);
-                }
-                this.updateSaveBarState('delete', false);
-                hideSpinner();
-            })
-        } else {
-            hideSpinner();
-        }
+                    let isException = err.responseText.toLowerCase().includes('exception');
+                    if (err.status >= 400 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.log('delete error', err);
+                    }
+                    this.updateSaveBarState('delete', false);
+                    hideSpinner();
+                });
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
 
     onCopyAvailability(availability) {
