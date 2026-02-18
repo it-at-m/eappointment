@@ -35,7 +35,7 @@ FROM role r
          JOIN permission p ON p.name IN (
                                          'appointment', 'emergency', 'counter', 'customersearch', 'cherrypick',
                                          'waitingqueue', 'parkedqueue', 'missedqueue', 'openqueue', 'finishedqueue',
-                                         'overallcalendar'
+                                         'overviewcalendar'
     )
 WHERE r.name = 'agent_queue_plus';
 
@@ -45,7 +45,7 @@ FROM role r
          JOIN permission p ON p.name IN (
                                          'appointment', 'emergency', 'counter', 'customersearch', 'cherrypick',
                                          'waitingqueue', 'parkedqueue', 'missedqueue', 'openqueue', 'finishedqueue',
-                                         'overallcalendar', 'restrictedscope', 'statistic'
+                                         'overviewcalendar', 'restrictedscope', 'statistic'
     )
 WHERE r.name = 'appointment_admin';
 
