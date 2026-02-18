@@ -2,6 +2,8 @@
  * Ensures tests always have a browser-like localStorage even when
  * NODE_OPTIONS or custom loaders replace jsdom's default implementation.
  */
+import { vi } from 'vitest';
+
 class LocalStorageMock implements Storage {
   private store = new Map<string, string>();
 
@@ -31,12 +33,26 @@ class LocalStorageMock implements Storage {
 }
 
 const isValidLocalStorage =
-  typeof globalThis.localStorage === "object" &&
-  typeof globalThis.localStorage?.getItem === "function";
+  typeof globalThis.localStorage === 'object' &&
+  typeof globalThis.localStorage?.getItem === 'function';
 
 if (!isValidLocalStorage) {
-  const mock = new LocalStorageMock();
-  globalThis.localStorage = mock;
+  globalThis.localStorage = new LocalStorageMock();
 }
+
+if (typeof window !== 'undefined') {
+  Object.defineProperty(HTMLElement.prototype, 'showModal', {
+    configurable: true,
+    writable: true,
+    value: vi.fn(),
+  });
+
+  Object.defineProperty(HTMLElement.prototype, 'close', {
+    configurable: true,
+    writable: true,
+    value: vi.fn(),
+  });
+}
+
 
 
