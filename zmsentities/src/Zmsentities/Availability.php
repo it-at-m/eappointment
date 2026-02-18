@@ -157,7 +157,8 @@ class Availability extends Schema\Entity
                 if ($this->hasWeekDay($current) && $this->hasDayOff($current)) {
                     return true;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception\DayoffMissing $e) {
+                // Scope doesn't have dayoff data, skip this day
             }
             $current = $current->modify('+1 day');
         }
