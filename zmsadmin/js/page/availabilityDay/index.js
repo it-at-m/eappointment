@@ -286,7 +286,6 @@ class AvailabilityPage extends Component {
                     }
                     hideSpinner();
                 }).fail(err => {
-                    console.log('delete error', err);
                     let isException = err.responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
@@ -294,7 +293,7 @@ class AvailabilityPage extends Component {
                             message: err.responseText
                         });
                     } else {
-                        console.log('delete error', err);
+                        console.error('delete error', err);
                     }
                     this.updateSaveBarState('delete', false);
                     hideSpinner();
