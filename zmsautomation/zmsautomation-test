@@ -168,9 +168,17 @@ section "5. Flyway Migrations"
 info "Clearing test data migrations from flyway_schema_history..."
 exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
-info "Running Flyway migrations from $FLYWAY_DIR..."
-flyway -url="jdbc:mariadb://$DB_HOST:$DB_PORT/$DB_NAME" -user="$DB_USER" -password="$DB_PASSWORD" \
-  -locations="filesystem:$FLYWAY_DIR" -baselineOnMigrate=true migrate || warn "Flyway failed; continuing."
+info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
+(
+  cd "$PROJECT_ROOT/zmsautomation"
+  mvn -B -q \
+    -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
+    -Dflyway.user="$DB_USER" \
+    -Dflyway.password="$DB_PASSWORD" \
+    -Dflyway.locations="filesystem:$FLYWAY_DIR" \
+    -Dflyway.baselineOnMigrate=true \
+    flyway:migrate || warn "Flyway (Maven plugin) failed; continuing."
+)
 
 info "Database tables after Flyway:"
 exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true

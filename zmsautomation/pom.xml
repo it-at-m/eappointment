@@ -49,6 +49,25 @@
 
   <build>
     <plugins>
+      <!-- Flyway plugin so we can run migrations via Maven (works on any CPU arch) -->
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>${flyway.version}</version>
+        <!-- Database support + JDBC driver must be on the plugin classpath -->
+        <dependencies>
+          <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+            <version>${flyway.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.2.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
