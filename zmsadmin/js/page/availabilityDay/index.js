@@ -189,9 +189,8 @@ class AvailabilityPage extends Component {
     prepareAvailabilityPayload() {
     const selectedDate = formatTimestampDate(this.props.timestamp);
 
-    const appointmentPreferences = this.props.scope.preferences.appointment;
-    const defaultStartInDays = appointmentPreferences.startInDaysDefault ?? 0;
-    const defaultEndInDays   = appointmentPreferences.endInDaysDefault   ?? 60;
+    const defaultStartInDays = this.props.scope?.preferences?.appointment?.startInDaysDefault ?? 0;
+    const defaultEndInDays   = this.props.scope?.preferences?.appointment?.endInDaysDefault   ?? 60;
 
     const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
         const isModified = availability.__modified === true;
