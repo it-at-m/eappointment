@@ -25,7 +25,7 @@ describe('AvailabilityInfoModal', () => {
                     <div class="modal-header">
                       <h2 class="standard-headline"><slot name="title"/></h2>
                       <!-- props direkt verwenden, nicht props.closeAriaLabel -->
-                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button" @click="$emit('update:open', false; $parent.$emit('update:open', false)"></button>
+                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button" @click="$emit('update:open', false)"></button>
                     </div>
                   <div class="modal-body"><slot name="body"/></div>
                   <div class="modal-footer"><slot name="footer"/></div>
@@ -120,10 +120,10 @@ describe('AvailabilityInfoModal', () => {
       wrapper = createWrapper({ open: true, html: 'Test content' });
     });
 
-    it('emits update:open false when close button is clicked', async () => {
-      const closeButton = wrapper.find('.modal-button-close');
-      await closeButton.trigger('click');
-      
+    it('emits update:open false when footer button is clicked', async () => {
+      const footerButton = wrapper.findComponent({ name: 'MucButton' });
+      await footerButton.trigger('click');
+
       expect(wrapper.emitted('update:open')).toBeTruthy();
       expect(wrapper.emitted('update:open')![0]).toEqual([false]);
     });
