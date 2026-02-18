@@ -36,17 +36,26 @@ const tempId = (() => {
     }
 })()
 
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(String(str)));
+    return div.innerHTML;
+}
+
 function buildConfirmDialogHtml(title, message, okButtonText = 'Bestätigen') {
+    const safeTitle = escapeHtml(title);
+    const safeOk = escapeHtml(okButtonText);
+    // NOTE: message may contain intentional HTML (e.g. <br>); callers must pass only trusted markup.
     return '<div class="lightbox__content" role="dialog" aria-modal="true"><section tabindex="0" class="board dialog" data-reload="">' +
         '<div class="header board__header">' +
         '<h2 tabindex="0" class="board__heading">' +
-        '<i aria-hidden="true" title="' + title + '" class="fas fa-info-circle"></i> ' + title + '</h2>' +
+        '<i aria-hidden="true" title="' + safeTitle + '" class="fas fa-info-circle"></i> ' + safeTitle + '</h2>' +
         '</div>' +
         '<div tabindex="0" class="body board__body">' +
         '<p>' + message + '</p>' +
         '<div class="form-actions">' +
         '<a data-action-abort="" class="button button--diamond button-abort" href="#">Abbruch</a>' +
-        '<a data-action-ok="" class="button button--destructive button-ok" href="#">' + okButtonText + '</a>' +
+        '<a data-action-ok="" class="button button--destructive button-ok" href="#">' + safeOk + '</a>' +
         '</div>' +
         '</div>' +
         '</section></div>';
