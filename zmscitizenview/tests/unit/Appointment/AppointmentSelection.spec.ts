@@ -1813,7 +1813,7 @@ describe("AppointmentSelection", () => {
 
         // Programmatically set modal HTML and open
         (wrapper.vm as any).availabilityInfoHtmlOverride = 'Same info message';
-        wrapper.setProps({ open: true });
+        wrapper.vm.showAvailabilityInfoModal = true;
         await nextTick();
 
         // Modal should open and show the aggregated info
@@ -1857,7 +1857,7 @@ describe("AppointmentSelection", () => {
 
         // Programmatically set modal HTML and open (use computed grouped html)
         (wrapper.vm as any).availabilityInfoHtmlOverride = (wrapper.vm as any).noneSelectedAvailabilityInfoHtml;
-        wrapper.setProps({ open: true });
+        wrapper.vm.showAvailabilityInfoModal = true;
         await nextTick();
 
         // Modal should open and show the grouped info
