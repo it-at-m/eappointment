@@ -154,7 +154,7 @@ class Availability extends Schema\Entity
 
         while ($current <= $end) {
             try {
-                if ($this->hasDayOff($current)) {
+                if ($this->hasWeekDay($current) && $this->hasDayOff($current)) {
                     return true;
                 }
             } catch (\Exception $e) {
