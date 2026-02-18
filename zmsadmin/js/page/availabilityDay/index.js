@@ -150,6 +150,17 @@ class AvailabilityPage extends Component {
                 }
                 this.doSaveUpdates(payload);
             },
+            error: (err) => {
+                let isException = err.responseText?.toLowerCase().includes('exception');
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.error('checkdayoff error', err);
+                }
+            }
         });
     }
 
@@ -178,12 +189,14 @@ class AvailabilityPage extends Component {
                 }
                 hideSpinner();
             }).fail((err) => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                let isException = err.responseText?.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
+                } else {
+                    console.error('save error', err);
                 }
                 this.updateSaveBarState('save', false);
                 this.getValidationList();
