@@ -1,7 +1,7 @@
 <template>
   <muc-modal
     :open="open"
-    @close="emit('update:open', $event)"
+    @close="emit('update:open', false)"
     aria-labelledby="modalTitle"
     :closeAriaLabel="closeAriaLabel || 'Dialog schließen'"
   >
