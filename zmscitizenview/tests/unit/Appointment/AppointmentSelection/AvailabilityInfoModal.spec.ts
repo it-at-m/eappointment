@@ -120,10 +120,10 @@ describe('AvailabilityInfoModal', () => {
       wrapper = createWrapper({ open: true, html: 'Test content' });
     });
 
-    it('emits update:open false when footer button is clicked', async () => {
-      const footerButton = wrapper.findComponent({ name: 'MucButton' });
-      await footerButton.trigger('click');
-
+    it('emits update:open false when close button is clicked', async () => {
+      const closeButton = wrapper.find('.modal-button-close');
+      await closeButton.trigger('click');
+      
       expect(wrapper.emitted('update:open')).toBeTruthy();
       expect(wrapper.emitted('update:open')![0]).toEqual([false]);
     });
