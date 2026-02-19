@@ -68,7 +68,7 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
+      expect(wrapper.find(`use[xlink\\:href="#${variant.icon}"]`).exists()).toBe(true);
       expect(wrapper.text()).toContain(t(variant.textKey));
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");
