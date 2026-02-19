@@ -97,7 +97,7 @@
 				"name": "Tempelhof-Sch\u00f6neberg"
 			},
 			"preferences": {
-				"ticketPrinterProtectionEnabled": "0"
+				"ticketPrinterActivation": "0"
 			},
 			"departments": [{
 				"email": "buergeramt@ba-ts.berlin.de",
