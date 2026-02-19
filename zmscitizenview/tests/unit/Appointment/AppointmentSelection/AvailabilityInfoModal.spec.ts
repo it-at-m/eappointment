@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 // @ts-expect-error: Vue SFC import for test
 import AvailabilityInfoModal from '@/components/Appointment/AppointmentSelection/AvailabilityInfoModal.vue';
+import { defineComponent } from 'vue';
 
 describe('AvailabilityInfoModal', () => {
   let wrapper: ReturnType<typeof mount>;
@@ -16,16 +17,16 @@ describe('AvailabilityInfoModal', () => {
       },
       global: {
         stubs: {
-          MucModal: {
+          MucModal: defineComponent({
             props: ['open', 'closeAriaLabel', 'dialogAriaLabel'],
-            emits: ['update:open'],
+            emits: ['close'],
               template: `
                 <div class="modal" role="dialog" aria-modal="true" v-if="open">
                   <div class="modal-content" v-show="open">
                     <div class="modal-header">
                       <h2 class="standard-headline"><slot name="title"/></h2>
                       <!-- props direkt verwenden, nicht props.closeAriaLabel -->
-                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button" @click="$emit('update:open', false)"></button>
+                      <button class="modal-button-close" :aria-label="closeAriaLabel || 'Dialog schließen'" type="button" @click="$emit('close')"></button>
                     </div>
                   <div class="modal-body"><slot name="body"/></div>
                   <div class="modal-footer"><slot name="footer"/></div>
@@ -33,7 +34,7 @@ describe('AvailabilityInfoModal', () => {
                 <div class="modal-backdrop"></div>
                 </div>
               `,
-          },
+          }),
           MucButton: {
             template: `<button><slot/></button>`,
           },
@@ -123,6 +124,7 @@ describe('AvailabilityInfoModal', () => {
     it('emits update:open false when close button is clicked', async () => {
       const closeButton = wrapper.find('.modal-button-close');
       await closeButton.trigger('click');
+      await wrapper.vm.$nextTick();
       
       expect(wrapper.emitted('update:open')).toBeTruthy();
       expect(wrapper.emitted('update:open')![0]).toEqual([false]);
