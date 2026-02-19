@@ -18,7 +18,8 @@
       <form class="m-form m-form--default">
         <muc-select
           id="service-search"
-          v-model="service"
+          :model-value="service"
+          @update:modelValue="onServiceSelected"
           :items="filteredServices"
           item-title="name"
           :label="t('serviceSearch')"
@@ -53,7 +54,7 @@
         v-model="countOfService"
         :label="service?.name || ''"
         :id="`service-${service?.id}`"
-        :link="getServiceBaseURL() + (baseServiceId || '')"
+        :link="getServiceBaseURL() + (serviceLinkId || '')"
         :max="maxValueOfService"
         :min="1"
       />
@@ -198,7 +199,10 @@ import ClockSvg from "@/components/Appointment/ServiceFinder/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/ServiceFinder/SubserviceListItem.vue";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import {
+  SelectedServiceProvider,
+  ServiceLinkProvider,
+} from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
@@ -263,6 +267,11 @@ const { selectedService, updateSelectedService } =
   inject<SelectedServiceProvider>(
     "selectedServiceProvider"
   ) as SelectedServiceProvider;
+
+const { serviceLinkId, updateServiceLinkId } = inject<ServiceLinkProvider>(
+  "serviceLinkProvider"
+) as ServiceLinkProvider;
+
 const service = ref<ServiceImpl | undefined>(selectedService.value);
 const minSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
@@ -297,17 +306,23 @@ const shouldShowLessButton = computed(() => {
   );
 });
 
-const baseServiceId = ref<number | string | null>(null);
 const nextButton = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
+const onServiceSelected = (selected: ServiceImpl | undefined) => {
+  if (!selected) {
+    service.value = undefined;
+    updateBaseServiceId(null);
+    return;
+  }
+
+  updateServiceLinkId(String(selected.parentId ?? selected.id));
+
+  service.value = selected;
+};
+
 watch(service, (newService) => {
   if (!newService) return;
-
-  baseServiceId.value =
-    newService.parentId != null
-      ? String(newService.parentId)
-      : String(newService.id);
 
   const variantId = newService.variantId;
   if (typeof variantId === "number" && Number.isFinite(variantId)) {
@@ -565,6 +580,7 @@ const setOftenSearchedService = (serviceId: string) => {
     (service) => service.id == serviceId
   );
   if (foundService) {
+    updateServiceLinkId(String(foundService.parentId ?? foundService.id));
     service.value = {
       ...foundService,
       providers: [] as OfficeImpl[],
@@ -611,7 +627,9 @@ const scrollToTop = () => {
 
 onMounted(() => {
   if (service.value) {
-    baseServiceId.value = service.value.parentId ?? service.value.id;
+    if (!serviceLinkId.value) {
+      updateServiceLinkId(String(service.value.parentId ?? service.value.id));
+    }
     const variantId = (service.value as any)?.variantId;
     if (typeof variantId === "number" && Number.isFinite(variantId)) {
       selectedVariant.value = String(variantId);
@@ -740,27 +758,37 @@ onMounted(() => {
   }
 });
 
-const hasNoParent = (service: Service) => service.parentId === null;
 const showOnStartPage = (service: Service) => service.showOnStartPage === true;
 
 const filteredServices = computed(() => {
-  return services.value.filter(hasNoParent).filter(showOnStartPage);
+  return services.value.filter(showOnStartPage);
 });
 
+/**
+ * Collects all service variants (appointment types) for the currently selected service.
+ * - if current is has variantId===1(Present)  => use current.id
+ * - otherwise use current.parentId
+ */
 const variantServices = computed<Service[]>(() => {
-  if (!baseServiceId.value) return [];
+  const current = service.value;
+  if (!current) return [];
+
+  const variantBaseId =
+    current.showOnStartPage === true && current.variantId === 1
+      ? String(current.id)
+      : String(current.parentId ?? current.id);
 
   const variants = services.value
-    .filter((s) => s.parentId === baseServiceId.value)
+    .filter((s) => String(s.parentId) === variantBaseId)
     .filter((s) => typeof s.variantId === "number");
 
-  const base = services.value.find((s) => s.id === baseServiceId.value);
+  const base = services.value.find((s) => String(s.id) === variantBaseId);
 
   const hasVariant1 = variants.some((v) => v.variantId === 1);
   if (base && !hasVariant1) {
     variants.unshift({
       ...base,
-      parentId: null,
+      parentId: base.parentId ?? null,
       variantId: 1,
     });
   }
@@ -770,7 +798,7 @@ const variantServices = computed<Service[]>(() => {
 });
 
 watch(selectedVariant, (variantId) => {
-  if (!variantId || !baseServiceId.value) return;
+  if (!variantId) return;
 
   const selectedServiceVariant = variantServices.value.find(
     (v) => String(v.variantId) === String(variantId)
