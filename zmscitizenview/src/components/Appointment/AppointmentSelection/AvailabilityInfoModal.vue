@@ -1,7 +1,7 @@
 <template>
   <muc-modal
-    v-model:open="props.open"
-    @close="emit('update:open', false)"
+    :open="open"
+    @close="emit('update:open', $event)"
     aria-labelledby="modalTitle"
     :closeAriaLabel="closeAriaLabel || 'Dialog schließen'"
   >
