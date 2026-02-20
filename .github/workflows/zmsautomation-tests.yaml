@@ -297,8 +297,14 @@ jobs:
   #           -w /workspace/zmsautomation \
   #           maven:3.9-eclipse-temurin-21 bash -c "
   #             apt-get update && apt-get install -y --no-install-recommends \
-  #               firefox firefox-geckodriver xvfb x11-utils x11-xserver-utils \
+  #               firefox-esr xvfb x11-utils x11-xserver-utils wget \
   #             && apt-get clean && rm -rf /var/lib/apt/lists/* \
+  #             && GECKODRIVER_VERSION=\$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep -oP '\"tag_name\": \"\\K[^\"]*' | head -1) \
+  #             && wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/\${GECKODRIVER_VERSION}/geckodriver-\${GECKODRIVER_VERSION}-linux64.tar.gz \
+  #             && tar -xzf /tmp/geckodriver.tar.gz -C /tmp \
+  #             && mv /tmp/geckodriver /usr/local/bin/geckodriver \
+  #             && chmod +x /usr/local/bin/geckodriver \
+  #             && rm /tmp/geckodriver.tar.gz \
   #             && Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & \
   #             && sleep 2 \
   #             && mvn -B -DtrimStackTrace=false test
