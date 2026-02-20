@@ -20,7 +20,6 @@
     <cucumber.version>7.18.0</cucumber.version>
     <testng.version>7.8.0</testng.version>
     <flyway.version>10.0.1</flyway.version>
-    <cucumber.messages.version>8.12.0</cucumber.messages.version>
   </properties>
 
   <dependencies>
@@ -156,12 +155,6 @@
           <groupId>io.cucumber</groupId>
           <artifactId>cucumber-testng</artifactId>
           <version>${cucumber.version}</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>messages</artifactId>
-          <version>${cucumber.messages.version}</version>
           <scope>test</scope>
         </dependency>
 
