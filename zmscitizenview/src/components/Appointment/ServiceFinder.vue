@@ -312,7 +312,7 @@ const selectedVariant = ref("");
 const onServiceSelected = (selected: ServiceImpl | undefined) => {
   if (!selected) {
     service.value = undefined;
-    updateBaseServiceId(null);
+    updateServiceLinkId(null);
     return;
   }
 
