@@ -78,7 +78,7 @@ public class StatisticsPage extends BasePage {
                 AuthenticationHelper.getUserPassword().access(clearPassword::append);
                 if ("chrome".equals(
                         TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-                    String ssoHost = System.getenv().getOrDefault("SSO_HOST", "keycloak.local");
+                    String ssoHost = System.getenv().getOrDefault("SSO_HOST", "keycloak");
                     WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
                     wait.until(ExpectedConditions.urlContains(ssoHost));
                     DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",

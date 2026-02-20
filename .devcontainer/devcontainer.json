@@ -14,8 +14,8 @@
     }
   },
   "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
-  // Note: To make keycloak.local work from your browser, add this to your Mac's /etc/hosts:
-  // 127.0.0.1 keycloak.local
+  // Note: To make keycloak work from your browser, add this to your Mac's /etc/hosts:
+  // 127.0.0.1 keycloak
   "postStartCommand": [
     // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
     // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",

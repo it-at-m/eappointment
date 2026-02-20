@@ -158,26 +158,26 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 
 ## Keycloak Setup
 
-Keycloak is configured to use the hostname `keycloak.local` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
+Keycloak is configured to use the hostname `keycloak` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
 
 - **Browser** (running on your host machine) needs to access Keycloak via a hostname that resolves to `127.0.0.1`
 - **PHP code** (running inside the container) needs to access Keycloak via a hostname that resolves through Docker/Podman network DNS
 
 Using `localhost` doesn't work because inside the container, `localhost` refers to the container itself, not the host machine where Keycloak is exposed.
 
-### Adding keycloak.local to /etc/hosts
+### Adding keycloak to /etc/hosts
 
-You need to add `keycloak.local` to your system's hosts file so it resolves to `127.0.0.1`:
+You need to add `keycloak` to your system's hosts file so it resolves to `127.0.0.1`:
 
 **macOS:**
 ```bash
-echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
 Enter your Mac password when prompted.
 
 **Ubuntu/Linux:**
 ```bash
-echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
 
 **Windows:**
@@ -185,17 +185,17 @@ echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
 2. Open `C:\Windows\System32\drivers\etc\hosts`
 3. Add this line at the end:
    ```
-   127.0.0.1 keycloak.local
+   127.0.0.1 keycloak
    ```
 4. Save the file
 
 **Verify it worked:**
 ```bash
 # macOS/Linux
-ping -c 1 keycloak.local
+ping -c 1 keycloak
 
 # Windows
-ping keycloak.local
+ping keycloak
 ```
 You should see it resolve to `127.0.0.1`.
 
