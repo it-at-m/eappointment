@@ -1,0 +1,18 @@
+id: add ataf user
+author: ZMS Development
+realm: zms
+changes:
+  - addUser:
+      name: ataf
+      lastName: Test
+      firstName: ATAF
+      enabled: true
+      emailVerified: true
+      email: ataf@localhost
+  - updateUserPassword:
+      name: ataf
+      password: "vorschau"
+  - assignRole:
+      user: ataf
+      role: user
+      clientId: zms

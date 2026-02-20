@@ -130,6 +130,9 @@ Required environment variables for ATAF tests:
 - `MYSQL_USER` - Database user (default: `zmsbo`)
 - `MYSQL_PASSWORD` - Database password (default: `zmsbo`)
 
+### UI tests (SSO)
+For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `07_add-ataf-user.yml` and ZMS Flyway migration `V10__add_ataf_keycloak_user.sql`. Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
+
 ### Example
 
 ```bash

@@ -6,7 +6,13 @@ import ataf.core.logging.ScenarioLogManager;
 public class TestData {
     public static final Environment LOCAL = new Environment("Environment", "LOCAL");
     public static final Environment DEV = new Environment("Environment", "DEV");
-    
+
+    private static final String SSO_HOST = System.getenv().getOrDefault("SSO_HOST", "keycloak");
+
+    public static String getSsoHost() {
+        return SSO_HOST;
+    }
+
     public static void init() {
         ScenarioLogManager.getLogger().info("Initializing ZMS API test environments");
 

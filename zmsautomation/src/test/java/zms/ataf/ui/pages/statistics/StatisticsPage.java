@@ -34,6 +34,7 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.data.TestData;
 
 
 public class StatisticsPage extends BasePage {
@@ -78,9 +79,9 @@ public class StatisticsPage extends BasePage {
                 AuthenticationHelper.getUserPassword().access(clearPassword::append);
                 if ("chrome".equals(
                         TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-                    String ssoHost = System.getenv().getOrDefault("SSO_HOST", "keycloak");
+                    String ssoHost = TestData.getSsoHost();
                     WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-                    wait.until(ExpectedConditions.urlContains(ssoHost));
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
                     DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
                             "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
                                     StandardCharsets.UTF_8) + "@"));
@@ -98,9 +99,7 @@ public class StatisticsPage extends BasePage {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
                 exception = e;
             } finally {
-                clearUserName.delete(0, clearUserName.length() - 1);
                 clearUserName.setLength(0);
-                clearPassword.delete(0, clearPassword.length() - 1);
                 clearPassword.setLength(0);
                 if (exception != null) {
                     throw exception;

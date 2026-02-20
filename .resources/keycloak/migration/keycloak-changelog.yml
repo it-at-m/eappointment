@@ -5,4 +5,5 @@ includes:
   - path: 04_add-users.yml
   - path: 05_assign-roles.yml
   - path: 06_zms-audience.yml
+  - path: 07_add-ataf-user.yml
 
