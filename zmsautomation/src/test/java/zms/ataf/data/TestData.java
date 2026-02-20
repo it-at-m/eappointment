@@ -16,7 +16,7 @@ public class TestData {
         String citizenUri =
                 System.getenv().getOrDefault("CITIZEN_API_BASE_URI", "http://localhost:8080/terminvereinbarung/api/citizen");
         String adminUri =
-                System.getenv().getOrDefault("ADMIN_BASE_URI", "https://localhost:443");
+                System.getenv().getOrDefault("ADMIN_BASE_URI", "https://localhost:443/terminvereinbarung/admin/");
         String buergerUri =
                 System.getenv().getOrDefault("BUERGER_BASE_URI", "http://localhost:8082");
         String statisticUri =
