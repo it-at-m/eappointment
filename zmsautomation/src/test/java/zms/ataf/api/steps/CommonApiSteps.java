@@ -1,5 +1,6 @@
 package zms.ataf.api.steps;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 
@@ -14,6 +15,14 @@ public class CommonApiSteps {
      * This allows common steps to work across different API step classes.
      */
     private static Response sharedResponse;
+    
+    /**
+     * Reset shared state before each scenario to prevent state leakage.
+     */
+    @Before
+    public void resetSharedState() {
+        sharedResponse = null;
+    }
     
     /**
      * Set the shared response (called by other step classes after making API calls).
