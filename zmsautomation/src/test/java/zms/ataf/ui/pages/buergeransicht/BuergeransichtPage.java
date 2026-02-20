@@ -347,7 +347,7 @@ public class BuergeransichtPage extends BasePage {
     }
 
     private String extractDateString(ChronoUnit chronoUnit, String textContainingDateString) {
-        Pattern monthYearPattern = Pattern.compile("([A-Z][a-z][a-z])*([a-z]+)*( )*([0-9][0-9][0-9][0-9])");
+        Pattern monthYearPattern = Pattern.compile("([A-Z][a-z]{2})?[a-z]*\\s*([0-9]{4})");
         Matcher monthYearMatcher = monthYearPattern.matcher(textContainingDateString);
         if (monthYearMatcher.find()) {
             switch (chronoUnit) {
@@ -358,8 +358,8 @@ public class BuergeransichtPage extends BasePage {
                     break;
                 }
             case YEARS:
-                if (monthYearMatcher.group(4) != null) {
-                    return monthYearMatcher.group(4);
+                if (monthYearMatcher.group(2) != null) {
+                    return monthYearMatcher.group(2);
                 } else {
                     break;
                 }
