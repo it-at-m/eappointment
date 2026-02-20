@@ -1,6 +1,7 @@
 FROM php:8.3-apache
 
 ENV TZ=Europe/Berlin
+ENV DISPLAY=:99
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # —————————————————————————————————————————
@@ -22,6 +23,7 @@ RUN apt-get update && apt-get install -y \
       libicu-dev libonig-dev libzip-dev \
       python3-click python3-git python3-colorama \
       mariadb-client \
+      firefox firefox-geckodriver xvfb x11-utils x11-xserver-utils \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl gd pdo pdo_mysql zip calendar \
     && apt-get clean

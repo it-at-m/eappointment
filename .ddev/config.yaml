@@ -14,6 +14,7 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment:
   - TZ=Europe/Berlin
+  - DISPLAY=:99
 nodejs_version: "18"
 hooks:
   pre-start:
@@ -23,6 +24,7 @@ hooks:
     - exec: "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "git config --global --add safe.directory /var/www/html"
+    - exec: "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
 
 timezone: Europe/Berlin
 
@@ -178,6 +180,11 @@ webimage_extra_packages:
   - python3-colorama
   - make
   - php8.3-calendar
+  - firefox
+  - firefox-geckodriver
+  - xvfb
+  - x11-utils
+  - x11-xserver-utils
 
 # Extra Debian packages that are needed in the webimage can be added here
 

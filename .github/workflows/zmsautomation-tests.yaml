@@ -291,10 +291,18 @@ jobs:
   #           --network "$NET" \
   #           -e BASE_URI="http://zms-web/terminvereinbarung/api/2" \
   #           -e CITIZEN_API_BASE_URI="http://zms-web/terminvereinbarung/api/citizen" \
+  #           -e DISPLAY=:99 \
   #           -v "$PWD:/workspace" \
   #           -v "$HOME/.m2:/root/.m2" \
   #           -w /workspace/zmsautomation \
-  #           maven:3.9-eclipse-temurin-21 mvn -B -DtrimStackTrace=false test
+  #           maven:3.9-eclipse-temurin-21 bash -c "
+  #             apt-get update && apt-get install -y --no-install-recommends \
+  #               firefox firefox-geckodriver xvfb x11-utils x11-xserver-utils \
+  #             && apt-get clean && rm -rf /var/lib/apt/lists/* \
+  #             && Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & \
+  #             && sleep 2 \
+  #             && mvn -B -DtrimStackTrace=false test
+  #           "
   #
   #     - name: Upload surefire reports
   #       if: always()
