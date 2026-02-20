@@ -226,8 +226,58 @@ if curl -sf --max-time 10 "$BASE_URI/status/" >/dev/null; then
     warn "✗ zmsapi status NOT responding"
   fi
 
-# 10. Running Tests
-section "10. Running ATAF Tests"
+# 10. Browser Setup (for UI tests)
+section "10. Browser Setup"
+info "Setting up Firefox and Xvfb for UI tests..."
+
+# Ensure DISPLAY is set
+export DISPLAY="${DISPLAY:-:99}"
+info "DISPLAY set to: $DISPLAY"
+
+# Create Firefox symlink if needed
+if [[ ! -L /usr/bin/firefox ]] || [[ ! -e /usr/bin/firefox ]]; then
+  if [[ -f /usr/bin/firefox-esr ]]; then
+    info "Creating symlink from /usr/bin/firefox to /usr/bin/firefox-esr..."
+    ln -sf /usr/bin/firefox-esr /usr/bin/firefox || warn "Failed to create Firefox symlink"
+  else
+    warn "firefox-esr not found at /usr/bin/firefox-esr"
+  fi
+else
+  info "Firefox symlink already exists"
+fi
+
+# Verify Firefox is available
+if command -v firefox >/dev/null 2>&1; then
+  FIREFOX_VERSION=$(firefox --version 2>&1 || echo "unknown")
+  info "Firefox found: $FIREFOX_VERSION"
+else
+  warn "Firefox not found in PATH"
+fi
+
+# Verify geckodriver is available
+if command -v geckodriver >/dev/null 2>&1; then
+  GECKODRIVER_VERSION=$(geckodriver --version 2>&1 | head -1 || echo "unknown")
+  info "Geckodriver found: $GECKODRIVER_VERSION"
+else
+  warn "Geckodriver not found in PATH"
+fi
+
+# Ensure Xvfb is running
+if pgrep -x Xvfb > /dev/null; then
+  info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
+else
+  info "Starting Xvfb on display $DISPLAY..."
+  Xvfb "$DISPLAY" -screen 0 1024x768x24 > /dev/null 2>&1 &
+  sleep 2
+  if pgrep -x Xvfb > /dev/null; then
+    info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+  else
+    warn "Failed to start Xvfb - UI tests may fail"
+  fi
+fi
+
+# 11. Running Tests
+section "11. Running ATAF Tests"
 info "Running Cucumber/ATAF tests with -Pataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
@@ -252,8 +302,8 @@ if mvn -B -DtrimStackTrace=false \
     TEST_EXIT=$?
   fi
 
-# 11. Test Results
-section "11. Test Results"
+# 12. Test Results
+section "12. Test Results"
 info "Collecting surefire reports..."
 if [[ -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports" ]]; then
   ls -la "$PROJECT_ROOT/zmsautomation/target/surefire-reports"
@@ -272,12 +322,12 @@ info "Cucumber reports available at:"
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
-# 12. Final Cache Clearing
-section "12. Final Cache Clearing"
+# 13. Final Cache Clearing
+section "13. Final Cache Clearing"
 clear_caches
 
-# 13. Database Restore
-section "13. Database Restore"
+# 14. Database Restore
+section "14. Database Restore"
 info "Restoring original database..."
 restore_db
 
@@ -285,8 +335,8 @@ restore_db
 info "Clearing test data migrations from flyway_schema_history after restore..."
 exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
-# 14. Cleanup
-section "14. Cleanup"
+# 15. Cleanup
+section "15. Cleanup"
 info "Cleaning up zmsapi/data folder..."
 cleanup_data_folder
 info "Cleared zmsapi/data folder (preserved .gitignore)"
