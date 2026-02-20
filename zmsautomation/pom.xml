@@ -201,6 +201,19 @@
           <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
         </repository>
       </repositories>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/ApiTestRunner.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <dependencies>
         <dependency>
           <groupId>de.muenchen.ataf.java</groupId>
@@ -241,6 +254,19 @@
           <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
         </repository>
       </repositories>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/UiTestRunner.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <dependencies>
         <dependency>
           <groupId>de.muenchen.ataf.java</groupId>
