@@ -113,10 +113,6 @@ public class StatisticsPage extends BasePage {
 
     public void selectLocation(String location) {
         CONTEXT.set();
-        // Wait for post-login redirect to Standort auswählen page and for scope dropdown to be present
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.until(ExpectedConditions.urlContains("workstation/select"));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
