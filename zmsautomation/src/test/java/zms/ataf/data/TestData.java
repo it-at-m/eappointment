@@ -20,7 +20,7 @@ public class TestData {
         String buergerUri =
                 System.getenv().getOrDefault("BUERGER_BASE_URI", "http://localhost:8082");
         String statisticUri =
-                System.getenv().getOrDefault("STATISTIC_BASE_URI", "https://localhost:443");
+                System.getenv().getOrDefault("STATISTIC_BASE_URI", "https://localhost:443/terminvereinbarung/statistic/");
         String citizenViewUri =
                 System.getenv().getOrDefault("CITIZEN_VIEW_BASE_URI", "http://localhost:8082");
 
