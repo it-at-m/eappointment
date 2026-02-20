@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-env": "^7.29.0",
     "@parcel/transformer-sass": "^2.16.0",
     "core-js": "^3.47.0",
     "eslint": "^9.0.0",

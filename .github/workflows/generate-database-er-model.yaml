@@ -550,7 +550,7 @@ jobs:
         run: python3 generate_schema.py
 
       - name: Upload database schema diagrams artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: database-schema-diagrams
           path: public/diagrams/database-er-model.html
