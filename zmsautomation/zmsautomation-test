@@ -112,6 +112,31 @@ restore_db() {
   fi
 }
 
+# Keycloak config: backup, rewrite 8091→443 for UI tests in container, then restore (same idea as DB backup/restore).
+# When we move to GitHub cloud we can add a host here instead of relying on localhost port swap.
+KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
+KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
+
+backup_and_rewrite_keycloak() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    cp "$file" "$file.bak"
+    sed -i 's/localhost:8091/localhost:443/g' "$file"
+    info "Keycloak config rewritten (8091→443): $file"
+  else
+    warn "Keycloak config not found: $file"
+  fi
+}
+
+restore_keycloak() {
+  for f in "$KEYCLOAK_STATISTIC_JSON" "$KEYCLOAK_ADMIN_JSON"; do
+    if [[ -f "${f}.bak" ]]; then
+      mv "${f}.bak" "$f"
+      info "Keycloak config restored: $f"
+    fi
+  done
+}
+
 # Drop all tables
 drop_all_tables() {
   info "Dropping all existing tables..."
@@ -128,7 +153,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
 
 # Ensure cleanup on exit
 trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
-trap 'warn "Failure detected, attempting DB restore..."; restore_db' ERR
+trap 'warn "Failure detected, attempting DB restore..."; restore_db; restore_keycloak' ERR
 
 # 1. Database Backup
 section "1. Database Backup"
@@ -282,6 +307,34 @@ info "Running Cucumber/ATAF tests with -Pataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
+# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container.
+# Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
+# Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
+# When we move to GitHub cloud we can add a host here instead of localhost port swap.
+MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
+RUN_UI_TESTS=true
+if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
+  RUN_UI_TESTS=false
+fi
+SWAP_STATISTIC=false
+SWAP_ADMIN=false
+if [[ "$RUN_UI_TESTS" == true ]]; then
+  if [[ "$MAVEN_ARGS_STR" == *"zmsstatistic"* ]] && [[ "$MAVEN_ARGS_STR" != *"zmsadmin"* ]]; then
+    SWAP_STATISTIC=true
+  elif [[ "$MAVEN_ARGS_STR" == *"zmsadmin"* ]] && [[ "$MAVEN_ARGS_STR" != *"zmsstatistic"* ]]; then
+    SWAP_ADMIN=true
+  else
+    SWAP_STATISTIC=true
+    SWAP_ADMIN=true
+  fi
+  if [[ "$SWAP_STATISTIC" == true ]]; then
+    backup_and_rewrite_keycloak "$KEYCLOAK_STATISTIC_JSON"
+  fi
+  if [[ "$SWAP_ADMIN" == true ]]; then
+    backup_and_rewrite_keycloak "$KEYCLOAK_ADMIN_JSON"
+  fi
+fi
+
 # Clear old surefire reports and cucumber reports
 rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber.json" 2>/dev/null || true
@@ -331,10 +384,12 @@ info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.ht
 section "13. Final Cache Clearing"
 clear_caches
 
-# 14. Database Restore
-section "14. Database Restore"
+# 14. Database Restore and Keycloak Restore
+section "14. Database Restore and Keycloak Restore"
 info "Restoring original database..."
 restore_db
+info "Restoring Keycloak config (8091)..."
+restore_keycloak
 
 # Clear test data migrations from flyway_schema_history after restore
 info "Clearing test data migrations from flyway_schema_history after restore..."
