@@ -144,6 +144,10 @@ describe("ServiceFinder", () => {
             selectedService: ref(service),
             updateSelectedService: () => {},
           },
+          serviceLinkProvider: {
+            serviceLinkId: ref<string | null>(null),
+            updateServiceLinkId: () => {},
+          },
         },
         stubs: {
           SubserviceListItem: {
@@ -313,6 +317,10 @@ describe("ServiceFinder", () => {
               selectedService: ref(null),
               updateSelectedService: () => {},
             },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
+            },
           },
           stubs: {
             "muc-select": true,
@@ -355,6 +363,10 @@ describe("ServiceFinder", () => {
               selectedService: ref(null),
               updateSelectedService: () => {},
             },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
+            },
           },
           stubs: {
             "muc-select": true,
@@ -396,6 +408,10 @@ describe("ServiceFinder", () => {
             selectedServiceProvider: {
               selectedService: ref(null),
               updateSelectedService: () => {},
+            },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
             },
           },
           stubs: {
