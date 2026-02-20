@@ -6,7 +6,7 @@ Funktionalität: Default
 	Szenario: Dienstleistungsstatistik
 		Wenn Sie zur Webseite der Statistik navigieren.
 		Und  Sie in der Statistik auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie in der Statistik für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr - BITTE NICHT ZUM TEST VERWENDEN" auswählen.
+		Und  Sie in der Statistik für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
 		Und  Sie in der Statistik auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Übersichtsseite der Statistik angezeigt.
 		Wenn Sie in der Statistik in der Seitenleiste auf die Schaltfläche "Dienstleistungsstatistik" klicken.

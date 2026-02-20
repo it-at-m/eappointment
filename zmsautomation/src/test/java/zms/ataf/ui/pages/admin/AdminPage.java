@@ -78,6 +78,7 @@ public class AdminPage extends BasePage {
 
                 ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
                 clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+                ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
                 exception = e;
