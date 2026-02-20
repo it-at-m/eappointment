@@ -226,6 +226,7 @@ if "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null; then
 else
   warn "Hourly cron failed or not available; continuing."
 fi
+clear_caches
 
 section "8. Minutly Cronjob"
 info "Running minutly cron..."
