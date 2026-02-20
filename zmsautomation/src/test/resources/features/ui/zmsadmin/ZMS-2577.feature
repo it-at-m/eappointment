@@ -7,14 +7,14 @@ Funktionalität: Default
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
 		Und Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-		Und Sie für den Standort "Bürgerbüro Ruppertstraße (KVR-II/22) WB 04" die Wiederholungsaufrufe auf "0" setzen.
-		Dann sind Für den Standort "Bürgerbüro Ruppertstraße (KVR-II/22) WB 04" Wiederholungsaufrufe auf "0" begrenzt.
+		Und Sie für den Standort "Bürgerbüro Ruppertstraße (KVR-II/22) WB04" die Wiederholungsaufrufe auf "0" setzen.
+		Dann sind Für den Standort "Bürgerbüro Ruppertstraße (KVR-II/22) WB04" Wiederholungsaufrufe auf "0" begrenzt.
 		Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
 		Und Sie für den Standort "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass" die Wiederholungsaufrufe auf "3" setzen.
 		Dann sind Für den Standort "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass" Wiederholungsaufrufe auf "3" begrenzt.
 		Und Sie "7" minuten bis die Änderungen übernommen werden werten.
 		Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Ruppertstraße (KVR-II/22) WB 04" auswählen.
+		Und  Sie für "Standort" den Wert "Bürgerbüro Ruppertstraße (KVR-II/22) WB04" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
@@ -35,7 +35,7 @@ Funktionalität: Default
 		Wenn Sie in der Menüzeile der Standorttabellen "Alle Clusterstandorte anzeigen" im Dropdown Clusterstandort auswählen.
 		Dann wird die Clusteransicht aktiviert.
 		Und In der Warteschlange sind die Kürzeln für folgende Standorten des Clusters zu sehen:
-			|	WB 04	|
+			|	WB04	|
 			|	WB04 Pass	|
 		Wenn Der Sachbearbeiter den Kunden "<TestData.kunde_SG11>" aus der Warteliste aufruft.
 		Dann wird der wartende Kunde "<TestData.Termin_SG11>" aufgerufen.

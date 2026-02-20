@@ -6,7 +6,7 @@ Funktionalität: Default
 	Szenario: Kundenstatistik -Dateninitialisierung
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr - BITTE NICHT ZUM TEST VERWENDEN" auswählen.
+		Und  Sie für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.

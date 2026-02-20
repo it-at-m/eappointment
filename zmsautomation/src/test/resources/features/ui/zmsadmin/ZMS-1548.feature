@@ -8,12 +8,12 @@ Funktionalität: Default
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
 		Dann öffnet sich die Standort auswählen Seite.
-		Wenn Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Gewerbemeldungen" auswählen.
+		Wenn Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Meldungen" auswählen.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Tresen geöffnet.
 		Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
 		Dann öffnet sich die Standort auswählen Seite.
-		Wenn Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Gewerbemeldungen" auswählen.
+		Wenn Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Meldungen" auswählen.
 		Wenn Sie in Feld "Platz-Nr. oder Tresen" den Text "1" eingeben.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
