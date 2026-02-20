@@ -487,9 +487,11 @@ class View extends BaseView {
                     { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-                    (response) => this.loadMessage(response, () => {
+                    (response) => {
+                        hideSpinner($container);
+                        this.loadMessage(response, () => {
                     }, null, event.currentTarget)
-                );
+                });
             }), null, event.currentTarget)
         });
     }
