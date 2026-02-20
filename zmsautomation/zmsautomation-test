@@ -292,10 +292,15 @@ cd "$PROJECT_ROOT/zmsautomation"
 
 # Run with ATAF profile
 # Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS
+# SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
+SSO_USER="${SSO_USER:-ataf}"
+SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
 if mvn -B -DtrimStackTrace=false \
   -Pataf \
   -Dbase.uri="$BASE_URI" \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+  -Dsso.username="$SSO_USER" \
+  -Dsso.password="$SSO_PASSWORD" \
   test "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; then
     TEST_EXIT=0
   else
