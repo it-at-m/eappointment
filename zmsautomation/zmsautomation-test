@@ -220,11 +220,20 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 
 # 7. Hourly Cronjob
 section "7. Hourly Cronjob"
-info "Running hourly cron..."
-if "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null; then
-  info "Hourly cron completed."
-else
-  warn "Hourly cron failed or not available; continuing."
+info "Running hourly cron (up to 3 attempts)..."
+hourly_ok=false
+for attempt in 1 2 3; do
+  if "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null; then
+    info "Hourly cron completed (attempt $attempt)."
+    hourly_ok=true
+    break
+  fi
+  if [[ $attempt -lt 3 ]]; then
+    warn "Hourly cron attempt $attempt failed; retrying..."
+  fi
+done
+if [[ "$hourly_ok" != true ]]; then
+  warn "Hourly cron failed after 3 attempts; continuing."
 fi
 clear_caches
 
