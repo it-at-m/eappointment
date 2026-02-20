@@ -77,10 +77,12 @@ public class StatisticsPage extends BasePage {
             try {
                 AuthenticationHelper.getUserName().access(clearUserName::append);
                 AuthenticationHelper.getUserPassword().access(clearPassword::append);
+                // Wait for Keycloak login form (local and ssodev both use id="username")
+                WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
                 if ("chrome".equals(
                         TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
                     String ssoHost = TestData.getSsoHost();
-                    WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
                     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
                     DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
                             "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
