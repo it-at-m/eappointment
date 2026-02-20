@@ -5,7 +5,8 @@ php_version: "8.3"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
-additional_fqdns: []
+additional_fqdns:
+  - keycloak.local
 database:
   type: mariadb
   version: "10.4"

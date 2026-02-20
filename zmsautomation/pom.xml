@@ -141,6 +141,11 @@
           <artifactId>rest</artifactId>
           <version>0.2</version>
         </dependency>
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>web</artifactId>
+          <version>0.2</version>
+        </dependency>
         <!-- Cucumber dependencies -->
         <dependency>
           <groupId>io.cucumber</groupId>
@@ -206,6 +211,209 @@
             </configuration>
             <dependencies>
               <!-- Use TestNG provider like zms-test-automation -->
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- ATAF API-only profile: run REST-assured tests against features/api -->
+    <profile>
+      <id>ataf-api</id>
+      <repositories>
+        <repository>
+          <id>lhm-artifactory</id>
+          <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
+        </repository>
+      </repositories>
+      <dependencies>
+        <!-- ATAF core + REST only (no Selenium/web) -->
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>core</artifactId>
+          <version>0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>rest</artifactId>
+          <version>0.2</version>
+        </dependency>
+        <!-- Cucumber dependencies -->
+        <dependency>
+          <groupId>io.cucumber</groupId>
+          <artifactId>cucumber-java</artifactId>
+          <version>${cucumber.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.cucumber</groupId>
+          <artifactId>cucumber-testng</artifactId>
+          <version>${cucumber.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <!-- TestNG -->
+        <dependency>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+          <version>${testng.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <!-- Flyway for database migrations -->
+        <dependency>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-core</artifactId>
+          <version>${flyway.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-mysql</artifactId>
+          <version>${flyway.version}</version>
+        </dependency>
+        <!-- MySQL connector -->
+        <dependency>
+          <groupId>com.mysql</groupId>
+          <artifactId>mysql-connector-j</artifactId>
+          <version>8.2.0</version>
+        </dependency>
+        <!-- Log4j 2.x for ATAF logging -->
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-api</artifactId>
+          <version>2.23.1</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-core</artifactId>
+          <version>2.23.1</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <configuration>
+              <useSystemClassLoader>true</useSystemClassLoader>
+              <trimStackTrace>false</trimStackTrace>
+              <includes>
+                <include>**/ApiTestRunner.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <cucumber.features>src/test/resources/features/api</cucumber.features>
+                <cucumber.glue>zms.ataf.api.steps,zms.ataf.hooks,ataf.rest.steps</cucumber.glue>
+              </systemPropertyVariables>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-testng</artifactId>
+                <version>${surefire.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- ATAF UI-only profile: run Selenium/ATAF web tests against features/ui -->
+    <profile>
+      <id>ataf-ui</id>
+      <repositories>
+        <repository>
+          <id>lhm-artifactory</id>
+          <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
+        </repository>
+      </repositories>
+      <dependencies>
+        <!-- ATAF core + REST + WEB (Selenium) -->
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>core</artifactId>
+          <version>0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>rest</artifactId>
+          <version>0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>de.muenchen.ataf.java</groupId>
+          <artifactId>web</artifactId>
+          <version>0.2</version>
+        </dependency>
+        <!-- Cucumber dependencies -->
+        <dependency>
+          <groupId>io.cucumber</groupId>
+          <artifactId>cucumber-java</artifactId>
+          <version>${cucumber.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.cucumber</groupId>
+          <artifactId>cucumber-testng</artifactId>
+          <version>${cucumber.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <!-- TestNG -->
+        <dependency>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+          <version>${testng.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <!-- Flyway for database migrations -->
+        <dependency>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-core</artifactId>
+          <version>${flyway.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-mysql</artifactId>
+          <version>${flyway.version}</version>
+        </dependency>
+        <!-- MySQL connector -->
+        <dependency>
+          <groupId>com.mysql</groupId>
+          <artifactId>mysql-connector-j</artifactId>
+          <version>8.2.0</version>
+        </dependency>
+        <!-- Log4j 2.x for ATAF logging -->
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-api</artifactId>
+          <version>2.23.1</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-core</artifactId>
+          <version>2.23.1</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <configuration>
+              <useSystemClassLoader>true</useSystemClassLoader>
+              <trimStackTrace>false</trimStackTrace>
+              <includes>
+                <include>**/UiTestRunner.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <cucumber.features>src/test/resources/features/ui</cucumber.features>
+                <cucumber.glue>zms.ataf.ui.steps,zms.ataf.hooks,ataf.web.steps</cucumber.glue>
+              </systemPropertyVariables>
+            </configuration>
+            <dependencies>
               <dependency>
                 <groupId>org.apache.maven.surefire</groupId>
                 <artifactId>surefire-testng</artifactId>

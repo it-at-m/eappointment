@@ -1,6 +1,6 @@
-# ZMS Automation - ATAF Integration
+## ZMS Automation - ATAF Integration
 
-This module contains API tests for ZMS using the ATAF (Test Automation Framework) with Cucumber.
+This module contains **API and UI tests** for ZMS using the ATAF (Test Automation Framework) with Cucumber.
 
 ## Prerequisites
 
@@ -12,8 +12,17 @@ This module contains API tests for ZMS using the ATAF (Test Automation Framework
 ## Project Structure
 
 - `src/test/java/zms/api/` - Original REST-assured + JUnit tests (standalone profile)
-- `src/test/java/zms/ataf/` - ATAF-based Cucumber tests
-- `src/test/resources/features/` - Cucumber feature files
+- `src/test/java/zms/ataf/`  
+  - `zms/ataf/api/steps/` - API step definitions (REST Assured)  
+  - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
+  - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
+- `src/test/resources/features/` - Cucumber feature files  
+  - `api/zmsapi/` - ZMS REST API features  
+  - `api/zmscitizenapi/` - Citizen REST API features  
+  - `ui/zmsadmin/` - Admin UI features  
+  - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
+  - `ui/zmsstatistic/` - Statistik UI features  
+  - `ui/zmscitizenview/` - (placeholder for future ZMS citizen view UI features)  
 - `src/main/resources/db/migration/` - Flyway database migrations
 
 ## Running Tests
@@ -33,14 +42,20 @@ export CACHE_DIR="/path/to/cache"
 export BASE_URI="http://localhost/terminvereinbarung/api/2"
 export CITIZEN_API_BASE_URI="http://localhost/terminvereinbarung/api/citizen"
 
-# Run all ATAF tests
+# Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test
 
 # Run specific tags
 ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
 
-# Run specific feature
-./zmsautomation/zmsautomation-test -Dcucumber.features="src/test/resources/features/zmsapi/status.feature"
+# Run specific API feature
+./zmsautomation/zmsautomation-test -Dcucumber.features="src/test/resources/features/api/zmsapi/status.feature"
+
+# Run only API tests (no Selenium)
+./zmsautomation/zmsautomation-test -Pataf-api
+
+# Run only UI tests (Selenium/ATAF web)
+./zmsautomation/zmsautomation-test -Pataf-ui
 ```
 
 The script will:
@@ -68,25 +83,36 @@ mvn test
 
 This profile is used in GitHub Actions CI.
 
-### ATAF Profile (Local Development - Manual)
+### ATAF Profiles (Local Development - Manual)
 
-Runs Cucumber/ATAF tests manually. Requires Artifactory access:
+Requires Artifactory access (closed-source ATAF artifacts).
+
+- **Run all ATAF tests (API + UI)**:
 
 ```bash
 cd zmsautomation
 mvn test -Pataf
 ```
 
-Run specific tags:
+- **API-only tests (REST Assured, no Selenium)**:
 
 ```bash
-mvn test -Pataf -Dcucumber.filter.tags="@smoke"
+mvn test -Pataf-api
+# optionally filter:
+# mvn test -Pataf-api -Dcucumber.filter.tags="@rest"
+# mvn test -Pataf-api -Dcucumber.filter.tags="@zmsapi"
+# mvn test -Pataf-api -Dcucumber.filter.tags="@citizenapi"
 ```
 
-Run specific feature:
+- **UI-only tests (Selenium/ATAF web, no REST Assured)**:
 
 ```bash
-mvn test -Pataf -Dcucumber.features="src/test/resources/features/zmsapi/status.feature"
+mvn test -Pataf-ui
+# optionally filter:
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 ```
 
 ## Environment Variables
@@ -124,14 +150,23 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 ## Test Tags
 
-- `@rest` - All REST API tests
-- `@zmsapi` - ZMS API tests
-- `@citizenapi` - Citizen API tests
-- `@smoke` - Smoke tests (critical path)
+- **API tags**
+  - `@rest` - All REST API tests
+  - `@zmsapi` - ZMS API tests (`features/api/zmsapi/**`)
+  - `@citizenapi` - Citizen API tests (`features/api/zmscitizenapi/**`)
+- **UI tags**
+  - `@web` - All web UI tests
+  - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
+  - `@buergeransicht` - Legacy eappointment citizen view UI features (`features/ui/buergeransicht/**`)
+  - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
+- **Other**
+  - `@smoke` - Smoke tests (critical path)
 
 ## Feature Files
 
-### ZMS API Features
+### API Features (`src/test/resources/features/api/`)
+
+#### ZMS API (`api/zmsapi/`)
 - `status.feature` - Status endpoint tests (converted from StatusEndpointTest)
 - `availability.feature` - Appointment availability tests
 - `appointments.feature` - Appointment management tests
@@ -139,10 +174,24 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `error-handling.feature` - Error handling scenarios (Phase 6 example)
 - `data-driven-example.feature` - Data-driven testing examples (Phase 6 example)
 
-### Citizen API Features
+#### Citizen API (`api/zmscitizenapi/`)
 - `offices-and-services.feature` - Offices and services endpoint (converted from OfficesAndServicesEndpointTest)
 - `booking.feature` - Appointment booking flow
 - `cancellation.feature` - Appointment cancellation flow (Phase 6 example)
+
+### UI Features (`src/test/resources/features/ui/`)
+
+#### Admin UI (`ui/zmsadmin/`)
+- Cucumber features for the Admin web UI (Terminadministration, Behörden & Standorte, Workview, etc.)
+
+#### Legacy Bürgeransicht UI (`ui/buergeransicht/`)
+- Features that automate the legacy eappointment Bürgeransicht frontend.
+
+#### Statistik UI (`ui/zmsstatistic/`)
+- Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
+
+#### ZMS Citizen View (`ui/zmscitizenview/`)
+- Placeholder for future ZMS citizen view UI features (currently empty).
 
 ### Migration Guide
 - `MIGRATION_GUIDE.md` - Guide for converting JUnit tests to Cucumber features (Phase 6)
