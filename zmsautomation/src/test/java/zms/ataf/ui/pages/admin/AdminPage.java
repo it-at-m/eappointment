@@ -108,6 +108,7 @@ public class AdminPage extends BasePage {
 
     public void clickOnApplySelectionButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
+        CONTEXT.set();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='weiter']", LocatorType.XPATH, false, CONTEXT);
     }
 

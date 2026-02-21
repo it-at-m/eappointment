@@ -30,6 +30,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void callNextCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Aufruf nächster Kunde\" button...");
+        CONTEXT.set();
         final String CALL_NEXT_CUSTOMER_BUTTON_LOCATOR_XPATH = "//button[@title='Nächsten Kunden aufrufen']";
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CALL_NEXT_CUSTOMER_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, true, CONTEXT),
                 "Button 'Nächsten Kunden aufrufen' is not visible!");

@@ -426,6 +426,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void selectServiceInNewAppointmentMultiList(String service) {
         ScenarioLogManager.getLogger().info("Trying to select service \"" + service + "\" in new appointment multi list...");
+        CONTEXT.set();
         if (service.equals("<beliebig>")) {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath("//div[@id='select-requests']/ul/li/div/label/span"), 1));
