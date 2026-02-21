@@ -436,9 +436,11 @@ public class CounterProcessingStationPage extends AdminPage {
             service = availableServices.get(SECURE_RANDOM.nextInt(availableServices.size() - 1)).getText().replaceAll(" \\([0-9]+ min\\)$", "");
             ScenarioLogManager.getLogger().info("Randomly found service \"" + service + "\"");
         }
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                "//div[@id='select-requests']/ul/li/div/label/span[contains(text(),'" + service + "')]/../input[@class='form-check-input']", LocatorType.XPATH,
-                false);
+        String checkboxXpath = "//div[@id='select-requests']/ul/li/div/label/span[contains(text(),'" + service + "')]/../input[@class='form-check-input']";
+        WebElement serviceCheckbox = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath(checkboxXpath)));
+        scrollToCenterByVisibleElement(serviceCheckbox);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, checkboxXpath, LocatorType.XPATH, false);
         Assert.assertTrue(
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//ul[@aria-label='Dienstleistungen Abwahlliste']//span[contains(text(),'" + service + "')]",
                         LocatorType.XPATH, false), "Selecting service \"" + service + "\" in new appointment multi list has failed...");
