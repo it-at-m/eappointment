@@ -18,7 +18,7 @@ Funktionalität: Beschränkung der Buchung auf eine Mailadresse
 #    Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
 #    Und Sie für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" die Maximale Anzahl an Terminen pro E-Mail-Adresse auf "1" setzen.
 #    Dann Für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" ist die Maximale Anzahl an Terminen pro E-Mail-Adresse auf "1" begrenzt.
-#    Und Sie "11" minuten bis die Änderungen übernommen werden werten.
+#    Und Sie "11" minuten bis die Änderungen übernommen werden warten.
    
        # Hier wird zur der Webseite navigiert, aber im selben Browser-Tab
        # Erster Tab hat den Index (1)

@@ -18,7 +18,7 @@ Funktionalität: Default
 #		Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
 #		Und Sie für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" die Anzahl an maximal buchbaren Slots pro Termin auf "1" setzen.
 #		Dann ist Für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" ist die maximale Anzahl buchbarer Slots pro Termin auf "1" begrenzt.
-#		Und Sie "11" minuten bis die Änderungen übernommen werden werten.
+#		Und Sie "11" minuten bis die Änderungen übernommen werden warten.
 	   	#Bürger
 	   	 Wenn Sie zur Webseite der Bürgeransicht navigieren.
 	   	 Und Sie auf der Bürgeransicht ins Textfeld Dienstleistungen "Mietberatung" eingeben.
@@ -33,7 +33,7 @@ Funktionalität: Default
 #		Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
 #		Und Sie für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" die Anzahl an maximal buchbaren Slots pro Termin auf "" setzen.
 #		Dann ist Für den Standort "Mietberatung (S-III-W/M) SOZ Mietberatung" ist die maximale Anzahl buchbarer Slots pro Termin auf "" begrenzt.
-#		Und Sie "11" minuten bis die Änderungen übernommen werden werten.
+#		Und Sie "11" minuten bis die Änderungen übernommen werden warten.
 	   	#Bürger
 	   	 Wenn Sie zur Webseite der Bürgeransicht navigieren.
 	   	 Und Sie auf der Bürgeransicht ins Textfeld Dienstleistungen "Mietberatung" eingeben.

@@ -891,6 +891,18 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
     }
 
+    @Und("Sie {string} minuten bis die Änderungen übernommen werden warten.")
+    public void und_sie_minuten_bis_die_aenderungen_uebernommen_werden_warten(String minuten) {
+        int minutes = Integer.parseInt(TestDataHelper.transformTestData(minuten));
+        ScenarioLogManager.getLogger().info("Waiting {} minutes for changes to be applied...", minutes);
+        try {
+            Thread.sleep(minutes * 60L * 1000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Wait for " + minutes + " minutes was interrupted", e);
+        }
+    }
+
     @Dann("Für den Standort {string} ist der Standardwert für die E-Mail-Bestätigung auf {word} gesetzt.")
     public void fuer_den_standort_ist_der_standardwert_fuer_die_email_bestaetigung_auf_gesetzt(String standort, String flag) {
         boolean booleanFlag = Boolean.parseBoolean(flag);

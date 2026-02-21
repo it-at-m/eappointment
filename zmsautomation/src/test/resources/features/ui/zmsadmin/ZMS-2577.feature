@@ -12,7 +12,7 @@ Funktionalität: Default
 		Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
 		Und Sie für den Standort "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass" die Wiederholungsaufrufe auf "3" setzen.
 		Dann sind Für den Standort "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass" Wiederholungsaufrufe auf "3" begrenzt.
-		Und Sie "7" minuten bis die Änderungen übernommen werden werten.
+		Und Sie "7" minuten bis die Änderungen übernommen werden warten.
 		Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
 		Und  Sie für "Standort" den Wert "Bürgerbüro Ruppertstraße (KVR-II/22) WB04" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
