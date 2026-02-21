@@ -18,15 +18,19 @@ public class CounterSection extends CounterProcessingStationPage {
 
     public void checkInformationVisible() {
         ScenarioLogManager.getLogger().info("Checking if the 'Informationen' panel is visible on 'Tresen' page.");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[normalize-space()='Fiktive Arbeitsplätze:']", LocatorType.XPATH, false),
+        // Wait for the panel (may load via data-reload) then check the four key headings (contains() tolerates whitespace)
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h2[@class='board__heading' and contains(normalize-space(.), 'Informationen')]", LocatorType.XPATH, false),
+                "'Informationen' panel heading not visible.");
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[contains(normalize-space(.), 'Fiktive Arbeitsplätze')]", LocatorType.XPATH, false),
                 "'Fiktive Arbeitsplätze' not visible.");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[normalize-space()='Anzahl offener Vorgänge:']", LocatorType.XPATH, false),
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[contains(normalize-space(.), 'Anzahl offener Vorgänge')]", LocatorType.XPATH, false),
                 "'Anzahl offener Vorgänge:' not visible.");
         Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[normalize-space()='davon vor nächstem Spontankunden:']", LocatorType.XPATH, false),
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[contains(normalize-space(.), 'davon vor nächstem Spontankunden')]", LocatorType.XPATH, false),
                 "'davon vor nächstem Spontankunden:' not visible.");
         Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[normalize-space()='Wartezeit für neue Spontankunden:']", LocatorType.XPATH,
-                        false), "'Wartezeit für neue Spontankunden:' not visible.");
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[contains(normalize-space(.), 'Wartezeit für neue Spontankunden')]", LocatorType.XPATH, false),
+                "'Wartezeit für neue Spontankunden:' not visible.");
     }
 }
