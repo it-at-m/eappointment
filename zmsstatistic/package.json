@@ -29,7 +29,7 @@
     }
   },
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.7.0",
+    "@parcel/transformer-sass": "^2.16.4",
     "chart.js": "^4.0.0",
     "eslint": "^9.35.0",
     "eslint-plugin-import": "^2.20.1",
