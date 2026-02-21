@@ -59,7 +59,7 @@ class TicketprinterByScope extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'enabled' => $ticketprinter->isEnabled()
-                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
+                    || !$organisation->getPreference('ticketPrinterActivation'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
