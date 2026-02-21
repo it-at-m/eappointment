@@ -30,7 +30,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnLocationAdminEntry() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Behörden und Standorte\" menu entry...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[text()='Behörden und Standorte']", LocatorType.XPATH, false, CONTEXT);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[contains(normalize-space(.), 'Behörden und Standorte')]", LocatorType.XPATH, false, CONTEXT);
         Assert.assertTrue(
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[@class='main-title' and text()='Behörden und Standorte']", LocatorType.XPATH, false),
                 "Page title 'Behörden und Standorte' is not visible!");

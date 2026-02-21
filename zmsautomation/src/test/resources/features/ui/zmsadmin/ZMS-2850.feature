@@ -6,7 +6,7 @@ Funktionalität: ZMS Admin GUI Optimierung
 	Szenario: [AUT] Aufrufhinweis bei 0 wartenden Kunden
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Erstanlaufstelle S-III-U" auswählen.
+		Und  Sie für "Standort" den Wert "Erstaufnahmeeinrichtung S-III-U" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.

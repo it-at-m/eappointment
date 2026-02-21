@@ -2,7 +2,7 @@
 Funktionalität: Default
 
 	
-	@web @zmsadmin @ZMS-2577 @automatisiert #@executeLocally
+	@web @zmsadmin @ZMS-2577 @automatisiert @executeLocally
 	Szenario: [AUT] Test zu "Alle Clusterstandorte" auch für Sachbearbeitung ermöglichen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.

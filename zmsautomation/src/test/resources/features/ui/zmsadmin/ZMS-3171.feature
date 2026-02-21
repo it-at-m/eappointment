@@ -2,7 +2,7 @@
 Funktionalität: Default
 
 	
-	@web @zmsadmin @ZMS-3171 @ZMS-3162 @automatisiert
+	@web @zmsadmin @ZMS-3171 @ZMS-3162 @automatisiert @executeLocally
 	Szenario: [AUT] Vorbelegung von "Mit E-Mail Bestätigung" ist konfigurierbar
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.

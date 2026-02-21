@@ -2,7 +2,7 @@
 Funktionalität: ZMS Admin GUI Optimierung
 
 
-  @web @zmsadmin @ZMS-2851 @ZMS-1795 #@executeLocally
+  @web @zmsadmin @ZMS-2851 @ZMS-1795 @executeLocally
   Szenario: [AUT] Kunde nach Aufruf nicht erschienen - Button umbenennen
     Wenn Sie zur Webseite der Administration navigieren.
     Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
