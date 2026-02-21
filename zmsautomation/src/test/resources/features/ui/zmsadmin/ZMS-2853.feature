@@ -10,12 +10,12 @@ Funktionalität: ZMS Admin GUI Optimierung
 		Und Sie für "Standort" den Wert "Bürgerbüro Ruppertstraße (KVR-II/225) Serviceschalter" auswählen.
 		Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Dienstleistung "Meldebescheinigung" auswählen.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu den Namen "<zufällig>" eingeben.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die E-mail-Adresse "<mailinator>" eingeben.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Telefonnummer "+491234567890" eingeben.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Anmerkung "Spontankunde" eingeben.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu auf die Schaltfläche "Spontankunden hinzufügen" klicken.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen die Dienstleistung "Meldebescheinigung" auswählen.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen den Namen "<zufällig>" eingeben.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen die E-mail-Adresse "<mailinator>" eingeben.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen die Telefonnummer "+491234567890" eingeben.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen die Anmerkung "Spontankunde" eingeben.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Spontankunden hinzufügen" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Schließen" klicken.
 		Dann wird der Spontankunden in der Warteschlange angezeigt.
 		Wenn Der Sachbearbeiter "<TestData.new_waiting_number>" aus der Warteliste aufruft.

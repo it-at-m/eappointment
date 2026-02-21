@@ -13,7 +13,7 @@ Funktionalität: ZMS Admin GUI Optimierung
 		Gegeben seien Für den Standort sind keine Termine in der Warteschlange vorhanden.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Aufruf nächster Kunde" klicken.
 		Dann erscheint die Meldung, dass keine wartenden Kunden vorhanden sind.
-		Wenn Sie im Zeitmanagementsystem unter Terminvereinbarung Neu auf die Schaltfläche "Spontankunden hinzufügen" klicken.
+		Wenn Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Spontankunden hinzufügen" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Schließen" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Aufruf nächster Kunde" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Nein, nächster Kunde bitte" klicken.

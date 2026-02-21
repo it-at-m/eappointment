@@ -303,17 +303,17 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteAppointmentLink(TestDataHelper.transformTestData(appointmentNumber));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu das Datum {string} eingeben.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen das Datum {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_das_datum_string_eingeben(String date) {
         COUNTER_PROCESSING_STATION_PAGE.enterDateInNewAppointmentTextField(TestDataHelper.transformTestData(date));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu die Zeit {string} auswählen.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Zeit {string} auswählen.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_zeit_string_auswaehlen(String time) {
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList(TestDataHelper.transformTestData(time));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu den Namen {string} eingeben.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen den Namen {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(String name) {
         name = TestDataHelper.transformTestData(name);
         if (name.equals("<zufällig>")) {
@@ -325,12 +325,12 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.transformTestData(name));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu die Telefonnummer {string} eingeben.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Telefonnummer {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_telefonnummer_string_eingeben(String phoneNumber) {
         COUNTER_PROCESSING_STATION_PAGE.enterPhoneNumberInNewAppointmentTextField(TestDataHelper.transformTestData(phoneNumber));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu die E-mail-Adresse {string} eingeben.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die E-mail-Adresse {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben(String email) {
         email = TestDataHelper.transformTestData(email);
         if (email.equals("<mailinator>")) {
@@ -347,17 +347,17 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(TestDataHelper.transformTestData(email));
     }
 
-    @Und("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu die Anmerkung {string} eingeben.")
+    @Und("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Anmerkung {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_anmerkung_string_eingeben(String note) {
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(TestDataHelper.transformTestData(note));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu die Dienstleistung {string} auswählen.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Dienstleistung {string} auswählen.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(String service) {
         COUNTER_PROCESSING_STATION_PAGE.selectServiceInNewAppointmentMultiList(TestDataHelper.transformTestData(service));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Terminvereinbarung Neu auf die Schaltfläche {string} klicken.")
+    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen auf die Schaltfläche {string} klicken.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_auf_die_schaltflaeche_string_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
         switch (button) {

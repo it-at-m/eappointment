@@ -15,6 +15,6 @@ Funktionalität: Default
 		Und Sie die Änderungen an der Standortkonfiguration speichern.
 		Dann Für den Standort "Gewerbeamt (KVR-III/21) Meldungen" ist der Standardwert für die E-Mail-Bestätigung auf true gesetzt.
 		Wenn Sie im Zeitmanagementsystem in der Navigationsleite auf die Schaltfläche "Tresen" klicken.
-		Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Zeit "<beliebig>" auswählen.
+		Und Sie im Zeitmanagementsystem unter Termin erstellen die Zeit "<beliebig>" auswählen.
     	# ausgewählt / nicht ausgewählt
 		Dann ist die Checkbox Mit E-Mail Bestätigung "ausgewählt".

@@ -47,13 +47,13 @@ Funktionalität: Default
 	   	 Und Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
 	   	 Dann sollten die Kundeninformationen angezeigt werden.
 	   	 Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu das Datum "<heute+7_tage>" eingeben.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Zeit "<beliebig>" auswählen.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu den Namen "<TestData.customer_name>" eingeben.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Telefonnummer "<TestData.customer_phone_number>" eingeben.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die E-mail-Adresse "<TestData.customer_email>" eingeben.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Anmerkung "Folgetermin wie durch Kunden gewünscht." eingeben.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu die Dienstleistung "<TestData.service>" auswählen.
-	   	 Und Sie im Zeitmanagementsystem unter Terminvereinbarung Neu auf die Schaltfläche "Termin buchen" klicken.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen das Datum "<heute+7_tage>" eingeben.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen die Zeit "<beliebig>" auswählen.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen den Namen "<TestData.customer_name>" eingeben.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen die Telefonnummer "<TestData.customer_phone_number>" eingeben.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen die E-mail-Adresse "<TestData.customer_email>" eingeben.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen die Anmerkung "Folgetermin wie durch Kunden gewünscht." eingeben.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen die Dienstleistung "<TestData.service>" auswählen.
+	   	 Und Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Termin buchen" klicken.
 	   	 Und Sie im Zeitmanagementsystem auf die Schaltfläche "Vorgangsnummer drucken" klicken.
 	   	 Dann kann die Terminbestätigung gedruckt werden.
