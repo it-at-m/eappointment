@@ -29,12 +29,12 @@
     }
   },
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.7.0",
+    "@parcel/transformer-sass": "^2.16.4",
     "chart.js": "^4.0.0",
     "eslint": "^9.35.0",
     "eslint-plugin-import": "^2.20.1",
     "jquery": "^4.0.0",
-    "parcel": "^2.7.0",
+    "parcel": "^2.16.4",
     "react-datepicker": "^4.2.1",
     "svgo": "^4.0.0"
   },
