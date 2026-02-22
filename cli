@@ -139,7 +139,7 @@ def cli_clean_cache():
 @click.argument("commands", required=True, nargs=-1)
 def cli_modules_loop(commands):
     """Loops through repositories and executes a given command. Adds --legacy-peer-deps for npm install commands."""
-    specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
+    specific_modules = ["zmsadmin", "zmscalldisplay", "zmscitizenview", "zmsstatistic", "zmsticketprinter"]
     
     is_npm_command = commands[0] == "npm"
     is_composer_install = len(commands) >= 2 and commands[0] == "composer" and commands[1] == "install"
@@ -147,6 +147,7 @@ def cli_modules_loop(commands):
     build_commands = {
         "zmsadmin": ["npm run build"],
         "zmscalldisplay": ["npm run build"],
+        "zmscitizenview": ["npm run build"],
         "zmsstatistic": ["npm run build"],
         "zmsticketprinter": ["npm run build"]
     }

@@ -13,7 +13,7 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment:
   - TZ=Europe/Berlin
-nodejs_version: "18"
+nodejs_version: "22"
 hooks:
   pre-start:
     - exec-host: "bash -c 'if [ ! -f .ddev/.env ]; then cp .ddev/.env.template .ddev/.env; fi'"
@@ -86,7 +86,7 @@ timezone: Europe/Berlin
 # Alternatively, an explicit Composer version may be specified, for example "2.2.18".
 # To reinstall Composer after the image was built, run "ddev debug refresh".
 
-# nodejs_version: "18"
+# nodejs_version: "22"
 # change from the default system Node.js version to another supported version, like 14, 16, 18, 20.
 # Note that you can use 'ddev nvm' or nvm inside the web container to provide nearly any
 # Node.js version, including v6, etc.
