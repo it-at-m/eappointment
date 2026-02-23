@@ -767,7 +767,7 @@ const filteredServices = computed(() => {
 
 /**
  * Collects all service variants (appointment types) for the currently selected service.
- * - if current is has variantId===1(Present)  => use current.id
+ * - if current has variantId===1(Present)  => use current.id
  * - otherwise use current.parentId
  */
 const variantServices = computed<Service[]>(() => {
