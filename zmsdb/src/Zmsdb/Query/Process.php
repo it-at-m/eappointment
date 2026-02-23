@@ -90,17 +90,21 @@ class Process extends Base implements MappingInterface
         WHERE istFolgeterminvon = :processID
         ";
 
+    // Start with 1000 json schema defined minimum if the setup is new and there's no process_sequence and no processes in the database
     public function getQueryNewProcessId()
     {
-        $random = rand(20, 999);
-        return 'SELECT pseq.processId AS `nextid`
-            FROM process_sequence pseq
-            WHERE pseq.processId = (
-                SELECT ps.processID FROM `process_sequence` ps LEFT JOIN `' . self::getTablename() . '` p
-                    ON ps.processId = p.BuergerID
+        return 'SELECT COALESCE(
+            (
+                SELECT ps.processId
+                FROM process_sequence ps
+                LEFT JOIN `' . self::getTablename() . '` p
+                ON ps.processId = p.BuergerID
                 WHERE p.`BuergerID` IS NULL
-                LIMIT ' . $random . ',1)
-            FOR UPDATE';
+                LIMIT 1
+            ),
+            1000
+        ) AS `nextid`
+        FOR UPDATE';
     }
 
     public function getLockProcessId()
