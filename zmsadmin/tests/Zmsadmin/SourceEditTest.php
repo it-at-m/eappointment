@@ -28,15 +28,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
-                ],
-                [
-                    'function'   => 'readGetResult',
                     'url'        => '/source/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response'   => $this->readFixture('GET_sourcelist_minimal.json'),
+                    'parameters' => ['resolveReferences' => 2],
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -79,15 +73,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
-                ],
-                [
-                    'function'   => 'readGetResult',
                     'url'        => '/source/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response'   => $this->readFixture('GET_sourcelist_minimal.json'),
+                    'parameters' => ['resolveReferences' => 2],
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -127,15 +115,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
-                ],
-                [
-                    'function'   => 'readGetResult',
                     'url'        => '/source/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response'   => $this->readFixture('GET_sourcelist_minimal.json'),
+                    'parameters' => ['resolveReferences' => 2],
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -182,15 +164,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
-                ],
-                [
-                    'function'   => 'readGetResult',
                     'url'        => '/source/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response'   => $this->readFixture('GET_sourcelist_minimal.json'),
+                    'parameters' => ['resolveReferences' => 2],
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
