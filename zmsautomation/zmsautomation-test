@@ -266,20 +266,23 @@ section "10. Browser Setup"
 info "Setting up Firefox and Xvfb for UI tests..."
 
 # Ensure DISPLAY is set
-export DISPLAY="${DISPLAY:-:99}"
+export DISPLAY="${DISPLAY:-:0}"
 info "DISPLAY set to: $DISPLAY"
 
-# Create Firefox symlink if needed
-if [[ ! -L /usr/bin/firefox ]] || [[ ! -e /usr/bin/firefox ]]; then
-  if [[ -f /usr/bin/firefox-esr ]]; then
-    info "Creating symlink from /usr/bin/firefox to /usr/bin/firefox-esr..."
-    ln -sf /usr/bin/firefox-esr /usr/bin/firefox || warn "Failed to create Firefox symlink"
-  else
-    warn "firefox-esr not found at /usr/bin/firefox-esr"
-  fi
-else
-  info "Firefox symlink already exists"
-fi
+# COMMENT OUT: Don't start Xvfb
+# if pgrep -x Xvfb > /dev/null; then
+#   info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
+# else
+#   info "Starting Xvfb on display $DISPLAY..."
+#   Xvfb "$DISPLAY" -screen 0 1024x768x24 > /dev/null 2>&1 &
+#   sleep 2
+#   if pgrep -x Xvfb > /dev/null; then
+#     info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+#   else
+#     warn "Failed to start Xvfb - UI tests may fail"
+#   fi
+# fi
+info "Using existing display for visible browser"
 
 # Verify Firefox is available
 if command -v firefox >/dev/null 2>&1; then
