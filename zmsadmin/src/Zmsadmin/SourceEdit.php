@@ -35,7 +35,8 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
-        [$parentProviders, $parentRequests] = $this->loadParentsFromAllSources();
+        $currentSource = $args['name'] ?? null;
+        [$parentProviders, $parentRequests] = $this->loadParentsFromSources($currentSource);
 
         try {
             $apiRes  = \App::$http->readGetResult('/requestvariants/');
@@ -82,22 +83,24 @@ class SourceEdit extends BaseController
         });
     }
 
-    private function loadParentsFromAllSources(): array
+    private function loadParentsFromSources(?string $currentSource): array
     {
-        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 0])->getCollection();
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 2])->getCollection();
+
+        $allowed = ['dldb'];
+        if ($currentSource && $currentSource !== 'add') {
+            $allowed[] = $currentSource;
+        }
+        $allowed = array_unique($allowed);
 
         $parentProviders = [];
         $parentRequests  = [];
 
-        foreach ($sourceList as $src) {
-            $srcName = $src->source ?? null;
-            if (!$srcName) {
+        foreach ($sourceList as $fullSource) {
+            $srcName = $fullSource->source ?? null;
+            if (!$srcName || !in_array($srcName, $allowed, true)) {
                 continue;
             }
-
-            $fullSource = \App::$http
-                ->readGetResult('/source/' . $srcName . '/', ['resolveReferences' => 2])
-                ->getEntity();
 
             foreach (($fullSource->providers ?? []) as $provider) {
                 $parentProviders[] = $provider;
@@ -108,7 +111,7 @@ class SourceEdit extends BaseController
         }
 
         usort($parentProviders, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
-        usort($parentRequests, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+        usort($parentRequests,  fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
 
         return [$parentProviders, $parentRequests];
     }
