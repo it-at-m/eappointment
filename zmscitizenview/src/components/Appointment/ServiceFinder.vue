@@ -702,6 +702,7 @@ onMounted(() => {
           (service) => service.id == props.preselectedServiceId
         );
         if (foundService) {
+          updateServiceLinkId(String(foundService.parentId ?? foundService.id));
           service.value = {
             ...foundService,
             providers: [] as OfficeImpl[],
