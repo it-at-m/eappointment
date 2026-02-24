@@ -12,7 +12,7 @@ Funktionalität: ZMS Admin GUI Optimierung
     Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
     Und Sie für den Standort "Standesamt München (KVR-II/1141) Urkundenstelle" die Wiederholungsaufrufe auf "1" setzen.
     Dann sind Für den Standort "Standesamt München (KVR-II/1141) Urkundenstelle" Wiederholungsaufrufe auf "1" begrenzt.
-    Und Sie "7" minuten bis die Änderungen übernommen werden warten.
+    Und Sie "1" Minute bis die Änderungen übernommen werden warten.
 #Standort: Standesamt München (KVR-II/112) Geburtenbüro, Wiederholungsaufrufe: 0
     Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
     Und  Sie für "Standort" den Wert "Standesamt München (KVR-II/112) Geburtenbüro" auswählen.
