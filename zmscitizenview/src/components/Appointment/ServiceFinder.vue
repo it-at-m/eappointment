@@ -313,11 +313,12 @@ const onServiceSelected = (selected: ServiceImpl | undefined) => {
   if (!selected) {
     service.value = undefined;
     updateServiceLinkId(null);
+    selectedVariant.value = "";
     return;
   }
 
   updateServiceLinkId(String(selected.parentId ?? selected.id));
-
+  selectedVariant.value = "";
   service.value = selected;
 };
 
