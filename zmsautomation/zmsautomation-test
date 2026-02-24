@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-  set -euo pipefail
+set -euo pipefail
 
 # Capture Maven arguments (e.g., -Dcucumber.filter.tags="@smoke" to run specific tags)
 MAVEN_ARGS=("$@")
@@ -22,7 +22,7 @@ if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
     $'\033[38;5;21m'  # blue
     $'\033[38;5;201m' # magenta
   )
-  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
+  if [[ ${`#SECTION_COLORS`[@]} -gt 0 ]]; then
     USE_SECTION_COLORS=true
   fi
 fi
@@ -33,7 +33,7 @@ section() {
   if [[ "$USE_SECTION_COLORS" == true ]]; then
     prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
     suffix="$SECTION_COLOR_RESET"
-    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${`#SECTION_COLORS`[@]}))
   fi
   echo ""
   echo "${prefix}${SECTION_BAR}${suffix}"
@@ -67,10 +67,14 @@ FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
 BASE_URI="${BASE_URI:-http://localhost/terminvereinbarung/api/2}"
 CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarung/api/citizen}"
 
+# Keycloak config files
+KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
+KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
+
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
   if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
-    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete 2>/dev/null || warn "Failed to clean data folder"
     [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
   fi
 }
@@ -79,7 +83,7 @@ cleanup_data_folder() {
 clear_caches() {
   if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
     info "Clearing caches in $CACHE_DIR..."
-    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
+    find "$CACHE_DIR" -mindepth 1 -delete 2>/dev/null || warn "Failed to clear caches"
   else
     warn "CACHE_DIR not set or does not exist"
   fi
@@ -97,7 +101,7 @@ exec_sql_root() {
 # Backup database
 backup_db() {
   info "Backing up database to $BACKUP_FILE..."
-  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" | gzip > "$BACKUP_FILE"
+  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" 2>/dev/null | gzip > "$BACKUP_FILE"
   info "Backup completed."
 }
 
@@ -105,18 +109,14 @@ backup_db() {
 restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE..."
-    gunzip < "$BACKUP_FILE" | exec_sql
+    gunzip < "$BACKUP_FILE" | exec_sql 2>/dev/null || warn "Database restore failed"
     info "Database restored."
   else
     warn "No backup file found to restore."
   fi
 }
 
-# Keycloak config: backup, rewrite 8091→443 for UI tests in container, then restore (same idea as DB backup/restore).
-# When we move to GitHub cloud we can add a host here instead of relying on localhost port swap.
-KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
-KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
-
+# Keycloak config: backup, rewrite 8091→443 for UI tests in container, then restore
 backup_and_rewrite_keycloak() {
   local file="$1"
   if [[ -f "$file" ]]; then
@@ -137,13 +137,55 @@ restore_keycloak() {
   done
 }
 
+# Restore real time (unset ZMS_TIMEADJUST and restart Apache)
+restore_time() {
+  if [[ -n "${ZMS_TIMEADJUST:-}" ]]; then
+    info "Restoring real system time..."
+    unset ZMS_TIMEADJUST
+    
+    info "Restarting Apache to restore real time..."
+    service apache2 restart 2>/dev/null || apachectl -k restart 2>/dev/null || warn "Apache restart failed"
+    sleep 2
+    
+    info "✓ Real time restored (developer environment restored)"
+  fi
+}
+
+# Comprehensive cleanup function (called by trap and explicit cleanup)
+cleanup_on_exit() {
+  info "Running cleanup..."
+  
+  # 1. Restore time first (most critical for developer environment)
+  restore_time
+  
+  # 2. Restore database
+  restore_db
+  
+  # 3. Restore Keycloak configs
+  restore_keycloak
+  
+  # 4. Clear Flyway test migrations
+  if [[ -n "${BACKUP_FILE:-}" ]]; then
+    info "Clearing test data migrations from flyway_schema_history..."
+    exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+  fi
+  
+  # 5. Clear caches
+  clear_caches
+  
+  # 6. Clean data folder
+  cleanup_data_folder
+  
+  info "Cleanup completed."
+}
+
 # Drop all tables
 drop_all_tables() {
   info "Dropping all existing tables..."
   local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
-SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
-SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
-PREPARE stmt FROM @sql;
+SET `@tables` = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
+SET `@sql` = IF(`@tables` IS NULL OR `@tables` = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', `@tables`));
+PREPARE stmt FROM `@sql`;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;"
@@ -151,9 +193,15 @@ SET FOREIGN_KEY_CHECKS = 1;"
   info "Tables dropped."
 }
 
-# Ensure cleanup on exit
-trap 'clear_caches; cleanup_data_folder' EXIT INT TERM
-trap 'warn "Failure detected, attempting DB restore..."; restore_db; restore_keycloak' ERR
+# ============================================================================
+# TRAP HANDLERS - Ensure cleanup always runs
+# ============================================================================
+trap 'cleanup_on_exit' EXIT INT TERM
+trap 'warn "Failure detected, running cleanup..."; cleanup_on_exit; exit 1' ERR
+
+# ============================================================================
+# MAIN SCRIPT
+# ============================================================================
 
 # 1. Database Backup
 section "1. Database Backup"
@@ -169,7 +217,7 @@ drop_all_tables
 
 # Log database tables after reset
 info "Database tables after reset (should be empty):"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
 
 # 4. Import Base Database
 section "4. Base Database Import"
@@ -183,7 +231,7 @@ if [[ -f "$BASE_SQL_FILE" ]]; then
   info "Base database import completed."
   
   info "Database tables after import:"
-  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
 else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
 fi
@@ -206,7 +254,28 @@ info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
 )
 
 info "Database tables after Flyway:"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
+
+# 5.5. Mock Date and Time (if enabled)
+section "5.5. Mock Date and Time"
+MOCK_DATETIME="${MOCK_DATETIME:-2026-02-25 10:00:00}" # Format: "YYYY-MM-DD HH:MM:SS"
+
+if [[ -n "$MOCK_DATETIME" ]]; then
+  info "Enabling date/time mocking: system will think now is $MOCK_DATETIME"
+  
+  # Set for all PHP processes (Apache, CLI, cron)
+  export ZMS_TIMEADJUST="$MOCK_DATETIME"
+  
+  # Restart Apache to pick up the new environment variable
+  info "Restarting Apache to apply mocked time..."
+  service apache2 restart || apachectl -k restart || true
+  sleep 2
+  
+  info "✓ All PHP modules will see current time as: $MOCK_DATETIME (Europe/Berlin)"
+  info "✓ Affects: zmsapi, zmsadmin, zmsstatistic, zmscitizenapi, zmscitizenview, minutely cron"
+else
+  info "No time mocking (set MOCK_DATETIME='YYYY-MM-DD HH:MM:SS' to enable)"
+fi
 
 # 6. PHP Migrations
 section "6. PHP Migrations"
@@ -216,7 +285,7 @@ vendor/bin/migrate --update
 info "PHP migrations completed."
 
 info "Database tables after PHP migrations:"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
 
 # 7. Hourly Cronjob
 section "7. Hourly Cronjob"
@@ -237,12 +306,13 @@ if [[ "$hourly_ok" != true ]]; then
 fi
 clear_caches
 
-section "8. Minutly Cronjob"
-info "Running minutly cron..."
+# 8. Minutely Cronjob
+section "8. Minutely Cronjob"
+info "Running minutely cron..."
 if "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null; then
-  info "Minutly cron completed."
+  info "Minutely cron completed."
 else
-  warn "Minutly cron failed or not available; continuing."
+  warn "Minutely cron failed or not available; continuing."
 fi
 
 # 9. Health Checks
@@ -317,10 +387,7 @@ info "Running Cucumber/ATAF tests with -Pataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
-# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container.
-# Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
-# Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
-# When we move to GitHub cloud we can add a host here instead of localhost port swap.
+# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container
 MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
 RUN_UI_TESTS=true
 if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
@@ -354,8 +421,6 @@ TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
 # Run with ATAF profile
-# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS
-# SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
 SSO_USER="${SSO_USER:-ataf}"
 SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
 if mvn -B -DtrimStackTrace=false \
@@ -390,31 +455,15 @@ info "Cucumber reports available at:"
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
-# 13. Final Cache Clearing
-section "13. Final Cache Clearing"
-clear_caches
-
-# 14. Database Restore and Keycloak Restore
-section "14. Database Restore and Keycloak Restore"
-info "Restoring original database..."
-restore_db
-info "Restoring Keycloak config (8091)..."
-restore_keycloak
-
-# Clear test data migrations from flyway_schema_history after restore
-info "Clearing test data migrations from flyway_schema_history after restore..."
-exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
-
-# 15. Cleanup
-section "15. Cleanup"
-info "Cleaning up zmsapi/data folder..."
-cleanup_data_folder
-info "Cleared zmsapi/data folder (preserved .gitignore)"
-
+# 13. Final Status
+section "13. Final Status"
 if [[ $TEST_EXIT -eq 0 ]]; then
   info "Tests completed successfully."
 else
   warn "Tests failed (exit $TEST_EXIT)."
 fi
 
-  exit "$TEST_EXIT"
+# Note: Cleanup (Section 14) runs automatically via EXIT trap
+info "Cleanup will run automatically via trap handler..."
+
+exit "$TEST_EXIT"
