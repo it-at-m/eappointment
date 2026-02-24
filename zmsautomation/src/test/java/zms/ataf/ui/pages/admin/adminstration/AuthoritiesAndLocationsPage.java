@@ -188,12 +188,6 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='WsCountIntern']", LocatorType.XPATH, numberOfCounters);
     }
 
-    public void selectCallcenterAvailableCounters(String numberOfCounters) {
-        CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Trying to select callcenter available counters \"" + numberOfCounters + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='WsCountCallcenter']", LocatorType.XPATH, numberOfCounters);
-    }
-
     public void selectInternetAvailableCounters(String numberOfCounters) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select internet available counters \"" + numberOfCounters + "\"");

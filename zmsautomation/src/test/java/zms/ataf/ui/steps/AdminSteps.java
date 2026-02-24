@@ -234,9 +234,6 @@ public class AdminSteps {
         case "Insgesamt":
             AUTHORITIES_AND_LOCATIONS_PAGE.selectOverallAvailableCounters(numberOfCounters);
             break;
-        case "Callcenter":
-            AUTHORITIES_AND_LOCATIONS_PAGE.selectCallcenterAvailableCounters(numberOfCounters);
-            break;
         case "Internet":
             AUTHORITIES_AND_LOCATIONS_PAGE.selectInternetAvailableCounters(numberOfCounters);
             break;

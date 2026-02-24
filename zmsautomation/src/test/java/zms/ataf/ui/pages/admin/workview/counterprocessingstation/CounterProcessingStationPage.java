@@ -6,9 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.OptionalInt;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -726,6 +723,13 @@ public class CounterProcessingStationPage extends AdminPage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".button.button--default.button-ok", LocatorType.CSSSELECTOR, false);
     }
 
+    public void checkForValuesInQueueColumn(String column, String... searchStrings) {
+        ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the waiting list...", column);
+        CONTEXT.waitForSpinners();
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        areValuesVisibleInTableColumn(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
+    }
+
     public void isQueueEmpty() {
         ScenarioLogManager.getLogger().info("Checking for the queue to be empty...");
         CONTEXT.waitForSpinners();
@@ -733,89 +737,25 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertTrue(isQueueInvisible, "Queue is not empty: The appointment queue table is still visible.");
     }
 
-    // -------------------------------
-    // Table-specific methods with logging
-    // -------------------------------
-    public void checkForValuesInQueueColumn(String column, String... searchStrings) {
-        ScenarioLogManager.getLogger().info("Checking waiting list column '{}'", column);
-        CONTEXT.waitForSpinners();
-        WebElement table = findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false);
-        scrollToCenterByVisibleElement(table);
-
-        logColumnValues(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, column);
-
-        // now call framework method
-        areValuesVisibleInTableColumn(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
-    }
-
     public void checkForValuesInParkingTableColumn(String column, String... searchStrings) {
-        ScenarioLogManager.getLogger().info("Checking parked table column '{}'", column);
+        ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the parking table...", column);
         CONTEXT.waitForSpinners();
-        WebElement table = findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false);
-        scrollToCenterByVisibleElement(table);
-
-        logColumnValues(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, column);
-
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
         areValuesVisibleInTableColumn(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
     public void checkForValuesInFinishedTableColumn(String column, String... searchStrings) {
-        ScenarioLogManager.getLogger().info("Checking finished table column '{}'", column);
+        ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the finished table...", column);
         CONTEXT.waitForSpinners();
-        WebElement table = findElementByLocatorType(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, false);
-        scrollToCenterByVisibleElement(table);
-
-        logColumnValues(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, column);
-
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, false));
         areValuesVisibleInTableColumn(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
     public void checkForValuesInMissedTableColumn(String column, String... searchStrings) {
-        ScenarioLogManager.getLogger().info("Checking missed table column '{}'", column);
+        ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the missed table...", column);
         CONTEXT.waitForSpinners();
-        WebElement table = findElementByLocatorType(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, false);
-        scrollToCenterByVisibleElement(table);
-
-        logColumnValues(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, column);
-
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, false));
         areValuesVisibleInTableColumn(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
-    }
 
-    private void logColumnValues(String tableLocator, LocatorType locatorType, String columnName, String... expectedValues) {
-        ScenarioLogManager.getLogger().info("Checking waiting list column '{}'", columnName);
-    
-        WebElement table = findElementByLocatorType(tableLocator, locatorType, true);
-        List<WebElement> headers = table.findElements(By.xpath(".//thead//th"));
-    
-        int columnIndex = IntStream.range(0, headers.size())
-                .filter(i -> columnName.equalsIgnoreCase(headers.get(i).getText().trim()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Column '" + columnName + "' not found"));
-    
-        columnIndex += 1; // XPath is 1-based
-    
-        List<String> actualValues = table.findElements(By.xpath(".//tbody//tr//td[" + columnIndex + "]")).stream()
-                .map(td -> {
-                    String text = td.getText().trim();
-                    if (text.isEmpty()) {
-                        // fallback: get all child text nodes
-                        text = td.findElements(By.xpath(".//*")).stream()
-                                .map(WebElement::getText)
-                                .map(String::trim)
-                                .filter(s -> !s.isEmpty())
-                                .collect(Collectors.joining(" | "));
-                    }
-                    return text;
-                })
-                .collect(Collectors.toList());
-    
-        ScenarioLogManager.getLogger().info("Table '{}' - column '{}': expected = {}, actual = {}",
-                tableLocator, columnName,
-                expectedValues.length > 0 ? List.of(expectedValues) : "[WARNING: no expected values passed]",
-                actualValues);
-    
-        if (expectedValues.length == 0) {
-            ScenarioLogManager.getLogger().warn("No expected values provided for column '{}'. Check test input!", columnName);
-        }
     }
 }

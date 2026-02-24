@@ -28,7 +28,6 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 		Und Sie in Feld "Uhrzeit von" den Text "08:00" eingeben.
 		Und Sie in Feld "Uhrzeit bis" den Text "17:00" eingeben.
 		Und Sie für Terminarbeitsplätze unter "Insgesamt" die Anzahl 1 auswählen.
-		Und Sie für Terminarbeitsplätze unter "Callcenter" die Anzahl 1 auswählen.
 		Und Sie für Terminarbeitsplätze unter "Internet" die Anzahl 1 auswählen.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Alle Änderungen aktivieren" klicken.
 		Dann sollte die aktivierte Öffnungszeit mit der Anmerkung "<TestData.Anmerkung>" löschbar sein.
