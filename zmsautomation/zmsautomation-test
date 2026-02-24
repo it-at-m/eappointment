@@ -117,18 +117,14 @@ restore_db() {
 }
 
 
-# Restore real time (unset ZMS_TIMEADJUST and restart Apache)
+# Restore time by reverting envvars
 restore_time() {
-  if [[ -n "${ZMS_TIMEADJUST:-}" ]]; then
-    info "Restoring real system time..."
-    unset ZMS_TIMEADJUST
-    
-    info "Restarting Apache to restore real time..."
-    service apache2 restart 2>/dev/null || apachectl -k restart 2>/dev/null || warn "Apache restart failed"
-    sleep 2
-    
-    info "✓ Real time restored (developer environment restored)"
+  if [[ -f /etc/apache2/envvars.bak-mocktime ]]; then
+    mv /etc/apache2/envvars.bak-mocktime /etc/apache2/envvars
+    apachectl graceful 2>/dev/null || true
+    info "✓ Real time restored via Apache envvars"
   fi
+  unset ZMS_TIMEADJUST
 }
 
 cleanup_on_exit() {
@@ -260,18 +256,17 @@ MOCK_DATETIME="${MOCK_DATETIME:-2026-02-25 10:00:00}" # Format: "YYYY-MM-DD HH:M
 if [[ -n "$MOCK_DATETIME" ]]; then
   info "Enabling date/time mocking: system will think now is $MOCK_DATETIME"
   
-  # Set for all PHP processes (Apache, CLI, cron)
-  export ZMS_TIMEADJUST="$MOCK_DATETIME"
-  
-  # Restart Apache to pick up the new environment variable
-  info "Restarting Apache to apply mocked time..."
-  service apache2 restart || apachectl -k restart || true
-  sleep 2
-  
-  info "✓ All PHP modules will see current time as: $MOCK_DATETIME (Europe/Berlin)"
-  info "✓ Affects: zmsapi, zmsadmin, zmsstatistic, zmscitizenapi, zmscitizenview, minutely cron"
-else
-  info "No time mocking (set MOCK_DATETIME='YYYY-MM-DD HH:MM:SS' to enable)"
+  # Backup and modify Apache envvars
+  if [[ -f /etc/apache2/envvars ]]; then
+    cp /etc/apache2/envvars /etc/apache2/envvars.bak-mocktime
+    echo "export ZMS_TIMEADJUST='$MOCK_DATETIME'" >> /etc/apache2/envvars
+    apachectl graceful 2>/dev/null || true
+    info "✓ Time mocked via Apache envvars"
+  else
+    # Fallback to shell export (works for CLI/cron)
+    export ZMS_TIMEADJUST="$MOCK_DATETIME"
+    info "✓ Time mocked via shell export (Apache envvars not found)"
+  fi
 fi
 
 # 6. PHP Migrations
