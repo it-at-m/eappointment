@@ -783,24 +783,23 @@ public class CounterProcessingStationPage extends AdminPage {
 
     private void logColumnValues(String tableLocator, LocatorType locatorType, String columnName, String... expectedValues) {
         ScenarioLogManager.getLogger().info("Checking waiting list column '{}'", columnName);
-
+    
         WebElement table = findElementByLocatorType(tableLocator, locatorType, true);
         List<WebElement> headers = table.findElements(By.xpath(".//thead//th"));
+    
         int columnIndex = IntStream.range(0, headers.size())
                 .filter(i -> columnName.equalsIgnoreCase(headers.get(i).getText().trim()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Column '" + columnName + "' not found"));
-
+    
         columnIndex += 1; // XPath is 1-based
-
-        // get actual column values including nested <a> text
+    
         List<String> actualValues = table.findElements(By.xpath(".//tbody//tr//td[" + columnIndex + "]")).stream()
                 .map(td -> {
                     String text = td.getText().trim();
                     if (text.isEmpty()) {
-                        // fallback: get text from child <a> or <span>
-                        List<WebElement> children = td.findElements(By.xpath(".//*"));
-                        text = children.stream()
+                        // fallback: get all child text nodes
+                        text = td.findElements(By.xpath(".//*")).stream()
                                 .map(WebElement::getText)
                                 .map(String::trim)
                                 .filter(s -> !s.isEmpty())
@@ -809,8 +808,14 @@ public class CounterProcessingStationPage extends AdminPage {
                     return text;
                 })
                 .collect(Collectors.toList());
-
-        ScenarioLogManager.getLogger().info("Table '{}' - column '{}': expected = {}, actual = {}", tableLocator, columnName,
-                List.of(expectedValues), actualValues);
+    
+        ScenarioLogManager.getLogger().info("Table '{}' - column '{}': expected = {}, actual = {}",
+                tableLocator, columnName,
+                expectedValues.length > 0 ? List.of(expectedValues) : "[WARNING: no expected values passed]",
+                actualValues);
+    
+        if (expectedValues.length == 0) {
+            ScenarioLogManager.getLogger().warn("No expected values provided for column '{}'. Check test input!", columnName);
+        }
     }
 }
