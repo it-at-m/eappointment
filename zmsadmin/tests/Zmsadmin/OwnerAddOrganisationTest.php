@@ -52,7 +52,7 @@ class OwnerAddOrganisationTest extends Base
                 'street' => 'Otto-Suhr-Allee 100, 10585 Berlin'
             ),
             'preferences' => array(
-                'ticketPrinterProtectionEnabled' => 1
+                'ticketPrinterActivation' => 1
             ),
             'save' => 'save'
         ], [], 'POST');

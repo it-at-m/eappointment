@@ -12,7 +12,7 @@ class OrganisationTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue($entity->hasDepartment(123), 'department with id 123 not found');
-        $this->assertFalse($entity->getPreference('ticketPrinterProtectionEnabled'), 'get preference failed');
+        $this->assertFalse($entity->getPreference('ticketPrinterActivation'), 'get preference failed');
     }
 
     public function testCollection()

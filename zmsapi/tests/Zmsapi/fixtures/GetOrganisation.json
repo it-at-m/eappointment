@@ -9,7 +9,7 @@
         "name": "Pankow"
     },
     "preferences": {
-        "ticketPrinterProtectionEnabled": 0
+        "ticketPrinterActivation": 0
     },
     "departments": [
         {
