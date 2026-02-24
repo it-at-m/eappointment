@@ -698,9 +698,19 @@ onMounted(() => {
       offices.value = (data as any).offices;
 
       if (props.preselectedServiceId) {
-        const foundService = services.value.find(
-          (service) => service.id == props.preselectedServiceId
+        // Look for a service variant where parentId matches and variantId equals 1
+        const variantOneService = services.value.find(
+          (service) =>
+            String(service.parentId) === String(props.preselectedServiceId) &&
+            service.variantId === 1
         );
+
+        const foundService =
+          variantOneService ??
+          services.value.find(
+            (service) => service.id == props.preselectedServiceId
+          );
+
         if (foundService) {
           updateServiceLinkId(String(foundService.parentId ?? foundService.id));
           service.value = {
