@@ -780,28 +780,36 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
-    private void logColumnValues(String tableLocator, LocatorType tableLocatorType, String columnName) {
-        WebElement table = findElementByLocatorType(tableLocator, tableLocatorType, true);
-    
-        // find column index
-        List<WebElement> headerElements = table.findElements(By.xpath(".//thead//th"));
-        OptionalInt columnIndexOpt = IntStream.range(0, headerElements.size())
-                .filter(i -> columnName.equalsIgnoreCase(headerElements.get(i).getText().trim()))
-                .findFirst();
-    
-        if (columnIndexOpt.isEmpty()) {
-            ScenarioLogManager.getLogger().warn("Column '{}' not found in table '{}'", columnName, tableLocator);
-            return;
-        }
-    
-        int columnIndex = columnIndexOpt.getAsInt() + 1;
-    
-        // fetch all actual values in the column
-        List<String> columnValues = table.findElements(By.xpath(".//tbody//tr//td[" + columnIndex + "]"))
-                .stream()
-                .map(e -> e.getText().trim())
-                .toList();
-    
-        ScenarioLogManager.getLogger().info("Table '{}' - column '{}': actual values = {}", tableLocator, columnName, columnValues);
+    private void logColumnValues(String tableLocator, LocatorType locatorType, String columnName, String... expectedValues) {
+        ScenarioLogManager.getLogger().info("Checking waiting list column '{}'", columnName);
+
+        WebElement table = findElementByLocatorType(tableLocator, locatorType, true);
+        List<WebElement> headers = table.findElements(By.xpath(".//thead//th"));
+        int columnIndex = IntStream.range(0, headers.size())
+                .filter(i -> columnName.equalsIgnoreCase(headers.get(i).getText().trim()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Column '" + columnName + "' not found"));
+
+        columnIndex += 1; // XPath is 1-based
+
+        // get actual column values including nested <a> text
+        List<String> actualValues = table.findElements(By.xpath(".//tbody//tr//td[" + columnIndex + "]")).stream()
+                .map(td -> {
+                    String text = td.getText().trim();
+                    if (text.isEmpty()) {
+                        // fallback: get text from child <a> or <span>
+                        List<WebElement> children = td.findElements(By.xpath(".//*"));
+                        text = children.stream()
+                                .map(WebElement::getText)
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.joining(" | "));
+                    }
+                    return text;
+                })
+                .collect(Collectors.toList());
+
+        ScenarioLogManager.getLogger().info("Table '{}' - column '{}': expected = {}, actual = {}", tableLocator, columnName,
+                List.of(expectedValues), actualValues);
     }
 }
