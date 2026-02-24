@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+  set -euo pipefail
 
 # Capture Maven arguments (e.g., -Dcucumber.filter.tags="@smoke" to run specific tags)
 MAVEN_ARGS=("$@")
@@ -22,7 +22,7 @@ if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
     $'\033[38;5;21m'  # blue
     $'\033[38;5;201m' # magenta
   )
-  if [[ ${`#SECTION_COLORS`[@]} -gt 0 ]]; then
+  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
     USE_SECTION_COLORS=true
   fi
 fi
@@ -33,7 +33,7 @@ section() {
   if [[ "$USE_SECTION_COLORS" == true ]]; then
     prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
     suffix="$SECTION_COLOR_RESET"
-    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${`#SECTION_COLORS`[@]}))
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
   fi
   echo ""
   echo "${prefix}${SECTION_BAR}${suffix}"
@@ -74,7 +74,7 @@ KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
 # Cleanup function to clear zmsapi/data folder (preserve .gitignore)
 cleanup_data_folder() {
   if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
-    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete 2>/dev/null || warn "Failed to clean data folder"
+    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
     [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
   fi
 }
@@ -83,7 +83,7 @@ cleanup_data_folder() {
 clear_caches() {
   if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
     info "Clearing caches in $CACHE_DIR..."
-    find "$CACHE_DIR" -mindepth 1 -delete 2>/dev/null || warn "Failed to clear caches"
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
   else
     warn "CACHE_DIR not set or does not exist"
   fi
@@ -101,7 +101,7 @@ exec_sql_root() {
 # Backup database
 backup_db() {
   info "Backing up database to $BACKUP_FILE..."
-  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" 2>/dev/null | gzip > "$BACKUP_FILE"
+  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" | gzip > "$BACKUP_FILE"
   info "Backup completed."
 }
 
@@ -109,33 +109,13 @@ backup_db() {
 restore_db() {
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE..."
-    gunzip < "$BACKUP_FILE" | exec_sql 2>/dev/null || warn "Database restore failed"
+    gunzip < "$BACKUP_FILE" | exec_sql
     info "Database restored."
   else
     warn "No backup file found to restore."
   fi
 }
 
-# Keycloak config: backup, rewrite 8091→443 for UI tests in container, then restore
-backup_and_rewrite_keycloak() {
-  local file="$1"
-  if [[ -f "$file" ]]; then
-    cp "$file" "$file.bak"
-    sed -i 's/localhost:8091/localhost:443/g' "$file"
-    info "Keycloak config rewritten (8091→443): $file"
-  else
-    warn "Keycloak config not found: $file"
-  fi
-}
-
-restore_keycloak() {
-  for f in "$KEYCLOAK_STATISTIC_JSON" "$KEYCLOAK_ADMIN_JSON"; do
-    if [[ -f "${f}.bak" ]]; then
-      mv "${f}.bak" "$f"
-      info "Keycloak config restored: $f"
-    fi
-  done
-}
 
 # Restore real time (unset ZMS_TIMEADJUST and restart Apache)
 restore_time() {
@@ -151,7 +131,6 @@ restore_time() {
   fi
 }
 
-# Comprehensive cleanup function (called by trap and explicit cleanup)
 cleanup_on_exit() {
   info "Running cleanup..."
   
@@ -179,13 +158,34 @@ cleanup_on_exit() {
   info "Cleanup completed."
 }
 
+
+backup_and_rewrite_keycloak() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    cp "$file" "$file.bak"
+    sed -i 's/localhost:8091/localhost:443/g' "$file"
+    info "Keycloak config rewritten (8091→443): $file"
+  else
+    warn "Keycloak config not found: $file"
+  fi
+}
+
+restore_keycloak() {
+  for f in "$KEYCLOAK_STATISTIC_JSON" "$KEYCLOAK_ADMIN_JSON"; do
+    if [[ -f "${f}.bak" ]]; then
+      mv "${f}.bak" "$f"
+      info "Keycloak config restored: $f"
+    fi
+  done
+}
+
 # Drop all tables
 drop_all_tables() {
   info "Dropping all existing tables..."
   local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
-SET `@tables` = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
-SET `@sql` = IF(`@tables` IS NULL OR `@tables` = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', `@tables`));
-PREPARE stmt FROM `@sql`;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;"
@@ -193,15 +193,10 @@ SET FOREIGN_KEY_CHECKS = 1;"
   info "Tables dropped."
 }
 
-# ============================================================================
-# TRAP HANDLERS - Ensure cleanup always runs
-# ============================================================================
+# Ensure cleanup on exit
 trap 'cleanup_on_exit' EXIT INT TERM
-trap 'warn "Failure detected, running cleanup..."; cleanup_on_exit; exit 1' ERR
-
-# ============================================================================
-# MAIN SCRIPT
-# ============================================================================
+trap 'warn "Failure detected, running cleanup..."; 
+cleanup_on_exit; exit 1' ERR
 
 # 1. Database Backup
 section "1. Database Backup"
@@ -217,7 +212,7 @@ drop_all_tables
 
 # Log database tables after reset
 info "Database tables after reset (should be empty):"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
 # 4. Import Base Database
 section "4. Base Database Import"
@@ -231,7 +226,7 @@ if [[ -f "$BASE_SQL_FILE" ]]; then
   info "Base database import completed."
   
   info "Database tables after import:"
-  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
+  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
 fi
@@ -254,7 +249,9 @@ info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
 )
 
 info "Database tables after Flyway:"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+
+
 
 # 5.5. Mock Date and Time (if enabled)
 section "5.5. Mock Date and Time"
@@ -285,7 +282,7 @@ vendor/bin/migrate --update
 info "PHP migrations completed."
 
 info "Database tables after PHP migrations:"
-exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" 2>/dev/null || true
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
 # 7. Hourly Cronjob
 section "7. Hourly Cronjob"
@@ -306,13 +303,12 @@ if [[ "$hourly_ok" != true ]]; then
 fi
 clear_caches
 
-# 8. Minutely Cronjob
-section "8. Minutely Cronjob"
-info "Running minutely cron..."
+section "8. Minutly Cronjob"
+info "Running minutly cron..."
 if "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null; then
-  info "Minutely cron completed."
+  info "Minutly cron completed."
 else
-  warn "Minutely cron failed or not available; continuing."
+  warn "Minutly cron failed or not available; continuing."
 fi
 
 # 9. Health Checks
@@ -387,7 +383,10 @@ info "Running Cucumber/ATAF tests with -Pataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
-# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container
+# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container.
+# Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
+# Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
+# When we move to GitHub cloud we can add a host here instead of localhost port swap.
 MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
 RUN_UI_TESTS=true
 if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
@@ -421,6 +420,8 @@ TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
 # Run with ATAF profile
+# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS
+# SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
 SSO_USER="${SSO_USER:-ataf}"
 SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
 if mvn -B -DtrimStackTrace=false \
@@ -455,15 +456,31 @@ info "Cucumber reports available at:"
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
-# 13. Final Status
-section "13. Final Status"
+# 13. Final Cache Clearing
+section "13. Final Cache Clearing"
+clear_caches
+
+# 14. Database Restore and Keycloak Restore
+section "14. Database Restore and Keycloak Restore"
+info "Restoring original database..."
+restore_db
+info "Restoring Keycloak config (8091)..."
+restore_keycloak
+
+# Clear test data migrations from flyway_schema_history after restore
+info "Clearing test data migrations from flyway_schema_history after restore..."
+exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+
+# 15. Cleanup
+section "15. Cleanup"
+info "Cleaning up zmsapi/data folder..."
+cleanup_data_folder
+info "Cleared zmsapi/data folder (preserved .gitignore)"
+
 if [[ $TEST_EXIT -eq 0 ]]; then
   info "Tests completed successfully."
 else
   warn "Tests failed (exit $TEST_EXIT)."
 fi
 
-# Note: Cleanup (Section 14) runs automatically via EXIT trap
-info "Cleanup will run automatically via trap handler..."
-
-exit "$TEST_EXIT"
+  exit "$TEST_EXIT"
