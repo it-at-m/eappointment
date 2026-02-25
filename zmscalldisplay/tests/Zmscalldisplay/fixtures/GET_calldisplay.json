@@ -198,7 +198,7 @@
 			"name": "Charlottenburg-Wilmersdorf"
 		},
 		"preferences": {
-			"ticketPrinterProtectionEnabled": "0"
+			"ticketPrinterActivation": "0"
 		},
 		"departments": [{
 			"email": "test@example.com",

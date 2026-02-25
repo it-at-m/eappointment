@@ -238,6 +238,68 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->hasDayOff($dayOffTime);
     }
 
+    public function testOverridesDayOffRespectsWeekdayConfiguration()
+    {
+        $entity = new $this->entityclass();
+        $date = new \DateTimeImmutable(self::DEFAULT_TIME); // friday
+
+        $entity['startDate'] = $date->getTimestamp();
+        $entity['endDate'] = $date->getTimestamp();
+        $entity['startTime'] = '08:00:00';
+        $entity['endTime'] = '12:00:00';
+
+        $entity['weekday'] = [
+            'sunday' => 0,
+            'monday' => 0,
+            'tuesday' => 0,
+            'wednesday' => 0,
+            'thursday' => 0,
+            'friday' => 1,
+            'saturday' => 0,
+        ];
+
+        $entity['scope'] = [
+            'dayoff' => [
+                [
+                    'date' => $date->getTimestamp(),
+                    'lastChange' => $date->getTimestamp(),
+                    'name' => 'Feiertag',
+                ],
+            ],
+        ];
+
+        $this->assertTrue(
+            $entity->overridesDayOff(),
+            'Availability should override a day off on an active weekday'
+        );
+
+        $entity['weekday']['friday'] = 0;
+
+        $this->assertFalse(
+            $entity->overridesDayOff(),
+            'Availability should not override a day off on an inactive weekday'
+        );
+    }
+
+    public function testOverridesDayOffWithoutDayoffData()
+    {
+        $entity = new $this->entityclass();
+        $date = new \DateTimeImmutable(self::DEFAULT_TIME); // friday
+
+        $entity['startDate'] = $date->getTimestamp();
+        $entity['endDate'] = $date->getTimestamp();
+        $entity['startTime'] = '08:00:00';
+        $entity['endTime'] = '12:00:00';
+        $entity['weekday']['friday'] = 1;
+
+        $entity['scope'] = [];
+
+        $this->assertFalse(
+            $entity->overridesDayOff(),
+            'OverridesDayOff should return false when scope has no dayoff data'
+        );
+    }
+
     public function testIsNewerThan()
     {
         $dateTime = new \DateTimeImmutable(self::DEFAULT_TIME);
