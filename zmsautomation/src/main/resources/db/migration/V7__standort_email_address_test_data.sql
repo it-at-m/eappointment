@@ -1,4 +1,5 @@
-INSERT INTO `email` (`emailID`, `BehoerdenID`, `serveradresse`, `authentication`, `username`, `password`, `ssl_coding`, `absenderadresse`, `send_reminder`, `send_reminder_minutes_before`) VALUES
+-- Flyway Migration add scope emailFrom
+INSERT IGNORE INTO `email` (`emailID`, `BehoerdenID`, `serveradresse`, `authentication`, `username`, `password`, `ssl_coding`, `absenderadresse`, `send_reminder`, `send_reminder_minutes_before`) VALUES
 (1,	1,	'localhost',	'0',	'',	'',	0,	'noreply-terminvereinbarung@muenchen.de',	1,	NULL),
 (2,	2,	'localhost',	'0',	'',	'',	0,	'noreply-terminvereinbarung@muenchen.de',	1,	1440),
 (3,	3,	'localhost',	'0',	'',	'',	0,	'noreply-terminvereinbarung@muenchen.de',	1,	1440),
