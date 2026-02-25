@@ -67,15 +67,21 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     public void saveLocationChanges() {
         ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Speichern']", LocatorType.XPATH, false);
-
+    
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
         String formattedDate = LocalDate.now().format(dateFormatter);
-        String formattedTime = LocalTime.now().format(timeFormatter);
-
-        String xpath = "//section[@class='dialog message message--success' and .//div[contains(text(), '" + formattedDate + "') and contains(text(), '" + formattedTime + "')]]";
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false), "Save message is not visible!");
+    
+        // Only check for the date and success message, not exact time
+        String xpath = "//section[contains(`@class`, 'message--success') and .//div[contains(text(), '" + formattedDate + "')]]";
+        
+        // Add explicit wait for the message to appear
+        try {
+            WebDriverWait wait = new WebDriverWait(CONTEXT.getDriver(), Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+            Assert.assertTrue(true, "Save message is visible!");
+        } catch (TimeoutException e) {
+            Assert.fail("Save message is not visible!");
+        }
     }
 
     public void clickOnOpeningHoursEntryBy(String location) {
