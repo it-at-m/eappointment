@@ -28,6 +28,7 @@ import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Gegebenseien;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.adminstration.AuthoritiesAndLocationsPage;
@@ -314,9 +315,7 @@ public class AdminSteps {
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(String name) {
         name = TestDataHelper.transformTestData(name);
         if (name.equals("<zufällig>")) {
-            RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-            randomNameGenerator.setRandomName();
-            name = randomNameGenerator.getName() + " " + randomNameGenerator.getSurname();
+            name = RandomNameHelper.generateRandomName();
         }
         TestDataHelper.setTestData("customer_name", name);
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.transformTestData(name));
@@ -473,10 +472,9 @@ public class AdminSteps {
             // Dienstleistung auswählen
             wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(dienstleistung);
 
-            // Spontankunden hinzufügen
-            RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-            randomNameGenerator.setRandomName();
-            TestDataHelper.setTestData(kunde, randomNameGenerator.getName() + " " + randomNameGenerator.getSurname());
+            // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+            String randomName = RandomNameHelper.generateRandomName();
+            TestDataHelper.setTestData(kunde, randomName);
             COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.getTestData(kunde));
             String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
 
@@ -507,12 +505,14 @@ public class AdminSteps {
             // Zeitslot
             COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>");
 
-            // Terminkunden hinzufügen
-            RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-            randomNameGenerator.setRandomName();
-            TestDataHelper.setTestData(kunde, randomNameGenerator.getName() + " " + randomNameGenerator.getSurname());
+            // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+            String randomName = RandomNameHelper.generateRandomName();
+            TestDataHelper.setTestData(kunde, randomName);
             COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.getTestData(kunde));
-            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(TestDataHelper.getTestData(kunde) + "@mailinator.com");
+            
+            // Create email-safe version of the name
+            String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
 
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(false);
 
@@ -537,10 +537,15 @@ public class AdminSteps {
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
-        RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-        randomNameGenerator.setRandomName();
-        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomNameGenerator.getName() + " " + randomNameGenerator.getSurname());
-        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(randomNameGenerator.getEmailConformName() + "@mailinator.com");
+        
+        // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+        String randomName = RandomNameHelper.generateRandomName();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomName);
+        
+        // Create email-safe version of the name
+        String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
+        
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }
 
@@ -549,10 +554,15 @@ public class AdminSteps {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
-        RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-        randomNameGenerator.setRandomName();
-        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomNameGenerator.getName() + " " + randomNameGenerator.getSurname());
-        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(randomNameGenerator.getEmailConformName() + "@mailinator.com");
+        
+        // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+        String randomName = RandomNameHelper.generateRandomName();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomName);
+        
+        // Create email-safe version of the name
+        String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
+        
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }
 
@@ -562,10 +572,15 @@ public class AdminSteps {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
-        RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-        randomNameGenerator.setRandomName();
-        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomNameGenerator.getName() + " " + randomNameGenerator.getSurname());
-        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(randomNameGenerator.getEmailConformName() + "@mailinator.com");
+        
+        // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+        String randomName = RandomNameHelper.generateRandomName();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(randomName);
+        
+        // Create email-safe version of the name
+        String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
+        
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(anmerkung);
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }

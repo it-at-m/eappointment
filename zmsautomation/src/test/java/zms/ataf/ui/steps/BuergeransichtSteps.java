@@ -18,6 +18,7 @@ import ataf.web.utils.DriverUtil;
 import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.base.services.ServicesUtil;
 import zms.ataf.ui.base.services.pojo.Service;
 import zms.ataf.ui.pages.buergeransicht.BuergeransichtPage;
@@ -138,9 +139,7 @@ public class BuergeransichtSteps {
     public void wenn_sie_auf_der_buergeransicht_ins_textfeld_name_string_eingeben(String name) {
         name = TestDataHelper.transformTestData(name);
         if (name.equals("<zufällig>")) {
-            RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-            randomNameGenerator.setRandomName();
-            name = randomNameGenerator.getName() + " " + randomNameGenerator.getSurname();
+            name = RandomNameHelper.generateRandomName();
         }
         TestDataHelper.setTestData("customer_name", name);
         BUERGERANSICHT_PAGE.enterCustomerName(name);
