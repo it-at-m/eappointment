@@ -923,36 +923,6 @@ CREATE TABLE `preferences` (
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `preferences`
---
-
-INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`) VALUES
-('scope', 0, 'appointment', 'deallocationDuration', '15', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'endInDaysDefault', '60', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'multipleSlotsEnabled', '0', '2022-04-12 11:31:15'),
-('scope', 0, 'appointment', 'reservationDuration', '15', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'startInDaysDefault', '2', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'callDisplayText', 'Herzlich Willkommen', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'firstNumber', '1', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'lastNumber', '999', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'maxNumberContingent', '999', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'processingTimeAverage', '12', '2022-03-16 14:04:36'),
-('scope', 1, 'appointment', 'endInDaysDefault', '60', '2019-08-23 15:22:22'),
-('scope', 1, 'appointment', 'startInDaysDefault', '0', '2019-08-23 15:22:22'),
-('scope', 3, 'appointment', 'deallocationDuration', '15', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'endInDaysDefault', '60', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'reservationDuration', '15', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'startInDaysDefault', '2', '2022-04-12 11:32:03'),
-('scope', 3, 'client', 'emailFrom', 'noreply@muenchen.de', '2022-04-12 11:32:03'),
-('scope', 3, 'notifications', 'headsUpTime', '10', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'callDisplayText', 'Herzlich Willkommen', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'firstNumber', '1', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'lastNumber', '999', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'maxNumberContingent', '999', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'processingTimeAverage', '12', '2022-04-12 11:32:03'),
-('scope', 3, 'ticketprinter', 'buttonName', 'Termin Wartebereich BB Leonrod', '2022-04-12 11:32:03'),
-('scope', 3, 'workstation', 'emergencyRefreshInterval', '5', '2022-04-12 11:32:03');
 
 -- --------------------------------------------------------
 
