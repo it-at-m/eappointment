@@ -134,12 +134,35 @@ class Availability extends Schema\Entity
             || ($type !== false && $this->type != $type)
             || !$this->hasDay($dateTime)
             || !$this->hasWeek($dateTime)
-            || ($this->getDuration() > 2 && $this->hasDayOff($dateTime))
+            || ($this->getDuration() > 1 && $this->hasDayOff($dateTime))
         ) {
             // Out of date range
             return false;
         }
         return true;
+    }
+
+    public function overridesDayOff(): bool
+    {
+        if ($this->getDuration() >= 2) {
+            return false;
+        }
+
+        $start = $this->getStartDateTime()->modify('00:00:00');
+        $end   = $this->getEndDateTime()->modify('23:59:59');
+        $current = clone $start;
+
+        while ($current <= $end) {
+            try {
+                if ($this->hasWeekDay($current) && $this->hasDayOff($current)) {
+                    return true;
+                }
+            } catch (Exception\DayoffMissing $e) {
+                // Scope doesn't have dayoff data, skip this day
+            }
+            $current = $current->modify('+1 day');
+        }
+        return false;
     }
 
     /**
