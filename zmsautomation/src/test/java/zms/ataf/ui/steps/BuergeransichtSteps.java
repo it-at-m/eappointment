@@ -13,7 +13,6 @@ import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.utils.DateUtils;
-import ataf.web.pages.RandomNameGenerator;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Und;
@@ -150,7 +149,7 @@ public class BuergeransichtSteps {
         email = TestDataHelper.transformTestData(email);
         if (email.equals("<mailinator>")) {
             if (TestDataHelper.getTestData("customer_name") != null) {
-                email = RandomNameGenerator.getEmailConformName(TestDataHelper.getTestData("customer_name")) + "@mailinator.com";
+                email = RandomNameHelper.getEmailConformName(TestDataHelper.getTestData("customer_name")) + "@mailinator.com";
             } else {
                 email = RandomStringUtils.randomAlphanumeric(8).toLowerCase() + "@mailinator.com";
             }

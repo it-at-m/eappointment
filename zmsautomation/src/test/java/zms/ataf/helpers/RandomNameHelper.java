@@ -1,17 +1,13 @@
 package zms.ataf.helpers;
 
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ataf.web.pages.RandomNameGenerator;
-import ataf.web.utils.DriverUtil;
+import java.util.Random;
 
 /**
- * Utility class for generating random names with fallback mechanism.
- * Provides a robust name generation that attempts to use ATAF's RandomNameGenerator
- * and falls back to local generation if that fails.
+ * Utility class for generating random names locally.
+ * Provides reliable name generation without external dependencies.
  */
 public final class RandomNameHelper {
     private static final Logger logger = LoggerFactory.getLogger(RandomNameHelper.class);
@@ -35,47 +31,58 @@ public final class RandomNameHelper {
     }
     
     /**
-     * Generates a random full name using ATAF's RandomNameGenerator with fallback.
-     * This method is for UI tests that have access to WebDriver.
-     *
-     * `@return` A random full name (first name + space + last name + optional numeric suffix)
+     * Generates a random full name using local name pool.
+     * 
+     * `@return` A random full name (first name + space + last name + numeric suffix)
      */
     public static String generateRandomName() {
-        try {
-            RandomNameGenerator randomNameGenerator = new RandomNameGenerator(DriverUtil.getDriver());
-            randomNameGenerator.setRandomName();
-            String name = randomNameGenerator.getName() + " " + randomNameGenerator.getSurname();
-            logger.info("✓ Random name generated via ATAF: {}", name);
-            return name;
-        } catch (Exception e) {
-            String fallbackName = generateFallbackRandomName();
-            logger.warn("⚠ ATAF RandomNameGenerator failed, using fallback: {} (Reason: {})", 
-                       fallbackName, e.getMessage());
-            return fallbackName;
-        }
-    }
-    
-    /**
-     * Generates a random full name locally without external dependencies.
-     * This method can be used in both UI and API tests.
-     *
-     * `@return` A random full name with numeric suffix for uniqueness
-     */
-    public static String generateFallbackRandomName() {
         String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
         String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
         int suffix = random.nextInt(9999);
-        return firstName + " " + lastName + suffix;
+        String fullName = firstName + " " + lastName + suffix;
+        logger.info("✓ Random name generated locally: {}", fullName);
+        return fullName;
     }
     
     /**
-     * Generates a simple random name for API tests without WebDriver dependency.
+     * Generates a random full name (alias for generateRandomName for clarity).
+     * 
+     * `@return` A random full name with numeric suffix for uniqueness
+     */
+    public static String generateFallbackRandomName() {
+        return generateRandomName();
+    }
+    
+    /**
+     * Generates a simple random name for API tests.
      * Uses timestamp-based approach for guaranteed uniqueness.
      *
      * `@return` A simple unique name
      */
     public static String generateSimpleRandomName() {
         long timestamp = System.currentTimeMillis();
-        return "Test User" + timestamp;
+        return "TestUser" + timestamp;
+    }
+    
+    /**
+     * Converts a name to an email-safe format.
+     * Removes special characters, umlauts, and spaces.
+     *
+     * `@param` name The name to convert
+     * `@return` Email-safe version of the name (lowercase, alphanumeric + underscore)
+     */
+    public static String getEmailConformName(String name) {
+        if (name == null || name.isEmpty()) {
+            return "testuser";
+        }
+        
+        return name.toLowerCase()
+                   .replace("ä", "ae")
+                   .replace("ö", "oe")
+                   .replace("ü", "ue")
+                   .replace("ß", "ss")
+                   .replaceAll("[^a-z0-9]", "_")
+                   .replaceAll("_+", "_")  // Replace multiple underscores with single
+                   .replaceAll("^_|_$", "");  // Remove leading/trailing underscores
     }
 }
