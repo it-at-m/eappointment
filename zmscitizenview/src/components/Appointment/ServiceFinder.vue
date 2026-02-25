@@ -165,9 +165,18 @@
     </div>
   </div>
   <div
-    ref="nextButton"
+    ref="buttons"
     class="m-button-group"
   >
+    <muc-button
+      v-if="service"
+      icon="arrow-left"
+      icon-shown-left
+      variant="secondary"
+      @click="reload"
+    >
+      <template #default>{{ t("change") }}</template>
+    </muc-button>
     <muc-button
       v-if="service"
       :disabled="isNextDisabled"
@@ -306,7 +315,7 @@ const shouldShowLessButton = computed(() => {
   );
 });
 
-const nextButton = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
 const selectedVariant = ref("");
 
 const onServiceSelected = (selected: ServiceImpl | undefined) => {
@@ -581,7 +590,6 @@ const setOftenSearchedService = (serviceId: string) => {
     (service) => service.id == serviceId
   );
   if (foundService) {
-    updateServiceLinkId(String(foundService.parentId ?? foundService.id));
     service.value = {
       ...foundService,
       providers: [] as OfficeImpl[],
@@ -593,9 +601,10 @@ const setOftenSearchedService = (serviceId: string) => {
 };
 
 const nextStep = () => emit("next");
+const reload = () => location.reload();
 
 const skipSubservices = () => {
-  nextButton.value?.firstChild?.focus();
+  buttons.value?.lastElementChild?.focus();
 };
 
 /**
