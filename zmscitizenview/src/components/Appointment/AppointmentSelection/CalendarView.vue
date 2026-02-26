@@ -482,7 +482,10 @@ function onLater(type: "hour" | "dayPart") {
     .container-wrapper:has(
         .muc-calendar-view-full-size
           > .muc-calendar-container:nth-of-type(2)
-          > :nth-child(36)
+          > :nth-child(36) 
+          /* :nth-child(36) checks whether the day grid has at least 36 direct children.
+          With 7 columns, 35 items fit into 5 rows; the 36th item means a 6th row is needed,
+          so we increase the calendar height only for 6-week months. */
       )
       .container-view-size
   ) {
