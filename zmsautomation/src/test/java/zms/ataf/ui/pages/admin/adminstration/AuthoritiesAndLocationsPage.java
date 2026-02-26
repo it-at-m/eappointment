@@ -74,15 +74,11 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Speichern']", LocatorType.XPATH, false);
     
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String formattedDate = LocalDate.now().format(dateFormatter);
-    
-        // Only check for the date and success message, not exact time
-        String xpath = "//section[contains(`@class`, 'message--success') and .//div[contains(text(), '" + formattedDate + "')]]";
+        // Just check that the success section appeared with the success heading
+        String xpath = "//section[contains(`@class`, 'message--success')]//h2[contains(text(), 'Speichern erfolgreich')]";
         
-        // Add explicit wait for the message to appear
         try {
-            WebDriverWait wait = new WebDriverWait(CONTEXT.getDriver(), Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
             Assert.assertTrue(true, "Save message is visible!");
         } catch (TimeoutException e) {
