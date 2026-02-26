@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Calendar Component -->
-    <div class="m-component">
+    <div class="m-component calendar-root">
       <muc-calendar
         :key="calendarKey"
         :model-value="selectedDay"
@@ -475,5 +475,19 @@ function onLater(type: "hour" | "dayPart") {
 .no-top-margin,
 .no-top-margin h3 {
   margin-top: 0 !important;
+}
+
+.calendar-root
+  :deep(
+    .container-wrapper:has(
+        .muc-calendar-view-full-size
+          > .muc-calendar-container:nth-of-type(2)
+          > :nth-child(36)
+      )
+      .container-view-size
+  ) {
+  --cal-container-view-height: 336px !important;
+  height: var(--cal-container-view-height) !important;
+  min-height: var(--cal-container-view-height) !important;
 }
 </style>
