@@ -9,7 +9,6 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -72,11 +71,11 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
         By parkedTable = By.id("table-parked-appointments");
         new WebDriverWait(DRIVER, Duration.ofSeconds(15))
-            .until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+            .until(ExpectedCondition.visibilityOfElementLocated(parkedTable));
     
         By rowByNumber = By.xpath("//table[`@id`='table-parked-appointments']//tbody/tr[.//td[normalize-space()='" + numOnly + "']]");
         WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-            .until(ExpectedConditions.presenceOfElementLocated(rowByNumber));
+            .until(ExpectedCondition.presenceOfElementLocated(rowByNumber));
     
         scrollToCenterByVisibleElement(row);
     
