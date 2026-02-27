@@ -141,9 +141,6 @@ class RequestsView extends Component {
     }
 
     onParentChange = (rowIndex, rawValue) => {
-        console.log("test")
-        console.log(rowIndex)
-        console.log(rawValue)
         const parent_id = rawValue === '' ? null : Number(rawValue);
         const parent = parent_id == null
             ? null
