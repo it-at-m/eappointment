@@ -72,15 +72,17 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void saveLocationChanges() {
         ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
-        // Click by CSS (stable attributes)
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button--positive.type-save[name='save']", LocatorType.CSS, false);
     
-        // Wait for success toast/section
-        By successHeading = By.cssSelector("section.message.message--success h2.message__heading");
+        // Click the "Speichern" button via XPATH (no CSS enum needed)
+        String saveBtnXpath = "//button[`@name`='save' and contains(`@class`,'button--positive') and contains(`@class`,'type-save')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, saveBtnXpath, LocatorType.XPATH, false);
+    
+        // Wait for the success message (valid XPath — no backticks)
+        By successHeading = By.xpath("//section[contains(`@class`,'message--success')]//h2[contains(normalize-space(.),'Speichern erfolgreich')]");
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(successHeading));
-        } catch (TimeoutException e) {
+        } catch (org.openqa.selenium.TimeoutException e) {
             Assert.fail("Save message is not visible!");
         }
     }
