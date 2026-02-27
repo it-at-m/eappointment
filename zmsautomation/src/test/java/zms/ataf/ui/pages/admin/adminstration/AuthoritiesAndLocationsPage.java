@@ -1,6 +1,7 @@
 package zms.ataf.ui.pages.admin.adminstration;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -255,7 +256,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         );
     
         try {
-            Alert alert = new WebDriverWait(driver, Duration.ofSeconds(5))
+            Alert alert = new WebDriverWait(getDriver(), Duration.ofSeconds(5))
                     .until(ExpectedConditions.alertIsPresent());
             alert.accept();
         } catch (TimeoutException ignored) {}
