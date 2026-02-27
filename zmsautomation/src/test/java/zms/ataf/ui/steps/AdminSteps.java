@@ -912,7 +912,7 @@ public class AdminSteps {
     public void erscheint_ein_popup_fenster_zum_loeschen_vom_standort(String expectedText) {
         ScenarioLogManager.getLogger().info("Checking for delete confirmation popup with text: " + expectedText);
         
-        By modal = By.xpath("//*[contains(`@class`,'modal') or contains(`@class`,'dialog') or `@role`='dialog' or contains(`@class`,'popup')]");
+        By modal = By.xpath("//*[contains(@class,'modal') or contains(@class,'dialog') or @role='dialog' or contains(@class,'popup')]");
         WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(10));
         
         WebElement dlg;
