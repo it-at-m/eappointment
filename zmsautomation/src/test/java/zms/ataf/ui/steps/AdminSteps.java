@@ -929,7 +929,7 @@ public class AdminSteps {
                 .until(ExpectedConditions.or(
                     ExpectedConditions.textToBePresentInElement(dlg, expectedText),
                     ExpectedConditions.textToBePresentInElementLocated(
-                        By.xpath("//*[contains(`@class`,'modal') or contains(`@class`,'dialog') or `@role`='dialog']//*[self::h1 or self::h2 or self::h3 or self::p or self::div]"), 
+                        By.xpath("//*[contains(@class,'modal') or contains(@class,'dialog') or @role='dialog']//*[self::h1 or self::h2 or self::h3 or self::p or self::div]"), 
                         expectedText)
                 ));
         } catch (TimeoutException e) {

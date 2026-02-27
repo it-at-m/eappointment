@@ -71,7 +71,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
     
         // CORRECT XPath (no backticks!)
-        final String saveBtnXpath = "//button[@name='save' and contains(`@class`,'type-save')]";
+        final String saveBtnXpath = "//button[@name='save' and contains(@class,'type-save')]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, saveBtnXpath, LocatorType.XPATH, false);
     
         // Multiple success message selectors
@@ -79,7 +79,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
             By.cssSelector("section.message.message--success"),
             By.cssSelector("div.message.message--success"),
             By.xpath("//*[contains(@class,'message--success')]"),
-            By.xpath("//*[@role='alert' and contains(`@class`,'message--success')]")
+            By.xpath("//*[@role='alert' and contains(@class,'message--success')]")
         };
     
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
@@ -115,7 +115,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         // Wait for editor elements - CORRECT XPath (no backticks!)
         By formLocator = By.xpath(
             "//*[@type='time' or (self::button and normalize-space(.)='Speichern') or " +
-            "contains(`@class`,'opening') or contains(`@class`,'oeffnungszeit')]"
+            "contains(@class,'opening') or contains(@class,'oeffnungszeit')]"
         );
     
         try {
@@ -126,7 +126,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
             // fallback: expand accordion
         }
     
-        final String ACCORDION_BTN_XPATH = "(//h3[contains(`@class`,'accordion__heading')]/button)[last()]";
+        final String ACCORDION_BTN_XPATH = "(//h3[contains(@class,'accordion__heading')]/button)[last()]";
         WebElement headerBtn = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, ACCORDION_BTN_XPATH, true, true);
     
         String ariaExpanded = String.valueOf(headerBtn.getAttribute("aria-expanded"));
