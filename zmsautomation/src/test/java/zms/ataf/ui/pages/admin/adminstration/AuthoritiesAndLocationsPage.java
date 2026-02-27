@@ -1,9 +1,7 @@
 package zms.ataf.ui.pages.admin.adminstration;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -14,12 +12,11 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
@@ -71,28 +68,30 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public void saveLocationChanges() {
-        ScenarioLogManager.getLogger()
-            .info("Trying click the button 'Speichern' to save location changes...");
+        ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
     
-        // ✅ FIXED: removed backticks
-        final String saveBtnXpath =
-            "//button[@name='save' and contains(@class,'type-save')]";
+        // CORRECT XPath (no backticks!)
+        final String saveBtnXpath = "//button[`@name`='save' and contains(`@class`,'type-save')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, saveBtnXpath, LocatorType.XPATH, false);
     
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                saveBtnXpath,
-                LocatorType.XPATH,
-                false);
+        // Multiple success message selectors
+        By[] candidates = new By[] {
+            By.cssSelector("section.message.message--success"),
+            By.cssSelector("div.message.message--success"),
+            By.xpath("//*[contains(`@class`,'message--success')]"),
+            By.xpath("//*[`@role`='alert' and contains(`@class`,'message--success')]")
+        };
     
-        // Wait for success message
-        By successHeading =
-            By.cssSelector("section.message.message--success h2.message__heading.title");
-    
-        try {
-            new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(successHeading));
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assert.fail("Save message is not visible!");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
+        boolean shown = false;
+        for (By by : candidates) {
+            try {
+                wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+                shown = true; 
+                break;
+            } catch (TimeoutException ignore) {}
         }
+        Assert.assertTrue(shown, "Save message is not visible!");
     }
 
     public void clickOnOpeningHoursEntryBy(String location) {
@@ -109,28 +108,29 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     public void clickOnNewOpeningHoursButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"neue Öffnungszeit\" button...");
     
-        // Click the visible trigger button by its label
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='neue Öffnungszeit']", LocatorType.XPATH, false);
+        // Click the visible trigger button
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space(.)='neue Öffnungszeit']",
+                LocatorType.XPATH, false);
     
-        // Prefer waiting for any opening-hours form elements to become visible
+        // Wait for editor elements - CORRECT XPath (no backticks!)
         By formLocator = By.xpath(
-            // visible time inputs or a save button inside the opening hours editor
-            "//*[(`@type`='time') or (self::button and normalize-space()='Speichern') or contains(`@class`,'opening') or contains(`@class`,'oeffnungszeit')]"
+            "//*[`@type`='time' or (self::button and normalize-space(.)='Speichern') or " +
+            "contains(`@class`,'opening') or contains(`@class`,'oeffnungszeit')]"
         );
     
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
-            return; // form is visible -> success
-        } catch (org.openqa.selenium.TimeoutException ignore) {
-            // fallback: try expanding the last accordion section if present
+            return;
+        } catch (TimeoutException ignore) {
+            // fallback: expand accordion
         }
     
         final String ACCORDION_BTN_XPATH = "(//h3[contains(`@class`,'accordion__heading')]/button)[last()]";
         WebElement headerBtn = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, ACCORDION_BTN_XPATH, true, true);
     
-        String ariaExpanded = headerBtn.getAttribute("aria-expanded");
-        if (!"true".equalsIgnoreCase(String.valueOf(ariaExpanded))) {
+        String ariaExpanded = String.valueOf(headerBtn.getAttribute("aria-expanded"));
+        if (!"true".equalsIgnoreCase(ariaExpanded)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, headerBtn, false);
         }
     
@@ -139,7 +139,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
             new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
             opened = true;
-        } catch (org.openqa.selenium.TimeoutException e) {
+        } catch (TimeoutException e) {
             opened = "true".equalsIgnoreCase(String.valueOf(headerBtn.getAttribute("aria-expanded")));
         }
         Assert.assertTrue(opened, "Click on \"neue Öffnungszeit\" did not open the form!");

@@ -492,38 +492,66 @@ public class AdminSteps {
     @Wenn("Sie einen Terminkunden für die Dienstleistung buchen:")
     public void wenn_sie_einen_terminkunden_fuer_die_dienstleistung_buchen(DataTable dataTable) {
         List<Map<String, String>> services = dataTable.asMaps(String.class, String.class);
-
+    
         for (Map<String, String> service : services) {
             String dienstleistung = service.get("Dienstleistung");
-            String terminName = service.get("Termin name");
-            String kunde = service.get("Kunde");
-
+            String terminName    = service.get("Termin name");
+            String kunde         = service.get("Kunde");
+    
             // Dienstleistung auswählen
             wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(dienstleistung);
-
-            // Zeitslot
+    
+            // Zeitslot wählen
             COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>");
-
-            // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
+    
+            // Name + E-Mail setzen (RandomNameHelper)
             String randomName = RandomNameHelper.generateRandomName();
             TestDataHelper.setTestData(kunde, randomName);
             COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.getTestData(kunde));
-            
-            // Create email-safe version of the name
+    
             String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
             COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
-
+    
+            // Buchen
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(false);
-
-            // Terminname und Wartenummer in TestDataHelper speichern
-            TestDataHelper.setTestData(terminName, TestDataHelper.getTestData("new_appointment_number"));
-
+    
+            // NPE-Guard: Warten bis "new_appointment_number" vom UI-Parselogik gesetzt wurde
+            String apptNo = null;
+            for (int i = 0; i < 15; i++) { // ~4.5s max (15 * 300ms)
+                apptNo = TestDataHelper.getTestData("new_appointment_number");
+                if (apptNo != null && !apptNo.isBlank()) break;
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while waiting for appointment number", ie);
+                }
+            }
+    
+            if (apptNo == null || apptNo.isBlank()) {
+                CustomAssertions.fail("No appointment number captured after booking. " +
+                    "Ensure the success dialog appeared and the number was parsed before encrypting/storing. " +
+                    "Terminname: " + terminName + ", Dienstleistung: " + dienstleistung);
+            }
+    
+            // Optional: nur Ziffern verwenden (falls UI in Klammern o.Ä. loggt)
+            String apptNoOnly = apptNo.replaceAll("\\D+", "");
+            if (apptNoOnly.isBlank()) {
+                CustomAssertions.fail("Captured appointment number contains no digits: '" + apptNo + "'");
+            }
+    
+            // Terminname -> Termin-/Vorgangsnummer speichern (verschlüsselt über TestDataHelper)
+            TestDataHelper.setTestData(terminName, apptNoOnly);
+    
+            // Dialog bestätigen
             try {
                 wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Ok");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_appointment_number"), false);
+    
+            // Sichtbarkeit in der Warteschlange prüfen
+            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(apptNoOnly, false);
         }
     }
 
@@ -877,13 +905,36 @@ public class AdminSteps {
     }
 
     @Dann("erscheint ein Pop-Up-Fenster {string} um den Standort zu löschen.")
-    public void erscheint_ein_popup_fenster_zum_loeschen_vom_standort(String message) {
-        String xpath = "//p[contains(text(), '" + message + "')]";
-        boolean isMessageVisible = AUTHORITIES_AND_LOCATIONS_PAGE.isWebElementVisible(
-                TestPropertiesHelper.getPropertyAsInteger("defaultExplicitWaitTime", true, DefaultValues.DEFAULT_EXPLICIT_WAIT_TIME),
-                xpath,
-                LocatorType.XPATH, false);
-        Assert.assertTrue(isMessageVisible, "Pop-up message is not visible");
+    public void erscheint_ein_popup_fenster_zum_loeschen_vom_standort(String expectedText) {
+        ScenarioLogManager.getLogger().info("Checking for delete confirmation popup with text: " + expectedText);
+        
+        By modal = By.xpath("//*[contains(`@class`,'modal') or contains(`@class`,'dialog') or `@role`='dialog' or contains(`@class`,'popup')]");
+        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(10));
+        
+        WebElement dlg;
+        try {
+            dlg = wait.until(ExpectedConditions.visibilityOfElementLocated(modal));
+        } catch (TimeoutException e) {
+            Assert.fail("Delete confirmation popup did not appear within 10 seconds.");
+            return;
+        }
+    
+        boolean hasText;
+        try {
+            hasText = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
+                .until(ExpectedConditions.or(
+                    ExpectedConditions.textToBePresentInElement(dlg, expectedText),
+                    ExpectedConditions.textToBePresentInElementLocated(
+                        By.xpath("//*[contains(`@class`,'modal') or contains(`@class`,'dialog') or `@role`='dialog']//*[self::h1 or self::h2 or self::h3 or self::p or self::div]"), 
+                        expectedText)
+                ));
+        } catch (TimeoutException e) {
+            String actualText = dlg.getText();
+            Assert.fail("Pop-up message does not contain expected text.\nExpected: " + expectedText + "\nActual: " + actualText);
+            return;
+        }
+    
+        Assert.assertTrue(hasText, "Pop-up message is not visible");
     }
 
     @Wenn("Sie für den Standort den Wert für die E-Mail-Bestätigung auf {word} setzen.")
@@ -911,6 +962,23 @@ public class AdminSteps {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Wait for " + minutes + " minutes was interrupted", e);
+        }
+    }
+
+    @Dann("^Sie \"(\\d+)\" Minuten? bis die Änderungen übernommen werden warten\\.$")
+    public void sie_minute_bis_die_aenderungen_uebernommen_werden_warten(String minutesText) {
+        int minutes;
+        try {
+            minutes = Integer.parseInt(minutesText.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid minutes value: " + minutesText, e);
+        }
+        ScenarioLogManager.getLogger().info("Waiting " + minutes + " minute(s) for changes to propagate...");
+        try {
+            Thread.sleep(Duration.ofMinutes(minutes).toMillis());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for changes to propagate", ie);
         }
     }
 

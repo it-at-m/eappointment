@@ -203,11 +203,27 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void isCustomerVisibleInFinishedTable(String customer) {
-        ScenarioLogManager.getLogger().info("Checking for customer(" + customer + ") to be visible under finished appointments...");
+        ScenarioLogManager.getLogger().info("Checking for customer(" + customer + ") under finished appointments...");
         showTheFinishedAppointmentTable();
         CONTEXT.waitForSpinners();
+    
+        By finishedTable = By.id(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID);
+        WebDriverWait w = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
+    
+        try {
+            w.until(ExpectedConditions.visibilityOfElementLocated(finishedTable));
+        } catch (TimeoutException first) {
+            ScenarioLogManager.getLogger().warn("Finished table not visible on first attempt, retrying...");
+            showTheFinishedAppointmentTable();
+            CONTEXT.waitForSpinners();
+            try {
+                w.until(ExpectedConditions.visibilityOfElementLocated(finishedTable));
+            } catch (TimeoutException second) {
+                Assert.fail("Finished appointments table did not become visible after retry.");
+            }
+        }
+    
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, false));
-        // Use the transaction number to verify its presence in the 'Name' column
         checkForValuesInFinishedTableColumn("Name", customer);
     }
 
