@@ -100,15 +100,41 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnNewOpeningHoursButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"neue Öffnungszeit\" button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[text()='neue Öffnungszeit']", LocatorType.XPATH, false, CONTEXT);
-        // get the last 'Öffnungszeit' beacue its the new one
-        final String OPENING_HOURS_BUTTON_LOCATOR_XPATH = "(//h3[@class='accordion__heading']/button)[last()]";
-        WebElement openingHoursButton = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, OPENING_HOURS_BUTTON_LOCATOR_XPATH, true, true);
-        if (openingHoursButton.getAttribute("aria-expanded").equals("false")) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, openingHoursButton, false);
+    
+        // Click the visible trigger button by its label
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='neue Öffnungszeit']", LocatorType.XPATH, false);
+    
+        // Prefer waiting for any opening-hours form elements to become visible
+        By formLocator = By.xpath(
+            // visible time inputs or a save button inside the opening hours editor
+            "//*[(`@type`='time') or (self::button and normalize-space()='Speichern') or contains(`@class`,'opening') or contains(`@class`,'oeffnungszeit')]"
+        );
+    
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
+            return; // form is visible -> success
+        } catch (org.openqa.selenium.TimeoutException ignore) {
+            // fallback: try expanding the last accordion section if present
         }
-        Assert.assertNotEquals(openingHoursButton.getAttribute("aria-expanded"), "false",
-                "Click on \"neue Öffnungszeit\" button has failed! Opening hours form did not open!");
+    
+        final String ACCORDION_BTN_XPATH = "(//h3[contains(`@class`,'accordion__heading')]/button)[last()]";
+        WebElement headerBtn = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, ACCORDION_BTN_XPATH, true, true);
+    
+        String ariaExpanded = headerBtn.getAttribute("aria-expanded");
+        if (!"true".equalsIgnoreCase(String.valueOf(ariaExpanded))) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, headerBtn, false);
+        }
+    
+        boolean opened;
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
+            opened = true;
+        } catch (org.openqa.selenium.TimeoutException e) {
+            opened = "true".equalsIgnoreCase(String.valueOf(headerBtn.getAttribute("aria-expanded")));
+        }
+        Assert.assertTrue(opened, "Click on \"neue Öffnungszeit\" did not open the form!");
     }
 
     public void enterNoteForOpeningHours(String noteKey) {

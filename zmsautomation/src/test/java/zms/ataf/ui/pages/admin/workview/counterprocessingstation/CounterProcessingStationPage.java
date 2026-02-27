@@ -155,14 +155,29 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void isCustomerVisibleInQueue(String transactionNumber, boolean isSpontaneousCustomer) {
-        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ?
-                "spontaneous " :
-                "") + "customer with Transaction number: (" + transactionNumber + ") to be visible in waiting list...");
+        // sanitize: keep only digits (logs sometimes show "(1)")
+        String numOnly = transactionNumber == null ? "" : transactionNumber.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ? "spontaneous " : "")
+                + "customer with Transaction number: (" + numOnly + ") to be visible in waiting list...");
+    
         CONTEXT.waitForSpinners();
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false));
+    
+        // Ensure correct filter is active (toggle helper should leave it ON when requested)
         showSpontaneousCustomers(isSpontaneousCustomer);
-        // Use the transaction number to verify its presence in the 'Nr.' column
-        checkForValuesInQueueColumn("Nr.", transactionNumber);
+    
+        // Wait until the queue table is visible
+        By queueTable = By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID);
+        new org.openqa.selenium.support.ui.WebDriverWait(DRIVER, java.time.Duration.ofSeconds(15))
+            .until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(queueTable));
+    
+        // Wait for a row in ‘Nr.’ column to equal our number
+        By rowByNumber = By.xpath("//table[`@id`='table-queued-appointments']//tbody/tr[.//td[normalize-space()='" + numOnly + "']]");
+        new org.openqa.selenium.support.ui.WebDriverWait(DRIVER, java.time.Duration.ofSeconds(10))
+            .until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNumber));
+    
+        // Final assertion with existing helper
+        checkForValuesInQueueColumn("Nr.", numOnly);
     }
 
     public void isCustomerVisibleInParkingTable(String transactionNumber, boolean isSpontaneousCustomer) {

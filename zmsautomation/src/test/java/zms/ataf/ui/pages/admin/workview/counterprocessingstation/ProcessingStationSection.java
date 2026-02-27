@@ -68,11 +68,24 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
-        ScenarioLogManager.getLogger().info("Trying to call customer with number '" + number + "' from parking table...");
-        final String CUSTOMER_NR_USING_NUMBER_XPATH = "//table[@id='table-parked-appointments']/tbody/tr/td[3][contains(text(), '" + number + "')]/following-sibling::td[8]//a";
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NUMBER_XPATH, LocatorType.XPATH, true, CONTEXT),
-                "Number: " + number + " is not visible!");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NUMBER_XPATH, LocatorType.XPATH, false, CONTEXT);
+        String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
+        By parkedTable = By.id("table-parked-appointments");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(15))
+            .until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+    
+        By rowByNumber = By.xpath("//table[`@id`='table-parked-appointments']//tbody/tr[.//td[normalize-space()='" + numOnly + "']]");
+        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+            .until(ExpectedConditions.presenceOfElementLocated(rowByNumber));
+    
+        scrollToCenterByVisibleElement(row);
+    
+        // Re-find the row to avoid stale element on dynamic re-render
+        row = DRIVER.findElement(rowByNumber);
+    
+        // Adjust selector to your per-row “call” action
+        // If there’s a specific icon/button, refine below accordingly:
+        WebElement callBtn = row.findElement(By.cssSelector("button, a"));
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, callBtn, false);
     }
 
     public void validateCustomerCall() {
