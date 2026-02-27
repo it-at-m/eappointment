@@ -9,6 +9,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -68,23 +69,38 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
+        ScenarioLogManager.getLogger()
+            .info("Trying to call customer from parking table with number \"" + number + "\"...");
+    
         String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
+    
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
+    
+        // Wait until parked table is visible
         By parkedTable = By.id("table-parked-appointments");
-        new WebDriverWait(DRIVER, Duration.ofSeconds(15))
-            .until(ExpectedCondition.visibilityOfElementLocated(parkedTable));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
     
-        By rowByNumber = By.xpath("//table[`@id`='table-parked-appointments']//tbody/tr[.//td[normalize-space()='" + numOnly + "']]");
-        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-            .until(ExpectedCondition.presenceOfElementLocated(rowByNumber));
+        // ✅ FIXED: removed invalid backticks from XPath
+        By rowByNumber = By.xpath(
+            "//table[@id='table-parked-appointments']//tbody/tr[.//td[normalize-space()='" 
+            + numOnly + "']]"
+        );
     
+        // Wait until the specific row is present
+        WebElement row = wait.until(
+            ExpectedConditions.presenceOfElementLocated(rowByNumber)
+        );
+    
+        // Scroll to row (helps avoid click interception)
         scrollToCenterByVisibleElement(row);
     
-        // Re-find the row to avoid stale element on dynamic re-render
+        // Re-locate row to avoid stale element after scroll/re-render
         row = DRIVER.findElement(rowByNumber);
     
-        // Adjust selector to your per-row “call” action
-        // If there’s a specific icon/button, refine below accordingly:
+        // Adjust selector if needed to target the exact call button
         WebElement callBtn = row.findElement(By.cssSelector("button, a"));
+    
+        // Use your existing wrapper for clicking
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, callBtn, false);
     }
 
@@ -325,7 +341,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void submitForwardAppointment() {
         ScenarioLogManager.getLogger().info("Trying to click on 'Termin buchen' for appointment forwarding...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[text()='Termin buchen']", LocatorType.XPATH, false, CONTEXT);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(normalize-space(), 'Termin buchen')]", LocatorType.XPATH, false, CONTEXT);
     }
 
     public void checkForNoWaitingCustomersMessage() {

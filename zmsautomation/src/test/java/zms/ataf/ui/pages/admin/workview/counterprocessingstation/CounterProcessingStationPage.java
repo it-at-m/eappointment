@@ -155,26 +155,37 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void isCustomerVisibleInQueue(String transactionNumber, boolean isSpontaneousCustomer) {
+
         // sanitize: keep only digits (logs sometimes show "(1)")
         String numOnly = transactionNumber == null ? "" : transactionNumber.replaceAll("\\D+", "");
-        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ? "spontaneous " : "")
-                + "customer with Transaction number: (" + numOnly + ") to be visible in waiting list...");
+    
+        ScenarioLogManager.getLogger().info(
+            "Checking for " + (isSpontaneousCustomer ? "spontaneous " : "")
+            + "customer with Transaction number: (" + numOnly + ") to be visible in waiting list..."
+        );
     
         CONTEXT.waitForSpinners();
-        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false));
     
-        // Ensure correct filter is active (toggle helper should leave it ON when requested)
+        scrollToCenterByVisibleElement(
+            findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false)
+        );
+    
+        // Ensure correct filter is active
         showSpontaneousCustomers(isSpontaneousCustomer);
     
         // Wait until the queue table is visible
         By queueTable = By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID);
-        new org.openqa.selenium.support.ui.WebDriverWait(DRIVER, java.time.Duration.ofSeconds(15))
-            .until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(queueTable));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(15))
+            .until(ExpectedConditions.visibilityOfElementLocated(queueTable));
     
-        // Wait for a row in ‘Nr.’ column to equal our number
-        By rowByNumber = By.xpath("//table[`@id`='table-queued-appointments']//tbody/tr[.//td[normalize-space()='" + numOnly + "']]");
-        new org.openqa.selenium.support.ui.WebDriverWait(DRIVER, java.time.Duration.ofSeconds(10))
-            .until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNumber));
+        // ✅ FIXED: removed backticks
+        By rowByNumber = By.xpath(
+            "//table[@id='table-queued-appointments']//tbody/tr[.//td[normalize-space()='"
+            + numOnly + "']]"
+        );
+    
+        new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+            .until(ExpectedConditions.presenceOfElementLocated(rowByNumber));
     
         // Final assertion with existing helper
         checkForValuesInQueueColumn("Nr.", numOnly);
@@ -465,7 +476,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnBookAppointmentButton(boolean assertErrors) {
         ScenarioLogManager.getLogger().info("Trying to click on \"book appointment\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[text()='Termin buchen']", LocatorType.XPATH, false, CONTEXT);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(normalize-space(), 'Termin buchen')]", LocatorType.XPATH, false, CONTEXT);
 
         // Warten auf eine Fehlermeldung oder Erfolgsmeldung
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");

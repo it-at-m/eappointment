@@ -71,14 +71,22 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public void saveLocationChanges() {
-        ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
+        ScenarioLogManager.getLogger()
+            .info("Trying click the button 'Speichern' to save location changes...");
     
-        // CLEAN XPath (no backticks)
-        final String saveBtnXpath = "//button[`@name`='save' and contains(`@class`,'type-save')]";
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, saveBtnXpath, LocatorType.XPATH, false);
+        // ✅ FIXED: removed backticks
+        final String saveBtnXpath =
+            "//button[@name='save' and contains(@class,'type-save')]";
     
-        // Wait for success message (use Selenium’s By; no LocatorType.CssEnum dependencies)
-        By successHeading = By.cssSelector("section.message.message--success h2.message__heading.title");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
+                saveBtnXpath,
+                LocatorType.XPATH,
+                false);
+    
+        // Wait for success message
+        By successHeading =
+            By.cssSelector("section.message.message--success h2.message__heading.title");
+    
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(successHeading));
