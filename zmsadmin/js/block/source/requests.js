@@ -149,7 +149,9 @@ class RequestsView extends Component {
         this.props.changeHandler(`requests[${rowIndex}][parent_id]`, parent_id);
         this.props.changeHandler(`requests[${rowIndex}][link]`, parent?.link || '');
         this.props.changeHandler(`requests[${rowIndex}][group]`, parent?.group || '');
-        this.props.changeHandler(`requests[${rowIndex}][data]`, parent?.data || {});
+        const data = {...(parent?.data || {})};
+        data.combinable = [];
+        this.props.changeHandler(`requests[${rowIndex}][data]`, data);
     };
 
     getRequestsWithLabels(onChange, onDeleteClick) {
