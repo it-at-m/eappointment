@@ -141,6 +141,9 @@ class RequestsView extends Component {
     }
 
     onParentChange = (rowIndex, rawValue) => {
+        console.log("test")
+        console.log(rowIndex)
+        console.log(rawValue)
         const parent_id = rawValue === '' ? null : Number(rawValue);
         const parent = parent_id == null
             ? null
@@ -149,7 +152,9 @@ class RequestsView extends Component {
         this.props.changeHandler(`requests[${rowIndex}][parent_id]`, parent_id);
         this.props.changeHandler(`requests[${rowIndex}][link]`, parent?.link || '');
         this.props.changeHandler(`requests[${rowIndex}][group]`, parent?.group || '');
-        this.props.changeHandler(`requests[${rowIndex}][data]`, parent?.data || {});
+        const data = {...(parent?.data || {})};
+        data.combinable = [];
+        this.props.changeHandler(`requests[${rowIndex}][data]`, data);
     };
 
     getRequestsWithLabels(onChange, onDeleteClick) {
