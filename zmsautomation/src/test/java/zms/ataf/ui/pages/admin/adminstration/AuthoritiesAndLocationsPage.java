@@ -256,7 +256,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         );
     
         try {
-            Alert alert = new WebDriverWait(getDriver(), Duration.ofSeconds(5))
+            Alert alert = new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                     .until(ExpectedConditions.alertIsPresent());
             alert.accept();
         } catch (TimeoutException ignored) {}
