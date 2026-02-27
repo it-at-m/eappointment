@@ -31,12 +31,7 @@
             >
               {{ selectedService.count }}x
               <a
-                :href="
-                  getServiceBaseURL() +
-                  (selectedService.parentId
-                    ? selectedService.parentId
-                    : selectedService.id)
-                "
+                :href="getServiceBaseURL() + +(serviceLinkId || '')"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -384,6 +379,10 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { serviceLinkId } = inject<ServiceLinkProvider>(
+  "serviceLinkProvider"
+) as ServiceLinkProvider;
 
 const { isExpired } = useReservationTimer();
 
