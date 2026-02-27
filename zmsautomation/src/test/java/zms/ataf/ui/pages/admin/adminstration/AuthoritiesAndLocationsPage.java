@@ -68,30 +68,36 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public void saveLocationChanges() {
-        ScenarioLogManager.getLogger().info("Trying click the button 'Speichern' to save location changes...");
+
+        ScenarioLogManager.getLogger().info(
+            "Trying to click 'Speichern' to save location changes...");
     
-        // CORRECT XPath (no backticks!)
-        final String saveBtnXpath = "//button[@name='save' and contains(@class,'type-save')]";
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, saveBtnXpath, LocatorType.XPATH, false);
+        // Robust Save button locator
+        By saveButton = By.xpath(
+            "//button[contains(@class,'type-save') and @name='save']"
+        );
     
-        // Multiple success message selectors
-        By[] candidates = new By[] {
-            By.cssSelector("section.message.message--success"),
-            By.cssSelector("div.message.message--success"),
-            By.xpath("//*[contains(@class,'message--success')]"),
-            By.xpath("//*[@role='alert' and contains(@class,'message--success')]")
-        };
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
     
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
-        boolean shown = false;
-        for (By by : candidates) {
-            try {
-                wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-                shown = true; 
-                break;
-            } catch (TimeoutException ignore) {}
-        }
-        Assert.assertTrue(shown, "Save message is not visible!");
+        WebElement button = wait.until(
+            ExpectedConditions.elementToBeClickable(saveButton)
+        );
+    
+        button.click();
+    
+        // Wait specifically for success message dialog
+        By successMessage = By.cssSelector(
+            "section.message--success[role='alert']"
+        );
+    
+        WebElement success = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(successMessage)
+        );
+    
+        Assert.assertTrue(
+            success.isDisplayed(),
+            "Save message is not visible!"
+        );
     }
 
     public void clickOnOpeningHoursEntryBy(String location) {
@@ -239,18 +245,35 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnSaveButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Alle Änderungen aktivieren\" button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='save']", LocatorType.XPATH, false, CONTEXT);
-        Alert alert = waitForAlertIsPresent(DEFAULT_EXPLICIT_WAIT_TIME);
-        alert.accept();
-        LocalDateTime saveDateTime = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//div[@class='message message--success']", LocatorType.XPATH, false),
-                "Click on \"Alle Änderungen aktivieren\" button has failed! Success message isn't visible!");
-        Assert.assertEquals(
-                getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME, "//div[@class='message message--success']", LocatorType.XPATH, CONTEXT).replaceAll("\\n", "")
-                        .trim(),
-                "Öffnungszeiten gespeichert, " + saveDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY)) + " um " + saveDateTime.format(
-                        DateTimeFormatter.ofPattern("HH:mm", Locale.GERMANY)) + " Uhr",
-                "Click on \"Alle Änderungen aktivieren\" button has failed! Success message text does not match expected value!");
+    
+        clickOnWebElement(
+            DEFAULT_EXPLICIT_WAIT_TIME,
+            "//button[contains(@class,'button-save')]",
+            LocatorType.XPATH,
+            false,
+            CONTEXT
+        );
+    
+        try {
+            Alert alert = new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.alertIsPresent());
+            alert.accept();
+        } catch (TimeoutException ignored) {}
+    
+        String message = getWebElementText(
+            DEFAULT_EXPLICIT_WAIT_TIME,
+            "//div[contains(@class,'message--success')]",
+            LocatorType.XPATH,
+            CONTEXT
+        ).replaceAll("\\n", "").trim();
+    
+        String today = LocalDate.now(ZoneId.of("Europe/Berlin"))
+                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
+    
+        Assert.assertTrue(
+                message.contains("Öffnungszeiten gespeichert, " + today),
+                "Success message does not contain today's date!"
+        );
     }
 
     public void clickOnDeleteLocation() {

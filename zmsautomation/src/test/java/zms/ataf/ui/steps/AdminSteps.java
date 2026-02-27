@@ -910,35 +910,28 @@ public class AdminSteps {
 
     @Dann("erscheint ein Pop-Up-Fenster {string} um den Standort zu löschen.")
     public void erscheint_ein_popup_fenster_zum_loeschen_vom_standort(String expectedText) {
-        ScenarioLogManager.getLogger().info("Checking for delete confirmation popup with text: " + expectedText);
-        
-        By modal = By.xpath("//*[contains(@class,'modal') or contains(@class,'dialog') or @role='dialog' or contains(@class,'popup')]");
-        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(10));
-        
-        WebElement dlg;
-        try {
-            dlg = wait.until(ExpectedConditions.visibilityOfElementLocated(modal));
-        } catch (TimeoutException e) {
-            Assert.fail("Delete confirmation popup did not appear within 10 seconds.");
-            return;
-        }
     
-        boolean hasText;
-        try {
-            hasText = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
-                .until(ExpectedConditions.or(
-                    ExpectedConditions.textToBePresentInElement(dlg, expectedText),
-                    ExpectedConditions.textToBePresentInElementLocated(
-                        By.xpath("//*[contains(@class,'modal') or contains(@class,'dialog') or @role='dialog']//*[self::h1 or self::h2 or self::h3 or self::p or self::div]"), 
-                        expectedText)
-                ));
-        } catch (TimeoutException e) {
-            String actualText = dlg.getText();
-            Assert.fail("Pop-up message does not contain expected text.\nExpected: " + expectedText + "\nActual: " + actualText);
-            return;
-        }
+        ScenarioLogManager.getLogger().info(
+            "Checking delete confirmation dialog with text: " + expectedText);
     
-        Assert.assertTrue(hasText, "Pop-up message is not visible");
+        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15));
+    
+        // Target ONLY the delete lightbox dialog
+        By dialogLocator = By.xpath(
+            "//div[contains(@class,'lightbox')]//section[contains(@class,'dialog')]"
+        );
+    
+        WebElement dialog = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(dialogLocator)
+        );
+    
+        String actualText = dialog.getText().trim();
+    
+        Assert.assertTrue(
+            actualText.contains(expectedText),
+            "Pop-up message does not contain expected text.\nExpected: "
+                    + expectedText + "\nActual: " + actualText
+        );
     }
 
     @Wenn("Sie für den Standort den Wert für die E-Mail-Bestätigung auf {word} setzen.")

@@ -156,39 +156,53 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void isCustomerVisibleInQueue(String transactionNumber, boolean isSpontaneousCustomer) {
 
-        // sanitize: keep only digits (logs sometimes show "(1)")
-        String numOnly = transactionNumber == null ? "" : transactionNumber.replaceAll("\\D+", "");
+        String numOnly = transactionNumber == null
+                ? ""
+                : transactionNumber.replaceAll("\\D+", "");
     
         ScenarioLogManager.getLogger().info(
-            "Checking for " + (isSpontaneousCustomer ? "spontaneous " : "")
-            + "customer with Transaction number: (" + numOnly + ") to be visible in waiting list..."
+                "Checking for "
+                        + (isSpontaneousCustomer ? "spontaneous " : "")
+                        + "customer with Transaction number: ("
+                        + numOnly + ") in waiting list..."
         );
     
         CONTEXT.waitForSpinners();
     
-        scrollToCenterByVisibleElement(
-            findElementByLocatorType(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, LocatorType.ID, false)
-        );
-    
-        // Ensure correct filter is active
         showSpontaneousCustomers(isSpontaneousCustomer);
     
-        // Wait until the queue table is visible
-        By queueTable = By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(15))
-            .until(ExpectedConditions.visibilityOfElementLocated(queueTable));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
     
-        // ✅ FIXED: removed backticks
-        By rowByNumber = By.xpath(
-            "//table[@id='table-queued-appointments']//tbody/tr[.//td[normalize-space()='"
-            + numOnly + "']]"
+        // Wait for at least one row in queue table
+        By firstRow = By.cssSelector(
+                "#table-queued-appointments tbody tr"
         );
     
-        new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-            .until(ExpectedConditions.presenceOfElementLocated(rowByNumber));
+        wait.until(ExpectedConditions.presenceOfElementLocated(firstRow));
     
-        // Final assertion with existing helper
-        checkForValuesInQueueColumn("Nr.", numOnly);
+        // Now scroll safely
+        WebElement table = DRIVER.findElement(
+                By.id("table-queued-appointments")
+        );
+    
+        scrollToCenterByVisibleElement(table);
+    
+        // Wait for specific row with transaction number
+        By rowByNumber = By.xpath(
+                "//table[@id='table-queued-appointments']" +
+                "//tbody/tr[.//td[normalize-space()='" + numOnly + "']]"
+        );
+    
+        WebElement row = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(rowByNumber)
+        );
+    
+        Assert.assertTrue(
+                row.isDisplayed(),
+                "Customer with transaction number "
+                        + numOnly
+                        + " is not visible in queue!"
+        );
     }
 
     public void isCustomerVisibleInParkingTable(String transactionNumber, boolean isSpontaneousCustomer) {
