@@ -505,59 +505,136 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void clickOnBookAppointmentButton(boolean assertErrors) {
-        ScenarioLogManager.getLogger().info("Trying to click on \"book appointment\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(normalize-space(), 'Termin buchen')]", LocatorType.XPATH, false, CONTEXT);
-
-        // Warten auf eine Fehlermeldung oder Erfolgsmeldung
+        ScenarioLogManager.getLogger().info("Trying to click on \"book appointment\" button...");
+    
+        // Always reset context to avoid iframe / window leakage from previous tests
+        DRIVER.switchTo().defaultContent();
+    
+        // Wait for loading spinners to disappear BEFORE interacting
+        CONTEXT.waitForSpinners();
+    
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+    
+        // Wait until button is clickable (more stable than presence)
+        WebElement bookButton = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("button.process-reserve")
+                )
+        );
+    
+        // Scroll into view to avoid click interception issues
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
+    
+        bookButton.click();
+    
+        // Wait for spinner again after click
+        CONTEXT.waitForSpinners();
+    
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
+    
         try {
-            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-            wait.until((ExpectedCondition<Boolean>) waitDriver -> {
+            wait.until(driver -> {
+    
                 CONTEXT.waitForSpinners();
-
-                // Prüfung auf Fehlermeldungen
-                List<WebElement> errorMessageWebElements = findElementsByLocatorType(
-                        TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
-                        "//li[@data-key='familyName'] | //li[@data-key='email'] | //li[@data-key='requests']", LocatorType.XPATH);
-                if (!errorMessageWebElements.isEmpty()) {
-                    for (WebElement errorMassageWebElement : errorMessageWebElements) {
-                        if (errorMassageWebElement.getAttribute("data-key").equals("familyName")) {
-                            TestDataHelper.setTestData("Fehler-Name", "Fehler: Es muss ein aussagekräftiger Name eingegeben werden.");
-                        }
-                        if (errorMassageWebElement.getAttribute("data-key").equals("email")) {
-                            TestDataHelper.setTestData("Fehler-Email", "Fehler: Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden.");
-                        }
-                        if (errorMassageWebElement.getAttribute("data-key").equals("requests")) {
-                            TestDataHelper.setTestData("Fehler-Dienstleistung", "Fehler: Es muss mindestens eine Dienstleistung ausgewählt werden!");
+    
+                // -----------------------------
+                // Check for error messages
+                // -----------------------------
+                List<WebElement> errorElements = driver.findElements(By.xpath(
+                        "//li[@data-key='familyName'] | " +
+                        "//li[@data-key='email'] | " +
+                        "//li[@data-key='requests']"
+                ));
+    
+                if (!errorElements.isEmpty()) {
+    
+                    for (WebElement element : errorElements) {
+    
+                        String key = element.getAttribute("data-key");
+    
+                        switch (key) {
+                            case "familyName":
+                                TestDataHelper.setTestData(
+                                        "Fehler-Name",
+                                        "Fehler: Es muss ein aussagekräftiger Name eingegeben werden."
+                                );
+                                break;
+    
+                            case "email":
+                                TestDataHelper.setTestData(
+                                        "Fehler-Email",
+                                        "Fehler: Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden."
+                                );
+                                break;
+    
+                            case "requests":
+                                TestDataHelper.setTestData(
+                                        "Fehler-Dienstleistung",
+                                        "Fehler: Es muss mindestens eine Dienstleistung ausgewählt werden!"
+                                );
+                                break;
                         }
                     }
                     return true;
                 }
-                // Prüfung auf Erfolgsmeldung
-                List<WebElement> successMessageWebElement = findElementsByLocatorType(
-                        TestPropertiesHelper.getPropertyAsLong("defaultImplicitWaitTime", true, DefaultValues.DEFAULT_IMPLICIT_WAIT_TIME),
-                        "//h2[text()='Termin erfolgreich eingetragen']", LocatorType.XPATH);
-                if (!successMessageWebElement.isEmpty()) {
-                    Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
-                    Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
-                            getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME, "//dt[starts-with(normalize-space(), 'Termin-Nr.')]",
-                                    LocatorType.XPATH));
-                    if (appointmentNumberMatcher.find()) {
-                        newAppointmentNumber.set(appointmentNumberMatcher.group(1));
+    
+                // -----------------------------
+                // Check for success message
+                // -----------------------------
+                List<WebElement> successHeader = driver.findElements(
+                        By.xpath("//h2[normalize-space()='Termin erfolgreich eingetragen']")
+                );
+    
+                if (!successHeader.isEmpty()) {
+    
+                    WebElement dtElement = driver.findElement(
+                            By.xpath("//dt[starts-with(normalize-space(), 'Termin-Nr.')]")
+                    );
+    
+                    String text = dtElement.getText();
+    
+                    Pattern pattern = Pattern.compile("Termin-Nr\\.\\s*([0-9]+)");
+                    Matcher matcher = pattern.matcher(text);
+    
+                    if (matcher.find()) {
+                        newAppointmentNumber.set(matcher.group(1));
                         return true;
                     }
                 }
+    
                 return false;
             });
-        } catch (TimeoutException ignore) {
-
+    
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().error("Timeout while waiting for success or error message after booking click.");
         }
+    
+        // -----------------------------
+        // Assertions
+        // -----------------------------
         if (assertErrors) {
-            Assert.assertNotEquals(newAppointmentNumber.get(), "", "Click on \"book appointment\" button has failed! Appointment number is not displayed,");
-            Assert.assertNull(TestDataHelper.getTestData("Fehler-Name"), TestDataHelper.getTestData("Fehler-Name") + ",");
-            Assert.assertNull(TestDataHelper.getTestData("Fehler-Email"), TestDataHelper.getTestData("Fehler-Email") + ",");
-            Assert.assertNull(TestDataHelper.getTestData("Fehler-Dienstleistung"), TestDataHelper.getTestData("Fehler-Dienstleistung") + ",");
+            Assert.assertNotEquals(
+                    newAppointmentNumber.get(),
+                    "",
+                    "Click on \"book appointment\" button has failed! Appointment number is not displayed."
+            );
+    
+            Assert.assertNull(
+                    TestDataHelper.getTestData("Fehler-Name"),
+                    TestDataHelper.getTestData("Fehler-Name") + ","
+            );
+    
+            Assert.assertNull(
+                    TestDataHelper.getTestData("Fehler-Email"),
+                    TestDataHelper.getTestData("Fehler-Email") + ","
+            );
+    
+            Assert.assertNull(
+                    TestDataHelper.getTestData("Fehler-Dienstleistung"),
+                    TestDataHelper.getTestData("Fehler-Dienstleistung") + ","
+            );
         }
+    
         if (!newAppointmentNumber.get().isEmpty()) {
             TestDataHelper.setTestData("new_appointment_number", newAppointmentNumber.get());
         }
