@@ -135,18 +135,49 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `ddev exec ./cli modules loop npm build`
 
 ### Using Podman (Devcontainer)
-> **Note for macOS users:** You may need to add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or run it in your terminal before using devcontainer commands.
-> ```
-> source ~/.zshrc
-> podman machine stop
-> podman machine start
-> devcontainer up --workspace-folder .
-> ```
-
 - `devcontainer up --workspace-folder .`
 - `podman exec -it zms-web bash -lc "./cli modules loop composer install"`
 - `podman exec -it zms-web bash -lc "./cli modules loop npm install"`
 - `podman exec -it zms-web bash -lc "./cli modules loop npm build"`
+- 
+> **Note for macOS users:** You may need to install the missing `krunkit` package before install Podman and add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or `~/.bashrc` or run it in your terminal before using devcontainer commands.
+> 1️⃣ Stop & remove any Podman machines
+> ```
+> podman machine stop 2>/dev/null && podman machine rm -f 2>/dev/null
+> ```
+> 2️⃣ Delete all Podman configuration & VM data
+> ```
+> rm -rf ~/.config/containers ~/.local/share/containers ~/.cache/containers && rm -rf ~/Library/Containers/io.podman* 2>/dev/null || true && rm -rf ~/Library/Application\ Support/Podman* 2>/dev/null || true && rm -rf ~/Library/Preferences/io.podman* 2>/dev/null || true
+> ```
+> 3️⃣ Uninstall Homebrew Podman and Podman Desktop
+> ```
+> brew uninstall -f podman podman-desktop 2>/dev/null && brew cleanup
+> ```
+> 4️⃣ ⚠️ Install missing package krunkit in Podman 5.8.0 (This is the issue) https://github.com/containers/podman/issues/27056#issuecomment-3434700252
+> ```
+> brew tap slp/krunkit && brew install krunkit && krunkit --version
+> ```
+> 5️⃣ Install Podman CLI and Podman Desktop
+> ```
+> brew install podman && brew install --cask podman-desktop
+> ```
+> 6️⃣ Initialize a new QEMU VM for Podman with 8GB RAM
+> ```
+> podman machine init --cpus 4 --memory 8192 --disk-size 100
+> ```
+> 7️⃣ Export Docker-compatible socket for Dev Containers
+> ```
+> echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.zshrc && echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.bashrc
+> source ~/.zshrc && source ~/.bashrc
+> ```
+> 8️⃣ Start the VM and list machines
+> ```
+> podman machine stop && podman machine start && podman machine list
+> ```
+> 9 Start the Project
+> ```
+> devcontainer up --workspace-folder .
+> ```
 
 <br>
 
