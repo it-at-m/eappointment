@@ -45,7 +45,7 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 ('scope', 1, 'appointment', 'startInDaysDefault', '0', '2019-08-23 15:22:22'),
 ('scope', 1, 'client', 'amendmentActivated', '1', '2023-08-11 08:58:40'),
 ('scope', 1, 'client', 'customTextfieldLabel', 'Zusätzliche Bemerkungen', '2024-10-22 12:51:20'),
-('scope', 1, 'client', 'emailConfirmationActivated', '1', '2024-09-09 09:03:09'),
+('scope', 1, 'client', 'emailConfirmationActivated', '0', '2024-09-09 09:03:09'), -- Disabled for ui test ZMS-3171.feature Vorbelegung von "Mit E-Mail Bestätigung" ist konfigurierbar" 
 ('scope', 1, 'client', 'emailFrom', 'noreply-terminvereinbarung@muenchen.de', '2026-01-30 12:34:23'),
 ('scope', 1, 'client', 'emailRequired', '1', '2025-03-13 12:08:47'),
 ('scope', 1, 'client', 'telephoneActivated', '0', '2023-10-27 12:06:41'),
