@@ -69,39 +69,28 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
-        ScenarioLogManager.getLogger()
-            .info("Trying to call customer from parking table with number \"" + number + "\"...");
-    
         String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
-    
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(15));
-    
-        // Wait until parked table is visible
         By parkedTable = By.id("table-parked-appointments");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
+        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(parkedTable));
     
-        // ✅ FIXED: removed invalid backticks from XPath
-        By rowByNumber = By.xpath(
-            "//table[@id='table-parked-appointments']//tbody/tr[.//td[normalize-space()='" 
-            + numOnly + "']]"
-        );
+        // Row anchored by 3rd column (Nr.)
+        By rowByNr = By.xpath(
+            "//table[@id='table-parked-appointments']" +
+            "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]");
+        org.openqa.selenium.WebElement row =
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNr));
     
-        // Wait until the specific row is present
-        WebElement row = wait.until(
-            ExpectedConditions.presenceOfElementLocated(rowByNumber)
-        );
-    
-        // Scroll to row (helps avoid click interception)
         scrollToCenterByVisibleElement(row);
     
-        // Re-locate row to avoid stale element after scroll/re-render
-        row = DRIVER.findElement(rowByNumber);
+        // Re-find inside the row to avoid stale element on re-render
+        row = DRIVER.findElement(rowByNr);
+        org.openqa.selenium.WebElement recall =
+            row.findElement(org.openqa.selenium.By.cssSelector("a[title='wieder aufrufen']"));
     
-        // Adjust selector if needed to target the exact call button
-        WebElement callBtn = row.findElement(By.cssSelector("button, a"));
-    
-        // Use your existing wrapper for clicking
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, callBtn, false);
+        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(recall));
+        scrollToCenterByVisibleElement(recall);
+        recall.click();
     }
 
     public void validateCustomerCall() {
