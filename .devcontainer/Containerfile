@@ -1,6 +1,7 @@
 FROM php:8.3-apache
 
 ENV TZ=Europe/Berlin
+ENV DISPLAY=:99
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # —————————————————————————————————————————
@@ -22,9 +23,17 @@ RUN apt-get update && apt-get install -y \
       libicu-dev libonig-dev libzip-dev \
       python3-click python3-git python3-colorama \
       mariadb-client \
+      firefox-esr xvfb x11-utils x11-xserver-utils \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl gd pdo pdo_mysql zip calendar \
-    && apt-get clean
+    && apt-get clean \
+    && ln -sf /usr/bin/firefox-esr /usr/bin/firefox \
+    && GECKODRIVER_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep -oP '"tag_name": "\K[^"]*' | head -1) \
+    && wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz \
+    && tar -xzf /tmp/geckodriver.tar.gz -C /tmp \
+    && mv /tmp/geckodriver /usr/local/bin/geckodriver \
+    && chmod +x /usr/local/bin/geckodriver \
+    && rm /tmp/geckodriver.tar.gz
 
 # —————————————————————————————————————————
 # 3. Enable Apache modules

@@ -19,3 +19,4 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $API config cron sendNotificationReminder|grep -q "$ZMS_ENV" && $BIN/sendNotificationReminder --commit
     fi
 fi
+exit 0

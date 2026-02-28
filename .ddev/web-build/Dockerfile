@@ -1,5 +1,5 @@
 # Custom Dockerfile additions for DDEV web container
-# Installs Java 21, Maven, and Flyway for zmsapiautomation tests
+# Installs Java 21, Maven, and Flyway for zmsautomation tests
 
 # Set timezone at OS level (matches dev container)
 ENV TZ=Europe/Berlin
@@ -41,3 +41,21 @@ RUN wget -q -O /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/fl
  && rm /tmp/flyway.tar.gz /tmp/flyway.tar.gz.sha1 \
  && ln -s /opt/flyway/flyway /usr/local/bin/flyway
 
+# Install Firefox and geckodriver for UI tests
+RUN apt-get update && apt-get install -y \
+    firefox-esr \
+    xvfb \
+    x11-utils \
+    x11-xserver-utils \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Create Firefox symlink
+RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
+
+# Install geckodriver (latest version)
+RUN GECKODRIVER_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep -oP '"tag_name": "\K[^"]*' | head -1) \
+ && wget -q -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz \
+ && tar -xzf /tmp/geckodriver.tar.gz -C /tmp \
+ && mv /tmp/geckodriver /usr/local/bin/geckodriver \
+ && chmod +x /usr/local/bin/geckodriver \
+ && rm /tmp/geckodriver.tar.gz

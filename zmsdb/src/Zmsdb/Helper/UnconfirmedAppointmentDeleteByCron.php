@@ -19,6 +19,8 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected $statusListForDeletion = ['preconfirmed'];
 
+    protected $scopeList;
+
     protected $count = [];
 
     public function __construct(\DateTimeInterface $now, $verbose = false)
