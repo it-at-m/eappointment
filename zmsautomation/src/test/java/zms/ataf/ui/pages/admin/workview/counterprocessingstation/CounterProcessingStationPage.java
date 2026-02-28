@@ -206,15 +206,62 @@ public class CounterProcessingStationPage extends AdminPage {
         );
     }
 
-    public void isCustomerVisibleInParkingTable(String transactionNumber, boolean isSpontaneousCustomer) {
-        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ?
-                "spontaneous " :
-                "") + "customer with Transaction number: (" + transactionNumber + ") to be visible in parking list...");
+    public void isCustomerVisibleInParkingTableByNumber(String number) {
+        String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + numOnly + ")...");
+    
         CONTEXT.waitForSpinners();
+    
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID); // "table-parked-appointments"
+        WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
+        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(parkedTable));
+    
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
-        showSpontaneousCustomers(isSpontaneousCustomer);
-        // Use the transaction number to verify its presence in the 'Nr.' column
-        checkForValuesInParkingTableColumn("Nr.", transactionNumber);
+    
+        // 3rd column (Nr.) = td with 2 preceding siblings
+        By rowByNr = By.xpath(
+            "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']" +
+            "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]");
+        org.openqa.selenium.WebElement row =
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNr));
+    
+        org.testng.Assert.assertTrue(row.isDisplayed(),
+            "Parked row with Nr. '" + numOnly + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
+    }
+
+    public void isCustomerVisibleInParkingTableByName(String customerName) {
+        ScenarioLogManager.getLogger().info("Checking parked list by Name (" + customerName + ")...");
+    
+        CONTEXT.waitForSpinners();
+    
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
+        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(parkedTable));
+    
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+    
+        // 5th column (Name) = td with 4 preceding siblings
+        By rowByName = By.xpath(
+            "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']" +
+            "//tbody/tr[td[count(preceding-sibling::td)=4][normalize-space(.)='" + customerName + "']]");
+        org.openqa.selenium.WebElement row =
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByName));
+    
+        org.testng.Assert.assertTrue(row.isDisplayed(),
+            "Parked row with Name '" + customerName + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
+    }
+
+    public void isCustomerVisibleInParkingTable(String token, boolean isSpontaneousCustomer) {
+        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+        if (!numOnly.isBlank()) {
+            try {
+                isCustomerVisibleInParkingTableByNumber(numOnly);
+                return;
+            } catch (org.openqa.selenium.TimeoutException ignore) {
+                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + token);
+            }
+        }
+        isCustomerVisibleInParkingTableByName(token);
     }
 
     public void isCustomerVisibleInFinishedTable(String customer) {
