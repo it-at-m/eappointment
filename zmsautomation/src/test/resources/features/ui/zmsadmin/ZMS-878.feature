@@ -24,7 +24,7 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 		Und Sie "Mittwoch" unter Wochentage selektieren.
 		Und Sie "Donnerstag" unter Wochentage selektieren.
 		Und Sie "Freitag" unter Wochentage selektieren.
-		Und Sie in Feld "Datum bis" den Text "04.06.2025" eingeben.
+		Und Sie in Feld "Datum bis" den Text "15.03.2026" eingeben.
 		Und Sie in Feld "Uhrzeit von" den Text "08:00" eingeben.
 		Und Sie in Feld "Uhrzeit bis" den Text "17:00" eingeben.
 		Und Sie für Terminarbeitsplätze unter "Insgesamt" die Anzahl 1 auswählen.
