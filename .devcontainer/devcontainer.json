@@ -4,18 +4,22 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443, 9003],
+  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443],
   "customizations": {
     "vscode": {
       "extensions": [
-        "xdebug.php-debug",
-        "bmewburn.vscode-intelephense-client"
+        "bmewburn.vscode-intelephense-client",
+        "eamodio.gitlens",
+        "mblode.twig-language-2",
+        "vue.volar",
+        "xdebug.php-debug"
       ]
     }
   },
-  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ ! -f zmsadmin/.env ]; then cp zmsadmin/.env.example zmsadmin/.env; fi'",
   // Note: To make keycloak.local work from your browser, add this to your Mac's /etc/hosts:
   // 127.0.0.1 keycloak.local
+  "postCreateCommand": "bash -c './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build && cd zmsapi && vendor/bin/migrate --update && cd ../zmscitizenview && npm install'",
   "postStartCommand": [
     // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
     // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",

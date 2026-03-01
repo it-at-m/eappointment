@@ -29,26 +29,27 @@ RUN apt-get update && apt-get install -y \
 # —————————————————————————————————————————
 # 3. Enable Apache modules
 # —————————————————————————————————————————
-RUN a2enmod rewrite proxy_fcgi alias headers ssl
+RUN a2enmod rewrite proxy_fcgi alias headers
+# RUN a2enmod rewrite proxy_fcgi alias headers ssl
 
 # —————————————————————————————————————————
 # 4. Generate self-signed SSL certificate
 # —————————————————————————————————————————
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /etc/ssl/private/apache-selfsigned.key \
-  -out /etc/ssl/certs/apache-selfsigned.crt \
-  -subj "/C=DE/ST=Dev/L=Dev/O=Dev/OU=Dev/CN=localhost"
+# RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#   -keyout /etc/ssl/private/apache-selfsigned.key \
+#   -out /etc/ssl/certs/apache-selfsigned.crt \
+#   -subj "/C=DE/ST=Dev/L=Dev/O=Dev/OU=Dev/CN=localhost"
 
 # —————————————————————————————————————————
 # 5. Copy and enable SSL VirtualHost config
 # —————————————————————————————————————————
-COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-RUN a2ensite default-ssl
+# COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+# RUN a2ensite default-ssl
 
 # —————————————————————————————————————————
 # 6. Install Node.js
 # —————————————————————————————————————————
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
  && apt-get install -y nodejs
 
 # —————————————————————————————————————————
