@@ -17,7 +17,7 @@ class Application extends \BO\Slim\Application
 {
     public const IDENTIFIER = 'zms';
     public const MODULE_NAME = 'zmscitizenapi';
-    public static string $source_name = "dldb,zms";
+    public static string $source_name = "";
     public static $http = null;
     public static array $http_curl_config = [];
     public static ?CacheInterface $cache = null;
