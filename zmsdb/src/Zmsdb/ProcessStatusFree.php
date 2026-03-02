@@ -18,6 +18,10 @@ class ProcessStatusFree extends Process
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
         error_log("Writing temporary scope list");
+        error_log("Calendar: " . json_encode($calendar));
+        error_log("Slots required: " . $slotsRequired);
+        error_log("Now: " . $now->format('Y-m-d H:i:s'));
+        error_log("Dayquery: " . json_encode($dayquery));
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         error_log("Temporary scope list written");
         $selectedDate = $calendar->getFirstDay();
