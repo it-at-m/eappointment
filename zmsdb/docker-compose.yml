@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:10.11.15 
+    image: mariadb:10.11.11 
     environment:
       MYSQL_ROOT_PASSWORD: zmsdb
       MYSQL_DATABASE: zmsbo
