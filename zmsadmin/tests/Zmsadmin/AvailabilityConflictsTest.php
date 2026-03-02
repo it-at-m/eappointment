@@ -6,7 +6,7 @@ class AvailabilityConflictsTest extends Base
 {
     protected $arguments = [];
 
-    protected $classname = "AvailabilityConflicts";
+    protected $classname = "\BO\Zmsadmin\Helper\AvailabilityConflicts";
 
     public function testRendering()
     {

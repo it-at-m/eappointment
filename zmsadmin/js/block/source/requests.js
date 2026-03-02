@@ -33,7 +33,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     onChange={(_, v) => onParentChange(index, v)}
                     options={[
                         {name: '—', value: ''},
-                        ...parentRequests.map(r => ({name: r.name, value: String(r.id)}))
+                        ...parentRequests.map(r => ({name: `${r.name} (${r.source})`, value: String(r.id)}))
                     ]}
                     attributes={{"aria-label": labels.parent}}
                 />

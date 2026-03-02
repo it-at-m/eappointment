@@ -22,3 +22,8 @@ export interface CustomerDataProvider {
 export interface SelectedAppointmentProvider {
   appointment: Ref<AppointmentDTO | undefined>;
 }
+
+export interface ServiceLinkProvider {
+  serviceLinkId: Ref<string | null>;
+  updateServiceLinkId: (id: string | null) => void;
+}
