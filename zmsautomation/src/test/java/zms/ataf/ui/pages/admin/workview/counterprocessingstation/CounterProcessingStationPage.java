@@ -264,6 +264,17 @@ public class CounterProcessingStationPage extends AdminPage {
         isCustomerVisibleInParkingTableByName(token);
     }
 
+    public void isCustomerVisibleInMissedTable(String transactionNumber, boolean isSpontaneousCustomer) {
+        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ?
+                "spontaneous " :
+                "") + "customer with Transaction number: (" + transactionNumber + ") to be visible in missed list...");
+        CONTEXT.waitForSpinners();
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        showSpontaneousCustomers(isSpontaneousCustomer);
+        // Use the transaction number to verify its presence in the 'Nr.' column
+        checkForValuesInMissedTableColumn("Nr.", transactionNumber);
+    }
+
     public void isCustomerVisibleInFinishedTable(String customer) {
         ScenarioLogManager.getLogger().info("Checking for customer(" + customer + ") under finished appointments...");
         showTheFinishedAppointmentTable();
@@ -287,17 +298,6 @@ public class CounterProcessingStationPage extends AdminPage {
     
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, false));
         checkForValuesInFinishedTableColumn("Name", customer);
-    }
-
-    public void isCustomerVisibleInMissedTable(String transactionNumber, boolean isSpontaneousCustomer) {
-        ScenarioLogManager.getLogger().info("Checking for " + (isSpontaneousCustomer ?
-                "spontaneous " :
-                "") + "customer with Transaction number: (" + transactionNumber + ") to be visible in parking list...");
-        CONTEXT.waitForSpinners();
-        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, false));
-        showSpontaneousCustomers(isSpontaneousCustomer);
-        // Use the transaction number to verify its presence in the 'Nr.' column
-        checkForValuesInMissedTableColumn("Nr.", transactionNumber);
     }
 
     public void clickOnFinishButton() {
