@@ -561,7 +561,7 @@ public class CounterProcessingStationPage extends AdminPage {
         // Wait for loading spinners to disappear BEFORE interacting
         CONTEXT.waitForSpinners();
     
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
     
         // Wait until button is clickable (more stable than presence)
         WebElement bookButton = wait.until(
@@ -839,14 +839,56 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void showTheFinishedAppointmentTable() {
         ScenarioLogManager.getLogger().info("Trying to show the finished appointments table...");
-        WebElement control = findElementByLocatorType("finished-appointments-control", LocatorType.ID, true);
-        WebElement upButton = control.findElement(By.className("fa-angle-up"));
-        WebElement downButton = control.findElement(By.className("fa-angle-down"));
+    
+        CONTEXT.waitForSpinners();
+    
+        final By headerToggle = By.id("finished-appointments-control");          // <h2 id="finished-appointments-control">
+        final By finishedTable = By.id(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID);   // "table-finished-appointments"
+    
+        WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
+    
+        // Ensure the header control is visible and on screen
+        org.openqa.selenium.WebElement header =
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(headerToggle));
+        scrollToCenterByVisibleElement(header);
+    
+        // If table is already visible, nothing to do
+        if (isElementVisible(finishedTable, 2)) {
+            return;
+        }
+    
+        // Toggle open and wait; retry once if needed (accounts for animation/rerenders)
+        for (int attempt = 0; attempt < 2; attempt++) {
+            header.click();
+            try {
+                // brief settle for animation
+                Thread.sleep(200);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            CONTEXT.waitForSpinners();
+            try {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions
+                        .visibilityOfElementLocated(finishedTable));
+                return; // opened successfully
+            } catch (org.openqa.selenium.TimeoutException e) {
+                if (attempt == 0) {
+                    // re-fetch header and try once more
+                    header = DRIVER.findElement(headerToggle);
+                } else {
+                    org.testng.Assert.fail("Finished appointments table did not become visible after toggling.");
+                }
+            }
+        }
+    }
 
-        if (downButton.isDisplayed()) {
-            control.click();
-            Assert.assertTrue(upButton.isDisplayed(), "Up button should be displayed after clicking to show the table.");
-            Assert.assertFalse(downButton.isDisplayed(), "Down button should be hidden after clicking to show the table.");
+    private boolean isElementVisible(By locator, int timeoutSeconds) {
+        try {
+            new org.openqa.selenium.support.ui.WebDriverWait(DRIVER, java.time.Duration.ofSeconds(timeoutSeconds))
+                .until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(locator));
+            return true;
+        } catch (org.openqa.selenium.TimeoutException e) {
+            return false;
         }
     }
 

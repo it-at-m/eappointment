@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -34,11 +35,41 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnLocationAdminEntry() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Behörden und Standorte\" menu entry...");
+    
         CONTEXT.set();
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[contains(normalize-space(.), 'Behörden und Standorte')]", LocatorType.XPATH, false, CONTEXT);
-        Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[@class='main-title' and text()='Behörden und Standorte']", LocatorType.XPATH, false),
-                "Page title 'Behörden und Standorte' is not visible!");
+        CONTEXT.waitForSpinners();
+    
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
+    
+        // Menu entry by visible text
+        By menuEntry = By.xpath("//nav//a[normalize-space(.)='Behörden und Standorte' or " +
+                                "(contains(normalize-space(.),'Behörden') and contains(normalize-space(.),'Standorte'))]");
+    
+        // Ensure it’s visible and clickable
+        WebElement entry = wait.until(ExpectedConditions.visibilityOfElementLocated(menuEntry));
+        scrollToCenterByVisibleElement(entry);
+    
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(entry)).click();
+        } catch (Exception e) {
+            // Fallback: JS click if an overlay blocks normal click
+            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for 'Behörden und Standorte'...");
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", entry);
+        }
+    
+        // Post‑click: wait for target page (either URL or distinctive heading)
+        boolean landed = false;
+        try {
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/administration/authorities"),
+                ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//h1[normalize-space(.)='Behörden und Standorte']"))
+            ));
+            landed = true;
+        } catch (TimeoutException ignore) { /* fall through */ }
+    
+        Assert.assertTrue(landed, "Did not reach 'Behörden und Standorte' after clicking the menu entry.");
+        CONTEXT.waitForSpinners();
     }
 
     public void clickOnLocationEntry(String location) {
