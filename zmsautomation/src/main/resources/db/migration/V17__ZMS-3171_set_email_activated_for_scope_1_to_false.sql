@@ -2,4 +2,6 @@
 
 UPDATE `scope` SET `email_confirmation_activated` = 0 WHERE `StandortID` = 1;
 
-UPDATE `preferences` SET `value` = 0 WHERE `id` = 1 AND `entity` = 'scope' AND `groupName` = 'client' AND `name` = 'emailConfirmationActivated';
+INSERT INTO preferences (type, refId, groupKey, name, value, updateTimestamp)
+VALUES ('scope', 1, 'client', 'emailConfirmationActivated', '0', NOW())
+ON DUPLICATE KEY UPDATE value = VALUES(value), updateTimestamp = VALUES(updateTimestamp);
