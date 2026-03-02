@@ -13,6 +13,7 @@ class Day extends Base
 
     public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
+        $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
         $this->getReader()->exec(Query\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
         $monthList = $calendar->getMonthList();
         $slotsRequired = $slotsRequiredForce;
