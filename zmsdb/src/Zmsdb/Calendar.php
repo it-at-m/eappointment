@@ -117,7 +117,9 @@ class Calendar extends Base
             $dayQuery = new Day();
             $dayList = $dayQuery->readByCalendar($calendar, $slotsRequiredForce);
             $calendar->days = $dayList->setStatusByType($slotType, $now);
+            $this->readDb = $dayQuery->getReader();
             $bookableEndString = $this->getReader()->fetchValue(Query\Calendar::QUERY_CALENDAR_BOOKABLEEND);
+            unset($dayQuery);
             $calendar->bookableEnd = (new \DateTimeImmutable($bookableEndString === null ? '' : $bookableEndString, $now->getTimezone()))->getTimestamp();
         }
         return $calendar;
