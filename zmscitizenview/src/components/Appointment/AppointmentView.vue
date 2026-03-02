@@ -379,6 +379,7 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
@@ -463,6 +464,11 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
+
+const serviceLinkId = ref<string | null>(null);
+const updateServiceLinkId = (id: string | null) => {
+  serviceLinkId.value = id;
+};
 
 watch(
   () => props.globalState.accessToken,
@@ -643,6 +649,11 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+provide<ServiceLinkProvider>("serviceLinkProvider", {
+  serviceLinkId,
+  updateServiceLinkId,
+} as ServiceLinkProvider);
 
 provide("reservationStartMs", reservationStartMs);
 

@@ -28,9 +28,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -73,9 +73,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -115,9 +115,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -164,9 +164,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
