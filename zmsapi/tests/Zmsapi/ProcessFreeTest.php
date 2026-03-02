@@ -36,6 +36,45 @@ class ProcessFreeTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    // request with 2 and 1 slots in scope 148 so 3 slots for 2 requests
+    public function testGettingAvailableSlotsFor3Requests()
+    {
+        \App::$now->modify('2016-05-24 15:00');
+        $response = $this->render([], [
+            '__body' => '{
+                "firstDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 27
+                },
+                "requests": [
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    },
+                    {
+                        "id": "120335",
+                        "name": "Abmeldung einer Wohnung",
+                        "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                        "id": 122304,
+                        "source": "dldb"
+                    }
+                ]
+            }'
+        ], []);
+
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(3, $processData['appointments'][0]['slotCount']);
+        }
+        $this->assertEquals(25, count(json_decode((string)$response->getBody(), true)['data']));
+        $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
+    }
+
     public function testWithGroupDataGreaterProcessListCount()
     {
         $response = $this->render([], [
@@ -181,48 +220,6 @@ class ProcessFreeTest extends Base
         }
 
         $this->assertEquals(21, count(json_decode((string)$response->getBody(), true)['data']));
-        $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
-    }
-
-    // request with 2 and 1 slots in scope 148 so 3 slots for 2 requests
-    public function testGettingAvailableSlotsFor3Requests()
-    {
-        \App::$now->modify('2016-05-24 15:00');
-        $response = $this->render([], [
-            '__body' => '{
-                "firstDay": {
-                    "year": 2016,
-                    "month": 5,
-                    "day": 27
-                },
-                "requests": [
-                    {
-                        "id": "120703",
-                        "name": "Personalausweis beantragen",
-                        "source": "dldb"
-                    },
-                    {
-                        "id": "120335",
-                        "name": "Abmeldung einer Wohnung",
-                        "source": "dldb"
-                    }
-                ],
-                "providers": [
-                    {
-                        "id": 122304,
-                        "source": "dldb"
-                    }
-                ]
-            }'
-        ], []);
-
-        error_log("Response: " . json_encode($response));
-        error_log("Response Body: " . json_encode($response->getBody()));
-
-        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
-            $this->assertEquals(3, $processData['appointments'][0]['slotCount']);
-        }
-        $this->assertEquals(25, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
     
