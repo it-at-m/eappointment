@@ -169,7 +169,7 @@ jobs:
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
-            --display-deprecations --display-warnings --fail-on-deprecation
+            --display-deprecations --display-warnings --fail-on-deprecation \
             --filter "ProcessFreeTest::testGettingAvailableSlotsFor3Requests"
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
