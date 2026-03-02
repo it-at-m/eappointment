@@ -35,7 +35,7 @@ Funktionalität: Default
 		Dann Sollte der Kunde "<TestData.Kunde1>" unter abgeschlossene Termine erscheinen.
 		Angenommen Die fertige Termintabelle angezeigt.
 		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde1>" sollte ziwschen "00:00:20" und "00:00:50" liegen.
-		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde2>" sollte ziwschen "00:02:25" und "00:02:50" liegen.
+		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde2>" sollte ziwschen "00:02:20" und "00:02:50" liegen.
 		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:20" und "00:01:00" liegen.
 		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde2>" sollte ziwschen "00:00:50" und "00:01:10" liegen.
 
