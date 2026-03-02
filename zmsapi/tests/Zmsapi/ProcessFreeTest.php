@@ -216,6 +216,9 @@ class ProcessFreeTest extends Base
             }'
         ], []);
 
+        error_log("Response: " . (string)$response);
+        error_log("Response Body: " . (string)$response->getBody());
+
         foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
             $this->assertEquals(3, $processData['appointments'][0]['slotCount']);
         }
