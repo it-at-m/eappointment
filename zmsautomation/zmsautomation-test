@@ -252,32 +252,26 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 # 5.5. Mock Date and Time (shared by web app AND cron/CLI)
 section "5.5. Mock Date and Time"
 
-# Fixed default; override via env. Keep this date INSIDE the seeded opening-hours window.
+# Keep this inside the seeded opening-hours window
 MOCK_DATETIME="${MOCK_DATETIME:-2026-03-02 10:00:00}"   # YYYY-MM-DD HH:MM:SS
 TZ="${TZ:-Europe/Berlin}"; export TZ
 
-# Optional: derive from DB (MAX(DatumBis) - 1 day @ 10:00) if you prefer auto-alignment
-# if [[ -z "${MOCK_DATETIME:-}" ]]; then
-#   OH_END="$(exec_sql -N -e "SELECT DATE_FORMAT(MAX(DatumBis),'%Y-%m-%d') FROM oeffnungszeit WHERE DatumBis IS NOT NULL;" 2>/dev/null || true)"
-#   if [[ -n "$OH_END" ]]; then
-#     SAFE_DAY="$(date -d "$OH_END -1 day" +%F 2>/dev/null || echo "$OH_END")"
-#     MOCK_DATETIME="$SAFE_DAY 10:00:00"
-#   else
-#     MOCK_DATETIME="$(date +'%F 10:00:00')"
-#   fi
-# fi
-
 info "Enabling date/time mocking: processes will think now is $MOCK_DATETIME"
 
-# Compute seconds offset for CLI/cron tools that honor ZMS_TIMEADJUST
+# Compute seconds offset and format as a DateTime‑compatible relative string
 now_s="$(date +%s)"
 mock_s="$(date -d "$MOCK_DATETIME" +%s 2>/dev/null || echo "")"
 ZMS_TIMEADJUST=""
 if [[ -n "$mock_s" ]]; then
-  ZMS_TIMEADJUST="$((mock_s - now_s))s"
+  delta=$((mock_s - now_s))
+  if (( delta >= 0 )); then
+    ZMS_TIMEADJUST="+${delta} seconds"
+  else
+    ZMS_TIMEADJUST="${delta} seconds"
+  fi
 fi
 
-# Export for all paths (Apache + CLI/cron). Also set MOCK_DATE for compatibility.
+# Export for all processes (web + CLI/cron). Also set MOCK_DATE for components that read this name.
 export MOCK_DATETIME
 export MOCK_DATE="$MOCK_DATETIME"
 export ZMS_TIMEADJUST
@@ -290,45 +284,42 @@ if [[ -f /etc/apache2/envvars ]]; then
     echo "# --- injected by zmsautomation-test (mocked time) ---"
     echo "export MOCK_DATETIME='$MOCK_DATETIME'"
     echo "export MOCK_DATE='$MOCK_DATETIME'"
-    echo "export ZMS_TIMEADJUST='${ZMS_TIMEADJUST:-}'"
+    echo "export ZMS_TIMEADJUST='${ZMS_TIMEADJUST}'"
     echo "# ----------------------------------------------------"
   } >> /etc/apache2/envvars
   apachectl graceful 2>/dev/null || true
-  info "✓ Time mocking exported to Apache and shell (ZMS_TIMEADJUST=${ZMS_TIMEADJUST:-0s})"
+  info "✓ Time mocking exported to Apache and shell (ZMS_TIMEADJUST=${ZMS_TIMEADJUST})"
 else
-  info "✓ Time mocking exported to shell only (ZMS_TIMEADJUST=${ZMS_TIMEADJUST:-0s})"
+  info "✓ Time mocking exported to shell (ZMS_TIMEADJUST=${ZMS_TIMEADJUST})"
 fi
 
 # 6. PHP Migrations
 section "6. PHP Migrations"
 info "Running zmsapi PHP migrations..."
 cd "$PROJECT_ROOT/zmsapi"
+# Important: pass the same mocked env to the CLI, so config.php parses a valid relative string
+MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST}" \
 vendor/bin/migrate --update
 info "PHP migrations completed."
 
-# Ensure slot calc isn’t globally skipped; turn on verbose
+# Ensure slot calc isn’t globally skipped; enable verbose logs
 exec_sql -e "INSERT INTO config (name,value) VALUES
  ('status__calculateSlotsSkip','0'),
  ('status__calculateSlotsForceVerbose','1')
 ON DUPLICATE KEY UPDATE value=VALUES(value);" || true
 
-# Quick eligibility check: are there opening-hours around MOCK_DATE?
-info "Opening-hours eligibility around $MOCK_DATETIME:"
-exec_sql -e "SELECT COUNT(*) AS eligible_oeffnungszeiten
-  FROM oeffnungszeit
- WHERE DATE('$MOCK_DATETIME') BETWEEN DATE(IFNULL(DatumVon, '$MOCK_DATETIME')) AND DATE(IFNULL(DatumBis, '$MOCK_DATETIME'));" || true
-
-# 7. Hourly Cronjob (with mocked time)
+# 7. Hourly Cronjob (with mocked time/gates)
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
 
-info "Running hourly cron (up to 3 attempts) with MOCK_DATETIME=$MOCK_DATETIME (offset ${ZMS_TIMEADJUST:-0s})..."
+info "Running hourly cron (up to 3 attempts) with MOCK_DATETIME=$MOCK_DATETIME (${ZMS_TIMEADJUST})..."
 hourly_ok=false
 for attempt in 1 2 3; do
-  if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-}" \
+  if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST}" \
      ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
-     "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null; then
+     "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null
+  then
     info "Hourly cron completed (attempt $attempt)."
     hourly_ok=true; break
   fi
@@ -339,26 +330,29 @@ clear_caches
 
 # 8. Minutly Cronjob (with mocked time) + forced slot calculation fallback
 section "8. Minutly Cronjob"
-info "Running minutly cron with MOCK_DATETIME=$MOCK_DATETIME (offset ${ZMS_TIMEADJUST:-0s})..."
-if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-}" \
+info "Running minutly cron with MOCK_DATETIME=$MOCK_DATETIME (${ZMS_TIMEADJUST})..."
+if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST}" \
    ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
-   "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null; then
+   "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null
+then
   info "Minutly cron completed."
 else
   warn "Minutly cron failed or not available; continuing."
 fi
 
 info "Forcing slot calculation (fallback) with mocked time..."
-if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-}" \
-   php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete 2>/dev/null; then
+if MOCK_DATETIME="$MOCK_DATETIME" MOCK_DATE="$MOCK_DATETIME" ZMS_TIMEADJUST="${ZMS_TIMEADJUST}" \
+   php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete 2>/dev/null
+then
   info "calculateSlots fallback completed."
 else
   warn "calculateSlots fallback failed; continuing."
 fi
 
-# Quick post-checks
+# Quick verification
 info "Slot count after cron/calc:"
 exec_sql -e "SELECT COUNT(*) AS slots_total FROM slot;" || true
+
 
 # 9. Health Checks
 section "9. Health Checks"
