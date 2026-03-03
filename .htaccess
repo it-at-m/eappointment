@@ -6,6 +6,17 @@ SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 RewriteCond %{QUERY_STRING} ^$
 RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
 
+# Time adjustment
+<IfModule mod_setenvif.c>
+  # API: header → ZMS_TIMEADJUST
+  SetEnvIfNoCase X-ZMS-Timeadjust "(.+)" ZMS_TIMEADJUST=$1
+
+  # UI: query param → ZMS_TIMEADJUST   (?mockNow=YYYY-MM-DD%20HH:MM:SS)
+  SetEnvIfNoCase Query_String "(?:^|&)mockNow=([^&]+)" ZMS_TIMEADJUST=$1
+
+  # UI: cookie → ZMS_TIMEADJUST         (ZMS_TIMEADJUST=YYYY-MM-DD HH:MM:SS)
+  SetEnvIfNoCase Cookie "(?:^|;\\s*)ZMS_TIMEADJUST=([^;]+)" ZMS_TIMEADJUST=$1
+</IfModule>
 
 # zmsapi
 SetEnvIf Request_URI ^/zmsapi ZMS_MODULE_BASEPATH=/terminvereinbarung/api/2
