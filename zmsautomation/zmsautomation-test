@@ -249,8 +249,8 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 
 # 5.5. Mock Date and Time (container-provided)
 section "5.5. Mock Date and Time"
-: "${ZMS_TIMEADJUST:?ZMS_TIMEADJUST must be set in container env (e.g., 2026-03-02 10:00:00)}"
-info "Container-provided ZMS_TIMEADJUST: ${ZMS_TIMEADJUST}"
+#: "${ZMS_TIMEADJUST:?ZMS_TIMEADJUST must be set in container env (e.g., 2026-03-02 10:00:00)}"
+#info "Container-provided ZMS_TIMEADJUST: ${ZMS_TIMEADJUST}"
 
 # 5.6. Time sanity check (zmsapi /status)
 section "5.6. Time sanity check"
