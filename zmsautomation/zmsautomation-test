@@ -252,29 +252,6 @@ section "5.5. Mock Date and Time"
 #: "${ZMS_TIMEADJUST:?ZMS_TIMEADJUST must be set in container env (e.g., 2026-03-02 10:00:00)}"
 #info "Container-provided ZMS_TIMEADJUST: ${ZMS_TIMEADJUST}"
 
-# 5.6. Time sanity check (zmsapi /status)
-section "5.6. Time sanity check"
-: "${BASE_URI:?BASE_URI must be set}"  # e.g., http://localhost/terminvereinbarung/api/2
-STATUS_URL="${BASE_URI%/}/status/"
-
-extract_generated() {
-  if command -v jq >/dev/null 2>&1; then
-    jq -r '.meta.generated // empty'
-  else
-    python3 - <<'PY' || true
-import sys,json
-try:
-  print(json.load(sys.stdin).get('meta',{}).get('generated',''))
-except Exception:
-  print('')
-PY
-  fi
-}
-
-GEN_RAW="$(curl -sS --max-time 10 "$STATUS_URL" | extract_generated)"
-info "/status meta.generated: ${GEN_RAW:-<n/a>}"
-info "Expected (day): $(echo "$ZMS_TIMEADJUST" | cut -d' ' -f1) — Got (day): $(echo "$GEN_RAW" | cut -d'T' -f1)"
-
 # 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
 section "6. PHP Migrations"
 ( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
