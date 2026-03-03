@@ -331,6 +331,15 @@ fi
 info "Slot count after cron/calc:"
 exec_sql -e "SELECT COUNT(*) AS slots_total FROM slot;" || true
 
+# Persist to Apache env and force a full restart so workers inherit the new env
+if [[ -f /etc/apache2/envvars ]]; then
+  sed -i '/^export ZMS_TIMEADJUST=/d' /etc/apache2/envvars || true
+  echo "export ZMS_TIMEADJUST='$ZMS_TIMEADJUST'" >> /etc/apache2/envvars
+  apachectl -k restart 2>/dev/null || apachectl restart 2>/dev/null
+else
+  echo "[WARN] /etc/apache2/envvars not found; Apache may not pick up ZMS_TIMEADJUST."
+fi
+
 
 # 9. Health Checks
 section "9. Health Checks"
