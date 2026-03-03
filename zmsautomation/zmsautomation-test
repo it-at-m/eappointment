@@ -252,70 +252,52 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 # 5.5. Mock Date and Time (shared by web app AND CLI/cron)
 section "5.5. Mock Date and Time"
 
-# Keep this inside the seeded opening-hours window; override externally if you like.
-MOCK_DATE="${MOCK_DATE:-2026-03-02 10:00:00}"   # format: "YYYY-MM-DD HH:MM:SS"
+# Keep this inside the seeded opening-hours window; override externally if needed.
+MOCK_DATETIME="${MOCK_DATETIME:-2026-03-02 10:00:00}"   # format: YYYY-MM-DD HH:MM:SS
 TZ="${TZ:-Europe/Berlin}"; export TZ
 
-info "Enabling date/time mocking: processes will think now is $MOCK_DATE"
+info "Enabling date/time mocking for all PHP processes via ZMS_TIMEADJUST=$MOCK_DATETIME"
 
-# OPTIONAL: auto-derive a safe MOCK_DATE from DB if you prefer (uncomment):
-# OH_END="$(exec_sql -N -e "SELECT DATE_FORMAT(MAX(DatumBis),'%Y-%m-%d') FROM oeffnungszeit WHERE DatumBis IS NOT NULL;" 2>/dev/null || true)"
-# if [[ -n "$OH_END" && -z "${MOCK_DATE_SET_EXTERNALLY:-}" ]]; then
-#   SAFE_DAY="$(date -d "$OH_END -1 day" +%F 2>/dev/null || echo "$OH_END")"
-#   MOCK_DATE="$SAFE_DAY 10:00:00"
-#   info "Auto-derived MOCK_DATE from opening-hours: $MOCK_DATE"
-# fi
+# IMPORTANT: zms expects ZMS_TIMEADJUST as an absolute datetime string (not seconds)
+export ZMS_TIMEADJUST="$MOCK_DATETIME"
 
-# Export for all processes; for CLI/cron we will pass ONLY MOCK_DATE (no ZMS_TIMEADJUST!)
-export MOCK_DATE
-export MOCK_DATETIME="$MOCK_DATE"   # for any code reading this alias
-
-# If you want the web app (Apache) to see the mock, persist ONLY MOCK_DATE/MOCK_DATETIME there too
+# Also export to Apache so the web app matches CLI/cron
 if [[ -f /etc/apache2/envvars ]]; then
   cp /etc/apache2/envvars /etc/apache2/envvars.bak-mocktime || true
   {
     echo ""
     echo "# --- injected by zmsautomation-test (mocked time) ---"
-    echo "export MOCK_DATE='$MOCK_DATE'"
-    echo "export MOCK_DATETIME='$MOCK_DATE'"
+    echo "export ZMS_TIMEADJUST='$ZMS_TIMEADJUST'"
     echo "# ----------------------------------------------------"
   } >> /etc/apache2/envvars
   apachectl graceful 2>/dev/null || true
-  info "✓ Mock date exported to Apache and shell (MOCK_DATE=$MOCK_DATE)"
+  info "✓ Mock time exported to Apache and shell (ZMS_TIMEADJUST=$ZMS_TIMEADJUST)"
 else
-  info "✓ Mock date exported to shell only (MOCK_DATE=$MOCK_DATE)"
+  info "✓ Mock time exported to shell only (ZMS_TIMEADJUST=$ZMS_TIMEADJUST)"
 fi
 
-# 6. PHP Migrations — pass ONLY MOCK_DATE to avoid ZMS_TIMEADJUST parsing issues
+# 6. PHP Migrations (run under the mocked time)
 section "6. PHP Migrations"
 info "Running zmsapi PHP migrations..."
 cd "$PROJECT_ROOT/zmsapi"
-MOCK_DATE="$MOCK_DATE" MOCK_DATETIME="$MOCK_DATE" \
-vendor/bin/migrate --update
+ZMS_TIMEADJUST="$ZMS_TIMEADJUST" vendor/bin/migrate --update
 info "PHP migrations completed."
 
-# Make sure slot calculation isn’t globally skipped; enable verbose logs
+# Ensure slot calc isn’t globally skipped; enable verbose logs
 exec_sql -e "INSERT INTO config (name,value) VALUES
  ('status__calculateSlotsSkip','0'),
  ('status__calculateSlotsForceVerbose','1')
 ON DUPLICATE KEY UPDATE value=VALUES(value);" || true
 
-# Quick eligibility check: do we have opening-hours that include MOCK_DATE?
-info "Opening-hours eligibility around $MOCK_DATE:"
-exec_sql -e "SELECT COUNT(*) AS eligible_oeffnungszeiten
-  FROM oeffnungszeit
- WHERE DATE('$MOCK_DATE') BETWEEN DATE(IFNULL(DatumVon,'$MOCK_DATE')) AND DATE(IFNULL(DatumBis,'$MOCK_DATE'));" || true
-
-# 7. Hourly Cronjob — ONLY MOCK_DATE; ensure cron gates are satisfied
+# 7. Hourly Cronjob (with mocked time / gates)
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
 
-info "Running hourly cron (up to 3 attempts) with MOCK_DATE=$MOCK_DATE..."
+info "Running hourly cron (up to 3 attempts) with ZMS_TIMEADJUST=$ZMS_TIMEADJUST..."
 hourly_ok=false
 for attempt in 1 2 3; do
-  if MOCK_DATE="$MOCK_DATE" MOCK_DATETIME="$MOCK_DATE" \
-     ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
+  if ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
      "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich 2>/dev/null
   then
     info "Hourly cron completed (attempt $attempt)."
@@ -326,11 +308,10 @@ done
 [[ "$hourly_ok" != true ]] && warn "Hourly cron failed after 3 attempts; continuing."
 clear_caches
 
-# 8. Minutly Cronjob — ONLY MOCK_DATE; force slot calc fallback afterwards
+# 8. Minutly Cronjob (with mocked time) + forced slot calculation fallback
 section "8. Minutly Cronjob"
-info "Running minutly cron with MOCK_DATE=$MOCK_DATE..."
-if MOCK_DATE="$MOCK_DATE" MOCK_DATETIME="$MOCK_DATE" \
-   ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
+info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST..."
+if ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 \
    "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" 2>/dev/null
 then
   info "Minutly cron completed."
@@ -338,9 +319,8 @@ else
   warn "Minutly cron failed or was skipped; continuing."
 fi
 
-info "Forcing slot calculation (fallback) with MOCK_DATE..."
-if MOCK_DATE="$MOCK_DATE" MOCK_DATETIME="$MOCK_DATE" \
-   php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete 2>/dev/null
+info "Forcing slot calculation (fallback) with ZMS_TIMEADJUST=$ZMS_TIMEADJUST..."
+if ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete 2>/dev/null
 then
   info "calculateSlots fallback completed."
 else
