@@ -253,7 +253,7 @@ exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM i
 section "5.5. Mock Date and Time"
 
 # Keep this inside the seeded opening-hours window; override externally if needed.
-MOCK_DATETIME="${MOCK_DATETIME:-2026-02-26 10:00:00}"   # format: YYYY-MM-DD HH:MM:SS
+MOCK_DATETIME="${MOCK_DATETIME:-2026-03-02 10:00:00}"   # format: YYYY-MM-DD HH:MM:SS
 TZ="${TZ:-Europe/Berlin}"; export TZ
 
 info "Enabling date/time mocking for all PHP processes via ZMS_TIMEADJUST=$MOCK_DATETIME"
