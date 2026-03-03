@@ -465,7 +465,6 @@ class View extends BaseView {
         this.bindMailForm($container, triggerElement);
     }
 
-
     bindMailForm($container, triggerElement) {
         const $dialog = $('.dialog');
         $dialog.off('submit.mail');
