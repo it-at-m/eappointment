@@ -7,28 +7,26 @@ import org.openqa.selenium.WebDriver;
 /**
  * Injects the mocked time into the web app for UI scenarios without depending on ATAF classes.
  * - Reads ZMS_TIMEADJUST from the environment (absolute datetime, e.g., "2026-03-02 10:00:00").
- * - Tries to obtain the WebDriver via reflection from ataf.web.util.DriverUtil#getDriver() if available.
+ * - Obtains WebDriver via reflection from ataf.web.util.DriverUtil#getDriver() after ATAF hooks ran.
  * - Navigates once to a root URL to establish a domain, then sets a "ZMS_TIMEADJUST" cookie.
- * - Works with the existing /.htaccess mapping that reads cookie/header/query into ZMS_TIMEADJUST per request.
+ * - Works with existing /.htaccess that maps cookie/header/query into ZMS_TIMEADJUST per request.
  */
 public class TimeMockHook {
 
-    @Before(order = 0)
+    // Run late so ATAF's driver setup has already executed
+    @Before(order = 10000)
     public void injectMockTimeCookie() {
         final String mock = System.getenv("ZMS_TIMEADJUST");
         if (mock == null || mock.isBlank()) {
-            // No mocked time configured -> nothing to inject
             return;
         }
 
-        final WebDriver driver = tryGetDriverViaReflection();
+        final WebDriver driver = waitForDriver(10_000); // wait up to 10s for driver
         if (driver == null) {
-            // Driver not available in this profile/run; skip quietly
-            System.out.println("TimeMockHook: WebDriver not available; skipping time cookie injection.");
+            System.out.println("TimeMockHook: WebDriver not available after wait; skipping cookie injection.");
             return;
         }
 
-        // Establish a domain before adding the cookie
         final String root = System.getenv().getOrDefault("ZMS_WEB_ROOT", "http://localhost/terminvereinbarung/");
         try {
             String current = "";
@@ -37,13 +35,12 @@ public class TimeMockHook {
                 driver.get(root);
             }
         } catch (Exception e) {
-            // As a fallback, try once more to reach the root; if it still fails, bail out silently
             try { driver.get(root); } catch (Exception ignored) { return; }
         }
 
         try {
             Cookie cookie = new Cookie.Builder("ZMS_TIMEADJUST", mock)
-                    .path("/")               // apply to whole app
+                    .path("/")
                     .isHttpOnly(false)
                     .isSecure(false)
                     .build();
@@ -54,10 +51,16 @@ public class TimeMockHook {
         }
     }
 
-    /**
-     * Attempts to obtain the WebDriver via ATAF's DriverUtil#getDriver() using reflection,
-     * so this class compiles even when ATAF is not on the classpath.
-     */
+    private WebDriver waitForDriver(long millis) {
+        long deadline = System.currentTimeMillis() + millis;
+        while (System.currentTimeMillis() < deadline) {
+            WebDriver d = tryGetDriverViaReflection();
+            if (d != null) return d;
+            try { Thread.sleep(200); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+        }
+        return null;
+    }
+
     private WebDriver tryGetDriverViaReflection() {
         try {
             Class<?> util = Class.forName("ataf.web.util.DriverUtil");
@@ -66,7 +69,7 @@ public class TimeMockHook {
                 return (WebDriver) drv;
             }
         } catch (Throwable ignored) {
-            // ATAF not on classpath or method not available — fall through
+            // ATAF not on classpath or driver not created yet
         }
         return null;
     }
