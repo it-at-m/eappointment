@@ -343,19 +343,66 @@ fi
 
 # 9. Health Checks
 section "9. Health Checks"
-info "Pinging citizenapi: $CITIZEN_API_BASE_URI/offices-and-services/"
-if curl -sf --max-time 10 "$CITIZEN_API_BASE_URI/offices-and-services/" >/dev/null; then
-    info "✓ citizenapi offices-and-services responding"
-  else
-    warn "✗ citizenapi offices-and-services NOT responding"
-  fi
 
-info "Pinging zmsapi: $BASE_URI/status/"
-if curl -sf --max-time 10 "$BASE_URI/status/" >/dev/null; then
-    info "✓ zmsapi status responding"
-  else
-    warn "✗ zmsapi status NOT responding"
-  fi
+# Helper to safely join base URL + path
+join_url() {
+  # join_url "<base>" "<path>"
+  local base="$1" path="$2"
+  base="${base%/}"
+  path="${path#/}"
+  printf '%s/%s\n' "$base" "$path"
+}
+
+# Configurable wait window and interval (defaults: 5 minutes total, 5s interval)
+HEALTH_MAX_WAIT="${HEALTH_MAX_WAIT:-300}"   # seconds
+HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"     # seconds between attempts
+
+# Compose concrete health URLs strictly from existing BASE_URI/CITIZEN_API_BASE_URI
+ZMS_API_HEALTH_URL="${ZMS_API_HEALTH_URL:-$(join_url "${BASE_URI}" "status/")}"
+CITIZEN_API_HEALTH_URL="${CITIZEN_API_HEALTH_URL:-$(join_url "${CITIZEN_API_BASE_URI}" "offices-and-services/")}"
+
+# Optional: pass a mocked-time header per request (only if your Apache maps it to ZMS_TIMEADJUST)
+# Example enablement (uncomment the next line to send the header):
+# HEALTH_EXTRA_HEADER="X-ZMS-Timeadjust: ${ZMS_TIMEADJUST}"
+
+wait_for_http() {
+  local name="$1" url="$2"
+  local attempts=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1) / HEALTH_INTERVAL ))
+  info "Pinging ${name}: ${url}"
+
+  for ((i=1; i<=attempts; i++)); do
+    # 5s per-try timeout; return 000 on network error
+    if [[ -n "${HEALTH_EXTRA_HEADER:-}" ]]; then
+      code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 5 -H "${HEALTH_EXTRA_HEADER}" "$url" || echo "000")"
+    else
+      code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 5 "$url" || echo "000")"
+    fi
+
+    if [[ "$code" =~ ^2|3 ]]; then
+      info "✓ ${name} responding (${code})"
+      return 0
+    fi
+
+    if (( i < attempts )); then
+      warn "… ${name} not ready yet (HTTP ${code}); retrying in ${HEALTH_INTERVAL}s (${i}/${attempts})"
+      sleep "${HEALTH_INTERVAL}"
+    fi
+  done
+
+  warn "✗ ${name} NOT responding after ${HEALTH_MAX_WAIT}s"
+  return 1
+}
+
+fail=false
+wait_for_http "zmsapi"     "${ZMS_API_HEALTH_URL}"     || fail=true
+wait_for_http "citizenapi" "${CITIZEN_API_HEALTH_URL}" || fail=true
+
+if ${fail}; then
+  warn "One or more health checks failed after ${HEALTH_MAX_WAIT}s. Aborting."
+  exit 1
+fi
+
+info "All health checks passed."
 
 # 10. Browser Setup (for UI tests)
 section "10. Browser Setup"
