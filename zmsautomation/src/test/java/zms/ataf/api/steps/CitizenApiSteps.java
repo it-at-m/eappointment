@@ -12,7 +12,6 @@ import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import zms.ataf.api.dto.common.ApiResponse;
 import zms.ataf.api.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 
@@ -20,16 +19,6 @@ public class CitizenApiSteps {
     
     private Response response;
     private String baseUri;
-
-    // Centralized request builder: inject time-mock header if present
-    private RequestSpecification baseRequest() {
-        RequestSpecification req = RestAssured.given();
-        String mock = System.getenv("ZMS_TIMEADJUST"); // e.g., "2026-03-02 10:00:00"
-        if (mock != null && !mock.isBlank()) {
-            req.header("X-ZMS-Timeadjust", mock);
-        }
-        return req;
-    }
     
     @Given("the Citizen API is available")
     public void theCitizenApiIsAvailable() {

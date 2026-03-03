@@ -11,7 +11,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import zms.ataf.api.dto.common.ApiResponse;
 import zms.ataf.api.dto.zmsapi.StatusResponse;
 
@@ -19,15 +18,6 @@ public class ZmsApiSteps {
     
     private Response response;
     private String baseUri;
-
-    private RequestSpecification baseRequest() {
-        RequestSpecification req = RestAssured.given();
-        String mock = System.getenv("ZMS_TIMEADJUST"); // e.g., "2026-03-02 10:00:00"
-        if (mock != null && !mock.isBlank()) {
-            req.header("X-ZMS-Timeadjust", mock);
-        }
-        return req;
-    }
     
     @Given("the ZMS API is available")
     public void theZmsApiIsAvailable() {

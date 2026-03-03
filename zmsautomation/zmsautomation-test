@@ -247,98 +247,83 @@ info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
 info "Database tables after Flyway:"
 exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
-# 5.5. Mock Date/Time (ONE value for the whole run, inside opening-hours)
-export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
-info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
+# 5.5. Mock Date and Time (container-provided)
+section "5.5. Mock Date and Time"
+: "${ZMS_TIMEADJUST:?ZMS_TIMEADJUST must be set in container env (e.g., 2026-03-02 10:00:00)}"
+info "Container-provided ZMS_TIMEADJUST: ${ZMS_TIMEADJUST}"
 
-# 6. PHP migrations under mocked time
+# 5.6. Time sanity check (zmsapi /status)
+section "5.6. Time sanity check"
+: "${BASE_URI:?BASE_URI must be set}"  # e.g., http://localhost/terminvereinbarung/api/2
+STATUS_URL="${BASE_URI%/}/status/"
+
+extract_generated() {
+  if command -v jq >/dev/null 2>&1; then
+    jq -r '.meta.generated // empty'
+  else
+    python3 - <<'PY' || true
+import sys,json
+try:
+  print(json.load(sys.stdin).get('meta',{}).get('generated',''))
+except Exception:
+  print('')
+PY
+  fi
+}
+
+GEN_RAW="$(curl -sS --max-time 10 "$STATUS_URL" | extract_generated)"
+info "/status meta.generated: ${GEN_RAW:-<n/a>}"
+info "Expected (day): $(echo "$ZMS_TIMEADJUST" | cut -d' ' -f1) — Got (day): $(echo "$GEN_RAW" | cut -d'T' -f1)"
+
+# 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
 section "6. PHP Migrations"
-( cd "$PROJECT_ROOT/zmsapi" && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" vendor/bin/migrate --update )
+( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
 
-# Make sure slot calc is allowed and verbose
-exec_sql -e "INSERT INTO config (name,value) VALUES
- ('status__calculateSlotsSkip','0'),
- ('status__calculateSlotsForceVerbose','1')
-ON DUPLICATE KEY UPDATE value=VALUES(value);" || true
-
-# 7. Hourly cron (mocked time + gates)
+# 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
-ZMS_TIMEADJUST="$ZMS_TIMEADJUST" "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich || true
+"$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich || true
 clear_caches
 
-# 8. Minutly cron (mocked time) + forced fallback
+# 8. Minutly Cronjob + calculateSlots fallback (inherit ZMS_TIMEADJUST)
 section "8. Minutly Cronjob"
-ZMS_TIMEADJUST="$ZMS_TIMEADJUST" "$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" || true
-ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete || true
+"$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" || true
+php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete || true
 
-# 9. Health Checks
+# 9. Health Checks (5 min total; 15s per try; bypass proxy for localhost; keep BASE_URI / CITIZEN_API_BASE_URI)
 section "9. Health Checks"
-
-# Always bypass proxy for local endpoints
 export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1}"
 export no_proxy="${NO_PROXY}"
 
-# Helper to safely join base URL + path
-join_url() { local b="${1%/}"; local p="${2#/}"; printf '%s/%s\n' "$b" "$p"; }
+join_url(){ local b="${1%/}"; local p="${2#/}"; printf '%s/%s\n' "$b" "$p"; }
 
-# Window/interval and per-try timeout (tune via env if needed)
-HEALTH_MAX_WAIT="${HEALTH_MAX_WAIT:-300}"          # total seconds (default 5 min)
-HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"            # seconds between attempts
-HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}" # seconds per curl try
-
-# Expect BASE_URI and CITIZEN_API_BASE_URI to be defined at script top
-: "${BASE_URI:?BASE_URI must be set}"
-: "${CITIZEN_API_BASE_URI:?CITIZEN_API_BASE_URI must be set}"
+HEALTH_MAX_WAIT="${HEALTH_MAX_WAIT:-300}"          # total seconds
+HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"            # seconds between tries
+HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}"
 
 ZMS_API_HEALTH_URL="$(join_url "${BASE_URI}" "status/")"
+: "${CITIZEN_API_BASE_URI:?CITIZEN_API_BASE_URI must be set}"
 CITIZEN_API_HEALTH_URL="$(join_url "${CITIZEN_API_BASE_URI}" "offices-and-services/")"
 
-# Optional: send mocked time per request (.htaccess maps it to ZMS_TIMEADJUST)
-HEALTH_SEND_TIMEADJUST="${HEALTH_SEND_TIMEADJUST:-1}"
-if [[ "${HEALTH_SEND_TIMEADJUST}" != "0" && -n "${ZMS_TIMEADJUST:-}" ]]; then
-  HEALTH_EXTRA_HEADER=("X-ZMS-Timeadjust: ${ZMS_TIMEADJUST}")
-fi
+# one-shot warm-up (ignore exit code)
+curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
 
-# One-time warm-up for citizenapi (bigger timeout; ignore exit code)
-if [[ -n "${HEALTH_EXTRA_HEADER[*]:-}" ]]; then
-  curl -sS -o /dev/null --max-time 30 -H "${HEALTH_EXTRA_HEADER[@]}" "${CITIZEN_API_HEALTH_URL}" || true
-else
-  curl -sS -o /dev/null --max-time 30 "${CITIZEN_API_HEALTH_URL}" || true
-fi
-
-wait_for_http() {
-  local name="$1" url="$2"
-  local attempts=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1) / HEALTH_INTERVAL ))
-  info "Pinging ${name}: ${url}"
-
-  local args=(-sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1")
-  [[ -n "${HEALTH_EXTRA_HEADER[*]:-}" ]] && args+=( -H "${HEALTH_EXTRA_HEADER[@]}" )
-
-  for ((i=1; i<=attempts; i++)); do
-    code="$(curl "${args[@]}" "$url" || echo "000")"
-    if [[ "$code" =~ ^2|3 ]]; then
-      info "✓ ${name} responding (${code})"
-      return 0
-    fi
-    if (( i < attempts )); then
-      warn "… ${name} not ready (HTTP ${code}); retry in ${HEALTH_INTERVAL}s (${i}/${attempts})"
-      sleep "${HEALTH_INTERVAL}"
-    fi
+wait_http() { # name url
+  local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  info "Pinging ${n}: ${u}"
+  for ((i=1;i<=tries;i++)); do
+    code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
+    [[ "$code" =~ ^2|3 ]] && { info "✓ ${n} responding (${code})"; return 0; }
+    (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
   done
-  warn "✗ ${name} NOT responding after ${HEALTH_MAX_WAIT}s"
-  return 1
+  warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
 }
 
 fail=false
-wait_for_http "zmsapi"     "${ZMS_API_HEALTH_URL}"     || fail=true
-wait_for_http "citizenapi" "${CITIZEN_API_HEALTH_URL}" || fail=true
-
-if ${fail}; then
-  warn "One or more health checks failed after ${HEALTH_MAX_WAIT}s. Aborting."
-  exit 1
-fi
+wait_http "zmsapi"     "$ZMS_API_HEALTH_URL"     || fail=true
+wait_http "citizenapi" "$CITIZEN_API_HEALTH_URL" || fail=true
+$fail && { warn "One or more health checks failed"; exit 1; }
 
 info "All health checks passed."
 
