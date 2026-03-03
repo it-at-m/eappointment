@@ -75,7 +75,8 @@ class Mail extends BaseController
         }
         $collection = array();
         $collection['subject'] = Validator::param('subject')->isString()
-            ->isBiggerThan(2, "Es muss ein aussagekräftiger Betreff eingegeben werden");
+                ->isBiggerThan(2, "Der Betreff muss mindestens zwei Zeichen lang sein.")
+                ->isSmallerThan(151, "Der Betreff darf maximal 150 Zeichen lang sein.");
         $collection['message'] = Validator::param('message')->isString()
             ->isBiggerThan(2, "Es muss eine aussagekräftige Nachricht eingegeben werden");
         $collection = Validator::collection($collection);
