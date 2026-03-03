@@ -454,27 +454,42 @@ class View extends BaseView {
         });
     }
 
-    onSendCustomMail($container, event) {
+    async onSendCustomMail($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
-        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
-            this.loadDialog(response, (() => {
-                showSpinner($container);
-                const sendData = $('.dialog form').serializeArray();
-                sendData.push(
-                    { 'name': 'submit', 'value': 'form' },
-                    { 'name': 'dialog', 'value': 1 }
-                );
-                this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
-                    (response) => {
-                        hideSpinner($container);
-                        this.loadMessage(response, () => {
-                    }, null, event.currentTarget)
-                });
-            }), null, event.currentTarget)
-        });
+        const triggerElement = event.currentTarget;
+        const html = await this.loadCall(
+            `${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`
+        );
+        this.loadDialog(html, null, null, triggerElement);
+        this.bindMailForm($container, triggerElement);
     }
 
+    bindMailForm($container, triggerElement) {
+        const $dialog = $('.dialog');
+        $dialog.off('submit.mail');
+        $dialog.on('submit.mail', 'form[name="mail"]', async (ev) => {
+            ev.preventDefault();
+            showSpinner($container);
+            const formData =
+                $(ev.currentTarget).serialize() + '&submit=form&dialog=1';
+            const response = await this.loadCall(
+                `${this.includeUrl}/mail/`,
+                'POST',
+                formData,
+                false,
+                $container
+            );
+            hideSpinner($container);
+            if (response.includes('<form')) {
+                this.loadDialog(response, null, null, triggerElement);
+                this.bindMailForm($container, triggerElement);
+            } else {
+                this.loadMessage(response, () => { }, null, triggerElement);
+            }
+        });
+    }
+    
     onSendCustomNotification($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
