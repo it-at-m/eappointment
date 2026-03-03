@@ -485,7 +485,7 @@ class View extends BaseView {
                 this.loadDialog(response, null, null, triggerElement);
                 this.bindMailForm($container, triggerElement);
             } else {
-                this.loadMessage(response, () => { }, null, event.currentTarget);
+                this.loadMessage(response, () => { }, null, triggerElement);
             }
         });
     }
