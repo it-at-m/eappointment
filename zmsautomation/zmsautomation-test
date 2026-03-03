@@ -58,6 +58,10 @@ DB_PASSWORD="${MYSQL_PASSWORD}"
 DB_HOST="${MYSQL_HOST:-db}"  # Defaults to 'db' (docker-compose service name)
 DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
+# Mock Date/Time (ONE value for the whole run, inside opening-hours)
+export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
+
 # File paths
 BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
@@ -247,11 +251,6 @@ info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
 info "Database tables after Flyway:"
 exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
 
-# 5.5. Mock Date and Time (container-provided)
-section "5.5. Mock Date and Time"
-#: "${ZMS_TIMEADJUST:?ZMS_TIMEADJUST must be set in container env (e.g., 2026-03-02 10:00:00)}"
-#info "Container-provided ZMS_TIMEADJUST: ${ZMS_TIMEADJUST}"
-
 # 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
 section "6. PHP Migrations"
 ( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
@@ -263,10 +262,20 @@ export ZMS_ENV="${ZMS_ENV:-dev}"
 "$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich || true
 clear_caches
 
-# 8. Minutly Cronjob + calculateSlots fallback (inherit ZMS_TIMEADJUST)
 section "8. Minutly Cronjob"
-"$PROJECT_ROOT/zmsapi/cron/cronjob.minutly" || true
-php "$PROJECT_ROOT/zmsapi/vendor/bin/calculateSlots" --commit --delete || true
+export ZMS_CRONROOT=1
+export ZMS_ENV="${ZMS_ENV:-dev}"
+info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
+(
+  cd "$PROJECT_ROOT/zmsapi" \
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
+) || true
+
+info "Forcing slot calculation fallback (mocked time) ..."
+(
+  cd "$PROJECT_ROOT/zmsapi" \
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+) || true
 
 # 9. Health Checks (5 min total; 15s per try; bypass proxy for localhost; keep BASE_URI / CITIZEN_API_BASE_URI)
 section "9. Health Checks"
