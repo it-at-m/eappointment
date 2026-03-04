@@ -100,35 +100,31 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public void saveLocationChanges() {
-
-        ScenarioLogManager.getLogger().info(
-            "Trying to click 'Speichern' to save location changes...");
+        ScenarioLogManager.getLogger().info("Trying to click 'Speichern' to save location changes...");
     
-        // Robust Save button locator
-        By saveButton = By.xpath(
-            "//button[contains(@class,'type-save') and @name='save']"
-        );
+        CONTEXT.set();
     
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
+        By saveButton = By.xpath("//button[contains(`@class`,'type-save') and `@name`='save']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(30));
     
-        WebElement button = wait.until(
-            ExpectedConditions.elementToBeClickable(saveButton)
-        );
-    
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(saveButton));
+        scrollToCenterByVisibleElement(button);
         button.click();
     
-        // Wait specifically for success message dialog
-        By successMessage = By.cssSelector(
-            "section.message--success[role='alert']"
-        );
+        // Give the page a moment to re-render and any spinner to finish
+        CONTEXT.waitForSpinners();
     
-        WebElement success = wait.until(
-            ExpectedConditions.visibilityOfElementLocated(successMessage)
-        );
+        // Be lenient: div/section, with class containing message--success; role may or may not be present
+        By successAny = By.xpath("//*[self::div or self::section][contains(`@class`,'message--success')]");
+        WebElement success = wait.until(ExpectedConditions.visibilityOfElementLocated(successAny));
     
+        String msg = success.getText().replaceAll("\\s+", " ").trim();
+        ScenarioLogManager.getLogger().info("Save success banner: " + msg);
+    
+        // Optional: assert generic success wording rather than an exact timestamp
         Assert.assertTrue(
-            success.isDisplayed(),
-            "Save message is not visible!"
+            msg.toLowerCase(Locale.GERMAN).contains("erfolgreich"),
+            "Save message did not contain 'erfolgreich'. Actual: " + msg
         );
     }
 
