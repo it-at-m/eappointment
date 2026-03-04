@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -47,6 +49,91 @@ public class AdminPage extends BasePage {
         CONTEXT.navigateToPage();
     }
 
+    // Sets a cookie so the shim has a reliable fallback if /status is momentarily unavailable
+    private void ensureMockTimeCookie() {
+        try {
+            String mock = System.getenv("ZMS_TIMEADJUST");
+            if (mock == null || mock.isBlank()) {
+                // fallback to test properties if you use them
+                try {
+                    mock = ataf.core.config.TestPropertiesHelper.get("ZMS_TIMEADJUST", null);
+                } catch (Throwable ignored) { /* optional */ }
+            }
+            if (mock != null && !mock.isBlank()) {
+                Cookie c = new Cookie.Builder("ZMS_TIMEADJUST", mock)
+                        .path("/")              // whole site
+                        .isHttpOnly(false)      // readable from JS if needed
+                        .build();
+                DRIVER.manage().addCookie(c);
+                // Make sure subsequent fetches see the cookie
+                DRIVER.navigate().refresh();
+            }
+        } catch (Exception ignored) { }
+    }
+
+    // Injects a one-time shim that aligns Date.now/new Date/performance.now to server "now"
+    private void alignBrowserClockWithServer() {
+        String script = """
+        (function(){
+        if (window.__ZMS_CLOCK_SKEW_APPLIED__) return;
+        window.__ZMS_CLOCK_SKEW_APPLIED__ = true;
+
+        const getCookie = (name) => {
+            const m = document.cookie.match(new RegExp('(?:^|;\\\\s*)' + name + '=([^;]+)'));
+            return m ? decodeURIComponent(m[1].replace(/\\+/g,' ')) : null;
+        };
+
+        const fetchServerNow = () => fetch('/terminvereinbarung/api/2/status/', {credentials:'same-origin'})
+            .then(r => r.json())
+            .then(j => Date.parse(j && j.meta && j.meta.generated))
+            .catch(() => null);
+
+        const fromCookie = () => {
+            const v = getCookie('ZMS_TIMEADJUST');
+            if (!v) return null;
+            const t = Date.parse(v);
+            return isNaN(t) ? null : t;
+        };
+
+        (async () => {
+            const serverMs = (await fetchServerNow()) ?? fromCookie();
+            if (serverMs == null) { console.warn('[ATAF] No server time available for skew.'); return; }
+
+            const NativeDate = Date;
+            const start = NativeDate.now();
+            const skew  = serverMs - start;
+
+            function MockDate(...args){
+            if (this instanceof MockDate) {
+                if (args.length === 0) return new NativeDate(NativeDate.now() + skew);
+                return new NativeDate(...args);
+            }
+            return NativeDate(...args);
+            }
+            MockDate.prototype = NativeDate.prototype;
+            MockDate.now   = () => NativeDate.now() + skew;
+            MockDate.UTC   = NativeDate.UTC;
+            MockDate.parse = NativeDate.parse;
+            window.Date = MockDate;
+
+            if (window.performance && typeof performance.now === 'function') {
+            const base = performance.now();
+            const startNow = NativeDate.now();
+            performance.now = () => base + ((NativeDate.now() - startNow) + skew);
+            }
+
+            console.log('[ATAF] Browser clock skew applied (ms):', skew);
+        })();
+        })();
+        """;
+        try {
+            ((JavascriptExecutor) DRIVER).executeScript(script);
+            // Optional: one-line sanity log
+            String jsNow = (String) ((JavascriptExecutor) DRIVER).executeScript("return new Date().toISOString()");
+            ScenarioLogManager.getLogger().info("[CLIENT JS now] " + jsNow);
+        } catch (Exception ignored) { }
+    }
+
     public void clickOnLoginButton() throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
@@ -79,6 +166,8 @@ public class AdminPage extends BasePage {
                 ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
                 clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
                 ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
+                ensureMockTimeCookie();
+                alignBrowserClockWithServer();
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
                 exception = e;
