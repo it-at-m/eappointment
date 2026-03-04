@@ -123,10 +123,10 @@ restore_db() {
 
 # --- Time freeze for browser via libfaketime ---------------------------------
 enable_browser_time_freeze() {
-  # Derive target time from ZMS_TIMEADJUST or fall back to a safe default
+  # Derive target time from ZMS_TIMEADJUST or default
   local fake_now="${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
 
-  # Known soname locations
+  # Find libfaketime .so
   local so_path=""
   for p in \
     /usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1 \
@@ -140,28 +140,40 @@ enable_browser_time_freeze() {
     return 0
   fi
 
-  # Remember previous env (so we can restore in trap)
+  # Remember previous env to restore later (safe with set -u)
   export __PREV_LD_PRELOAD="${LD_PRELOAD-}"
   export __PREV_FAKETIME="${FAKETIME-}"
   export __PREV_FAKETIME_NO_CACHE="${FAKETIME_NO_CACHE-}"
   export __PREV_FAKETIME_DONT_RESET="${FAKETIME_DONT_RESET-}"
+  export __PREV_FAKETIME_DONT_FAKE_MONOTONIC="${FAKETIME_DONT_FAKE_MONOTONIC-}"
+  export __PREV_MOZ_DISABLE_CONTENT_SANDBOX="${MOZ_DISABLE_CONTENT_SANDBOX-}"
 
-  # Activate faketime (prepend to LD_PRELOAD)
-  export LD_PRELOAD="$so_path${LD_PRELOAD+:$LD_PRELOAD}"
+  # Prepend faketime to LD_PRELOAD safely
+  if [ -n "${LD_PRELOAD-}" ]; then
+    export LD_PRELOAD="$so_path:$LD_PRELOAD"
+  else
+    export LD_PRELOAD="$so_path"
+  fi
   export FAKETIME="@${fake_now}"
   export FAKETIME_NO_CACHE=1
   export FAKETIME_DONT_RESET=1
+  # Key stabilizer for Firefox/Gecko:
+  export FAKETIME_DONT_FAKE_MONOTONIC=1
+  # Relax sandbox only during tests (containerized E2E is safe):
+  export MOZ_DISABLE_CONTENT_SANDBOX=1
 
-  info "libfaketime enabled (FAKETIME=$FAKETIME, LD_PRELOAD=$LD_PRELOAD)"
+  info "libfaketime enabled (FAKETIME=$FAKETIME, LD_PRELOAD=${LD_PRELOAD-<unset>})"
   info "Client clock (date) now: $(date -Iseconds)"
 }
 
 disable_browser_time_freeze() {
-  # Restore / unset env so subsequent runs use real time again
-  if [ -n "${__PREV_LD_PRELOAD+x}" ]; then export LD_PRELOAD="$__PREV_LD_PRELOAD"; else unset LD_PRELOAD; fi
-  if [ -n "${__PREV_FAKETIME+x}" ]; then export FAKETIME="$__PREV_FAKETIME"; else unset FAKETIME; fi
-  if [ -n "${__PREV_FAKETIME_NO_CACHE+x}" ]; then export FAKETIME_NO_CACHE="$__PREV_FAKETIME_NO_CACHE"; else unset FAKETIME_NO_CACHE; fi
-  if [ -n "${__PREV_FAKETIME_DONT_RESET+x}" ]; then export FAKETIME_DONT_RESET="$__PREV_FAKETIME_DONT_RESET"; else unset FAKETIME_DONT_RESET; fi
+  # Restore previous env (handle unset safely)
+  if [ -n "${__PREV_LD_PRELOAD-}" ]; then export LD_PRELOAD="$__PREV_LD_PRELOAD"; else unset LD_PRELOAD; fi
+  if [ -n "${__PREV_FAKETIME-}" ]; then export FAKETIME="$__PREV_FAKETIME"; else unset FAKETIME; fi
+  if [ -n "${__PREV_FAKETIME_NO_CACHE-}" ]; then export FAKETIME_NO_CACHE="$__PREV_FAKETIME_NO_CACHE"; else unset FAKETIME_NO_CACHE; fi
+  if [ -n "${__PREV_FAKETIME_DONT_RESET-}" ]; then export FAKETIME_DONT_RESET="$__PREV_FAKETIME_DONT_RESET"; else unset FAKETIME_DONT_RESET; fi
+  if [ -n "${__PREV_FAKETIME_DONT_FAKE_MONOTONIC-}" ]; then export FAKETIME_DONT_FAKE_MONOTONIC="$__PREV_FAKETIME_DONT_FAKE_MONOTONIC"; else unset FAKETIME_DONT_FAKE_MONOTONIC; fi
+  if [ -n "${__PREV_MOZ_DISABLE_CONTENT_SANDBOX-}" ]; then export MOZ_DISABLE_CONTENT_SANDBOX="$__PREV_MOZ_DISABLE_CONTENT_SANDBOX"; else unset MOZ_DISABLE_CONTENT_SANDBOX; fi
 
   info "libfaketime disabled. Client real clock (date): $(date -Iseconds)"
 }
@@ -400,12 +412,9 @@ fi
 
 # 10.1 Setup client side mocked time
 section "10.1 Setup client side mocked time"
-enable_browser_time_freeze
-
-# (optional) quick sanity output
-info "[TIME] Expecting client time ≈ ${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
-info "[TIME] LD_PRELOAD=$LD_PRELOAD"
-info "[TIME] FAKETIME=$FAKETIME"
+#enable_browser_time_freeze
+#info "[TIME] Expecting client time ≈ ${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+#info "[TIME] LD_PRELOAD=${LD_PRELOAD-<unset>}  FAKETIME=${FAKETIME-<unset>}"
 
 # 11. Running Tests
 section "11. Running ATAF Tests"
