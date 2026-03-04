@@ -121,21 +121,56 @@ restore_db() {
 }
 
 
-# Restore time by reverting envvars
-restore_time() {
-  if [[ -f /etc/apache2/envvars.bak-mocktime ]]; then
-    mv /etc/apache2/envvars.bak-mocktime /etc/apache2/envvars
-    apachectl graceful 2>/dev/null || true
-    info "✓ Real time restored via Apache envvars"
+# --- Time freeze for browser via libfaketime ---------------------------------
+enable_browser_time_freeze() {
+  # Derive target time from ZMS_TIMEADJUST or fall back to a safe default
+  local fake_now="${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+
+  # Known soname locations
+  local so_path=""
+  for p in \
+    /usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1 \
+    /usr/lib/faketime/libfaketime.so.1 \
+    /usr/local/lib/faketime/libfaketime.so.1; do
+    [ -f "$p" ] && so_path="$p" && break
+  done
+
+  if [ -z "$so_path" ]; then
+    warn "libfaketime not found. Skipping browser time freeze. Install package 'libfaketime'."
+    return 0
   fi
-  unset ZMS_TIMEADJUST
+
+  # Remember previous env (so we can restore in trap)
+  export __PREV_LD_PRELOAD="${LD_PRELOAD-}"
+  export __PREV_FAKETIME="${FAKETIME-}"
+  export __PREV_FAKETIME_NO_CACHE="${FAKETIME_NO_CACHE-}"
+  export __PREV_FAKETIME_DONT_RESET="${FAKETIME_DONT_RESET-}"
+
+  # Activate faketime (prepend to LD_PRELOAD)
+  export LD_PRELOAD="$so_path${LD_PRELOAD+:$LD_PRELOAD}"
+  export FAKETIME="@${fake_now}"
+  export FAKETIME_NO_CACHE=1
+  export FAKETIME_DONT_RESET=1
+
+  info "libfaketime enabled (FAKETIME=$FAKETIME, LD_PRELOAD=$LD_PRELOAD)"
+  info "Client clock (date) now: $(date -Iseconds)"
+}
+
+disable_browser_time_freeze() {
+  # Restore / unset env so subsequent runs use real time again
+  if [ -n "${__PREV_LD_PRELOAD+x}" ]; then export LD_PRELOAD="$__PREV_LD_PRELOAD"; else unset LD_PRELOAD; fi
+  if [ -n "${__PREV_FAKETIME+x}" ]; then export FAKETIME="$__PREV_FAKETIME"; else unset FAKETIME; fi
+  if [ -n "${__PREV_FAKETIME_NO_CACHE+x}" ]; then export FAKETIME_NO_CACHE="$__PREV_FAKETIME_NO_CACHE"; else unset FAKETIME_NO_CACHE; fi
+  if [ -n "${__PREV_FAKETIME_DONT_RESET+x}" ]; then export FAKETIME_DONT_RESET="$__PREV_FAKETIME_DONT_RESET"; else unset FAKETIME_DONT_RESET; fi
+
+  info "libfaketime disabled. Client real clock (date): $(date -Iseconds)"
 }
 
 cleanup_on_exit() {
   info "Running cleanup..."
   
   # 1. Restore time first (most critical for developer environment)
-  restore_time
+  disable_browser_time_freeze || true
   
   # 2. Restore database
   restore_db
@@ -362,6 +397,15 @@ else
     warn "Failed to start Xvfb - UI tests may fail"
   fi
 fi
+
+# 10.1 Setup client side mocked time
+section "10.1 Setup client side mocked time"
+enable_browser_time_freeze
+
+# (optional) quick sanity output
+info "[TIME] Expecting client time ≈ ${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+info "[TIME] LD_PRELOAD=$LD_PRELOAD"
+info "[TIME] FAKETIME=$FAKETIME"
 
 # 11. Running Tests
 section "11. Running ATAF Tests"
