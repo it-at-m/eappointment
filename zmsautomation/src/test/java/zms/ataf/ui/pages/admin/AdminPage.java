@@ -52,23 +52,23 @@ public class AdminPage extends BasePage {
     // Sets a cookie so the shim has a reliable fallback if /status is momentarily unavailable
     private void ensureMockTimeCookie() {
         try {
-            String mock = System.getenv("ZMS_TIMEADJUST");
+            // Prefer system property, then environment variable
+            String mock = System.getProperty("ZMS_TIMEADJUST");
             if (mock == null || mock.isBlank()) {
-                // fallback to test properties if you use them
-                try {
-                    mock = ataf.core.config.TestPropertiesHelper.get("ZMS_TIMEADJUST", null);
-                } catch (Throwable ignored) { /* optional */ }
+                mock = System.getenv("ZMS_TIMEADJUST");
             }
             if (mock != null && !mock.isBlank()) {
                 Cookie c = new Cookie.Builder("ZMS_TIMEADJUST", mock)
-                        .path("/")              // whole site
-                        .isHttpOnly(false)      // readable from JS if needed
+                        .path("/")
+                        .isHttpOnly(false)
                         .build();
                 DRIVER.manage().addCookie(c);
-                // Make sure subsequent fetches see the cookie
+                ScenarioLogManager.getLogger().info("Set client side mock time to " + mock);
                 DRIVER.navigate().refresh();
             }
-        } catch (Exception ignored) { }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Could not set ZMS_TIMEADJUST cookie: " + e.getMessage());
+        }
     }
 
     // Injects a one-time shim that aligns Date.now/new Date/performance.now to server "now"
