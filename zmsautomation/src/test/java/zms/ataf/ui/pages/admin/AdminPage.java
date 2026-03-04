@@ -336,6 +336,9 @@ public class AdminPage extends BasePage {
         CONTEXT.set();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='weiter']", LocatorType.XPATH,
                 false, CONTEXT);
+        CONTEXT.waitForSpinners();
+        // Re-apply shim after navigation
+        alignBrowserClockEverywhere();
     }
 
     // prüfen ob die eingegebenen Standort und Platz-Nr im Seitenkopf angezeigt

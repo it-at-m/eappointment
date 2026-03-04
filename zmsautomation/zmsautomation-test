@@ -388,9 +388,9 @@ fi
 # 10.1 Setup client side mocked time
 section "10.1 Setup client side mocked time"
 # Ensure Firefox runs under frozen time (but NOT geckodriver/maven)
-write_firefox_freeze_wrapper
-switch_firefox_to_frozen
-info "[TIME] Firefox will run with ZMS_TIMEADJUST=${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+#write_firefox_freeze_wrapper
+#switch_firefox_to_frozen
+#info "[TIME] Firefox will run with ZMS_TIMEADJUST=${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
 
 # 11. Running Tests
 section "11. Running ATAF Tests"
