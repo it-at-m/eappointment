@@ -2,8 +2,15 @@ package zms.ataf.ui.pages.admin;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.By;
@@ -50,88 +57,122 @@ public class AdminPage extends BasePage {
     }
 
     // Sets a cookie so the shim has a reliable fallback if /status is momentarily unavailable
+    // Prefer env, then -D system property
+    private String resolveMockNow() {
+        String v = System.getenv("ZMS_TIMEADJUST");
+        if (v == null || v.isBlank()) v = System.getProperty("ZMS_TIMEADJUST");
+        return (v != null && !v.isBlank()) ? v.trim() : null;
+    }
+
+    // Parse common inputs to epochMillis. Accepts:
+    // - 2026-03-02 10:00:00
+    // - 2026-03-02 10:00
+    // - 2026-03-02T10:00[:ss]
+    // - full ISO with Z or +offset
+    private Long resolveMockEpochMillis() {
+        String raw = resolveMockNow();
+        if (raw == null) return null;
+
+        String v = raw.replace(' ', 'T');
+        ZoneId zone = null;
+        // Use container TZ if set, else system default
+        String tzEnv = System.getenv("TZ");
+        if (tzEnv != null && !tzEnv.isBlank()) {
+            try { zone = ZoneId.of(tzEnv); } catch (Exception ignore) {}
+        }
+        if (zone == null) zone = ZoneId.systemDefault();
+
+        try {
+            // Full ISO with zone/offset
+            if (Pattern.compile("[zZ]|[+-][0-9]{2}:[0-9]{2}").matcher(v).find()) {
+                return Instant.parse(v).toEpochMilli();
+            }
+        } catch (Exception ignore) {}
+
+        // Try ISO local datetime patterns (no zone)
+        DateTimeFormatter[] fmts = new DateTimeFormatter[] {
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ROOT)
+        };
+        for (DateTimeFormatter fmt : fmts) {
+            try {
+                LocalDateTime ldt = LocalDateTime.parse(v, fmt);
+                return ldt.atZone(zone).toInstant().toEpochMilli();
+            } catch (Exception ignore) {}
+        }
+
+        // Try date only
+        try {
+            LocalDate d = LocalDate.parse(v.substring(0, 10), DateTimeFormatter.ISO_LOCAL_DATE);
+            return d.atStartOfDay(zone).toInstant().toEpochMilli();
+        } catch (Exception ignore) {}
+
+        // As last resort, let JS handle it (may fail)
+        return null;
+    }
+
+    // Optional: set cookie so app can also see mock time
     private void ensureMockTimeCookie() {
         try {
-            // Prefer system property, then environment variable
-            String mock = System.getProperty("ZMS_TIMEADJUST");
-            if (mock == null || mock.isBlank()) {
-                mock = System.getenv("ZMS_TIMEADJUST");
-            }
-            if (mock != null && !mock.isBlank()) {
-                Cookie c = new Cookie.Builder("ZMS_TIMEADJUST", mock)
-                        .path("/")
-                        .isHttpOnly(false)
-                        .build();
-                DRIVER.manage().addCookie(c);
-                ScenarioLogManager.getLogger().info("Set client side mock time to " + mock);
-                DRIVER.navigate().refresh();
-            }
+            String raw = resolveMockNow();
+            if (raw == null) return;
+            String cookieVal = raw.replace(' ', 'T'); // normalize to ISO-ish
+            Cookie c = new Cookie.Builder("ZMS_TIMEADJUST", cookieVal)
+                .path("/")
+                .isHttpOnly(false)
+                .build();
+            DRIVER.manage().addCookie(c);
+            DRIVER.navigate().refresh();
+            ScenarioLogManager.getLogger().info("Set client side mock time cookie to " + cookieVal);
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Could not set ZMS_TIMEADJUST cookie: " + e.getMessage());
         }
     }
 
-    // Injects a one-time shim that aligns Date.now/new Date/performance.now to server "now"
-    private void alignBrowserClockWithServer() {
+    // Deterministic shim: use epoch millis computed in Java, no fetch/parse in the page
+    public void alignBrowserClockWithServer() {
+        Long serverMs = resolveMockEpochMillis();
+        if (serverMs == null) {
+            ScenarioLogManager.getLogger().warn("No valid ZMS_TIMEADJUST to inject; skipping clock shim.");
+            return;
+        }
         String script = """
-        (function(){
-        if (window.__ZMS_CLOCK_SKEW_APPLIED__) return;
-        window.__ZMS_CLOCK_SKEW_APPLIED__ = true;
-
-        const getCookie = (name) => {
-            const m = document.cookie.match(new RegExp('(?:^|;\\\\s*)' + name + '=([^;]+)'));
-            return m ? decodeURIComponent(m[1].replace(/\\+/g,' ')) : null;
-        };
-
-        const fetchServerNow = () => fetch('/terminvereinbarung/api/2/status/', {credentials:'same-origin'})
-            .then(r => r.json())
-            .then(j => Date.parse(j && j.meta && j.meta.generated))
-            .catch(() => null);
-
-        const fromCookie = () => {
-            const v = getCookie('ZMS_TIMEADJUST');
-            if (!v) return null;
-            const t = Date.parse(v);
-            return isNaN(t) ? null : t;
-        };
-
-        (async () => {
-            const serverMs = (await fetchServerNow()) ?? fromCookie();
-            if (serverMs == null) { console.warn('[ATAF] No server time available for skew.'); return; }
-
+            (function(){
+            if (window.__ZMS_CLOCK_SKEW_APPLIED__) return;
+            window.__ZMS_CLOCK_SKEW_APPLIED__ = true;
+            const serverMs = %d;
             const NativeDate = Date;
             const start = NativeDate.now();
             const skew  = serverMs - start;
 
-            function MockDate(...args){
-            if (this instanceof MockDate) {
-                if (args.length === 0) return new NativeDate(NativeDate.now() + skew);
-                return new NativeDate(...args);
-            }
-            return NativeDate(...args);
+            function MockDate(){ if (this instanceof MockDate) {
+                if (arguments.length === 0) return new NativeDate(NativeDate.now()+skew);
+                return new (Function.prototype.bind.apply(NativeDate, [null].concat(Array.from(arguments))))();
+                }
+                return NativeDate.apply(this, arguments);
             }
             MockDate.prototype = NativeDate.prototype;
-            MockDate.now   = () => NativeDate.now() + skew;
+            MockDate.now   = function(){ return NativeDate.now() + skew; };
             MockDate.UTC   = NativeDate.UTC;
             MockDate.parse = NativeDate.parse;
-            window.Date = MockDate;
+            window.Date    = MockDate;
 
             if (window.performance && typeof performance.now === 'function') {
-            const base = performance.now();
-            const startNow = NativeDate.now();
-            performance.now = () => base + ((NativeDate.now() - startNow) + skew);
+                const base = performance.now(), s = NativeDate.now();
+                performance.now = function(){ return base + ((NativeDate.now() - s) + skew); };
             }
+            console.log('[ATAF] Browser clock skew(ms):', skew);
+            })();
+            """.formatted(serverMs);
 
-            console.log('[ATAF] Browser clock skew applied (ms):', skew);
-        })();
-        })();
-        """;
         try {
             ((JavascriptExecutor) DRIVER).executeScript(script);
-            // Optional: one-line sanity log
-            String jsNow = (String) ((JavascriptExecutor) DRIVER).executeScript("return new Date().toISOString()");
+            String jsNow = (String) ((JavascriptExecutor) DRIVER)
+                .executeScript("return new Date().toISOString()");
             ScenarioLogManager.getLogger().info("[CLIENT JS now] " + jsNow);
-        } catch (Exception ignored) { }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Clock shim injection failed: " + e.getMessage());
+        }
     }
 
     public void clickOnLoginButton() throws Exception {
