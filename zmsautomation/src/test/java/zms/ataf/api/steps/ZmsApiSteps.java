@@ -9,7 +9,6 @@ import config.TestConfig;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import zms.ataf.api.dto.common.ApiResponse;
 import zms.ataf.api.dto.zmsapi.StatusResponse;
