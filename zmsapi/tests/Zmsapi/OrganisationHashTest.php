@@ -23,7 +23,7 @@ class OrganisationHashTest extends Base
 
     public function testTicketprinterDisabled()
     {
-        $response = $this->render(['id' => 65], [], []); //Friedrichshain-Kreuzberg mit kioskpasswortschutz
+        $response = $this->render(['id' => 65], [], []); //Friedrichshain-Kreuzberg mit kiosk_activation
         $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
         $this->assertStringContainsString('"enabled":false', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
