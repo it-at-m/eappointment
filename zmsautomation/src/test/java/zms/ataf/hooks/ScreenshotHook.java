@@ -1,11 +1,5 @@
 package zms.ataf.hooks;
 
-import io.cucumber.java.AfterStep;
-import io.cucumber.java.Scenario;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +7,13 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import ataf.web.utils.DriverUtil; // adjust if your DriverUtil package differs
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import ataf.web.utils.DriverUtil;
+import io.cucumber.java.AfterStep;
+import io.cucumber.java.Scenario;
 
 public class ScreenshotHook {
     // Default off to avoid huge artifacts; enable with: -DSCREENSHOT_EVERY_STEP=true
