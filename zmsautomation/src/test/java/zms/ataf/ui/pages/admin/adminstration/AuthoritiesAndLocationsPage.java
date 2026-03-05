@@ -78,20 +78,30 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
                 "Page title 'Behörden und Standorte' is not visible!");
     }
 
+    // setMaxSlotsForLocation — clear before type
     public void setMaxSlotsForLocation(String location, String number) {
         ScenarioLogManager.getLogger().info("Trying to set the maximal slots for location: " + location);
-        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, number, "//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH);
-    }
-
-    public void setRepeatCallsForLocation(String location, String number) {
-        ScenarioLogManager.getLogger().info("Trying to set 'Wiederholungsaufrufe' for location: " + location);
         WebElement field = findElementByLocatorType(
-            "//input[`@name`='preferences[queue][callCountMax]']", LocatorType.XPATH, true);
+            "//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH, true);
         moveToElementAction(field);
         new Actions(DRIVER)
             .click(field)
             .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
-            .sendKeys(Keys.BACK_SPACE)
+            .sendKeys(Keys.DELETE)
+            .sendKeys(number)
+            .perform();
+    }
+
+    // setRepeatCallsForLocation — clear before type
+    public void setRepeatCallsForLocation(String location, String number) {
+        ScenarioLogManager.getLogger().info("Trying to set 'Wiederholungsaufrufe' for location: " + location);
+        WebElement field = findElementByLocatorType(
+            "//input[@name='preferences[queue][callCountMax]']", LocatorType.XPATH, true);
+        moveToElementAction(field);
+        new Actions(DRIVER)
+            .click(field)
+            .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+            .sendKeys(Keys.DELETE)
             .sendKeys(number)
             .perform();
     }
