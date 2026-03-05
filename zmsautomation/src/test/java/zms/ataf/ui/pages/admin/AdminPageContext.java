@@ -91,10 +91,6 @@ public class AdminPageContext extends Context {
         //Wait for spinners having finished loading
         waitForSpinners();
 
-            try {
-        new AdminPage(DRIVER, this).alignBrowserClockEverywhere();
-    } catch (Exception ignore) { }
-
         //Check for any errors
         List<WebElement> errorMessages = findElementsByLocatorType(500L, "//div[contains(@class,'message--error')]", LocatorType.XPATH);
         if (!errorMessages.isEmpty()) {

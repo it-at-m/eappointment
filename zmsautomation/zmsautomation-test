@@ -59,7 +59,7 @@ DB_HOST="${MYSQL_HOST:-db}"  # Defaults to 'db' (docker-compose service name)
 DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
 # Mock Date/Time (ONE value for the whole run, inside opening-hours)
-export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-$(TZ=Europe/Berlin date '+%Y-%m-%d %H:%M:%S')}"
 info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
 
 # File paths
