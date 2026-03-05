@@ -121,7 +121,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     
         CONTEXT.set();
     
-        By saveButton = By.xpath("//button[contains(`@class`,'type-save') and `@name`='save']");
+        By saveButton = By.xpath("//button[contains(@class,'type-save') and @name='save']");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(30));
     
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(saveButton));
@@ -132,7 +132,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         CONTEXT.waitForSpinners();
     
         // Be lenient: div/section, with class containing message--success; role may or may not be present
-        By successAny = By.xpath("//*[self::div or self::section][contains(`@class`,'message--success')]");
+        By successAny = By.xpath("//*[self::div or self::section][contains(@class,'message--success')]");
         WebElement success = wait.until(ExpectedConditions.visibilityOfElementLocated(successAny));
     
         String msg = success.getText().replaceAll("\\s+", " ").trim();

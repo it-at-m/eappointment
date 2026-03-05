@@ -1196,7 +1196,7 @@ CREATE TABLE `standort` (
   `standortkuerzel` varchar(40) DEFAULT NULL,
   `aufrufanzeigetext` text NOT NULL,
   `reservierungsdauer` int(4) NOT NULL DEFAULT 60,
-  `anzahlwiederaufruf` int(2) NOT NULL DEFAULT 3,
+  `anzahlwiederaufruf` int(2) NOT NULL DEFAULT 0,
   `startwartenr` int(5) NOT NULL DEFAULT 1,
   `endwartenr` int(5) NOT NULL DEFAULT 999,
   `letztewartenr` int(5) NOT NULL DEFAULT 0,
