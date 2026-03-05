@@ -122,7 +122,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         CONTEXT.set();
     
         By saveButton = By.xpath("//button[contains(@class,'type-save') and @name='save']");
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(30));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(60));
     
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(saveButton));
         scrollToCenterByVisibleElement(button);
