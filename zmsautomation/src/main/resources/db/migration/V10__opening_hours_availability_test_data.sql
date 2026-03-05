@@ -15,6 +15,16 @@
 -- Mon–Fri only, skip feiertage, whole day 00:00–23:59, 10‑min slots
 -- Rows carry Kommentar = 'ATAF dynamic opening-hours' for idempotency.
 
+-- Flyway migration: Opening hours availability test data
+
+-- Round current time up to the next 5-minute slot
+SET @rounded_start :=
+    SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
+
+-- End time = start + 3 hours
+SET @rounded_end :=
+    ADDTIME(@rounded_start, '03:00:00');
+
 INSERT IGNORE INTO `oeffnungszeit`
 (
   `OeffnungszeitID`,
@@ -39,14 +49,14 @@ INSERT IGNORE INTO `oeffnungszeit`
   `updateTimestamp`
 )
 VALUES
-(136180, 1,   CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136181, 2,   CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136182, 160, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136183, 181, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136184, 172, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136185, 184, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136186, 175, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136187, 127, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136188, 169, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136189, 93,  CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136190, 253, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', CURTIME(), '00:00:00', '23:59:59', '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW());
+(136180, 1,   CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136181, 2,   CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136182, 160, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136183, 181, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136184, 172, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136185, 184, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136186, 175, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136187, 127, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136188, 169, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136189, 93,  CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136190, 253, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW());
