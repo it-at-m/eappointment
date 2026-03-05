@@ -709,7 +709,7 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
     }
 
-    @Dann("Die Wartezeit-H:mm:ss für {string} sollte ziwschen {string} und {string} liegen.")
+    @Dann("Die Wartezeit-H:mm:ss für {string} sollte zwischen {string} und {string} liegen.")
     public void die_wartezeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleWartezeit, String maximaleWartezeit) {
         ScenarioLogManager.getLogger().info("Verifying if waiting time for {} is between {} and {}.", kunde, minimaleWartezeit, maximaleWartezeit);
         Duration minDuration = Duration.ofHours(Long.parseLong(minimaleWartezeit.split(":")[0]))
@@ -732,7 +732,7 @@ public class AdminSteps {
         Assert.assertTrue(effektiveWartezeit.compareTo(minDuration) >= 0 && effektiveWartezeit.compareTo(maxDuration) <= 0, errorMessage);
     }
 
-    @Dann("Die Bearbeitungszeit-H:mm:ss für {string} sollte ziwschen {string} und {string} liegen.")
+    @Dann("Die Bearbeitungszeit-H:mm:ss für {string} sollte zwischen {string} und {string} liegen.")
     public void die_bearbeitungszeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleBearbeitungszeit,
             String maximaleBearbeitungszeit) {
         ScenarioLogManager.getLogger()
