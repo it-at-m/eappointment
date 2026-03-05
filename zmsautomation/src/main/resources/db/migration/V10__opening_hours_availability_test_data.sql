@@ -4,15 +4,15 @@
 -- 1 Gewerbeamt (KVR-III/21) Meldungen
 -- 2 Gewerbeamt (KVR-III/23) Verkehr
 -- 160 181 Bürgerbüro Ruppertstraße (KVR-II/22)
--- 172 184 Bürgerbüro Ruppertstraße (KVR-II/221)
+-- 172 184 Bürgerbüro Ruppertstraße (KVR-II/221) WB04 / Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass
 -- 175 Bürgerbüro Ruppertstraße (KVR-II/225) Serviceschalter
 -- 127 Bürgerbüro Orleansplatz (KVR-II/231 KP)
 -- 169 Bürgerbüro Forstenrieder Allee (KVR-II/234)
 -- 96 Standesamt München (KVR-II/112) Geburtenbüro
+-- 99 Standesamt München (KVR-II/1141) Urkundenstelle
 -- 253 Erstaufnahmeeinrichtung S‑III‑U
 
 -- Dynamic opening-hours for UI tests
--- Mon–Fri only, skip feiertage, whole day 00:00–23:59, 10‑min slots
 -- Rows carry Kommentar = 'ATAF dynamic opening-hours' for idempotency.
 
 -- Flyway migration: Opening hours availability test data
@@ -59,4 +59,6 @@ VALUES
 (136187, 127, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
 (136188, 169, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
 (136189, 93,  CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
-(136190, 253, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW());
+(136190, 253, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136191, 96, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW()),
+(136192, 99, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 1, 0, 127, '00:00:00', @rounded_start, '00:00:00', @rounded_end, '00:05:00', 0, 3, 'Neue Öffnungszeit', 0, 1, 0, 30, NOW());

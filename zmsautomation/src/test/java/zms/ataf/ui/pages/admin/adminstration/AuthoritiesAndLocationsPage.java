@@ -84,8 +84,16 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public void setRepeatCallsForLocation(String location, String number) {
-        ScenarioLogManager.getLogger().info("Trying to 'Wiederholungsaufrufe' for location: " + location);
-        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, number, "//input[@name='preferences[queue][callCountMax]']", LocatorType.XPATH);
+        ScenarioLogManager.getLogger().info("Trying to set 'Wiederholungsaufrufe' for location: " + location);
+        WebElement field = findElementByLocatorType(
+            "//input[`@name`='preferences[queue][callCountMax]']", LocatorType.XPATH, true);
+        moveToElementAction(field);
+        new Actions(DRIVER)
+            .click(field)
+            .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+            .sendKeys(Keys.BACK_SPACE)
+            .sendKeys(number)
+            .perform();
     }
 
     public String getMaxSlotsForLocation(String location) {
