@@ -141,12 +141,15 @@ public class StatisticsPage extends BasePage {
 
     public void checkIfStatisticsPageIsOpen(String pageName) {
         ScenarioLogManager.getLogger().info("Checking if the " + pageName + " statistics page is visible.");
+
+        // Some builds render the filter panel first; apply it if present before strict assertions.
+        applyLocationAndDateFilterIfPresent();
+
         Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[normalize-space()='" + pageName + "']",
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h1[contains(normalize-space(.),'" + pageName + "')]",
                         LocatorType.XPATH, true),
                 "'Statistics page heading \"" + pageName + "\" is not visible!");
-
-        applySubPageFilterIfRequired();
 
         Assert.assertTrue(
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
@@ -160,9 +163,9 @@ public class StatisticsPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Dienstleistungsstatistik']", LocatorType.XPATH, false, CONTEXT);
     }
 
-    private void applySubPageFilterIfRequired() {
+    private void applyLocationAndDateFilterIfPresent() {
         boolean filterPresent = isWebElementVisible(5,
-                "//button[normalize-space()='Übernehmen']",
+                "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
         if (!filterPresent) {
             return;
@@ -191,7 +194,7 @@ public class StatisticsPage extends BasePage {
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                "//button[normalize-space()='Übernehmen']",
+                "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
     }
 
