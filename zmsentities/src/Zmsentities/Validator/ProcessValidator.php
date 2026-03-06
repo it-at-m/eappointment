@@ -131,7 +131,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateTelephone(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    public function validateTelephone(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
         $length = strlen((string)$valid->getValue());
