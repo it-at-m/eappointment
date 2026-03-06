@@ -215,6 +215,38 @@ SET FOREIGN_KEY_CHECKS = 1;"
   info "Tables dropped."
 }
 
+run_hourly_with_retries() {
+  # Run hourly cronjob with up to 5 retries (6 attempts total)
+  # Waits between attempts: 1, 2, 3, 5, 10 seconds
+  local cmd=("$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich)
+  local delays=(0 1 2 3 5 10) # initial attempt has no delay
+  local max_attempts=${#delays[@]}
+  local attempt delay
+
+  for i in "${!delays[@]}"; do
+    attempt=$((i + 1))
+    delay="${delays[$i]}"
+
+    if (( delay > 0 )); then
+      info "Waiting ${delay}s before hourly cronjob attempt ${attempt}/${max_attempts}..."
+      sleep "$delay"
+    fi
+
+    info "Running hourly cronjob (attempt ${attempt}/${max_attempts})..."
+    if "${cmd[@]}"; then
+      info "Hourly cronjob succeeded on attempt ${attempt}/${max_attempts}."
+      return 0
+    fi
+
+    if (( attempt < max_attempts )); then
+      warn "Hourly cronjob failed on attempt ${attempt}/${max_attempts}; will retry."
+    fi
+  done
+
+  warn "Hourly cronjob failed after ${max_attempts} attempts; continuing."
+  return 1
+}
+
 # Ensure cleanup on exit
 trap 'cleanup_on_exit' EXIT INT TERM
 trap 'warn "Failure detected, running cleanup..."; 
@@ -281,7 +313,7 @@ section "6. PHP Migrations"
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
-"$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich || true
+run_hourly_with_retries || true
 clear_caches
 
 section "8. Minutly Cronjob"
