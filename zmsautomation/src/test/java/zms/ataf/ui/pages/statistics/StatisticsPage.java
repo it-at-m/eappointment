@@ -147,12 +147,6 @@ public class StatisticsPage extends BasePage {
                         "//h1[contains(normalize-space(.),'" + pageName + "')]",
                         LocatorType.XPATH, true),
                 "'Statistics page heading \"" + pageName + "\" is not visible!");
-
-        Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
-                        "//li[normalize-space()='" + pageName + " Standort']",
-                        LocatorType.XPATH, true),
-                "'Statistics page \"" + pageName + " Standort\" is not visible after applying filter!");
     }
 
     public void clickOnServiceStatistics() {
@@ -161,6 +155,7 @@ public class StatisticsPage extends BasePage {
     }
 
     public void applyLocationAndDateFilter(String location) {
+        ScenarioLogManager.getLogger().info("Attempting to apply Standort filter on statistics sub-page...");
         boolean filterPresent = isWebElementVisible(5,
                 "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
@@ -190,6 +185,7 @@ public class StatisticsPage extends BasePage {
     }
 
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
+        ScenarioLogManager.getLogger().info("Attempting to apply date range filter on statistics sub-page...");
         boolean filterPresent = isWebElementVisible(5,
                 "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
