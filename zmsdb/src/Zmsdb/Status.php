@@ -197,21 +197,6 @@ class Status extends Base
     }
 
     /**
-     * Get notification stats
-     *
-     * @return array
-     */
-    protected function readNotificationStats()
-    {
-        $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(id) as queueCount, UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds, 
-                UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
-             FROM notificationqueue'
-        );
-        return $stats;
-    }
-
-    /**
      * Get process statistics
      *
      * @return array

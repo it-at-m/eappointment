@@ -536,7 +536,7 @@
 				</div>
 			</fieldset>
 
-            {% if rights.superuser %}
+            {# {% if rights.superuser %}
                 <fieldset class="superuser-only-field">
                     <legend>
                         SMS Einstellungen
@@ -612,7 +612,7 @@
                         {% endif %}
                     </div>
                 </fieldset>
-            {% endif %}
+            {% endif %} #}
 
             {% if rights.superuser %}
                 <fieldset class="superuser-only-field">
@@ -707,95 +707,6 @@
                                 }
                             }]
                         ) }}
-
-                        {% if department.preferences.notifications.enabled %}
-
-                            {# TODO: Remove SMS notification settings - https://github.com/it-at-m/eappointment/issues/1807 #}
-                            {{ formgroup(
-                            {
-                                "legend": "SMS-Eintrag:", 
-                                "groupTag": "fieldset",
-                                "description": "Eine Mobilfunknummereingabe beim Ziehen einer Nummer am Kiosk erlauben."
-                            },
-                            [{
-                                "type":"checkbox",
-                                "parameter": {
-                                    "label": "SMS-Eintrag am Kiosk aktivieren",
-                                    "name": "preferences[ticketprinter][notificationsEnabled]",
-                                    "value": 1,
-                                    "checked": scope.preferences.ticketprinter.notificationsEnabled|default(0),
-                                }
-                            }]
-                        ) }}
-
-                            {{ formgroup(
-                            {
-                                "legend": "SMS-Nachtrag:", 
-                                "groupTag": "fieldset", 
-                                "description": "Eine nachträglicher Mobilfunknummereingabe am Kiosk erlauben."
-                            },
-                            [{
-                                "type":"checkbox",
-                                "parameter": {
-                                    "label": "SMS-Nachtrag am Kiosk aktivieren",
-                                    "name": "preferences[ticketprinter][notificationsAmendmentEnabled]",
-                                    "value": 1,
-                                    "checked": scope.preferences.ticketprinter.notificationsAmendmentEnabled|default(0),
-                                }
-                            }]
-                        ) }}
-
-                            {{ formgroup(
-                            {
-                                "legend": "SMS-Bestätigung:", 
-                                "groupTag": "fieldset", 
-                                "description": "Der Kunde erhält eine SMS zur Bestätigung, dass er in die Warteschlange aufgenommen wurde."
-                            },
-                            [{
-                                "type":"checkbox",
-                                "parameter": {
-                                    "label": "für den Kiosk aktivieren",
-                                    "name": "preferences[ticketprinter][confirmationEnabled]",
-                                    "value": 1,
-                                    "checked": scope.preferences.ticketprinter.confirmationEnabled|default(0),
-                                }
-                            }]
-                        ) }}
-
-                            {{ formgroup(
-                            {
-                                "label": "SMS-Angebotsfrist:", 
-                                "description": "In Minuten errechnete Wartezeit. Wartezeit, ab der am Kiosk die SMS-Option angeboten wird, bei 0 wird der Systemdefaultwert verwendet."
-                            },
-                            [{
-                                "type":"input",
-                                "parameter": {
-                                    "name": "preferences[ticketprinter][notificationsDelay]",
-                                    "value": scope.preferences.ticketprinter.notificationsDelay|default(0),
-                                    "maxlength": 2,
-                                    "width": 1
-                                }
-                            }]
-                        ) }}
-
-                            {{ formgroup(
-                            {"label": "SMS-Bestätigungstext für Spontankunden:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
-                            [{
-                                "type":"textarea",
-                                "parameter": {
-                                    "name": "preferences[notifications][confirmationContent]",
-                                    "id": "smsbestaetigungstext",
-                                    "value": scope.preferences.notifications.confirmationContent,
-                                    "width": 10,
-                                    "maxlength": 150
-                                }
-                            }]
-                        ) }}
-                        {% else %}
-                            <p>
-                                {% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
-                            </p>
-                        {% endif %}
                     </div>
                 </fieldset>
             {% endif %}
