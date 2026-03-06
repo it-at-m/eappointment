@@ -55,14 +55,6 @@ class Messaging
     }
 
     protected static $templates = array(
-        'notification' => array(
-            'appointment' => 'notification_appointment.twig',
-            'confirmed' => 'notification_confirmation.twig',
-            'queued' => 'notification_confirmation.twig',
-            'called' => 'notification_headsup.twig',
-            'reminder' => 'notification_reminder.twig',
-            'deleted' => 'notification_deleted.twig'
-        ),
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',

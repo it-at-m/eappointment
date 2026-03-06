@@ -745,12 +745,6 @@ class ProcessTest extends Base
                         "telephoneRequired"=>"1",
                         "emailFrom"=>"1"
                     ],
-                    "notifications"=>[
-                        "confirmationContent"=>"",
-                        "enabled"=>"0",
-                        "headsUpContent"=>"",
-                        "headsUpTime"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",

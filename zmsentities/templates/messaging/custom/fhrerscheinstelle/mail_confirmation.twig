@@ -26,13 +26,7 @@
 
         {#Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
         <br />#}
-        
-        {#{% if config.appointments.sms.telephone %}
-            Oder schicken Sie eine SMS mit dem Inhalt "{{ config.appointments.sms.textCancel }}\{{ process.id }}" an die Rufnummer {{ config.appointments.sms.telephone }}.
-            "Hierbei ist die Groß- und Kleinschreibung von "{{ config.appointments.sms.textCancel }}" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br />
-            <br />
-        {% endif %}
-        #}
+
         {#{% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
             Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
         {% endif %}#}
