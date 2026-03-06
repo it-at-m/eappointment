@@ -82,9 +82,7 @@ class AvailabilityCheckDayOffTest extends Base
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
-                                    "startInDaysDefault": "0",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "0"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -93,11 +91,6 @@ class AvailabilityCheckDayOffTest extends Base
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": 0
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                    "headsUpTime": "30"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -116,10 +109,7 @@ class AvailabilityCheckDayOffTest extends Base
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
                                     "confirmationEnabled": "0",
-                                    "deactivatedText": "",
-                                    "notificationsAmendmentEnabled": "0",
-                                    "notificationsEnabled": "1",
-                                    "notificationsDelay": "0"
+                                    "deactivatedText": ""
                                 },
                                 "workstation": {
                                     "emergencyEnabled": "1",

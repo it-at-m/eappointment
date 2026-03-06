@@ -189,21 +189,4 @@ class DepartmentTest extends EntityCommonTests
         $entity->email = '';
         $this->assertFalse($entity->hasMail());
     }
-
-    public function testHasNotificationEnabled()
-    {
-        $entity = $this->getExample();
-        $this->assertTrue($entity->hasNotificationEnabled());
-        $this->assertTrue($entity->hasNotificationReminderEnabled());
-        $this->assertTrue($entity->hasNotificationConfirmationEnabled());
-
-        $entity->preferences['notifications']['enabled'] = false;
-        $this->assertFalse($entity->hasNotificationEnabled());
-
-        $entity->preferences['notifications']['sendReminderEnabled'] = false;
-        $this->assertFalse($entity->hasNotificationReminderEnabled());
-
-        $entity->preferences['notifications']['sendConfirmationEnabled'] = false;
-        $this->assertFalse($entity->hasNotificationConfirmationEnabled());
-    }
 }

@@ -67,7 +67,6 @@ class HttpTest extends Base
         $response = new Response();
         $response = Status::testStatus($response, $status);
         $this->assertStringContainsString('Oldest mail with age in seconds: 400s', (string)$response->getBody());
-        $this->assertStringContainsString('Oldest sms with age in seconds: 400s', (string)$response->getBody());
         $this->assertStringContainsString(
             'DB connection without replication log detected',
             (string)$response->getBody()

@@ -19,7 +19,6 @@
         "absage": "0",
         "gateway": "mail",
         "gatewayUrl": "",
-        "smsGatewayUrl": "example.com",
         "eMailkonfigurierbar": "0",
         "benachrichtigungsfrist": "10",
         "headsUpContent": "Sie sind in Kürze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist",

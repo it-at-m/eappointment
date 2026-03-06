@@ -32,9 +32,6 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
                 $parameter['settings']['hasMail'] = (
                     $process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()
                 );
-                $parameter['settings']['hasTelephone'] = (
-                    $process->getFirstClient()->hasTelephone() && $process->scope->hasNotificationEnabled()
-                );
                 $parameter['id'] = $process->queue->number;
             }
         }

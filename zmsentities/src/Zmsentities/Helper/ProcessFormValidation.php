@@ -220,16 +220,6 @@ class ProcessFormValidation
                 ->isSmallerThan(15, "Zu lang: für den Standort muss eine gültige Telefonnummer eingetragen werden");
         }
 
-        if (self::hasCheckedSms() && !$length) {
-            $collection['telephone'] = Validator::value($phoneNumber, 'telephone')
-                ->isString()
-                ->isBiggerThan(10, "Zu kurz: für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden")
-                ->isSmallerThan(
-                    15,
-                    "Zu lang: für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden"
-                );
-        }
-
         if ($length) {
             $collection['telephone'] = Validator::value($phoneNumber, 'telephone')
                 ->isString()
@@ -288,14 +278,6 @@ class ProcessFormValidation
         return (
             Property::__keyExists('telephoneRequired', $scopePrefs['client']) &&
             $scopePrefs['client']['telephoneRequired']
-        );
-    }
-
-    protected static function hasCheckedSms()
-    {
-        return (
-            1 == Validator::param('sendConfirmation')->isNumber()->getValue() ||
-            1 == Validator::param('sendReminder')->isNumber()->getValue()
         );
     }
 

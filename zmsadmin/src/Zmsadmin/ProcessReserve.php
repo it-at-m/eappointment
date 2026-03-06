@@ -171,7 +171,7 @@ class ProcessReserve extends BaseController
         $confirmedProcess = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
         if ('confirmed' == $confirmedProcess->getStatus()) {
             $process = $confirmedProcess;
-            Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
+            Helper\AppointmentFormHelper::updateMail($input, $process);
         }
         return $process;
     }

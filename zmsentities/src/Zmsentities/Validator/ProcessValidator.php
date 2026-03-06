@@ -152,9 +152,6 @@ class ProcessValidator
         ) {
             $valid
                 ->isBiggerThan(10, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
-        } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
-            $valid
-                ->isBiggerThan(10, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
         } elseif ($length) {
             $valid
                 ->isSmallerThan(

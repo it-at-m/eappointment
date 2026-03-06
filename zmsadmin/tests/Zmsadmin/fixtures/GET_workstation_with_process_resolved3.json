@@ -43,9 +43,7 @@
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "60",
-                                    "startInDaysDefault": "1",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "1"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -136,9 +134,7 @@
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
-                                    "startInDaysDefault": "0",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "0"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -1647,11 +1643,6 @@
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen im\r\nRathaus Mitte",
@@ -1737,11 +1728,6 @@
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": "0"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -2696,11 +2682,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Weißensee",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "In den Pankower Bürgerämtern werden nur Terminkunden bedient. In dringenden Angelegenheiten und zur Terminvereinbarung wenden Sie sich bitte an die Information.",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "In den Pankower Bürgerämtern werden nur Terminkunden bedient. In dringenden Angelegenheiten und zur Terminvereinbarung wenden Sie sich bitte an die Information."
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "1",
@@ -2767,11 +2749,6 @@
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -2788,11 +2765,7 @@
                                 },
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
-                                    "confirmationEnabled": "0",
-                                    "deactivatedText": "",
-                                    "notificationsAmendmentEnabled": "0",
-                                    "notificationsEnabled": "0",
-                                    "notificationsDelay": "0"
+                                    "deactivatedText": ""
                                 },
                                 "workstation": {
                                     "emergencyEnabled": "0",
@@ -2857,11 +2830,6 @@
                                     "emailRequired": "1",
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -2949,11 +2917,6 @@
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3039,11 +3002,6 @@
                                     "emailRequired": "1",
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -3131,11 +3089,6 @@
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "1"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3221,11 +3174,6 @@
                                     "emailRequired": "1",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": "0"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "3",
@@ -3313,11 +3261,6 @@
                                     "telephoneActivated": "0",
                                     "telephoneRequired": "0"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "3",
                                     "callDisplayText": "",
@@ -3404,11 +3347,6 @@
                                     "telephoneActivated": "0",
                                     "telephoneRequired": "0"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "3",
                                     "callDisplayText": "",
@@ -3494,11 +3432,6 @@
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": "0"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "3",
@@ -3621,11 +3554,6 @@
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "0"
                                 },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "",
@@ -3711,11 +3639,6 @@
                                     "emailRequired": "1",
                                     "telephoneActivated": "1",
                                     "telephoneRequired": "0"
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "",
-                                    "headsUpTime": "0"
                                 },
                                 "queue": {
                                     "callCountMax": "0",

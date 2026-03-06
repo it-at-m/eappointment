@@ -24,7 +24,6 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
         $this->assertStringContainsString('Flughafen', (string)$entity, 'Contact name not available');
         $this->assertFalse($entity->hasEmailFrom());
-        $this->assertTrue($entity->hasNotificationEnabled());
     }
 
     public function testWithCleanedUpFormData()
