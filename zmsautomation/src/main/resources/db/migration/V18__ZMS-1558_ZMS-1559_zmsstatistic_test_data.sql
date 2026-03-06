@@ -20,6 +20,10 @@ DELETE FROM `buergerarchiv`
 WHERE `StandortID` = 2
   AND `Datum` = @stats_date;
 
+DELETE FROM `statistik`
+WHERE `standortid` = 2
+  AND `datum` = @stats_date;
+
 -- Seed Kundenstatistik / Dienstleistungsstatistik data for scope 2:
 --  - Erschienene Kunden: 2 (1 Termin, 1 Spontan)
 --  - Nicht erschienene Kunden: 2 (1 Termin, 1 Spontan)
@@ -48,12 +52,86 @@ INSERT INTO `buergerarchiv`
 )
 VALUES
   -- Appeared Termin-Kunde (1) with service "Güterkraftverkehr – Erlaubnis und Lizenz"
-  (2, @stats_date, 1, 0, '08:00:00', 5, 1, 10, 'Termin-Kunde 1', 'Güterkraftverkehr – Erlaubnis und Lizenz', 2),
+  (2, @stats_date, 1, 0, '08:00:00', 5, 1, 10, 'Termin-Kunde 1', 'Güterkraftverkehr – Erlaubnis und Lizenz', 2);
+SET @ba1 := LAST_INSERT_ID();
+
+INSERT INTO `buergerarchiv`
+(
+  `StandortID`,
+  `Datum`,
+  `mitTermin`,
+  `nicht_erschienen`,
+  `Timestamp`,
+  `wartezeit`,
+  `AnzahlPersonen`,
+  `bearbeitungszeit`,
+  `name`,
+  `dienstleistungen`,
+  `wegezeit`
+)
+VALUES
   -- Appeared Spontan-Kunde (1) with service "Taxi oder Mietwagen – Unterlagen nachreichen"
-  (2, @stats_date, 0, 0, '08:05:00', 4, 1, 8, 'Spontan-Kunde 1', 'Taxi oder Mietwagen – Unterlagen nachreichen', 1),
+  (2, @stats_date, 0, 0, '08:05:00', 4, 1, 8, 'Spontan-Kunde 1', 'Taxi oder Mietwagen – Unterlagen nachreichen', 1);
+SET @ba2 := LAST_INSERT_ID();
+
+INSERT INTO `buergerarchiv`
+(
+  `StandortID`,
+  `Datum`,
+  `mitTermin`,
+  `nicht_erschienen`,
+  `Timestamp`,
+  `wartezeit`,
+  `AnzahlPersonen`,
+  `bearbeitungszeit`,
+  `name`,
+  `dienstleistungen`,
+  `wegezeit`
+)
+VALUES
   -- Nicht erschienener Termin-Kunde (1) with service "Zulassung Taxi oder Mietwagen"
-  (2, @stats_date, 1, 1, '08:10:00', 0, 1, 0, 'No-Show Termin 1', 'Zulassung Taxi oder Mietwagen', 0),
+  (2, @stats_date, 1, 1, '08:10:00', 0, 1, 0, 'No-Show Termin 1', 'Zulassung Taxi oder Mietwagen', 0);
+SET @ba3 := LAST_INSERT_ID();
+
+INSERT INTO `buergerarchiv`
+(
+  `StandortID`,
+  `Datum`,
+  `mitTermin`,
+  `nicht_erschienen`,
+  `Timestamp`,
+  `wartezeit`,
+  `AnzahlPersonen`,
+  `bearbeitungszeit`,
+  `name`,
+  `dienstleistungen`,
+  `wegezeit`
+)
+VALUES
   -- Nicht erschienener Spontan-Kunde (1) with service "Zulassung Taxi oder Mietwagen"
   (2, @stats_date, 0, 1, '08:15:00', 0, 1, 0, 'No-Show Spontan 1', 'Zulassung Taxi oder Mietwagen', 0);
+SET @ba4 := LAST_INSERT_ID();
 
+-- Minimal statistik rows associated with the archive entries above.
+-- We reuse simple IDs (1) for kunden/organisation/behoerde/cluster and info_dl_id
+-- because there are no foreign key constraints on this table.
+INSERT INTO `statistik`
+(
+  `kundenid`,
+  `organisationsid`,
+  `behoerdenid`,
+  `clusterid`,
+  `standortid`,
+  `anliegenid`,
+  `datum`,
+  `lastbuergerarchivid`,
+  `termin`,
+  `info_dl_id`,
+  `bearbeitungszeit`
+)
+VALUES
+  (1, 1, 1, 1, 2, 1, @stats_date, @ba1, 1, 1, 10),
+  (1, 1, 1, 1, 2, 2, @stats_date, @ba2, 0, 2, 8),
+  (1, 1, 1, 1, 2, 3, @stats_date, @ba3, 1, 3, 0),
+  (1, 1, 1, 1, 2, 3, @stats_date, @ba4, 0, 3, 0);
 
