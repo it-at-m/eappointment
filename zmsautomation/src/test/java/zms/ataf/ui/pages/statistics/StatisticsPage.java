@@ -211,10 +211,10 @@ public class StatisticsPage extends BasePage {
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
         ScenarioLogManager.getLogger().info("Attempting to apply date range filter on statistics sub-page...");
         boolean filterPresent = isWebElementVisible(5,
-                "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
+                "//form[contains(@class,'form--base')][contains(@class,'panel--heavy')]",
                 LocatorType.XPATH, false);
         if (!filterPresent) {
-            ScenarioLogManager.getLogger().warn("Date filter panel not present on statistics page.");
+            ScenarioLogManager.getLogger().warn("Date filter form not present on statistics page.");
             return;
         }
 
@@ -225,10 +225,16 @@ public class StatisticsPage extends BasePage {
         setDateInputByJs("from", fromIso);
         setDateInputByJs("to", toIso);
 
-        ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
-                LocatorType.XPATH, false);
+        ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button via JavaScript click...");
+        try {
+            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+            WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+            scrollToCenterByVisibleElement(submitButton);
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().error("Failed to submit statistics filter form", e);
+        }
     }
 
     private void setDateInputByJs(String fieldName, String isoValue) {
