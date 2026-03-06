@@ -155,7 +155,8 @@ public class StatisticsPage extends BasePage {
     }
 
     public void applyLocationAndDateFilter(String location) {
-        ScenarioLogManager.getLogger().info("Attempting to apply Standort filter on statistics sub-page...");
+        ScenarioLogManager.getLogger().info("Attempting to apply Standort filter on statistics sub-page with value: \""
+                + location + "\"");
         boolean filterPresent = isWebElementVisible(5,
                 "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
@@ -172,14 +173,37 @@ public class StatisticsPage extends BasePage {
             return;
         }
 
-        ScenarioLogManager.getLogger().info("Selecting statistics location: " + location);
+        ScenarioLogManager.getLogger().info("Selecting statistics location in multi-select scope picker: " + location);
         try {
-            selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+            WebElement select = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.id("scope-select")));
+
+            List<WebElement> options = select.findElements(By.tagName("option"));
+            WebElement target = null;
+            for (WebElement option : options) {
+                String text = option.getText().trim();
+                if (text.equals(location) || text.contains(location)) {
+                    target = option;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                ScenarioLogManager.getLogger().warn(
+                        "Could not find option matching location \"" + location + "\" in scope-select.");
+                return;
+            }
+
+            scrollToCenterByVisibleElement(target);
+            target.click();
+            ScenarioLogManager.getLogger().info("Location \"" + target.getText().trim()
+                    + "\" selected in scope-select.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn(
                     "Failed to select location via drop-down, trying fallback option click. Cause: " + e.getMessage());
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                    "//select[@name='scope']/option[normalize-space()='" + location + "']",
+                    "//select[@id='scope-select']/option[contains(normalize-space(.),'" + location + "')]",
                     LocatorType.XPATH, false);
         }
     }
@@ -198,8 +222,8 @@ public class StatisticsPage extends BasePage {
         String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
-        setDateInputByJs("von", fromIso);
-        setDateInputByJs("bis", toIso);
+        setDateInputByJs("from", fromIso);
+        setDateInputByJs("to", toIso);
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
