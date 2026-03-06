@@ -113,8 +113,10 @@ VALUES
 SET @ba4 := LAST_INSERT_ID();
 
 -- Minimal statistik rows associated with the archive entries above.
--- We reuse simple IDs (1) for kunden/organisation/behoerde/cluster and info_dl_id
--- because there are no foreign key constraints on this table.
+-- Use real service IDs for anliegenid/info_dl_id to match test data:
+--   1063712   -> "Güterkraftverkehr – Erlaubnis und Lizenz"
+--   10300793  -> "Taxi oder Mietwagen – Unterlagen nachreichen"
+--   10300814  -> "Zulassung Taxi oder Mietwagen"
 INSERT INTO `statistik`
 (
   `kundenid`,
@@ -130,8 +132,8 @@ INSERT INTO `statistik`
   `bearbeitungszeit`
 )
 VALUES
-  (1, 1, 1, 1, 2, 1, @stats_date, @ba1, 1, 1, 10),
-  (1, 1, 1, 1, 2, 2, @stats_date, @ba2, 0, 2, 8),
-  (1, 1, 1, 1, 2, 3, @stats_date, @ba3, 1, 3, 0),
-  (1, 1, 1, 1, 2, 3, @stats_date, @ba4, 0, 3, 0);
+  (1, 1, 1, 1, 2, 1063712,  @stats_date, @ba1, 1, 1063712, 10),
+  (1, 1, 1, 1, 2, 10300793, @stats_date, @ba2, 0, 10300793, 8),
+  (1, 1, 1, 1, 2, 10300814, @stats_date, @ba3, 1, 10300814, 0),
+  (1, 1, 1, 1, 2, 10300814, @stats_date, @ba4, 0, 10300814, 0);
 

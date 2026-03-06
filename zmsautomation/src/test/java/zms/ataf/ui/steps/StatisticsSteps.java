@@ -184,9 +184,15 @@ public class StatisticsSteps {
         SERVICE_STATISTICS_PAGE.isServiceStatisticDownloaded();
     }
 
-    @Und("die Dienstleistungsstatistik-Tabelle wird angezeigt.")
-    public void die_dienstleistungsstatistik_tabelle_wird_angezeigt() {
+    @Und("die folgenden Dienstleistungen sollten in der Dienstleistungsstatistik angezeigt werden:")
+    public void die_folgenden_dienstleistungen_sollten_in_der_dienstleistungsstatistik_angezeigt_werden(DataTable dataTable) {
         SERVICE_STATISTICS_PAGE.assertTableVisible();
+
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+        for (Map<String, String> row : rows) {
+            String service = row.get("dienstleistung");
+            SERVICE_STATISTICS_PAGE.assertServiceListed(service);
+        }
     }
 
     @Wenn("Sie die Verfügbarkeit statistischer Informationen für den aktuellen Monat und die Dienstleistung {string} überprüfen.")

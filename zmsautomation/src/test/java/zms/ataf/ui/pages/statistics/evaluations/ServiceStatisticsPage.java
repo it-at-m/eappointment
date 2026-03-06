@@ -65,4 +65,12 @@ public class ServiceStatisticsPage extends StatisticsPage {
         WebElement table = findElementByLocatorType("//table[@class='table--base']", LocatorType.XPATH, true);
         scrollToCenterByVisibleElement(table);
     }
+
+    public void assertServiceListed(String serviceName) {
+        ScenarioLogManager.getLogger().info("Checking that service row is listed: " + serviceName);
+        WebElement row = findElementByLocatorType(
+                "//table[@class='table--base']//tr[th[contains(normalize-space(.),'" + serviceName + "')]]",
+                LocatorType.XPATH, true);
+        scrollToCenterByVisibleElement(row);
+    }
 }
