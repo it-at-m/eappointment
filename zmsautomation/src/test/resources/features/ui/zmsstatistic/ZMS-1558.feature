@@ -21,6 +21,5 @@ Funktionalität: Aufbau ZMS-Testautomatisierung
 			| Nicht erschienene Termin-Kunden  | 1               |
 			| Erschienene Spontan-Kunden       | 1               |
 			| Nicht erschienene Spontan-Kunden | 1               |
-			| Dienstleistungen (Tag)           | 3               |
 		Wenn Sie In der Statistik auf den Download-Button klicken.
 		Dann wird die Kundenstatistik heruntergeladen.

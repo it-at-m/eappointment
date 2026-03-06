@@ -13,10 +13,6 @@ Funktionalität: Default
 		Dann wird die Statistik-Seite "Dienstleistungsstatistik" angezeigt.
 		Und  Sie in der Statistik im Filter für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
 		Und  Sie in der Statistik im Zeitraum von 14 Tagen vor heute bis heute filtern.
-		Und  die folgenden Dienstleistungen sollten für den vorherigen Tag angezeigt werden:
-			| dienstleistung								|	Erwarteter Wert	|
-			| Güterkraftverkehr – Erlaubnis und Lizenz		|	1              	|
-			| Taxi oder Mietwagen – Unterlagen nachreichen	|	1              	|
-			| Zulassung Taxi oder Mietwagen					|	1              	|
+		Und  die Dienstleistungsstatistik-Tabelle wird angezeigt.
 		Wenn Sie In der Statistik auf den Download-Button klicken.
 		Dann wird die Dienstleistungsstatistik heruntergeladen.

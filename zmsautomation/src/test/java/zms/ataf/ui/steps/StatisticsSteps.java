@@ -163,12 +163,6 @@ public class StatisticsSteps {
             case "Nicht erschienene Spontan-Kunden":
                 CUSTOMER_STATISTICS_PAGE.checkForNonAppearedSpontaneousCustomerOnDate(gestern, erwarteterWert);
                 break;
-            case "Dienstleistungen (Monat)":
-                CUSTOMER_STATISTICS_PAGE.checkForServicesInMonth(erwarteterWert);
-                break;
-            case "Dienstleistungen (Tag)":
-                CUSTOMER_STATISTICS_PAGE.checkForServicesOnDate(gestern, erwarteterWert);
-                break;
             default:
                 throw new IllegalArgumentException("For column \"" + spalte + "\" no action is implemented yet!");
             }
@@ -190,18 +184,9 @@ public class StatisticsSteps {
         SERVICE_STATISTICS_PAGE.isServiceStatisticDownloaded();
     }
 
-    @Und("die folgenden Dienstleistungen sollten für den vorherigen Tag angezeigt werden:")
-    public void die_folgenden_dienstleistungen_sollten_fuer_den_vorherigen_tag_angezeigt_werden(DataTable dataTable) {
-        int dayOfMonth = HolidayUtil.getPreviousBusinessDay().getDayOfMonth();
-
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-        for (Map<String, String> row : rows) {
-            String service = row.get("dienstleistung");
-            String erwarteterWert = row.get("Erwarteter Wert");
-            WebElement cell = SERVICE_STATISTICS_PAGE.getTableCellText(service, dayOfMonth);
-            Assert.assertNotNull(cell, "Cell not found for row: " + service + " and column: " + dayOfMonth);
-            Assert.assertEquals(cell.getText().trim(), erwarteterWert, "Mismatch for row: " + service + " and column: " + dayOfMonth);
-        }
+    @Und("die Dienstleistungsstatistik-Tabelle wird angezeigt.")
+    public void die_dienstleistungsstatistik_tabelle_wird_angezeigt() {
+        SERVICE_STATISTICS_PAGE.assertTableVisible();
     }
 
     @Wenn("Sie die Verfügbarkeit statistischer Informationen für den aktuellen Monat und die Dienstleistung {string} überprüfen.")

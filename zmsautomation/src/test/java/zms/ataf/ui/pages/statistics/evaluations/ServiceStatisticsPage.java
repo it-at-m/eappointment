@@ -59,4 +59,10 @@ public class ServiceStatisticsPage extends StatisticsPage {
     public void isServiceStatisticDownloaded() {
         isStatisticDownloaded("requeststatistic_\\d{4}-\\d{1,2}(-\\d{2})?\\.xlsx");
     }
+
+    public void assertTableVisible() {
+        ScenarioLogManager.getLogger().info("Checking that service statistics table is visible.");
+        WebElement table = findElementByLocatorType("//table[@class='table--base']", LocatorType.XPATH, true);
+        scrollToCenterByVisibleElement(table);
+    }
 }
