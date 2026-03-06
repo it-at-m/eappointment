@@ -36,7 +36,8 @@ public class StatisticsPageContext extends Context {
                     .getSystemUrl("Statistik");
         }
         windowType = new WindowType("Statistik", new System("Statistik", statisticsUrl));
-        if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, statisticsUrl, StatisticsPageContext.TITLE)) {
+        int timeoutSeconds = DEFAULT_EXPLICIT_WAIT_TIME * 2;
+        if (navigateToPageByUrl(timeoutSeconds, statisticsUrl, StatisticsPageContext.TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         } else {

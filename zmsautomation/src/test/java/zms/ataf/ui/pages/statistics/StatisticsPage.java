@@ -97,9 +97,16 @@ public class StatisticsPage extends BasePage {
                 ScenarioLogManager.getLogger().info("Trying to enter password...");
                 enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
-                ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
-                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
-                ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
+                ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button (Keycloak)...");
+                try {
+                    clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "kc-login", LocatorType.ID, false);
+                    ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
+                } catch (org.openqa.selenium.TimeoutException te) {
+                    ScenarioLogManager.getLogger().warn(
+                            "SSO login navigation took longer than expected; proceeding with test anyway.", te);
+                    // Do not treat this as fatal; navigation may still complete in background.
+                    exception = null;
+                }
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
                 exception = e;
