@@ -85,6 +85,26 @@ public class StatisticsSteps {
         STATISTICS_PAGE.checkIfTheOverviewPageIsOpen();
     }
 
+    @Und("Sie in der Statistik im Filter für {string} den Wert {string} auswählen.")
+    public void sie_in_der_statistik_im_filter_fuer_den_wert_auswaehlen(String type, String value) {
+        value = TestDataHelper.transformTestData(value);
+        switch (type) {
+        case "Standort":
+            STATISTICS_PAGE.applyLocationAndDateFilter(value);
+            break;
+        default:
+            throw new IllegalArgumentException(
+                    "For filter type \"" + type + "\" no action is implemented yet!");
+        }
+    }
+
+    @Und("Sie in der Statistik im Zeitraum von {int} Tagen vor heute bis heute filtern.")
+    public void sie_in_der_statistik_im_zeitraum_von_tagen_vor_heute_bis_heute_filtern(int daysBack) {
+        LocalDate to = LocalDate.now();
+        LocalDate from = to.minusDays(daysBack);
+        STATISTICS_PAGE.applyDateRangeFilter(from, to);
+    }
+
     @Wenn("Sie in der Statistik in der Seitenleiste auf die Schaltfläche {string} klicken.")
     public void wenn_sie_in_der_statistik_in_der_seitenleiste_auf_die_schaltflaeche_string_klicken(String button) {
         button = TestDataHelper.transformTestData(button);

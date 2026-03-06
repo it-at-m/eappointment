@@ -11,8 +11,8 @@ Funktionalität: Default
 		Dann wird die Übersichtsseite der Statistik angezeigt.
 		Wenn Sie in der Statistik in der Seitenleiste auf die Schaltfläche "Dienstleistungsstatistik" klicken.
 		Dann wird die Statistik-Seite "Dienstleistungsstatistik" angezeigt.
-		Wenn Sie in der Statistik den aktuellen Monat auswählen.
-		Dann öffnet sich die Auswertung für den ausgewählten Monat.
+		Und  Sie in der Statistik im Filter für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
+		Und  Sie in der Statistik im Zeitraum von 14 Tagen vor heute bis heute filtern.
 		Und  die folgenden Dienstleistungen sollten für den vorherigen Tag angezeigt werden:
 			| dienstleistung								|	Erwarteter Wert	|
 			| Güterkraftverkehr – Erlaubnis und Lizenz		|	1              	|

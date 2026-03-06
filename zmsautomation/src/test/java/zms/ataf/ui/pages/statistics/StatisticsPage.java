@@ -142,9 +142,6 @@ public class StatisticsPage extends BasePage {
     public void checkIfStatisticsPageIsOpen(String pageName) {
         ScenarioLogManager.getLogger().info("Checking if the " + pageName + " statistics page is visible.");
 
-        // Some builds render the filter panel first; apply it if present before strict assertions.
-        applyLocationAndDateFilterIfPresent();
-
         Assert.assertTrue(
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
                         "//h1[contains(normalize-space(.),'" + pageName + "')]",
@@ -163,34 +160,50 @@ public class StatisticsPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Dienstleistungsstatistik']", LocatorType.XPATH, false, CONTEXT);
     }
 
-    private void applyLocationAndDateFilterIfPresent() {
+    public void applyLocationAndDateFilter(String location) {
         boolean filterPresent = isWebElementVisible(5,
                 "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
         if (!filterPresent) {
+            ScenarioLogManager.getLogger().warn("Location/date filter panel not present on statistics page.");
             return;
         }
 
         ScenarioLogManager.getLogger().info(
-                "Sub-page filter panel detected. Applying location and date range for statistics sub-page...");
+                "Location/date filter panel detected. Applying location for statistics sub-page...");
 
-        String location = TestDataHelper.getTestData("location");
-        if (location != null && !location.isEmpty()) {
-            ScenarioLogManager.getLogger().info("Selecting statistics location: " + location);
-            try {
-                selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger().warn(
-                        "Failed to select location via drop-down, trying fallback option click. Cause: " + e.getMessage());
-                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
-                        "//select[@name='scope']/option[normalize-space()='" + location + "']",
-                        LocatorType.XPATH, false);
-            }
+        if (location == null || location.isEmpty()) {
+            ScenarioLogManager.getLogger().warn("No location provided for statistics filter; skipping filter application.");
+            return;
         }
 
-        String todayIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        setDateInputByJs("von", todayIso);
-        setDateInputByJs("bis", todayIso);
+        ScenarioLogManager.getLogger().info("Selecting statistics location: " + location);
+        try {
+            selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Failed to select location via drop-down, trying fallback option click. Cause: " + e.getMessage());
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
+                    "//select[@name='scope']/option[normalize-space()='" + location + "']",
+                    LocatorType.XPATH, false);
+        }
+    }
+
+    public void applyDateRangeFilter(LocalDate from, LocalDate to) {
+        boolean filterPresent = isWebElementVisible(5,
+                "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
+                LocatorType.XPATH, false);
+        if (!filterPresent) {
+            ScenarioLogManager.getLogger().warn("Date filter panel not present on statistics page.");
+            return;
+        }
+
+        String fromIso = from.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+        ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
+        setDateInputByJs("von", fromIso);
+        setDateInputByJs("bis", toIso);
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
