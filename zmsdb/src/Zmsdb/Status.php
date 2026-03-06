@@ -38,7 +38,6 @@ class Status extends Base
         }
 
         $entity['mail'] = $this->readMailStats();
-        $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
         $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
