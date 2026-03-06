@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasDownloads;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -138,16 +140,82 @@ public class StatisticsPage extends BasePage {
     }
 
     public void checkIfStatisticsPageIsOpen(String pageName) {
-        ScenarioLogManager.getLogger().info("Checking if the Customer statistics page is visible.");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[normalize-space()='" + pageName + "']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//li[normalize-space()='" + pageName + " Standort']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
+        ScenarioLogManager.getLogger().info("Checking if the " + pageName + " statistics page is visible.");
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[normalize-space()='" + pageName + "']",
+                        LocatorType.XPATH, true),
+                "'Statistics page heading \"" + pageName + "\" is not visible!");
+
+        applySubPageFilterIfRequired();
+
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//li[normalize-space()='" + pageName + " Standort']",
+                        LocatorType.XPATH, true),
+                "'Statistics page \"" + pageName + " Standort\" is not visible after applying filter!");
     }
 
     public void clickOnServiceStatistics() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Dienstleistungsstatistik\" button in the sidebar...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Dienstleistungsstatistik']", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    private void applySubPageFilterIfRequired() {
+        boolean filterPresent = isWebElementVisible(5,
+                "//button[normalize-space()='Übernehmen']",
+                LocatorType.XPATH, false);
+        if (!filterPresent) {
+            return;
+        }
+
+        ScenarioLogManager.getLogger().info(
+                "Sub-page filter panel detected. Applying location and date range for statistics sub-page...");
+
+        String location = TestDataHelper.getTestData("location");
+        if (location != null && !location.isEmpty()) {
+            ScenarioLogManager.getLogger().info("Selecting statistics location: " + location);
+            try {
+                selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Failed to select location via drop-down, trying fallback option click. Cause: " + e.getMessage());
+                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//select[@name='scope']/option[normalize-space()='" + location + "']",
+                        LocatorType.XPATH, false);
+            }
+        }
+
+        String todayIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        setDateInputByJs("von", todayIso);
+        setDateInputByJs("bis", todayIso);
+
+        ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
+                "//button[normalize-space()='Übernehmen']",
+                LocatorType.XPATH, false);
+    }
+
+    private void setDateInputByJs(String fieldName, String isoValue) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By[] candidates = new By[] { By.name(fieldName), By.id(fieldName) };
+
+        for (By by : candidates) {
+            try {
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(by));
+                ((JavascriptExecutor) DRIVER).executeScript(
+                        "arguments[0].value = arguments[1];"
+                                + "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
+                        element, isoValue);
+                ScenarioLogManager.getLogger()
+                        .info("Date input '" + fieldName + "' set to " + isoValue);
+                return;
+            } catch (Exception ignored) {
+                // try next candidate
+            }
+        }
+
+        ScenarioLogManager.getLogger()
+                .warn("Could not locate date input '" + fieldName + "' to set value " + isoValue);
     }
 
     public boolean checkAvailabilityOfStatisticalInformationForDate(int year, int month) {
