@@ -96,7 +96,12 @@ public class StatisticsPage extends BasePage {
                 enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
                 ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button (Keycloak)...");
-                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+                WebElement kcLogin = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                        .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
+                scrollToCenterByVisibleElement(kcLogin);
+                ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
+                new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+                        .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
                 ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
