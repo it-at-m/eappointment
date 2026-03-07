@@ -1,6 +1,6 @@
-package zms.ataf.api.helpers.zmsapi;
+package zms.ataf.rest.helpers.zmsapi;
 
-import zms.ataf.api.dto.zmsapi.StatusResponse;
+import zms.ataf.rest.dto.zmsapi.StatusResponse;
 
 /**
  * Builder for ProcessStats test data.

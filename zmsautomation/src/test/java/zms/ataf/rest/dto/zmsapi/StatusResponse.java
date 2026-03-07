@@ -1,4 +1,4 @@
-package zms.ataf.api.dto.zmsapi;
+package zms.ataf.rest.dto.zmsapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

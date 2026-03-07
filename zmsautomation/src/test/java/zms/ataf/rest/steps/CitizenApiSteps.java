@@ -1,4 +1,4 @@
-package zms.ataf.api.steps;
+package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -10,8 +10,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
-import zms.ataf.api.dto.common.ApiResponse;
-import zms.ataf.api.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import zms.ataf.rest.dto.common.ApiResponse;
+import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 
 public class CitizenApiSteps {
     

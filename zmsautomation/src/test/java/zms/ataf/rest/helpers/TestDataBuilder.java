@@ -1,8 +1,8 @@
-package zms.ataf.api.helpers;
+package zms.ataf.rest.helpers;
 
-import zms.ataf.api.helpers.zmsapi.ProcessStatusBuilder;
-import zms.ataf.api.helpers.zmsapi.StatusResponseBuilder;
-import zms.ataf.api.helpers.zmscitizenapi.OfficesAndServicesResponseBuilder;
+import zms.ataf.rest.helpers.zmsapi.ProcessStatusBuilder;
+import zms.ataf.rest.helpers.zmsapi.StatusResponseBuilder;
+import zms.ataf.rest.helpers.zmscitizenapi.OfficesAndServicesResponseBuilder;
 
 /**
  * Factory class for creating test data builders for REST (API) tests.
@@ -10,8 +10,8 @@ import zms.ataf.api.helpers.zmscitizenapi.OfficesAndServicesResponseBuilder;
  *
  * <p>Builders are organized in sub-packages:
  * <ul>
- *   <li>{@code zms.ataf.api.helpers.zmsapi} - Builders for ZMS API DTOs</li>
- *   <li>{@code zms.ataf.api.helpers.zmscitizenapi} - Builders for Citizen API DTOs</li>
+ *   <li>{@code zms.ataf.rest.helpers.zmsapi} - Builders for ZMS API DTOs</li>
+ *   <li>{@code zms.ataf.rest.helpers.zmscitizenapi} - Builders for Citizen API DTOs</li>
  * </ul>
  *
  * <p>This class serves as a central entry point for test data creation,

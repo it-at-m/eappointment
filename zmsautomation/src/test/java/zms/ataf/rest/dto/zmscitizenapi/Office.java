@@ -1,4 +1,4 @@
-package zms.ataf.api.dto.zmscitizenapi;
+package zms.ataf.rest.dto.zmscitizenapi;
 
 import java.util.List;
 

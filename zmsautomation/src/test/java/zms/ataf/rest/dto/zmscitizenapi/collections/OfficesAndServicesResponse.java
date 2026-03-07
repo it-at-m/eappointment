@@ -1,13 +1,13 @@
-package zms.ataf.api.dto.zmscitizenapi.collections;
+package zms.ataf.rest.dto.zmscitizenapi.collections;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import zms.ataf.api.dto.zmscitizenapi.Office;
-import zms.ataf.api.dto.zmscitizenapi.OfficeServiceRelation;
-import zms.ataf.api.dto.zmscitizenapi.Service;
+import zms.ataf.rest.dto.zmscitizenapi.Office;
+import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
+import zms.ataf.rest.dto.zmscitizenapi.Service;
 
 /**
  * Response model for the /offices-and-services/ endpoint.

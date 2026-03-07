@@ -13,7 +13,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 
 - `src/test/java/zms/api/` - Original REST-assured + JUnit tests (standalone profile)
 - `src/test/java/zms/ataf/`  
-  - `zms/ataf/api/steps/` - API step definitions (REST Assured)  
+  - `zms/ataf/rest/steps/` - REST step definitions (REST Assured)  
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  

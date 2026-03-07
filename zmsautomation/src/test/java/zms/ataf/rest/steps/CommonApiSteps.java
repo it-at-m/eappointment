@@ -1,4 +1,4 @@
-package zms.ataf.api.steps;
+package zms.ataf.rest.steps;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
