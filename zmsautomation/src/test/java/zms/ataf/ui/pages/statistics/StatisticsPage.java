@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.HasDownloads;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -36,7 +37,6 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
-import zms.ataf.data.TestData;
 
 
 public class StatisticsPage extends BasePage {
@@ -67,8 +67,55 @@ public class StatisticsPage extends BasePage {
         CONTEXT.navigateToPage();
     }
 
+    private WebElement waitFirstClickable(By[] locators, int secondsTotal) {
+        int perLocator = Math.max(3, secondsTotal / Math.max(1, locators.length));
+        for (By by : locators) {
+            try {
+                return new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator))
+                        .until(ExpectedConditions.elementToBeClickable(by));
+            } catch (Exception ignored) {
+                // try next
+            }
+        }
+        return null;
+    }
+
+    private boolean waitForStatisticsHomeOrFilter(int secondsTotal) {
+        try {
+            WebDriverWait spinnerWait = new WebDriverWait(DRIVER, Duration.ofSeconds(Math.min(5, secondsTotal)));
+            spinnerWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".spinner, div.spinner, .loading")));
+        } catch (Exception ignored) {
+            // no spinner or already gone
+        }
+        By[] goodSignals = new By[] {
+                By.name("scope"),
+                By.id("scope"),
+                By.id("scope-select"),
+                By.xpath("//button[normalize-space()='Auswahl bestätigen' or normalize-space()='Weiter']"),
+                By.xpath("//input[@type='submit' and (normalize-space(@value)='weiter' or normalize-space(@value)='Weiter')]"),
+                By.cssSelector("form button[type='submit'], form input[type='submit']"),
+                By.xpath("//aside//a[contains(normalize-space(),'Kundenstatistik') or contains(normalize-space(),'Dienstleistungsstatistik')]")
+        };
+        int perLocator = Math.max(5, secondsTotal / Math.max(1, goodSignals.length));
+        for (By by : goodSignals) {
+            try {
+                new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator)).until(ExpectedConditions.presenceOfElementLocated(by));
+                return true;
+            } catch (Exception ignored) {
+                // try next
+            }
+        }
+        return false;
+    }
+
+    private void waitAfterSsoSubmit() {
+        Assert.assertTrue(waitForStatisticsHomeOrFilter(60),
+                "Post-login statistics page did not appear in time.");
+    }
+
     public void clickOnLoginButton() throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
+        CONTEXT.set();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         if (!DriverUtil.isLocalExecution() || TestPropertiesHelper.getPropertyAsBoolean("useIncognitoMode", true, DefaultValues.USE_INCOGNITO_MODE)) {
             ScenarioLogManager.getLogger().info("SSO-Login page detected!");
@@ -79,12 +126,10 @@ public class StatisticsPage extends BasePage {
             try {
                 AuthenticationHelper.getUserName().access(clearUserName::append);
                 AuthenticationHelper.getUserPassword().access(clearPassword::append);
-                // Wait for Keycloak login form (local and ssodev both use id="username")
                 WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
                 if ("chrome".equals(
                         TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-                    String ssoHost = TestData.getSsoHost();
                     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
                     DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
                             "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
@@ -98,14 +143,28 @@ public class StatisticsPage extends BasePage {
                 enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
                 ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button (Keycloak)...");
+                WebElement submit = waitFirstClickable(new By[] { By.id("kc-login") }, 20);
+                Assert.assertNotNull(submit, "Could not find Keycloak submit button (kc-login).");
+
                 try {
-                    clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "kc-login", LocatorType.ID, false);
+                    scrollToCenterByVisibleElement(submit);
+                    submit.click();
+                    waitAfterSsoSubmit();
                     ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
-                } catch (org.openqa.selenium.TimeoutException te) {
+                } catch (TimeoutException te) {
                     ScenarioLogManager.getLogger().warn(
-                            "SSO login navigation took longer than expected; proceeding with test anyway.", te);
-                    // Do not treat this as fatal; navigation may still complete in background.
-                    exception = null;
+                            "SSO login navigation took longer than expected; probing post-login state...", te);
+                    if (!waitForStatisticsHomeOrFilter(30)) {
+                        throw te;
+                    }
+                    ScenarioLogManager.getLogger().info("SSO login completed (post-condition detected).");
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger().warn("Normal click failed (" + e.getClass().getSimpleName() + "). Falling back to JS click.");
+                    ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
+                    if (!waitForStatisticsHomeOrFilter(60)) {
+                        Assert.fail("Could not navigate to statistics page after SSO JS click.");
+                    }
+                    ScenarioLogManager.getLogger().info("SSO login submitted successfully (JS click).");
                 }
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
@@ -127,9 +186,52 @@ public class StatisticsPage extends BasePage {
         TestDataHelper.setTestData("location", location);
     }
 
+    private boolean waitAnyVisible(By[] locators, int secondsTotal) {
+        int perLocator = Math.max(5, secondsTotal / Math.max(1, locators.length));
+        for (By by : locators) {
+            try {
+                new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator)).until(ExpectedConditions.presenceOfElementLocated(by));
+                return true;
+            } catch (Exception ignored) {
+                // try next
+            }
+        }
+        return false;
+    }
+
     public void clickOnApplySelectionButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='weiter']", LocatorType.XPATH, false, CONTEXT);
+        CONTEXT.set();
+        if (CONTEXT instanceof StatisticsPageContext ctx) {
+            ctx.waitForSpinners();
+        }
+
+        By[] buttonCandidates = new By[] {
+                By.xpath("//button[@type='submit' and (normalize-space()='Weiter' or normalize-space()='Auswahl bestätigen')]"),
+                By.xpath("//button[@type='submit' and @value='weiter']"),
+                By.xpath("//input[@type='submit' and (translate(@value,'WEITER','weiter')='weiter' or contains(translate(@value,'ÄAUSW','äausw'),'auswahl'))]"),
+                By.cssSelector("form button[type='submit'], form input[type='submit']")
+        };
+
+        WebElement submit = waitFirstClickable(buttonCandidates, 20);
+        Assert.assertNotNull(submit, "Could not find the statistics location submit button.");
+
+        try {
+            scrollToCenterByVisibleElement(submit);
+            submit.click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Normal click failed (" + e.getClass().getSimpleName() + "). Falling back to JS click.");
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
+        }
+
+        By[] postConditions = new By[] {
+                By.xpath("//h1[contains(normalize-space(),'Übersicht')]"),
+                By.xpath("//aside//a[contains(normalize-space(),'Kundenstatistik')]"),
+                By.xpath("//aside//a[contains(normalize-space(),'Dienstleistungsstatistik')]"),
+                By.xpath("//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']")
+        };
+        Assert.assertTrue(waitAnyVisible(postConditions, 60),
+                "Could not navigate to statistics page after clicking \"Auswahl bestätigen\".");
     }
 
     public void checkIfTheOverviewPageIsOpen() {

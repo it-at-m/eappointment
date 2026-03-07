@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;

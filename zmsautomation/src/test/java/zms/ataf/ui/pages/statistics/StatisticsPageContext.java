@@ -1,7 +1,9 @@
 package zms.ataf.ui.pages.statistics;
 
+import java.util.List;
 import java.util.Objects;
 
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 
@@ -12,6 +14,7 @@ import ataf.core.properties.TestProperties;
 import ataf.core.utils.RunnerUtils;
 import ataf.web.controls.FrameControls;
 import ataf.web.controls.WindowControls;
+import ataf.web.model.LocatorType;
 import ataf.web.model.WindowType;
 import ataf.web.pages.Context;
 import ataf.web.utils.DriverUtil;
@@ -42,6 +45,13 @@ public class StatisticsPageContext extends Context {
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         } else {
             Assert.fail("Could not navigate to statistics page!");
+        }
+    }
+
+    public void waitForSpinners() {
+        List<WebElement> spinnerElements = findElementsByLocatorType(1000L, "//div[@class='spinner']", LocatorType.XPATH);
+        if (!spinnerElements.isEmpty()) {
+            waitForElementToDisappearByXpath(DEFAULT_EXPLICIT_WAIT_TIME, "//div[@class='spinner']");
         }
     }
 
