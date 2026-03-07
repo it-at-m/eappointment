@@ -22,7 +22,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.HasDownloads;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -67,55 +66,9 @@ public class StatisticsPage extends BasePage {
         CONTEXT.navigateToPage();
     }
 
-    private WebElement waitFirstClickable(By[] locators, int secondsTotal) {
-        int perLocator = Math.max(3, secondsTotal / Math.max(1, locators.length));
-        for (By by : locators) {
-            try {
-                return new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator))
-                        .until(ExpectedConditions.elementToBeClickable(by));
-            } catch (Exception ignored) {
-                // try next
-            }
-        }
-        return null;
-    }
-
-    private boolean waitForStatisticsHomeOrFilter(int secondsTotal) {
-        try {
-            WebDriverWait spinnerWait = new WebDriverWait(DRIVER, Duration.ofSeconds(Math.min(5, secondsTotal)));
-            spinnerWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".spinner, div.spinner, .loading")));
-        } catch (Exception ignored) {
-            // no spinner or already gone
-        }
-        By[] goodSignals = new By[] {
-                By.name("scope"),
-                By.id("scope"),
-                By.id("scope-select"),
-                By.xpath("//button[normalize-space()='Auswahl bestätigen' or normalize-space()='Weiter']"),
-                By.xpath("//input[@type='submit' and (normalize-space(@value)='weiter' or normalize-space(@value)='Weiter')]"),
-                By.cssSelector("form button[type='submit'], form input[type='submit']"),
-                By.xpath("//aside//a[contains(normalize-space(),'Kundenstatistik') or contains(normalize-space(),'Dienstleistungsstatistik')]")
-        };
-        int perLocator = Math.max(5, secondsTotal / Math.max(1, goodSignals.length));
-        for (By by : goodSignals) {
-            try {
-                new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator)).until(ExpectedConditions.presenceOfElementLocated(by));
-                return true;
-            } catch (Exception ignored) {
-                // try next
-            }
-        }
-        return false;
-    }
-
-    private void waitAfterSsoSubmit() {
-        Assert.assertTrue(waitForStatisticsHomeOrFilter(60),
-                "Post-login statistics page did not appear in time.");
-    }
-
+    /** Login and SSO flow aligned with AdminPage (same pattern as zmsadmin). */
     public void clickOnLoginButton() throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
-        CONTEXT.set();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         if (!DriverUtil.isLocalExecution() || TestPropertiesHelper.getPropertyAsBoolean("useIncognitoMode", true, DefaultValues.USE_INCOGNITO_MODE)) {
             ScenarioLogManager.getLogger().info("SSO-Login page detected!");
@@ -143,29 +96,8 @@ public class StatisticsPage extends BasePage {
                 enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
                 ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button (Keycloak)...");
-                WebElement submit = waitFirstClickable(new By[] { By.id("kc-login") }, 20);
-                Assert.assertNotNull(submit, "Could not find Keycloak submit button (kc-login).");
-
-                try {
-                    scrollToCenterByVisibleElement(submit);
-                    submit.click();
-                    waitAfterSsoSubmit();
-                    ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
-                } catch (TimeoutException te) {
-                    ScenarioLogManager.getLogger().warn(
-                            "SSO login navigation took longer than expected; probing post-login state...", te);
-                    if (!waitForStatisticsHomeOrFilter(30)) {
-                        throw te;
-                    }
-                    ScenarioLogManager.getLogger().info("SSO login completed (post-condition detected).");
-                } catch (Exception e) {
-                    ScenarioLogManager.getLogger().warn("Normal click failed (" + e.getClass().getSimpleName() + "). Falling back to JS click.");
-                    ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
-                    if (!waitForStatisticsHomeOrFilter(60)) {
-                        Assert.fail("Could not navigate to statistics page after SSO JS click.");
-                    }
-                    ScenarioLogManager.getLogger().info("SSO login submitted successfully (JS click).");
-                }
+                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+                ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
             } catch (Exception e) {
                 ScenarioLogManager.getLogger().error(e.getMessage(), e);
                 exception = e;
@@ -179,59 +111,28 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    // --- First scope selection (post-login, same as zmsadmin: workstation/Standort) ---
+
+    /** First scope selection: select Standort in the initial dropdown (name=scope), same as zmsadmin. Used after login before overview. */
     public void selectLocation(String location) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
+        ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\" (first scope, like zmsadmin)");
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
     }
 
-    private boolean waitAnyVisible(By[] locators, int secondsTotal) {
-        int perLocator = Math.max(5, secondsTotal / Math.max(1, locators.length));
-        for (By by : locators) {
-            try {
-                new WebDriverWait(DRIVER, Duration.ofSeconds(perLocator)).until(ExpectedConditions.presenceOfElementLocated(by));
-                return true;
-            } catch (Exception ignored) {
-                // try next
-            }
-        }
-        return false;
-    }
-
+    /** First scope selection: confirm with "Auswahl bestätigen", same as zmsadmin. Navigates to statistics overview. */
     public void clickOnApplySelectionButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
         CONTEXT.set();
-        if (CONTEXT instanceof StatisticsPageContext ctx) {
-            ctx.waitForSpinners();
-        }
-
-        By[] buttonCandidates = new By[] {
-                By.xpath("//button[@type='submit' and (normalize-space()='Weiter' or normalize-space()='Auswahl bestätigen')]"),
-                By.xpath("//button[@type='submit' and @value='weiter']"),
-                By.xpath("//input[@type='submit' and (translate(@value,'WEITER','weiter')='weiter' or contains(translate(@value,'ÄAUSW','äausw'),'auswahl'))]"),
-                By.cssSelector("form button[type='submit'], form input[type='submit']")
-        };
-
-        WebElement submit = waitFirstClickable(buttonCandidates, 20);
-        Assert.assertNotNull(submit, "Could not find the statistics location submit button.");
-
-        try {
-            scrollToCenterByVisibleElement(submit);
-            submit.click();
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Normal click failed (" + e.getClass().getSimpleName() + "). Falling back to JS click.");
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
-        }
-
-        By[] postConditions = new By[] {
-                By.xpath("//h1[contains(normalize-space(),'Übersicht')]"),
-                By.xpath("//aside//a[contains(normalize-space(),'Kundenstatistik')]"),
-                By.xpath("//aside//a[contains(normalize-space(),'Dienstleistungsstatistik')]"),
-                By.xpath("//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']")
-        };
-        Assert.assertTrue(waitAnyVisible(postConditions, 60),
-                "Could not navigate to statistics page after clicking \"Auswahl bestätigen\".");
+        // Same locator as AdminPage; JS click avoids navigation timeout and stale element when stats app is slow
+        By submitLocator = By.xpath("//button[@type='submit' and @value='weiter']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submit = wait.until(ExpectedConditions.elementToBeClickable(submitLocator));
+        scrollToCenterByVisibleElement(submit);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Übersicht')]")));
     }
 
     public void checkIfTheOverviewPageIsOpen() {
@@ -263,26 +164,27 @@ public class StatisticsPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Dienstleistungsstatistik']", LocatorType.XPATH, false, CONTEXT);
     }
 
-    public void applyLocationAndDateFilter(String location) {
-        ScenarioLogManager.getLogger().info("Attempting to apply Standort filter on statistics sub-page with value: \""
-                + location + "\"");
+    // --- Second scope selection (statistics table/report filter; different UI, after opening Kundenstatistik/Dienstleistungsstatistik) ---
+
+    /**
+     * Second scope selection: select Standort in the statistics table filter panel (e.g. scope-select).
+     * Used on Kundenstatistik/Dienstleistungsstatistik sub-pages only. Not the same as the first post-login scope.
+     */
+    public void selectScopeInStatisticsTableFilter(String location) {
+        ScenarioLogManager.getLogger().info("Selecting scope in statistics table filter (second scope): \"" + location + "\"");
         boolean filterPresent = isWebElementVisible(5,
                 "//*[self::button or self::input][normalize-space(text())='Übernehmen' or normalize-space(@value)='Übernehmen']",
                 LocatorType.XPATH, false);
         if (!filterPresent) {
-            ScenarioLogManager.getLogger().warn("Location/date filter panel not present on statistics page.");
+            ScenarioLogManager.getLogger().warn("Statistics table filter panel not present.");
             return;
         }
-
-        ScenarioLogManager.getLogger().info(
-                "Location/date filter panel detected. Applying location for statistics sub-page...");
 
         if (location == null || location.isEmpty()) {
-            ScenarioLogManager.getLogger().warn("No location provided for statistics filter; skipping filter application.");
+            ScenarioLogManager.getLogger().warn("No location provided for statistics table filter; skipping.");
             return;
         }
 
-        ScenarioLogManager.getLogger().info("Selecting statistics location in multi-select scope picker: " + location);
         try {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             WebElement select = wait.until(
@@ -306,19 +208,19 @@ public class StatisticsPage extends BasePage {
 
             scrollToCenterByVisibleElement(target);
             target.click();
-            ScenarioLogManager.getLogger().info("Location \"" + target.getText().trim()
-                    + "\" selected in scope-select.");
+            ScenarioLogManager.getLogger().info("Scope \"" + target.getText().trim() + "\" selected in statistics table filter.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn(
-                    "Failed to select location via drop-down, trying fallback option click. Cause: " + e.getMessage());
+                    "Failed to select scope in statistics table filter, trying fallback. Cause: " + e.getMessage());
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
                     "//select[@id='scope-select']/option[contains(normalize-space(.),'" + location + "')]",
                     LocatorType.XPATH, false);
         }
     }
 
+    /** Second scope context: set date range in the statistics table filter panel (after opening a statistics sub-page). */
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
-        ScenarioLogManager.getLogger().info("Attempting to apply date range filter on statistics sub-page...");
+        ScenarioLogManager.getLogger().info("Applying date range in statistics table filter...");
         boolean filterPresent = isWebElementVisible(5,
                 "//form[contains(@class,'form--base')][contains(@class,'panel--heavy')]",
                 LocatorType.XPATH, false);

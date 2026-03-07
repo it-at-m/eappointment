@@ -88,7 +88,7 @@ public class StatisticsSteps {
         value = TestDataHelper.transformTestData(value);
         switch (type) {
         case "Standort":
-            STATISTICS_PAGE.applyLocationAndDateFilter(value);
+            STATISTICS_PAGE.selectScopeInStatisticsTableFilter(value);
             break;
         default:
             throw new IllegalArgumentException(

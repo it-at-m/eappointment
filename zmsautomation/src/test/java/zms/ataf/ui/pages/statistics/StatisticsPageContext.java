@@ -23,7 +23,7 @@ import ataf.web.utils.DriverUtil;
 public class StatisticsPageContext extends Context {
     public static final String NAME = "Statistik";
     public static final String TITLE = "Anmeldung - ZMS Statistik";
-    private static final int STATISTICS_TIMEOUT_SECONDS = 60;
+    static final int STATISTICS_TIMEOUT_SECONDS = 60;
     private WindowType windowType;
 
     StatisticsPageContext(RemoteWebDriver driver) {
