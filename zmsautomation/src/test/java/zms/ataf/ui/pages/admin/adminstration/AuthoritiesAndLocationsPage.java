@@ -220,13 +220,11 @@ public void saveLocationChanges() {
         if (!"true".equalsIgnoreCase(ariaExpanded)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, headerBtn, false);
         }
-        By formLocator = By.xpath(
-            "//*[@type='time' or (self::button and normalize-space(.)='Speichern') or "
-                + "contains(@class,'opening') or contains(@class,'oeffnungszeit')]"
-        );
+        // Wait for the note field (visible at top of form); time/Speichern may be below fold
+        By noteFieldLocator = By.xpath("//input[@id='AvDayDescription']");
         try {
-            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
+            new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(noteFieldLocator));
         } catch (TimeoutException e) {
             Assert.fail("Opening accordion with title containing \"" + accordionTitle + "\" did not reveal the form.");
         }
