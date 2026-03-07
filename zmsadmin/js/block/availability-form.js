@@ -1,5 +1,6 @@
 import $ from "jquery";
 import BaseView from '../lib/baseview';
+import { buildConfirmDialogHtml } from '../lib/confirmDialog';
 
 class View extends BaseView {
 
@@ -21,21 +22,30 @@ class View extends BaseView {
 
     delete (ev) {
         ev.preventDefault();
-        const id  = this.$.find('input[name=id]').val()
-        this.options.removeAvailability(id)
+        const id = this.$.find('input[name=id]').val();
+        const removeAvailability = this.options.removeAvailability;
+        const $form = this.$;
 
-        const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
-
-        if (ok) {
-            $.ajax(`/availability/delete/${id}/`, {
-                method: 'GET'
-            }).done(() => {
-                this.options.removeAvailability(id)
-                this.$.hide();
-            }).fail(err => {
-                console.log('ajax error', err)
-            })
-        }
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeit löschen',
+            'Soll diese Öffnungszeit wirklich gelöscht werden?',
+            'Löschen'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                $.ajax(`/availability/delete/${id}/`, {
+                    method: 'GET'
+                }).done(() => {
+                    removeAvailability(id);
+                    $form.hide();
+                }).fail(err => {
+                    console.log('ajax error', err);
+                });
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
 }
 

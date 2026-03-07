@@ -1,0 +1,553 @@
+#!/usr/bin/env bash
+  set -euo pipefail
+
+# Capture Maven arguments (e.g., -Dcucumber.filter.tags="@smoke" to run specific tags)
+MAVEN_ARGS=("$@")
+
+info() { echo "[INFO] $*"; }
+warn() { echo "[WARN] $*"; }
+
+SECTION_BAR="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+SECTION_COLOR_RESET=$'\033[0m'
+SECTION_COLOR_INDEX=0
+SECTION_COLORS=()
+USE_SECTION_COLORS=false
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  SECTION_COLORS=(
+    $'\033[38;5;196m' # red
+    $'\033[38;5;208m' # orange
+    $'\033[38;5;226m' # yellow
+    $'\033[38;5;46m'  # green
+    $'\033[38;5;51m'  # cyan
+    $'\033[38;5;21m'  # blue
+    $'\033[38;5;201m' # magenta
+  )
+  if [[ ${#SECTION_COLORS[@]} -gt 0 ]]; then
+    USE_SECTION_COLORS=true
+  fi
+fi
+
+section() {
+  local title="$*"
+  local prefix="" suffix=""
+  if [[ "$USE_SECTION_COLORS" == true ]]; then
+    prefix="${SECTION_COLORS[$SECTION_COLOR_INDEX]}"
+    suffix="$SECTION_COLOR_RESET"
+    SECTION_COLOR_INDEX=$(((SECTION_COLOR_INDEX + 1) % ${#SECTION_COLORS[@]}))
+  fi
+  echo ""
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo "${prefix}[SECTION] $title${suffix}"
+  echo "${prefix}${SECTION_BAR}${suffix}"
+  echo ""
+}
+
+# Paths and variables
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Validate required environment variables
+: "${MYSQL_PORT:?MYSQL_PORT must be set}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
+: "${MYSQL_USER:?MYSQL_USER must be set}"
+: "${MYSQL_PASSWORD:?MYSQL_PASSWORD must be set}"
+: "${CACHE_DIR:?CACHE_DIR must be set}"
+
+DB_NAME="${MYSQL_DATABASE}"
+DB_USER="${MYSQL_USER}"
+DB_PASSWORD="${MYSQL_PASSWORD}"
+DB_HOST="${MYSQL_HOST:-db}"  # Defaults to 'db' (docker-compose service name)
+DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
+
+# Mock Date/Time (ONE value for the whole run, inside opening-hours)
+export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-$(TZ=Europe/Berlin date '+%Y-%m-%d %H:%M:%S')}"
+info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
+
+# File paths
+BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
+BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
+FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
+
+# API endpoints (for health checks from inside container)
+BASE_URI="${BASE_URI:-http://localhost/terminvereinbarung/api/2}"
+CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarung/api/citizen}"
+
+# Keycloak config files
+KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
+KEYCLOAK_ADMIN_JSON="$PROJECT_ROOT/zmsadmin/keycloak.json"
+
+# Cleanup function to clear zmsapi/data folder (preserve .gitignore)
+cleanup_data_folder() {
+  if [ -d "$PROJECT_ROOT/zmsapi/data" ]; then
+    find "$PROJECT_ROOT/zmsapi/data" -mindepth 1 -not -name ".gitignore" -delete || warn "Failed to clean data folder"
+    [ -f "$PROJECT_ROOT/zmsapi/data/.gitignore" ] || printf "*\n!.gitignore\n" > "$PROJECT_ROOT/zmsapi/data/.gitignore"
+  fi
+}
+
+# Clear caches
+clear_caches() {
+  if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
+    info "Clearing caches in $CACHE_DIR..."
+    find "$CACHE_DIR" -mindepth 1 -delete || warn "Failed to clear caches"
+  else
+    warn "CACHE_DIR not set or does not exist"
+  fi
+}
+
+# Database helper function
+exec_sql() {
+  mysql --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" "$@"
+}
+
+exec_sql_root() {
+  mysql --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u root --password="${MYSQL_ROOT_PASSWORD:-root}" "$@"
+}
+
+# Backup database
+backup_db() {
+  info "Backing up database to $BACKUP_FILE..."
+  mysqldump --ssl=0 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" | gzip > "$BACKUP_FILE"
+  info "Backup completed."
+}
+
+# Restore database
+restore_db() {
+  if [[ -f "$BACKUP_FILE" ]]; then
+    info "Restoring database from $BACKUP_FILE..."
+    gunzip < "$BACKUP_FILE" | exec_sql
+    info "Database restored."
+  else
+    warn "No backup file found to restore."
+  fi
+}
+
+# --- Freeze Firefox time only (no global LD_PRELOAD) ------------------------
+write_firefox_freeze_wrapper() {
+  cat >/usr/local/bin/firefox-frozen <<'EOF'
+#!/bin/bash
+FAKE_NOW="${FAKETIME_TARGET:-${ZMS_TIMEADJUST:-2026-03-02 10:00:00}}"
+SO="/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1"
+[ -f "$SO" ] || SO="/usr/lib/faketime/libfaketime.so.1"
+# Only Firefox sees faketime (not geckodriver)
+export FAKETIME="@${FAKE_NOW}"
+export FAKETIME_NO_CACHE=1
+export FAKETIME_DONT_RESET=1
+export FAKETIME_DONT_FAKE_MONOTONIC=1     # important for Gecko
+export MOZ_DISABLE_CONTENT_SANDBOX=1      # avoid sandbox conflict
+export LD_PRELOAD="$SO${LD_PRELOAD+:$LD_PRELOAD}"
+exec /usr/bin/firefox-esr "$@"
+EOF
+  chmod +x /usr/local/bin/firefox-frozen
+}
+
+switch_firefox_to_frozen() {
+  # Remember original target for restore
+  export __PREV_FIREFOX_BIN_TARGET="$(readlink -f /usr/bin/firefox || echo /usr/bin/firefox-esr)"
+  ln -sf /usr/local/bin/firefox-frozen /usr/bin/firefox
+  info "Firefox binary switched to wrapper (/usr/local/bin/firefox-frozen)"
+}
+
+restore_firefox_binary() {
+  if [ -n "${__PREV_FIREFOX_BIN_TARGET-}" ] && [ -e "$__PREV_FIREFOX_BIN_TARGET" ]; then
+    ln -sf "$__PREV_FIREFOX_BIN_TARGET" /usr/bin/firefox
+    info "Firefox binary restored to $__PREV_FIREFOX_BIN_TARGET"
+  fi
+}
+
+cleanup_on_exit() {
+  info "Running cleanup..."
+  
+  # 1. Restore time first (most critical for developer environment)
+  restore_firefox_binary  || true
+  
+  # 2. Restore database
+  restore_db
+  
+  # 3. Restore Keycloak configs
+  restore_keycloak
+  
+  # 4. Clear Flyway test migrations
+  if [[ -n "${BACKUP_FILE:-}" ]]; then
+    info "Clearing test data migrations from flyway_schema_history..."
+    exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+  fi
+  
+  # 5. Clear caches
+  clear_caches
+  
+  # 6. Clean data folder
+  cleanup_data_folder
+  
+  info "Cleanup completed."
+}
+
+
+backup_and_rewrite_keycloak() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    cp "$file" "$file.bak"
+    sed -i 's/localhost:8091/localhost:443/g' "$file"
+    info "Keycloak config rewritten (8091→443): $file"
+  else
+    warn "Keycloak config not found: $file"
+  fi
+}
+
+restore_keycloak() {
+  for f in "$KEYCLOAK_STATISTIC_JSON" "$KEYCLOAK_ADMIN_JSON"; do
+    if [[ -f "${f}.bak" ]]; then
+      mv "${f}.bak" "$f"
+      info "Keycloak config restored: $f"
+    fi
+  done
+}
+
+# Drop all tables
+drop_all_tables() {
+  info "Dropping all existing tables..."
+  local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;"
+  echo "$drop_sql" | exec_sql
+  info "Tables dropped."
+}
+
+run_hourly_with_retries() {
+  # Run hourly cronjob with up to 5 retries (6 attempts total)
+  # Waits between attempts: 1, 2, 3, 5, 10 seconds
+  local cmd=("$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich)
+  local delays=(0 1 2 3 5 10) # initial attempt has no delay
+  local max_attempts=${#delays[@]}
+  local attempt delay
+
+  for i in "${!delays[@]}"; do
+    attempt=$((i + 1))
+    delay="${delays[$i]}"
+
+    if (( delay > 0 )); then
+      info "Waiting ${delay}s before hourly cronjob attempt ${attempt}/${max_attempts}..."
+      sleep "$delay"
+    fi
+
+    info "Running hourly cronjob (attempt ${attempt}/${max_attempts})..."
+    if "${cmd[@]}"; then
+      info "Hourly cronjob succeeded on attempt ${attempt}/${max_attempts}."
+      return 0
+    fi
+
+    if (( attempt < max_attempts )); then
+      warn "Hourly cronjob failed on attempt ${attempt}/${max_attempts}; will retry."
+    fi
+  done
+
+  warn "Hourly cronjob failed after ${max_attempts} attempts; continuing."
+  return 1
+}
+
+# Ensure cleanup on exit
+trap 'cleanup_on_exit' EXIT INT TERM
+trap 'warn "Failure detected, running cleanup..."; 
+cleanup_on_exit; exit 1' ERR
+
+# 1. Database Backup
+section "1. Database Backup"
+backup_db
+
+# 2. Cache Clearing
+section "2. Cache Clearing"
+clear_caches
+
+# 3. Drop Tables
+section "3. Database Tables Drop"
+drop_all_tables
+
+# Log database tables after reset
+info "Database tables after reset (should be empty):"
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+
+# 4. Import Base Database
+section "4. Base Database Import"
+if [[ -f "$BASE_SQL_FILE" ]]; then
+  info "Importing base database from $BASE_SQL_FILE..."
+  {
+      echo "SET FOREIGN_KEY_CHECKS = 0;"
+      cat "$BASE_SQL_FILE"
+      echo "SET FOREIGN_KEY_CHECKS = 1;"
+  } | exec_sql
+  info "Base database import completed."
+  
+  info "Database tables after import:"
+  exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+else
+  warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
+fi
+
+# 5. Flyway Migrations
+section "5. Flyway Migrations"
+info "Clearing test data migrations from flyway_schema_history..."
+exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+
+info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
+(
+  cd "$PROJECT_ROOT/zmsautomation"
+  mvn -B -q \
+    -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
+    -Dflyway.user="$DB_USER" \
+    -Dflyway.password="$DB_PASSWORD" \
+    -Dflyway.locations="filesystem:$FLYWAY_DIR" \
+    -Dflyway.baselineOnMigrate=true \
+    flyway:migrate || warn "Flyway (Maven plugin) failed; continuing."
+)
+
+info "Database tables after Flyway:"
+exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
+
+# 6. PHP Migrations (inherit ZMS_TIMEADJUST from env)
+section "6. PHP Migrations"
+( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
+
+# 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
+section "7. Hourly Cronjob"
+export ZMS_CRONROOT=1
+export ZMS_ENV="${ZMS_ENV:-dev}"
+run_hourly_with_retries || true
+clear_caches
+
+section "8. Minutly Cronjob"
+export ZMS_CRONROOT=1
+export ZMS_ENV="${ZMS_ENV:-dev}"
+info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
+(
+  cd "$PROJECT_ROOT/zmsapi" \
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
+) || true
+
+info "Forcing slot calculation fallback (mocked time) ..."
+(
+  cd "$PROJECT_ROOT/zmsapi" \
+  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+) || true
+
+# 9. Health Checks (5 min total; 15s per try; bypass proxy for localhost; keep BASE_URI / CITIZEN_API_BASE_URI)
+section "9. Health Checks"
+export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1}"
+export no_proxy="${NO_PROXY}"
+
+join_url(){ local b="${1%/}"; local p="${2#/}"; printf '%s/%s\n' "$b" "$p"; }
+
+HEALTH_MAX_WAIT="${HEALTH_MAX_WAIT:-300}"          # total seconds
+HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"            # seconds between tries
+HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}"
+
+ZMS_API_HEALTH_URL="$(join_url "${BASE_URI}" "status/")"
+: "${CITIZEN_API_BASE_URI:?CITIZEN_API_BASE_URI must be set}"
+CITIZEN_API_HEALTH_URL="$(join_url "${CITIZEN_API_BASE_URI}" "offices-and-services/")"
+
+# one-shot warm-up (ignore exit code)
+curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
+
+wait_http() { # name url
+  local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  info "Pinging ${n}: ${u}"
+  for ((i=1;i<=tries;i++)); do
+    code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
+    [[ "$code" =~ ^2|3 ]] && { info "✓ ${n} responding (${code})"; return 0; }
+    (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
+  done
+  warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
+}
+
+fail=false
+wait_http "zmsapi"     "$ZMS_API_HEALTH_URL"     || fail=true
+wait_http "citizenapi" "$CITIZEN_API_HEALTH_URL" || fail=true
+$fail && { warn "One or more health checks failed"; exit 1; }
+
+info "All health checks passed."
+
+# 10. Browser Setup (for UI tests)
+section "10. Browser Setup"
+info "Setting up Firefox and Xvfb for UI tests..."
+
+# Ensure DISPLAY is set
+export DISPLAY="${DISPLAY:-:0}"
+info "DISPLAY set to: $DISPLAY"
+
+# Create Firefox symlink if needed
+if [[ ! -L /usr/bin/firefox ]] || [[ ! -e /usr/bin/firefox ]]; then
+  if [[ -f /usr/bin/firefox-esr ]]; then
+    info "Creating symlink from /usr/bin/firefox to /usr/bin/firefox-esr..."
+    ln -sf /usr/bin/firefox-esr /usr/bin/firefox || warn "Failed to create Firefox symlink"
+  else
+    warn "firefox-esr not found at /usr/bin/firefox-esr"
+  fi
+else
+  info "Firefox symlink already exists"
+fi
+
+# Verify Firefox is available
+if command -v firefox >/dev/null 2>&1; then
+  FIREFOX_VERSION=$(firefox --version 2>&1 || echo "unknown")
+  info "Firefox found: $FIREFOX_VERSION"
+else
+  warn "Firefox not found in PATH"
+fi
+
+# Verify geckodriver is available
+if command -v geckodriver >/dev/null 2>&1; then
+  GECKODRIVER_VERSION=$(geckodriver --version 2>&1 | head -1 || echo "unknown")
+  info "Geckodriver found: $GECKODRIVER_VERSION"
+else
+  warn "Geckodriver not found in PATH"
+fi
+
+# Ensure Xvfb is running
+if pgrep -x Xvfb > /dev/null; then
+  info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
+else
+  info "Starting Xvfb on display $DISPLAY..."
+  Xvfb "$DISPLAY" -screen 0 1024x768x24 > /dev/null 2>&1 &
+  sleep 2
+  if pgrep -x Xvfb > /dev/null; then
+    info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+  else
+    warn "Failed to start Xvfb - UI tests may fail"
+  fi
+fi
+
+# 10.1 Setup client side mocked time
+section "10.1 Setup client side mocked time"
+# Ensure Firefox runs under frozen time (but NOT geckodriver/maven)
+#write_firefox_freeze_wrapper
+#switch_firefox_to_frozen
+#info "[TIME] Firefox will run with ZMS_TIMEADJUST=${ZMS_TIMEADJUST:-2026-03-02 10:00:00}"
+
+# 11. Running Tests
+section "11. Running ATAF Tests"
+info "Running Cucumber/ATAF tests with -Pataf profile..."
+info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
+info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
+
+# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container.
+# Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
+# Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
+# When we move to GitHub cloud we can add a host here instead of localhost port swap.
+MAVEN_ARGS_STR="${MAVEN_ARGS[*]:-}"
+RUN_UI_TESTS=true
+if [[ "$MAVEN_ARGS_STR" == *"-Pataf-api"* ]] && [[ "$MAVEN_ARGS_STR" != *"-Pataf-ui"* ]]; then
+  RUN_UI_TESTS=false
+fi
+SWAP_STATISTIC=false
+SWAP_ADMIN=false
+if [[ "$RUN_UI_TESTS" == true ]]; then
+  if [[ "$MAVEN_ARGS_STR" == *"zmsstatistic"* ]] && [[ "$MAVEN_ARGS_STR" != *"zmsadmin"* ]]; then
+    SWAP_STATISTIC=true
+  elif [[ "$MAVEN_ARGS_STR" == *"zmsadmin"* ]] && [[ "$MAVEN_ARGS_STR" != *"zmsstatistic"* ]]; then
+    SWAP_ADMIN=true
+  else
+    SWAP_STATISTIC=true
+    SWAP_ADMIN=true
+  fi
+  if [[ "$SWAP_STATISTIC" == true ]]; then
+    backup_and_rewrite_keycloak "$KEYCLOAK_STATISTIC_JSON"
+  fi
+  if [[ "$SWAP_ADMIN" == true ]]; then
+    backup_and_rewrite_keycloak "$KEYCLOAK_ADMIN_JSON"
+  fi
+fi
+
+# Clear old surefire reports and cucumber reports
+rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber.json" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || true
+
+TEST_EXIT=0
+cd "$PROJECT_ROOT/zmsautomation"
+
+# Run with ATAF profile
+# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
+# Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
+ATAF_MAVEN_ARGS=()
+HAS_CUCUMBER_TAGS=false
+for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
+  if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
+    HAS_CUCUMBER_TAGS=true
+    value="${arg#-Dcucumber.filter.tags=}"
+    if [[ "$value" != *@ignore* ]]; then
+      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
+    else
+      ATAF_MAVEN_ARGS+=("$arg")
+    fi
+  else
+    ATAF_MAVEN_ARGS+=("$arg")
+  fi
+done
+if [[ "$HAS_CUCUMBER_TAGS" != true ]]; then
+  ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
+fi
+
+# SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
+SSO_USER="${SSO_USER:-ataf}"
+SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
+if mvn -B -DtrimStackTrace=false \
+  -Pataf \
+  -Dbase.uri="$BASE_URI" \
+  -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+  -Dsso.username="$SSO_USER" \
+  -Dsso.password="$SSO_PASSWORD" \
+  test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}"; then
+    TEST_EXIT=0
+  else
+    TEST_EXIT=$?
+  fi
+
+# 12. Test Results
+section "12. Test Results"
+info "Collecting surefire reports..."
+if [[ -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports" ]]; then
+  ls -la "$PROJECT_ROOT/zmsautomation/target/surefire-reports"
+  for f in "$PROJECT_ROOT/zmsautomation/target/surefire-reports"/*.txt; do
+    if [[ -f "$f" ]]; then
+      echo "==== $f ===="
+      cat "$f"
+      echo
+    fi
+  done
+else
+  info "No surefire-reports found"
+fi
+
+info "Cucumber reports available at:"
+info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
+info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
+
+# 13. Final Cache Clearing
+section "13. Final Cache Clearing"
+clear_caches
+
+# 14. Database Restore and Keycloak Restore
+section "14. Database Restore and Keycloak Restore"
+info "Restoring original database..."
+restore_db
+info "Restoring Keycloak config (8091)..."
+restore_keycloak
+
+# Clear test data migrations from flyway_schema_history after restore
+info "Clearing test data migrations from flyway_schema_history after restore..."
+exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+
+# 15. Cleanup
+section "15. Cleanup"
+info "Cleaning up zmsapi/data folder..."
+cleanup_data_folder
+info "Cleared zmsapi/data folder (preserved .gitignore)"
+
+if [[ $TEST_EXIT -eq 0 ]]; then
+  info "Tests completed successfully."
+else
+  warn "Tests failed (exit $TEST_EXIT)."
+fi
+
+  exit "$TEST_EXIT"
