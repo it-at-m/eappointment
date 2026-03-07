@@ -467,7 +467,27 @@ TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
 # Run with ATAF profile
-# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS
+# Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
+# Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
+ATAF_MAVEN_ARGS=()
+HAS_CUCUMBER_TAGS=false
+for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
+  if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
+    HAS_CUCUMBER_TAGS=true
+    value="${arg#-Dcucumber.filter.tags=}"
+    if [[ "$value" != *@ignore* ]]; then
+      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
+    else
+      ATAF_MAVEN_ARGS+=("$arg")
+    fi
+  else
+    ATAF_MAVEN_ARGS+=("$arg")
+  fi
+done
+if [[ "$HAS_CUCUMBER_TAGS" != true ]]; then
+  ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
+fi
+
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
 SSO_USER="${SSO_USER:-ataf}"
 SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
@@ -477,7 +497,7 @@ if mvn -B -DtrimStackTrace=false \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
   -Dsso.username="$SSO_USER" \
   -Dsso.password="$SSO_PASSWORD" \
-  test "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; then
+  test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}"; then
     TEST_EXIT=0
   else
     TEST_EXIT=$?
