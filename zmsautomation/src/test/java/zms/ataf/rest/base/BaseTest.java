@@ -1,4 +1,4 @@
-package zms.ataf.api.base;
+package zms.ataf.rest.base;
 
 import static io.restassured.RestAssured.given;
 

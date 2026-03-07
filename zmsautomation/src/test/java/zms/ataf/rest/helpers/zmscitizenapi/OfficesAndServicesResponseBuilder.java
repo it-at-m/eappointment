@@ -1,12 +1,12 @@
-package zms.ataf.api.helpers.zmscitizenapi;
+package zms.ataf.rest.helpers.zmscitizenapi;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import zms.ataf.api.dto.zmscitizenapi.Office;
-import zms.ataf.api.dto.zmscitizenapi.OfficeServiceRelation;
-import zms.ataf.api.dto.zmscitizenapi.Service;
-import zms.ataf.api.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import zms.ataf.rest.dto.zmscitizenapi.Office;
+import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
+import zms.ataf.rest.dto.zmscitizenapi.Service;
+import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 
 /**
  * Builder for OfficesAndServicesResponse test data.
