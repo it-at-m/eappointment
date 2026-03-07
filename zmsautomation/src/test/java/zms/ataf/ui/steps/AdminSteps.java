@@ -1,6 +1,8 @@
 package zms.ataf.ui.steps;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +161,9 @@ public class AdminSteps {
     @Wenn("Sie in Feld {string} den Text {string} eingeben.")
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
+        if ("Datum bis".equals(field) && "<heute+14_tage>".equals(text)) {
+            text = LocalDate.now().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
         switch (field) {
         case "Platz-Nr. oder Tresen":
             ADMIN_PAGE.enterWorkstation(text);
@@ -212,6 +217,12 @@ public class AdminSteps {
     @Wenn("Sie unter Behörden und Standorte auf den Standort {string} klicken.")
     public void wenn_sie_unter_behoerden_und_standorte_auf_den_standort_klicken(String location) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
+    }
+
+    @Und("Sie die Öffnungszeit-Accordion {string} öffnen.")
+    public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
+        accordionTitle = TestDataHelper.transformTestData(accordionTitle);
+        AUTHORITIES_AND_LOCATIONS_PAGE.expandOpeningHoursAccordionByTitle(accordionTitle);
     }
 
     @Wenn("Sie unter Öffnungszeiten auf Tag {string} klicken.")

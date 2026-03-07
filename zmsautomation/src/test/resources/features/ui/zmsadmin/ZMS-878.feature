@@ -16,6 +16,7 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 		Und Sie unter Behörden und Standorte auf den Öffnungszeiten Eintrag von "Bürgerbüro Ruppertstraße (KVR-II/225) Serviceschalter" klicken.
 		Und Sie unter Öffnungszeiten auf Tag "<heute_tag>" klicken.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "neue Öffnungszeit" klicken.
+		Und Sie die Öffnungszeit-Accordion "Neue Öffnungszeit" öffnen.
 		Und Sie für "Öffnungszeiten Anmerkung" den Wert "Anmerkung" auswählen.
 		Und Sie für "Öffnungszeiten Typ" den Wert "Terminkunden" auswählen.
 		Und Sie für "Serie" den Wert "jede Woche" auswählen.
@@ -24,7 +25,7 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 		Und Sie "Mittwoch" unter Wochentage selektieren.
 		Und Sie "Donnerstag" unter Wochentage selektieren.
 		Und Sie "Freitag" unter Wochentage selektieren.
-		Und Sie in Feld "Datum bis" den Text "15.03.2026" eingeben.
+		Und Sie in Feld "Datum bis" den Text "<heute+14_tage>" eingeben.
 		Und Sie in Feld "Uhrzeit von" den Text "08:00" eingeben.
 		Und Sie in Feld "Uhrzeit bis" den Text "17:00" eingeben.
 		Und Sie für Terminarbeitsplätze unter "Insgesamt" die Anzahl 1 auswählen.

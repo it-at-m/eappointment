@@ -203,28 +203,33 @@ public void saveLocationChanges() {
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
-            return;
         } catch (TimeoutException ignore) {
-            // fallback: expand accordion
+            // Form not yet visible; caller should use step "Sie die Öffnungszeit-Accordion \"...\" öffnen" to expand the correct accordion by title
         }
-    
-        final String ACCORDION_BTN_XPATH = "(//h3[contains(@class,'accordion__heading')]/button)[last()]";
-        WebElement headerBtn = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, ACCORDION_BTN_XPATH, true, true);
-    
+    }
+
+    /**
+     * Expands the opening-hours accordion whose title contains the given text (e.g. "Neue Öffnungszeit").
+     * Title is passed from the feature so the correct panel is opened when multiple accordions exist.
+     */
+    public void expandOpeningHoursAccordionByTitle(String accordionTitle) {
+        ScenarioLogManager.getLogger().info("Trying to open Öffnungszeit accordion with title containing \"" + accordionTitle + "\"...");
+        String xpath = "//h3[contains(@class,'accordion__heading')][contains(@title,'" + accordionTitle + "')]/button";
+        WebElement headerBtn = waitForElementByXpath(DEFAULT_EXPLICIT_WAIT_TIME, xpath, true, true);
         String ariaExpanded = String.valueOf(headerBtn.getAttribute("aria-expanded"));
         if (!"true".equalsIgnoreCase(ariaExpanded)) {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, headerBtn, false);
         }
-    
-        boolean opened;
+        By formLocator = By.xpath(
+            "//*[@type='time' or (self::button and normalize-space(.)='Speichern') or "
+                + "contains(@class,'opening') or contains(@class,'oeffnungszeit')]"
+        );
         try {
             new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(formLocator));
-            opened = true;
         } catch (TimeoutException e) {
-            opened = "true".equalsIgnoreCase(String.valueOf(headerBtn.getAttribute("aria-expanded")));
+            Assert.fail("Opening accordion with title containing \"" + accordionTitle + "\" did not reveal the form.");
         }
-        Assert.assertTrue(opened, "Click on \"neue Öffnungszeit\" did not open the form!");
     }
 
     public void enterNoteForOpeningHours(String noteKey) {
