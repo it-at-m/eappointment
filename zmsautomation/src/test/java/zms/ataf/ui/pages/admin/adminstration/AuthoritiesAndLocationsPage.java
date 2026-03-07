@@ -324,7 +324,7 @@ public void saveLocationChanges() {
 
     public void clickOnSaveButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Alle Änderungen aktivieren\" button...");
-    
+        CONTEXT.set();
         clickOnWebElement(
             DEFAULT_EXPLICIT_WAIT_TIME,
             "//button[contains(@class,'button-save')]",
@@ -332,13 +332,12 @@ public void saveLocationChanges() {
             false,
             CONTEXT
         );
-    
-        try {
-            Alert alert = new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.alertIsPresent());
-            alert.accept();
-        } catch (TimeoutException ignored) {}
-    
+        By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
+        WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+        confirmBtn.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
         String message = getWebElementText(
             DEFAULT_EXPLICIT_WAIT_TIME,
             "//div[contains(@class,'message--success')]",
