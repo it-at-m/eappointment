@@ -45,8 +45,10 @@ export CITIZEN_API_BASE_URI="http://localhost/terminvereinbarung/api/citizen"
 # Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test
 
-# Run specific tags
+# Run specific tags (scenarios tagged @ignore are excluded unless you add @ignore to the expression)
 ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
+# Run including ignored scenarios, e.g.:
+# ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@ignore and @web"
 
 # Run specific API feature
 ./zmsautomation/zmsautomation-test -Dcucumber.features="src/test/resources/features/api/zmsapi/status.feature"
