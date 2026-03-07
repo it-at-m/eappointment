@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
