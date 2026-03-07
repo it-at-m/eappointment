@@ -356,27 +356,20 @@ public void saveLocationChanges() {
     }
 
     /**
-     * Clicks the trash icon for the opening-hours row with the given note, then confirms.
-     * The app may show a native confirm dialog; accept it first so Selenium can continue.
-     * If a custom lightbox is used instead, click its confirm button. Used on Behörden und Standorte > Öffnungszeiten.
+     * Clicks the trash icon for the opening-hours row with the given note, then confirms
+     * via the app's HTML lightbox (Öffnungszeit löschen / Löschen). Used on Behörden und Standorte > Öffnungszeiten.
      */
     public void clickDeleteOpeningHoursWithNote(String note) {
         ScenarioLogManager.getLogger().info("Trying to click delete for opening hour with note \"" + note + "\"...");
         CONTEXT.set();
         String trashXpath = "//table[contains(@class,'table--base')]//tr[.//td[contains(., '" + note + "')]]//a[.//i[contains(@class,'fa-trash-alt')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, trashXpath, LocatorType.XPATH, false);
-        try {
-            Alert alert = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-                    .until(ExpectedConditions.alertIsPresent());
-            alert.accept();
-        } catch (TimeoutException e) {
-            By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-            WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
-            confirmBtn.click();
-            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
-        }
+        By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
+        WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+        confirmBtn.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
     }
 
     public void clickOnDeleteLocation() {
