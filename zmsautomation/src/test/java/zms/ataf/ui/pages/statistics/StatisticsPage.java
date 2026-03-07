@@ -149,9 +149,17 @@ public class StatisticsPage extends BasePage {
                 "'Overview page is not visible!");
     }
 
+    /** Use JS click and wait for sub-page to avoid navigation timeout when opening Kundenstatistik. */
     public void clickOnCustomerStatistics() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Kundenstatistik\" button in the sidebar...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Kundenstatistik']", LocatorType.XPATH, false, CONTEXT);
+        CONTEXT.set();
+        By linkLocator = By.xpath("//a[normalize-space()='Kundenstatistik']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(linkLocator));
+        scrollToCenterByVisibleElement(link);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Kundenstatistik')]")));
     }
 
     public void checkIfStatisticsPageIsOpen(String pageName) {
@@ -164,9 +172,17 @@ public class StatisticsPage extends BasePage {
                 "'Statistics page heading \"" + pageName + "\" is not visible!");
     }
 
+    /** Use JS click and wait for sub-page to avoid navigation timeout when opening Dienstleistungsstatistik. */
     public void clickOnServiceStatistics() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Dienstleistungsstatistik\" button in the sidebar...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[normalize-space()='Dienstleistungsstatistik']", LocatorType.XPATH, false, CONTEXT);
+        CONTEXT.set();
+        By linkLocator = By.xpath("//a[normalize-space()='Dienstleistungsstatistik']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(linkLocator));
+        scrollToCenterByVisibleElement(link);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Dienstleistungsstatistik')]")));
     }
 
     // --- Second scope selection (statistics table/report filter; different UI, after opening Kundenstatistik/Dienstleistungsstatistik) ---

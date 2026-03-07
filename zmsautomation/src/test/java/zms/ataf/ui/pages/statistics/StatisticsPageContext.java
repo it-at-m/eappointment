@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.statistics;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,6 +41,7 @@ public class StatisticsPageContext extends Context {
                     .getSystemUrl("Statistik");
         }
         windowType = new WindowType("Statistik", new System("Statistik", statisticsUrl));
+        DRIVER.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(STATISTICS_TIMEOUT_SECONDS));
         if (navigateToPageByUrl(STATISTICS_TIMEOUT_SECONDS, statisticsUrl, StatisticsPageContext.TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
