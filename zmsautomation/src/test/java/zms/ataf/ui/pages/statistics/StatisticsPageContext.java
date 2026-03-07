@@ -1,6 +1,5 @@
 package zms.ataf.ui.pages.statistics;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +23,6 @@ import ataf.web.utils.DriverUtil;
 public class StatisticsPageContext extends Context {
     public static final String NAME = "Statistik";
     public static final String TITLE = "Anmeldung - ZMS Statistik";
-    static final int STATISTICS_TIMEOUT_SECONDS = 60;
     private WindowType windowType;
 
     StatisticsPageContext(RemoteWebDriver driver) {
@@ -41,8 +39,7 @@ public class StatisticsPageContext extends Context {
                     .getSystemUrl("Statistik");
         }
         windowType = new WindowType("Statistik", new System("Statistik", statisticsUrl));
-        DRIVER.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(STATISTICS_TIMEOUT_SECONDS));
-        if (navigateToPageByUrl(STATISTICS_TIMEOUT_SECONDS, statisticsUrl, StatisticsPageContext.TITLE)) {
+        if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, statisticsUrl, StatisticsPageContext.TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         } else {
@@ -63,7 +60,7 @@ public class StatisticsPageContext extends Context {
             if (WindowControls.isWindowWithTitleInList(TITLE)) {
                 WindowControls.switchToWindow(DRIVER, TITLE);
             } else {
-                WindowControls.switchToOpenedWindow(DRIVER, STATISTICS_TIMEOUT_SECONDS, windowType, TITLE);
+                WindowControls.switchToOpenedWindow(DRIVER, DEFAULT_EXPLICIT_WAIT_TIME, windowType, TITLE);
             }
         }
     }

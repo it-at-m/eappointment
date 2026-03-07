@@ -100,7 +100,7 @@ public class StatisticsPage extends BasePage {
                         .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
                 scrollToCenterByVisibleElement(kcLogin);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
-                new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+                new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                         .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
                 ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
             } catch (Exception e) {
@@ -136,7 +136,7 @@ public class StatisticsPage extends BasePage {
         WebElement submit = wait.until(ExpectedConditions.elementToBeClickable(submitLocator));
         scrollToCenterByVisibleElement(submit);
         ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submit);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Übersicht')]")));
     }
 
@@ -158,7 +158,7 @@ public class StatisticsPage extends BasePage {
                 .until(ExpectedConditions.elementToBeClickable(linkLocator));
         scrollToCenterByVisibleElement(link);
         ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Kundenstatistik')]")));
     }
 
@@ -181,7 +181,7 @@ public class StatisticsPage extends BasePage {
                 .until(ExpectedConditions.elementToBeClickable(linkLocator));
         scrollToCenterByVisibleElement(link);
         ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(StatisticsPageContext.STATISTICS_TIMEOUT_SECONDS))
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Dienstleistungsstatistik')]")));
     }
 
