@@ -397,8 +397,9 @@ public class AdminSteps {
 
     @Dann("sollte die aktivierte Öffnungszeit mit der Anmerkung {string} löschbar sein.")
     public void dann_sollte_die_aktivierte_oeffnungszeit_mit_anmerkung_loeschbar_sein(String anmerkung) {
-        String noteKey = TestDataHelper.transformTestData(anmerkung);
-        COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteOpeningHoursWithNote(noteKey);
+        String note = TestDataHelper.transformTestData(anmerkung);
+        // Behörden und Standorte > Öffnungszeiten uses a custom dialog, not a browser alert
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickDeleteOpeningHoursWithNote(note);
     }
 
     @Wenn("Der Sachbearbeiter den wartenden Kunden aufruft.")

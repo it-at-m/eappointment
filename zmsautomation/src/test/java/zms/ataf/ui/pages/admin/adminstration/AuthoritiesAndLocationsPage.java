@@ -355,6 +355,23 @@ public void saveLocationChanges() {
         );
     }
 
+    /**
+     * Clicks the trash icon for the opening-hours row with the given note, then confirms
+     * via the app's custom dialog (not a browser alert). Used on Behörden und Standorte > Öffnungszeiten.
+     */
+    public void clickDeleteOpeningHoursWithNote(String note) {
+        ScenarioLogManager.getLogger().info("Trying to click delete for opening hour with note \"" + note + "\"...");
+        CONTEXT.set();
+        String trashXpath = "//table[contains(@class,'table--base')]//tr[.//td[contains(., '" + note + "')]]//a[.//i[contains(@class,'fa-trash-alt')]]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, trashXpath, LocatorType.XPATH, false);
+        By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
+        WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+        confirmBtn.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
+    }
+
     public void clickOnDeleteLocation() {
         ScenarioLogManager.getLogger().info("Trying to click on \"delete\" button under location config...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, ".button.type-delete", LocatorType.CSSSELECTOR, false);
