@@ -57,11 +57,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt Halemweg (Außenstelle)",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "1",
-                                "notificationsDelay": "0"
+                                "deactivatedText": ""
                             },
                             "workstation": {
                                 "emergencyEnabled": "0",
@@ -160,11 +156,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "0",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "0",
-                                "notificationsDelay": "0"
+                                "deactivatedText": "0"
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",
@@ -226,14 +218,6 @@
                     "country": "Germany",
                     "name": ""
                 },
-                "preferences": {
-                    "notifications": {
-                        "enabled": "1",
-                        "identification": "test@example.com",
-                        "sendConfirmationEnabled": "1",
-                        "sendReminderEnabled": "1"
-                    }
-                },
                 "clusters": [
                     {
                         "scopes": [
@@ -255,9 +239,7 @@
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
-                                        "startInDaysDefault": "0",
-                                        "notificationConfirmationEnabled": "1",
-                                        "notificationHeadsUpEnabled": "1"
+                                        "startInDaysDefault": "0"
                                     },
                                     "client": {
                                         "amendmentActivated": "0",
@@ -289,11 +271,7 @@
                                     },
                                     "ticketprinter": {
                                         "buttonName": "Bürgeramt Hohenzollerndamm",
-                                        "confirmationEnabled": "0",
-                                        "deactivatedText": "",
-                                        "notificationsAmendmentEnabled": "0",
-                                        "notificationsEnabled": "1",
-                                        "notificationsDelay": "0"
+                                        "deactivatedText": ""
                                     },
                                     "workstation": {
                                         "emergencyEnabled": "1",
@@ -348,9 +326,7 @@
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
-                                        "startInDaysDefault": "0",
-                                        "notificationConfirmationEnabled": "1",
-                                        "notificationHeadsUpEnabled": "1"
+                                        "startInDaysDefault": "0"
                                     },
                                     "client": {
                                         "amendmentActivated": "0",
@@ -382,11 +358,7 @@
                                     },
                                     "ticketprinter": {
                                         "buttonName": "Bürgeramt",
-                                        "confirmationEnabled": "0",
-                                        "deactivatedText": "",
-                                        "notificationsAmendmentEnabled": "0",
-                                        "notificationsEnabled": "1",
-                                        "notificationsDelay": "0"
+                                        "deactivatedText": ""
                                     },
                                     "workstation": {
                                         "emergencyEnabled": "1",
@@ -441,9 +413,7 @@
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
-                                        "startInDaysDefault": "0",
-                                        "notificationConfirmationEnabled": "1",
-                                        "notificationHeadsUpEnabled": "1"
+                                        "startInDaysDefault": "0"
                                     },
                                     "client": {
                                         "amendmentActivated": "0",
@@ -475,11 +445,7 @@
                                     },
                                     "ticketprinter": {
                                         "buttonName": "Bürgeramt Wilmersdorfer Straße",
-                                        "confirmationEnabled": "0",
-                                        "deactivatedText": "",
-                                        "notificationsAmendmentEnabled": "0",
-                                        "notificationsEnabled": "1",
-                                        "notificationsDelay": "0"
+                                        "deactivatedText": ""
                                     },
                                     "workstation": {
                                         "emergencyEnabled": "1",
@@ -578,11 +544,7 @@
                                     },
                                     "ticketprinter": {
                                         "buttonName": "Ordnungsamt",
-                                        "confirmationEnabled": "0",
-                                        "deactivatedText": "",
-                                        "notificationsAmendmentEnabled": "0",
-                                        "notificationsEnabled": "0",
-                                        "notificationsDelay": "0"
+                                        "deactivatedText": ""
                                     },
                                     "workstation": {
                                         "emergencyEnabled": "0",

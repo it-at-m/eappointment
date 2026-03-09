@@ -14,14 +14,6 @@
       "createTimestamp": 1459504500,
       "department": {
         "id": 74,
-        "preferences": {
-          "notifications": {
-            "enabled": true,
-            "identification": "",
-            "sendConfirmationEnabled": true,
-            "sendReminderEnabled": true
-          }
-        },
         "email": ""
       },
       "message": "Denken Sie an ihren Termin mit der Nummer 123456",

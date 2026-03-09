@@ -62,11 +62,7 @@
 					},
 					"ticketprinter": {
 						"buttonName": "B\u00fcrgeramt Rathaus Neuk\u00f6lln",
-						"confirmationEnabled": "0",
-						"deactivatedText": "Aufgrund des hohen Publikumsaufkommens werden nur Termine und die wartenden B\u00fcrger bearbeitet - die Wartenummernausgabe ist abgeschaltet! Personalausweisabholer und Antragsteller f\u00fcr den BerlinPass wenden sich bitte direkt an die Info. Dort k\u00f6nnen auch Termine f\u00fcr die n\u00e4chsten Tage vereinbart werden. Danke f\u00fcr Ihr Verst\u00e4ndnis.",
-						"notificationsAmendmentEnabled": "0",
-						"notificationsEnabled": "0",
-						"notificationsDelay": "0"
+						"deactivatedText": "Aufgrund des hohen Publikumsaufkommens werden nur Termine und die wartenden B\u00fcrger bearbeitet - die Wartenummernausgabe ist abgeschaltet! Personalausweisabholer und Antragsteller f\u00fcr den BerlinPass wenden sich bitte direkt an die Info. Dort k\u00f6nnen auch Termine f\u00fcr die n\u00e4chsten Tage vereinbart werden. Danke f\u00fcr Ihr Verst\u00e4ndnis."
 					},
 					"workstation": {
 						"emergencyEnabled": "1"

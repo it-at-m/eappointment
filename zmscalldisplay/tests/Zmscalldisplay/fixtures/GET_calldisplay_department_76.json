@@ -56,7 +56,6 @@
 				},
 				"ticketprinter": {
 					"buttonName": "B\u00fcrgeramt Sch\u00f6neberg",
-					"confirmationEnabled": "0",
 					"deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzuf\u00fcgen\" auf der ZMS-Oberfl\u00e4che.",
 					"notificationsAmendmentEnabled": "0",
 					"notificationsEnabled": "0",

@@ -171,7 +171,6 @@
             },
             "ticketprinter": {
                 "buttonName": "Mobiles Bürgeramt MV",
-                "confirmationEnabled": 0,
                 "deactivatedText": "",
                 "notificationsAmendmentEnabled": 0,
                 "notificationsEnabled": 0,

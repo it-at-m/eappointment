@@ -108,7 +108,6 @@ class AvailabilityCheckDayOffTest extends Base
                                 },
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
-                                    "confirmationEnabled": "0",
                                     "deactivatedText": ""
                                 },
                                 "workstation": {

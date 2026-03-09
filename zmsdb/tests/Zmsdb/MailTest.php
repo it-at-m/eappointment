@@ -108,15 +108,7 @@ class MailTest extends Base
                 "familyName" => "Test Entity",
                 ],
             "department" => [
-                "id" => 72,
-                "preferences" => [
-                    "notifications" => [
-                        "enabled" => true,
-                        "identification" => "terminvereinbarung@mitte.berlin.de",
-                        "sendConfirmationEnabled" => true,
-                        "sendReminderEnabled" => true
-                    ]
-                ]
+                "id" => 72
             ],
             "multipart" => array(
                 [
@@ -190,10 +182,7 @@ class MailTest extends Base
                             "label" => ""
                         ],
                         "ticketprinter" => [
-                            "confirmationEnabled" => "0",
-                            "deactivatedText" => "",
-                            "notificationsAmendmentEnabled" => "0",
-                            "notificationsDelay" => "0"
+                            "deactivatedText" => ""
                         ],
                     ],
                     "contact" => [
