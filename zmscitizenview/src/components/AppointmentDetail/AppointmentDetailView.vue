@@ -315,7 +315,12 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucIntro,
+  MucModal,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
