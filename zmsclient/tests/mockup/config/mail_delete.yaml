@@ -26,15 +26,7 @@ response:
         "createIP": "145.15.3.10",
         "createTimestamp": 1447931596000,
         "department": {
-          "id": 123,
-          "preferences": {
-            "notifications": {
-              "enabled": true,
-              "identification": "terminvereinbarung@mitte.berlin.de",
-              "sendConfirmationEnabled": true,
-              "sendReminderEnabled": true
-            }
-          }
+          "id": 123
         },
         "multipart": [
           {
@@ -106,10 +98,7 @@ response:
                 "label": ""
               },
               "ticketprinter": {
-                "confirmationEnabled": "0",
-                "deactivatedText": "",
-                "notificationsAmendmentEnabled": "0",
-                "notificationsDelay": "0"
+                "deactivatedText": ""
               },
               "workstation": {
                 "emergencyEnabled": "0"

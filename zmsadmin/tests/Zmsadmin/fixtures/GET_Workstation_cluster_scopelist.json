@@ -84,14 +84,6 @@
               "country": "Germany",
               "name": ""
             },
-            "preferences": {
-              "notifications": {
-                "enabled": "1",
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": "1",
-                "sendReminderEnabled": "1"
-              }
-            },
             "clusters": [
               {
                 "scopes": [
@@ -253,14 +245,6 @@
               "street": "Egon-Erwin-Kisch-Str.",
               "country": "Germany",
               "name": ""
-            },
-            "preferences": {
-              "notifications": {
-                "enabled": "1",
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": "1",
-                "sendReminderEnabled": "1"
-              }
             },
             "clusters": [
               {
@@ -1089,7 +1073,6 @@
           },
           "ticketprinter": {
             "buttonName": "Bürgeramt",
-            "confirmationEnabled": "0",
             "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
             "notificationsAmendmentEnabled": "0",
             "notificationsEnabled": "0",

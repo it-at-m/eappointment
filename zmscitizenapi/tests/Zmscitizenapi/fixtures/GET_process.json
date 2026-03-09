@@ -117,9 +117,7 @@
                   "multipleSlotsEnabled":"0",
                   "reservationDuration":"15",
                   "activationDuration":"15",
-                  "startInDaysDefault":"2",
-                  "notificationConfirmationEnabled":"0",
-                  "notificationHeadsUpEnabled":"0"
+                  "startInDaysDefault":"2"
                },
                "client":{
                   "amendmentActivated":"0",
@@ -162,11 +160,7 @@
                },
                "ticketprinter":{
                   "buttonName":"Bürgerbüro Orleansplatz (KVR-II/231)",
-                  "confirmationEnabled":"0",
-                  "deactivatedText":"dasdsa",
-                  "notificationsAmendmentEnabled":"0",
-                  "notificationsEnabled":"0",
-                  "notificationsDelay":"0"
+                  "deactivatedText":"dasdsa"
                },
                "workstation":{
                   "emergencyEnabled":"0",

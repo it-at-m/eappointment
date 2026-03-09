@@ -64,11 +64,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt I in Köpenick",
-              "confirmationEnabled": 0,
-              "deactivatedText": "",
-              "notificationsAmendmentEnabled": 0,
-              "notificationsEnabled": 0,
-              "notificationsDelay": 0
+              "deactivatedText": ""
             },
             "workstation": {
               "emergencyEnabled": 1

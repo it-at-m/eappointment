@@ -75,15 +75,7 @@ class NotificationTest extends Base
             "createIP" => "145.15.3.10",
             "createTimestamp" => 1447931596,
             "department" => [
-                "id" => 72,
-                "preferences" => [
-                    "notifications" => [
-                        "enabled" => true,
-                        "identification" => "terminvereinbarung@mitte.berlin.de",
-                        "sendConfirmationEnabled" => true,
-                        "sendReminderEnabled" => true
-                    ]
-                ]
+                "id" => 72
             ],
             "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
             "process" => [

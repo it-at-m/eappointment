@@ -102,11 +102,7 @@
           "label": ""
         },
         "ticketprinter": {
-          "confirmationEnabled": "0",
-          "deactivatedText": "",
-          "notificationsAmendmentEnabled": "0",
-          "notificationsEnabled": "1",
-          "notificationsDelay": "0"
+          "deactivatedText": ""
         },
         "workstation": {
           "emergencyEnabled": "1"
@@ -750,15 +746,7 @@
           "name": "Fr. Krause-Jentsch"
         },
         "email": "buergeramt@charlottenburg-wilmersdorf.de",
-        "name": "Bürgeramt",
-        "preferences": {
-          "notifications": {
-            "enabled": null,
-            "identification": null,
-            "sendConfirmationEnabled": null,
-            "sendReminderEnabled": null
-          }
-        }
+        "name": "Bürgeramt"
       }
     },
     "authKey": "57c2",

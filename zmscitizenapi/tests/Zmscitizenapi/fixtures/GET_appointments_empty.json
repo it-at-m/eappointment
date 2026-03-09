@@ -82,10 +82,7 @@
                         "label": ""
                     },
                     "ticketprinter": {
-                        "confirmationEnabled": "0",
-                        "deactivatedText": "",
-                        "notificationsAmendmentEnabled": "0",
-                        "notificationsDelay": "0"
+                        "deactivatedText": ""
                     },
                     "workstation": {
                         "emergencyEnabled": "1"
@@ -133,15 +130,7 @@
                         "name": ""
                     },
                     "email": "test@example.com",
-                    "name": "Bürgeramt",
-                    "preferences": {
-                        "notifications": {
-                            "enabled": null,
-                            "identification": null,
-                            "sendConfirmationEnabled": null,
-                            "sendReminderEnabled": null
-                        }
-                    }
+                    "name": "Bürgeramt"
                 }
             },
             "status": ""

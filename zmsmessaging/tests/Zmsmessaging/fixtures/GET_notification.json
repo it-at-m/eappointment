@@ -13,14 +13,6 @@
     "createTimestamp": 1459504500,
     "department": {
       "id": 74,
-      "preferences": {
-        "notifications": {
-          "enabled": true,
-          "identification": "max@example.com",
-          "sendConfirmationEnabled": true,
-          "sendReminderEnabled": true
-        }
-      },
       "email": "max@example.com"
     },
     "message": "Denken Sie an ihren Termin mit der Nummer 123456",
