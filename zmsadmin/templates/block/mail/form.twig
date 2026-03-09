@@ -21,7 +21,7 @@
                 {% else %}
                     {% set defaultSubject = "Information zu Ihrer Wartenummer %d am %s"|format(process.displayNumber, process.appointments|first.date|date("d.m.Y")) %}
                     {% if process.queue.withAppointment %}
-                        {% set defaultSubject = "Information zu Ihrem Termin %d am %s um %s Uhr"|format(process.displayNumber, process.appointments|first.date|date('d.m.Y'), process.appointments|first.date|date('H:i')) %}
+                        {% set defaultSubject = "Information zu Ihrem Termin %s am %s um %s Uhr"|format(process.displayNumber, process.appointments|first.date|date('d.m.Y'), process.appointments|first.date|date('H:i')) %}
                     {% endif %}
                     {{ formgroup(
                         {"label": "Betreff der E-Mail:", "errors": form.subject.messages},
