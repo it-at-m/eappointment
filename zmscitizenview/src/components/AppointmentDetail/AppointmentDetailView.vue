@@ -236,17 +236,17 @@
                   <strong> {{ selectedProvider.scope.hint }} </strong>
                 </p>
               </div>
+              <muc-callout
+                v-if="appointment?.scope?.infoForAppointment"
+                type="info"
+              >
+                <template #content>
+                  {{ appointment.scope.infoForAppointment }}
+                </template>
+                <template #header>{{ t("appointmentHintHeader") }}</template>
+              </muc-callout>
             </div>
           </div>
-          <muc-callout
-            v-if="appointment?.scope?.infoForAppointment"
-            type="info"
-          >
-            <template #content>
-              {{ appointment.scope.infoForAppointment }}
-            </template>
-            <template #header>{{ t("appointmentHintHeader") }}</template>
-          </muc-callout>
         </div>
       </div>
       <div
