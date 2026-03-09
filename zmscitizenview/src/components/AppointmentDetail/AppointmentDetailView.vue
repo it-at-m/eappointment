@@ -239,6 +239,7 @@
               <muc-callout
                 v-if="appointment?.scope?.infoForAppointment"
                 type="info"
+                class="callout-margin"
               >
                 <template #content>
                   {{ appointment.scope.infoForAppointment }}
@@ -641,6 +642,11 @@ onMounted(() => {
 
 .time-container-margin-bottom {
   margin-bottom: 64px;
+}
+
+.callout-margin {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
 }
 
 .timeBox {
