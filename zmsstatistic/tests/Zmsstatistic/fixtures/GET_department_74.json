@@ -119,11 +119,6 @@
                         "telephoneActivated": "0",
                         "telephoneRequired": "0"
                     },
-                    "notifications": {
-                        "confirmationContent": "",
-                        "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
-                        "headsUpTime": "30"
-                    },
                     "queue": {
                         "callCountMax": "0",
                         "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
@@ -140,10 +135,7 @@
                     },
                     "ticketprinter": {
                         "buttonName": "Bürgeramt",
-                        "deactivatedText": "0",
-                        "notificationsAmendmentEnabled": "0",
-                        "notificationsEnabled": "0",
-                        "notificationsDelay": "0"
+                        "deactivatedText": "0"
                     },
                     "workstation": {
                         "emergencyEnabled": "1",
@@ -234,11 +226,6 @@
                                 "emailRequired": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
-                            },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
-                                "headsUpTime": "30"
                             },
                             "queue": {
                                 "callCountMax": "0",

@@ -55,7 +55,6 @@
                 "selecteddate": "2016-04-01",
                 "email": "test@example.com",
                 "emailSendCount": "0",
-                "notificationsSendCount": "0",
                 "surveyAccepted": false,
                 "telephone": "1234567890"
             }

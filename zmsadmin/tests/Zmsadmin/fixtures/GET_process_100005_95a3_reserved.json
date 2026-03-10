@@ -56,7 +56,6 @@
 		"email": "",
 		"emailSendCount": "0",
 		"familyName": "",
-		"notificationsSendCount": "0",
 		"surveyAccepted": null,
 		"telephone": null
 	}],
@@ -778,12 +777,6 @@
 				"telephoneActivated": "1",
 				"telephoneRequired": "1"
 			},
-			"notifications": {
-				"confirmationContent": "",
-				"enabled": "1",
-				"headsUpContent": "Ihre Wartezeit betr\u00e4gt noch ca. 30 Min., bitte informieren Sie sich \u00fcber die Aufrufanzeige im B\u00fcrgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-				"headsUpTime": "30"
-			},
 			"queue": {
 				"callCountMax": "0",
 				"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp:\/\/www.berlin.de\/ba-charlottenburg-wilmersdorf\/org\/buergerdienste\/buergeraemter.html",
@@ -798,9 +791,7 @@
 				"label": ""
 			},
 			"ticketprinter": {
-				"deactivatedText": "",
-				"notificationsAmendmentEnabled": "0",
-				"notificationsDelay": "0"
+				"deactivatedText": ""
 			},
 			"workstation": {
 				"emergencyEnabled": "1"

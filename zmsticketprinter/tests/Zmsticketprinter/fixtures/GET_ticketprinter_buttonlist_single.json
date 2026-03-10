@@ -44,11 +44,6 @@
               "telephoneActivated": 1,
               "telephoneRequired": 1
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": 0
-            },
             "queue": {
               "callCountMax": 0,
               "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",

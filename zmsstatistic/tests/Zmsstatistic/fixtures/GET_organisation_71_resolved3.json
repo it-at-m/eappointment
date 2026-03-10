@@ -121,11 +121,6 @@
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
                             },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
-                                "headsUpTime": "30"
-                            },
                             "queue": {
                                 "callCountMax": "0",
                                 "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
@@ -142,10 +137,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt",
-                                "deactivatedText": "0",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "0",
-                                "notificationsDelay": "0"
+                                "deactivatedText": "0"
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",
@@ -237,11 +229,6 @@
                                         "telephoneActivated": "0",
                                         "telephoneRequired": "0"
                                     },
-                                    "notifications": {
-                                        "confirmationContent": "",
-                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
-                                        "headsUpTime": "30"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -322,11 +309,6 @@
                                         "telephoneActivated": "0",
                                         "telephoneRequired": "0"
                                     },
-                                    "notifications": {
-                                        "confirmationContent": "",
-                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                        "headsUpTime": "30"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -406,11 +388,6 @@
                                         "emailRequired": "0",
                                         "telephoneActivated": "0",
                                         "telephoneRequired": "0"
-                                    },
-                                    "notifications": {
-                                        "confirmationContent": "",
-                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                        "headsUpTime": "30"
                                     },
                                     "queue": {
                                         "callCountMax": "0",
@@ -504,11 +481,6 @@
                                         "telephoneActivated": "0",
                                         "telephoneRequired": "0"
                                     },
-                                    "notifications": {
-                                        "confirmationContent": "",
-                                        "headsUpContent": "",
-                                        "headsUpTime": "0"
-                                    },
                                     "queue": {
                                         "callCountMax": "0",
                                         "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail: test@example.com",
@@ -525,10 +497,7 @@
                                     },
                                     "ticketprinter": {
                                         "buttonName": "Ordnungsamt",
-                                        "deactivatedText": "",
-                                        "notificationsAmendmentEnabled": "0",
-                                        "notificationsEnabled": "0",
-                                        "notificationsDelay": "0"
+                                        "deactivatedText": ""
                                     },
                                     "workstation": {
                                         "emergencyEnabled": "0",

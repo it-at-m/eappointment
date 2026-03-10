@@ -123,12 +123,6 @@ class AppointmentDeallocateByCronTest extends Base
                         "telephoneActivated"=>"1",
                         "telephoneRequired"=>"1"
                     ],
-                    "notifications"=>[
-                        "confirmationContent"=>"",
-                        "enabled"=>"0",
-                        "headsUpContent"=>"",
-                        "headsUpTime"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",

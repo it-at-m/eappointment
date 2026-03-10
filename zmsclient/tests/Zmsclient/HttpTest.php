@@ -55,7 +55,6 @@ class HttpTest extends Base
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $result->getRequest());
 
         $status['mail']['oldestSeconds'] = 400;
-        $status['notification']['oldestSeconds'] = 400;
         $status['database']['logbin'] = 'OFF';
         $status['database']['clusterStatus'] = 'OFF';
         $status['database']['locks'] = 11;
@@ -108,7 +107,6 @@ class HttpTest extends Base
         $response = new Response();
         $status = $result->getEntity();
         $status['mail']['oldestSeconds'] = 0;
-        $status['notification']['oldestSeconds'] = 0;
         $status['database']['logbin'] = 'ON';
         $status['database']['clusterStatus'] = 'ON';
         $status['database']['locks'] = 0;

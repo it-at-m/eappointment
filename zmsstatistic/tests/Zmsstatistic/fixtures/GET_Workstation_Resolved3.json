@@ -61,11 +61,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
-                      "headsUpTime": "30"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
@@ -166,10 +161,7 @@
                 },
                 "ticketprinter": {
                   "buttonName": "Bürgeramt Halemweg (Außenstelle)",
-                  "deactivatedText": "",
-                  "notificationsAmendmentEnabled": "0",
-                  "notificationsEnabled": "1",
-                  "notificationsDelay": "0"
+                  "deactivatedText": ""
                 },
                 "workstation": {
                   "emergencyEnabled": "0",
@@ -561,11 +553,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                      "headsUpTime": "30"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -646,11 +633,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                      "headsUpTime": "30"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -743,11 +725,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -857,11 +834,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen im Bürgeramt 1 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nhttp://www.berlin.de\r\n\r\n                 Ihr Bürgeramt",
@@ -942,11 +914,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -1068,11 +1035,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert.\r\nIhreWartenummer Lautet:",
-                      "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                      "headsUpTime": "15"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe\r\nunter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1153,11 +1115,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenummer lautet:",
-                      "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                      "headsUpTime": "15"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -1240,11 +1197,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert.\r\nIhre Wartenummer lautet:",
-                      "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                      "headsUpTime": "20"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe\r\nunter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
@@ -1325,11 +1277,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenummer lautet:",
-                      "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                      "headsUpTime": "15"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -1425,11 +1372,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "3",
                       "callDisplayText": "Wir wünschen Ihnen frohe Festtage und einen guten Start in das Neue Jahr!",
@@ -1524,11 +1466,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "1"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "1",
                       "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n===================\r\nAn jedem Arbeitsplatz nur noch bargeldlos mit PIN. Halten Sie dafür unbedingt Ihre EC-Karte bereit.\r\n================================\r\nAM 14. und 15.01. sowie am 22. und 25.01.2016 sind die Bürgerämer von Marzahn-Hellersdorf geschlossen !!!!!!\r\n================================\r\n",
@@ -1610,11 +1547,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "1"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "1",
                       "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=============================\r\nPRO TERMIN UND WARTEMARKE NUR EIN KUNDE\r\n================================\r\nAb 01.11.2015 Anmeldung nur noch mit Einzugsbestätigung des Wohnungsgeber möglich !!!!",
@@ -1695,11 +1627,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "1",
                       "telephoneRequired": "1"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "1",
@@ -1784,11 +1711,6 @@
                   "emailRequired": "0",
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -2086,11 +2008,6 @@
                   "emailRequired": "0",
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -2401,11 +2318,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "",
@@ -2500,11 +2412,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTipp: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-neukoelln/org/buergeramt/",
@@ -2585,11 +2492,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -2672,11 +2574,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -2748,11 +2645,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -2834,11 +2726,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -2923,11 +2810,6 @@
                   "emailRequired": "1",
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "Ihre Handynummer wurde\r\nerfolgreich registriert.\r\nIhre Wartenummer lautet:",
-                  "headsUpContent": "Ihre Wartenummer im Bürgeramt\r\nKarow/Buch wird in ca. 10\r\nMinuten aufgerufen.",
-                  "headsUpTime": "15"
                 },
                 "queue": {
                   "callCountMax": "1",
@@ -3233,11 +3115,6 @@
                   "emailRequired": "0",
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "Ihre Handynummer wurde übertragen.",
-                  "headsUpContent": "Ihre Wartenummer im Bürgeramt Pankow wird in ca. 10 Minuten aufgerufen.",
-                  "headsUpTime": "15"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -3566,11 +3443,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "Ihre Handynummer wurde übertragen.",
-                      "headsUpContent": "Ihre Wartenummer im Bürgeramt Prenzlauer Berg wird in ca. 10 Minuten aufgerufen.",
-                      "headsUpTime": "15"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -3651,11 +3523,6 @@
                       "emailRequired": "0",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "Ihre Handynummer wurde übertragen. Ihre Wartenummer lautet ",
-                      "headsUpContent": "Ihre Wartenummer im Bürgeramt Weißensee wird in ca. 10 Minuten aufgerufen.",
-                      "headsUpTime": "15"
                     },
                     "queue": {
                       "callCountMax": "1",
@@ -3740,11 +3607,6 @@
                   "emailRequired": "1",
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -4063,11 +3925,6 @@
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
                 },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
-                },
                 "queue": {
                   "callCountMax": "0",
                   "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -4384,11 +4241,6 @@
                   "emailRequired": "1",
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -4707,11 +4559,6 @@
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
                 },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
-                },
                 "queue": {
                   "callCountMax": "0",
                   "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -5028,11 +4875,6 @@
                   "emailRequired": "1",
                   "telephoneActivated": "1",
                   "telephoneRequired": "1"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -5351,11 +5193,6 @@
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
                 },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
-                },
                 "queue": {
                   "callCountMax": "3",
                   "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -5672,11 +5509,6 @@
                   "emailRequired": "0",
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "3",
@@ -5995,11 +5827,6 @@
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
                 },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
-                },
                 "queue": {
                   "callCountMax": "3",
                   "callDisplayText": "",
@@ -6316,11 +6143,6 @@
                   "emailRequired": "0",
                   "telephoneActivated": "0",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "3",
@@ -6674,11 +6496,6 @@
                   "telephoneActivated": "1",
                   "telephoneRequired": "0"
                 },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
-                },
                 "queue": {
                   "callCountMax": "0",
                   "callDisplayText": "",
@@ -6979,11 +6796,6 @@
                   "emailRequired": "1",
                   "telephoneActivated": "1",
                   "telephoneRequired": "0"
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "headsUpContent": "",
-                  "headsUpTime": "0"
                 },
                 "queue": {
                   "callCountMax": "0",
@@ -7304,11 +7116,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "1",
                       "callDisplayText": "Vereinbarte Termine sind Richtwerte.\r\nEs kann mitunter zu zeitlichen Abweichungen kommen.",
@@ -7389,11 +7196,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "1",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "1",
@@ -7593,11 +7395,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -7669,11 +7466,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -7756,11 +7548,6 @@
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -7841,11 +7628,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "0",
                       "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",
@@ -7965,11 +7747,6 @@
                       "telephoneActivated": "1",
                       "telephoneRequired": "1"
                     },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
-                    },
                     "queue": {
                       "callCountMax": "0",
                       "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
@@ -8050,11 +7827,6 @@
                       "emailRequired": "1",
                       "telephoneActivated": "1",
                       "telephoneRequired": "1"
-                    },
-                    "notifications": {
-                      "confirmationContent": "",
-                      "headsUpContent": "",
-                      "headsUpTime": "0"
                     },
                     "queue": {
                       "callCountMax": "0",

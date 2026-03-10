@@ -16,7 +16,6 @@ class DepartmentTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = $this->getExample();
-        $this->assertTrue(4 == count($entity->getNotificationPreferences()), 'preferences not accessible');
         $this->assertStringContainsString('Flughafen Schönefeld', $entity->getContactPerson(), 'getting contact person failed');
         $this->assertTrue(15831 == $entity->getContact()->postalCode, 'contact not accessible');
     }

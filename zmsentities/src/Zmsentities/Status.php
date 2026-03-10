@@ -29,12 +29,7 @@ class Status extends Schema\Entity
                 'queueCount' => 0,
                 'oldestSeconds' => 0,
                 'newestSeconds' => 0,
-            ),
-            'notification' => array (
-                'queueCount' => 0,
-                'oldestSeconds' => 0,
-                'newestSeconds' => 0,
-            ),
+            )
         ];
     }
 }

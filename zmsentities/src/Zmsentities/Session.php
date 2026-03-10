@@ -203,11 +203,6 @@ class Session extends Schema\Entity
         return ('inProgress' == $this->getStatus()) ? true : false;
     }
 
-    public function hasConfirmationNotification()
-    {
-        return ($this->toProperty()->content->confirmationNotification->get()) ? true : false;
-    }
-
     /**
      * Check if requests exists
      *
