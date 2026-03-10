@@ -68,7 +68,7 @@ class Index extends BaseController
                 'urlQueryString' => $queryString,
                 'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
-                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
+                    || !$organisation->getPreference('ticketPrinterActivation'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,

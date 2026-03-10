@@ -116,7 +116,7 @@
 				"name": "Neuk\u00f6lln"
 			},
 			"preferences": {
-				"ticketPrinterProtectionEnabled": "0"
+				"ticketPrinterActivation": "0"
 			},
 			"departments": [{
 				"email": "Buergeramt@bezirksamt-neukoelln.de",

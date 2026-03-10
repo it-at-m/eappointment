@@ -33,7 +33,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     onChange={(_, v) => onParentChange(index, v)}
                     options={[
                         {name: '—', value: ''},
-                        ...parentRequests.map(r => ({name: r.name, value: String(r.id)}))
+                        ...parentRequests.map(r => ({name: `${r.name} (${r.source})`, value: String(r.id)}))
                     ]}
                     attributes={{"aria-label": labels.parent}}
                 />
@@ -149,7 +149,9 @@ class RequestsView extends Component {
         this.props.changeHandler(`requests[${rowIndex}][parent_id]`, parent_id);
         this.props.changeHandler(`requests[${rowIndex}][link]`, parent?.link || '');
         this.props.changeHandler(`requests[${rowIndex}][group]`, parent?.group || '');
-        this.props.changeHandler(`requests[${rowIndex}][data]`, parent?.data || {});
+        const data = {...(parent?.data || {})};
+        data.combinable = [];
+        this.props.changeHandler(`requests[${rowIndex}][data]`, data);
     };
 
     getRequestsWithLabels(onChange, onDeleteClick) {
