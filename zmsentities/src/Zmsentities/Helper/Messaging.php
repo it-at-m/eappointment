@@ -34,8 +34,6 @@ class Messaging
     ];
 
     public static function isIcsRequired(
-        \BO\Zmsentities\Config $config,
-        \BO\Zmsentities\Process $process,
         $status
     ) {
         return (in_array($status, self::$icsRequiredForStatus));
