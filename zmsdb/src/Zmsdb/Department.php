@@ -158,14 +158,11 @@ class Department extends Base
             $emailDelete = $this->perform(Query\Department::QUERY_MAIL_DELETE, array(
                 $departmentId
             ));
-            $notificationsDelete = $this->perform(Query\Department::QUERY_NOTIFICATIONS_DELETE, array(
-                $departmentId
-            ));
         }
 
         $this->removeCache($entity);
 
-        return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
+        return ($entity && $entityDelete && $emailDelete) ? $entity : null;
     }
 
     public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
@@ -193,9 +190,6 @@ class Department extends Base
                 $entity->sendEmailReminderEnabled,
                 $entity->sendEmailReminderMinutesBefore
             );
-        }
-        if ($entity->getNotificationPreferences()) {
-            $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         }
 
         $this->removeCache($entity);
@@ -225,7 +219,6 @@ class Department extends Base
                 $entity->sendEmailReminderMinutesBefore
             );
         }
-        $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         $this->removeCache($entity);
         return $this->readEntity($departmentId, 0, true);
     }

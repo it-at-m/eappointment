@@ -14,8 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 class ReportClientOrganisation extends BaseController
 {
     protected $totals = [
-        'notificationscount',
-        'notificationscost',
         'clientscount',
         'missed',
         'withappointment',

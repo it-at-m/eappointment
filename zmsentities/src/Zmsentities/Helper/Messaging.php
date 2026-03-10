@@ -38,14 +38,6 @@ class Messaging
         \BO\Zmsentities\Process $process,
         $status
     ) {
-        $client = $process->getFirstClient();
-        $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
-        $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
-        foreach ($noAttachmentDomains as $matching) {
-            if (trim($matching) && strpos($client->email, '@' . trim($matching))) {
-                return false;
-            }
-        }
         return (in_array($status, self::$icsRequiredForStatus));
     }
 
@@ -209,27 +201,6 @@ class Messaging
                 'dateTime' => $dateTime,
                 'processList' => $processList,
                 'scope' => $scope
-            )
-        );
-        return $message;
-    }
-
-    public static function getNotificationContent(Process $process, Config $config, $status = 'appointment')
-    {
-        $appointment = $process->getFirstAppointment();
-        $template = self::getTemplate('notification', $status);
-        if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
-            $exception->data = $process;
-            throw $exception;
-        }
-        $message = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => $config
             )
         );
         return $message;

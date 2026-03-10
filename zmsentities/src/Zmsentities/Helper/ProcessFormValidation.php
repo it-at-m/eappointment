@@ -28,7 +28,7 @@ class ProcessFormValidation
         $collection = array();
         $collection = self::getPersonalParameters($collection, $scopePrefs, $withAppointment);
         $collection = self::getAdditionalParameters($collection);
-        $collection = self::getNotificationParameters($collection);
+        $collection = self::getMailConfirmationParameters($collection);
 
         // return validated collection
         $collection = Validator::collection($collection);
@@ -43,7 +43,7 @@ class ProcessFormValidation
         $collection = array();
         $collection = self::getPersonalParameters($collection, $scopePrefs, $withAppointment);
         $collection = self::getAdditionalAdminParameters($collection, $withAppointment);
-        $collection = self::getNotificationParameters($collection);
+        $collection = self::getMailConfirmationParameters($collection);
 
         // return validated collection
         $collection = Validator::collection($collection);
@@ -132,22 +132,10 @@ class ProcessFormValidation
         return $collection;
     }
 
-    protected static function getNotificationParameters($collection)
+    protected static function getMailConfirmationParameters($collection)
     {
-        // confirmation notification
-        if (1 == Validator::param('sendConfirmation')->isNumber()->getValue()) {
-            $collection['sendConfirmation'] = Validator::param('sendConfirmation')->isNumber();
-        }
-
-        // confirmation mail
         if (1 == Validator::param('sendMailConfirmation')->isNumber()->getValue()) {
             $collection['sendMailConfirmation'] = Validator::param('sendMailConfirmation')->isNumber();
-        }
-
-        // reminder notification
-        if (1 == Validator::param('sendReminder')->isNumber()->getValue()) {
-            $collection['sendReminder'] = Validator::param('sendReminder')->isNumber();
-            $collection['headsUpTime'] = Validator::param('headsUpTime')->isNumber();
         }
         return $collection;
     }

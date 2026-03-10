@@ -752,7 +752,6 @@
         "email": "test@example.com",
         "emailSendCount": "1",
         "familyName": "BO",
-        "notificationsSendCount": "0",
         "surveyAccepted": null,
         "telephone": null
       }

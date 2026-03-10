@@ -734,8 +734,7 @@ class ProcessTest extends Base
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",
-                        "startInDaysDefault"=>"0",
-                        "notificationHeadsUpEnabled"=>"1"
+                        "startInDaysDefault"=>"0"
                     ],
                     "client"=>[
                         "amendmentActivated"=>"0",

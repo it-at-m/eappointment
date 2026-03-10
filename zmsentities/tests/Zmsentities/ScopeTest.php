@@ -14,7 +14,6 @@ class ScopeTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue(is_array($entity->getNotificationPreferences()), 'Notification preferences not available');
         $this->assertStringContainsString('erfolgreich', $entity->getConfirmationContent(), 'Confirmation content not available');
         $this->assertStringContainsString('Warteraum', $entity->getHeadsUpContent(), 'Confirmation HeadsUpContent not available');
         $this->assertTrue('23' == $entity->getStatus('queue', 'givenNumberCount'), 'Status is not accessible');

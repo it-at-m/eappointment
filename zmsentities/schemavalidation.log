@@ -23,7 +23,6 @@ Testing /home/application/zms/zmsentities/schema/maintenanceSchedule.json
 Testing /home/application/zms/zmsentities/schema/metaresult.json
 Testing /home/application/zms/zmsentities/schema/mimepart.json
 Testing /home/application/zms/zmsentities/schema/month.json
-Testing /home/application/zms/zmsentities/schema/notification.json
 Testing /home/application/zms/zmsentities/schema/organisation.json
 Testing /home/application/zms/zmsentities/schema/owner.json
 Testing /home/application/zms/zmsentities/schema/processArchive.json
@@ -75,6 +74,5 @@ Testing /home/application/zms/zmsentities/schema/mail.json
 Testing /home/application/zms/zmsentities/schema/metaresult.json
 Testing /home/application/zms/zmsentities/schema/mimepart.json
 Testing /home/application/zms/zmsentities/schema/month.json
-Testing /home/application/zms/zmsentities/schema/notification.json
 Testing /home/application/zms/zmsentities/schema/organisation.json
 Testing /home/application/zms/zmsentities/schema/owner.json

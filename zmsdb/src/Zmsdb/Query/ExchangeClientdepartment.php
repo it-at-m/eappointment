@@ -21,7 +21,7 @@ class ExchangeClientdepartment extends Base
         SUM(missedwithappointment) as missedwithappointment,
         SUM(requestcount) as requestcount
 
-    FROM ( 
+    FROM (
           SELECT
               d.behoerdenid as subjectid,
               DATE_FORMAT(a.`Datum`, :groupby) as date,

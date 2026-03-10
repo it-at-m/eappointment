@@ -69,7 +69,6 @@
                 "familyName": "J525",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": "0987654321"
             }

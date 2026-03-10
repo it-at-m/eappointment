@@ -30,12 +30,6 @@
                 "telephoneActivated": 0,
                 "telephoneRequired": 0
               },
-              "notifications": {
-                "confirmationContent": "",
-                "enabled": 1,
-                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                "headsUpTime": 30
-              },
               "queue": {
                 "callCountMax": 0,
                 "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -50,9 +44,7 @@
                 "label": ""
               },
               "ticketprinter": {
-                "deactivatedText": "",
-                "notificationsAmendmentEnabled": 0,
-                "notificationsDelay": 0
+                "deactivatedText": ""
               },
               "workstation": {
                 "emergencyEnabled": 1
@@ -366,12 +358,6 @@
                   "emailRequired": 0,
                   "telephoneActivated": 0,
                   "telephoneRequired": 0
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "enabled": 1,
-                  "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                  "headsUpTime": 30
                 },
                 "queue": {
                   "callCountMax": 0,
@@ -690,12 +676,6 @@
             "telephoneActivated": 0,
             "telephoneRequired": 0
           },
-          "notifications": {
-            "confirmationContent": "",
-            "enabled": 1,
-            "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-            "headsUpTime": 30
-          },
           "queue": {
             "callCountMax": 0,
             "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1002,12 +982,6 @@
                 "telephoneActivated": 0,
                 "telephoneRequired": 0
               },
-              "notifications": {
-                "confirmationContent": "",
-                "enabled": 1,
-                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                "headsUpTime": 30
-              },
               "queue": {
                 "callCountMax": 0,
                 "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1022,9 +996,7 @@
                 "label": ""
               },
               "ticketprinter": {
-                "deactivatedText": "",
-                "notificationsAmendmentEnabled": 0,
-                "notificationsDelay": 0
+                "deactivatedText": ""
               },
               "workstation": {
                 "emergencyEnabled": 1
@@ -1338,12 +1310,6 @@
                   "emailRequired": 0,
                   "telephoneActivated": 0,
                   "telephoneRequired": 0
-                },
-                "notifications": {
-                  "confirmationContent": "",
-                  "enabled": 1,
-                  "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                  "headsUpTime": 30
                 },
                 "queue": {
                   "callCountMax": 0,
@@ -1661,12 +1627,6 @@
             "emailRequired": 0,
             "telephoneActivated": 0,
             "telephoneRequired": 0
-          },
-          "notifications": {
-            "confirmationContent": "",
-            "enabled": 1,
-            "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-            "headsUpTime": 30
           },
           "queue": {
             "callCountMax": 0,

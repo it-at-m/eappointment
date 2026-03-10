@@ -54,7 +54,6 @@
                 "familyName": "Doe",
                 "email": "johndoe@example.com",
                 "emailSendCount": "0",
-                "notificationsSendCount": "0",
                 "surveyAccepted": 1,
                 "telephone": "0123456789"
             }
@@ -138,11 +137,6 @@
                   "adminMailOnDeleted":0,
                   "adminMailOnUpdated":0,
                   "adminMailOnMailSent":0
-               },
-               "notifications":{
-                  "confirmationContent":"",
-                  "headsUpContent":"",
-                  "headsUpTime":"10"
                },
                "queue":{
                   "callCountMax":"1",

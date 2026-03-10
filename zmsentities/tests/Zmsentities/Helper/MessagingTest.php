@@ -97,11 +97,7 @@ class MessagingTest extends Base
 
     public function testIcsRequired()
     {
-        $config = new Config([
-            'notifications' => [
-                'noAttachmentDomains' => 'outlook.,live.,hotmail.'
-            ]
-        ]);
+        $config = new Config();
 
         $process = new Process([
             "clients" => [new Client([
@@ -112,17 +108,6 @@ class MessagingTest extends Base
         $this->assertTrue(
             Messaging::isIcsRequired($config, $process, 'confirmed'),
             "confirmed process should contain attachments"
-        );
-
-        $process = new Process([
-            "clients" => [new Client([
-                'email' => 'test@outlook.com'
-            ])],
-            "status" => "confirmed"
-        ]);
-        $this->assertFalse(
-            Messaging::isIcsRequired($config, $process, 'confirmed'),
-            "confirmed process with denied client domain should not contain attachments"
         );
 
         $process = new Process([
