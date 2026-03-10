@@ -16,23 +16,23 @@
 	<div class="noprint">
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
 			<span class="msg_wartenummer_lautet">
-		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
-		</span>
+		    	{% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
+			</span>
 			<div class="nummernanzeige">
 				{{ process.queue.number }}
 			</div>
 			<span>
-        	{% if waitingClients >= 1 %}
-				{% if waitingClients == 1 %}
-					Es wartet 1 Kunde vor Ihnen.
-				{% else %}
-					Es warten {{ waitingClients }} Kunden vor Ihnen.
-				{% endif %}
+				{% if waitingClients >= 1 %}
+					{% if waitingClients == 1 %}
+						Es wartet 1 Kunde vor Ihnen.
+					{% else %}
+						Es warten {{ waitingClients }} Kunden vor Ihnen.
+					{% endif %}
 
-			{% else %}
-				Es wartet niemand vor Ihnen.
-			{% endif %}
-        </span>
+				{% else %}
+					Es wartet niemand vor Ihnen.
+				{% endif %}
+        	</span>
 			<br />
 
 			{% trans %}Voraussichtliche Wartezeit{% endtrans %}:
@@ -45,16 +45,10 @@
 			{% else %}
 				{% trans %}keine{% endtrans %}
 			{% endif %}
-        </span>
 
-			{% else %}
-				<p>Ihre Wartenummer wird gedruckt.</p>
-				{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-				{{ hiddenfield({ "name": "status", "value": "process_success" }) }}
-				</form>
-				{% set label = "OK" %}
-				{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
-			{% endif %}
+			<p>Ihre Wartenummer wird gedruckt.</p>
+			{% set label = "OK" %}
+			{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
 
 			<script>
 				window.setTimeout(function(){
