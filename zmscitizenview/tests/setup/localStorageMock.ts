@@ -53,6 +53,3 @@ if (typeof window !== 'undefined') {
     value: vi.fn(),
   });
 }
-
-
-
