@@ -3,7 +3,8 @@
 
 {% set userAccount = userAccount|default({}) %}
 {% set userAccountDepartments = userAccount.departments|default([]) %}
-{% set userAccountRights = userAccount.rights|default({}) %}
+{% set userAccountRights = {} %}
+{% set userAccountRoles = userAccount.roles|default([]) %}
     
 {% set readonly = 1 %}
 {% if action == "add" %}
@@ -116,7 +117,7 @@
             {% set departmentOptionsGroup = [] %}
             {% set departmentOneSelected = 0 %}
 
-            {% if workstation.useraccount.rights.superuser %}
+            {% if workstation.useraccount.permissions.superuser %}
                 {% if userAccountRights.superuser|default(0) %}
                     {% set allOverSelected = 1 %}
                 {% endif %}
@@ -137,7 +138,7 @@
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
-                        {% if workstation.useraccount.rights.superuser %}
+                        {% if workstation.useraccount.permissions.superuser %}
                             {% set departmentOptions = departmentOptions|merge([
                                 { "value": department.id, "name": department.name ~ " (Id: " ~ department.id ~ ")", "selected": selected }
                             ]) %}
@@ -170,70 +171,98 @@
             {{ inputfield({ "name":"departments[][id]", "type":"hidden", "value":selectedDepartment }) }}
         {% endif %}
 
-        {% set rightsCheckboxes = [
+        {# Derive selected roles from existing roles (preferred) or legacy rights for backwards compatibility #}
+        {% set selectedRoles = userAccountRoles %}
+        {% if selectedRoles is empty %}
+            {% set selectedRoles = [] %}
+            {# Legacy mapping: superuser → system_admin #}
+            {% if userAccountRights.superuser|default(0) %}
+                {% set selectedRoles = selectedRoles|merge(['system_admin']) %}
+            {% endif %}
+            {# Legacy mapping: cluster → user_admin #}
+            {% if userAccountRights.cluster|default(0) %}
+                {% set selectedRoles = selectedRoles|merge(['user_admin']) %}
+            {% endif %}
+            {# Legacy mapping: scope → appointment_admin #}
+            {% if userAccountRights.scope|default(0) %}
+                {% set selectedRoles = selectedRoles|merge(['appointment_admin']) %}
+            {% endif %}
+            {# Legacy mapping: audit → audit_viewer #}
+            {% if userAccountRights.audit|default(0) %}
+                {% set selectedRoles = selectedRoles|merge(['audit_viewer']) %}
+            {% endif %}
+            {# Default fallback: agent_queue #}
+            {% if selectedRoles is empty %}
+                {% set selectedRoles = ['agent_queue'] %}
+            {% endif %}
+        {% endif %}
+
+        {% set currentPermissions = workstation.useraccount.permissions|default({}) %}
+
+        {% set roleCheckboxes = [
             {
                 "type":"checkbox",
                 "parameter": {
-                    "label": "Sachbearbeitung (Rolle: 0)",
-                    "name": "rights[basic]",
-                    "value": 1,
-                    "checked" : 1,
-                    "disabled" : 1,
-                    "id": "check_rights_1"
+                    "label": "Sachbearbeitung (Rolle: agent_queue)",
+                    "name": "roles[]",
+                    "value": "agent_queue",
+                    "checked" : 'agent_queue' in selectedRoles,
+                    "id": "role_agent_queue"
                 }
             }
         ] %}
 
-        {% if workstation.useraccount.rights.scope %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
+        {# Rollen für erweiterte Berechtigungen, sichtbar je nach eigenen Rechten des eingeloggten Nutzers #}
+        {% if currentPermissions.statistic or currentPermissions.logs or currentPermissions.customersearch %}
+            {% set roleCheckboxes = roleCheckboxes|merge([
                 {
                     "type":"checkbox",
                     "parameter": {
-                    "label": "Innenrevision (Rolle: 5)",
-                    "name": "rights[audit]",
-                    "value": 1,
-                    "checked" : userAccountRights.audit|default(0),
-                    "id": "check_rights_15"
+                        "label": "Innenrevision (Rolle: audit_viewer)",
+                        "name": "roles[]",
+                        "value": "audit_viewer",
+                        "checked" : 'audit_viewer' in selectedRoles,
+                        "id": "role_audit_viewer"
+                    }
                 }
+            ]) %}
+        {% endif %}
+
+        {% if currentPermissions.useraccount %}
+            {% set roleCheckboxes = roleCheckboxes|merge([
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "Terminadministration (Rolle: appointment_admin)",
+                        "name": "roles[]",
+                        "value": "appointment_admin",
+                        "checked" : 'appointment_admin' in selectedRoles,
+                        "id": "role_appointment_admin"
+                    }
                 },
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Terminadministration (Rolle: 30)",
-                        "name": "rights[scope]",
-                        "value": 1,
-                            "checked" : userAccountRights.scope|default(0),
-                        "id": "check_rights_5"
+                        "label": "Fachliche Administration (Rolle: user_admin)",
+                        "name": "roles[]",
+                        "value": "user_admin",
+                        "checked" : 'user_admin' in selectedRoles,
+                        "id": "role_user_admin"
                     }
                 }
             ]) %}
         {% endif %}
 
-        {% if workstation.useraccount.rights.cluster %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
+        {% if currentPermissions.superuser %}
+            {% set roleCheckboxes = roleCheckboxes|merge([
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Fachliche Administration (Rolle: 40)",
-                        "name": "rights[cluster]",
-                        "value": 1,
-                            "checked" : userAccountRights.cluster|default(0),
-                        "id": "check_rights_7"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.superuser %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Technische Administration (Rolle: 90)",
-                        "name": "rights[superuser]",
-                        "value": 1,
-                            "checked" : userAccountRights.superuser|default(0),
-                    "id": "check_rights_10"
+                        "label": "Technische Administration (Rolle: system_admin)",
+                        "name": "roles[]",
+                        "value": "system_admin",
+                        "checked" : 'system_admin' in selectedRoles,
+                        "id": "role_system_admin"
                     }
                 }
             ]) %}
@@ -242,10 +271,15 @@
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>
-    
+
     {{ formgroup(
-        {"groupTag": "fieldset", "legend": "Berechtigungen", "controlgroupclass": "panel--heavy"},
-        rightsCheckboxes
+        {
+            "groupTag": "fieldset",
+            "legend": "Rollen",
+            "controlgroupclass": "panel--heavy",
+            "errors": (exception and exception.data.roles.messages is defined) ? exception.data.roles.messages : []
+        },
+        roleCheckboxes
     ) }}
 
     <div class="form-actions">

@@ -21,7 +21,7 @@ class TicketprinterListByScopeList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('ticketprinter');
         $scopeIdList = explode(',', $args['ids']);
 
         $ticketprinterList = new \BO\Zmsentities\Collection\TicketprinterList();

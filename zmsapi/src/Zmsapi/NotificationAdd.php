@@ -22,7 +22,7 @@ class NotificationAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('sms');
+        (new Helper\User($request))->checkRights('appointment');
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Notification($input);

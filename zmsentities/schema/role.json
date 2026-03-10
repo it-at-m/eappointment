@@ -1,0 +1,41 @@
+{
+    "type": "object",
+    "description": "A role bundles a set of atomic permissions that can be assigned to useraccounts.",
+    "example": {
+        "id": 8,
+        "name": "system_admin",
+        "description": "Systemweite Superuser-Rolle mit allen Rechten",
+        "permissions": [
+            "superuser"
+        ]
+    },
+    "required": [
+        "id",
+        "name"
+    ],
+    "properties": {
+        "id": {
+            "type": "integer",
+            "description": "Numeric identifier of the role (primary key in the role table)."
+        },
+        "name": {
+            "type": "string",
+            "description": "Unique name of the role (e.g. agent_queue, appointment_admin, system_admin)."
+        },
+        "description": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Optional human-readable description of the role."
+        },
+        "permissions": {
+            "type": "array",
+            "description": "List of permission names that are granted by this role.",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
+

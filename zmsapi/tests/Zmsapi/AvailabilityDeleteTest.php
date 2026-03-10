@@ -14,7 +14,8 @@ class AvailabilityDeleteTest extends Base
     {
         $input = (new Entity)->createExample();
         $entity = (new Query())->writeEntity($input);
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render(['id' => $entity->getId()], [], []); //Test Availability
         $this->assertStringContainsString('startDate', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -22,9 +23,17 @@ class AvailabilityDeleteTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render(['id' => 1], [], []);
         $this->assertStringContainsString('availability.json","id":1', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testMissingAvailabilityPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render(['id' => 1], [], []);
     }
 }

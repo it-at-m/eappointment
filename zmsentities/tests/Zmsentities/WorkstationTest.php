@@ -50,7 +50,7 @@ class WorkstationTest extends EntityCommonTests
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $entity = (new $this->entityclass())->getExample();
-        $rights = $entity->getUseraccountRights();
+        $rights = $entity->getUseraccountPermissions();
         $this->assertTrue(count($rights) > 0, 'Useraccount rights missed');
 
         $userAccount = (new \BO\Zmsentities\Useraccount())->getExample();
@@ -67,15 +67,15 @@ class WorkstationTest extends EntityCommonTests
 
         try {
             $userAccount->testRights(array_keys(array('superuser')), $now);
-            $this->fail("Expected exception UserAccountMissingRights not thrown");
-        } catch (\BO\Zmsentities\Exception\UserAccountMissingRights $exception) {
+            $this->fail("Expected exception UserAccountMissingPermissions not thrown");
+        } catch (\BO\Zmsentities\Exception\UserAccountMissingPermissions $exception) {
             $this->assertEquals(403, $exception->getCode());
         }
 
         unset($userAccount['id']);
         try {
             $userAccount->testRights(array_keys(array('superuser')), $now);
-            $this->fail("Expected exception UserAccountMissingRights not thrown");
+            $this->fail("Expected exception UserAccountMissingPermissions not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingLogin $exception) {
             $this->assertEquals(401, $exception->getCode());
         }

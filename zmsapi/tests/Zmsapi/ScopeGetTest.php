@@ -46,7 +46,7 @@ class ScopeGetTest extends Base
 
     public function testWithMissingAccessRight()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);

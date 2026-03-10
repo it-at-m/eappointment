@@ -7,7 +7,7 @@
     {% embed "block/scaffholding/board.twig" with {'class': 'notification-form'} %}
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
 
-        {% set rights = workstation.useraccount.rights %}
+{% set rights = workstation.useraccount.permissions %}
 
         {% block board_title %}
             SMS-Versand

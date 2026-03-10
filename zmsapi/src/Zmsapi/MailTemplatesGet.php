@@ -10,7 +10,7 @@ namespace BO\Zmsapi;
 use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsdb\MailTemplates as MailTemplatesQuery;
-use BO\Zmsapi\Helper\User;
+use BO\Zmsapi\Helper\User as UserHelper;
 
 class MailTemplatesGet extends BaseController
 {
@@ -23,7 +23,13 @@ class MailTemplatesGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        // Permissions-based guard: require 'mailtemplates' permission or superuser.
+        UserHelper::$request = $request;
+        $workstation = UserHelper::readWorkstation(1);
+        $userAccount = $workstation->getUseraccount();
+        if (!$userAccount->isSuperUser() && !$userAccount->hasPermissions(['mailtemplates'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingPermissions('Missing mailtemplates permission');
+        }
 
         $config = (new MailTemplatesQuery())->readListWithoutProvider();
 

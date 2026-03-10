@@ -1,15 +1,18 @@
 {
-  "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he/she begins with the work.",
+  "description": "An useraccount represents an user for the ZMS. It contains the permissions and roles the user has for processing data with the ZMS. Usually a user creates a workstation entity if he/she begins with the work.",
   "type": "object",
   "example": {
     "lastLogin": 1447926465,
     "id": "johndoe",
     "email": "johndoe@muenchen.de",
     "password": "secret",
-    "rights": {
+    "permissions": {
       "scope": true,
       "ticketprinter": true
     },
+    "roles": [
+      "system_admin"
+    ],
     "departments": [
       {
         "id": 72
@@ -17,8 +20,7 @@
     ]
   },
   "required": [
-    "id",
-    "rights"
+    "id"
   ],
   "additionalProperties": false,
   "properties": {
@@ -102,159 +104,46 @@
         }
       }
     },
-    "rights": {
+    "permissions": {
       "type": "object",
+      "description": "Atomic permission flags derived from roles (appointment, availability, statistic, logs, etc.)",
+      "additionalProperties": false,
       "properties": {
-        "availability": {
-          "description": "Allow editing availability with opening hours",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "basic": {
-          "description": "Allow login and basic usage",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "cluster": {
-          "description": "Allow editing clusters",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "department": {
-          "description": "Allow editing departments",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "organisation": {
-          "description": "Allow editing organisations",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "scope": {
-          "description": "Allow editing scopes",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "sms": {
-          "description": "Allow sending SMS",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "superuser": {
-          "description": "Special rights for administrators, especially for maintenance",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "ticketprinter": {
-          "description": "Manage ticketprinter",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
-        "useraccount": {
-          "description": "Allow create, edit and delete user accounts",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        }
+        "appointment": { "type": "boolean" },
+        "availability": { "type": "boolean" },
+        "calldisplay": { "type": "boolean" },
+        "cherrypick": { "type": "boolean" },
+        "cluster": { "type": "boolean" },
+        "config": { "type": "boolean" },
+        "counter": { "type": "boolean" },
+        "customersearch": { "type": "boolean" },
+        "dayoff": { "type": "boolean" },
+        "department": { "type": "boolean" },
+        "emergency": { "type": "boolean" },
+        "finishedqueue": { "type": "boolean" },
+        "finishedqueuepast": { "type": "boolean" },
+        "logs": { "type": "boolean" },
+        "mailtemplates": { "type": "boolean" },
+        "missedqueue": { "type": "boolean" },
+        "openqueue": { "type": "boolean" },
+        "organisation": { "type": "boolean" },
+        "overviewcalendar": { "type": "boolean" },
+        "parkedqueue": { "type": "boolean" },
+        "restrictedscope": { "type": "boolean" },
+        "scope": { "type": "boolean" },
+        "source": { "type": "boolean" },
+        "statistic": { "type": "boolean" },
+        "ticketprinter": { "type": "boolean" },
+        "useraccount": { "type": "boolean" },
+        "waitingqueue": { "type": "boolean" },
+        "superuser": { "type": "boolean" }
+      }
+    },
+    "roles": {
+      "type": "array",
+      "description": "List of role names assigned to the useraccount (e.g. agent_queue, appointment_admin, system_admin).",
+      "items": {
+        "type": "string"
       }
     },
     "departments": {

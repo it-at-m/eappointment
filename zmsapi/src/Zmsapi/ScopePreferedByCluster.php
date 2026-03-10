@@ -23,7 +23,7 @@ class ScopePreferedByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('scope');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $cluster = (new \BO\Zmsdb\Cluster())->readEntity($args['id']);
         if (! $cluster) {

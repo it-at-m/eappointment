@@ -22,7 +22,7 @@ class DayoffUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkRights('dayoff');
 
         $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();

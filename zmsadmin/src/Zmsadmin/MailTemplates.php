@@ -21,19 +21,21 @@ class MailTemplates extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $providerId = $workstation->scope['provider']['id'];
+        $providerId = $workstation->scope['provider']['id'] ?? null;
 
-        $scopeName = $workstation->scope['contact']['name'];
-        $scopeId = $workstation->scope['id'];
+        // Guard against missing contact.name in scope
+        $scopeName = $workstation->scope['contact']['name']
+            ?? ($workstation->scope['provider']['name'] ?? '');
+        $scopeId = $workstation->scope['id'] ?? null;
 
         if (isset($args['scopeId']) && !empty($args['scopeId'])) {
             $scope = \App::$http
                 ->readGetResult('/scope/' . $args['scopeId'] . '/', ['resolveReferences' => 1])
                 ->getEntity();
 
-            $scopeName = $scope->contact->name;
-            $scopeId = $scope->id;
-            $providerId = $scope->provider->id;
+            $scopeName = $scope->contact->name ?? ($scope->provider->name ?? '');
+            $scopeId = $scope->id ?? $scopeId;
+            $providerId = $scope->provider->id ?? $providerId;
         }
 
         $config = \App::$http->readGetResult('/config/')->getEntity();

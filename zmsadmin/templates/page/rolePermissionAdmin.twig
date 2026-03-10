@@ -1,0 +1,123 @@
+{% extends "layout/main.twig" %}
+
+{% block content %}
+    {% from 'element/helper/form.twig' import formgroup %}
+
+    <div class="panel panel--heavy">
+        <h1>Rollen &amp; Berechtigungen</h1>
+        <p>
+            Diese Übersicht zeigt die im System hinterlegten Rollen und die ihnen zugeordneten Berechtigungen.
+            Superuser können hier Rollen und ihre Berechtigungen anlegen, bearbeiten und löschen.
+        </p>
+
+        <form method="post" action="{{ urlGet('rolePermissionAdmin', {}, {}) }}">
+            {% if rolePermissionMatrix is empty %}
+                <p>Es sind keine Rollen definiert.</p>
+            {% else %}
+                <table class="table table--striped">
+                    <thead>
+                        <tr>
+                            <th>Rollenname</th>
+                            <th>Beschreibung</th>
+                            <th>Berechtigungen</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for role in rolePermissionMatrix %}
+                        <tr>
+                            <td>
+                                <input type="text"
+                                       name="roles[{{ role.id }}][name]"
+                                       value="{{ role.name }}"
+                                       class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text"
+                                       name="roles[{{ role.id }}][description]"
+                                       value="{{ role.description }}"
+                                       class="form-control" />
+                            </td>
+                            <td>
+                                {% if permissions is not empty %}
+                                    <div class="roles-permissions">
+                                        {% for permission in permissions %}
+                                            <label class="checkbox">
+                                                <input type="checkbox"
+                                                       name="roles[{{ role.id }}][permissions][]"
+                                                       value="{{ permission.id }}"
+                                                       {% if permission.name in role.permissions %}checked="checked"{% endif %} />
+                                                <code>{{ permission.name }}</code>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <em>Keine Berechtigungen definiert.</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="delete[]" value="{{ role.id }}" />
+                                    Rolle löschen
+                                </label>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <h2>Neue Rolle anlegen</h2>
+            <table class="table table--striped">
+                <thead>
+                    <tr>
+                        <th>Rollenname</th>
+                        <th>Beschreibung</th>
+                        <th>Berechtigungen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text"
+                                   name="newRole[name]"
+                                   value=""
+                                   class="form-control"
+                                   placeholder="neuer Rollenname" />
+                        </td>
+                        <td>
+                            <input type="text"
+                                   name="newRole[description]"
+                                   value=""
+                                   class="form-control"
+                                   placeholder="Beschreibung (optional)" />
+                        </td>
+                        <td>
+                            {% if permissions is not empty %}
+                                <div class="roles-permissions">
+                                    {% for permission in permissions %}
+                                        <label class="checkbox">
+                                            <input type="checkbox"
+                                                   name="newRole[permissions][]"
+                                                   value="{{ permission.id }}" />
+                                            <code>{{ permission.name }}</code>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <em>Keine Berechtigungen definiert.</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-actions">
+                <button type="submit" class="button button--primary">
+                    Rollen &amp; Berechtigungen speichern
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+

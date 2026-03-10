@@ -25,7 +25,7 @@ class ProcessDeleteQuick extends ProcessDelete
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('basic');
+        $workstation = (new Helper\User($request, 2))->checkRights('appointment');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
 

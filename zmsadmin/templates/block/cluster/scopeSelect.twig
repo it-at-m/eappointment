@@ -19,7 +19,7 @@
     {% else %}
         {% set scopeOptions = [{ "value": scope.id, "name": "%s %s"|format(scope.contact.name, scope.shortName), "selected": "selected" }] %}
     {% endif %}
-    {#% if workstation.useraccount.rights.superuser == "1" and selectedProcess %}
+    {#% if workstation.useraccount.permissions.superuser and selectedProcess %}
          {% set scopeOptions = [{ "value": selectedProcess.scope.id, "name": "%s %s"|format(selectedProcess.scope.contact.name, selectedProcess.scope.shortName), "selected": "selected" }] %}
     {% endif %#}
 

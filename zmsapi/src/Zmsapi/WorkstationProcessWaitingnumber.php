@@ -28,7 +28,7 @@ class WorkstationProcessWaitingnumber extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);

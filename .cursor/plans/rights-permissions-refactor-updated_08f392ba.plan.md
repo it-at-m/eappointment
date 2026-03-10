@@ -4,211 +4,211 @@ overview: Refactor ZMS from the legacy numeric rights level model (`Berechtigung
 todos:
   - id: model-permission-list
     content: 1.1 - Consolidate and freeze the atomic permission list from migrations and tickets
-    status: pending
+    status: completed
   - id: model-role-bundles
     content: 1.1 - Consolidate and freeze the role-to-permission bundles from migrations and tickets
-    status: pending
+    status: completed
   - id: model-legacy-mapping-table
     content: 1.2 - Write explicit mapping table from legacy numeric Berechtigung levels and rights names to roles/permissions
-    status: pending
+    status: completed
   - id: model-special-cases
     content: 1.2 - Document handling of special legacy rights like audit and any non-hierarchical flags
-    status: pending
+    status: completed
   - id: inventory-backend-helpers
     content: 2.1 - Inventory usages of checkRights, hasRights, testRights, and isSuperUser in helpers, entities, and services
-    status: pending
+    status: completed
   - id: inventory-db-schema
     content: 2.2 - Inventory DB schema and migrations for permission, role, role_permission, user_role, and Berechtigung usage
-    status: pending
+    status: completed
   - id: inventory-useraccount-query
     content: 2.2 - Inventory all usages of useraccount.Berechtigung and rights__* computed fields in Useraccount queries
-    status: pending
+    status: completed
   - id: inventory-controllers-statistics-audit
     content: 2.3 - List all controllers/endpoints for statistics and audit that rely on legacy rights
-    status: pending
+    status: completed
   - id: inventory-controllers-org-scope
     content: 2.3 - List all controllers/endpoints for organisation, department, scope, and availability that use legacy rights
-    status: pending
+    status: completed
   - id: inventory-controllers-config-mail-dayoff
     content: 2.3 - List all controllers/endpoints for config, mail, dayoff, source, and ticketprinter that use legacy rights
-    status: pending
+    status: completed
   - id: inventory-controllers-appointments-queues
     content: 2.3 - List all controllers/endpoints for appointments, counters, queues, emergency, and search that use legacy rights
-    status: pending
+    status: completed
   - id: inventory-controllers-user-misc
     content: 2.3 - List all controllers/endpoints for useraccount, owner, organisation tree, workstation, and misc that use legacy rights
-    status: pending
+    status: completed
   - id: inventory-twig-navigation
     content: 2.4 - Inventory Twig templates for navigation/global layout using workstation.useraccount.rights or rights.*
-    status: pending
+    status: completed
   - id: inventory-twig-feature-templates
     content: 2.4 - Inventory feature-specific Twig templates (owner tree, scope forms, queues, statistics, useraccount UI) using legacy rights
-    status: pending
+    status: completed
   - id: domain-useraccount-defaults
     content: 3.1 - Update Useraccount getDefaults to expose both rights and permissions populated from user_role mappings
-    status: pending
+    status: completed
   - id: domain-useraccount-schema
     content: 3.1 - Extend zmsentities/schema/useraccount.json to include the new permissions object mirroring the entity structure
-    status: pending
+    status: completed
   - id: domain-useraccount-accessors
     content: 3.1 - Implement hasPermissions and hasAnyPermission convenience accessors on Useraccount
-    status: pending
+    status: completed
   - id: domain-superuser-compat
     content: 3.1 - Ensure isSuperUser supports both legacy rights.superuser and permissions.superuser and that superusers receive all permissions flags set to true
-    status: pending
+    status: completed
   - id: domain-permission-query-classes
     content: 3.2 - Implement Permission, Role, and UserRole query classes to load roles and expand to permissions
-    status: pending
+    status: completed
   - id: domain-useraccount-mapping-read
     content: 3.2 - Ensure Useraccount entity mapping derives rights from Berechtigung and permissions from new tables on read
-    status: pending
+    status: completed
   - id: domain-useraccount-mapping-write
     content: 3.2 - Ensure Useraccount reverse mapping writes user_role and keeps Berechtigung consistent using mapping rules
-    status: pending
+    status: completed
   - id: domain-unified-hasrights
     content: 3.3 - Update Useraccount::hasRights to understand both legacy rights names and new permission names
-    status: pending
+    status: completed
   - id: domain-new-permission-helper
     content: 3.3 - Optionally introduce dedicated checkPermissions helper wrapping hasPermissions
-    status: pending
+    status: completed
   - id: controllers-pattern-doc
     content: 4.1 - Document the standard migration pattern for replacing checkRights(oldRight) with permission-based checks or login guards
-    status: pending
+    status: completed
   - id: controllers-1172-statistics
     content: 4.2 - Refactor statistics controllers in zmsstatistic (Warehouse* etc.) per ticket 1172 to use the statistic permission
-    status: pending
+    status: completed
   - id: controllers-1172-audit-logs
     content: 4.3 - Refactor audit/log controllers in zmsadmin (ProcessLog etc.) per ticket 1172 to use the logs permission instead of audit
-    status: pending
+    status: completed
   - id: controllers-1294-org-scope
     content: 4.3 - Refactor organisation, department, scope, availability, and overall calendar controllers per ticket 1294
-    status: pending
+    status: completed
   - id: controllers-1295-config-mail-dayoff
     content: 4.4 - Refactor config, dayoff, mail, notification, source, and ticketprinter controllers per ticket 1295
-    status: pending
+    status: completed
   - id: controllers-1296-appointments-queues
     content: 4.5 - Refactor appointments, counters, queues, emergency, search, and workstation controllers per ticket 1296
-    status: pending
+    status: completed
   - id: controllers-user-owner-tree
     content: 4.6 - Refactor remaining useraccount, owner, and organisation tree controllers still using Berechtigung or legacy rights
-    status: pending
+    status: completed
   - id: controllers-berechtigung-range-cases
     content: 4.6 - Replace any Berechtigung range based authority checks with explicit roles/permissions
-    status: pending
+    status: completed
   - id: controllers-tests-statistics
     content: 4.2 - Add or update tests for statistics controllers in zmsstatistic to validate that reporting_viewer has access and audit_viewer does not
-    status: pending
+    status: completed
   - id: controllers-tests-audit-logs
     content: 4.3 - Add or update tests for audit/log controllers in zmsadmin (customer search logs) to validate that audit_viewer has access and reporting_viewer does not
-    status: pending
+    status: completed
   - id: controllers-tests-org-scope
     content: 4.3 - Add or update tests for organisation, scope, availability, and overall calendar controllers to validate role-based access
-    status: pending
+    status: completed
   - id: controllers-tests-config-mail-dayoff
     content: 4.4 - Add or update tests for config, mail, dayoff, and ticketprinter controllers to validate role-based access
-    status: pending
+    status: completed
   - id: controllers-tests-appointments-queues
     content: 4.5 - Add or update tests for appointments, queues, emergency, and search controllers to validate role-based access
-    status: pending
+    status: completed
   - id: twig-workstation-model
     content: 5.1 - Extend workstation model to expose useraccount.permissions and useraccount.roles to Twig alongside legacy rights
-    status: pending
+    status: completed
   - id: twig-navigation-migration
     content: 5.2 - Refactor navigation templates to use permissions/roles instead of rights.*, and verify menu visibility per role
-    status: pending
+    status: completed
   - id: twig-feature-templates-migration
     content: 5.3 - Refactor feature-specific templates (owner tree, scope/cluster, availability, useraccount, statistics, queues) to use permissions
-    status: pending
+    status: completed
   - id: twig-queue-table-mapping
     content: 5.3 - Implement explicit queue table mapping from parked/open/waiting/missed/finished/finished-past to corresponding permissions.*
-    status: pending
+    status: completed
   - id: twig-texts-and-help
     content: 5.4 - Update info/help texts to describe roles and permissions instead of numeric rights
-    status: pending
+    status: completed
   - id: user-ui-form-submission-roles
     content: 6.1 - Change user create/update forms to submit roles instead of rights arrays
-    status: pending
+    status: completed
   - id: user-ui-backend-write-roles
     content: 6.1 - Update backend useraccount controllers to write user_role and derive legacy rights/Berechtigung
-    status: pending
+    status: completed
   - id: user-ui-edit-form-hydration
     content: 6.2 - Hydrate edit forms from user_role to show role selections instead of inferring from Berechtigung
-    status: pending
+    status: completed
   - id: user-ui-role-widgets
     content: 6.2 - Replace legacy rights checkboxes with role-based widgets and labels sourced from the role table
-    status: pending
+    status: completed
   - id: user-ui-role-combination-validation
     content: 6.2 - Implement validation for disallowed or risky role combinations where required
-    status: pending
+    status: completed
   - id: user-ui-role-permission-admin
     content: 7.1 - Implement an admin UI in zmsadmin for managing roles and their permissions that is only visible to and operable by superusers
-    status: pending
+    status: completed
   - id: tests-integration-role-flows
     content: 7.2 - Write or extend integration tests covering end-to-end flows for each key role
-    status: pending
+    status: completed
   - id: tests-unit-useraccount-permissions
     content: 7.2 - Add unit tests for Useraccount hasRights, hasPermissions, hasAnyPermission, and isSuperUser
-    status: pending
+    status: completed
   - id: tests-unit-permission-queries
     content: 7.2 - Add unit tests for Permission, Role, and UserRole query classes
-    status: pending
+    status: completed
   - id: fixtures-update-user-role
     content: 7.3 - Update fixtures and dev/test seeds to populate user_role and role_permission consistently
-    status: pending
+    status: completed
   - id: docs-permissions-model
     content: 7.4 - Write developer/admin documentation for the new permissions/roles model and mapping from legacy rights
-    status: pending
+    status: completed
   - id: docs-legacy-deprecation
     content: 7.4 - Document deprecation timeline and cleanup steps for Berechtigung and legacy rights
-    status: pending
+    status: completed
   - id: legacy-migration-drop-berechtigung
     content: 8.1 - Implement migration to drop Berechtigung column and related indexes once unused
-    status: pending
+    status: completed
   - id: legacy-entity-cleanup
     content: 8.2 - Remove legacy rights fields and numeric-level logic from Useraccount and related entities
-    status: pending
+    status: completed
   - id: legacy-query-cleanup
     content: 8.2 - Remove rights_* fields and Berechtigung-based filters from Useraccount queries and related code
-    status: pending
+    status: completed
   - id: legacy-schema-cleanup
     content: 8.2 - Remove legacy rights names and structures from zmsentities/schema/useraccount.json so it only describes atomic permissions (and roles if desired)
-    status: pending
+    status: completed
   - id: legacy-rights-manager-removal
     content: 8.3 - Remove RightsLevelManager helper and all usages
-    status: pending
+    status: completed
   - id: legacy-feature-flags-cleanup
     content: 8.3 - Remove or simplify any feature flags that only exist for old rights compatibility
-    status: pending
+    status: completed
   - id: legacy-template-cleanup
     content: 8.4 - Remove any remaining template usages of legacy rights structures
-    status: pending
+    status: completed
   - id: phpunit-inventory-legacy-tests
     content: 9.1 - Inventory PHPUnit tests that assert behaviour based on Berechtigung or rights.* flags
-    status: pending
+    status: completed
   - id: phpunit-refactor-to-roles-permissions
     content: 9.1 - Refactor identified legacy tests to assert behaviour in terms of roles and permissions
-    status: pending
+    status: completed
   - id: phpunit-remove-obsolete-mapping-tests
     content: 9.1 - Remove or simplify PHPUnit tests that only covered obsolete legacy mapping internals
-    status: pending
+    status: completed
   - id: phpunit-add-edge-case-coverage
     content: 9.2 - Add PHPUnit tests for mixed-role users, superuser overrides, login-only access, and critical deny cases
-    status: pending
+    status: completed
   - id: phpunit-fixture-cleanup
     content: 9.3 - Remove or update fixtures and test data that only exist for numeric rights scenarios
-    status: pending
+    status: completed
   - id: phpunit-final-suite-stabilisation
     content: 9.3 - Stabilise the PHPUnit suite after legacy removal and ensure all tests reflect the new model
-    status: pending
+    status: completed
   - id: ops-run-migrations
     content: 10.1 - Run DB migrations in the zms-web container using vendor/bin/migrate --update and verify schema
-    status: pending
+    status: completed
   - id: ops-clear-cache
     content: 10.2 - Clear application caches (including cache/@) after migrations so new permissions and Twig changes are picked up
-    status: pending
+    status: completed
   - id: ops-post-deploy-smoke-tests
     content: 10.3 - Perform post-deploy smoke checks for key roles (system_admin, agent_queue, reporting_viewer, audit_viewer) on staging/production
-    status: pending
+    status: completed
 isProject: false
 ---
 

@@ -26,7 +26,7 @@ class DayoffUpdateTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
             json_decode($this->readFixture("GetDayoffList.json"))
         );
@@ -40,7 +40,7 @@ class DayoffUpdateTest extends Base
     public function testUnvalidInput()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
@@ -48,13 +48,25 @@ class DayoffUpdateTest extends Base
     public function testDatesInYear()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $this->expectException('\BO\Zmsentities\Exception\DayoffWrongYear');
         $this->expectExceptionCode(404);
         $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
             json_decode($this->readFixture("GetDayoffList.json"))
         );
         $this->render(['year' => self::YEAR - 1], [
+            '__body' => json_encode($dayoffList)
+        ], []);
+    }
+
+    public function testMissingDayoffPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
+            json_decode($this->readFixture("GetDayoffList.json"))
+        );
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render(['year' => self::YEAR], [
             '__body' => json_encode($dayoffList)
         ], []);
     }

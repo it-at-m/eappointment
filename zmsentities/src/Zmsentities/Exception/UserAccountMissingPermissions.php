@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Exception;
 /**
  * example class to generate an exception
  */
-class UserAccountMissingRights extends \Exception
+class UserAccountMissingPermissions extends \Exception
 {
     protected $code = 403;
 }

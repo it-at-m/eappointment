@@ -8,7 +8,7 @@ class NotificationAddTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('sms');
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
         $response = $this->render([], [
             '__body' => $this->readFixture('GetNotification.json')
         ], []);
@@ -19,14 +19,14 @@ class NotificationAddTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('sms');
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testUnvalidInput()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('sms');
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -35,6 +35,15 @@ class NotificationAddTest extends Base
                 "createIP": "145.15.3.10",
                 "createTimestamp": 1447931596000
             }'
+        ], []);
+    }
+
+    public function testMissingAppointmentPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [
+            '__body' => $this->readFixture('GetNotification.json')
         ], []);
     }
 }

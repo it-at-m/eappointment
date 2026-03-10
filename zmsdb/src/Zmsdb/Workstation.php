@@ -32,11 +32,21 @@ class Workstation extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
     {
         if (0 < $resolveReferences) {
-            $workstation->useraccount = (new Useraccount())
-                ->readResolvedReferences(
-                    new UseraccountEntity($workstation->useraccount),
-                    $resolveReferences - 1
-                );
+            // Rehydrate the embedded useraccount via the dedicated Useraccount repository
+            // so that roles and permissions are populated from user_role / role_permission.
+            $loginName = null;
+            if (is_array($workstation->useraccount) && isset($workstation->useraccount['id'])) {
+                $loginName = $workstation->useraccount['id'];
+            } elseif (is_object($workstation->useraccount) && isset($workstation->useraccount->id)) {
+                $loginName = $workstation->useraccount->id;
+            }
+
+            if (null !== $loginName) {
+                // Bypass any stale useraccount cache so that permissions, roles,
+                // and departments (especially for superusers) are always fresh.
+                $workstation->useraccount = (new Useraccount())
+                    ->readEntity($loginName, $resolveReferences - 1, true);
+            }
             if ($workstation->scope['id']) {
                 $workstation->scope = (new Scope())->readResolvedReferences(
                     new ScopeEntity($workstation->scope),

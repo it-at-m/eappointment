@@ -26,7 +26,7 @@ class ScopeGet extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         $hasGQL = Validator::param('gql')->isString()->getValue();
-        $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('basic')->getValue();
+        $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('scope')->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope())->readEntity($args['id'], $resolveReferences);
         if (! $scope) {

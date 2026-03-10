@@ -27,7 +27,7 @@ class RoutingTest extends Base
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        $exception = new \BO\Zmsentities\Exception\UserAccountMissingPermissions();
         $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
         $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
@@ -85,7 +85,7 @@ class RoutingTest extends Base
 
     public function testErrorHandlerIgnoreException()
     {
-        $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        $exception = new \BO\Zmsentities\Exception\UserAccountMissingPermissions();
         $this->setApiCalls(
             [
                 [

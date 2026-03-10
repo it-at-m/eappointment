@@ -1,4 +1,5 @@
 {% set textfieldDisplayLength = 50 %}
+{% set permissions = workstation.useraccount.permissions %}
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless queue-table'} %}
 	{% use "block/calendar/navigation.twig" %}
 	{% use "block/workstation/scopeSwitch.twig" %}
@@ -66,6 +67,7 @@
 	{% endblock %}
 
 	{% block board_body %}
+		{% if permissions.parkedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -186,7 +188,9 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+		{% endif %}
 
+		{% if permissions.openqueue %}
 		<div class="table-responsive-wrapper">
 			<h2 class="accordion {{ showCalledList ? 'active' : '' }}" id="called-appointments">
 				<span class="color-green">
@@ -260,7 +264,9 @@
 					{% endif %}
 				</div>
 		</div>
+		{% endif %}
 
+		{% if permissions.waitingqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-blue">
@@ -464,6 +470,10 @@
 		{% else %}
 			Keine Einträge gefunden.
 		{% endif %}
+		</div>
+		{% endif %}
+
+		{% if permissions.missedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-red">
@@ -579,7 +589,9 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+		{% endif %}
 
+		{% if permissions.finishedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2 id="finished-appointments-control">
 				<span class="color-green">
@@ -675,6 +687,7 @@ content.addClass('hidden')
 				}
 			</style>
 		</div>
+		{% endif %}
 		<div class="form-actions">
 			<div class="right">
 				<button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload">

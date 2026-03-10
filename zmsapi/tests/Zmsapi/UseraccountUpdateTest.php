@@ -82,7 +82,7 @@ class UseraccountUpdateTest extends Base
     public function testMissingRights()
     {
         $this->setWorkstation();
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render(['loginname' => 'testadmin'], [], []);
     }
@@ -173,7 +173,7 @@ class UseraccountUpdateTest extends Base
 
     public function testMissingAssignedRights()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setDepartment(74);

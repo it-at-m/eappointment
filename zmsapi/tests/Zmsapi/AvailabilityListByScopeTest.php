@@ -45,7 +45,7 @@ class AvailabilityListByScopeTest extends Base
 
     public function testMissingAccessRights()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);

@@ -35,21 +35,21 @@
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
                              
-                            {% set rights = useraccount.rights|default({}) %} 
-                            {% set roles = ['Sachbearbeitung'] %} 
-                            {% if rights.audit|default(false) %}
+                            {% set permissions = useraccount.permissions|default({}) %}
+                            {% set roles = [] %}
+                            {% if 'agent_queue' in (useraccount.roles|default([])) or 'agent_basic' in (useraccount.roles|default([])) %}
+                                {% set roles = roles|merge(['Sachbearbeitung']) %}
+                            {% endif %}
+                            {% if 'audit_viewer' in (useraccount.roles|default([])) %}
                                 {% set roles = roles|merge(['Innenrevision']) %}
                             {% endif %}
-
-                            {% if rights.scope|default(false) %}
-                                {% set roles = roles|merge(['Terminadministration']) %}  
+                            {% if 'appointment_admin' in (useraccount.roles|default([])) %}
+                                {% set roles = roles|merge(['Terminadministration']) %}
                             {% endif %}
-
-                            {% if rights.cluster|default(false) %}
+                            {% if 'user_admin' in (useraccount.roles|default([])) %}
                                 {% set roles = roles|merge(['Fachliche Administration']) %}
                             {% endif %}
-
-                            {% if rights.superuser|default(false) %}
+                            {% if 'system_admin' in (useraccount.roles|default([])) %}
                                 {% set roles = roles|merge(['Technische Administration']) %}
                             {% endif %}
                             <td>{{ roles|join('<br>')|raw  }} </td>

@@ -66,18 +66,6 @@ class Useraccount extends Base implements MappingInterface
             'id' => 'useraccount.Name',
             'password' => 'useraccount.Passworthash',
             'lastLogin' => 'useraccount.lastUpdate',
-            'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
-            'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
-            'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
-            'rights__cluster' => self::expression('`useraccount`.`Berechtigung` >= 40'),
-            'rights__useraccount' => self::expression('`useraccount`.`Berechtigung` >= 40'),
-            'rights__scope' => self::expression('`useraccount`.`Berechtigung` >= 30'),
-            'rights__departmentStats' => self::expression('`useraccount`.`Berechtigung` >= 25'),
-            'rights__availability' => self::expression('`useraccount`.`Berechtigung` >= 20'),
-            'rights__ticketprinter' => self::expression('`useraccount`.`Berechtigung` >= 15'),
-            'rights__sms' => self::expression('`useraccount`.`Berechtigung` >= 10'),
-            'rights__audit' => self::expression('`useraccount`.`Berechtigung` = 5 OR `useraccount`.`Berechtigung` = 90'),
-            'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
         ];
     }
 
@@ -106,12 +94,6 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionRoleLevel($roleLevel)
-    {
-        $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
-        return $this;
-    }
-
     public function addConditionSearch($queryString, $orWhere = false)
     {
         $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
@@ -132,7 +114,6 @@ class Useraccount extends Base implements MappingInterface
         $data = array();
         $data['Name'] = $entity->id;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
-        $data['Berechtigung'] = $entity->getRightsLevel();
         $data['BehoerdenID'] = 0;
         if (!$entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
             $data['BehoerdenID'] = $entity->departments->getFirst()->id;

@@ -40,7 +40,7 @@ class DepartmentAddScopeTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render(['id' => 72], [
             '__body' => '{

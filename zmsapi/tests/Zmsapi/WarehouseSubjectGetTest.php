@@ -12,6 +12,7 @@ class WarehouseSubjectGetTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(['subject' => 'waitingscope'], [], []);
         $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertStringContainsString('141,"2015-01-02"', (string)$response->getBody());
@@ -22,6 +23,7 @@ class WarehouseSubjectGetTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 140);
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(['subject' => 'waitingscope'], [], []);
         $this->assertStringNotContainsString('"141","2015-01-02"', (string)$response->getBody());
     }
@@ -30,6 +32,8 @@ class WarehouseSubjectGetTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope', 'department');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $workstation->getUseraccount()->permissions['department'] = true;
         $this->setDepartment(74);
         $response = $this->render(['subject' => 'waitingdepartment'], [], []);
         $this->assertStringContainsString('"data":[[74', (string)$response->getBody());
@@ -39,6 +43,8 @@ class WarehouseSubjectGetTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope', 'department');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $workstation->getUseraccount()->permissions['department'] = true;
         $this->setDepartment(75);
         $response = $this->render(['subject' => 'waitingdepartment'], [], []);
         $this->assertStringNotContainsString('"data":[["74"', (string)$response->getBody());
@@ -48,6 +54,9 @@ class WarehouseSubjectGetTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope', 'department');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $workstation->getUseraccount()->permissions['department'] = true;
+        $workstation->getUseraccount()->permissions['organisation'] = true;
         $response = $this->render(['subject' => 'waitingorganisation'], [], []);
         $this->assertStringContainsString('"data":[[71', (string)$response->getBody());
     }
@@ -57,6 +66,9 @@ class WarehouseSubjectGetTest extends Base
         //there is no statistic entry for scope 143, department 75, organisation 72, so is not available
         $workstation = $this->setWorkstation(137, 'berlinonline', 143); //organisation 72
         $workstation->getUseraccount()->setRights('scope', 'department', 'organisation');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $workstation->getUseraccount()->permissions['department'] = true;
+        $workstation->getUseraccount()->permissions['organisation'] = true;
         $response = $this->render(['subject' => 'waitingorganisation'], [], []);
         $this->assertStringNotContainsString('"data":[["72"', (string)$response->getBody());
     }
@@ -64,7 +76,7 @@ class WarehouseSubjectGetTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation(137, 'testuser', 141);
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render([], [], []);
     }
 
@@ -73,6 +85,7 @@ class WarehouseSubjectGetTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation(138, 'berlinonline', 140);
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(['subject' => 'unittest'], [], []);
     }
 }

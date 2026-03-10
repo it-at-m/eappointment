@@ -166,6 +166,162 @@ class Useraccount extends Base
         return array_values(array_unique($ids));
     }
 
+    protected function readPermissionNamesForUserId(int $userId): array
+    {
+        $sql = '
+            SELECT DISTINCT p.name
+            FROM user_role ur
+            INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+            INNER JOIN permission p ON p.id = rp.permission_id
+            WHERE ur.user_id = :userId
+        ';
+
+        $rows = $this->getReader()->fetchAll($sql, ['userId' => $userId]);
+        if (!is_array($rows) || empty($rows)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_column($rows, 'name')));
+    }
+
+    protected function readRoleNamesForUserId(int $userId): array
+    {
+        $sql = '
+            SELECT DISTINCT r.name
+            FROM user_role ur
+            INNER JOIN role r ON r.id = ur.role_id
+            WHERE ur.user_id = :userId
+        ';
+
+        $rows = $this->getReader()->fetchAll($sql, ['userId' => $userId]);
+        if (!is_array($rows) || empty($rows)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_column($rows, 'name')));
+    }
+
+    protected function hydratePermissionsForUseraccount(Entity $useraccount): Entity
+    {
+        if (!$useraccount->hasId()) {
+            return $useraccount;
+        }
+
+        $userId = $this->readEntityIdByLoginName($useraccount->id);
+        $permissionNames = $this->readPermissionNamesForUserId((int) $userId);
+
+        if (empty($permissionNames)) {
+            return $useraccount;
+        }
+
+        foreach ($permissionNames as $permission) {
+            if (isset($useraccount->permissions) && array_key_exists($permission, $useraccount->permissions)) {
+                $useraccount->permissions[$permission] = true;
+            }
+        }
+
+        // Superusers implicitly have all permissions; ensure the boolean map reflects that
+        if ($useraccount->isSuperUser() && isset($useraccount->permissions) && is_array($useraccount->permissions)) {
+            foreach (array_keys($useraccount->permissions) as $permissionKey) {
+                $useraccount->permissions[$permissionKey] = true;
+            }
+        }
+
+        return $useraccount;
+    }
+
+    protected function hydrateRolesForUseraccount(Entity $useraccount): Entity
+    {
+        if (!$useraccount->hasId()) {
+            return $useraccount;
+        }
+
+        $userId = $this->readEntityIdByLoginName($useraccount->id);
+        $roleNames = $this->readRoleNamesForUserId((int) $userId);
+
+        if (empty($roleNames)) {
+            return $useraccount;
+        }
+
+        $useraccount->roles = $roleNames;
+
+        return $useraccount;
+    }
+
+    protected function hydratePermissionsForCollection(Collection $useraccounts): Collection
+    {
+        if (count($useraccounts) === 0) {
+            return $useraccounts;
+        }
+
+        $names = [];
+        foreach ($useraccounts as $entity) {
+            if (isset($entity->id)) {
+                $names[] = $entity->id;
+            }
+        }
+        $names = array_values(array_unique(array_filter($names)));
+
+        if (empty($names)) {
+            return $useraccounts;
+        }
+
+        $ids = [];
+        foreach ($names as $loginName) {
+            $ids[$loginName] = $this->readEntityIdByLoginName($loginName);
+        }
+
+        if (empty($ids)) {
+            return $useraccounts;
+        }
+
+        $allPermissions = [];
+        $sql = '
+            SELECT ur.user_id, p.name AS permission
+            FROM user_role ur
+            INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+            INNER JOIN permission p ON p.id = rp.permission_id
+            WHERE ur.user_id IN (:userIds)
+        ';
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = str_replace(':userIds', $placeholders, $sql);
+        $rows = $this->getReader()->fetchAll($sql, array_values($ids));
+
+        foreach ($rows as $row) {
+            $userId = $row['user_id'];
+            $permission = $row['permission'];
+            if (!isset($allPermissions[$userId])) {
+                $allPermissions[$userId] = [];
+            }
+            $allPermissions[$userId][] = $permission;
+        }
+
+        foreach ($useraccounts as $entity) {
+            $loginName = $entity->id ?? null;
+            if ($loginName === null || !isset($ids[$loginName])) {
+                continue;
+            }
+            $userId = $ids[$loginName];
+            if (!isset($allPermissions[$userId])) {
+                continue;
+            }
+            foreach (array_unique($allPermissions[$userId]) as $permission) {
+                if (isset($entity->permissions) && array_key_exists($permission, $entity->permissions)) {
+                    $entity->permissions[$permission] = true;
+                }
+            }
+
+            // Superusers implicitly have all permissions; ensure the boolean map reflects that
+            if ($entity->isSuperUser() && isset($entity->permissions) && is_array($entity->permissions)) {
+                foreach (array_keys($entity->permissions) as $permissionKey) {
+                    $entity->permissions[$permissionKey] = true;
+                }
+            }
+        }
+
+        return $useraccounts;
+    }
+
     protected function collectDepartmentIdsForInvalidation($useraccount, array $previousDepartmentIds = []): array
     {
         $currentFromEntity = $this->extractDepartmentIdsFromEntity($useraccount);
@@ -272,6 +428,10 @@ class Useraccount extends Base
                 return null;
             }
 
+            // First hydrate permissions and roles so isSuperUser() and permission-based
+            // logic are available when resolving references such as departments.
+            $useraccount = $this->hydratePermissionsForUseraccount($useraccount);
+            $useraccount = $this->hydrateRolesForUseraccount($useraccount);
             $useraccount = $this->readResolvedReferences($useraccount, $resolveReferences);
 
             if (App::$cache) {
@@ -350,6 +510,8 @@ class Useraccount extends Base
                 }
             }
             $result = $collection;
+
+            $result = $this->hydratePermissionsForCollection($result);
 
             if (App::$cache) {
                 App::$cache->set($cacheKey, $result);
@@ -547,7 +709,16 @@ class Useraccount extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($hashedAuthKey);
         $entity = ($hashedAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
-        return $this->readResolvedReferences($entity, $resolveReferences);
+
+        if ($entity->hasId()) {
+            // Ensure permissions and roles are hydrated so that isSuperUser() and
+            // permission-based guards work correctly for X-AuthKey authenticated users.
+            $entity = $this->hydratePermissionsForUseraccount($entity);
+            $entity = $this->hydrateRolesForUseraccount($entity);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+        }
+
+        return $entity;
     }
 
     public function readEntityByUserId($userId, $resolveReferences = 0)
@@ -642,6 +813,7 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
+        $this->updateUserRoles($entity);
 
         $this->removeCache($entity);
 
@@ -657,6 +829,7 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
+        $this->updateUserRoles($entity);
 
         $this->removeCache($entity, $previousDepartmentIds, $loginName);
 
@@ -697,6 +870,77 @@ class Useraccount extends Base
                 );
             }
         }
+    }
+
+    protected function updateUserRoles(\BO\Zmsentities\Useraccount $entity): void
+    {
+        $loginName = $entity->id;
+        $userId = $this->readEntityIdByLoginName($loginName);
+
+        // Clear existing role assignments for this user
+        $this->perform('DELETE FROM user_role WHERE user_id = ?', [$userId]);
+
+        // Prefer explicit roles on the entity when present (new model)
+        if (isset($entity->roles) && is_array($entity->roles) && !empty($entity->roles)) {
+            $sql = '
+                INSERT IGNORE INTO user_role (user_id, role_id)
+                SELECT :userId, r.id
+                FROM role r
+                WHERE r.name = :roleName
+            ';
+
+            foreach ($entity->roles as $roleName) {
+                if (!is_string($roleName) || $roleName === '') {
+                    continue;
+                }
+                $this->perform($sql, [
+                    'userId' => $userId,
+                    'roleName' => $roleName,
+                ]);
+            }
+
+            return;
+        }
+
+        // Fallback for legacy flows: derive a single canonical role from Berechtigung
+        $berechtigung = $entity->getRightsLevel();
+        $roleName = null;
+
+        switch ($berechtigung) {
+            case 90:
+                $roleName = 'system_admin';
+                break;
+            case 40:
+                $roleName = 'user_admin';
+                break;
+            case 30:
+                $roleName = 'appointment_admin';
+                break;
+            case 5:
+                $roleName = 'audit_viewer';
+                break;
+            case 0:
+                $roleName = 'agent_queue';
+                break;
+            default:
+                $roleName = null;
+        }
+
+        if (null === $roleName) {
+            return;
+        }
+
+        $sql = '
+            INSERT IGNORE INTO user_role (user_id, role_id)
+            SELECT :userId, r.id
+            FROM role r
+            WHERE r.name = :roleName
+        ';
+
+        $this->perform($sql, [
+            'userId' => $userId,
+            'roleName' => $roleName,
+        ]);
     }
 
     protected function readEntityIdByLoginName($loginName)
@@ -789,6 +1033,8 @@ class Useraccount extends Base
                 }
             }
         }
+        $collection = $this->hydratePermissionsForCollection($collection);
+
         return $collection;
     }
 
@@ -830,6 +1076,8 @@ class Useraccount extends Base
                 }
             }
         }
+        $collection = $this->hydratePermissionsForCollection($collection);
+
         return $collection;
     }
 
@@ -884,59 +1132,15 @@ class Useraccount extends Base
 
     public function readListRole($roleLevel, $resolveReferences = 0, $workstation = null)
     {
-        $version = $this->getUseraccountCacheVersion();
-        $workstationKey = '';
-        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
-        }
-        $cacheKey = "useraccountReadByRole-v{$version}-" . ($roleLevel ?? 'null') . "-$resolveReferences$workstationKey";
-        $result = null;
-
-        if (App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
-            if ($result && App::$log) {
-                App::$log->info('Useraccount role list cache hit', [
-                    'cache_key' => $cacheKey,
-                    'role_level' => $roleLevel,
-                    'resolveReferences' => $resolveReferences,
-                    'count' => $result->count()
-                ]);
-            }
+        // Legacy numeric role levels are no longer supported; this method is kept
+        // only for backwards compatibility of the public API and now delegates
+        // to a role-based implementation using the permissions / roles model.
+        $roleName = $this->mapLegacyRoleLevelToRoleName($roleLevel);
+        if (null === $roleName) {
+            return new Collection();
         }
 
-        if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
-            ->addOrderByName();
-
-            if (isset($roleLevel)) {
-                $query->addConditionRoleLevel($roleLevel);
-            }
-
-            // Apply workstation access filtering if provided
-            if (!$this->applyWorkstationAccessFilter($query, $workstation)) {
-                return new Collection();
-            }
-
-            $statement = $this->fetchStatement($query);
-            $result = $this->readListStatement($statement, $resolveReferences);
-
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
-                $this->registerCacheKeyForDepartments([self::CACHE_INDEX_GLOBAL], $cacheKey);
-                if (App::$log) {
-                    App::$log->info('Useraccount role list cache set', [
-                        'cache_key' => $cacheKey,
-                        'role_level' => $roleLevel,
-                        'resolveReferences' => $resolveReferences,
-                        'count' => $result->count()
-                    ]);
-                }
-            }
-        }
-
-        return $result;
+        return $this->readListByRoleNames([$roleName], $resolveReferences, $workstation);
     }
 
     /**
@@ -944,63 +1148,120 @@ class Useraccount extends Base
      */
     public function readListByRoleAndDepartmentIds($roleLevel, array $departmentIds, $resolveReferences = 0, $disableCache = false, $workstation = null)
     {
-        sort($departmentIds);
-        $version = $this->getUseraccountCacheVersion();
-        $workstationKey = '';
-        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
-        }
-        $cacheKey = "useraccountReadByRoleAndDepartmentIds-v{$version}-$roleLevel-" . implode(',', $departmentIds) . "-$resolveReferences$workstationKey";
-        $result = null;
-
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
-            if ($result && App::$log) {
-                App::$log->info('Useraccount role and department list cache hit', [
-                    'cache_key' => $cacheKey,
-                    'role_level' => $roleLevel,
-                    'department_ids' => $departmentIds,
-                    'resolveReferences' => $resolveReferences,
-                    'count' => $result->count()
-                ]);
-            }
+        $roleName = $this->mapLegacyRoleLevelToRoleName($roleLevel);
+        if (null === $roleName || empty($departmentIds)) {
+            return new Collection();
         }
 
-        if (empty($result)) {
-            $query = new Query\Useraccount(Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-              ->addEntityMapping()
-              ->addOrderByName();
+        return $this->readListByRoleNamesAndDepartmentIds([$roleName], $departmentIds, $resolveReferences, $disableCache, $workstation);
+    }
 
-            if (isset($roleLevel) && !empty($departmentIds)) {
-                $query->addConditionRoleLevel($roleLevel);
-                $query->addConditionDepartmentIds($departmentIds);
-            }
+    /**
+     * Map legacy numeric Berechtigung levels to canonical role names.
+     * Kept for backwards compatible public APIs that still receive numeric levels.
+     */
+    private function mapLegacyRoleLevelToRoleName($roleLevel): ?string
+    {
+        switch ((int) $roleLevel) {
+            case 90:
+                return 'system_admin';
+            case 40:
+                return 'user_admin';
+            case 30:
+                return 'appointment_admin';
+            case 5:
+                return 'audit_viewer';
+            case 0:
+                return 'agent_queue';
+            default:
+                return null;
+        }
+    }
 
-            // Exclude superusers if workstation user is not superuser
-            if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-                $query->addConditionExcludeSuperusers();
-            }
+    /**
+     * Read useraccounts that have at least one of the given role names.
+     */
+    private function readListByRoleNames(array $roleNames, int $resolveReferences = 0, $workstation = null): Collection
+    {
+        $roleNames = array_values(array_unique(array_filter($roleNames, 'strlen')));
+        $collection = new Collection();
 
-            $statement = $this->fetchStatement($query);
-            $result = $this->readListStatement($statement, $resolveReferences);
+        if (empty($roleNames)) {
+            return $collection;
+        }
 
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
-                $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
-                if (App::$log) {
-                    App::$log->info('Useraccount role and department list cache set', [
-                        'cache_key' => $cacheKey,
-                        'role_level' => $roleLevel,
-                        'department_ids' => $departmentIds,
-                        'resolveReferences' => $resolveReferences,
-                        'count' => $result->count()
-                    ]);
-                }
+        $reader = $this->getReader();
+        $placeholders = implode(',', array_fill(0, count($roleNames), '?'));
+        $sql = '
+            SELECT DISTINCT useraccount.Name
+            FROM ' . Query\Useraccount::TABLE . ' useraccount
+            INNER JOIN user_role ur ON ur.user_id = useraccount.NutzerID
+            INNER JOIN role r ON r.id = ur.role_id
+            WHERE r.name IN (' . $placeholders . ')
+        ';
+
+        $rows = $reader->fetchAll($sql, $roleNames);
+        if (!is_array($rows) || empty($rows)) {
+            return $collection;
+        }
+
+        foreach ($rows as $row) {
+            $entity = $this->readEntity($row['Name'], $resolveReferences, true);
+            if ($entity instanceof Entity && $entity->hasId()) {
+                $collection->addEntity($entity);
             }
         }
 
-        return $result;
+        return $collection;
+    }
+
+    /**
+     * Read useraccounts that have at least one of the given role names and belong to the given departments.
+     */
+    private function readListByRoleNamesAndDepartmentIds(array $roleNames, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null): Collection
+    {
+        $roleNames = array_values(array_unique(array_filter($roleNames, 'strlen')));
+        $departmentIds = array_values(array_unique(array_filter($departmentIds, function ($id) {
+            return $id !== null && $id !== '';
+        })));
+
+        $collection = new Collection();
+
+        if (empty($roleNames) || empty($departmentIds)) {
+            return $collection;
+        }
+
+        $reader = $this->getReader();
+
+        $rolePlaceholders = implode(',', array_fill(0, count($roleNames), '?'));
+        $departmentPlaceholders = implode(',', array_fill(0, count($departmentIds), '?'));
+
+        $sql = '
+            SELECT DISTINCT useraccount.Name
+            FROM ' . Query\Useraccount::TABLE . ' useraccount
+            INNER JOIN user_role ur ON ur.user_id = useraccount.NutzerID
+            INNER JOIN role r ON r.id = ur.role_id
+            INNER JOIN ' . Query\Useraccount::TABLE_ASSIGNMENT . ' useraccount_department
+                ON useraccount_department.nutzerid = useraccount.NutzerID
+            WHERE r.name IN (' . $rolePlaceholders . ')
+              AND useraccount_department.behoerdenid IN (' . $departmentPlaceholders . ')
+        ';
+
+        $params = array_merge($roleNames, $departmentIds);
+        $rows = $reader->fetchAll($sql, $params);
+
+        if (!is_array($rows) || empty($rows)) {
+            return $collection;
+        }
+
+        foreach ($rows as $row) {
+            $entity = $this->readEntity($row['Name'], $resolveReferences, true);
+            if ($entity instanceof Entity && $entity->hasId()) {
+                $collection->addEntity($entity);
+            }
+        }
+
+        return $collection;
     }
 
     public function removeCache($useraccount, array $previousDepartmentIds = [], ?string $oldLoginName = null)

@@ -5,7 +5,7 @@
         {% if searchUserQuery %}
             {% trans %}Suchergebnisse für {% endtrans %} "{{ searchUserQuery }}"
         {% else %}
-        {% if workstation.useraccount.rights.superuser %}
+        {% if workstation.useraccount.permissions.superuser %}
             Gesamtnutzerliste
         {% else %}
             Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
@@ -46,7 +46,7 @@
                     {% for useraccount in useraccountList %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
-                            {% set rights = useraccount.rights|default({}) %} 
+                            {% set rights = useraccount.permissions|default({}) %}
                             {% set roles = ['Sachbearbeitung'] %} 
                             {% if rights.audit|default(false) %}
                                 {% set roles = roles|merge(['Innenrevision']) %}

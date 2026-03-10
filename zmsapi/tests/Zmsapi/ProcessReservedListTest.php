@@ -10,9 +10,16 @@ class ProcessReservedListTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testMissingAppointmentPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [], []);
     }
 }

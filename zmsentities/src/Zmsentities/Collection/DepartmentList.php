@@ -57,7 +57,7 @@ class DepartmentList extends Base implements JsonUnindexed
         $list = new static();
         foreach ($this as $department) {
             if ($department->hasAccess($useraccount)) {
-                if ($useraccount->rights['organisation']) {
+                if ($useraccount->permissions['organisation']) {
                     return $this;
                 }
                 $list->addEntity($department);

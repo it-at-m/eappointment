@@ -32,18 +32,11 @@ class OrganisationByScope extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $organisation = (new Query())->readByScopeId($scope->id, $resolveReferences);
-
-        if (! $organisation->hasId()) {
+        if (!$organisation->hasId()) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
 
         $message = Response\Message::create($request);
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('basic');
-        } else {
-            $organisation = $organisation->withLessData();
-            $message->meta->reducedData = true;
-        }
         $message->data = $organisation;
 
         $response = Render::withLastModified($response, time(), '0');

@@ -40,7 +40,7 @@ class GraphDefaults
         appointmentsOnly
     }
     useraccount {
-        rights
+        permissions
     }
 }
 EOS;
@@ -82,7 +82,7 @@ EOS;
         appointmentsOnly
     }
     useraccount {
-        rights
+        permissions
     }
 }
 EOS;

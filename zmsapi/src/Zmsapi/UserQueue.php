@@ -24,7 +24,7 @@ class UserQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
+        (new Helper\User($request))->checkRights('waitingqueue');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $statusParameter = Validator::param('status')->isString()->getValue();
         $statuses = empty($statusParameter) ? [] : explode(',', $statusParameter);

@@ -20,6 +20,39 @@
             "ticketprinter": "1",
             "useraccount": "1"
         },
+        "permissions": {
+            "appointment": true,
+            "availability": true,
+            "calldisplay": true,
+            "cherrypick": true,
+            "cluster": true,
+            "config": true,
+            "counter": true,
+            "customersearch": true,
+            "dayoff": true,
+            "department": true,
+            "emergency": true,
+            "finishedqueue": true,
+            "finishedqueuepast": true,
+            "logs": true,
+            "mailtemplates": true,
+            "missedqueue": true,
+            "openqueue": true,
+            "organisation": true,
+            "overviewcalendar": true,
+            "parkedqueue": true,
+            "restrictedscope": true,
+            "scope": true,
+            "source": true,
+            "statistic": true,
+            "ticketprinter": true,
+            "useraccount": true,
+            "waitingqueue": true,
+            "superuser": true
+        },
+        "roles": [
+            "system_admin"
+        ],
         "id": "testadmin",
         "lastLogin": 1459461600
     }

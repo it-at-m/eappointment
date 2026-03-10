@@ -22,7 +22,7 @@ class OrganisationList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
+        (new Helper\User($request))->checkRights('counter');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $organisationList = (new Query())->readList($resolveReferences);

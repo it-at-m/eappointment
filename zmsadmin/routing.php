@@ -337,9 +337,12 @@ use Slim\Routing\RouteCollectorProxy;
 
 /*
  * ---------------------------------------------------------------------------
- * Useraccount
+ * Useraccount / Roles & Permissions
  * -------------------------------------------------------------------------
  */
+\App::$slim->map(['GET','POST'], '/roles/', \BO\Zmsadmin\RolePermissionAdmin::class)
+    ->setName("rolePermissionAdmin");
+
 \App::$slim->get('/users/', \BO\Zmsadmin\UseraccountList::class)
     ->setName("useraccountList");
 

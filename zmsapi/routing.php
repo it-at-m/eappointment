@@ -1540,6 +1540,44 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/roles/":
+ *      get:
+ *          summary: List all roles and their permissions
+ *          x-since: 2.25
+ *          tags:
+ *              - role
+ *          responses:
+ *              200:
+ *                  description: "List of roles with permission bundles"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      id:
+ *                                          type: integer
+ *                                      name:
+ *                                          type: string
+ *                                      description:
+ *                                          type: string
+ *                                      permissions:
+ *                                          type: array
+ *                                          items:
+ *                                              type: string
+ */
+\App::$slim->map(
+    ['GET', 'POST'],
+    '/roles/',
+    '\BO\Zmsapi\Roles'
+)->setName("Roles");
+
+/**
+ *  @swagger
  *  "/role/{level}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role

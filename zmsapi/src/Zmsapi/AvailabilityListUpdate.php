@@ -34,7 +34,7 @@ class AvailabilityListUpdate extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('availability');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         self::validateClientData($input);

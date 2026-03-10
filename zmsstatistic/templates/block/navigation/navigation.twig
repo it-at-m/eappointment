@@ -1,5 +1,5 @@
 {% block navigation %}
-    {% set rights = workstation.useraccount.rights %}
+    {% set permissions = workstation.useraccount.permissions %}
 
     <ul class="nav__list">
     {% if workstation %}
@@ -14,7 +14,7 @@
                     <a title="{% trans %}Wählen Sie hier den Standort für Ihre Statistikabfragen{% endtrans %}" href="{{ urlGet('workstationSelect', {}, {}) }}"{{ menuActive == 'select'? ' aria-current="page"' }}>Standort auswählen</a>
                 </li>
             {% endif %}
-            {% if workstation.scope.id %}
+            {% if workstation.scope.id and permissions.statistic %}
                 <li class="nav__link">
                     <ul class="nav__list">
                         <li class="nav__link{{ menuActive == 'client'? ' active' }}">

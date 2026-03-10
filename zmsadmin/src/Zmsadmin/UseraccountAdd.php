@@ -71,6 +71,19 @@ class UseraccountAdd extends BaseController
 
     protected function writeNewEntity($input)
     {
+        $roles = isset($input['roles']) && is_array($input['roles']) ? $input['roles'] : [];
+
+        // Validate role selection (e.g. required, disallowed combinations)
+        $validationResult = $this->validateRoles($roles);
+        if (is_array($validationResult) && isset($validationResult['data'])) {
+            // Return structured validation error for Twig rendering
+            return $validationResult;
+        }
+        // Normalized roles from validator
+        $roles = $validationResult;
+
+        $input['roles'] = $roles;
+
         $entity = new Entity($input);
         if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
             $entity->id = $entity->id . '@' . $input['oidcProvider'];
@@ -79,5 +92,54 @@ class UseraccountAdd extends BaseController
         return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         });
+    }
+
+    /**
+     * Validate selected roles and normalize the list.
+     *
+     * @param array $roles
+     * @return array Normalized role list on success, or an error-structure array on failure
+     */
+    protected function validateRoles(array $roles)
+    {
+        // Normalize roles (deduplicate, remove empty values)
+        $normalized = [];
+        foreach ($roles as $role) {
+            if (!is_string($role)) {
+                continue;
+            }
+            $role = trim($role);
+            if ('' === $role) {
+                continue;
+            }
+            $normalized[$role] = true;
+        }
+        $normalized = array_keys($normalized);
+
+        $errors = [];
+
+        // Require at least one role
+        if (0 === count($normalized)) {
+            $errors[] = 'Es muss mindestens eine Rolle ausgewählt werden.';
+        }
+
+        // Forbid combining system_admin with any other role to keep semantics clear
+        if (in_array('system_admin', $normalized, true) && count($normalized) > 1) {
+            $errors[] = 'Die Rolle „Technische Administration (system_admin)“ darf nicht mit weiteren Rollen kombiniert werden.';
+        }
+
+        if (!empty($errors)) {
+            return [
+                'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                'include' => true,
+                'data' => [
+                    'roles' => [
+                        'messages' => $errors,
+                    ],
+                ],
+            ];
+        }
+
+        return $normalized;
     }
 }

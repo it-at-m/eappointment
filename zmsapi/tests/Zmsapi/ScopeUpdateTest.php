@@ -60,7 +60,7 @@ class ScopeUpdateTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation();
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);

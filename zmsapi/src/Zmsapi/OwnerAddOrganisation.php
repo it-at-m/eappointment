@@ -25,6 +25,7 @@ class OwnerAddOrganisation extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsdb\Owner())->readEntity($args['id'], 2);
         (new Helper\User($request, 2))->checkRights(
+            'organisation',
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
         $input = Validator::input()->isJson()->assertValid()->getValue();

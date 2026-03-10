@@ -35,7 +35,7 @@ class OrganisationByCluster extends BaseController
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('basic');
+            (new Helper\User($request))->checkRights('counter');
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;

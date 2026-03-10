@@ -26,7 +26,7 @@ class AvailabilityDelete extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('availability');
         $repository = new AvailabilityRepository();
         $entity = $repository->readEntity($args['id'], 2);
 

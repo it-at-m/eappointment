@@ -27,7 +27,7 @@ class ClusterCalldisplayImageDataUpdateTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation();
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render(['id' => self::CLUSTER_ID], [
             '__body' => '',
         ], []);

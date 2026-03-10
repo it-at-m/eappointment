@@ -1,6 +1,6 @@
 {% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, custombutton %}
 
-{% set rights = workstation.useraccount.rights %}
+{% set rights = workstation.useraccount.permissions %}
 
 {#% embed "block/scaffholding/board.twig" with {'class': 'cluster-form'} %}
         {% block board_title %}

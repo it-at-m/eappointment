@@ -24,7 +24,7 @@ class ConfigUpdate extends BaseController
         array $args
     ) {
         try {
-            (new Helper\User($request))->checkRights('superuser');
+            (new Helper\User($request))->checkRights('config');
         } catch (\Exception $exception) {
             $token = $request->getHeader('X-Token');
             if (\App::SECURE_TOKEN != current($token)) {

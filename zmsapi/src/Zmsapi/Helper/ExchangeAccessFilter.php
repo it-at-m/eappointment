@@ -14,7 +14,7 @@ class ExchangeAccessFilter
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
         'organisation.id' => 'getFilteredEntityByOrganisation',
-        'useraccount.rights' => 'getFilteredEntityByUseraccountRights'
+        'useraccount.permissions' => 'getFilteredEntityByUseraccountRights'
     ];
 
     protected static $exchangeEntity = null;

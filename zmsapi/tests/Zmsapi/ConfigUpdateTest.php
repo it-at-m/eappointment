@@ -30,7 +30,7 @@ class ConfigUpdateTest extends Base
     public function testWithSuperuser()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['config'] = true;
         $response = $this->render([], [
             '__body' => '{
                   "cron": {
@@ -45,10 +45,9 @@ class ConfigUpdateTest extends Base
 
     public function testWithoutAccess()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Config\ConfigAuthentificationFailed');
-        $this->expectExceptionCode(401);
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('basic');
+        User::$workstation->useraccount->permissions['appointment'] = true;
         $response = $this->render([], [
             '__body' => '{
                   "cron": {

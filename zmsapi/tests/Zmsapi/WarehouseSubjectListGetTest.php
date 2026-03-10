@@ -21,7 +21,7 @@ class WarehouseSubjectListGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('basic');
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render([], [], []);
     }
 }

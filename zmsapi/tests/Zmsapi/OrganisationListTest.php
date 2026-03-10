@@ -10,9 +10,17 @@ class OrganisationListTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['counter'] = true;
         $response = $this->render([], [], []);
         $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testMissingCounterPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [], []);
     }
 }

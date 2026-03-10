@@ -22,7 +22,7 @@ class ScopeListByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('counter');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = (new \BO\Zmsdb\Cluster())->readEntity($args['id']);
         if (! $cluster) {

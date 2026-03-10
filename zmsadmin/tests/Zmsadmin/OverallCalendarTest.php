@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-use BO\Zmsentities\Exception\UserAccountMissingRights;
+use BO\Zmsentities\Exception\UserAccountMissingPermissions;
 
 class OverallCalendarTest extends Base
 {
@@ -43,7 +43,7 @@ class OverallCalendarTest extends Base
             ]
         );
 
-        $this->expectException(\BO\Zmsentities\Exception\UserAccountMissingRights::class);
+        $this->expectException(\BO\Zmsentities\Exception\UserAccountMissingPermissions::class);
         $this->render([], [], []);
     }
 
