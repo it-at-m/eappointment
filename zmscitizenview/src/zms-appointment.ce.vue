@@ -2,8 +2,10 @@
   <link
     href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
     rel="stylesheet"
+    @load="onStylesheetLoaded"
+    @error="onStylesheetLoaded"
   />
-  <main>
+  <main :class="{ 'styles-loading': !stylesLoaded }">
     <div>
       <div v-html="sanitizeHtml(mucIconsSprite)"></div>
       <div v-html="sanitizeHtml(customIconsSprit)"></div>
@@ -149,6 +151,20 @@ onMounted(() => {
 // i18n & Global State
 const { t } = useI18n();
 const globalState = useGlobalState(props);
+
+// Prevent flickering: hide content until external stylesheet is loaded
+// This prevents icons from appearing large/unstyled before CSS applies
+const stylesLoaded = ref(false);
+const onStylesheetLoaded = () => {
+  stylesLoaded.value = true;
+};
+
+// Fallback: reveal content after 3s even if stylesheet fails or never loads
+onMounted(() => {
+  setTimeout(() => {
+    stylesLoaded.value = true;
+  }, 3000);
+});
 </script>
 
 <style>
@@ -163,5 +179,10 @@ const globalState = useGlobalState(props);
 
 main {
   padding-bottom: 32px;
+}
+
+/* Hide content until external stylesheet is loaded to prevent icon flickering */
+main.styles-loading {
+  visibility: hidden;
 }
 </style>

@@ -65,7 +65,7 @@ jobs:
           cd ..
 
       - name: Upload API docs artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: api-docs
           retention-days: 7

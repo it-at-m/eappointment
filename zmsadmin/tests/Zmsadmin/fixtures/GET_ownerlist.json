@@ -415,7 +415,7 @@
                         "name": "Pankow"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -639,7 +639,7 @@
                         "name": "Friedrichshain-Kreuzberg"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "1"
+                        "ticketPrinterActivation": "1"
                     }
                 },
                 {
@@ -940,7 +940,7 @@
                         "name": "Marzahn-Hellersdorf"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -1488,7 +1488,7 @@
                         "name": "Lichtenberg"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -2112,7 +2112,7 @@
                         "name": "Charlottenburg-Wilmersdorf"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     },
                     "ticketprinters": [
                         {
@@ -2429,7 +2429,7 @@
                         "name": "Mitte"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -2916,7 +2916,7 @@
                         "name": "Tempelhof-Schöneberg"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -3803,7 +3803,7 @@
                         "name": "Reinickendorf"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -4207,7 +4207,7 @@
                         "name": "Spandau"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -4681,7 +4681,7 @@
                         "name": "Neukölln"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -4915,7 +4915,7 @@
                         "name": "Treptow-Köpenick"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 },
                 {
@@ -4928,7 +4928,7 @@
                         "name": "Test Organisation"
                     },
                     "preferences": {
-                        "ticketPrinterProtectionEnabled": "0"
+                        "ticketPrinterActivation": "0"
                     }
                 }
             ],
