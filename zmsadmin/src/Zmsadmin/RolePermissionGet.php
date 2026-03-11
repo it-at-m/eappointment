@@ -29,10 +29,6 @@ class RolePermissionGet extends BaseController
         // Guard: only allow superusers (permissions.superuser) to access this UI
         if (!$workstation->getUseraccount()->isSuperUser()) {
             // Reuse generic forbidden handling: render standard exception template
-            $exception = new \BO\Zmsentities\Exception\UserAccountMissingPermissions(
-                'Superuser permission required to manage Rollen & Berechtigungen.'
-            );
-
             return \BO\Slim\Render::withHtml(
                 $response->withStatus(403),
                 'exception/bo/zmsentities/exception/schemavalidation.twig',
