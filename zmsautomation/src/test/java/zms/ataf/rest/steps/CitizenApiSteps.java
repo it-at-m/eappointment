@@ -21,6 +21,7 @@ import zms.ataf.rest.dto.zmscitizenapi.AvailableDaysResponse;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import ataf.core.logging.ScenarioLogManager;
 
 public class CitizenApiSteps {
 
@@ -89,6 +90,15 @@ public class CitizenApiSteps {
             .get("/available-days-by-office/");
         CommonApiSteps.setResponse(response);
 
+        String daysBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /available-days-by-office/ (officeId=%d, serviceId=%d) status=%d body=%s",
+            officeId,
+            serviceId,
+            response.getStatusCode(),
+            daysBody.length() > 500 ? daysBody.substring(0, 500) + "..." : daysBody
+        ));
+
         // Citizen API may return either a plain AvailableDaysResponse payload
         // or an ApiResponse-wrapped payload. Try plain first, then wrapped.
         AvailableDaysResponse days;
@@ -132,6 +142,16 @@ public class CitizenApiSteps {
             .get("/available-appointments-by-office/");
         CommonApiSteps.setResponse(response);
 
+        String appointmentsBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /available-appointments-by-office/ (date=%s, officeId=%d, serviceId=%d) status=%d body=%s",
+            date,
+            officeId,
+            serviceId,
+            response.getStatusCode(),
+            appointmentsBody.length() > 500 ? appointmentsBody.substring(0, 500) + "..." : appointmentsBody
+        ));
+
         // As with available-days, available-appointments endpoints may return either
         // a plain AvailableAppointmentsResponse payload or an ApiResponse-wrapped payload.
         AvailableAppointmentsResponse appointments;
@@ -150,6 +170,8 @@ public class CitizenApiSteps {
         }
         Long timestamp = lastAvailableAppointmentsResponse.getFirstAppointmentTimestamp();
         if (timestamp == null) {
+            ScenarioLogManager.getLogger().error("No appointment timestamps found in lastAvailableAppointmentsResponse "
+                + "for officeId=" + lastOfficeId + ", serviceId=" + lastServiceId);
             throw new IllegalStateException("No appointment timestamps in last response.");
         }
         ReserveAppointmentRequest body = new ReserveAppointmentRequest();
