@@ -62,4 +62,3 @@ class RolesUpdate extends BaseController
         return Render::withJson($response, $message, $message->getStatuscode());
     }
 }
-

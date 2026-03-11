@@ -57,4 +57,3 @@ class RolePermissionUpdate extends BaseController
         return \BO\Slim\Render::redirect('rolePermissionAdmin', [], []);
     }
 }
-

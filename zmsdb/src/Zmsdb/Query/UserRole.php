@@ -31,4 +31,3 @@ class UserRole extends Base implements MappingInterface
         return $this;
     }
 }
-

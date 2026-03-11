@@ -45,4 +45,3 @@ class RolesGet extends BaseController
         return Render::withJson($response, $message, $message->getStatuscode());
     }
 }
-

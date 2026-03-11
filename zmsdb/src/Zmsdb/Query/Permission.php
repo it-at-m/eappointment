@@ -32,4 +32,3 @@ class Permission extends Base implements MappingInterface
         return $this;
     }
 }
-

@@ -51,4 +51,3 @@ class PermissionsGet extends BaseController
         return Render::withJson($response, $message, $message->getStatuscode());
     }
 }
-

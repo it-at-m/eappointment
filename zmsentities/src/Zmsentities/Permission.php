@@ -8,4 +8,3 @@ class Permission extends Schema\Entity
 
     public static $schema = "permission.json";
 }
-

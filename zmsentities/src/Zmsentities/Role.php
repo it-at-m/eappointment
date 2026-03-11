@@ -15,4 +15,3 @@ class Role extends Schema\Entity
         ];
     }
 }
-

@@ -159,4 +159,3 @@ class Role extends Base
         }
     }
 }
-

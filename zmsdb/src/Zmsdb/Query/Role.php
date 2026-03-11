@@ -32,4 +32,3 @@ class Role extends Base implements MappingInterface
         return $this;
     }
 }
-
