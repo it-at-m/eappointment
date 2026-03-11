@@ -1570,11 +1570,15 @@ use \Psr\Http\Message\ResponseInterface;
  *                                          items:
  *                                              type: string
  */
-\App::$slim->map(
-    ['GET', 'POST'],
+\App::$slim->get(
     '/roles/',
-    '\BO\Zmsapi\Roles'
-)->setName("Roles");
+    '\BO\Zmsapi\RolesGet'
+)->setName("RolesGet");
+
+\App::$slim->post(
+    '/roles/',
+    '\BO\Zmsapi\RolesUpdate'
+)->setName("RolesUpdate");
 
 /**
  *  @swagger
@@ -1606,8 +1610,8 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/permissions/',
-    '\BO\Zmsapi\Permissions'
-)->setName("Permissions");
+    '\BO\Zmsapi\PermissionsGet'
+)->setName("PermissionsGet");
 
 /**
  *  @swagger

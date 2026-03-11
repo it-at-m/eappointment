@@ -10,7 +10,7 @@
             Superuser können hier Rollen und ihre Berechtigungen anlegen, bearbeiten und löschen.
         </p>
 
-        <form method="post" action="{{ urlGet('rolePermissionAdmin', {}, {}) }}">
+        <form method="post" action="{{ urlGet('rolePermissionUpdate', {}, {}) }}">
             {% if rolePermissionMatrix is empty %}
                 <p>Es sind keine Rollen definiert.</p>
             {% else %}
