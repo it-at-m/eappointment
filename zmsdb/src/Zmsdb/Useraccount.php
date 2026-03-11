@@ -1140,7 +1140,9 @@ class Useraccount extends Base
             return new Collection();
         }
 
-        return $this->readListByRoleNames([$roleName], $resolveReferences, $workstation);
+        // Note: $workstation is currently ignored here; this method is kept
+        // for backwards compatibility and delegates to a role-based helper.
+        return $this->readListByRoleNames([$roleName], $resolveReferences);
     }
 
     /**
@@ -1153,7 +1155,9 @@ class Useraccount extends Base
             return new Collection();
         }
 
-        return $this->readListByRoleNamesAndDepartmentIds([$roleName], $departmentIds, $resolveReferences, $disableCache, $workstation);
+        // Note: $disableCache and $workstation are currently ignored here; this
+        // method is kept for backwards compatible public API surface.
+        return $this->readListByRoleNamesAndDepartmentIds([$roleName], $departmentIds, $resolveReferences);
     }
 
     /**
@@ -1181,7 +1185,7 @@ class Useraccount extends Base
     /**
      * Read useraccounts that have at least one of the given role names.
      */
-    private function readListByRoleNames(array $roleNames, int $resolveReferences = 0, $workstation = null): Collection
+    private function readListByRoleNames(array $roleNames, int $resolveReferences = 0): Collection
     {
         $roleNames = array_values(array_unique(array_filter($roleNames, 'strlen')));
         $collection = new Collection();
@@ -1218,7 +1222,7 @@ class Useraccount extends Base
     /**
      * Read useraccounts that have at least one of the given role names and belong to the given departments.
      */
-    private function readListByRoleNamesAndDepartmentIds(array $roleNames, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null): Collection
+    private function readListByRoleNamesAndDepartmentIds(array $roleNames, array $departmentIds, int $resolveReferences = 0): Collection
     {
         $roleNames = array_values(array_unique(array_filter($roleNames, 'strlen')));
         $departmentIds = array_values(array_unique(array_filter($departmentIds, function ($id) {
