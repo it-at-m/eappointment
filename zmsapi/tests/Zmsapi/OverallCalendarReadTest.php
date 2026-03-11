@@ -19,9 +19,9 @@ class OverallCalendarReadTest extends Base
 
     protected function initializeSuperUserWorkstation(): void
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setRights('scope');
+        $workstation = $this->setWorkstation();
+        $useraccount = $workstation->getUseraccount();
+        $useraccount->permissions['overviewcalendar'] = true;
     }
 
     public function testCalendarStructure(): void
@@ -114,5 +114,12 @@ class OverallCalendarReadTest extends Base
 
         $anyEvents = array_merge(...array_map(fn($s) => $s['events'] ?? [], $day['scopes']));
         $this->assertIsArray($anyEvents);
+    }
+
+    public function testMissingOverviewcalendarPermissionThrows403(): void
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], self::VALID_PARAMS);
     }
 }

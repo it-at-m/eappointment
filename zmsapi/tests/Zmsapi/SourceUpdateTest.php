@@ -8,7 +8,8 @@ class SourceUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['source'] = true;
         $response = $this->render([], [
             '__body' => $this->readFixture('GetSource.json'),
             'resolveReferences' => 2
@@ -24,7 +25,8 @@ class SourceUpdateTest extends Base
 
     public function testWithRequestRelation()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['source'] = true;
         $response = $this->render([], [
             '__body' => $this->readFixture('GetSourceWithRequestRelation.json'),
             'resolveReferences' => 2
@@ -38,7 +40,8 @@ class SourceUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['source'] = true;
         $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
@@ -47,7 +50,8 @@ class SourceUpdateTest extends Base
 
     public function testUnvalidSchema()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['source'] = true;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -73,8 +77,8 @@ class SourceUpdateTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render([], [
             '__body' => $this->readFixture('GetSource.json')
         ], []);

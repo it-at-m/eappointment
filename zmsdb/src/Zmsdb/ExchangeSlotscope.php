@@ -59,7 +59,7 @@ class ExchangeSlotscope extends Base
     {
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung ";
-        $entity->addDictionaryEntry('id', 'string', 'Gesamter Zeitraum', 'useraccount.rights.superuser');
+        $entity->addDictionaryEntry('id', 'string', 'Gesamter Zeitraum', 'useraccount.permissions.superuser');
         $entity->addDataSet(["_"]);
         return $entity;
     }

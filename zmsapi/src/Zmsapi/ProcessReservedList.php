@@ -22,7 +22,7 @@ class ProcessReservedList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
+        (new Helper\User($request))->checkRights('appointment');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
         $message = Response\Message::create($request);

@@ -11,7 +11,7 @@ class DayoffListTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $response = $this->render(['year' => 2016], [], []);
         $this->assertStringContainsString('dayoff.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -20,7 +20,7 @@ class DayoffListTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
@@ -28,10 +28,17 @@ class DayoffListTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('superuser');
+        User::$workstation->useraccount->permissions['dayoff'] = true;
         $testYear = \App::$now->modify('+ 11years')->format('Y');
         $this->expectException('\BO\Zmsapi\Exception\Dayoff\YearOutOfRange');
         $this->expectExceptionCode(404);
         $this->render(['year' => $testYear], [], []);
+    }
+
+    public function testMissingDayoffPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render(['year' => 2016], [], []);
     }
 }

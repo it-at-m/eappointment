@@ -27,7 +27,7 @@ class ProcessFinished extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request))->checkRights('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $survey = Validator::param('survey')->isNumber()->setDefault(1)->getValue();
         $process = new \BO\Zmsentities\Process($input);

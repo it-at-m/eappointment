@@ -50,6 +50,13 @@
         "scope": true,
         "ticketprinter": true
       },
+      "permissions": {
+        "scope": true,
+        "ticketprinter": true
+      },
+      "roles": [
+        "system_admin"
+      ],
       "departments": [
         {
           "id": 123

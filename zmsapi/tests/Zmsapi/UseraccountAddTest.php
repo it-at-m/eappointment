@@ -195,7 +195,7 @@ class UseraccountAddTest extends Base
     public function testMissingRights()
     {
         $this->setWorkstation();
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render([], [], []);
     }

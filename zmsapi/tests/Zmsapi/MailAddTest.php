@@ -8,7 +8,8 @@ class MailAddTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['appointment'] = true;
         $response = $this->render([], [
             '__body' => $this->readFixture('GetMail.json')
         ], []);
@@ -19,14 +20,16 @@ class MailAddTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['appointment'] = true;
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testUnvalidInput()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['appointment'] = true;
         $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
         $this->expectExceptionCode(404);
         $this->render([], [
@@ -49,6 +52,15 @@ class MailAddTest extends Base
               ],
               "subject": "Example Mail"
             }'
+        ], []);
+    }
+
+    public function testMissingAppointmentPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [
+            '__body' => $this->readFixture('GetMail.json')
         ], []);
     }
 }

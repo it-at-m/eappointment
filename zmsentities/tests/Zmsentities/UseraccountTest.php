@@ -140,6 +140,48 @@ class UseraccountTest extends EntityCommonTests
         );
     }
 
+    public function testHasPermissionsAndHasAnyPermission()
+    {
+        /** @var \BO\Zmsentities\Useraccount $entity */
+        $entity = (new $this->entityclass())->getExample();
+
+        // Ensure permissions array exists and is initialized to false
+        $this->assertIsArray($entity->permissions);
+
+        // No permissions set yet
+        $this->assertFalse($entity->hasPermissions(['appointment']));
+        $this->assertFalse($entity->hasAnyPermission(['appointment', 'availability']));
+
+        // Grant a single permission
+        $entity->permissions['appointment'] = true;
+
+        $this->assertTrue($entity->hasPermissions(['appointment']));
+        $this->assertTrue($entity->hasAnyPermission(['appointment', 'availability']));
+        $this->assertFalse($entity->hasPermissions(['appointment', 'availability']));
+
+        // Grant additional permission and re-check
+        $entity->permissions['availability'] = true;
+        $this->assertTrue($entity->hasPermissions(['appointment', 'availability']));
+    }
+
+    public function testIsSuperUserWithPermissions()
+    {
+        /** @var \BO\Zmsentities\Useraccount $entity */
+        $entity = (new $this->entityclass())->getExample();
+
+        // Default example is not superuser
+        $this->assertFalse($entity->isSuperUser());
+
+        // Setting legacy right should make it a superuser
+        $entity->rights['superuser'] = true;
+        $this->assertTrue($entity->isSuperUser());
+
+        // Reset legacy flag and use permissions.superuser instead
+        $entity->rights['superuser'] = false;
+        $entity->permissions['superuser'] = true;
+        $this->assertTrue($entity->isSuperUser());
+    }
+
     public function testWithCleanedUpFormData()
     {
         $entity = $this->getExample();

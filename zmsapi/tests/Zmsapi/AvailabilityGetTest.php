@@ -14,7 +14,8 @@ class AvailabilityGetTest extends Base
     {
         $input = (new Entity)->createExample();
         $entity = (new Query())->writeEntity($input);
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render(['id' => $entity->getId()], [], []);
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -22,16 +23,25 @@ class AvailabilityGetTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
+        $this->render(['id' => 1], [], []);
+    }
+
+    public function testMissingAvailabilityPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->render(['id' => 1], [], []);
     }
 }

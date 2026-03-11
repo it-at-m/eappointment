@@ -1,62 +1,63 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'useraccount-info', 'messages':'hide'} %}
-    
-        
+
+
         {% block board_title %}
-            Nutzerinformation
-        {% endblock %} 
-        
-        
+            Rollen und Berechtigungen
+        {% endblock %}
+
+
         {% block board_body %}
-       
+
                 <h3>Nutzername</h3>
                 <p>
-                    {{useraccount.id}}
+                    {{ useraccount.id }}
                 </p>
                 <h3>Zugeordnete Einheiten</h3>
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser -%}
                         <li>Alle (Superuser)</li>
                     {%- else -%}
                     {% for department in useraccount.departments %}
-                        <li>{{department.name}}</li>
+                        <li>{{ department.name }}</li>
                     {% endfor %}
                     {%- endif -%}
                 </ul>
-                <h3>Sie haben die folgenden Berechtigungen</h3>
+                <h3>Ihre Rollen und Berechtigungen im System</h3>
+                {% set hasAnyPermission = useraccount.permissions is iterable and useraccount.permissions|filter((v, k) => v)|length > 0 %}
                 <ul>
-                    {%- if useraccount.rights.superuser -%}
+                    {%- if useraccount.permissions.superuser -%}
                         <li>Superuser</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.organisation -%}
+                    {%- if useraccount.permissions.organisation -%}
                         <li>Administration von Bezirken</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.department -%}
+                    {%- if useraccount.permissions.department -%}
                         <li>Administration von Behörden</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.cluster -%}
+                    {%- if useraccount.permissions.cluster -%}
                         <li>Administration von Standortclustern</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.useraccount -%}
+                    {%- if useraccount.permissions.useraccount -%}
                         <li>Administration von Nutzern</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.scope -%}
+                    {%- if useraccount.permissions.scope -%}
                         <li>Administration von Standorten</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.availability -%}
+                    {%- if useraccount.permissions.availability -%}
                         <li>Administration von Öffnungszeiten</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.ticketprinter -%}
+                    {%- if useraccount.permissions.ticketprinter -%}
                         <li>Ein- und Ausschalten des Kiosks</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.sms -%}
+                    {%- if useraccount.permissions.appointment -%}
                         <li>Nutzung des SMS-Versands</li>
                     {%- endif -%}
-                    {%- if useraccount.rights.basic -%}
+                    {%- if hasAnyPermission -%}
                         <li>Nutzung des Systems</li>
                     {%- endif -%}
                 </ul>
-            
-        {% endblock %} 
-        
-        
+
+        {% endblock %}
+
+
 {% endembed %}

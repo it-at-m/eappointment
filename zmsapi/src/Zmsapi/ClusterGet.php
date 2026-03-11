@@ -29,7 +29,7 @@ class ClusterGet extends BaseController
 
         if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
-            (new Helper\User($request))->checkRights('basic');
+            (new Helper\User($request))->checkRights('counter');
         } else {
             $message->meta->reducedData = true;
         }

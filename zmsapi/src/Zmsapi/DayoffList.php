@@ -21,7 +21,7 @@ class DayoffList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkRights('dayoff');
         if ($args['year'] > \App::$now->modify('+ 10years')->format('Y') || $args['year'] < \App::$now->format('Y')) {
             throw new Exception\Dayoff\YearOutOfRange();
         }

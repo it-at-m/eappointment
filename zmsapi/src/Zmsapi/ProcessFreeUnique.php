@@ -26,7 +26,7 @@ class ProcessFreeUnique extends BaseController
         $groupData = Validator::param('groupData')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkRights();
+            (new Helper\User($request))->checkRights('appointment');
         } else {
             $slotsRequired = 0;
             $slotType = 'public';

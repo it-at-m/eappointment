@@ -8,7 +8,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -71,7 +72,8 @@ class AvailabilityListUpdateTest extends Base
     
     public function testAvailabilityListUpdateFailsWithDifferentScopes()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('BO\\Zmsapi\\Exception\\BadRequest');
         $this->expectExceptionMessage('All availabilities must belong to the same scope');
         
@@ -135,14 +137,16 @@ class AvailabilityListUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testEmptyBody()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsapi\Exception\BadRequest');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -152,7 +156,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testUpdateFailed()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -192,7 +197,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testWeekdayValidation()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -243,7 +249,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testStartTimeValidation()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -294,7 +301,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testSlotTimeValidation()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->render([], [
             '__body' => '{
@@ -331,7 +339,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testBookableDayRangeValidation()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -386,7 +395,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testTypeValidation()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->render([], [
             '__body' => '{
@@ -424,7 +434,8 @@ class AvailabilityListUpdateTest extends Base
 
     public function testMultipleValidationErrors()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -489,5 +500,42 @@ class AvailabilityListUpdateTest extends Base
         $this->assertContains('Mindestens ein Wochentag muss ausgewählt sein.', $errorMessages);
         $this->assertContains('Die Endzeit darf nicht vor der Startzeit liegen.', $errorMessages);
         $this->assertContains('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $errorMessages);
+    }
+
+    public function testMissingAvailabilityPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test Öffnungszeit update",
+                        "scope": {
+                            "id": 312
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "workstationCount": {
+                            "public": 1,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
     }
 }

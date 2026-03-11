@@ -33,6 +33,7 @@ class OwnerGet extends BaseController
 
         if ($workstation->hasRights()) {
             $workstation->checkRights(
+                'organisation',
                 new \BO\Zmsentities\Useraccount\EntityAccess($owner)
             );
         } else {

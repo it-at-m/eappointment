@@ -337,9 +337,18 @@ use Slim\Routing\RouteCollectorProxy;
 
 /*
  * ---------------------------------------------------------------------------
- * Useraccount
+ * Useraccount / Roles & Permissions
  * -------------------------------------------------------------------------
  */
+\App::$slim->get('/roles/', \BO\Zmsadmin\RolePermissionGet::class)
+    ->setName("rolePermissionAdmin");
+
+\App::$slim->post('/roles/', \BO\Zmsadmin\RolePermissionUpdate::class)
+    ->setName("rolePermissionUpdate");
+
+\App::$slim->get('/roles/delete/{id:\d+}/', \BO\Zmsadmin\RolePermissionDelete::class)
+    ->setName("rolePermissionDelete");
+
 \App::$slim->get('/users/', \BO\Zmsadmin\UseraccountList::class)
     ->setName("useraccountList");
 

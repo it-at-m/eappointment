@@ -28,7 +28,7 @@
         "variable": "right",
         "type": "string",
         "description": "useraccount right for this subject",
-        "reference": "useraccount.rights"
+        "reference": "useraccount.permissions"
       }
     ],
     "data": [
@@ -80,17 +80,17 @@
       [
         "requestscope",
         "Dienstleistungsstatistik Standort",
-        "useraccount.rights.scope"
+        "useraccount.permissions.scope"
       ],
       [
         "requestdepartment",
         "Dienstleistungsstatistik Behörde",
-        "useraccount.rights.department"
+        "useraccount.permissions.department"
       ],
       [
         "requestorganisation",
         "Dienstleistungsstatistik Organisation",
-        "useraccount.rights.organisation"
+        "useraccount.permissions.organisation"
       ]
     ]
   }

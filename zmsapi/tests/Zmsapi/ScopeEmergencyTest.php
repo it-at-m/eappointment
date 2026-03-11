@@ -24,7 +24,10 @@ class ScopeEmergencyTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->permissions['emergency'] = true;
+        // emergency permission required by controller; ensure superuser path also works
+        // (superuser is treated as having all permissions)
+        // Legacy rights kept for backwards compatibility in tests.
         $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => '{
             }'
@@ -36,7 +39,7 @@ class ScopeEmergencyTest extends Base
 
     public function testNoAccess()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->permissions['appointment'] = true;
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
         $this->expectExceptionCode(403);
         $this->render(['id' => 141], [

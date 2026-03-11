@@ -115,7 +115,7 @@ class Warehouse extends Base
         $entity = (new Exchange())->withLessData();
         $entity->addDictionaryEntry('subject', 'string', 'subject name');
         $entity->addDictionaryEntry('description', 'string', 'subject description');
-        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject', 'useraccount.rights');
+        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject', 'useraccount.permissions');
         foreach ($this->subjects as $subject) {
             $entity->addDataSet(array_values($subject));
         }

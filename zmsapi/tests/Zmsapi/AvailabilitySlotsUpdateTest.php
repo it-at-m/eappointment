@@ -8,7 +8,8 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $response = $this->render([], [
             '__body' => '[
                 {
@@ -32,14 +33,16 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testEmptyBody()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsapi\Exception\BadRequest');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -49,7 +52,8 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['availability'] = true;
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
@@ -69,6 +73,29 @@ class AvailabilitySlotsUpdateTest extends Base
                 }
             ]',
             'migrationfix' => 0
+        ], []);
+    }
+
+    public function testMissingAvailabilityPermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render([], [
+            '__body' => '[
+                {
+                    "id": 21202,
+                    "description": "Test Öffnungszeit update",
+                    "scope": {
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
+                }
+            ]'
         ], []);
     }
 }

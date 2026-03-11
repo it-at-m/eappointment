@@ -34,7 +34,7 @@ class ProcessAddLogTest extends Base
     public function testMissingRights()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render(['id' => self::PROCESS_ID], [
             '__body' => '{}'

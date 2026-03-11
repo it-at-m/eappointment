@@ -28,7 +28,7 @@ class ScopeWithWorkstationCount extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         (new Helper\User($request, 2))->checkRights(
-            'basic',
+            'counter',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 

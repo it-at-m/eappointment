@@ -12,6 +12,7 @@ class WarehousePeriodGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(
             ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2016-03-01'],
             ['groupby' => 'day'],
@@ -28,6 +29,7 @@ class WarehousePeriodGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(
             ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2016-03'],
             ['groupby' => 'day'],
@@ -46,6 +48,7 @@ class WarehousePeriodGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(
             ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2016'],
             [],
@@ -62,6 +65,7 @@ class WarehousePeriodGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(
             ['subject' => 'clientscope', 'subjectId' => 141, 'period' => '_'],
             [],
@@ -77,6 +81,7 @@ class WarehousePeriodGetTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
         $response = $this->render(
             ['subject' => 'unittest', 'subjectId' => 141, 'period' => '2016-03'],
             ['groupby' => 'day'],
@@ -89,6 +94,33 @@ class WarehousePeriodGetTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $response = $this->render(
+            ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2017-04'],
+            ['groupby' => 'day'],
+            []
+        );
+    }
+
+    public function testReportingViewerHasAccess()
+    {
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $response = $this->render(
+            ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2016-03-01'],
+            ['groupby' => 'day'],
+            []
+        );
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testAuditViewerHasNoStatisticAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $workstation = $this->setWorkstation();
+        $useraccount = $workstation->getUseraccount();
+        $useraccount->permissions['logs'] = true;
+        $useraccount->permissions['customersearch'] = true;
         $response = $this->render(
             ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2017-04'],
             ['groupby' => 'day'],

@@ -72,28 +72,38 @@ class Workstation extends Schema\Entity
         return $this->toProperty()->scope->provider->id->get();
     }
 
-    public function getUseraccountRights()
+    public function getUseraccountPermissions()
     {
-        $rights = null;
-        if (Property::__keyExists('rights', $this->useraccount)) {
-            $rights = $this->useraccount['rights'];
+        $permissions = null;
+        if (Property::__keyExists('permissions', $this->useraccount)) {
+            $permissions = $this->useraccount['permissions'];
         }
-        return $rights;
+        return $permissions;
+    }
+
+    public function getUseraccountRoles()
+    {
+        if (Property::__keyExists('roles', $this->useraccount)) {
+            return $this->useraccount['roles'];
+        }
+        return null;
     }
 
     public function hasSuperUseraccount()
     {
-        $isSuperuser = false;
-        $userRights = $this->getUseraccountRights();
-        if (isset($userRights['superuser']) && $userRights['superuser']) {
-            $isSuperuser = true;
+        // Prefer the new permissions-based flag when available
+        if (isset($this->useraccount['permissions']['superuser']) && $this->useraccount['permissions']['superuser']) {
+            return true;
         }
-        return $isSuperuser;
+
+        // Fallback to legacy rights map if still present
+        $userRights = $this->getUseraccountPermissions();
+        return isset($userRights['superuser']) && $userRights['superuser'];
     }
 
     public function hasAuditAccount()
     {
-        $userRights = $this->getUseraccountRights();
+        $userRights = $this->getUseraccountPermissions();
         if (isset($userRights['audit']) && $userRights['audit']) {
             return true;
         }

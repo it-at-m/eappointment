@@ -22,7 +22,7 @@ class ClusterWithWorkstationCount extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('counter');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {

@@ -31,7 +31,7 @@ class WorkstationUpdate extends BaseController
         if ($entity->getUseraccount()->id != $currentWorkstation->getUseraccount()->id) {
             throw new Exception\Workstation\WorkstationAccessFailed();
         }
-        $entity->getUseraccount()->rights = $currentWorkstation->getUseraccount()->rights;
+        $entity->getUseraccount()->permissions = $currentWorkstation->getUseraccount()->permissions;
         $workstation = (new Workstation())->updateEntity($entity, $resolveReferences);
         $message = Response\Message::create($request);
         $message->data = $workstation;

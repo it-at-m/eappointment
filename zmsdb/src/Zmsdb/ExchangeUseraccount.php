@@ -22,7 +22,7 @@ class ExchangeUseraccount extends Base
         $entity->addDictionaryEntry('rightscluster', 'string', 'Administration von Standortclustern');
         $entity->addDictionaryEntry('rightsdepartment', 'string', 'Adminstration von Behoerden');
         $entity->addDictionaryEntry('rightssorganisation', 'string', 'Adminstration von Bezirken');
-        $entity->addDictionaryEntry('rightssuperuser', 'string', 'Superuser', 'useraccount.rights.superuser');
+        $entity->addDictionaryEntry('rightssuperuser', 'string', 'Superuser', 'useraccount.permissions.superuser');
 
         $raw = $this
             ->getReader()
@@ -53,7 +53,7 @@ class ExchangeUseraccount extends Base
     {
         $entity = new Exchange();
         $entity['title'] = "Nutzerliste";
-        $entity->addDictionaryEntry('id', 'string', 'Organisation', 'useraccount.rights.superuser');
+        $entity->addDictionaryEntry('id', 'string', 'Organisation', 'useraccount.permissions.superuser');
         $entity->addDataSet(["_"]);
         return $entity;
     }

@@ -15,7 +15,10 @@ class ProcessLogTest extends Base
     public function testRendering()
     {
         (new ProcessUpdateTest('dummyTest'))->testRendering();
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->setRights('superuser');
+        $useraccount->permissions['logs'] = true;
+        $useraccount->permissions['customersearch'] = true;
         $response = $this->render([], ['searchQuery' => self::SEARCH_PARAM], []);
         $this->assertStringContainsString('log.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,9 +26,29 @@ class ProcessLogTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->setRights('superuser');
+        $useraccount->permissions['logs'] = true;
+        $useraccount->permissions['customersearch'] = true;
         $response = $this->render([], ['searchQuery' => 123456], []);
         $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testAuditViewerHasAccess()
+    {
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->permissions['logs'] = true;
+        $useraccount->permissions['customersearch'] = true;
+        $response = $this->render([], ['searchQuery' => self::SEARCH_PARAM], []);
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testReportingViewerHasNoLogsAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->permissions['statistic'] = true;
+        $response = $this->render([], ['searchQuery' => self::SEARCH_PARAM], []);
     }
 }

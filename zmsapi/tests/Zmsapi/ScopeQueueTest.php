@@ -11,7 +11,7 @@ class ScopeQueueTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
+        User::$workstation->useraccount->permissions['waitingqueue'] = true;
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -28,7 +28,7 @@ class ScopeQueueTest extends Base
     public function testQueueEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
+        User::$workstation->useraccount->permissions['waitingqueue'] = true;
         $response = $this->render(['id' => 141], ['date' => '2015-04-01'], []);
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -36,9 +36,16 @@ class ScopeQueueTest extends Base
     public function testScopeNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('scope');
+        User::$workstation->useraccount->permissions['waitingqueue'] = true;
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
+    }
+
+    public function testMissingWaitingqueuePermissionThrows403()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingPermissions');
+        $this->render(['id' => 141], [], []);
     }
 }

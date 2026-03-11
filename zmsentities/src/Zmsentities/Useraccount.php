@@ -18,17 +18,35 @@ class Useraccount extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'rights' => [
-                "availability" => false,
-                "basic" => true,
-                "cluster" => false,
-                "department" => false,
-                "organisation" => false,
-                "scope" => false,
-                "sms" => false,
-                "superuser" => false,
-                "ticketprinter" => false,
-                "useraccount" => false,
+            'permissions' => [
+                'appointment' => false,
+                'availability' => false,
+                'calldisplay' => false,
+                'cherrypick' => false,
+                'cluster' => false,
+                'config' => false,
+                'counter' => false,
+                'customersearch' => false,
+                'dayoff' => false,
+                'department' => false,
+                'emergency' => false,
+                'finishedqueue' => false,
+                'finishedqueuepast' => false,
+                'logs' => false,
+                'mailtemplates' => false,
+                'missedqueue' => false,
+                'openqueue' => false,
+                'organisation' => false,
+                'overviewcalendar' => false,
+                'parkedqueue' => false,
+                'restrictedscope' => false,
+                'scope' => false,
+                'source' => false,
+                'statistic' => false,
+                'ticketprinter' => false,
+                'useraccount' => false,
+                'waitingqueue' => false,
+                'superuser' => false,
             ],
             'departments' => new Collection\DepartmentList(),
         ];
@@ -84,39 +102,26 @@ class Useraccount extends Schema\Entity
         return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
     }
 
-    /**
-     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
-     */
-    public function getRightsLevel()
-    {
-        return Helper\RightsLevelManager::getLevel($this->rights);
-    }
-
-    public function setRights()
-    {
-        $givenRights = func_get_args();
-        foreach ($givenRights as $right) {
-            if (Property::__keyExists($right, $this->rights)) {
-                $this->rights[$right] = true;
-            }
-        }
-        return $this;
-    }
-
     public function hasRights(array $requiredRights)
     {
         if ($this->isSuperUser()) {
             return true;
         }
+
         foreach ($requiredRights as $required) {
             if ($required instanceof Useraccount\RightsInterface) {
                 if (!$required->validateUseraccount($this)) {
                     return false;
                 }
-            } elseif (! $this->toProperty()->rights->$required->get()) {
+                continue;
+            }
+
+            // Treat remaining string arguments as atomic permission names
+            if (!$this->hasPermissions([$required])) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -124,7 +129,7 @@ class Useraccount extends Schema\Entity
     {
         if ($this->hasId()) {
             if (!$this->hasRights($requiredRights)) {
-                throw new Exception\UserAccountMissingRights(
+                throw new Exception\UserAccountMissingPermissions(
                     "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
                 );
             }
@@ -132,6 +137,39 @@ class Useraccount extends Schema\Entity
             throw new Exception\UserAccountMissingLogin();
         }
         return $this;
+    }
+
+    public function hasPermissions(array $permissions): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        foreach ($permissions as $permission) {
+            if (!Property::__keyExists($permission, $this->permissions ?? [])) {
+                return false;
+            }
+            if (!($this->permissions[$permission] ?? false)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function hasAnyPermission(array $permissions): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        foreach ($permissions as $permission) {
+            if (Property::__keyExists($permission, $this->permissions ?? []) && ($this->permissions[$permission] ?? false)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isOveraged(\DateTimeInterface $dateTime)
@@ -145,7 +183,19 @@ class Useraccount extends Schema\Entity
 
     public function isSuperUser()
     {
-        return $this->toProperty()->rights->superuser->get();
+        // Primary check: explicit superuser permission flag
+        if (isset($this->permissions['superuser']) && $this->permissions['superuser']) {
+            return true;
+        }
+
+        // Fallback: system_admin role implies superuser semantics
+        if (Property::__keyExists('roles', $this) && is_array($this->roles ?? null)) {
+            if (in_array('system_admin', $this->roles, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getDepartmentById($departmentId)

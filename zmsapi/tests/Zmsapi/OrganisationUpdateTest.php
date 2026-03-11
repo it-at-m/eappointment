@@ -46,7 +46,7 @@ class OrganisationUpdateTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render(["id" => 54], [
             '__body' => $this->readFixture("GetOrganisation.json")

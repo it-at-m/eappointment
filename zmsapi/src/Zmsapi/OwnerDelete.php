@@ -29,6 +29,7 @@ class OwnerDelete extends BaseController
         if (! $owner->hasId()) {
             throw new Exception\Owner\OwnerNotFound();
         }(new Helper\User($request, 2))->checkRights(
+            'organisation',
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );
         $query->deleteEntity($owner->id);

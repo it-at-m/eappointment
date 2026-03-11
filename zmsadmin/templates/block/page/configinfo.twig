@@ -26,7 +26,7 @@
                         <li class="grid">
                             <div class="grid__item three-twelfths"><strong>{{name}}:</strong></div>
                             <div class="grid__item eight-twelfths">{{value}}</div>
-                            <div class="grid__item one-twelfth">{% if workstation.useraccount.rights.superuser == "1" %} 
+                            <div class="grid__item one-twelfth">{% if workstation.useraccount.permissions.superuser %}
                                 <a data-property="{{ name }}" data-value="{{ value }}" data-key="{{ group }}" href="#" class="icon edit" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a> {% endif %}
                             </div>
                         </li>

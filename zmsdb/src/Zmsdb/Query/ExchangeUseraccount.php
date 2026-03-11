@@ -8,16 +8,78 @@ class ExchangeUseraccount extends Base
        IFNULL(b.Name, 'alle') AS Behoerdennamen,
        n.Name,
        n.lastUpdate,
-       -- n.Berechtigung,
-  	   IF(n.Berechtigung >= 10, 1, 0) AS 'Nutzung des SMS-Versands',	
-   	   IF(n.Berechtigung >= 15, 1, 0) AS 'Ein- und Ausschalten des Kiosks',	
-	   IF(n.Berechtigung >= 20, 1, 0) AS 'Administration von Öffnungszeiten',   	
-	   IF(n.Berechtigung >= 30, 1, 0) AS 'Administration von Standorten',
-	   IF(n.Berechtigung >= 40, 1, 0) AS 'Administration von Nutzern',
-	   IF(n.Berechtigung >= 40, 1, 0) AS 'Administration von Standortclustern',	
-   	   IF(n.Berechtigung >= 50, 1, 0) AS 'Administration von Behörden',
-       IF(n.Berechtigung >= 70, 1, 0) AS 'Administration von Bezirken',   	   
-       IF(n.Berechtigung >= 90, 1, 0) AS 'Superuser'
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'logs'
+          ), 1, 0) AS 'Nutzung des SMS-Versands',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'ticketprinter'
+          ), 1, 0) AS 'Ein- und Ausschalten des Kiosks',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'availability'
+          ), 1, 0) AS 'Administration von Öffnungszeiten',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'scope'
+          ), 1, 0) AS 'Administration von Standorten',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'useraccount'
+          ), 1, 0) AS 'Administration von Nutzern',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'cluster'
+          ), 1, 0) AS 'Administration von Standortclustern',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'department'
+          ), 1, 0) AS 'Administration von Behörden',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'organisation'
+          ), 1, 0) AS 'Administration von Bezirken',
+       IF(EXISTS (
+              SELECT 1
+              FROM user_role ur
+              INNER JOIN role_permission rp ON rp.role_id = ur.role_id
+              INNER JOIN permission p ON p.id = rp.permission_id
+              WHERE ur.user_id = n.NutzerID
+                AND p.name = 'superuser'
+          ), 1, 0) AS 'Superuser'
        FROM nutzerzuordnung nz LEFT JOIN nutzer n ON nz.nutzerid = n.NutzerID
        LEFT JOIN behoerde b ON nz.behoerdenid = b.BehoerdenID
        LEFT JOIN standort s ON s.BehoerdenID = b.BehoerdenID

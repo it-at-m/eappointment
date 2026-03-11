@@ -980,6 +980,13 @@
                     "scope": true,
                     "ticketprinter": true
                 },
+                "permissions": {
+                    "scope": true,
+                    "ticketprinter": true
+                },
+                "roles": [
+                    "system_admin"
+                ],
                 "departments": [
                     {
                         "id": 72
@@ -1143,6 +1150,41 @@
                                 "number"
                             ]
                         }
+                    }
+                },
+                "permissions": {
+                    "type": "object",
+                    "description": "Atomic permission flags derived from roles (appointment, availability, statistic, logs, etc.)",
+                    "additionalProperties": false,
+                    "properties": {
+                        "appointment": { "type": "boolean" },
+                        "availability": { "type": "boolean" },
+                        "calldisplay": { "type": "boolean" },
+                        "cherrypick": { "type": "boolean" },
+                        "cluster": { "type": "boolean" },
+                        "config": { "type": "boolean" },
+                        "counter": { "type": "boolean" },
+                        "customersearch": { "type": "boolean" },
+                        "dayoff": { "type": "boolean" },
+                        "department": { "type": "boolean" },
+                        "emergency": { "type": "boolean" },
+                        "finishedqueue": { "type": "boolean" },
+                        "finishedqueuepast": { "type": "boolean" },
+                        "logs": { "type": "boolean" },
+                        "mailtemplates": { "type": "boolean" },
+                        "missedqueue": { "type": "boolean" },
+                        "openqueue": { "type": "boolean" },
+                        "organisation": { "type": "boolean" },
+                        "overviewcalendar": { "type": "boolean" },
+                        "parkedqueue": { "type": "boolean" },
+                        "restrictedscope": { "type": "boolean" },
+                        "scope": { "type": "boolean" },
+                        "source": { "type": "boolean" },
+                        "statistic": { "type": "boolean" },
+                        "ticketprinter": { "type": "boolean" },
+                        "useraccount": { "type": "boolean" },
+                        "waitingqueue": { "type": "boolean" },
+                        "superuser": { "type": "boolean" }
                     }
                 },
                 "departments": {

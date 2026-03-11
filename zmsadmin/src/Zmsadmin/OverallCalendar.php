@@ -25,7 +25,7 @@ class OverallCalendar extends BaseController
         }
         $workstation = $result->getEntity();
         if (!$workstation->getUseraccount()->hasRights(['scope'])) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingPermissions();
         }
 
         return \BO\Slim\Render::withHtml(

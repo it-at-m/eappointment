@@ -207,6 +207,13 @@
 	        {{ block('success_end') }}
     	{% endblock %}
 
+		{% block rolePermission_saved %}
+			{% set successTitle = "Speichern erfolgreich" %}
+	    	{{ block('success_start') }}
+	        	Die Rollen &amp; Berechtigungen wurden {{ timeString }} erfolgreich aktualisiert.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
 		{% block useraccount_added %}
 	    	{{ block('success_start') }}
 	        	Der Nutzer wurde {{ timeString }} erfolgreich angelegt.

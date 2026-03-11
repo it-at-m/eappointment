@@ -23,7 +23,7 @@ class MailCustomTemplatesGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkRights('mailtemplates');
 
         $providerId = $args['providerId'];
 

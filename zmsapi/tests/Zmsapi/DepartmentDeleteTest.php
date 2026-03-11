@@ -42,7 +42,7 @@ class DepartmentDeleteTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation()->getUseraccount()->addDepartment(['id' => 74]);
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingPermissions');
         $this->expectExceptionCode(403);
         $this->render(['id' => 999], [], []); //Test Department
     }

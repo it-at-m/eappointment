@@ -23,7 +23,12 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             if (isset($exception->data)) {
                 $data = $exception->data;
             }
-            $exception->templatedata = array('workstation' => $workstation, 'sourceData' => $data);
+
+            // Only set templatedata when the exception class declares the property,
+            // to avoid PHP 8.2+ dynamic property deprecation warnings (e.g. Error, Twig\Error\RuntimeError).
+            if (property_exists($exception, 'templatedata')) {
+                $exception->templatedata = array('workstation' => $workstation, 'sourceData' => $data);
+            }
         } catch (\Throwable $workstationexception) {
             // ignore
         }

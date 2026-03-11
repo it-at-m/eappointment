@@ -10,6 +10,7 @@ namespace BO\Zmsapi;
 use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsdb\Useraccount;
+use BO\Zmsdb\Role as RoleRepository;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -30,6 +31,47 @@ class UseraccountUpdate extends BaseController
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+
+        // Normalize roles from the incoming payload before schema validation.
+        // Historically, roles were inferred from numeric "Berechtigung" levels.
+        // In the new model, we may receive either role names (strings) or role ids (integers).
+        if (isset($input['roles']) && is_array($input['roles'])) {
+            $normalizedRoles = [];
+            $numericRoleIds = [];
+
+            foreach ($input['roles'] as $value) {
+                if (is_string($value)) {
+                    $value = trim($value);
+                    if ($value !== '') {
+                        $normalizedRoles[$value] = true;
+                    }
+                    continue;
+                }
+
+                if (is_int($value)) {
+                    $numericRoleIds[] = $value;
+                    continue;
+                }
+
+                if (is_string($value) && ctype_digit($value)) {
+                    $numericRoleIds[] = (int) $value;
+                }
+            }
+
+            if (!empty($numericRoleIds)) {
+                $roleRepository = new RoleRepository();
+                $namesById = $roleRepository->readRoleNamesByIds($numericRoleIds);
+                foreach ($namesById as $name) {
+                    $name = trim($name);
+                    if ($name !== '') {
+                        $normalizedRoles[$name] = true;
+                    }
+                }
+            }
+
+            $input['roles'] = array_keys($normalizedRoles);
+        }
+
         $entity = new \BO\Zmsentities\Useraccount($input);
         if (! (new Useraccount())->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
@@ -67,6 +109,5 @@ class UseraccountUpdate extends BaseController
 
         Helper\UserAuth::testUseraccountExists($args['loginname']);
         Helper\User::testWorkstationAccessRights($entity);
-        Helper\User::testWorkstationAssignedRights($entity);
     }
 }

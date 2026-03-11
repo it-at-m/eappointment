@@ -22,7 +22,7 @@ class ClusterCalldisplayImageDataDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
+        (new Helper\User($request))->checkRights('calldisplay');
         $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
