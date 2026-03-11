@@ -109,7 +109,7 @@
                             <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
                         </li>
                 {% endif %}
-                {% if workstation.scope.id and permissions.ticketprinter and permissions.superuser %}
+                {% if workstation.scope.id and (permissions.ticketprinter or permissions.superuser) %}
                     <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
                         <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
                             Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
@@ -120,7 +120,8 @@
                         </a>
                     </li>
                 {% endif %}
-                {% if permissions.scope
+                {% if permissions.superuser
+                    or permissions.scope
                     or permissions.department
                     or permissions.organisation
                     or permissions.availability %}
@@ -128,27 +129,27 @@
                         <a title="{% trans %}Hier erhalten Sie eine Übersicht über Ihre Administrationsoptionen{% endtrans %}" {{ menuActive == 'menuActive'? ' aria-current="page"' }} href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a>
                     </li>
                 {% endif %}
-                {% if permissions.useraccount %}
+                {% if permissions.superuser or permissions.useraccount %}
                     <li class="nav__link{{ menuActive == 'useraccount'? ' active' }}">
                         <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccountList', {}, {}) }}">Nutzer*innen</a>
                     </li>
                 {% endif %}
-                {% if permissions.dayoff %}
+                {% if permissions.superuser or permissions.dayoff %}
                     <li class="nav__link{{ menuActive == 'dayoff'? ' active' }}">
                         <a title="{% trans %}Hier können Sie die freien Tage (z.B. Feiertage) Spalte einfügen, ändern und löschen{% endtrans %}" {{ menuActive == 'dayoff'? ' aria-current="page"' }} href="{{ urlGet('dayoff', {}, {}) }}">Freie Tage</a>
                     </li>
                 {% endif %}
-                {% if permissions.source %}
+                {% if permissions.superuser or permissions.source %}
                     <li class="nav__link{{ menuActive == 'source'? ' active' }}">
                         <a title="{% trans %}Hier können neue Mandanten hinzugefügt und bestehende geändert oder gelöscht werden{% endtrans %}" {{ menuActive == 'source'? ' aria-current="page"' }} href="{{ urlGet('sourceindex', {}, {}) }}">Mandanten</a>
                     </li>
                 {% endif %}
-                {% if permissions.mailtemplates %}
+                {% if permissions.superuser or permissions.mailtemplates %}
                     <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
                         <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mail Templates</a>
                     </li>
                 {% endif %}
-                {% if permissions.config %}
+                {% if permissions.superuser or permissions.config %}
                     <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
                         <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
                     </li>
