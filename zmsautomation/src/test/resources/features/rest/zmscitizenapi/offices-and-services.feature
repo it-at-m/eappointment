@@ -1,4 +1,4 @@
-@rest @citizenapi @smoke
+@rest @zmscitizenapi  @smoke
 Feature: Citizen API Offices and Services
   As a citizen
   I want to retrieve available offices and services

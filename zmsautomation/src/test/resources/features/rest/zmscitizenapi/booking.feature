@@ -1,4 +1,4 @@
-@rest @citizenapi @ZMSKVR-1124
+@rest @zmscitizenapi  @ZMSKVR-1124
 Feature: Citizen API full booking flow (ZMSKVR-1124)
   As a citizen
   I want to complete a full appointment booking from offices-and-services through confirm

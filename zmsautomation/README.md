@@ -103,7 +103,7 @@ mvn test -Pataf-api
 # optionally filter:
 # mvn test -Pataf-api -Dcucumber.filter.tags="@rest"
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmsapi"
-# mvn test -Pataf-api -Dcucumber.filter.tags="@citizenapi"
+# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi "
 ```
 
 - **UI-only tests (Selenium/ATAF web, no REST Assured)**:
@@ -158,7 +158,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **API tags**
   - `@rest` - All REST API tests
   - `@zmsapi` - ZMS API tests (`features/api/zmsapi/**`)
-  - `@citizenapi` - Citizen API tests (`features/api/zmscitizenapi/**`)
+  - `@zmscitizenapi ` - Citizen API tests (`features/api/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
