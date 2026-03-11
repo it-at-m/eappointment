@@ -141,7 +141,7 @@
               <div v-if="isAppointmentInPast">
                 <muc-callout type="error">
                   <template #content>
-                    {{ t("rescheduleErrorText") }}
+                    <p>{{ t("rescheduleErrorText") }}</p>
                   </template>
 
                   <template #header>
@@ -160,7 +160,7 @@
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -173,7 +173,7 @@
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -202,7 +202,7 @@
                 type="warning"
               >
                 <template #content>
-                  {{ confirmText }}
+                  <p>{{ confirmText }}</p>
                 </template>
                 <template #header>
                   {{ t("confirmAppointmentHeader") }}
@@ -214,7 +214,7 @@
                 type="success"
               >
                 <template #content>
-                  {{ t("appointmentSuccessfullyCanceledText") }}
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
                 </template>
                 <template #header>
                   {{ t("appointmentSuccessfullyCanceledHeader") }}
@@ -226,7 +226,7 @@
                 :type="toCalloutType(apiErrorTranslation.errorType)"
               >
                 <template #content>
-                  {{ t(apiErrorTranslation.textKey) }}
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
                 </template>
                 <template #header>
                   {{ t(apiErrorTranslation.headerKey) }}
@@ -240,7 +240,7 @@
                 type="success"
               >
                 <template #content>
-                  {{ t("appointmentSuccessfullyBookedText") }}
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
                 </template>
                 <template #header>
                   {{ t("appointmentSuccessfullyBookedHeader") }}
@@ -279,7 +279,7 @@
                 :type="toCalloutType(apiErrorTranslation.errorType)"
               >
                 <template #content>
-                  {{ t(apiErrorTranslation.textKey) }}
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
                 </template>
                 <template #header>
                   {{ t(apiErrorTranslation.headerKey) }}
@@ -291,7 +291,7 @@
                 :type="toCalloutType(apiErrorTranslation.errorType)"
               >
                 <template #content>
-                  {{ t(apiErrorTranslation.textKey) }}
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
                 </template>
                 <template #header>
                   {{ t(apiErrorTranslation.headerKey) }}
@@ -308,13 +308,15 @@
                     class="m-button-group"
                     style="margin-top: 1rem"
                   >
-                    <muc-button
-                      icon="arrow-right"
-                      @click="redirectToAppointmentStart"
-                      style="margin-bottom: 0; margin-right: 0"
-                    >
-                      {{ t("bookAppointmentStart") }}
-                    </muc-button>
+                    <p>
+                      <muc-button
+                        icon="arrow-right"
+                        @click="redirectToAppointmentStart"
+                        style="margin-bottom: 0; margin-right: 0"
+                      >
+                        {{ t("bookAppointmentStart") }}
+                      </muc-button>
+                    </p>
                   </div>
                 </template>
                 <template #header>

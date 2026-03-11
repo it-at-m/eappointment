@@ -5,7 +5,7 @@
   >
     <muc-callout type="error">
       <template #content>
-        {{ t("apiErrorSessionTimeoutText") }}
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -150,10 +150,11 @@
               <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <p
+              <component
+                :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
                 tabindex="0"
-                v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
-              ></p>
+                v-html="sanitizedInfoForAppointment"
+              />
             </div>
           </div>
           <div class="m-content">
@@ -330,6 +331,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   getServiceBaseURL,
   getVariantHint,
@@ -438,6 +440,14 @@ const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
+
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 </script>
 
 <style lang="scss" scoped>
