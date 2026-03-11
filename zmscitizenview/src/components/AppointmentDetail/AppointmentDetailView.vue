@@ -232,8 +232,8 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
-                <p v-if="selectedProvider?.scope?.hint">
-                  <strong> {{ selectedProvider.scope.hint }} </strong>
+                <p v-if="appointment?.scope?.hint">
+                  <strong> {{ appointment.scope.hint }} </strong>
                 </p>
               </div>
               <muc-callout
