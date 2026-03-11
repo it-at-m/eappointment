@@ -118,9 +118,9 @@ class UseraccountEdit extends BaseController
             $errors[] = 'Es muss mindestens eine Rolle ausgewählt werden.';
         }
 
-        // Forbid combining system_admin with any other role to keep semantics clear
+        // If system_admin is selected, enforce it as the only role by normalization
         if (in_array('system_admin', $normalized, true) && count($normalized) > 1) {
-            $errors[] = 'Die Rolle „Technische Administration (system_admin)“ darf nicht mit weiteren Rollen kombiniert werden.';
+            $normalized = ['system_admin'];
         }
 
         if (!empty($errors)) {

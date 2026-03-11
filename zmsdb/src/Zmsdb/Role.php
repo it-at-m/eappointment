@@ -2,9 +2,6 @@
 
 namespace BO\Zmsdb;
 
-/**
- * Lightweight repository for role and role_permission operations.
- */
 class Role extends Base
 {
     /**
@@ -68,6 +65,38 @@ class Role extends Base
         unset($role);
 
         return array_values($rolesById);
+    }
+
+    /**
+     * Return a map of role-id => role-name for the given ids.
+     *
+     * @param int[] $ids
+     * @return array<int,string>
+     */
+    public function readRoleNamesByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if (empty($ids)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = sprintf('SELECT id, name FROM role WHERE id IN (%s)', $placeholders);
+
+        $rows = $this->getReader()->fetchAll($sql, $ids);
+        if (!is_array($rows) || empty($rows)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($rows as $row) {
+            if (!isset($row['id'], $row['name'])) {
+                continue;
+            }
+            $result[(int) $row['id']] = (string) $row['name'];
+        }
+
+        return $result;
     }
 
     /**
