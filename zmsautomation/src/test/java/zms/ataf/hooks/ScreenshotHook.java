@@ -25,6 +25,11 @@ public class ScreenshotHook {
     @AfterStep
     public void afterStep(Scenario scenario) {
         if (!ENABLED) return;
+
+        // Only run for UI scenarios that actually use a WebDriver (@web tag).
+        if (!scenario.getSourceTagNames().contains("@web")) {
+            return;
+        }
         try {
             RemoteWebDriver driver = DriverUtil.getDriver();
             byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
