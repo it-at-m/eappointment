@@ -471,21 +471,24 @@ class View extends BaseView {
         $dialog.on('submit.mail', 'form[name="mail"]', async (ev) => {
             ev.preventDefault();
             showSpinner($container);
-            const formData =
-                $(ev.currentTarget).serialize() + '&submit=form&dialog=1';
-            const response = await this.loadCall(
-                `${this.includeUrl}/mail/`,
-                'POST',
-                formData,
-                false,
-                $container
-            );
-            hideSpinner($container);
-            if (response.includes('<form')) {
-                this.loadDialog(response, null, null, triggerElement);
-                this.bindMailForm($container, triggerElement);
-            } else {
-                this.loadMessage(response, () => { }, null, triggerElement);
+            try {
+                const formData =
+                    $(ev.currentTarget).serialize() + '&submit=form&dialog=1';
+                const response = await this.loadCall(
+                    `${this.includeUrl}/mail/`,
+                    'POST',
+                    formData,
+                    false,
+                    $container
+                );
+                if (response.includes('<form')) {
+                    this.loadDialog(response, null, null, triggerElement);
+                    this.bindMailForm($container, triggerElement);
+                } else {
+                    this.loadMessage(response, () => { }, null, triggerElement);
+                }
+            } finally {
+                hideSpinner($container);
             }
         });
     }
