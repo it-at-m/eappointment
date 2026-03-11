@@ -88,7 +88,16 @@ public class CitizenApiSteps {
         .when()
             .get("/available-days-by-office/");
         CommonApiSteps.setResponse(response);
-        lastAvailableDaysResponse = parseDataResponse(response, AvailableDaysResponse.class);
+
+        // Citizen API may return either a plain AvailableDaysResponse payload
+        // or an ApiResponse-wrapped payload. Try plain first, then wrapped.
+        AvailableDaysResponse days;
+        try {
+            days = response.as(AvailableDaysResponse.class);
+        } catch (Exception e) {
+            days = parseDataResponse(response, AvailableDaysResponse.class);
+        }
+        lastAvailableDaysResponse = days;
     }
 
     @When("I request available appointments for the first available day")
@@ -122,7 +131,16 @@ public class CitizenApiSteps {
         .when()
             .get("/available-appointments-by-office/");
         CommonApiSteps.setResponse(response);
-        lastAvailableAppointmentsResponse = parseDataResponse(response, AvailableAppointmentsResponse.class);
+
+        // As with available-days, available-appointments endpoints may return either
+        // a plain AvailableAppointmentsResponse payload or an ApiResponse-wrapped payload.
+        AvailableAppointmentsResponse appointments;
+        try {
+            appointments = response.as(AvailableAppointmentsResponse.class);
+        } catch (Exception e) {
+            appointments = parseDataResponse(response, AvailableAppointmentsResponse.class);
+        }
+        lastAvailableAppointmentsResponse = appointments;
     }
 
     @When("I reserve an appointment with the first available slot")
