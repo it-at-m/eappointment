@@ -220,13 +220,6 @@ class Useraccount extends Base
             }
         }
 
-        // Superusers implicitly have all permissions; ensure the boolean map reflects that
-        if ($useraccount->isSuperUser() && isset($useraccount->permissions) && is_array($useraccount->permissions)) {
-            foreach (array_keys($useraccount->permissions) as $permissionKey) {
-                $useraccount->permissions[$permissionKey] = true;
-            }
-        }
-
         return $useraccount;
     }
 
@@ -308,13 +301,6 @@ class Useraccount extends Base
             foreach (array_unique($allPermissions[$userId]) as $permission) {
                 if (isset($entity->permissions) && array_key_exists($permission, $entity->permissions)) {
                     $entity->permissions[$permission] = true;
-                }
-            }
-
-            // Superusers implicitly have all permissions; ensure the boolean map reflects that
-            if ($entity->isSuperUser() && isset($entity->permissions) && is_array($entity->permissions)) {
-                foreach (array_keys($entity->permissions) as $permissionKey) {
-                    $entity->permissions[$permissionKey] = true;
                 }
             }
         }
