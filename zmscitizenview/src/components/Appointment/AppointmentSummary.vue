@@ -331,12 +331,12 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   getServiceBaseURL,
   getVariantHint,
   VARIANTS_WITH_HINTS,
 } from "@/utils/Constants";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 

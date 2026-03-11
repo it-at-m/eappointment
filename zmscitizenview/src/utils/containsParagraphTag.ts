@@ -2,9 +2,7 @@
  * Shared utility for callout type handling
  */
 
-export function containsParagraphTag(
-  html: string | null | undefined
-): boolean {
+export function containsParagraphTag(html: string | null | undefined): boolean {
   const input = (html ?? "").toString().trim();
   if (input === "") return false;
 
