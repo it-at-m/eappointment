@@ -51,7 +51,7 @@
     "qrcode-generator": "^2.0.0",
     "querystring-es3": "^0.2.1",
     "react": "^18.0.2",
-    "react-datepicker": "^4.2.1",
+    "react-datepicker": "^9.1.0",
     "react-dom": "^18.0.2",
     "react-icons": "^5.0.0",
     "react-to-print": "^3.0.0",
@@ -67,6 +67,6 @@
     "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#muc-main",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14",
     "chart.js": "^4.4.2",
-    "react-chartjs-2": "^5.2.0"
+    "react-chartjs-2": "^5.3.1"
   }
 }
