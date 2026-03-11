@@ -20,6 +20,7 @@ import ConfigView from './page/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
+import RolePermissionView from './page/rolePermissionAdmin'
 import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
@@ -95,6 +96,10 @@ $('.workstation-view').each(function () {
 
 $('.useraccount-edit-view').each(function () {
     new UseraccountView(this, getDataAttributes(this));
+})
+
+$('.role-permission-view').each(function () {
+    new RolePermissionView(this, getDataAttributes(this));
 })
 
 $('.calendar-weektable').each(function () {

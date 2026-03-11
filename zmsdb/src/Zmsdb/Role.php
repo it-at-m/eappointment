@@ -100,30 +100,19 @@ class Role extends Base
     }
 
     /**
-     * Apply create/update/delete actions for roles and their permissions.
+     * Apply create/update actions for roles and their permissions.
      *
      * @param array<string,array> $rolesInput keyed by role ID
-     * @param int[] $deleteIds list of role IDs to delete
      * @param array<string,mixed> $newRoleInput data for a new role
      */
-    public function updateRoleAssignments(array $rolesInput, array $deleteIds, array $newRoleInput): void
+    public function updateRoleAssignments(array $rolesInput, array $newRoleInput): void
     {
         $db = $this;
 
-        // Normalize delete IDs to integers
-        $deleteIds = array_values(array_unique(array_map('intval', $deleteIds)));
-
-        // Existing roles: update or delete
+        // Existing roles: update
         foreach ($rolesInput as $roleId => $roleData) {
             $roleId = (int) $roleId;
             if ($roleId <= 0) {
-                continue;
-            }
-
-            // Delete role (and its permissions) if requested
-            if (in_array($roleId, $deleteIds, true)) {
-                $db->perform('DELETE FROM role_permission WHERE role_id = ?', [$roleId]);
-                $db->perform('DELETE FROM role WHERE id = ?', [$roleId]);
                 continue;
             }
 
@@ -156,6 +145,8 @@ class Role extends Base
             }
         }
 
+        // Note: deletion of roles is handled by a dedicated path (see deleteRoleById()).
+
         // New role creation
         $newName = isset($newRoleInput['name']) ? trim((string) $newRoleInput['name']) : '';
         if ($newName !== '') {
@@ -186,5 +177,21 @@ class Role extends Base
                 }
             }
         }
+    }
+
+    /**
+     * Delete a role and all of its permission assignments.
+     *
+     * @param int $roleId
+     */
+    public function deleteRoleById(int $roleId): void
+    {
+        $roleId = (int) $roleId;
+        if ($roleId <= 0) {
+            return;
+        }
+
+        $this->perform('DELETE FROM role_permission WHERE role_id = ?', [$roleId]);
+        $this->perform('DELETE FROM role WHERE id = ?', [$roleId]);
     }
 }

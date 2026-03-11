@@ -24,6 +24,7 @@ class RolePermissionGet extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
 
         // Guard: only allow superusers (permissions.superuser) to access this UI
@@ -66,6 +67,7 @@ class RolePermissionGet extends BaseController
                 'workstation' => $workstation,
                 'rolePermissionMatrix' => $rolePermissionMatrix,
                 'permissions' => $permissions,
+                'success' => $success,
             ]
         );
     }

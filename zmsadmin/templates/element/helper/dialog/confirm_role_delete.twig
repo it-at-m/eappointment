@@ -1,0 +1,19 @@
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}
+        <i aria-hidden="true" title="{{ ('Rolle löschen')|trans }}" class="fas fa-info-circle"></i>
+        {{ ('Rolle löschen')|trans }}
+    {% endblock %}
+    {% block board_body %}
+        {% set message = "Wenn Sie die Rolle \"" ~  name ~"\" wirklich löschen wollen, klicken Sie auf \"Rolle löschen\"." %}
+        <p>
+            {{ message|trans }}
+        </p>
+        <div class="form-actions">
+            <a class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-ok class="button button--destructive button-ok" href="#">Rolle löschen</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}
+

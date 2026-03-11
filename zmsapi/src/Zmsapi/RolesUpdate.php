@@ -42,10 +42,9 @@ class RolesUpdate extends BaseController
 
         $rolesInput = isset($data['roles']) && is_array($data['roles']) ? $data['roles'] : [];
         $newRoleInput = isset($data['newRole']) && is_array($data['newRole']) ? $data['newRole'] : [];
-        $deleteIds = isset($data['delete']) && is_array($data['delete']) ? $data['delete'] : [];
 
         $repository = new RoleRepository();
-        $repository->updateRoleAssignments($rolesInput, $deleteIds, $newRoleInput);
+        $repository->updateRoleAssignments($rolesInput, $newRoleInput);
 
         // Return updated matrix for convenience (same shape as RolesGet)
         $roles = $repository->readRolePermissionMatrix();

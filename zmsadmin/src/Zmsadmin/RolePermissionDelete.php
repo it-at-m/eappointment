@@ -9,13 +9,14 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Mellon\Validator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class RolePermissionUpdate extends BaseController
+class RolePermissionDelete extends BaseController
 {
     /**
-     * Superuser-only endpoint to update roles and their permission bundles.
+     * Superuser-only endpoint to delete a single role.
      *
      * @return ResponseInterface
      */
@@ -24,10 +25,8 @@ class RolePermissionUpdate extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
 
-        // Guard: only allow superusers (permissions.superuser) to access this UI
         if (!$workstation->getUseraccount()->isSuperUser()) {
             return \BO\Slim\Render::withHtml(
                 $response->withStatus(403),
@@ -47,10 +46,10 @@ class RolePermissionUpdate extends BaseController
             );
         }
 
-        // Forward the updated role matrix to zmsapi for persistence.
-        \App::$http->readPostResult('/roles/', $request->getParsedBody() ?? []);
+        $roleId = Validator::value($args['id'])->isNumber()->getValue();
 
-        // After update, redirect back to the GET view with success flag.
-        return \BO\Slim\Render::redirect('rolePermissionAdmin', [], ['success' => 'rolePermission_saved']);
+        \App::$http->readDeleteResult('/roles/' . $roleId . '/');
+
+        return \BO\Slim\Render::redirect('rolePermissionAdmin', [], []);
     }
 }

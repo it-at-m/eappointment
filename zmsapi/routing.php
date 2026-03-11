@@ -1580,6 +1580,11 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\RolesUpdate'
 )->setName("RolesUpdate");
 
+\App::$slim->delete(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RolesDelete'
+)->setName("RolesDelete");
+
 /**
  *  @swagger
  *  "/permissions/":
