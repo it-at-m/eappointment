@@ -186,7 +186,22 @@ public class CitizenApiSteps {
         .when()
             .post("/reserve-appointment/");
         CommonApiSteps.setResponse(response);
-        lastReserveProcess = parseDataResponse(response, ThinnedProcess.class);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ status=%d body=%s",
+            response.getStatusCode(),
+            reserveBody.length() > 500 ? reserveBody.substring(0, 500) + "..." : reserveBody
+        ));
+
+        // Reserve endpoint may return plain ThinnedProcess or an ApiResponse-wrapped payload
+        ThinnedProcess reserved;
+        try {
+            reserved = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            reserved = parseDataResponse(response, ThinnedProcess.class);
+        }
+        lastReserveProcess = reserved;
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
@@ -210,7 +225,20 @@ public class CitizenApiSteps {
         .when()
             .post("/preconfirm-appointment/");
         CommonApiSteps.setResponse(response);
-        ThinnedProcess updated = parseDataResponse(response, ThinnedProcess.class);
+
+        String preconfirmBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /preconfirm-appointment/ status=%d body=%s",
+            response.getStatusCode(),
+            preconfirmBody.length() > 500 ? preconfirmBody.substring(0, 500) + "..." : preconfirmBody
+        ));
+
+        ThinnedProcess updated;
+        try {
+            updated = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            updated = parseDataResponse(response, ThinnedProcess.class);
+        }
         if (updated != null) {
             lastReserveProcess = updated;
             setLastReserveProcess(updated);
@@ -231,7 +259,20 @@ public class CitizenApiSteps {
         .when()
             .post("/confirm-appointment/");
         CommonApiSteps.setResponse(response);
-        ThinnedProcess confirmed = parseDataResponse(response, ThinnedProcess.class);
+
+        String confirmBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /confirm-appointment/ status=%d body=%s",
+            response.getStatusCode(),
+            confirmBody.length() > 500 ? confirmBody.substring(0, 500) + "..." : confirmBody
+        ));
+
+        ThinnedProcess confirmed;
+        try {
+            confirmed = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            confirmed = parseDataResponse(response, ThinnedProcess.class);
+        }
         if (confirmed != null) {
             lastReserveProcess = confirmed;
             setLastReserveProcess(confirmed);
