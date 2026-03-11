@@ -1578,6 +1578,39 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/permissions/":
+ *      get:
+ *          summary: List all atomic permissions
+ *          x-since: 2.25
+ *          tags:
+ *              - permission
+ *          responses:
+ *              200:
+ *                  description: "List of permissions"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      id:
+ *                                          type: integer
+ *                                      name:
+ *                                          type: string
+ *                                      description:
+ *                                          type: string
+ */
+\App::$slim->get(
+    '/permissions/',
+    '\BO\Zmsapi\Permissions'
+)->setName("Permissions");
+
+/**
+ *  @swagger
  *  "/role/{level}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role

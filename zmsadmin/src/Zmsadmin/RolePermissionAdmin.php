@@ -58,8 +58,13 @@ class RolePermissionAdmin extends BaseController
 
         // Load roles and their permissions via zmsapi.
         // zmsadmin must not talk to zmsdb directly.
-        $apiResult = \App::$http->readGetResult('/roles/', []);
-        $rolePermissionMatrix = $apiResult->getCollection();
+        $rolesResult = \App::$http->readGetResult('/roles/', []);
+        $rolePermissionMatrix = $rolesResult->getCollection();
+
+        // Load the full permission catalog so the UI can render checkboxes
+        // for all atomic permissions.
+        $permissionsResult = \App::$http->readGetResult('/permissions/', []);
+        $permissions = $permissionsResult->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -69,6 +74,7 @@ class RolePermissionAdmin extends BaseController
                 'menuActive' => 'rolePermissionAdmin',
                 'workstation' => $workstation,
                 'rolePermissionMatrix' => $rolePermissionMatrix,
+                'permissions' => $permissions,
             ]
         );
     }
