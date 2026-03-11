@@ -1,5 +1,5 @@
 /**
- * Shared utility for callout type handling
+ * Checks whether the given HTML string contains a paragraph (<p>) element
  */
 
 export function containsParagraphTag(html: string | null | undefined): boolean {
