@@ -690,12 +690,12 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public String clickOnAddSpontaneousCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2L, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2L, "//h2[text()='Wartenummer wurde hinzugefügt']", LocatorType.XPATH, false, CONTEXT),
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Wartenummer wurde hinzugefügt']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");
         Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
         Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
-                getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME * 2L, "//dt[starts-with(normalize-space(), 'Termin-Nr.')]", LocatorType.XPATH, CONTEXT));
+                getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//dt[starts-with(normalize-space(), 'Termin-Nr.')]", LocatorType.XPATH, CONTEXT));
         Assert.assertTrue(appointmentNumberMatcher.find(), "Click on \"Add spontaneous customer\"  button has failed! Waiting number is not displayed!");
         TestDataHelper.setTestData("new_waiting_number", appointmentNumberMatcher.group(1));
         return appointmentNumberMatcher.group(1);
