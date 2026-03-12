@@ -30,7 +30,7 @@
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "60",
-                                "startInDaysDefault": "1",
+                                "startInDaysDefault": "1"
                             },
                             "client": {
                                 "amendmentActivated": "0",
@@ -112,7 +112,7 @@
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
