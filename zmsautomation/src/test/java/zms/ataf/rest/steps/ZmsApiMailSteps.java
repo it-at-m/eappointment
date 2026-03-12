@@ -68,9 +68,9 @@ public class ZmsApiMailSteps {
         }
 
         // Fallback for local/dev: obtain X-AuthKey by calling POST /workstation/login/
-        // using the same credentials already used by ATAF properties (defaults to ataf/vorschau).
-        String username = TestPropertiesHelper.getPropertyAsString("userName", true, "ataf");
-        String password = TestPropertiesHelper.getPropertyAsString("userPassword", true, "vorschau");
+        // Use the system messenger account by default (same password as other system users).
+        String username = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserName", true, "_system_messenger");
+        String password = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserPassword", true, "vorschau");
 
         Response loginResponse = given()
             .baseUri(TestConfig.getBaseUri())
@@ -91,7 +91,7 @@ public class ZmsApiMailSteps {
         if (loginResponse.getStatusCode() < 200 || loginResponse.getStatusCode() >= 300) {
             throw new IllegalStateException(
                 "Unable to auto-login to obtain X-AuthKey. Ensure "
-                    + "userName/userPassword can login to /workstation/login/. HTTP " + loginResponse.getStatusCode());
+                    + "zmsapiMailUserName/zmsapiMailUserPassword can login to /workstation/login/. HTTP " + loginResponse.getStatusCode());
         }
 
         try {
