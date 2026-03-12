@@ -1424,7 +1424,7 @@ class AvailabilityConflictsTest extends Base
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
