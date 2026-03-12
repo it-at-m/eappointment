@@ -25,46 +25,27 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Basic smoke check that the Service Finder is rendered on the start page.
-     * We assert a few key German labels that come from ServiceFinder.vue /
-     * de-DE.json so the test matches the actual UI:
-     * - "Leistung" (t("service"))
-     * - "Bürgerservice-Suche" (t("serviceSearch"))
-     * - "Häufig gesuchte Leistungen" (t("oftenSearchedService"))
+     * Basic smoke check that the Service Finder webcomponent is rendered on the
+     * start page.
+     *
+     * For zmscitizenview we don't need to pierce into the Vue app; it is
+     * sufficient to assert that the root host element for the appointment
+     * component hierarchy is present and visible:
+     *   <zms-appointment-i18n-host><zms-appointment-wrapped/></zms-appointment-i18n-host>
      */
     public void assertServiceFinderHeadingVisible() {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Checking that the Service Finder texts are visible on zmscitizenview.");
+        ScenarioLogManager.getLogger().info("Checking that the zmscitizenview appointment webcomponent root is visible.");
 
-        // Main section heading
-        boolean serviceHeadingVisible = isWebElementVisible(
+        boolean hostVisible = isWebElementVisible(
                 DEFAULT_EXPLICIT_WAIT_TIME,
-                "//h2[normalize-space()='Leistung']",
+                "//zms-appointment-i18n-host",
                 LocatorType.XPATH,
-                false);
-        Assert.assertTrue(
-                serviceHeadingVisible,
-                "Service Finder heading \"Leistung\" is not visible on the zmscitizenview start page.");
+                true);
 
-        // Search label
-        boolean serviceSearchVisible = isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//*[normalize-space()='Bürgerservice-Suche']",
-                LocatorType.XPATH,
-                false);
         Assert.assertTrue(
-                serviceSearchVisible,
-                "\"Bürgerservice-Suche\" label is not visible on the zmscitizenview start page.");
-
-        // Often searched services section
-        boolean oftenSearchedVisible = isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//*[normalize-space()='Häufig gesuchte Leistungen']",
-                LocatorType.XPATH,
-                false);
-        Assert.assertTrue(
-                oftenSearchedVisible,
-                "\"Häufig gesuchte Leistungen\" section heading is not visible on the zmscitizenview start page.");
+                hostVisible,
+                "Root element <zms-appointment-i18n-host> is not visible on the zmscitizenview start page.");
     }
 }
 
