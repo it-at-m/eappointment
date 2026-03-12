@@ -141,6 +141,9 @@ DialogHandler.hideMessages();
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
 
+// Simple sanity check to verify JS bundle was built and deployed (e.g. via GitHub Actions)
+// This will show once on every zmsadmin page load while enabled.
+alert("Hello world – zmsadmin JS bundle was built (GitHub Actions sanity check).");
 
 // hook up react components
 //bindReact('.availabilityDayRoot', AvailabilityDayPage)
