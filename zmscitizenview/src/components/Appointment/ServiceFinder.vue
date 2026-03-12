@@ -603,7 +603,7 @@ const setOftenSearchedService = (serviceId: string) => {
 const nextStep = () => emit("next");
 const reload = () => {
   const baseUrl = window.location.origin + window.location.pathname;
-  window.location.assign(baseUrl);
+  window.location.replace(baseUrl);
 };
 
 const skipSubservices = () => {
