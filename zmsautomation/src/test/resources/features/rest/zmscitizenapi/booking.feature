@@ -51,7 +51,7 @@ Feature: Citizen API full booking flow (ZMSKVR-1124)
 
   @jumpin @allowDisabledServicesMix
   Scenario: JumpIn 10489 with Personalausweis 1063441 – effective office may be 10502
-    When I request available days for office 10489 and service 1063441
+    When I request available days for office 10502 and service 1063441
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the response should contain a process id and auth key
