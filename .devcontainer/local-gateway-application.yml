@@ -7,6 +7,8 @@ spring:
             allowedOriginPatterns:
               - "http://localhost:*"
               - "https://localhost:*"
+              - "http://citizenview:*"
+              - "https://citizenview:*"
             allowedMethods:
               - '*'
             allowedHeaders:
