@@ -98,12 +98,6 @@ class ReportClientDepartmentTest extends Base
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientdepartment/74/2016-04/',
                   'response' => $this->readFixture("GET_clientdepartment_74_042016.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/warehouse/notificationdepartment/74/2016-04/',
-                  'parameters' => ['groupby' => 'month'],
-                  'response' => $this->readFixture("GET_notificationdepartment_74_042016.json")
               ]
             ]
         );
@@ -163,12 +157,6 @@ class ReportClientDepartmentTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/warehouse/clientdepartment/74/2016-04/',
                 'response' => $this->readFixture("GET_clientdepartment_74_042016.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/warehouse/notificationdepartment/74/2016-04/',
-                'parameters' => ['groupby' => 'month'],
-                'response' => $this->readFixture("GET_notificationdepartment_74_042016.json")
             ]
             ]
         );
