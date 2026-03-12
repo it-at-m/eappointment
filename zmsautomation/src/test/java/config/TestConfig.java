@@ -85,11 +85,4 @@ public final class TestConfig {
         return getConfigValue("AUTH_TOKEN", "AUTH_TOKEN", null);
     }
 
-    /**
-     * ZMS API superuser X-Authkey for endpoints requiring superuser (e.g. GET /mails/).
-     * Set via system property ZMSAPI_AUTH_KEY or environment variable ZMSAPI_AUTH_KEY.
-     */
-    public static String getZmsApiAuthKey() {
-        return getConfigValue("ZMSAPI_AUTH_KEY", "ZMSAPI_AUTH_KEY", null);
-    }
 }

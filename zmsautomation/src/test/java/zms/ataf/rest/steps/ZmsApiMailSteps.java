@@ -63,10 +63,6 @@ public class ZmsApiMailSteps {
     }
 
     private String getOrLoginXAuthKey() {
-        String authKey = TestConfig.getZmsApiAuthKey();
-        if (authKey != null && !authKey.isBlank()) {
-            return authKey;
-        }
         if (cachedXAuthKey != null && !cachedXAuthKey.isBlank()) {
             return cachedXAuthKey;
         }
@@ -94,7 +90,7 @@ public class ZmsApiMailSteps {
 
         if (loginResponse.getStatusCode() < 200 || loginResponse.getStatusCode() >= 300) {
             throw new IllegalStateException(
-                "Unable to auto-login to obtain X-AuthKey. Set ZMSAPI_AUTH_KEY env/prop, or ensure "
+                "Unable to auto-login to obtain X-AuthKey. Ensure "
                     + "userName/userPassword can login to /workstation/login/. HTTP " + loginResponse.getStatusCode());
         }
 
