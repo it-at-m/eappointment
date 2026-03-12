@@ -40,13 +40,13 @@ public class AdminPageContext extends Context {
     public void navigateToPage() {
         String adminUrl;
         if (RunnerUtils.isJiraBasedTestExecution()) {
-            adminUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT)).getSystemUrl("Admin");
+            adminUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT)).getSystemUrl("zmsadmin");
         } else {
             adminUrl = Objects.requireNonNull(
                             Environment.contains(TestProperties.getProperty("test.execution.test.environment", true).map(String.class::cast).orElse("")))
-                    .getSystemUrl("Admin");
+                    .getSystemUrl("zmsadmin");
         }
-        windowType = new WindowType("Admin", new System("Admin", adminUrl));
+        windowType = new WindowType("zmsadmin", new System("zmsadmin", adminUrl));
         if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, adminUrl, START_PAGE_TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);

@@ -32,17 +32,17 @@ public class TestData {
 
         LOCAL.addSystem("ZMS-API", baseUri);
         LOCAL.addSystem("ZMS-Citizen-API", citizenUri);
-        LOCAL.addSystem("Admin", adminUri);
+        LOCAL.addSystem("zmsadmin", adminUri);
         LOCAL.addSystem("Bürgeransicht", buergerUri);
-        LOCAL.addSystem("Statistik", statisticUri);
-        LOCAL.addSystem("ZMS-Citizen-View", citizenViewUri);
+        LOCAL.addSystem("zmsstatistic", statisticUri);
+        LOCAL.addSystem("zmscitizenview", citizenViewUri);
 
         // City DEV environment (optional)
         DEV.addSystem("ZMS-API", "https://zms-dev.muenchen.de/terminvereinbarung/api/2");
         DEV.addSystem("ZMS-Citizen-API", "https://zms-dev.muenchen.de/terminvereinbarung/api/citizen");
-        DEV.addSystem("Admin", "https://zms-dev.muenchen.de/terminvereinbarung/admin/");
+        DEV.addSystem("zmsadmin", "https://zms-dev.muenchen.de/terminvereinbarung/admin/");
         DEV.addSystem("Bürgeransicht", "https://zms-dev.muenchen.de/buergeransicht/#/");
-        DEV.addSystem("Statistik", "https://zms-dev.muenchen.de/terminvereinbarung/statistic/");
-        DEV.addSystem("ZMS-Citizen-View", "https://zms-dev.muenchen.de/buergeransicht/#/");
+        DEV.addSystem("zmsstatistic", "https://zms-dev.muenchen.de/terminvereinbarung/statistic/");
+        DEV.addSystem("zmscitizenview", "https://zms-dev.muenchen.de/buergeransicht/#/");
     }
 }

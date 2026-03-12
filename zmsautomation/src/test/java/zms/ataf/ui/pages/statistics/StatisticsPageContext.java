@@ -32,13 +32,13 @@ public class StatisticsPageContext extends Context {
     public void navigateToPage() {
         String statisticsUrl;
         if (RunnerUtils.isJiraBasedTestExecution()) {
-            statisticsUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT)).getSystemUrl("Statistik");
+            statisticsUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT)).getSystemUrl("zmsstatistic");
         } else {
             statisticsUrl = Objects.requireNonNull(
                             Environment.contains(TestProperties.getProperty("test.execution.test.environment", true).map(String.class::cast).orElse("")))
-                    .getSystemUrl("Statistik");
+                    .getSystemUrl("zmsstatistic");
         }
-        windowType = new WindowType("Statistik", new System("Statistik", statisticsUrl));
+        windowType = new WindowType("zmsstatistic", new System("zmsstatistic", statisticsUrl));
         if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, statisticsUrl, StatisticsPageContext.TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
             FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);

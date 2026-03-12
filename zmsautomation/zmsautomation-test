@@ -73,6 +73,8 @@ CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarun
 CITIZENVIEW_PORT="${CITIZENVIEW_PORT:-8082}"
 # Inside the devcontainer network, citizenview is reachable via its service name.
 CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_PORT}}"
+# Make the base URI also available for ATAF's Environment as ZMS-Citizen-View.
+export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
 
 # Keycloak config files
 KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
