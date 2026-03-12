@@ -547,6 +547,7 @@ class View extends BaseView {
     }
 
     loadCalendar(showLoader = true) {
+        console.log("Testtttt");
         if ('counter' == this.page) {
             return new CalendarView($.find('[data-calendar]'), {
                 selectedDate: this.selectedDate,
