@@ -107,8 +107,8 @@ class View extends BaseView {
         this.selectedDate = date;
         this.loadCalendar();
         if ('counter' == this.page){
-            this.loadQueueInfo();
             this.loadAppointmentTimes();
+            this.loadQueueInfo();
         }
         this.loadQueueTable();
         this.loadAppointmentForm(true, !this.selectedProcess).loadFreeProcessList().loadList().then(() => {
