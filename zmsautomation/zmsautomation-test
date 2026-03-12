@@ -70,6 +70,9 @@ FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
 # API endpoints (for health checks from inside container)
 BASE_URI="${BASE_URI:-http://localhost/terminvereinbarung/api/2}"
 CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarung/api/citizen}"
+CITIZENVIEW_PORT="${CITIZENVIEW_PORT:-8082}"
+# Inside the devcontainer network, citizenview is reachable via its service name.
+CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_PORT}}"
 
 # Keycloak config files
 KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
@@ -345,6 +348,7 @@ HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}"
 ZMS_API_HEALTH_URL="$(join_url "${BASE_URI}" "status/")"
 : "${CITIZEN_API_BASE_URI:?CITIZEN_API_BASE_URI must be set}"
 CITIZEN_API_HEALTH_URL="$(join_url "${CITIZEN_API_BASE_URI}" "offices-and-services/")"
+ZMSCITIZENVIEW_HEALTH_URL="${CITIZENVIEW_BASE_URI}"
 
 # derive a date range similar to the Java steps (today .. today+6 months)
 AVAIL_DAYS_START_DATE="$(TZ=Europe/Berlin date -d "${ZMS_TIMEADJUST%% *}" +%F 2>/dev/null || date +%F)"
@@ -372,6 +376,7 @@ fail=false
 wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
 wait_http "citizenapi-available-days"  "$CITIZEN_API_AVAIL_DAYS_URL"  || fail=true
+wait_http "zmscitizenview"             "$ZMSCITIZENVIEW_HEALTH_URL"   || fail=true
 $fail && { warn "One or more health checks failed"; exit 1; }
 
 info "All health checks passed."

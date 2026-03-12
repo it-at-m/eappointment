@@ -36,7 +36,13 @@ export default defineConfig({
     ],
   },
   server: {
+    host: '0.0.0.0',
     port: 8082,
+    watch: {
+      // In containerized dev on macOS/Podman, inotify events may not
+      // propagate correctly for bind mounts, so force polling.
+      usePolling: true,
+    },
   },
   build: {
     ssrManifest: true,
