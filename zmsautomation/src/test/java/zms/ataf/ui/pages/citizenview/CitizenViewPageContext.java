@@ -40,13 +40,13 @@ public class CitizenViewPageContext extends Context {
                     .getSystemUrl("zmscitizenview");
         }
 
+        // For the Vite-powered zmscitizenview dev server we don't rely on the page
+        // title (it may be empty or localized differently). Just navigate to the URL
+        // and let the scenario assertions verify that the Service Finder is rendered.
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
-        if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, citizenViewUrl, TITLE)) {
-            WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
-            FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
-        } else {
-            Assert.fail("Could not navigate to ZMS-Citizen-View!");
-        }
+        DRIVER.navigate().to(citizenViewUrl);
+        WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
+        FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
     }
 
     @Override
