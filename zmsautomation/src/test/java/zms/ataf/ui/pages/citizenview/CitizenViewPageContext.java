@@ -2,12 +2,14 @@ package zms.ataf.ui.pages.citizenview;
 
 import java.util.Objects;
 
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 
 import ataf.core.context.TestExecutionContext;
 import ataf.core.data.Environment;
 import ataf.core.data.System;
+import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.TestProperties;
 import ataf.core.utils.RunnerUtils;
 import ataf.web.controls.FrameControls;
@@ -40,13 +42,27 @@ public class CitizenViewPageContext extends Context {
                     .getSystemUrl("zmscitizenview");
         }
 
-        // For the Vite-powered zmscitizenview dev server we don't rely on the page
-        // title (it may be empty or localized differently). Just navigate to the URL
-        // and let the scenario assertions verify that the Service Finder is rendered.
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
-        DRIVER.navigate().to(citizenViewUrl);
+        try {
+            // For the Vite-powered zmscitizenview dev server we don't enforce a full
+            // page-load; if the dev client keeps the page "loading", Selenium may fire a
+            // TimeoutException even though the app is usable. In that case we log and
+            // continue, letting the UI assertions verify the page instead.
+            DRIVER.navigate().to(citizenViewUrl);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Navigation to zmscitizenview timed out in WebDriver, continuing to UI assertions anyway.", e);
+        }
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
+
+        // Give the webcomponent a brief moment to bootstrap before we start
+        // asserting on its DOM state.
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Override
