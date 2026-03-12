@@ -601,7 +601,10 @@ const setOftenSearchedService = (serviceId: string) => {
 };
 
 const nextStep = () => emit("next");
-const reload = () => location.reload();
+const reload = () => {
+  const baseUrl = window.location.origin + window.location.pathname;
+  window.location.assign(baseUrl);
+};
 
 const skipSubservices = () => {
   buttons.value?.lastElementChild?.focus();
