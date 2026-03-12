@@ -26,19 +26,45 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * Basic smoke check that the Service Finder is rendered on the start page.
-     * We assert the translated heading "Leistung" from t("service") is visible.
+     * We assert a few key German labels that come from ServiceFinder.vue /
+     * de-DE.json so the test matches the actual UI:
+     * - "Leistung" (t("service"))
+     * - "Bürgerservice-Suche" (t("serviceSearch"))
+     * - "Häufig gesuchte Leistungen" (t("oftenSearchedService"))
      */
     public void assertServiceFinderHeadingVisible() {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Checking that the Service Finder heading is visible on ZMS-Citizen-View.");
-        boolean visible = isWebElementVisible(
+        ScenarioLogManager.getLogger().info("Checking that the Service Finder texts are visible on zmscitizenview.");
+
+        // Main section heading
+        boolean serviceHeadingVisible = isWebElementVisible(
                 DEFAULT_EXPLICIT_WAIT_TIME,
                 "//h2[normalize-space()='Leistung']",
                 LocatorType.XPATH,
                 false);
         Assert.assertTrue(
-                visible,
-                "Service Finder heading \"Leistung\" is not visible on the ZMS-Citizen-View start page.");
+                serviceHeadingVisible,
+                "Service Finder heading \"Leistung\" is not visible on the zmscitizenview start page.");
+
+        // Search label
+        boolean serviceSearchVisible = isWebElementVisible(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[normalize-space()='Bürgerservice-Suche']",
+                LocatorType.XPATH,
+                false);
+        Assert.assertTrue(
+                serviceSearchVisible,
+                "\"Bürgerservice-Suche\" label is not visible on the zmscitizenview start page.");
+
+        // Often searched services section
+        boolean oftenSearchedVisible = isWebElementVisible(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[normalize-space()='Häufig gesuchte Leistungen']",
+                LocatorType.XPATH,
+                false);
+        Assert.assertTrue(
+                oftenSearchedVisible,
+                "\"Häufig gesuchte Leistungen\" section heading is not visible on the zmscitizenview start page.");
     }
 }
 
