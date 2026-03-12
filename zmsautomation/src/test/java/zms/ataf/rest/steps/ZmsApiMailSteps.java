@@ -3,9 +3,13 @@ package zms.ataf.rest.steps;
 import static io.restassured.RestAssured.*;
 
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ataf.core.helpers.TestPropertiesHelper;
+import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
@@ -20,13 +24,11 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
  */
 public class ZmsApiMailSteps {
 
+    private static String cachedXAuthKey;
+
     @When("I fetch the preconfirmation mail for the current process")
     public void iFetchThePreconfirmationMailForTheCurrentProcess() {
-        String authKey = TestConfig.getZmsApiAuthKey();
-        if (authKey == null || authKey.isEmpty()) {
-            throw new IllegalStateException(
-                "ZMSAPI_AUTH_KEY (or ZMSAPI_AUTH_KEY env) is required to fetch mails. Set it for tests that use preconfirmation mail.");
-        }
+        String authKey = getOrLoginXAuthKey();
         ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
         if (booking == null) {
             throw new IllegalStateException("No current process. Reserve an appointment first.");
@@ -58,6 +60,62 @@ public class ZmsApiMailSteps {
         String confirmProcessId = String.valueOf(match.getProcess().getId());
         String confirmAuthKey = match.getProcess().getAuthKey();
         CitizenApiSteps.setBookingConfirmCredentials(confirmProcessId, confirmAuthKey != null ? confirmAuthKey : "");
+    }
+
+    private String getOrLoginXAuthKey() {
+        String authKey = TestConfig.getZmsApiAuthKey();
+        if (authKey != null && !authKey.isBlank()) {
+            return authKey;
+        }
+        if (cachedXAuthKey != null && !cachedXAuthKey.isBlank()) {
+            return cachedXAuthKey;
+        }
+
+        // Fallback for local/dev: obtain X-AuthKey by calling POST /workstation/login/
+        // using the same credentials already used by ATAF properties (defaults to ataf/vorschau).
+        String username = TestPropertiesHelper.getPropertyAsString("userName", true, "ataf");
+        String password = TestPropertiesHelper.getPropertyAsString("userPassword", true, "vorschau");
+
+        Response loginResponse = given()
+            .baseUri(TestConfig.getBaseUri())
+            .contentType("application/json")
+            .body(Map.of("id", username, "password", password))
+        .when()
+            .post("/workstation/login/");
+
+        CommonApiSteps.setResponse(loginResponse);
+
+        String body = loginResponse.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "ZMS API /workstation/login/ (auto X-AuthKey) status=%d body=%s",
+            loginResponse.getStatusCode(),
+            body.length() > 500 ? body.substring(0, 500) + "..." : body
+        ));
+
+        if (loginResponse.getStatusCode() < 200 || loginResponse.getStatusCode() >= 300) {
+            throw new IllegalStateException(
+                "Unable to auto-login to obtain X-AuthKey. Set ZMSAPI_AUTH_KEY env/prop, or ensure "
+                    + "userName/userPassword can login to /workstation/login/. HTTP " + loginResponse.getStatusCode());
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(body);
+            JsonNode authNode = root.path("data").path("authkey");
+            String key = authNode.isMissingNode() || authNode.isNull() ? null : authNode.asText();
+            if (key == null || key.isBlank()) {
+                // some payloads might use "authKey"
+                authNode = root.path("data").path("authKey");
+                key = authNode.isMissingNode() || authNode.isNull() ? null : authNode.asText();
+            }
+            if (key == null || key.isBlank()) {
+                throw new IllegalStateException("Login succeeded but response did not contain data.authkey");
+            }
+            cachedXAuthKey = key;
+            return key;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to parse /workstation/login/ response for authkey", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
