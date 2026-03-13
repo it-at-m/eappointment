@@ -26,21 +26,7 @@
           :message="t('systemFailurePageText')"
           :header="t('systemFailurePageHeader')"
           type="error"
-        >
-          <div
-            v-if="isDev"
-            class="api-debug-callout"
-          >
-            <strong>[DEV] API / gateway debug</strong>
-            <pre>{{ apiDebugText }}</pre>
-            <template v-if="lastApiFailureDebug">
-              <strong class="api-debug-callout__sub"
-                >Last request (offices-and-services)</strong
-              >
-              <pre>{{ lastApiFailureDebug }}</pre>
-            </template>
-          </div>
-        </error-alert>
+        />
       </div>
     </div>
   </div>
@@ -150,13 +136,11 @@ import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSv
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import { GlobalState } from "@/types/GlobalState";
-import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { getApiBaseDebugInfo } from "@/utils/Constants";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -171,13 +155,6 @@ const props = defineProps<{
   overviewUrl: string;
   t: (key: string) => string;
 }>();
-
-const isDev = import.meta.env.DEV;
-const apiDebugText = computed(() =>
-  Object.entries(getApiBaseDebugInfo())
-    .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")
-);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);

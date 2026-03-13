@@ -27,21 +27,7 @@
             :message="t('systemFailurePageText')"
             :header="t('systemFailurePageHeader')"
             type="error"
-          >
-            <div
-              v-if="isDev"
-              class="api-debug-callout"
-            >
-              <strong>[DEV] API / gateway debug</strong>
-              <pre>{{ apiDebugText }}</pre>
-              <template v-if="lastApiFailureDebug">
-                <strong class="api-debug-callout__sub"
-                  >Last request (offices-and-services)</strong
-                >
-                <pre>{{ lastApiFailureDebug }}</pre>
-              </template>
-            </div>
-          </error-alert>
+          />
         </div>
       </div>
     </div>
@@ -395,7 +381,6 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
-import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,
@@ -406,7 +391,6 @@ import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
-  getApiBaseDebugInfo,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
@@ -436,13 +420,6 @@ const props = defineProps<{
   showLoginOption: boolean;
   t: (key: string) => string;
 }>();
-
-const isDev = import.meta.env.DEV;
-const apiDebugText = computed(() =>
-  Object.entries(getApiBaseDebugInfo())
-    .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")
-);
 
 const STEPPER_ITEMS: StepperItem[] = [
   {

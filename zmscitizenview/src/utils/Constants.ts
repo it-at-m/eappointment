@@ -108,24 +108,6 @@ export function getAPIBaseURL(
   }
 }
 
-/** Dev-only: which API base URL is actually resolved (host vs container). */
-export function getApiBaseDebugInfo(): Record<string, string> {
-  const hostname =
-    typeof window !== "undefined" ? window.location.hostname : "(no window)";
-  const envHost = String(import.meta.env.VITE_VUE_APP_API_URL ?? "");
-  const envContainer = String(
-    import.meta.env.VITE_VUE_APP_API_URL_CONTAINER ?? ""
-  );
-  const rawBase = getRawApiBaseURL(undefined);
-  return {
-    hostname,
-    VITE_VUE_APP_API_URL: envHost,
-    VITE_VUE_APP_API_URL_CONTAINER: envContainer,
-    "resolved raw base (getRawApiBaseURL)": rawBase,
-    "full unauth API base (getAPIBaseURL)": getAPIBaseURL(undefined, false),
-  };
-}
-
 /**
  * UI thresholds and limits
  */

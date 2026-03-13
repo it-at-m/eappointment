@@ -7,10 +7,6 @@ import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { GlobalState } from "@/types/GlobalState";
 import {
-  formatFetchNetworkDebug,
-  recordApiFailureDebug,
-} from "@/utils/apiLastResponseDebug";
-import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
@@ -103,58 +99,29 @@ export function fetchServicesAndProviders(
     apiUrl += "?" + params.toString();
   }
 
-  const startedMs = performance.now();
   return fetch(apiUrl)
-    .then(async (response) => {
-      const text = await response.text();
-      recordApiFailureDebug(
-        formatFetchNetworkDebug({
-          requestUrl: apiUrl,
-          method: "GET",
-          startedMs,
-          response,
-          bodyText: text,
-        })
-      );
-      let data: any = {};
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        data = {
-          errors: [
-            {
-              errorCode: "parseError",
-              errorMessage: "Response was not JSON",
-              statusCode: response.status || 0,
-            },
-          ],
-          _rawPreview: text.slice(0, 400),
-        };
-      }
+    .then((response) => {
       if (response.status >= 400 && response.status < 600) {
-        if (!data.errors) {
-          data.errors = [
-            {
-              errorCode:
-                response.status >= 500 ? "serverError" : "internalError",
-              errorMessage: `HTTP ${response.status}`,
-              statusCode: response.status,
-            },
-          ];
-        }
-        return data;
+        return response
+          .json()
+          .catch(() => ({}))
+          .then((data: any) => {
+            if (!data.errors) {
+              data.errors = [
+                {
+                  errorCode:
+                    response.status >= 500 ? "serverError" : "internalError",
+                  errorMessage: `HTTP ${response.status}`,
+                  statusCode: response.status,
+                },
+              ];
+            }
+            return data;
+          });
       }
-      return data;
+      return response.json();
     })
-    .catch((err) => {
-      recordApiFailureDebug(
-        formatFetchNetworkDebug({
-          requestUrl: apiUrl,
-          method: "GET",
-          startedMs,
-          err,
-        })
-      );
+    .catch(() => {
       return {
         errors: [
           {

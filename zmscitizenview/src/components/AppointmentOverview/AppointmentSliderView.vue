@@ -26,21 +26,7 @@
           :message="t('systemFailurePageText')"
           :header="t('systemFailurePageHeader')"
           type="error"
-        >
-          <div
-            v-if="isDev"
-            class="api-debug-callout"
-          >
-            <strong>[DEV] API / gateway debug</strong>
-            <pre>{{ apiDebugText }}</pre>
-            <template v-if="lastApiFailureDebug">
-              <strong class="api-debug-callout__sub"
-                >Last request (offices-and-services)</strong
-              >
-              <pre>{{ lastApiFailureDebug }}</pre>
-            </template>
-          </div>
-        </error-alert>
+        />
       </div>
     </div>
   </div>
@@ -158,16 +144,12 @@ import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import { GlobalState } from "@/types/GlobalState";
-import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import {
-  getApiBaseDebugInfo,
-  QUERY_PARAM_APPOINTMENT_ID,
-} from "@/utils/Constants";
+import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -183,13 +165,6 @@ const props = defineProps<{
   displayedOnDetailScreen: boolean;
   t: (key: string) => string;
 }>();
-
-const isDev = import.meta.env.DEV;
-const apiDebugText = computed(() =>
-  Object.entries(getApiBaseDebugInfo())
-    .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")
-);
 
 const loading = ref(true);
 const loadingError = ref(false);
