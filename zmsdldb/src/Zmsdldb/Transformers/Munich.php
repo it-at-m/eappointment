@@ -146,7 +146,7 @@ class Munich
     public function fetchLatestExport(string $indexUrl): array
     {
         try {
-            $response = Request::get($indexUrl)->timeout(15)->send();
+            $response = Request::get($indexUrl)->timeout(45)->send();
             if ((int)($response->code ?? 0) !== 200) {
                 throw new \RuntimeException("Index fetch failed with status {$response->code}");
             }
