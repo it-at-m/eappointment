@@ -141,12 +141,31 @@ class Munich
     }
 
     /**
+     * Apply corporate proxy to Httpful request when HTTPS_PROXY / HTTP_PROXY is set.
+     * Cron and CI often do not inherit .bashrc; sourcing in cronjob.hourly helps, this is a second safeguard.
+     */
+    private function requestWithOptionalProxy(string $url): Request
+    {
+        $req = Request::get($url);
+        $proxy = getenv('HTTPS_PROXY') ?: getenv('https_proxy')
+            ?: getenv('HTTP_PROXY') ?: getenv('http_proxy');
+        if ($proxy !== false && $proxy !== '') {
+            $parts = parse_url($proxy);
+            if (!empty($parts['host'])) {
+                $port = isset($parts['port']) ? (int) $parts['port'] : 80;
+                $req->useProxy($parts['host'], $port);
+            }
+        }
+        return $req;
+    }
+
+    /**
      * Fetch latest Munich SADB export and return the data
      */
     public function fetchLatestExport(string $indexUrl): array
     {
         try {
-            $response = Request::get($indexUrl)->timeout(45)->send();
+            $response = $this->requestWithOptionalProxy($indexUrl)->timeout(45)->send();
             if ((int)($response->code ?? 0) !== 200) {
                 throw new \RuntimeException("Index fetch failed with status {$response->code}");
             }
@@ -160,12 +179,24 @@ class Munich
 
             $this->logger?->info('Fetching Munich export', ['url' => $latestUrl]);
 
-            $exportResponse = Request::get($latestUrl)->timeout(30)->send();
+            $exportResponse = $this->requestWithOptionalProxy($latestUrl)->timeout(120)->send();
             if ((int)($exportResponse->code ?? 0) !== 200) {
                 throw new \RuntimeException("Export fetch failed with status {$exportResponse->code}");
             }
 
-            return json_decode($exportResponse->raw_body, true, 512, JSON_THROW_ON_ERROR);
+            $body = $exportResponse->raw_body;
+            try {
+                return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                $snippet = preg_replace('/\s+/', ' ', substr((string) $body, 0, 400));
+                throw new \RuntimeException(
+                    'Export JSON parse failed (' . $e->getMessage() . '). '
+                    . 'Often means the HTTP response was not JSON (e.g. block page or missing HTTPS_PROXY in cron). '
+                    . 'Body preview: ' . $snippet,
+                    0,
+                    $e
+                );
+            }
         } catch (\Throwable $e) {
             $this->logger?->error('Failed to fetch Munich export', ['error' => $e->getMessage(), 'url' => $indexUrl]);
             throw $e;
