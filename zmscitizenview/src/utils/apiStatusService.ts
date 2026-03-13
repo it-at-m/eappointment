@@ -68,7 +68,7 @@ export async function checkApiStatus(baseUrl?: string): Promise<ApiStatusType> {
 
     const firstError = (response as any)?.errors?.[0];
     return determineStatusFromError(firstError);
-  } catch {
+  } catch (error) {
     return "systemFailure";
   }
 }
