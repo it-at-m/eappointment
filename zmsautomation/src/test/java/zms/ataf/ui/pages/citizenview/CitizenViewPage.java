@@ -29,11 +29,6 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateToPage();
     }
 
-    /** Browser opens gateway offices-and-services (screenshot in report). */
-    public void navigateToGatewayOfficesApi() {
-        CONTEXT.navigateToGatewayOfficesApi();
-    }
-
     /**
      * Basic smoke check that the Service Finder (appointment webcomponent) is
      * rendered on the start page.

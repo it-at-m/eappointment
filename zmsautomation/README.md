@@ -127,8 +127,6 @@ Required environment variables for ATAF tests:
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
 
-zmscitizenview UI (`ServiceFinder.feature`): first step opens `REFARCH_GATEWAY_OFFICES_URL` in Firefox and attaches screenshot `gateway_offices_and_services` (same default URL as health ping).
-
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)
 - `MYSQL_PORT` - Database port (default: `3306`)
