@@ -37,7 +37,7 @@ public class CitizenViewPageContext extends Context {
      */
     public void navigateToGatewayOfficesApi() {
         String url =
-                System.getenv()
+                java.lang.System.getenv()
                         .getOrDefault(
                                 "REFARCH_GATEWAY_OFFICES_URL",
                                 "http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/");
