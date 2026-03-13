@@ -636,6 +636,11 @@ const scrollToTop = () => {
 };
 
 onMounted(() => {
+  // Sanity check: verify JS bundle was built and deployed (e.g. via GitHub Actions)
+  alert(
+    "Hello world – zmscitizenview ServiceFinder bundle was built (GitHub Actions sanity check)."
+  );
+
   if (service.value) {
     if (!serviceLinkId.value) {
       updateServiceLinkId(String(service.value.parentId ?? service.value.id));
