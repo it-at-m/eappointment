@@ -46,12 +46,14 @@ defineSlots<{
 }
 .api-debug-callout pre {
   margin: 0.35rem 0 0;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   line-height: 1.35;
   white-space: pre-wrap;
   word-break: break-word;
   background: rgba(0, 0, 0, 0.06);
   padding: 0.5rem 0.65rem;
   border-radius: 4px;
+  max-height: 70vh;
+  overflow: auto;
 }
 </style>

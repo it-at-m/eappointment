@@ -6,7 +6,10 @@ import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { GlobalState } from "@/types/GlobalState";
-import { recordApiFailureDebug } from "@/utils/apiLastResponseDebug";
+import {
+  formatFetchNetworkDebug,
+  recordApiFailureDebug,
+} from "@/utils/apiLastResponseDebug";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
@@ -100,12 +103,18 @@ export function fetchServicesAndProviders(
     apiUrl += "?" + params.toString();
   }
 
+  const startedMs = performance.now();
   return fetch(apiUrl)
     .then(async (response) => {
       const text = await response.text();
-      const bodyPreview = text.length > 1800 ? text.slice(0, 1800) + "…" : text;
       recordApiFailureDebug(
-        `offices-and-services\nURL: ${apiUrl}\nHTTP: ${response.status} ${response.statusText}\nBody:\n${bodyPreview}`
+        formatFetchNetworkDebug({
+          requestUrl: apiUrl,
+          method: "GET",
+          startedMs,
+          response,
+          bodyText: text,
+        })
       );
       let data: any = {};
       try {
@@ -139,7 +148,12 @@ export function fetchServicesAndProviders(
     })
     .catch((err) => {
       recordApiFailureDebug(
-        `offices-and-services fetch failed\nURL: ${apiUrl}\n${err instanceof Error ? err.message : String(err)}`
+        formatFetchNetworkDebug({
+          requestUrl: apiUrl,
+          method: "GET",
+          startedMs,
+          err,
+        })
       );
       return {
         errors: [
