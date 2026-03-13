@@ -22,6 +22,11 @@ spring:
               - "https://localhost:*"
               - "http://citizenview:*"
               - "https://citizenview:*"
+              # Docker service names (any port) when the page is opened by host
+              - "http://zms-web:*"
+              - "https://zms-web:*"
+              - "http://refarch-gateway:*"
+              - "https://refarch-gateway:*"
             allowedMethods:
               - '*'
             allowedHeaders:

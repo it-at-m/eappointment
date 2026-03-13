@@ -21,6 +21,13 @@ spring:
             allowedOriginPatterns:
               - "https://*.ddev.site"
               - "http://localhost:*"
+              - "https://localhost:*"
+              - "http://citizenview:*"
+              - "https://citizenview:*"
+              - "http://ddev-zms-web:*"
+              - "https://ddev-zms-web:*"
+              - "http://refarch-gateway:*"
+              - "https://refarch-gateway:*"
             allowedMethods:
               - '*'
             allowedHeaders:
