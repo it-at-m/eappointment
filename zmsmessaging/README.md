@@ -40,7 +40,7 @@ Edit the `config.php` and add/change settings for accessing the API.
 
 ## Usage
 
-To start sending emails or SMS notifications from a database queue, the following scripts can be integrated into a cron job that processes the jobs at a desired interval.
+To start sending emails from a database queue, the following scripts can be integrated into a cron job that processes the jobs at a desired interval.
 
 To start a dispatch, the parameter --send should be set. If you also want an output of the sent jobs, the parameter --verbose can be added. A DryRun is obtained by using only the --verbose parameter without --send.
 

@@ -14,9 +14,6 @@ class ScopeTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue(is_array($entity->getNotificationPreferences()), 'Notification preferences not available');
-        $this->assertStringContainsString('erfolgreich', $entity->getConfirmationContent(), 'Confirmation content not available');
-        $this->assertStringContainsString('Warteraum', $entity->getHeadsUpContent(), 'Confirmation HeadsUpContent not available');
         $this->assertTrue('23' == $entity->getStatus('queue', 'givenNumberCount'), 'Status is not accessible');
         $this->assertTrue(null === $entity->getContactEmail(), 'Contact eMail should not be available');
         $this->assertStringContainsString('Flughafen', $entity->getName(), 'Contact name not available');
@@ -24,7 +21,6 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
         $this->assertStringContainsString('Flughafen', (string)$entity, 'Contact name not available');
         $this->assertFalse($entity->hasEmailFrom());
-        $this->assertTrue($entity->hasNotificationEnabled());
     }
 
     public function testWithCleanedUpFormData()

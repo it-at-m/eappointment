@@ -505,9 +505,6 @@ class MapperService
                     'customTextfield2Activated' => $thinnedProcess->scope->getCustomTextfield2Activated() ?? false,
                     'customTextfield2Required' => $thinnedProcess->scope->getCustomTextfield2Required() ?? false,
                     'customTextfield2Label' => $thinnedProcess->scope->getCustomTextfield2Label() ?? null
-                ],
-                'notifications' => [
-                    'enabled' => true
                 ]
             ];
         }

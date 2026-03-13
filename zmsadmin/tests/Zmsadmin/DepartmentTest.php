@@ -76,14 +76,6 @@ class DepartmentTest extends Base
                 'name' => 'Fr. Krause-Jentsch',
             ),
             'email' => 'test@example.com',
-            'preferences' => array(
-                'notifications' => array(
-                    'enabled' => '1',
-                    'identification' => 'test@example.com',
-                    'sendConfirmationEnabled' => '1',
-                    'sendReminderEnabled' => '1',
-                ),
-            ),
             'links' => array(
                 array(
                   'name' => 'Bürgerämter Charlottenburg-Wilmersdorf',
