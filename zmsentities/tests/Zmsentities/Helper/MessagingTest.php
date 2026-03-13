@@ -112,6 +112,17 @@ class MessagingTest extends Base
 
         $process = new Process([
             "clients" => [new Client([
+                'email' => 'test@outlook.com'
+            ])],
+            "status" => "confirmed"
+        ]);
+        $this->assertFalse(
+            Messaging::isIcsRequired($config, $process, 'confirmed'),
+            "confirmed process with denied client domain should not contain attachments"
+        );
+
+        $process = new Process([
+            "clients" => [new Client([
                 'email' => 'test@berlinonline.de'
             ])]
         ]);
