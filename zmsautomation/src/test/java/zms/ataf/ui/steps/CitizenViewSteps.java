@@ -14,6 +14,11 @@ public class CitizenViewSteps {
         CITIZEN_VIEW_PAGE = new CitizenViewPage(DriverUtil.getDriver());
     }
 
+    @Wenn("Sie im Browser zur Gateway-URL offices-and-services navigieren.")
+    public void sie_im_browser_zur_gateway_url_offices_and_services_navigieren() {
+        CITIZEN_VIEW_PAGE.navigateToGatewayOfficesApi();
+    }
+
     @Wenn("Sie zur Webseite der " + CitizenViewPageContext.NAME + " navigieren.")
     public void sie_zur_webseite_der_citizenview_navigieren() {
         CITIZEN_VIEW_PAGE.navigateToPage();

@@ -16,6 +16,7 @@ import ataf.web.controls.FrameControls;
 import ataf.web.controls.WindowControls;
 import ataf.web.model.WindowType;
 import ataf.web.pages.Context;
+import ataf.web.steps.Hook;
 import ataf.web.utils.DriverUtil;
 
 public class CitizenViewPageContext extends Context {
@@ -27,6 +28,30 @@ public class CitizenViewPageContext extends Context {
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    /**
+     * Open the Citizen API via refarch-gateway in the browser so reports show JSON (or error)
+     * from the same URL the app uses for fetch. Optional screenshot for ATAF reports.
+     * URL: env REFARCH_GATEWAY_OFFICES_URL or default refarch-gateway:8080/.../offices-and-services/
+     */
+    public void navigateToGatewayOfficesApi() {
+        String url =
+                System.getenv()
+                        .getOrDefault(
+                                "REFARCH_GATEWAY_OFFICES_URL",
+                                "http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/");
+        if (url.isBlank()) {
+            ScenarioLogManager.getLogger().info("REFARCH_GATEWAY_OFFICES_URL empty — skip gateway navigation");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Navigate to gateway Citizen API (screenshot): " + url);
+        try {
+            DRIVER.navigate().to(url);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Gateway URL navigation timed out; continuing.", e);
+        }
+        Hook.makeScreenshot(DRIVER, "gateway_offices_and_services");
     }
 
     public void navigateToPage() {
