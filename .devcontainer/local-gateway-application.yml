@@ -1,3 +1,16 @@
+# Verbose logs: podman logs -f zms-refarch-gateway
+# CORS is mostly enforced in the browser; gateway still logs each request (incl. OPTIONS preflight).
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.web.cors: DEBUG
+    org.springframework.web.cors.reactive: DEBUG
+    org.springframework.web.server.adapter: DEBUG
+    reactor.netty.http.server: DEBUG
+
 spring:
   cloud:
     gateway:
