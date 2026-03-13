@@ -1,11 +1,16 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.time.Duration;
+
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
+import ataf.web.utils.DriverUtil;
 
 public class CitizenViewPage extends BasePage {
 
@@ -39,6 +44,9 @@ public class CitizenViewPage extends BasePage {
      *   - "Leistung" (t("service"))
      *   - "Bürgerservice-Suche" (t("serviceSearch"))
      *   - "Häufig gesuchte Leistungen" (t("oftenSearchedService"))
+     *
+     * <p>Vue custom elements render inside <strong>shadow DOM</strong>; XPath //h2 does not see those
+     * nodes. We collect text by walking shadow roots in JS.
      */
     public void assertServiceFinderHeadingVisible() {
         CONTEXT.set();
@@ -55,35 +63,25 @@ public class CitizenViewPage extends BasePage {
                 hostVisible,
                 "Root element <zms-appointment-i18n-host> is not visible on the zmscitizenview start page.");
 
-        // Main section heading "Leistung"
-        boolean serviceHeadingVisible = isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//h2[normalize-space()='Leistung']",
-                LocatorType.XPATH,
-                false);
-        Assert.assertTrue(
-                serviceHeadingVisible,
-                "Service Finder heading \"Leistung\" is not visible on the zmscitizenview start page.");
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        String script =
+                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=walk(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=walk(c[i]);return s;}"
+                        + "var t=walk(document.body);"
+                        + "return t.indexOf('Leistung')>=0&&t.indexOf('Bürgerservice-Suche')>=0"
+                        + "&&t.indexOf('Häufig gesuchte Leistungen')>=0;";
 
-        // Search label "Bürgerservice-Suche"
-        boolean serviceSearchVisible = isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//*[normalize-space()='Bürgerservice-Suche']",
-                LocatorType.XPATH,
-                false);
+        Boolean textsVisible =
+                new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                        .until(
+                                d ->
+                                        Boolean.TRUE.equals(
+                                                ((JavascriptExecutor) d).executeScript(script)));
         Assert.assertTrue(
-                serviceSearchVisible,
-                "\"Bürgerservice-Suche\" label is not visible on the zmscitizenview start page.");
-
-        // Section heading "Häufig gesuchte Leistungen"
-        boolean oftenSearchedVisible = isWebElementVisible(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//*[normalize-space()='Häufig gesuchte Leistungen']",
-                LocatorType.XPATH,
-                false);
-        Assert.assertTrue(
-                oftenSearchedVisible,
-                "\"Häufig gesuchte Leistungen\" section heading is not visible on the zmscitizenview start page.");
+                textsVisible,
+                "Service Finder copy (Leistung / Bürgerservice-Suche / Häufig gesuchte Leistungen) not found"
+                        + " in page+shadow DOM within timeout.");
     }
 }
 
