@@ -34,8 +34,18 @@ class Messaging
     ];
 
     public static function isIcsRequired(
+        \BO\Zmsentities\Config $config,
+        \BO\Zmsentities\Process $process,
         $status
     ) {
+        $client = $process->getFirstClient();
+        $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
+        $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
+        foreach ($noAttachmentDomains as $matching) {
+            if (trim($matching) && strpos($client->email, '@' . trim($matching))) {
+                return false;
+            }
+        }
         return (in_array($status, self::$icsRequiredForStatus));
     }
 
@@ -313,13 +323,6 @@ class Messaging
         $icsString = html_entity_decode($icsString);
         return self::getTextWithFoldedLines($icsString);
     }
-
-
-
-
-
-
-
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
