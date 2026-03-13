@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -21,7 +22,6 @@ import zms.ataf.rest.dto.zmscitizenapi.AvailableDaysResponse;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
-import ataf.core.logging.ScenarioLogManager;
 
 public class CitizenApiSteps {
 

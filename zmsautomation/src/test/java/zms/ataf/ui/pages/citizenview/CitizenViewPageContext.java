@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.Assert;
 
 import ataf.core.context.TestExecutionContext;
 import ataf.core.data.Environment;
@@ -76,4 +75,3 @@ public class CitizenViewPageContext extends Context {
         }
     }
 }
-

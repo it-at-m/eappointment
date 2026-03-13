@@ -24,4 +24,3 @@ public class CitizenViewSteps {
         CITIZEN_VIEW_PAGE.assertServiceFinderHeadingVisible();
     }
 }
-

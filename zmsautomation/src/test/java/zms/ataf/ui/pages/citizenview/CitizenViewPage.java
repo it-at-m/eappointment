@@ -79,4 +79,3 @@ public class CitizenViewPage extends BasePage {
                         + " in page+shadow DOM within timeout.");
     }
 }
-
