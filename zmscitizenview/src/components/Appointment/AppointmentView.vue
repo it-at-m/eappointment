@@ -34,6 +34,12 @@
             >
               <strong>[DEV] API / gateway debug</strong>
               <pre>{{ apiDebugText }}</pre>
+              <template v-if="lastApiFailureDebug">
+                <strong class="api-debug-callout__sub"
+                  >Last request (offices-and-services)</strong
+                >
+                <pre>{{ lastApiFailureDebug }}</pre>
+              </template>
             </div>
           </error-alert>
         </div>
@@ -389,6 +395,7 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,

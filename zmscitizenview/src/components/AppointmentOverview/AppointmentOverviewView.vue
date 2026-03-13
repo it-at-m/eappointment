@@ -33,6 +33,12 @@
           >
             <strong>[DEV] API / gateway debug</strong>
             <pre>{{ apiDebugText }}</pre>
+            <template v-if="lastApiFailureDebug">
+              <strong class="api-debug-callout__sub"
+                >Last request (offices-and-services)</strong
+              >
+              <pre>{{ lastApiFailureDebug }}</pre>
+            </template>
           </div>
         </error-alert>
       </div>
@@ -144,6 +150,7 @@ import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSv
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import { GlobalState } from "@/types/GlobalState";
+import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,

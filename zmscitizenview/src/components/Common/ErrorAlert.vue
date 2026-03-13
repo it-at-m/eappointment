@@ -39,6 +39,11 @@ defineSlots<{
   padding-top: 0.5rem;
   border-top: 1px dashed rgba(0, 0, 0, 0.2);
 }
+.api-debug-callout__sub {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+}
 .api-debug-callout pre {
   margin: 0.35rem 0 0;
   font-size: 0.75rem;

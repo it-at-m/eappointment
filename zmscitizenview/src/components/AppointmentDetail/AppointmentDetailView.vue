@@ -33,6 +33,12 @@
           >
             <strong>[DEV] API / gateway debug</strong>
             <pre>{{ apiDebugText }}</pre>
+            <template v-if="lastApiFailureDebug">
+              <strong class="api-debug-callout__sub"
+                >Last request (offices-and-services)</strong
+              >
+              <pre>{{ lastApiFailureDebug }}</pre>
+            </template>
           </div>
         </error-alert>
       </div>
@@ -354,6 +360,7 @@ import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
+import { lastApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,

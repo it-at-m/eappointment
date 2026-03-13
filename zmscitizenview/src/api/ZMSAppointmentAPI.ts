@@ -6,6 +6,7 @@ import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { GlobalState } from "@/types/GlobalState";
+import { recordApiFailureDebug } from "@/utils/apiLastResponseDebug";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
@@ -100,28 +101,46 @@ export function fetchServicesAndProviders(
   }
 
   return fetch(apiUrl)
-    .then((response) => {
-      if (response.status >= 400 && response.status < 600) {
-        return response
-          .json()
-          .catch(() => ({}))
-          .then((data: any) => {
-            if (!data.errors) {
-              data.errors = [
-                {
-                  errorCode:
-                    response.status >= 500 ? "serverError" : "internalError",
-                  errorMessage: `HTTP ${response.status}`,
-                  statusCode: response.status,
-                },
-              ];
-            }
-            return data;
-          });
+    .then(async (response) => {
+      const text = await response.text();
+      const bodyPreview = text.length > 1800 ? text.slice(0, 1800) + "…" : text;
+      recordApiFailureDebug(
+        `offices-and-services\nURL: ${apiUrl}\nHTTP: ${response.status} ${response.statusText}\nBody:\n${bodyPreview}`
+      );
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = {
+          errors: [
+            {
+              errorCode: "parseError",
+              errorMessage: "Response was not JSON",
+              statusCode: response.status || 0,
+            },
+          ],
+          _rawPreview: text.slice(0, 400),
+        };
       }
-      return response.json();
+      if (response.status >= 400 && response.status < 600) {
+        if (!data.errors) {
+          data.errors = [
+            {
+              errorCode:
+                response.status >= 500 ? "serverError" : "internalError",
+              errorMessage: `HTTP ${response.status}`,
+              statusCode: response.status,
+            },
+          ];
+        }
+        return data;
+      }
+      return data;
     })
-    .catch(() => {
+    .catch((err) => {
+      recordApiFailureDebug(
+        `offices-and-services fetch failed\nURL: ${apiUrl}\n${err instanceof Error ? err.message : String(err)}`
+      );
       return {
         errors: [
           {

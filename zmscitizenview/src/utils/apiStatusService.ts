@@ -1,6 +1,10 @@
 import { ref, Ref } from "vue";
 
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import {
+  clearApiFailureDebug,
+  recordApiFailureDebug,
+} from "@/utils/apiLastResponseDebug";
 
 export type ApiStatusType = "normal" | "maintenance" | "systemFailure";
 
@@ -69,6 +73,9 @@ export async function checkApiStatus(baseUrl?: string): Promise<ApiStatusType> {
     const firstError = (response as any)?.errors?.[0];
     return determineStatusFromError(firstError);
   } catch (error) {
+    recordApiFailureDebug(
+      `checkApiStatus catch\n${error instanceof Error ? error.message : String(error)}`
+    );
     return "systemFailure";
   }
 }
@@ -86,6 +93,10 @@ export function setApiStatus(status: ApiStatusType, baseUrl?: string): void {
   if (apiStatusState.checkInterval.value) {
     clearInterval(apiStatusState.checkInterval.value);
     apiStatusState.checkInterval.value = null;
+  }
+
+  if (status === "normal") {
+    clearApiFailureDebug();
   }
 
   if (status !== "normal") {
@@ -135,6 +146,9 @@ export function handleApiResponseForDownTime(
   baseUrl?: string
 ): boolean {
   if (!response || typeof response !== "object" || Array.isArray(response)) {
+    recordApiFailureDebug(
+      `handleApiResponseForDownTime: invalid response\n${String(response).slice(0, 500)}`
+    );
     const prev = apiStatusState.status.value;
     if (prev !== "systemFailure") {
       setApiStatus("systemFailure", baseUrl);
