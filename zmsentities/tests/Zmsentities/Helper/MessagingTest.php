@@ -97,7 +97,11 @@ class MessagingTest extends Base
 
     public function testIcsRequired()
     {
-        $config = new Config();
+        $config = new Config([
+            'notifications' => [
+                'noAttachmentDomains' => 'outlook.,live.,hotmail.'
+            ]
+        ]);
 
         $process = new Process([
             "clients" => [new Client([
