@@ -23,17 +23,14 @@ public class TestData {
                 System.getenv().getOrDefault("CITIZEN_API_BASE_URI", "http://localhost:8080/terminvereinbarung/api/citizen");
         String adminUri =
                 System.getenv().getOrDefault("ADMIN_BASE_URI", "https://localhost:443/terminvereinbarung/admin/");
-        String buergerUri =
-                System.getenv().getOrDefault("BUERGER_BASE_URI", "http://localhost:8082");
         String statisticUri =
                 System.getenv().getOrDefault("STATISTIC_BASE_URI", "https://localhost:443/terminvereinbarung/statistic/");
         String citizenViewUri =
-                System.getenv().getOrDefault("CITIZEN_VIEW_BASE_URI", "http://localhost:8082");
+                System.getenv().getOrDefault("CITIZEN_VIEW_BASE_URI", "http://localhost:8082/");
 
         LOCAL.addSystem("ZMS-API", baseUri);
         LOCAL.addSystem("ZMS-Citizen-API", citizenUri);
         LOCAL.addSystem("zmsadmin", adminUri);
-        LOCAL.addSystem("Bürgeransicht", buergerUri);
         LOCAL.addSystem("zmsstatistic", statisticUri);
         LOCAL.addSystem("zmscitizenview", citizenViewUri);
 
@@ -41,8 +38,7 @@ public class TestData {
         DEV.addSystem("ZMS-API", "https://zms-dev.muenchen.de/terminvereinbarung/api/2");
         DEV.addSystem("ZMS-Citizen-API", "https://zms-dev.muenchen.de/terminvereinbarung/api/citizen");
         DEV.addSystem("zmsadmin", "https://zms-dev.muenchen.de/terminvereinbarung/admin/");
-        DEV.addSystem("Bürgeransicht", "https://zms-dev.muenchen.de/buergeransicht/#/");
         DEV.addSystem("zmsstatistic", "https://zms-dev.muenchen.de/terminvereinbarung/statistic/");
-        DEV.addSystem("zmscitizenview", "https://zms-dev.muenchen.de/buergeransicht/#/");
+        DEV.addSystem("zmscitizenview", "https://zms-dev.muenchen.de/buergeransicht/");
     }
 }
