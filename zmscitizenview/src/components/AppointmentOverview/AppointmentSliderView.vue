@@ -26,7 +26,15 @@
           :message="t('systemFailurePageText')"
           :header="t('systemFailurePageHeader')"
           type="error"
-        />
+        >
+          <div
+            v-if="isDev"
+            class="api-debug-callout"
+          >
+            <strong>[DEV] API / gateway debug</strong>
+            <pre>{{ apiDebugText }}</pre>
+          </div>
+        </error-alert>
       </div>
     </div>
   </div>
@@ -149,7 +157,10 @@ import {
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
-import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
+import {
+  getApiBaseDebugInfo,
+  QUERY_PARAM_APPOINTMENT_ID,
+} from "@/utils/Constants";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -165,6 +176,13 @@ const props = defineProps<{
   displayedOnDetailScreen: boolean;
   t: (key: string) => string;
 }>();
+
+const isDev = import.meta.env.DEV;
+const apiDebugText = computed(() =>
+  Object.entries(getApiBaseDebugInfo())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join("\n")
+);
 
 const loading = ref(true);
 const loadingError = ref(false);

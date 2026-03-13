@@ -26,7 +26,15 @@
           :message="t('systemFailurePageText')"
           :header="t('systemFailurePageHeader')"
           type="error"
-        />
+        >
+          <div
+            v-if="isDev"
+            class="api-debug-callout"
+          >
+            <strong>[DEV] API / gateway debug</strong>
+            <pre>{{ apiDebugText }}</pre>
+          </div>
+        </error-alert>
       </div>
     </div>
   </div>
@@ -354,6 +362,7 @@ import {
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   APPOINTMENT_ACTION_TYPE,
+  getApiBaseDebugInfo,
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
@@ -365,6 +374,13 @@ import {
 } from "@/utils/errorHandler";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
+
+const isDev = import.meta.env.DEV;
+const apiDebugText = computed(() =>
+  Object.entries(getApiBaseDebugInfo())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join("\n")
+);
 
 const props = defineProps<{
   globalState: GlobalState;

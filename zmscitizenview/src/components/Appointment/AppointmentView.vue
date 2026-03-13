@@ -27,7 +27,15 @@
             :message="t('systemFailurePageText')"
             :header="t('systemFailurePageHeader')"
             type="error"
-          />
+          >
+            <div
+              v-if="isDev"
+              class="api-debug-callout"
+            >
+              <strong>[DEV] API / gateway debug</strong>
+              <pre>{{ apiDebugText }}</pre>
+            </div>
+          </error-alert>
         </div>
       </div>
     </div>
@@ -391,6 +399,7 @@ import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
+  getApiBaseDebugInfo,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
@@ -420,6 +429,13 @@ const props = defineProps<{
   showLoginOption: boolean;
   t: (key: string) => string;
 }>();
+
+const isDev = import.meta.env.DEV;
+const apiDebugText = computed(() =>
+  Object.entries(getApiBaseDebugInfo())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join("\n")
+);
 
 const STEPPER_ITEMS: StepperItem[] = [
   {
