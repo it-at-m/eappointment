@@ -123,7 +123,9 @@ Required environment variables for ATAF tests:
 
 ### API Endpoints
 - `BASE_URI` - Base URI for ZMS API (default: `http://localhost:8080/terminvereinbarung/api/2`)
-- `CITIZEN_API_BASE_URI` - Base URI for Citizen API (default: `http://localhost:8080/terminvereinbarung/api/citizen`)
+- `CITIZEN_API_BASE_URI` - Base URI for Citizen API (default: `http://localhost:8080/terminvereinbarung/api/citizen`) — **direct** to zms-web (`/terminvereinbarung/api/citizen/...`). REST steps use this; **refarch-gateway is not used** for those pings.
+- `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
+- `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
 
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)
