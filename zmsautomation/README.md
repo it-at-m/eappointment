@@ -169,7 +169,10 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
-  - `@ruppertstrasse` / `@abholung` - Office/service-specific booking scenarios
+  - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
+  - `@passkalender` - Jump-in/UI checks for Pass calendar (10502); invalid mix with 10489
+  - `@hauptkalender` - Hauptkalender (10489); non-Pass + Pass combinable
+  - `@abholung` - Abholung 10295182 / standort 10492 only (KVR-II/211)
   - `@executeLocally` - Often skipped in CI (captcha, Selenium, mail); run locally when needed
   - `@allowDisabledServicesMix` - Jump-in scenario that may mix disabled services (environment-dependent)
 - **Other**
@@ -202,13 +205,10 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `ServiceFinder.feature` - Start page / Service Finder visible (English)
-- `booking.feature` - Full UI booking (reserve → preconfirm callout → confirm deep link), aligned with REST `zmscitizenapi/booking.feature`; steps live in `CitizenViewSteps.java`
+- `booking.feature` - Jump-in rules (KVR-II/221): invalid Pass↔Hauptkalender callout; Passkalender 10502 / Hauptkalender 10489 / Abholung 10492; asserts `#checkbox-provider-*` and `#provider-*` on reserve, preconfirm, confirm
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
-
-#### ZMS Citizen View (`ui/zmscitizenview/`)
-- Placeholder for future ZMS citizen view UI features (currently empty).
 
 ### Migration Guide
 - `MIGRATION_GUIDE.md` - Guide for converting JUnit tests to Cucumber features (Phase 6)

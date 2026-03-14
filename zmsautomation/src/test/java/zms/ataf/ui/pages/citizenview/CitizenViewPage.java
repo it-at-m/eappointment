@@ -30,6 +30,12 @@ public class CitizenViewPage extends BasePage {
     private static final String DE_WEITER = "Weiter";
     private static final String DE_RESERVE = "Termin reservieren";
 
+    /** German invalid jump-in callout ({@code de-DE.json}). */
+    public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
+
+    public static final String DE_INVALID_JUMPIN_TEXT =
+            "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+
     private final CitizenViewPageContext CONTEXT;
 
     public CitizenViewPage(RemoteWebDriver driver) {
@@ -122,6 +128,74 @@ public class CitizenViewPage extends BasePage {
 
     public void deepClickRequired(String cssSelector) {
         Assert.assertTrue(deepClick(cssSelector), "Could not click: " + cssSelector);
+    }
+
+    /** True if an element matching {@code cssSelector} exists in document or any open shadow root. */
+    public boolean deepElementExists(String cssSelector) {
+        CONTEXT.set();
+        String script =
+                "var sel=arguments[0];function find(root){if(!root)return null;var q=root.querySelector(sel);if(q)return q;"
+                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
+                        + "return !!(document.querySelector(sel)||find(document.body));";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cssSelector);
+        return Boolean.TRUE.equals(o);
+    }
+
+    public void assertInvalidJumpinLinkCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_INVALID_JUMPIN_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_INVALID_JUMPIN_HEADER),
+                "Invalid jump-in header not found (Pass-only on Hauptkalender or non-Pass on Passkalender).");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_INVALID_JUMPIN_TEXT),
+                "Invalid jump-in body text not found.");
+    }
+
+    public void waitUntilDeepElementExists(String cssSelector, int seconds) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
+                .until(d -> deepElementExists(cssSelector));
+    }
+
+    public void assertProviderCheckboxPresent(int officeId) {
+        CONTEXT.set();
+        String sel = "#checkbox-provider-" + officeId;
+        waitUntilDeepElementExists(sel, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(deepElementExists(sel), "Expected provider checkbox in DOM: " + sel);
+    }
+
+    public void assertProviderCheckboxAbsent(int officeId) {
+        CONTEXT.set();
+        Assert.assertFalse(
+                deepElementExists("#checkbox-provider-" + officeId),
+                "Provider checkbox for office " + officeId + " must not appear for this jump-in/service.");
+    }
+
+    /**
+     * Reserve / preconfirm / confirm screens expose {@code <p id="provider-{officeId}">…</p>} (summary).
+     * Asserts that block is present so the appointment is tied to the correct calendar/office.
+     */
+    public void assertProviderSummaryVisible(int officeId) {
+        CONTEXT.set();
+        String sel = "#provider-" + officeId;
+        Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
+        Assert.assertTrue(
+                shadowDomContainsText("Bürgerbüro Ruppertstraße"),
+                "Expected standort label near provider-" + officeId);
+    }
+
+    /** On Passkalender jump-in, only Pass services should be combinable (names from API). */
+    public void assertPassOnlyCombinationServicesVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains("Reisepass", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(shadowDomContainsText("Reisepass"), "Expected Reisepass on Pass-only combination step");
+        Assert.assertTrue(shadowDomContainsText("Personalausweis"), "Expected Personalausweis (Pass family)");
+        Assert.assertTrue(
+                shadowDomContainsText("Vorläufiger Reisepass")
+                        || shadowDomContainsText("vorläufiger Reisepass")
+                        || shadowDomContainsText("Vorläufiger"),
+                "Expected Vorläufiger Reisepass (or label) on Pass-only step");
     }
 
     /** Set value on input/textarea found by id anywhere in shadow DOM. */

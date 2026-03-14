@@ -121,4 +121,34 @@ public class CitizenViewSteps {
     public void theSelectedAppointmentCalloutShouldBeVisible() {
         page.assertSelectedAppointmentCalloutVisible();
     }
+
+    @Then("the invalid jump-in callout should be visible in the citizen view")
+    public void theInvalidJumpinCalloutShouldBeVisible() {
+        page.assertInvalidJumpinLinkCalloutVisible();
+    }
+
+    @Then("provider checkbox {int} should be visible in the citizen view")
+    public void providerCheckboxShouldBeVisible(int officeId) {
+        page.assertProviderCheckboxPresent(officeId);
+    }
+
+    @Then("provider checkbox {int} should not appear in the citizen view")
+    public void providerCheckboxShouldNotAppear(int officeId) {
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        page.assertProviderCheckboxAbsent(officeId);
+    }
+
+    @Then("the booking summary should show provider {int} in the citizen view")
+    public void theBookingSummaryShouldShowProvider(int officeId) {
+        page.assertProviderSummaryVisible(officeId);
+    }
+
+    @Then("only Pass calendar services should be offered on the combination step")
+    public void onlyPassCalendarServicesOnCombinationStep() {
+        page.assertPassOnlyCombinationServicesVisible();
+    }
 }
