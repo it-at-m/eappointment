@@ -1,6 +1,6 @@
 #language: en
 @web @zmscitizenview @ZMSKVR-1124
-Feature: zmscitizenview full booking flow (ZMSKVR-1124)
+Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 10502, Hauptkalender 10489, Abholung 10492, jump-in)
   As a citizen
   I want to book via the citizen view UI
   So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)
@@ -12,13 +12,13 @@ Feature: zmscitizenview full booking flow (ZMSKVR-1124)
     Then the response status code should be 200
     And the response should contain offices and services
 
-  # --- Invalid jump-in: non-Pass on Passkalender only (no relation / invalid link) ---
+  # --- Invalid jump-in: 10502 = Passkalender only (three Pass services). 10489 = Hauptkalender (e.g. 1063475 Wohnsitzanmeldung + Pass when combined). Non-Pass alone on 10502 has no relation → error callout. ---
   @jumpin @passkalender @executeLocally
   Scenario: Non-Pass service jump-in with Passkalender 10502 is rejected
     Given I open zmscitizenview with jump-in service "1063475" and location "10502"
     Then the invalid jump-in callout should be visible in the citizen view
 
-  # --- allowDisabledServicesMix: Pass jump-in with location 10489 is valid; Pass-only lists Passkalender 10502 (same as REST booking) ---
+  # --- allowDisabledServicesMix: Pass jump-in with location 10489 is valid; Pass-only lists Passkalender 10502 (same as REST companion feature) ---
   @jumpin @allowDisabledServicesMix @passkalender @executeLocally
   Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
     Given I open zmscitizenview with jump-in service "1063441" and location "10489"

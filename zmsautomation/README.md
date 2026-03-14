@@ -129,7 +129,8 @@ Required environment variables for ATAF tests:
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
 - **zmscitizenview ping (502)** - If `zmsautomation-test` reports 502 for `http://citizenview:8082` while `curl` from a container works, `HTTP_PROXY` was routing that URL to the corporate gateway. The script pings zmscitizenview with `--noproxy '*'` so the request stays on Docker DNS.
 - **SCREENSHOT_EVERY_STEP** - Per-step PNGs skip `about:newtab` / Firefox start page so REST Background steps do not flood artifacts. After the app URL loads, screenshots include calendar/reserve steps as usual.
-- **Pass jump-in + 10489** - Valid link: `allowDisabledServicesMix` links 10489 and 10502. Pass-only still books on **10502** (see UI + REST `booking.feature` JumpIn 10489 scenario).
+- **Pass jump-in + 10489** - Valid link: `allowDisabledServicesMix` links 10489 and 10502. Pass-only still books on **10502** (see UI + REST `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links*` JumpIn 10489 scenario).
+- **10502 vs 10489** - Passkalender **10502** only exposes the three Pass services. Hauptkalender **10489** exposes non-Pass (e.g. Wohnsitzanmeldung 1063475) and Pass when combined. Jump-in non-Pass + **10502** is correctly rejected in UI.
 
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)
@@ -173,7 +174,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
-  - `@passkalender` - Jump-in/UI checks for Pass calendar (10502); invalid mix with 10489
+  - `@passkalender` - Passkalender 10502 (three Pass services only); invalid jump-in if non-Pass + 10502
   - `@hauptkalender` - Hauptkalender (10489); non-Pass + Pass combinable
   - `@abholung` - Abholung 10295182 / standort 10492 only (KVR-II/211)
   - `@executeLocally` - Often skipped in CI (captcha, Selenium, mail); run locally when needed
@@ -195,7 +196,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### Citizen API (`api/zmscitizenapi/`)
 - `offices-and-services.feature` - Offices and services endpoint (converted from OfficesAndServicesEndpointTest)
-- `booking.feature` - Appointment booking flow
+- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
 - `cancellation.feature` - Appointment cancellation flow (Phase 6 example)
 
 ### UI Features (`src/test/resources/features/ui/`)
@@ -208,7 +209,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `ServiceFinder.feature` - Start page / Service Finder visible (English)
-- `booking.feature` - Jump-in rules (KVR-II/221): invalid Pass↔Hauptkalender callout; Passkalender 10502 / Hauptkalender 10489 / Abholung 10492; asserts `#checkbox-provider-*` and `#provider-*` on reserve, preconfirm, confirm
+- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (same calendars); `#checkbox-provider-*` / `#provider-*` on reserve, preconfirm, confirm
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)

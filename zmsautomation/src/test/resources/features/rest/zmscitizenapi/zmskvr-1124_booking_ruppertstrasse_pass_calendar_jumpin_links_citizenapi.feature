@@ -1,5 +1,5 @@
-@rest @zmscitizenapi  @ZMSKVR-1124
-Feature: Citizen API full booking flow (ZMSKVR-1124)
+@rest @zmscitizenapi @ZMSKVR-1124
+Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 10492, jump-in allow-mix)
   As a citizen
   I want to complete a full appointment booking from offices-and-services through confirm
   So that the API behaviour matches the citizen frontend (offices → days → slots → reserve → preconfirm → confirm via mail)

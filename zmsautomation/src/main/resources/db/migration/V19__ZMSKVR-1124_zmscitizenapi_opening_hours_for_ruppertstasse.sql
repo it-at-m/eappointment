@@ -1,7 +1,7 @@
 -- Flyway migration: Opening hours for Ruppertstraße test data (ZMSKVR-1124)
 --
 -- Mirrors V10__opening_hours_availability_test_data but focuses on
--- Ruppertstraße offices used in Citizen API booking.feature:
+-- Ruppertstraße offices used in Citizen API zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature:
 --  - Office 10489 (Bürgerbüro Ruppertstraße (KVR-II/22))
 --  - Office 10492 (Bürgerbüro Ruppertstraße (KVR-II/211))
 --  - Office 10502 (Bürgerbüro Ruppertstraße (KVR-II/221))
