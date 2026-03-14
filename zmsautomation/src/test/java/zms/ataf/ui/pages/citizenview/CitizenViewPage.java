@@ -12,10 +12,12 @@ import org.testng.Assert;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
 /**
@@ -550,12 +552,75 @@ public class CitizenViewPage extends BasePage {
                         officeId);
     }
 
+    /** Fixed test phone; never random (avoid real subscriber numbers). */
+    public static final String CONTACT_PHONE_E2E = "+491234567890";
+
+    /** Short Lorem for required custom remarks (under 250). */
+    private static final String CONTACT_LOREM_REQUIRED =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. E2E Pflichtfeld.";
+
     public void fillContactDetails(String firstName, String lastName, String email, String phone) {
         CONTEXT.set();
         deepSetById("input-firstname", firstName);
         deepSetById("input-lastname", lastName);
         deepSetById("input-mailaddress", email);
-        deepSetById("input-telephonenumber", phone);
+        if (deepElementExists("#input-telephonenumber")) {
+            deepSetById("input-telephonenumber", phone);
+        }
+    }
+
+    /**
+     * Kontakt step: same name/email approach as zmsadmin ({@link RandomNameHelper} + mailinator).
+     * Vorname/Nachname split; phone only if field exists (optional or required); required custom
+     * text areas only → {@link #CONTACT_LOREM_REQUIRED}.
+     */
+    public void fillContactDetailsRandom() {
+        CONTEXT.set();
+        String fullName;
+        if (TestDataHelper.getTestData("customer_name") != null) {
+            fullName = TestDataHelper.getTestData("customer_name");
+        } else {
+            fullName = RandomNameHelper.generateRandomName();
+        }
+        String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
+        String email = RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com";
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt — Vorname={} Nachname={} E-Mail={}",
+                        parts[0],
+                        parts[1],
+                        email);
+        deepSetById("input-firstname", parts[0]);
+        deepSetById("input-lastname", parts[1]);
+        deepSetById("input-mailaddress", email);
+        if (deepElementExists("#input-telephonenumber")) {
+            deepSetById("input-telephonenumber", CONTACT_PHONE_E2E);
+            ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — Telefon (field present)");
+        }
+        fillRequiredCustomTextAreasInShadow();
+    }
+
+    /**
+     * Fills only {@code textarea} nodes that are required (HTML or aria-required), in open shadow trees.
+     * Skips optional custom fields; does not touch name/email/phone inputs.
+     */
+    private void fillRequiredCustomTextAreasInShadow() {
+        CONTEXT.set();
+        String script =
+                "var lorem=arguments[0];function req(t){return t&&(t.required||t.getAttribute('aria-required')==='true');}"
+                        + "function vis(t){try{return t.offsetParent!==null||t.getClientRects().length>0;}catch(e){return true;}}"
+                        + "var n=0;function walk(r){if(!r)return;var ta=r.querySelectorAll?r.querySelectorAll('textarea'):[];"
+                        + "for(var i=0;i<ta.length;i++){var e=ta[i];if(req(e)&&vis(e)&&(!e.value||!e.value.trim())){"
+                        + "e.value=lorem;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));n++;}}"
+                        + "var all=r.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)walk(all[j].shadowRoot);}"
+                        + "walk(document.body);return n;";
+        Object n =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, CONTACT_LOREM_REQUIRED);
+        if (n instanceof Number && ((Number) n).intValue() > 0) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: Kontakt — filled {} required Bemerkung(en)", n);
+        }
     }
 
     public void acceptPrivacyAndCommunication() {

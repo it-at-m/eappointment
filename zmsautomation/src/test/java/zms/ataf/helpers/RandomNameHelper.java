@@ -85,4 +85,28 @@ public final class RandomNameHelper {
                    .replaceAll("_+", "_")  // Replace multiple underscores with single
                    .replaceAll("^_|_$", "");  // Remove leading/trailing underscores
     }
+
+    /**
+     * Splits {@link #generateRandomName()} style full name into first and last for split contact forms.
+     * First token → Vorname; remainder → Nachname (includes numeric suffix on last name).
+     *
+     * @param fullName e.g. {@code "Paul Schmidt4321"}
+     * @return {@code [0]} first name, {@code [1]} last name (never null; last defaults to {@code "Test"})
+     */
+    public static String[] splitFullNameIntoFirstAndLast(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return new String[] {"E2E", "Test"};
+        }
+        String trimmed = fullName.trim();
+        int space = trimmed.indexOf(' ');
+        if (space < 0) {
+            return new String[] {trimmed, "Test"};
+        }
+        String first = trimmed.substring(0, space).trim();
+        String last = trimmed.substring(space + 1).trim();
+        if (last.isEmpty()) {
+            last = "Test";
+        }
+        return new String[] {first, last};
+    }
 }

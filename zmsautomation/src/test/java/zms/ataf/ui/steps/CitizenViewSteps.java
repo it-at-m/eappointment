@@ -15,11 +15,6 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPage;
  */
 public class CitizenViewSteps {
 
-    private static final String DEFAULT_FIRST = "E2E";
-    private static final String DEFAULT_LAST = "Bürger";
-    private static final String DEFAULT_MAIL = "e2e-buerger@example.org";
-    private static final String DEFAULT_PHONE = "08912345678";
-
     private final CitizenViewPage page;
 
     public CitizenViewSteps() {
@@ -79,7 +74,7 @@ public class CitizenViewSteps {
 
     @When("I enter default contact details in the citizen view")
     public void iEnterDefaultContactDetails() {
-        page.fillContactDetails(DEFAULT_FIRST, DEFAULT_LAST, DEFAULT_MAIL, DEFAULT_PHONE);
+        page.fillContactDetailsRandom();
         page.clickWeiter();
     }
 
