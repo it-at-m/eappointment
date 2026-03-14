@@ -127,6 +127,7 @@ Required environment variables for ATAF tests:
 - `CITIZEN_API_BASE_URI` - Base URI for Citizen API (default: `http://localhost:8080/terminvereinbarung/api/citizen`) — **direct** to zms-web (`/terminvereinbarung/api/citizen/...`). REST steps use this; **refarch-gateway is not used** for those pings.
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
+- **zmscitizenview ping (502)** - If `zmsautomation-test` reports 502 for `http://citizenview:8082` while `curl` from a container works, `HTTP_PROXY` was routing that URL to the corporate gateway. The script pings zmscitizenview with `--noproxy '*'` so the request stays on Docker DNS.
 
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)

@@ -397,7 +397,9 @@ wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=tr
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
 wait_http "citizenapi-available-days"  "$CITIZEN_API_AVAIL_DAYS_URL"  || fail=true
-wait_http "zmscitizenview"             "$ZMSCITIZENVIEW_HEALTH_URL"   || fail=true
+# zmscitizenview: must use wait_http_direct — wait_http only noproxy's localhost, so
+# HTTP_PROXY still sends http://citizenview:8082 to the corporate gateway → 502.
+wait_http_direct "zmscitizenview"      "$ZMSCITIZENVIEW_HEALTH_URL"   || fail=true
 if [[ "${SKIP_REFARCH_GATEWAY_HEALTH:-}" == "1" ]]; then
   info "SKIP_REFARCH_GATEWAY_HEALTH=1 — not pinging refarch-gateway"
 else
