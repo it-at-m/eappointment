@@ -23,6 +23,7 @@ public class CitizenViewPageContext extends Context {
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
 
     private WindowType windowType;
+    String lastCitizenViewUrl;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
@@ -41,6 +42,7 @@ public class CitizenViewPageContext extends Context {
                     .getSystemUrl("zmscitizenview");
         }
 
+        lastCitizenViewUrl = citizenViewUrl;
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         try {
             // For the Vite-powered zmscitizenview dev server we don't enforce a full
@@ -57,6 +59,41 @@ public class CitizenViewPageContext extends Context {
 
         // Give the webcomponent a brief moment to bootstrap before we start
         // asserting on its DOM state.
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Opens zmscitizenview on the jump-in route: service and location preselected; UI shows the
+     * service combination (quantity) step, not the service finder.
+     */
+    public void navigateWithJumpIn(String serviceId, String locationId) {
+        String citizenViewUrl;
+        if (RunnerUtils.isJiraBasedTestExecution()) {
+            citizenViewUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT))
+                    .getSystemUrl("zmscitizenview");
+        } else {
+            citizenViewUrl = Objects.requireNonNull(
+                    Environment.contains(TestProperties.getProperty("test.execution.test.environment", true)
+                            .map(String.class::cast)
+                            .orElse("")))
+                    .getSystemUrl("zmscitizenview");
+        }
+        lastCitizenViewUrl = citizenViewUrl;
+        windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
+        int hashIdx = citizenViewUrl.indexOf('#');
+        String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
+        String jumpInUrl = base + "#/services/" + serviceId + "/locations/" + locationId;
+        try {
+            DRIVER.navigate().to(jumpInUrl);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Jump-in navigation timed out, continuing.", e);
+        }
+        WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
+        FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         try {
             Thread.sleep(3000L);
         } catch (InterruptedException ie) {

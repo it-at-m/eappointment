@@ -1,18 +1,34 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
+/**
+ * zmscitizenview booking flow: all meaningful DOM lives under Vue custom elements / shadow roots.
+ * Interactions use JS that searches open shadow trees (deep query / text walk).
+ */
 public class CitizenViewPage extends BasePage {
+
+    /** Same key as zmscitizenview LOCALSTORAGE_PARAM_APPOINTMENT_DATA */
+    public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
+
+    private static final String DE_WEITER = "Weiter";
+    private static final String DE_RESERVE = "Termin reservieren";
 
     private final CitizenViewPageContext CONTEXT;
 
@@ -29,25 +45,14 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateToPage();
     }
 
-    /**
-     * Basic smoke check that the Service Finder (appointment webcomponent) is
-     * rendered on the start page.
-     *
-     * We assert:
-     * - the root host element <zms-appointment-i18n-host> is visible
-     * - the main Service Finder texts from ServiceFinder.vue / de-DE.json are present:
-     *   - "Leistung" (t("service"))
-     *   - "Bürgerservice-Suche" (t("serviceSearch"))
-     *   - "Häufig gesuchte Leistungen" (t("oftenSearchedService"))
-     *
-     * <p>Vue custom elements render inside <strong>shadow DOM</strong>; XPath //h2 does not see those
-     * nodes. We collect text by walking shadow roots in JS.
-     */
+    public void navigateWithJumpIn(String serviceId, String locationId) {
+        CONTEXT.navigateWithJumpIn(serviceId, locationId);
+    }
+
     public void assertServiceFinderHeadingVisible() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Checking that the zmscitizenview Service Finder is visible on the start page.");
 
-        // Root host element of the appointment webcomponent hierarchy
         boolean hostVisible = isWebElementVisible(
                 DEFAULT_EXPLICIT_WAIT_TIME,
                 "//zms-appointment-i18n-host",
@@ -77,5 +82,250 @@ public class CitizenViewPage extends BasePage {
                 textsVisible,
                 "Service Finder copy (Leistung / Bürgerservice-Suche / Häufig gesuchte Leistungen) not found"
                         + " in page+shadow DOM within timeout.");
+    }
+
+    /** True if substring appears anywhere in document + shadow DOM text. */
+    public boolean shadowDomContainsText(String substring) {
+        CONTEXT.set();
+        String esc = substring.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var sub='" + esc + "';function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=walk(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=walk(c[i]);return s;}"
+                        + "return walk(document.body).indexOf(sub)>=0;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    public void waitUntilShadowContains(String substring, int seconds) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
+                .until(d -> shadowDomContainsText(substring));
+    }
+
+    public void assertShadowContains(String substring, String message) {
+        waitUntilShadowContains(substring, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(shadowDomContainsText(substring), message);
+    }
+
+    /**
+     * Find first element matching CSS in document or any shadow root; click via JS.
+     */
+    public boolean deepClick(String cssSelector) {
+        CONTEXT.set();
+        String script =
+                "var sel=arguments[0];function find(root){if(!root)return null;var q=root.querySelector(sel);if(q)return q;"
+                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
+                        + "var e=document.querySelector(sel)||find(document.body);if(e){e.scrollIntoView({block:'center'});e.click();return true;}return false;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cssSelector);
+        return Boolean.TRUE.equals(o);
+    }
+
+    public void deepClickRequired(String cssSelector) {
+        Assert.assertTrue(deepClick(cssSelector), "Could not click: " + cssSelector);
+    }
+
+    /** Set value on input/textarea found by id anywhere in shadow DOM. */
+    public boolean deepSetById(String id, String value) {
+        CONTEXT.set();
+        String script =
+                "var id=arguments[0],v=arguments[1];function find(root){if(!root)return null;var q=root.getElementById?root.getElementById(id):root.querySelector('#'+id);"
+                        + "if(q&&(q.tagName==='INPUT'||q.tagName==='TEXTAREA'))return q;var all=root.querySelectorAll('*');"
+                        + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
+                + "var e=find(document.body);if(e){e.scrollIntoView({block:'center'});e.focus();e.value=v;"
+                + "e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));return true;}return false;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id, value);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /** Click first button whose visible text includes label (shadow-safe). */
+    public boolean clickButtonContaining(String text) {
+        CONTEXT.set();
+        String esc = text.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
+                        + "if(n.tagName==='BUTTON'||n.tagName==='A'){var t=(n.textContent||'').trim();if(t.indexOf(label)>=0&&!n.disabled){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
+                        + "return walkClick(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    public void clickWeiter() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickButtonContaining(DE_WEITER));
+    }
+
+    /** Jump-in: combination step shows Weiter + optional counters. */
+    public void assertCombinationStepVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_WEITER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_WEITER),
+                "Expected combination step (button Weiter) after jump-in.");
+    }
+
+    /** Full entry: open choices, type filter, click option row containing serviceLabel. */
+    public void selectServiceByLabel(String serviceLabel) {
+        CONTEXT.set();
+        deepClickRequired("#select-service-search");
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        deepSetById("select-service-search", serviceLabel);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
+                        + "if(n.classList&&n.classList.contains('choices__item--choice')||n.classList&&n.classList.contains('choices__item--selectable')){"
+                        + "var t=(n.textContent||'');if(t.indexOf(label)>=0){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
+                        + "return walkClick(document.body);";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!Boolean.TRUE.equals(clicked)) {
+            clickButtonContaining(serviceLabel);
+        }
+        clickWeiter();
+    }
+
+    public void selectOfficeById(int officeId) {
+        CONTEXT.set();
+        deepClickRequired("#checkbox-provider-" + officeId);
+    }
+
+    public void clickFirstAvailableTimeslot() {
+        CONTEXT.set();
+        String script =
+                "function find(root){if(!root)return null;var q=root.querySelector('button.timeslot:not([disabled])');if(q)return q;"
+                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
+                        + "var e=document.querySelector('button.timeslot:not([disabled])')||find(document.body);"
+                        + "if(e){e.scrollIntoView({block:'center'});e.click();return true;}return false;";
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d ->
+                                Boolean.TRUE.equals(
+                                        ((JavascriptExecutor) d).executeScript(script)));
+    }
+
+    /** Optional: list vs calendar – click toggle if present, then pick slot. */
+    public void useCalendarViewIfPossible() {
+        CONTEXT.set();
+        clickButtonContaining("Kalenderansicht");
+    }
+
+    public void fillContactDetails(String firstName, String lastName, String email, String phone) {
+        CONTEXT.set();
+        deepSetById("input-firstname", firstName);
+        deepSetById("input-lastname", lastName);
+        deepSetById("input-mailaddress", email);
+        deepSetById("input-telephonenumber", phone);
+    }
+
+    public void acceptPrivacyAndCommunication() {
+        CONTEXT.set();
+        deepClick("#checkbox-privacy-policy");
+        deepClick("#checkbox-electronic-communication");
+    }
+
+    public void clickReserveAppointment() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d -> {
+                            String script =
+                                    "function find(root){if(!root)return null;var q=root.querySelector('button.m-button--primary');if(q&&!(q.disabled)&&((q.textContent||'').indexOf('Termin reservieren')>=0))return q;"
+                                            + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
+                                            + "var e=find(document.body);if(e){e.click();return true;}return false;";
+                            return Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript(script));
+                        });
+    }
+
+    public void assertPreconfirmationCalloutVisible() {
+        assertShadowContains(
+                "Aktivieren Sie Ihren Termin.",
+                "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
+    }
+
+    public void assertConfirmationSuccessCalloutVisible() {
+        assertShadowContains(
+                "Ihr Termin wurde gebucht.",
+                "Confirmation success callout not found after opening confirm link.");
+    }
+
+    public void assertSelectedAppointmentCalloutVisible() {
+        assertShadowContains(
+                "Ausgewählter Termin",
+                "Selected-appointment info callout not found after choosing slot.");
+    }
+
+    /**
+     * Reads {@value #LOCALSTORAGE_APPOINTMENT_KEY} and sets {@link zms.ataf.rest.steps.CitizenApiSteps} booking process
+     * so mail steps can run after UI preconfirm.
+     */
+    public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
+        CONTEXT.set();
+        String json =
+                (String)
+                        ((JavascriptExecutor) DriverUtil.getDriver())
+                                .executeScript(
+                                        "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
+        Assert.assertNotNull(json, "localStorage lhm-appointment-data missing after UI flow");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(json);
+        JsonNode appointment = root.path("appointment");
+        Integer processId = null;
+        if (appointment.has("processId") && !appointment.get("processId").isNull()) {
+            processId = appointment.get("processId").asInt();
+        }
+        String authKey = appointment.path("authKey").asText(null);
+        Assert.assertNotNull(processId, "appointment.processId missing in localStorage");
+        Assert.assertNotNull(authKey, "appointment.authKey missing in localStorage");
+        ThinnedProcess p = new ThinnedProcess();
+        p.setProcessId(processId);
+        p.setAuthKey(authKey);
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+        return p;
+    }
+
+    public void openConfirmationDeepLinkInBrowser() {
+        CONTEXT.set();
+        ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(p, "No booking process; sync localStorage first");
+        String payload =
+                "{\"id\":"
+                        + p.getProcessId()
+                        + ",\"authKey\":"
+                        + mapperQuote(p.getAuthKey())
+                        + "}";
+        String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
+        int hashIdx = base.indexOf('#');
+        if (hashIdx >= 0) {
+            base = base.substring(0, hashIdx);
+        }
+        String url = base + "#/appointment/confirm/" + b64;
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        }
+        try {
+            Thread.sleep(4000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static String mapperQuote(String s) {
+        if (s == null) {
+            return "null";
+        }
+        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
     }
 }

@@ -1,26 +1,124 @@
 package zms.ataf.ui.steps;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.web.utils.DriverUtil;
-import io.cucumber.java.de.Dann;
-import io.cucumber.java.de.Wenn;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
-import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 
+/**
+ * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
+ * {@code features/ui/zmscitizenview/ServiceFinder.feature} and {@code booking.feature}.
+ */
 public class CitizenViewSteps {
 
-    private final CitizenViewPage CITIZEN_VIEW_PAGE;
+    private static final String DEFAULT_FIRST = "E2E";
+    private static final String DEFAULT_LAST = "Bürger";
+    private static final String DEFAULT_MAIL = "e2e-buerger@example.org";
+    private static final String DEFAULT_PHONE = "08912345678";
+
+    private final CitizenViewPage page;
 
     public CitizenViewSteps() {
-        CITIZEN_VIEW_PAGE = new CitizenViewPage(DriverUtil.getDriver());
+        page = new CitizenViewPage(DriverUtil.getDriver());
     }
 
-    @Wenn("Sie zur Webseite der " + CitizenViewPageContext.NAME + " navigieren.")
-    public void sie_zur_webseite_der_citizenview_navigieren() {
-        CITIZEN_VIEW_PAGE.navigateToPage();
+    @Given("I open the zmscitizenview booking page")
+    public void iOpenTheZmscitizenviewBookingPage() {
+        page.navigateToPage();
     }
 
-    @Dann("wird der Service Finder auf der Startseite der " + CitizenViewPageContext.NAME + " angezeigt.")
-    public void wird_der_service_finder_auf_der_startseite_angezeigt() {
-        CITIZEN_VIEW_PAGE.assertServiceFinderHeadingVisible();
+    @Then("the Service Finder should be visible on the start page")
+    public void theServiceFinderShouldBeVisibleOnTheStartPage() {
+        page.assertServiceFinderHeadingVisible();
+    }
+
+    @Given("I open zmscitizenview with jump-in service {string} and location {string}")
+    public void iOpenZmscitizenviewWithJumpIn(String serviceId, String locationId) {
+        page.navigateWithJumpIn(
+                TestDataHelper.transformTestData(serviceId), TestDataHelper.transformTestData(locationId));
+    }
+
+    @Then("the service combination step should be visible")
+    public void theServiceCombinationStepShouldBeVisible() {
+        page.assertCombinationStepVisible();
+    }
+
+    @When("I continue from the service combination step")
+    public void iContinueFromTheServiceCombinationStep() {
+        page.clickWeiter();
+    }
+
+    @When("I select service {string} from the service finder and continue")
+    public void iSelectServiceFromTheServiceFinderAndContinue(String serviceLabel) {
+        page.selectServiceByLabel(TestDataHelper.transformTestData(serviceLabel));
+    }
+
+    @When("I select office {int} in the citizen view")
+    public void iSelectOfficeInTheCitizenView(int officeId) {
+        page.selectOfficeById(officeId);
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @When("I switch to calendar view if available")
+    public void iSwitchToCalendarViewIfAvailable() {
+        page.useCalendarViewIfPossible();
+    }
+
+    @When("I choose the first available time slot in the citizen view")
+    public void iChooseTheFirstAvailableTimeSlot() {
+        page.clickFirstAvailableTimeslot();
+        page.clickWeiter();
+    }
+
+    @When("I enter default contact details in the citizen view")
+    public void iEnterDefaultContactDetails() {
+        page.fillContactDetails(DEFAULT_FIRST, DEFAULT_LAST, DEFAULT_MAIL, DEFAULT_PHONE);
+        page.clickWeiter();
+    }
+
+    @When("I accept privacy and communication in the citizen view")
+    public void iAcceptPrivacyAndCommunication() {
+        page.acceptPrivacyAndCommunication();
+    }
+
+    @When("I reserve the appointment in the citizen view")
+    public void iReserveTheAppointmentInTheCitizenView() {
+        page.clickReserveAppointment();
+        try {
+            Thread.sleep(5000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Then("the preconfirmation callout should be visible in the citizen view")
+    public void thePreconfirmationCalloutShouldBeVisible() {
+        page.assertPreconfirmationCalloutVisible();
+    }
+
+    @When("I sync the booking process from citizen view localStorage")
+    public void iSyncTheBookingProcessFromCitizenViewLocalStorage() throws Exception {
+        page.syncBookingProcessFromLocalStorage();
+    }
+
+    @When("I open the confirmation deep link in the browser")
+    public void iOpenTheConfirmationDeepLinkInTheBrowser() {
+        page.openConfirmationDeepLinkInBrowser();
+    }
+
+    @Then("the confirmation success callout should be visible in the citizen view")
+    public void theConfirmationSuccessCalloutShouldBeVisible() {
+        page.assertConfirmationSuccessCalloutVisible();
+    }
+
+    @Then("the selected appointment callout should be visible in the citizen view")
+    public void theSelectedAppointmentCalloutShouldBeVisible() {
+        page.assertSelectedAppointmentCalloutVisible();
     }
 }

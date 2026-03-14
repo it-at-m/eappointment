@@ -22,7 +22,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
   - `ui/zmsstatistic/` - Statistik UI features  
-  - `ui/zmscitizenview/` - (placeholder for future ZMS citizen view UI features)  
+  - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
 - `src/main/resources/db/migration/` - Flyway database migrations
 
 ## Running Tests
@@ -115,6 +115,7 @@ mvn test -Pataf-ui
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
 
 ## Environment Variables
@@ -166,6 +167,11 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
   - `@buergeransicht` - Legacy eappointment citizen view UI features (`features/ui/buergeransicht/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
+  - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
+  - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
+  - `@ruppertstrasse` / `@abholung` - Office/service-specific booking scenarios
+  - `@executeLocally` - Often skipped in CI (captcha, Selenium, mail); run locally when needed
+  - `@allowDisabledServicesMix` - Jump-in scenario that may mix disabled services (environment-dependent)
 - **Other**
   - `@smoke` - Smoke tests (critical path)
 
@@ -193,6 +199,10 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### Legacy Bürgeransicht UI (`ui/buergeransicht/`)
 - Features that automate the legacy eappointment Bürgeransicht frontend.
+
+#### zmscitizenview UI (`ui/zmscitizenview/`)
+- `ServiceFinder.feature` - Start page / Service Finder visible (English)
+- `booking.feature` - Full UI booking (reserve → preconfirm callout → confirm deep link), aligned with REST `zmscitizenapi/booking.feature`; steps live in `CitizenViewSteps.java`
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
