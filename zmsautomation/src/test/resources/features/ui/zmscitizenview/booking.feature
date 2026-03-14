@@ -4,7 +4,7 @@ Feature: zmscitizenview full booking flow (ZMSKVR-1124)
   As a citizen
   I want to book via the citizen view UI
   So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)
-  And invalid Pass/Hauptkalender combinations show the standard error callout
+  And allowDisabledServicesMix jump-ins stay valid; Pass-only still books on the Passkalender (10502)
 
   Background:
     Given the Citizen API is available
@@ -12,20 +12,35 @@ Feature: zmscitizenview full booking flow (ZMSKVR-1124)
     Then the response status code should be 200
     And the response should contain offices and services
 
-  # --- Invalid jump-in (KVR-II/221): Pass-only must not use Hauptkalender; non-Pass must not use Passkalender ---
-  # Pass+10489: ServiceFinder allows disabled Pass on 10489 when LOCATIONS_ALLOW_DISABLED_MIX (10489,10502) —
-  # no invalidJumpinLink emit → callout never shows. Enable when product blocks Pass-only on Hauptkalender.
-  @jumpin @passkalender @executeLocally @ignore
-  Scenario: Pass service jump-in with Hauptkalender 10489 is rejected
-    Given I open zmscitizenview with jump-in service "1063453" and location "10489"
-    Then the invalid jump-in callout should be visible in the citizen view
-
+  # --- Invalid jump-in: non-Pass on Passkalender only (no relation / invalid link) ---
   @jumpin @passkalender @executeLocally
   Scenario: Non-Pass service jump-in with Passkalender 10502 is rejected
     Given I open zmscitizenview with jump-in service "1063475" and location "10502"
     Then the invalid jump-in callout should be visible in the citizen view
 
-  # --- Passkalender 10502: Pass-only jump-in → only Pass services → book → provider-10502 everywhere ---
+  # --- allowDisabledServicesMix: Pass jump-in with location 10489 is valid; Pass-only lists Passkalender 10502 (same as REST booking) ---
+  @jumpin @allowDisabledServicesMix @passkalender @executeLocally
+  Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
+    Given I open zmscitizenview with jump-in service "1063441" and location "10489"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10502 should be visible in the citizen view
+    When I select office 10502 in the citizen view
+    And I switch to calendar view if available
+    And I choose the first available time slot in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    When I enter default contact details in the citizen view
+    And I accept privacy and communication in the citizen view
+    And I reserve the appointment in the citizen view
+    Then the preconfirmation callout should be visible in the citizen view
+    And the booking summary should show provider 10502 in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And the booking summary should show provider 10502 in the citizen view
+
+  # --- Passkalender 10502: direct jump-in → only Pass services → book → provider-10502 everywhere ---
   @jumpin @passkalender @executeLocally
   Scenario: Reisepass jump-in Passkalender 10502 books to provider 10502 with correct summaries
     Given I open zmscitizenview with jump-in service "1063453" and location "10502"

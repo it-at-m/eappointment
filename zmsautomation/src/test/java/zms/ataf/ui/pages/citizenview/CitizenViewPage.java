@@ -166,8 +166,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) || shadowDomContainsText(EN_INVALID_JUMPIN_HEADER))
                         && (shadowDomContainsText(DE_INVALID_JUMPIN_TEXT) || shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)),
-                "Invalid jump-in callout not found (de or en). If Pass+Hauptkalender: frontend may allow mix via"
-                        + " LOCATIONS_ALLOW_DISABLED_MIX — see booking.feature @ignore scenario.");
+                "Invalid jump-in callout not found (de or en). Expected for invalid service–office pairs only.");
     }
 
     public void waitUntilDeepElementExists(String cssSelector, int seconds) {

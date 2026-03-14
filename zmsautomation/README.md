@@ -129,7 +129,7 @@ Required environment variables for ATAF tests:
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
 - **zmscitizenview ping (502)** - If `zmsautomation-test` reports 502 for `http://citizenview:8082` while `curl` from a container works, `HTTP_PROXY` was routing that URL to the corporate gateway. The script pings zmscitizenview with `--noproxy '*'` so the request stays on Docker DNS.
 - **SCREENSHOT_EVERY_STEP** - Per-step PNGs skip `about:newtab` / Firefox start page so REST Background steps do not flood artifacts. After the app URL loads, screenshots include calendar/reserve steps as usual.
-- **Pass + Hauptkalender (10489) UI scenario** - Tagged `@ignore` until the app emits invalid jump-in for Pass-only on 10489. Today `LOCATIONS_ALLOW_DISABLED_MIX [10489,10502]` makes `ServiceFinder.vue` accept that jump-in (no error callout).
+- **Pass jump-in + 10489** - Valid link: `allowDisabledServicesMix` links 10489 and 10502. Pass-only still books on **10502** (see UI + REST `booking.feature` JumpIn 10489 scenario).
 
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)
