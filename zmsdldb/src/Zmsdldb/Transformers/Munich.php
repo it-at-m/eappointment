@@ -59,12 +59,16 @@ class Munich
         [10489, 10502],
     ];
 
+    /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
-        10396802, // Anmeldung einer Eheschließung mit Auslandsbezug
-        1063648, // Anmeldung einer Eheschließung ohne Auslandsbezug
-        1063731, // Kirchenaustritt
-        1071907, // Einbürgerung
-        10502137
+        10396802,
+        1063648,
+        1063731,
+        1071907,
+        10502137,
+        10314100,
+        10416410,
+        10323113,
     ];
 
     const SERVICE_COMBINATIONS = [
@@ -201,6 +205,106 @@ class Munich
             $this->logger?->error('Failed to fetch Munich export', ['error' => $e->getMessage(), 'url' => $indexUrl]);
             throw $e;
         }
+    }
+
+    /**
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     */
+    public static function defaultSadbOverwritePath(): string
+    {
+        return dirname(__DIR__, 3) . '/resources/munich_sadb_overwrite.json';
+    }
+
+    /**
+     * Merge overwrite JSON into raw SADB export — same role as dldb-mapper mapImport($overwrite).
+     * - Services: merge by id, fields merged by name (overwrite wins).
+     * - Locations: merge by id (extendedServiceReferences by refId) or append if missing (e.g. 10502).
+     */
+    public function applySadbOverwrite(array $data, ?string $overwritePath = null): array
+    {
+        $path = $overwritePath ?: self::defaultSadbOverwritePath();
+        if (!is_readable($path)) {
+            $this->logger?->warning('Munich SADB overwrite not readable, skipping merge', ['path' => $path]);
+            return $data;
+        }
+        $raw = file_get_contents($path);
+        if ($raw === false) {
+            return $data;
+        }
+        try {
+            $additional = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger?->error('Munich SADB overwrite JSON invalid', ['path' => $path, 'error' => $e->getMessage()]);
+            return $data;
+        }
+
+        $data['services'] = $data['services'] ?? [];
+        $data['locations'] = $data['locations'] ?? [];
+
+        foreach ($additional['services'] ?? [] as $svc) {
+            $id = $svc['id'] ?? null;
+            if ($id === null) {
+                continue;
+            }
+            foreach ($data['services'] as $k => $existing) {
+                if ((string)($existing['id'] ?? '') !== (string)$id) {
+                    continue;
+                }
+                $origFields = $existing['fields'] ?? [];
+                $newFields = $svc['fields'] ?? [];
+                $data['services'][$k] = array_merge($existing, $svc);
+                $data['services'][$k]['fields'] = $this->mergeListByKey($origFields, $newFields, 'name');
+                break;
+            }
+        }
+
+        foreach ($additional['locations'] ?? [] as $ov) {
+            $oid = (string)($ov['id'] ?? '');
+            if ($oid === '') {
+                continue;
+            }
+            $idx = null;
+            foreach ($data['locations'] as $k => $loc) {
+                if ((string)($loc['id'] ?? '') === $oid) {
+                    $idx = $k;
+                    break;
+                }
+            }
+            if ($idx === null) {
+                $data['locations'][] = $ov;
+                $this->logger?->info('Munich SADB overwrite: appended location', ['id' => $oid]);
+                continue;
+            }
+            $existing = $data['locations'][$idx];
+            $origRefs = $existing['extendedServiceReferences'] ?? [];
+            $newRefs = $ov['extendedServiceReferences'] ?? [];
+            $data['locations'][$idx] = array_merge($existing, $ov);
+            $data['locations'][$idx]['extendedServiceReferences'] = $this->mergeListByKey($origRefs, $newRefs, 'refId');
+            $this->logger?->info('Munich SADB overwrite: merged location', ['id' => $oid]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $originalList
+     * @param array<int, array<string, mixed>> $additionalList
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeListByKey(array $originalList, array $additionalList, string $key): array
+    {
+        $by = [];
+        foreach ($originalList as $el) {
+            if (isset($el[$key])) {
+                $by[(string)$el[$key]] = $el;
+            }
+        }
+        foreach ($additionalList as $el) {
+            if (isset($el[$key])) {
+                $by[(string)$el[$key]] = $el;
+            }
+        }
+        return array_values($by);
     }
 
     /**
