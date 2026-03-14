@@ -179,6 +179,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String sel = "#checkbox-provider-" + officeId;
         waitUntilDeepElementExists(sel, DEFAULT_EXPLICIT_WAIT_TIME);
+        logProviderCheckboxesVisible(officeId);
         Assert.assertTrue(deepElementExists(sel), "Expected provider checkbox in DOM: " + sel);
     }
 
@@ -287,27 +288,112 @@ public class CitizenViewPage extends BasePage {
 
     public void selectOfficeById(int officeId) {
         CONTEXT.set();
+        logProviderCheckboxesVisible(officeId);
         deepClickRequired("#checkbox-provider-" + officeId);
     }
 
-    public void clickFirstAvailableTimeslot() {
+    /**
+     * Logs every {@code #checkbox-provider-*} in DOM (shadow-safe). Confirms {@code expectedOfficeId} is in the Ort
+     * list before we tick it.
+     */
+    public void logProviderCheckboxesVisible(int expectedOfficeId) {
         CONTEXT.set();
         String script =
-                "function find(root){if(!root)return null;var q=root.querySelector('button.timeslot:not([disabled])');if(q)return q;"
-                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
-                        + "var e=document.querySelector('button.timeslot:not([disabled])')||find(document.body);"
-                        + "if(e){e.scrollIntoView({block:'center'});e.click();return true;}return false;";
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                "var ids=[];function collect(r){if(!r)return;var a=r.querySelectorAll('[id^=\"checkbox-provider-\"]');"
+                        + "for(var i=0;i<a.length;i++)ids.push(a[i].id);var q=r.querySelectorAll('*');"
+                        + "for(var j=0;j<q.length;j++)if(q[j].shadowRoot)collect(q[j].shadowRoot);}"
+                        + "collect(document.body);return ids.join(',');";
+        String found =
+                String.valueOf(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+        boolean ok = found.contains("checkbox-provider-" + expectedOfficeId);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview Ort checkboxes in DOM: [{}] | expected provider {} present={}",
+                        found,
+                        expectedOfficeId,
+                        ok);
+        Assert.assertTrue(
+                ok,
+                "Expected #checkbox-provider-" + expectedOfficeId + " in list; saw: " + found);
+    }
+
+    /** True when at least one bookable slot control exists (list or calendar). */
+    public boolean deepTimeslotClickablePresent() {
+        CONTEXT.set();
+        String script =
+                "function has(root){if(!root)return false;"
+                        + "var all=root.querySelectorAll('*');"
+                        + "for(var i=0;i<all.length;i++){var n=all[i];"
+                        + "if(n.id&&n.id.indexOf('-timeslot-')>=0)return true;"
+                        + "if(n.classList&&n.classList.contains('timeslot'))return true;"
+                        + "if(n.shadowRoot&&has(n.shadowRoot))return true;}return false;}"
+                        + "return has(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    /** Wait until slot buttons exist; API slow after office/day selection in calendar. */
+    public void waitUntilAppointmentSlotsReady(int maxSeconds) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to {}s for appointment slots", maxSeconds);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
+                .until(d -> deepTimeslotClickablePresent());
+    }
+
+    /**
+     * Below the calendar: scroll to slot grid, wait for API, click first {@code muc-button.timeslot} (prefer grid for
+     * {@code officeId}). First day stays as preselected — no calendar toggle.
+     */
+    public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
+        CONTEXT.set();
+        int timeout = Math.max(DEFAULT_EXPLICIT_WAIT_TIME, 90);
+        try {
+            waitUntilAppointmentSlotsReady(timeout);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
+        }
+        String scrollClick =
+                "var oid=arguments[0];"
+                        + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
+                        + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
+                        + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
+                        + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
+                        + "window.scrollBy(0,200);"
+                        + "function clickSlot(n){if(!n)return false;if(n.nodeType===1){"
+                        + "if(n.id&&n.id.indexOf('-timeslot-')>=0){if(n.shadowRoot){var b=n.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}try{n.click();return true;}catch(e){}}"
+                        + "if(n.classList&&n.classList.contains('timeslot')){if(n.shadowRoot){var b2=n.shadowRoot.querySelector('button:not([disabled])');if(b2){b2.click();return true;}}try{n.click();return true;}catch(e2){}}}"
+                        + "if(n.shadowRoot&&clickSlot(n.shadowRoot))return true;var c=n.children;if(c)for(var i=0;i<c.length;i++)if(clickSlot(c[i]))return true;return false;}"
+                        + "return clickSlot(document.body);";
+        ScenarioLogManager.getLogger().info("zmscitizenview: scroll + first slot office {}", officeId);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
                 .until(
                         d ->
                                 Boolean.TRUE.equals(
-                                        ((JavascriptExecutor) d).executeScript(script)));
+                                        ((JavascriptExecutor) d).executeScript(scrollClick, officeId)));
+        try {
+            Thread.sleep(800L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        assertSelectedAppointmentCalloutShowsProvider(officeId);
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weiter after Ausgewählter Termin callout");
+        clickWeiter();
     }
 
-    /** Optional: list vs calendar – click toggle if present, then pick slot. */
-    public void useCalendarViewIfPossible() {
+    /** Info callout after slot pick: {@code Ausgewählter Termin} + {@code #provider-{officeId}}. */
+    public void assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
-        clickButtonContaining("Kalenderansicht");
+        waitUntilShadowContains("Ausgewählter Termin", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText("Ausgewählter Termin"),
+                "Ausgewählter Termin callout missing after slot click");
+        Assert.assertTrue(
+                deepElementExists("#provider-" + officeId),
+                "Expected #provider-" + officeId + " in selected-appointment callout");
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
+                        officeId);
     }
 
     public void fillContactDetails(String firstName, String lastName, String email, String phone) {

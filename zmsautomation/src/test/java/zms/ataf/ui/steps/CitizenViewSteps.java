@@ -66,22 +66,15 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger().info("zmscitizenview: select office {}", officeId);
         page.selectOfficeById(officeId);
         try {
-            Thread.sleep(2000L);
+            Thread.sleep(4000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    @When("I switch to calendar view if available")
-    public void iSwitchToCalendarViewIfAvailable() {
-        page.useCalendarViewIfPossible();
-    }
-
-    @When("I choose the first available time slot in the citizen view")
-    public void iChooseTheFirstAvailableTimeSlot() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: first timeslot + Weiter");
-        page.clickFirstAvailableTimeslot();
-        page.clickWeiter();
+    @When("I choose the first slot below the calendar for office {int} and continue in the citizen view")
+    public void iChooseFirstSlotBelowCalendarForOfficeAndContinue(int officeId) {
+        page.scrollClickFirstSlotAssertCalloutWeiter(officeId);
     }
 
     @When("I enter default contact details in the citizen view")

@@ -26,8 +26,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
+    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
@@ -51,10 +50,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10489 should not appear in the citizen view
     And provider checkbox 10492 should not appear in the citizen view
     When I select office 10502 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
-    Then the selected appointment callout should be visible in the citizen view
-    And the booking summary should show provider 10502 in the citizen view
+    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
     And I reserve the appointment in the citizen view
@@ -74,8 +71,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
+    And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
@@ -98,8 +94,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10489 should not appear in the citizen view
     And provider checkbox 10502 should not appear in the citizen view
     When I select office 10492 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
+    And I choose the first slot below the calendar for office 10492 and continue in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
@@ -118,8 +113,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Given I open the zmscitizenview booking page
     When I select service "Personalausweis" from the service finder and continue
     And I select office 10502 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
+    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
     And I reserve the appointment in the citizen view
@@ -135,8 +129,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Given I open the zmscitizenview booking page
     When I select service "Personalausweis" from the service finder and continue
     And I select office 10489 in the citizen view
-    And I switch to calendar view if available
-    And I choose the first available time slot in the citizen view
+    And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     And I accept privacy and communication in the citizen view
     And I reserve the appointment in the citizen view
