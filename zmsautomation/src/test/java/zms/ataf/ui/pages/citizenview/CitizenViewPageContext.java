@@ -108,8 +108,8 @@ public class CitizenViewPageContext extends Context {
                         + "return t.indexOf('Diese Ansicht kann nicht geladen werden')>=0||t.indexOf('This view cannot be loaded')>=0"
                         + "||t.indexOf('Weiter')>=0||t.indexOf('Kombinierbare Leistungen')>=0"
                         + "||t.indexOf('Bürgerservice-Suche')>=0;";
-        long deadline = System.currentTimeMillis() + 25_000L;
-        while (System.currentTimeMillis() < deadline) {
+        long deadline = java.lang.System.currentTimeMillis() + 25_000L;
+        while (java.lang.System.currentTimeMillis() < deadline) {
             try {
                 Object o = ((org.openqa.selenium.JavascriptExecutor) DRIVER).executeScript(script);
                 if (Boolean.TRUE.equals(o)) {
