@@ -33,7 +33,7 @@ class AppointmentUpdateController extends BaseController
         if (isset($logBody['authKey']) && is_string($logBody['authKey'])) {
             $logBody['authKey'] = $logBody['authKey'] !== '' ? '[REDACTED]' : '';
         }
-        LoggerService::logInfo('update-appointment request payload', ['body' => $logBody]);
+        LoggerService::logInfo('update-appointment request payload', ['body' => json_encode($logBody)]);
 
         $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
         $result = $this->service->processUpdate($body ?? [], $authenticatedUser);
