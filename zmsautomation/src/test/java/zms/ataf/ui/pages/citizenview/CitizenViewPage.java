@@ -547,6 +547,20 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
         clickWeiter();
+        waitForReserveToSettle();
+    }
+
+    /**
+     * After reserve-Weiter: give the reserve API time to persist so update-appointment (Kontakt submit) does not get
+     * 404 appointmentNotFound. The Weiter button is not disabled; it only looks inactive when pressed.
+     */
+    private void waitForReserveToSettle() {
+        try {
+            Thread.sleep(2500L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: reserve settle delay done");
     }
 
     /** Info callout after slot pick: {@code Ausgewählter Termin} + {@code #provider-{officeId}}. */
@@ -628,52 +642,11 @@ public class CitizenViewPage extends BasePage {
         }
         fillRequiredCustomTextAreasInShadow();
         fillOptionalContactRemarksIfPresent();
-        triggerBlurOnContactFieldsForValidation();
-        waitForKontaktWeiterEnabled(20);
-    }
-
-    /**
-     * Blur the last filled field so Vue runs validation and can enable the Weiter button.
-     */
-    private void triggerBlurOnContactFieldsForValidation() {
-        CONTEXT.set();
-        String script =
-                "var last=null;function collect(r){if(!r)return;"
-                        + "var q=r.querySelectorAll('input:not([type=hidden]):not([type=checkbox]),textarea');"
-                        + "for(var i=0;i<q.length;i++){if(q[i].offsetParent!==null)last=q[i];}"
-                        + "var all=r.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collect(all[j].shadowRoot);}"
-                        + "collect(document.body);if(last){last.blur();last.dispatchEvent(new Event('blur',{bubbles:true}));return true;}return false;";
-        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         try {
-            Thread.sleep(400L);
+            Thread.sleep(500L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    /**
-     * Waits until the Kontakt form’s Weiter button is enabled (form validation may run asynchronously). Fails with a
-     * clear message if it stays disabled.
-     */
-    public void waitForKontaktWeiterEnabled(int timeoutSeconds) {
-        CONTEXT.set();
-        String script =
-                "var label='Weiter';function findEnabled(root){if(!root)return false;"
-                        + "var nodes=root.querySelectorAll('button,a');for(var i=0;i<nodes.length;i++){"
-                        + "var n=nodes[i];var t=(n.textContent||'').trim();if(t.indexOf(label)>=0&&!n.disabled){return true;}}"
-                        + "var all=root.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot&&findEnabled(all[j].shadowRoot))return true;"
-                        + "return false;}return findEnabled(document.body);";
-        try {
-            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
-                    .pollingEvery(Duration.ofMillis(400))
-                    .until(d -> Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript(script)));
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assert.fail(
-                    "Kontakt Weiter button did not become enabled within "
-                            + timeoutSeconds
-                            + "s. Form validation may be blocking (check required fields / Bemerkung).");
-        }
-        ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — Weiter button enabled");
     }
 
     /**
