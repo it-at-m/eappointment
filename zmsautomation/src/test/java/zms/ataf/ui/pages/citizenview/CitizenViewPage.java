@@ -552,11 +552,16 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * After reserve-Weiter: give the reserve API time to persist so update-appointment (Kontakt submit) does not get
-     * 404 appointmentNotFound. The Weiter button is not disabled; it only looks inactive when pressed.
+     * 404 appointmentNotFound.
+     * <p>
+     * Update payload comes from: (1) {@code processId}/{@code authKey}/{@code scope} from the reserve response
+     * (stored in {@code appointment.value}); (2) contact fields from the form’s Vue state ({@code customerData}),
+     * copied onto {@code appointment} in {@code nextUpdateAppointment} before POST. If the backend returns 404
+     * despite a 200 reserve, increase this delay or check backend persistence (e.g. commit/replication).
      */
     private void waitForReserveToSettle() {
         try {
-            Thread.sleep(2500L);
+            Thread.sleep(4500L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
