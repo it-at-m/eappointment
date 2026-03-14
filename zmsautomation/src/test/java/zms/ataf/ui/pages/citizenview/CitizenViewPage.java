@@ -311,13 +311,39 @@ public class CitizenViewPage extends BasePage {
         clickWeiter();
     }
 
+    /**
+     * Jump-in can pre-select the only provider; clicking again toggles off. True if that office is already on.
+     */
+    public boolean deepProviderCheckboxChecked(int officeId) {
+        CONTEXT.set();
+        String sel = "#checkbox-provider-" + officeId;
+        String script =
+                "var id=arguments[0];function find(root,id){if(!root)return null;"
+                        + "var q=root.querySelector('#checkbox-provider-'+id);if(q)return q;"
+                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot,id);if(f)return f;}}return null;}"
+                        + "var e=document.querySelector('#checkbox-provider-'+id)||find(document.body,id);if(!e)return false;"
+                        + "if(e.tagName==='INPUT'&&e.type==='checkbox')return !!e.checked;"
+                        + "if(e.shadowRoot){var inp=e.shadowRoot.querySelector('input[type=checkbox]');if(inp)return !!inp.checked;}"
+                        + "var inp2=e.querySelector('input[type=checkbox]');if(inp2)return !!inp2.checked;"
+                        + "return e.getAttribute('aria-checked')==='true'||e.classList.contains('is-selected');";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId);
+        return Boolean.TRUE.equals(o);
+    }
+
     public void selectOfficeById(int officeId) {
         CONTEXT.set();
         logOrtProviderResolution(officeId);
         if (deepElementExists("#checkbox-provider-" + officeId)) {
-            deepClickRequired("#checkbox-provider-" + officeId);
-            ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: clicked Ort checkbox provider {}", officeId);
+            if (deepProviderCheckboxChecked(officeId)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Ort checkbox provider {} already checked (jump-in); skip click",
+                                officeId);
+            } else {
+                deepClickRequired("#checkbox-provider-" + officeId);
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: clicked Ort checkbox provider {}", officeId);
+            }
         } else if (deepOrtSingleProviderTeaserPresent(officeId)) {
             ScenarioLogManager.getLogger()
                     .info(
