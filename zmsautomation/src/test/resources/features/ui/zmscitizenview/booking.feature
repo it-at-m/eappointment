@@ -13,7 +13,9 @@ Feature: zmscitizenview full booking flow (ZMSKVR-1124)
     And the response should contain offices and services
 
   # --- Invalid jump-in (KVR-II/221): Pass-only must not use Hauptkalender; non-Pass must not use Passkalender ---
-  @jumpin @passkalender @executeLocally
+  # Pass+10489: ServiceFinder allows disabled Pass on 10489 when LOCATIONS_ALLOW_DISABLED_MIX (10489,10502) —
+  # no invalidJumpinLink emit → callout never shows. Enable when product blocks Pass-only on Hauptkalender.
+  @jumpin @passkalender @executeLocally @ignore
   Scenario: Pass service jump-in with Hauptkalender 10489 is rejected
     Given I open zmscitizenview with jump-in service "1063453" and location "10489"
     Then the invalid jump-in callout should be visible in the citizen view

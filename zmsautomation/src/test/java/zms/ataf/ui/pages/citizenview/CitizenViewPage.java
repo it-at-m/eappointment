@@ -36,6 +36,10 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_INVALID_JUMPIN_TEXT =
             "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
 
+    private static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
+    private static final String EN_INVALID_JUMPIN_TEXT =
+            "The link to this page is unfortunately incorrect";
+
     private final CitizenViewPageContext CONTEXT;
 
     public CitizenViewPage(RemoteWebDriver driver) {
@@ -143,13 +147,27 @@ public class CitizenViewPage extends BasePage {
 
     public void assertInvalidJumpinLinkCalloutVisible() {
         CONTEXT.set();
-        waitUntilShadowContains(DE_INVALID_JUMPIN_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        int sec = Math.min(25, DEFAULT_EXPLICIT_WAIT_TIME);
+        long deadline = System.currentTimeMillis() + sec * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) && shadowDomContainsText(DE_INVALID_JUMPIN_TEXT)) {
+                return;
+            }
+            if (shadowDomContainsText(EN_INVALID_JUMPIN_HEADER) && shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)) {
+                return;
+            }
+            try {
+                Thread.sleep(300L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
         Assert.assertTrue(
-                shadowDomContainsText(DE_INVALID_JUMPIN_HEADER),
-                "Invalid jump-in header not found (Pass-only on Hauptkalender or non-Pass on Passkalender).");
-        Assert.assertTrue(
-                shadowDomContainsText(DE_INVALID_JUMPIN_TEXT),
-                "Invalid jump-in body text not found.");
+                (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) || shadowDomContainsText(EN_INVALID_JUMPIN_HEADER))
+                        && (shadowDomContainsText(DE_INVALID_JUMPIN_TEXT) || shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)),
+                "Invalid jump-in callout not found (de or en). If Pass+Hauptkalender: frontend may allow mix via"
+                        + " LOCATIONS_ALLOW_DISABLED_MIX — see booking.feature @ignore scenario.");
     }
 
     public void waitUntilDeepElementExists(String cssSelector, int seconds) {

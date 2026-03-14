@@ -1,6 +1,7 @@
 package zms.ataf.ui.steps;
 
 import ataf.core.helpers.TestDataHelper;
+import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -26,6 +27,7 @@ public class CitizenViewSteps {
 
     @Given("I open the zmscitizenview booking page")
     public void iOpenTheZmscitizenviewBookingPage() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open booking page (Service Finder)");
         page.navigateToPage();
     }
 
@@ -36,8 +38,10 @@ public class CitizenViewSteps {
 
     @Given("I open zmscitizenview with jump-in service {string} and location {string}")
     public void iOpenZmscitizenviewWithJumpIn(String serviceId, String locationId) {
-        page.navigateWithJumpIn(
-                TestDataHelper.transformTestData(serviceId), TestDataHelper.transformTestData(locationId));
+        String s = TestDataHelper.transformTestData(serviceId);
+        String l = TestDataHelper.transformTestData(locationId);
+        ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={} location={}", s, l);
+        page.navigateWithJumpIn(s, l);
     }
 
     @Then("the service combination step should be visible")
@@ -47,6 +51,7 @@ public class CitizenViewSteps {
 
     @When("I continue from the service combination step")
     public void iContinueFromTheServiceCombinationStep() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weiter (combination → office/time)");
         page.clickWeiter();
     }
 
@@ -57,6 +62,7 @@ public class CitizenViewSteps {
 
     @When("I select office {int} in the citizen view")
     public void iSelectOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: select office {}", officeId);
         page.selectOfficeById(officeId);
         try {
             Thread.sleep(2000L);
@@ -72,6 +78,7 @@ public class CitizenViewSteps {
 
     @When("I choose the first available time slot in the citizen view")
     public void iChooseTheFirstAvailableTimeSlot() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: first timeslot + Weiter");
         page.clickFirstAvailableTimeslot();
         page.clickWeiter();
     }
@@ -89,6 +96,7 @@ public class CitizenViewSteps {
 
     @When("I reserve the appointment in the citizen view")
     public void iReserveTheAppointmentInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Termin reservieren");
         page.clickReserveAppointment();
         try {
             Thread.sleep(5000L);

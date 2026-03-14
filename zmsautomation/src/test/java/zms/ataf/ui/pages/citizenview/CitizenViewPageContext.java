@@ -94,11 +94,38 @@ public class CitizenViewPageContext extends Context {
         }
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
-        try {
-            Thread.sleep(3000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+        ScenarioLogManager.getLogger().info("Jump-in loaded: {}", jumpInUrl);
+        // Vue + offices-and-services fetch: wait until error callout or combination UI is present
+        waitJumpInDomSettled();
+    }
+
+    /** Poll shadow DOM until invalid jump-in, Weiter, or Service Finder copy appears (max ~25s). */
+    void waitJumpInDomSettled() {
+        String script =
+                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=walk(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=walk(c[i]);return s;}"
+                        + "var t=walk(document.body);"
+                        + "return t.indexOf('Diese Ansicht kann nicht geladen werden')>=0||t.indexOf('This view cannot be loaded')>=0"
+                        + "||t.indexOf('Weiter')>=0||t.indexOf('Kombinierbare Leistungen')>=0"
+                        + "||t.indexOf('Bürgerservice-Suche')>=0;";
+        long deadline = System.currentTimeMillis() + 25_000L;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                Object o = ((org.openqa.selenium.JavascriptExecutor) DRIVER).executeScript(script);
+                if (Boolean.TRUE.equals(o)) {
+                    return;
+                }
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger().debug("waitJumpInDomSettled: {}", e.toString());
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
+        ScenarioLogManager.getLogger().warn("Jump-in DOM still unsettled after 25s (half-blank risk).");
     }
 
     @Override

@@ -47,6 +47,20 @@ public class ScreenshotHook {
         }
         try {
             RemoteWebDriver driver = DriverUtil.getDriver();
+            String url = driver.getCurrentUrl();
+            // Background REST steps run before first navigation — Firefox is still on about:newtab.
+            // Skip screenshots until the app URL is loaded (avoids dozens of empty-tab PNGs).
+            if (url.startsWith("about:")
+                    || "data:,".equals(url)
+                    || (url.contains("mozilla.org") && !url.contains("808"))) {
+                return;
+            }
+            if ("zmscitizenview".equals(resolveModuleFolder(scenario))) {
+                if (!url.contains("#/") && !url.contains("citizenview") && !url.contains("8082")
+                        && !url.contains("buergeransicht") && !url.contains("localhost")) {
+                    return;
+                }
+            }
             byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 
             // 1) Attach to Cucumber report (shows up in the HTML report)
