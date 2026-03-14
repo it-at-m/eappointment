@@ -209,7 +209,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `ServiceFinder.feature` - Start page / Service Finder visible (English)
-- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); `#checkbox-provider-*` / `#provider-*` on reserve, preconfirm, confirm
+- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)

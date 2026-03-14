@@ -175,12 +175,34 @@ public class CitizenViewPage extends BasePage {
                 .until(d -> deepElementExists(cssSelector));
     }
 
+    /**
+     * Ort step: either multi-provider ({@code #checkbox-provider-{id}}) or single-provider teaser
+     * ({@code h3#provider-{id}}) — see ProviderSelection.vue.
+     */
+    public boolean ortStepShowsProvider(int officeId) {
+        CONTEXT.set();
+        return deepElementExists("#checkbox-provider-" + officeId)
+                || deepOrtSingleProviderTeaserPresent(officeId);
+    }
+
+    /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
+    private boolean deepOrtSingleProviderTeaserPresent(int officeId) {
+        CONTEXT.set();
+        String script =
+                "var id='provider-'+arguments[0];function has(root){if(!root)return false;"
+                        + "var h=root.querySelector('h3#'+id+'.m-teaser-contained-contact__headline');"
+                        + "if(h)return true;var all=root.querySelectorAll('*');"
+                        + "for(var i=0;i<all.length;i++)if(all[i].shadowRoot&&has(all[i].shadowRoot))return true;return false;}"
+                        + "return has(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId));
+    }
+
     public void assertProviderCheckboxPresent(int officeId) {
         CONTEXT.set();
-        String sel = "#checkbox-provider-" + officeId;
-        waitUntilDeepElementExists(sel, DEFAULT_EXPLICIT_WAIT_TIME);
-        logProviderCheckboxesVisible(officeId);
-        Assert.assertTrue(deepElementExists(sel), "Expected provider checkbox in DOM: " + sel);
+        waitUntilOrtStepShowsProvider(officeId, DEFAULT_EXPLICIT_WAIT_TIME);
+        logOrtProviderResolution(officeId);
+        Assert.assertTrue(ortStepShowsProvider(officeId), "Ort must show provider " + officeId);
     }
 
     public void assertProviderCheckboxAbsent(int officeId) {
@@ -188,6 +210,9 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(
                 deepElementExists("#checkbox-provider-" + officeId),
                 "Provider checkbox for office " + officeId + " must not appear for this jump-in/service.");
+        Assert.assertFalse(
+                deepOrtSingleProviderTeaserPresent(officeId),
+                "Single-provider Ort teaser for office " + officeId + " must not appear.");
     }
 
     /**
@@ -288,15 +313,65 @@ public class CitizenViewPage extends BasePage {
 
     public void selectOfficeById(int officeId) {
         CONTEXT.set();
-        logProviderCheckboxesVisible(officeId);
-        deepClickRequired("#checkbox-provider-" + officeId);
+        logOrtProviderResolution(officeId);
+        if (deepElementExists("#checkbox-provider-" + officeId)) {
+            deepClickRequired("#checkbox-provider-" + officeId);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: clicked Ort checkbox provider {}", officeId);
+        } else if (deepOrtSingleProviderTeaserPresent(officeId)) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: Ort single-provider teaser already selected provider {} (no checkbox)",
+                            officeId);
+        } else {
+            Assert.fail("Ort: no checkbox and no single-provider teaser for provider " + officeId);
+        }
     }
 
     /**
-     * Logs every {@code #checkbox-provider-*} in DOM (shadow-safe). Confirms {@code expectedOfficeId} is in the Ort
-     * list before we tick it.
+     * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
      */
-    public void logProviderCheckboxesVisible(int expectedOfficeId) {
+    public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Ort step — start waiting for provider {} (checkbox or single-provider teaser), up to {}s",
+                        officeId,
+                        maxSeconds);
+        long deadline = java.lang.System.currentTimeMillis() + maxSeconds * 1000L;
+        while (java.lang.System.currentTimeMillis() < deadline) {
+            if (ortStepShowsProvider(officeId)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Ort step — provider {} found ({})",
+                                officeId,
+                                deepElementExists("#checkbox-provider-" + officeId)
+                                        ? "checkbox list"
+                                        : "single-provider teaser");
+                return;
+            }
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        logOrtProviderResolution(officeId);
+        Assert.fail(
+                "Ort step did not show provider "
+                        + officeId
+                        + " within "
+                        + maxSeconds
+                        + "s (no checkbox-provider-"
+                        + officeId
+                        + " and no single-provider teaser)");
+    }
+
+    /**
+     * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
+     */
+    public void logOrtProviderResolution(int expectedOfficeId) {
         CONTEXT.set();
         String script =
                 "var ids=[];function collect(r){if(!r)return;var a=r.querySelectorAll('[id^=\"checkbox-provider-\"]');"
@@ -305,16 +380,23 @@ public class CitizenViewPage extends BasePage {
                         + "collect(document.body);return ids.join(',');";
         String found =
                 String.valueOf(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
-        boolean ok = found.contains("checkbox-provider-" + expectedOfficeId);
+        boolean checkboxOk = found.contains("checkbox-provider-" + expectedOfficeId);
+        boolean teaserOk = deepOrtSingleProviderTeaserPresent(expectedOfficeId);
         ScenarioLogManager.getLogger()
                 .info(
-                        "zmscitizenview Ort checkboxes in DOM: [{}] | expected provider {} present={}",
+                        "zmscitizenview: Ort provider resolution — checkboxIds=[{}] checkboxHit={} singleProviderTeaser={} expected={}",
                         found,
-                        expectedOfficeId,
-                        ok);
+                        checkboxOk,
+                        teaserOk,
+                        expectedOfficeId);
         Assert.assertTrue(
-                ok,
-                "Expected #checkbox-provider-" + expectedOfficeId + " in list; saw: " + found);
+                checkboxOk || teaserOk,
+                "Ort must list provider "
+                        + expectedOfficeId
+                        + " (checkbox or single teaser); checkboxes=["
+                        + found
+                        + "] teaser="
+                        + teaserOk);
     }
 
     /** True when at least one bookable slot control exists (list or calendar). */
@@ -332,12 +414,58 @@ public class CitizenViewPage extends BasePage {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
-    /** Wait until slot buttons exist; API slow after office/day selection in calendar. */
+    /**
+     * MucSpinner lives in {@code .m-spinner-container}; shown while days load and again after a calendar day change
+     * until slot API returns ({@code CalendarView.vue}).
+     */
+    public boolean deepMucSpinnerVisible() {
+        CONTEXT.set();
+        String script =
+                "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
+                        + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
+                        + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
+                        + "function spin(root){if(!root)return false;"
+                        + "var nodes=root.querySelectorAll('.m-spinner-container');"
+                        + "for(var i=0;i<nodes.length;i++)if(vis(nodes[i]))return true;"
+                        + "var all=root.querySelectorAll('*');"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot&&spin(all[j].shadowRoot))return true;"
+                        + "return false;}"
+                        + "return spin(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    /**
+     * Slot API finished: no visible MucSpinner and at least one timeslot control (avoids clicking while day-change
+     * spinner runs).
+     */
+    public boolean deepTimeslotReadyNoSpinner() {
+        return deepTimeslotClickablePresent() && !deepMucSpinnerVisible();
+    }
+
+    /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
     public void waitUntilAppointmentSlotsReady(int maxSeconds) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to {}s for appointment slots", maxSeconds);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
-                .until(d -> deepTimeslotClickablePresent());
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting up to {}s for slots (MucSpinner gone + timeslot in DOM)",
+                        maxSeconds);
+        long t0 = java.lang.System.currentTimeMillis();
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
+                    .until(d -> deepTimeslotReadyNoSpinner());
+        } catch (org.openqa.selenium.TimeoutException e) {
+            boolean spin = deepMucSpinnerVisible();
+            boolean slot = deepTimeslotClickablePresent();
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: slot wait timeout — spinnerVisible={} timeslotInDom={} after {}ms",
+                            spin,
+                            slot,
+                            java.lang.System.currentTimeMillis() - t0);
+            throw e;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
     }
 
     /**
