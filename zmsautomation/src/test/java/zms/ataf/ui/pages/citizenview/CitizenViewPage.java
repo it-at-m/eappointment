@@ -243,15 +243,26 @@ public class CitizenViewPage extends BasePage {
                 "Expected Vorläufiger Reisepass (or label) on Pass-only step");
     }
 
-    /** Set value on input/textarea found by id anywhere in shadow DOM. */
+    /**
+     * Set value on input/textarea. {@code muc-input} / {@code muc-text-area} use host ids ({@code firstname},
+     * {@code mailaddress}) with the real control inside <strong>shadow DOM</strong>; also tries {@code input-*} ids.
+     * Dispatches {@code InputEvent} so Vue v-model updates (plain {@code value=} is not enough).
+     */
     public boolean deepSetById(String id, String value) {
         CONTEXT.set();
         String script =
-                "var id=arguments[0],v=arguments[1];function find(root){if(!root)return null;var q=root.getElementById?root.getElementById(id):root.querySelector('#'+id);"
-                        + "if(q&&(q.tagName==='INPUT'||q.tagName==='TEXTAREA'))return q;var all=root.querySelectorAll('*');"
-                        + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}return null;}"
-                + "var e=find(document.body);if(e){e.scrollIntoView({block:'center'});e.focus();e.value=v;"
-                + "e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));return true;}return false;";
+                "var want=arguments[0],v=arguments[1]==null?'':String(arguments[1]);"
+                        + "var ids=[];ids.push(want);if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]):not([type=checkbox]):not([type=radio]),textarea');if(q)return q;}return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);"
+                        + "if(e){e.scrollIntoView({block:'center'});e.focus();e.value=v;"
+                        + "try{e.dispatchEvent(new InputEvent('input',{bubbles:true,cancelable:true,inputType:'insertReplacementText',data:v}));}catch(ex){e.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "e.dispatchEvent(new Event('change',{bubbles:true}));return true;}return false;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id, value);
         return Boolean.TRUE.equals(o);
     }
@@ -563,12 +574,19 @@ public class CitizenViewPage extends BasePage {
 
     public void fillContactDetails(String firstName, String lastName, String email, String phone) {
         CONTEXT.set();
-        deepSetById("input-firstname", firstName);
-        deepSetById("input-lastname", lastName);
-        deepSetById("input-mailaddress", email);
-        if (deepElementExists("#input-telephonenumber")) {
-            deepSetById("input-telephonenumber", phone);
+        deepSetById("firstname", firstName);
+        deepSetById("lastname", lastName);
+        deepSetById("mailaddress", email);
+        if (deepContactPhoneFieldExists()) {
+            deepSetById("telephonenumber", phone);
         }
+    }
+
+    /** Phone field: host {@code id=\"telephonenumber\"} or inner {@code input-telephonenumber}. */
+    public boolean deepContactPhoneFieldExists() {
+        return deepElementExists("#telephonenumber")
+                || deepElementExists("#input-telephonenumber")
+                || deepElementExists("muc-input#telephonenumber");
     }
 
     /**
@@ -578,6 +596,12 @@ public class CitizenViewPage extends BasePage {
      */
     public void fillContactDetailsRandom() {
         CONTEXT.set();
+        waitUntilShadowContains("Kontaktdaten", Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            Thread.sleep(600L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         String fullName;
         if (TestDataHelper.getTestData("customer_name") != null) {
             fullName = TestDataHelper.getTestData("customer_name");
@@ -592,14 +616,45 @@ public class CitizenViewPage extends BasePage {
                         parts[0],
                         parts[1],
                         email);
-        deepSetById("input-firstname", parts[0]);
-        deepSetById("input-lastname", parts[1]);
-        deepSetById("input-mailaddress", email);
-        if (deepElementExists("#input-telephonenumber")) {
-            deepSetById("input-telephonenumber", CONTACT_PHONE_E2E);
+        boolean ok1 = deepSetById("firstname", parts[0]);
+        boolean ok2 = deepSetById("lastname", parts[1]);
+        boolean ok3 = deepSetById("mailaddress", email);
+        Assert.assertTrue(ok1, "Kontakt: could not set Vorname (muc-input shadow)");
+        Assert.assertTrue(ok2, "Kontakt: could not set Nachname (muc-input shadow)");
+        Assert.assertTrue(ok3, "Kontakt: could not set E-Mail (muc-input shadow)");
+        if (deepContactPhoneFieldExists()) {
+            deepSetById("telephonenumber", CONTACT_PHONE_E2E);
             ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt — Telefon (field present)");
         }
         fillRequiredCustomTextAreasInShadow();
+        fillOptionalContactRemarksIfPresent();
+    }
+
+    /**
+     * Both Bemerkung fields are often optional but still block or confuse validation if left totally empty in some
+     * builds; fill with short Lorem when the textarea exists inside {@code muc-text-area} shadow (not only when HTML
+     * required).
+     */
+    private void fillOptionalContactRemarksIfPresent() {
+        CONTEXT.set();
+        String script =
+                "var lorem=arguments[0];var n=0;"
+                        + "function fillTa(root){if(!root)return;var tas=root.querySelectorAll('textarea');"
+                        + "for(var i=0;i<tas.length;i++){var e=tas[i];if(e.offsetParent===null)continue;"
+                        + "if(e.value&&e.value.trim())continue;"
+                        + "var lab=(e.getAttribute('aria-label')||e.placeholder||'');"
+                        + "e.value=lorem.substring(0,Math.min(120,lorem.length));"
+                        + "try{e.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertReplacementText',data:e.value}));}catch(x){e.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "e.dispatchEvent(new Event('change',{bubbles:true}));n++;}"
+                        + "var all=root.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)fillTa(all[j].shadowRoot);}"
+                        + "fillTa(document.body);return n;";
+        Object n =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, CONTACT_LOREM_REQUIRED);
+        if (n instanceof Number && ((Number) n).intValue() > 0) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: Kontakt — filled {} Bemerkung textarea(s) (optional)", n);
+        }
     }
 
     /**
@@ -611,9 +666,9 @@ public class CitizenViewPage extends BasePage {
         String script =
                 "var lorem=arguments[0];function req(t){return t&&(t.required||t.getAttribute('aria-required')==='true');}"
                         + "function vis(t){try{return t.offsetParent!==null||t.getClientRects().length>0;}catch(e){return true;}}"
+                        + "function fire(e){e.value=lorem;try{e.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertReplacementText',data:lorem}));}catch(x){e.dispatchEvent(new Event('input',{bubbles:true}));}e.dispatchEvent(new Event('change',{bubbles:true}));}"
                         + "var n=0;function walk(r){if(!r)return;var ta=r.querySelectorAll?r.querySelectorAll('textarea'):[];"
-                        + "for(var i=0;i<ta.length;i++){var e=ta[i];if(req(e)&&vis(e)&&(!e.value||!e.value.trim())){"
-                        + "e.value=lorem;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));n++;}}"
+                        + "for(var i=0;i<ta.length;i++){var e=ta[i];if(req(e)&&vis(e)&&(!e.value||!e.value.trim())){fire(e);n++;}}"
                         + "var all=r.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)walk(all[j].shadowRoot);}"
                         + "walk(document.body);return n;";
         Object n =
