@@ -386,7 +386,8 @@ class ZmsApiClientService
         try {
             LoggerService::logInfo('getProcessById lookup', [
                 'processId' => $processId,
-                'authKeyLength' => $authKey,
+                'authKey' => $authKey,
+                'authKeyLength' => strlen($authKey)
             ]);
             $resolveReferences = 2;
             $result = \App::$http->readGetResult("/process/{$processId}/{$authKey}/", [
