@@ -72,6 +72,10 @@ public class CitizenViewSteps {
         page.scrollClickFirstSlotAssertCalloutWeiter(officeId);
     }
 
+    /**
+     * Update-appointment (Kontakt) step only — run <em>after</em> reserve (first Weiter after slot). Fills form and
+     * clicks Weiter to update; then preconfirm page with privacy checkboxes.
+     */
     @When("I enter default contact details in the citizen view")
     public void iEnterDefaultContactDetails() {
         page.fillContactDetailsRandom();
@@ -83,9 +87,17 @@ public class CitizenViewSteps {
         page.acceptPrivacyAndCommunication();
     }
 
+    /** Preconfirm page: privacy + this Weiter → activation callout (not before Kontakt). */
+    @When("I continue from the preconfirm step in the citizen view")
+    public void iContinueFromThePreconfirmStepInTheCitizenView() {
+        page.continueFromPreconfirmStep();
+    }
+
     @When("I reserve the appointment in the citizen view")
     public void iReserveTheAppointmentInTheCitizenView() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: Termin reservieren");
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Termin reservieren (legacy); flow uses Weiter after slot to reserve — prefer that");
         page.clickReserveAppointment();
         try {
             Thread.sleep(5000L);

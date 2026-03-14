@@ -6,6 +6,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)
   And allowDisabledServicesMix jump-ins stay valid; Pass-only still books on the Passkalender (10502)
 
+  # Flow: calendar + slot → Ausgewählter Termin callout → Weiter (= reserve) → Kontakt form → Weiter (= update) →
+  # preconfirm (summary + privacy) → Weiter → activation callout (“Aktivieren Sie Ihren Termin.”)
+
   Background:
     Given the Citizen API is available
     When I request the offices and services endpoint
@@ -27,10 +30,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
-    Then the booking summary should show provider 10502 in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10502 in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -51,10 +54,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10492 should not appear in the citizen view
     When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
-    Then the booking summary should show provider 10502 in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10502 in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -72,10 +75,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
-    Then the booking summary should show provider 10489 in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10489 in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -95,10 +98,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10502 should not appear in the citizen view
     When I select office 10492 in the citizen view
     And I choose the first slot below the calendar for office 10492 and continue in the citizen view
-    Then the booking summary should show provider 10492 in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10492 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10492 in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -115,8 +118,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10502 in the citizen view
     When I sync the booking process from citizen view localStorage
@@ -131,8 +135,9 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
-    And I accept privacy and communication in the citizen view
-    And I reserve the appointment in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible in the citizen view
     And the booking summary should show provider 10489 in the citizen view
     When I sync the booking process from citizen view localStorage

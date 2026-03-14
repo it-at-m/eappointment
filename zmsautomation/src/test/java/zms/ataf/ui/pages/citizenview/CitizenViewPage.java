@@ -497,8 +497,9 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Below the calendar: scroll to slot grid, wait for API, click first {@code muc-button.timeslot} (prefer grid for
-     * {@code officeId}). First day stays as preselected — no calendar toggle.
+     * Below the calendar: scroll to slot grid, wait for API, click first timeslot, assert {@code Ausgewählter Termin}
+     * callout, then click <strong>Weiter</strong> — that call <em>reserves</em> the appointment (API reserve). The
+     * update-appointment (Kontakt) form is shown only after this Weiter.
      */
     public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
         CONTEXT.set();
@@ -532,7 +533,8 @@ public class CitizenViewPage extends BasePage {
             Thread.currentThread().interrupt();
         }
         assertSelectedAppointmentCalloutShowsProvider(officeId);
-        ScenarioLogManager.getLogger().info("zmscitizenview: Weiter after Ausgewählter Termin callout");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
         clickWeiter();
     }
 
@@ -629,6 +631,11 @@ public class CitizenViewPage extends BasePage {
         deepClick("#checkbox-electronic-communication");
     }
 
+    /**
+     * Legacy: some builds exposed a primary “Termin reservieren” before the two-step reserve/update flow. Prefer
+     * {@link #scrollClickFirstSlotAssertCalloutWeiter(int)} (Weiter = reserve) then {@link #fillContactDetailsRandom()}
+     * + {@link #clickWeiter()} (update).
+     */
     public void clickReserveAppointment() {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
@@ -640,6 +647,18 @@ public class CitizenViewPage extends BasePage {
                                             + "var e=find(document.body);if(e){e.click();return true;}return false;";
                             return Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript(script));
                         });
+    }
+
+    /** Preconfirm page: after privacy checkboxes, primary Weiter leads to activation (“Aktivieren Sie Ihren Termin.”). */
+    public void continueFromPreconfirmStep() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Weiter (activation callout)");
+        clickWeiter();
+        try {
+            Thread.sleep(1500L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void assertPreconfirmationCalloutVisible() {
