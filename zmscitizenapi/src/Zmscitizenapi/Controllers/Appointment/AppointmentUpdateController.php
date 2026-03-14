@@ -8,6 +8,7 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentUpdateService;
 use BO\Zmscitizenapi\Services\Core\AuthenticationService;
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,8 +28,15 @@ class AppointmentUpdateController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
+        $body = $request->getParsedBody();
+        $logBody = is_array($body) ? $body : [];
+        if (isset($logBody['authKey']) && is_string($logBody['authKey'])) {
+            $logBody['authKey'] = $logBody['authKey'] !== '' ? '[REDACTED]' : '';
+        }
+        LoggerService::logInfo('update-appointment request payload', ['body' => $logBody]);
+
         $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
-        $result = $this->service->processUpdate($request->getParsedBody(), $authenticatedUser);
+        $result = $this->service->processUpdate($body ?? [], $authenticatedUser);
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);
