@@ -90,6 +90,7 @@ public class ZmsApiMailSteps {
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
     }
 
+    /** Second mail fetch: run after the user has opened the /appointment/confirm/*** link. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
     @When("I fetch the confirmation mail for the current process")
     public void iFetchTheConfirmationMailForTheCurrentProcess() {
         ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
@@ -98,7 +99,7 @@ public class ZmsApiMailSteps {
         }
         Integer processId = booking.getProcessId();
         String authKey = getOrLoginXAuthKey();
-        ScenarioLogManager.getLogger().info("zmsapi: fetching confirmation mail from GET /mails/ for process {}", processId);
+        ScenarioLogManager.getLogger().info("zmsapi: fetching confirmation mail (second GET /mails/, after confirm link opened) for process {}", processId);
         Response response = given()
             .baseUri(TestConfig.getBaseUri())
             .header("X-Authkey", authKey)
@@ -112,9 +113,9 @@ public class ZmsApiMailSteps {
         String appointmentUrl = extractAppointmentViewUrlFromMailResponse(response.asString(), processId);
         if (appointmentUrl != null) {
             CitizenApiSteps.setBookingAppointmentUrl(appointmentUrl);
-            ScenarioLogManager.getLogger().info("zmsapi: appointment view URL extracted from confirmation mail for process {}", processId);
+            ScenarioLogManager.getLogger().info("zmsapi: appointment view URL extracted from confirmation mail for process {} -> {}", processId, appointmentUrl);
         } else {
-            ScenarioLogManager.getLogger().warn("zmsapi: no appointment view URL in confirmation mail for process {}", processId);
+            ScenarioLogManager.getLogger().warn("zmsapi: no appointment view URL in any mail for process {} (check second mail has link to /appointment/ without /confirm/)", processId);
         }
     }
 
@@ -144,7 +145,7 @@ public class ZmsApiMailSteps {
                         return url;
                     }
                 }
-                break;
+                // Do not break: check all mails for this process. First is usually preconfirmation (confirm link only); second is confirmation (appointment view link).
             }
         } catch (Exception e) {
             ScenarioLogManager.getLogger().debug("zmsapi: could not extract appointment view URL from mail body", e);

@@ -778,9 +778,11 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void assertConfirmationSuccessCalloutVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
         assertShadowContains(
                 "Ihr Termin wurde gebucht.",
                 "Confirmation success callout not found after opening confirm link.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
 
     public void assertSelectedAppointmentCalloutVisible() {
@@ -948,8 +950,11 @@ public class CitizenViewPage extends BasePage {
     public void openAppointmentViewDeepLinkInBrowser() {
         CONTEXT.set();
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
+        if (url == null || url.isBlank()) {
+            ScenarioLogManager.getLogger().warn("zmscitizenview: no appointment view URL set; fetch the confirmation mail (second mail) first.");
+        }
         Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
-        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL: {}", url);
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL (from second email): {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
             DriverUtil.getDriver().navigate().refresh();

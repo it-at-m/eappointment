@@ -39,6 +39,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
