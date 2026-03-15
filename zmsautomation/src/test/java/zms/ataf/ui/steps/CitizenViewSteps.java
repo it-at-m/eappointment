@@ -80,6 +80,7 @@ public class CitizenViewSteps {
     public void iEnterDefaultContactDetails() {
         page.fillContactDetailsRandom();
         page.clickWeiter();
+        page.waitForPreconfirmPageAfterUpdate(25);
     }
 
     @When("I accept privacy and communication in the citizen view")

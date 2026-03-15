@@ -286,6 +286,19 @@ public class CitizenViewPage extends BasePage {
                 .until(d -> clickButtonContaining(DE_WEITER));
     }
 
+    /**
+     * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
+     * page to be shown (privacy checkboxes). Prevents the next step from running before the UI has navigated.
+     */
+    public void waitForPreconfirmPageAfterUpdate(int timeoutSeconds) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting up to {}s for preconfirm page after Kontakt Weiter", timeoutSeconds);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
+                .until(d -> deepElementExists("#checkbox-privacy-policy"));
+        ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
+    }
+
     /** Jump-in: combination step shows Weiter + optional counters. */
     public void assertCombinationStepVisible() {
         CONTEXT.set();
