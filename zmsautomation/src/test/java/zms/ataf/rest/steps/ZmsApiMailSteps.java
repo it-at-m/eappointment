@@ -34,6 +34,7 @@ public class ZmsApiMailSteps {
             throw new IllegalStateException("No current process. Reserve an appointment first.");
         }
         Integer processId = booking.getProcessId();
+        ScenarioLogManager.getLogger().info("zmsapi: fetching preconfirmation mail from GET /mails/ for process {}", processId);
         Response response = given()
             .baseUri(TestConfig.getBaseUri())
             .header("X-Authkey", authKey)
@@ -41,7 +42,9 @@ public class ZmsApiMailSteps {
         .when()
             .get("/mails/");
         CommonApiSteps.setResponse(response);
-        if (response.getStatusCode() != 200) {
+        int status = response.getStatusCode();
+        ScenarioLogManager.getLogger().info("zmsapi: GET /mails/ status={} bodySize={}", status, response.getBody().asString().length());
+        if (status != 200) {
             return;
         }
         List<MailListItem> mails = parseMailList(response);
@@ -60,6 +63,7 @@ public class ZmsApiMailSteps {
         String confirmProcessId = String.valueOf(match.getProcess().getId());
         String confirmAuthKey = match.getProcess().getAuthKey();
         CitizenApiSteps.setBookingConfirmCredentials(confirmProcessId, confirmAuthKey != null ? confirmAuthKey : "");
+        ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", processId);
     }
 
     private String getOrLoginXAuthKey() {

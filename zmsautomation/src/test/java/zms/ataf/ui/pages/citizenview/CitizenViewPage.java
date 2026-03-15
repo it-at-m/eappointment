@@ -767,6 +767,8 @@ public class CitizenViewPage extends BasePage {
 
     /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). */
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: checking activation callout (Aktivieren Sie Ihren Termin., {} Minuten)", activationMinutes);
         assertShadowContains(
                 "Aktivieren Sie Ihren Termin.",
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
@@ -774,6 +776,7 @@ public class CitizenViewPage extends BasePage {
         assertShadowContains(
                 timeText,
                 "Preconfirmation callout should mention activation time limit (" + timeText + ").");
+        ScenarioLogManager.getLogger().info("zmscitizenview: activation callout visible with {} Minuten", activationMinutes);
     }
 
     public void assertConfirmationSuccessCalloutVisible() {
@@ -822,12 +825,14 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String processId = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmProcessId();
         String authKey = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmAuthKey();
-        if (processId == null || authKey == null) {
+        boolean fromMail = processId != null && authKey != null;
+        if (!fromMail) {
             ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
             Assert.assertNotNull(p, "No booking process; sync localStorage and fetch preconfirmation mail first");
             processId = String.valueOf(p.getProcessId());
             authKey = p.getAuthKey();
         }
+        ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (credentials from {})", fromMail ? "GET /mails/" : "localStorage");
         String payload =
                 "{\"id\":"
                         + processId
