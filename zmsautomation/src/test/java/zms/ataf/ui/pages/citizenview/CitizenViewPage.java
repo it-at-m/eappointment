@@ -327,48 +327,47 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         // Ensure the Service Finder step is visible first (same heuristic as assertServiceFinderHeadingVisible).
         waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
-        // Prefer the \"Häufig gesuchte Leistungen\" quick links: explicit shadow-safe search under that list.
+        // Wait until the desired service label is present in the DOM (links may render after first paint).
+        waitUntilShadowContains(serviceLabel, 15);
+        // Find and click the link: walk all roots and shadow roots, match <a> or <button> by visible text.
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
         String js =
                 "var label='" + esc + "';"
                         + "function matchText(t){"
                         + "  if(!t)return false;"
-                        + "  var s=t.replace(/\\s+/g,' ').trim();"
+                        + "  var s=String(t).replace(/\\s+/g,' ').trim();"
                         + "  return s===label || s.indexOf(label)>=0;"
                         + "}"
-                        + "function findQuickLink(root){"
-                        + "  if(!root)return null;"
-                        + "  try{var lists=root.querySelectorAll('.m-linklist-inline__list');"
-                        + "      for(var i=0;i<lists.length;i++){"
-                        + "        var as=lists[i].querySelectorAll('a');"
-                        + "        for(var j=0;j<as.length;j++){"
-                        + "          var t=(as[j].textContent||'');"
-                        + "          if(matchText(t)){return as[j];}"
-                        + "        }"
-                        + "      }"
-                        + "  }catch(e){}"
-                        + "  var all=root.querySelectorAll('*');"
-                        + "  for(var k=0;k<all.length;k++){if(all[k].shadowRoot){var r=findQuickLink(all[k].shadowRoot);if(r)return r;}}"
-                        + "  return null;"
-                        + "}"
-                        + "function findAnyServiceLink(root){"
+                        + "function findLinkInRoot(root){"
                         + "  if(!root)return null;"
                         + "  var as=root.querySelectorAll('a,button');"
                         + "  for(var i=0;i<as.length;i++){"
-                        + "    var t=(as[i].textContent||'');"
-                        + "    if(matchText(t)){return as[i];}"
+                        + "    var el=as[i];"
+                        + "    if(el.disabled)continue;"
+                        + "    var t=(el.textContent||'');"
+                        + "    if(matchText(t))return el;"
                         + "  }"
-                        + "  var all=root.querySelectorAll('*');"
-                        + "  for(var j=0;j<all.length;j++){if(all[j].shadowRoot){var r=findAnyServiceLink(all[j].shadowRoot);if(r)return r;}}"
                         + "  return null;"
                         + "}"
-                        + "var link=findQuickLink(document)||findQuickLink(document.body);"
-                        + "if(!link){link=findAnyServiceLink(document)||findAnyServiceLink(document.body);}"
+                        + "function findLinkDeep(root){"
+                        + "  if(!root)return null;"
+                        + "  var link=findLinkInRoot(root);"
+                        + "  if(link)return link;"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var k=0;k<all.length;k++){"
+                        + "    if(all[k].shadowRoot){"
+                        + "      var r=findLinkDeep(all[k].shadowRoot);"
+                        + "      if(r)return r;"
+                        + "    }"
+                        + "  }"
+                        + "  return null;"
+                        + "}"
+                        + "var link=findLinkDeep(document.documentElement)||findLinkDeep(document.body);"
                         + "if(link){link.scrollIntoView({block:'center'});link.click();return true;}return false;";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(js);
         Assert.assertTrue(
                 Boolean.TRUE.equals(clicked),
-                "Service Finder: could not click quick-link or button for service '" + serviceLabel + "'");
+                "Service Finder: could not find or click link for service '" + serviceLabel + "'");
         // After clicking a service the UI auto-advances to the combination (Ort/Zeit) step.
         // Give the SPA a brief moment to transition before asserting the combination step.
         try {
