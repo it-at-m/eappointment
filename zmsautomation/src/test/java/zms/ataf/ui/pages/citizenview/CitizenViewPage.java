@@ -326,9 +326,30 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         // Ensure the Service Finder step is visible first (same heuristic as assertServiceFinderHeadingVisible).
         waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
-        // Prefer the \"Häufig gesuchte Leistungen\" quick links, which are simple <a> elements.
+        // Prefer the \"Häufig gesuchte Leistungen\" quick links: explicit shadow-safe search under that list.
+        String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
+        String js =
+                "var label='" + esc + "';"
+                        + "function findLink(root){"
+                        + "  if(!root)return null;"
+                        + "  try{var lists=root.querySelectorAll('.m-linklist-inline__list');"
+                        + "      for(var i=0;i<lists.length;i++){"
+                        + "        var as=lists[i].querySelectorAll('a');"
+                        + "        for(var j=0;j<as.length;j++){"
+                        + "          var t=(as[j].textContent||'').trim();"
+                        + "          if(t===label){return as[j];}"
+                        + "        }"
+                        + "      }"
+                        + "  }catch(e){}"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var k=0;k<all.length;k++){if(all[k].shadowRoot){var r=findLink(all[k].shadowRoot);if(r)return r;}}"
+                        + "  return null;"
+                        + "}"
+                        + "var link=findLink(document)||findLink(document.body);"
+                        + "if(link){link.scrollIntoView({block:'center'});link.click();return true;}return false;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(js);
         Assert.assertTrue(
-                clickButtonContaining(serviceLabel),
+                Boolean.TRUE.equals(clicked),
                 "Service Finder: could not click quick-link for service '" + serviceLabel + "'");
         // After selecting a service the UI automatically advances to the combination (Ort/Zeit) step.
         // Wait until the combination step is visible (Weiter button present), but don't click it here.
