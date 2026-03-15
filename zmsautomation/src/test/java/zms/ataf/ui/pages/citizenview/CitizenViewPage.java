@@ -94,6 +94,7 @@ public class CitizenViewPage extends BasePage {
                 textsVisible,
                 "Service Finder copy (Leistung / Bürgerservice-Suche / Häufig gesuchte Leistungen) not found"
                         + " in page+shadow DOM within timeout.");
+        ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
     /** True if substring appears anywhere in document + shadow DOM text. */
