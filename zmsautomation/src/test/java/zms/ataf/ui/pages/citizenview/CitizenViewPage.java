@@ -765,14 +765,15 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** Activation callout after "Termin reservieren": heading + time limit (e.g. 30 Minuten). */
-    public void assertPreconfirmationCalloutVisible() {
+    /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). */
+    public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         assertShadowContains(
                 "Aktivieren Sie Ihren Termin.",
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
+        String timeText = activationMinutes + " Minuten";
         assertShadowContains(
-                "30 Minuten",
-                "Preconfirmation callout should mention activation time limit (30 Minuten).");
+                timeText,
+                "Preconfirmation callout should mention activation time limit (" + timeText + ").");
     }
 
     public void assertConfirmationSuccessCalloutVisible() {

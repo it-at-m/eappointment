@@ -107,9 +107,9 @@ public class CitizenViewSteps {
         }
     }
 
-    @Then("the preconfirmation callout should be visible in the citizen view")
-    public void thePreconfirmationCalloutShouldBeVisible() {
-        page.assertPreconfirmationCalloutVisible();
+    @Then("the preconfirmation callout should be visible with activation time {int} minutes in the citizen view")
+    public void thePreconfirmationCalloutShouldBeVisibleWithActivationTime(int activationMinutes) {
+        page.assertPreconfirmationCalloutVisible(activationMinutes);
     }
 
     @When("I sync the booking process from citizen view localStorage")

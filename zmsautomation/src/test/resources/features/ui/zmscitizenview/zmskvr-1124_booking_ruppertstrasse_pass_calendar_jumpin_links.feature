@@ -34,7 +34,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10502 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
@@ -57,7 +57,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10502 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
@@ -77,7 +77,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10489 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
@@ -99,7 +99,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10492 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
@@ -117,7 +117,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10502 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
@@ -133,7 +133,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the booking summary should show provider 10489 in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
-    Then the preconfirmation callout should be visible in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
