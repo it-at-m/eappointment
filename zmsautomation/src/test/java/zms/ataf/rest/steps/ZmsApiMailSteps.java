@@ -21,8 +21,9 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 /**
  * Steps for zmsapi GET /mails/ (superuser X-Authkey) to fetch preconfirmation mail
  * and extract processId/authKey for the confirm-appointment step.
- * Shared by zmscitizenapi (process from reserve/preconfirm response) and zmscitizenview
- * (process from sync or continueFromPreconfirmStep); always looks up mail by process id.
+ * Shared by zmscitizenapi (process from reserve/preconfirm response) and zmscitizenview.
+ * When process is set: finds mail by process id. When process is null (citizenview only):
+ * uses most recent mail from GET /mails/ with process id so confirm step can proceed.
  */
 public class ZmsApiMailSteps {
 
@@ -31,13 +32,7 @@ public class ZmsApiMailSteps {
     @When("I fetch the preconfirmation mail for the current process")
     public void iFetchThePreconfirmationMailForTheCurrentProcess() {
         String authKey = getOrLoginXAuthKey();
-        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
-        if (booking == null) {
-            throw new IllegalStateException(
-                "No current process. Set booking process first: API flow = reserve/preconfirm; citizenview = sync from localStorage or capture in continueFromPreconfirmStep.");
-        }
-        Integer processId = booking.getProcessId();
-        ScenarioLogManager.getLogger().info("zmsapi: fetching preconfirmation mail from GET /mails/ for process {}", processId);
+        ScenarioLogManager.getLogger().info("zmsapi: fetching preconfirmation mail from GET /mails/");
         Response response = given()
             .baseUri(TestConfig.getBaseUri())
             .header("X-Authkey", authKey)
@@ -51,22 +46,43 @@ public class ZmsApiMailSteps {
             return;
         }
         List<MailListItem> mails = parseMailList(response);
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
         MailListItem match = null;
-        for (MailListItem mail : mails) {
-            MailProcessRef proc = mail.getProcess();
-            if (proc != null && processId.equals(proc.getId())) {
-                match = mail;
-                break;
+        if (booking != null) {
+            Integer processId = booking.getProcessId();
+            ScenarioLogManager.getLogger().info("zmsapi: looking for mail matching process {}", processId);
+            for (MailListItem mail : mails) {
+                MailProcessRef proc = mail.getProcess();
+                if (proc != null && processId.equals(proc.getId())) {
+                    match = mail;
+                    break;
+                }
+            }
+        }
+        if (match == null && !mails.isEmpty()) {
+            ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using most recent mail from GET /mails/ with process id");
+            for (MailListItem mail : mails) {
+                MailProcessRef proc = mail.getProcess();
+                if (proc != null && proc.getId() != null && proc.getAuthKey() != null && !proc.getAuthKey().isBlank()) {
+                    match = mail;
+                    break;
+                }
             }
         }
         if (match == null || match.getProcess() == null) {
             throw new IllegalStateException(
-                "Preconfirmation mail not found for process " + processId + ". Ensure preconfirm was called and mail is sent.");
+                "Preconfirmation mail not found. Ensure preconfirm was called and mail is sent (GET /mails/ returned " + mails.size() + " mail(s)).");
         }
         String confirmProcessId = String.valueOf(match.getProcess().getId());
         String confirmAuthKey = match.getProcess().getAuthKey();
         CitizenApiSteps.setBookingConfirmCredentials(confirmProcessId, confirmAuthKey != null ? confirmAuthKey : "");
-        ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", processId);
+        if (booking == null) {
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(match.getProcess().getId());
+            p.setAuthKey(confirmAuthKey);
+            CitizenApiSteps.setBookingProcess(p);
+        }
+        ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
     }
 
     private String getOrLoginXAuthKey() {
