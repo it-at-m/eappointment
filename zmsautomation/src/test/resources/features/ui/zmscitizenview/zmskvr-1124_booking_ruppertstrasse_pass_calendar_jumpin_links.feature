@@ -32,10 +32,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
@@ -55,10 +55,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
@@ -75,10 +75,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
@@ -97,10 +97,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10492 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
@@ -115,10 +115,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
@@ -131,10 +131,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
+    When I sync the booking process from citizen view localStorage
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
-    When I sync the booking process from citizen view localStorage
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
