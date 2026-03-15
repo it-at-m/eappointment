@@ -316,18 +316,23 @@ public class CitizenViewPage extends BasePage {
     /** Jump-in: combination step shows Weiter + optional counters. */
     public void assertCombinationStepVisible() {
         CONTEXT.set();
-        waitUntilShadowContains(DE_WEITER, DEFAULT_EXPLICIT_WAIT_TIME);
+        // Combination (Ort/Zeit) step is identified by the \"Kombinierbare Leistungen\" heading
+        // (or its English equivalent) rather than by a generic \"Weiter\" button label.
+        waitUntilShadowContains("Kombinierbare Leistungen", DEFAULT_EXPLICIT_WAIT_TIME);
         Assert.assertTrue(
-                shadowDomContainsText(DE_WEITER),
-                "Expected combination step (button Weiter) after jump-in.");
+                shadowDomContainsText("Kombinierbare Leistungen")
+                        || shadowDomContainsText("Combinable services"),
+                "Expected combination step (Kombinierbare Leistungen / Combinable services) after service selection or jump-in.");
     }
 
     /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Service Finder: searching for and clicking service '{}'", serviceLabel);
         // Ensure the Service Finder step is visible first (same heuristic as assertServiceFinderHeadingVisible).
         waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
         // Wait until the desired service label is present in the DOM (links may render after first paint).
+        ScenarioLogManager.getLogger().info("Service Finder: waiting for label '{}' in DOM (up to 15s)", serviceLabel);
         waitUntilShadowContains(serviceLabel, 15);
         // Find and click the link: walk all roots and shadow roots, match <a> or <button> by visible text.
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
@@ -365,17 +370,20 @@ public class CitizenViewPage extends BasePage {
                         + "var link=findLinkDeep(document.documentElement)||findLinkDeep(document.body);"
                         + "if(link){link.scrollIntoView({block:'center'});link.click();return true;}return false;";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(js);
+        if (Boolean.TRUE.equals(clicked)) {
+            ScenarioLogManager.getLogger().info("Service Finder: found and clicked link for '{}'", serviceLabel);
+        } else {
+            ScenarioLogManager.getLogger().warn("Service Finder: did not find or click link for '{}'", serviceLabel);
+        }
         Assert.assertTrue(
                 Boolean.TRUE.equals(clicked),
                 "Service Finder: could not find or click link for service '" + serviceLabel + "'");
-        // After clicking a service the UI auto-advances to the combination (Ort/Zeit) step.
-        // Give the SPA a brief moment to transition before asserting the combination step.
+        // Clicking a service link auto-advances to the combination (Ort/Zeit) step; no Weiter on this page.
         try {
             Thread.sleep(2000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        // Now wait until that step (with its own Weiter button) is visible.
         assertCombinationStepVisible();
     }
 
