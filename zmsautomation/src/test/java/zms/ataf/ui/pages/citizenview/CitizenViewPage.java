@@ -369,8 +369,14 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 Boolean.TRUE.equals(clicked),
                 "Service Finder: could not click quick-link or button for service '" + serviceLabel + "'");
-        // After selecting a service the UI automatically advances to the combination (Ort/Zeit) step.
-        // Wait until the combination step is visible (Weiter button present), but don't click it here.
+        // After clicking a service the UI auto-advances to the combination (Ort/Zeit) step.
+        // Give the SPA a brief moment to transition before asserting the combination step.
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        // Now wait until that step (with its own Weiter button) is visible.
         assertCombinationStepVisible();
     }
 
