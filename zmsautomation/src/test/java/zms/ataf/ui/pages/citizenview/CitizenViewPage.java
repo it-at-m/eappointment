@@ -761,6 +761,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to 25s for activation callout to appear after reserve");
         waitUntilShadowContains("Aktivieren Sie Ihren Termin.", 25);
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
+        trySyncBookingProcessFromLocalStorageOnce();
     }
 
     /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). Reserve API may take several seconds, so we wait up to 25s for the callout. */
@@ -790,16 +791,48 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * Reads {@value #LOCALSTORAGE_APPOINTMENT_KEY} and sets {@link zms.ataf.rest.steps.CitizenApiSteps} booking process
-     * so mail steps can run after UI preconfirm.
+     * so mail steps can run after UI preconfirm. If process was already set (e.g. by continueFromPreconfirmStep), returns it.
      */
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         CONTEXT.set();
+        ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (already != null) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
+            return already;
+        }
         String json =
                 (String)
                         ((JavascriptExecutor) DriverUtil.getDriver())
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
         Assert.assertNotNull(json, "localStorage lhm-appointment-data missing after UI flow");
+        ThinnedProcess p = parseAndSetBookingProcessFromJson(json);
+        Assert.assertNotNull(p, "appointment.processId or authKey missing in localStorage");
+        return p;
+    }
+
+    /** Try to read localStorage and set booking process once after activation callout is visible; no assert if missing. */
+    private void trySyncBookingProcessFromLocalStorageOnce() {
+        CONTEXT.set();
+        String json =
+                (String)
+                        ((JavascriptExecutor) DriverUtil.getDriver())
+                                .executeScript(
+                                        "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
+        if (json == null || json.isBlank()) {
+            return;
+        }
+        try {
+            ThinnedProcess p = parseAndSetBookingProcessFromJson(json);
+            if (p != null) {
+                ScenarioLogManager.getLogger().info("zmscitizenview: captured booking process from localStorage after activation callout (processId={})", p.getProcessId());
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse localStorage after activation callout", e);
+        }
+    }
+
+    private ThinnedProcess parseAndSetBookingProcessFromJson(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
         JsonNode appointment = root.path("appointment");
@@ -808,8 +841,9 @@ public class CitizenViewPage extends BasePage {
             processId = appointment.get("processId").asInt();
         }
         String authKey = appointment.path("authKey").asText(null);
-        Assert.assertNotNull(processId, "appointment.processId missing in localStorage");
-        Assert.assertNotNull(authKey, "appointment.authKey missing in localStorage");
+        if (processId == null || authKey == null) {
+            return null;
+        }
         ThinnedProcess p = new ThinnedProcess();
         p.setProcessId(processId);
         p.setAuthKey(authKey);
