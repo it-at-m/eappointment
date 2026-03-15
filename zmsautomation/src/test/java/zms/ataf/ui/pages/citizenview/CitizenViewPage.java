@@ -286,11 +286,16 @@ public class CitizenViewPage extends BasePage {
 
     /** Wait up to timeoutSeconds for a clickable Weiter, then click it (e.g. use 30 on Kontakt step). */
     public void clickWeiter(int timeoutSeconds) {
+        waitForAndClickButtonContaining(DE_WEITER, timeoutSeconds);
+    }
+
+    /** Wait up to timeoutSeconds for a clickable button whose text contains label (shadow-safe), then click it. */
+    public void waitForAndClickButtonContaining(String label, int timeoutSeconds) {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting up to {}s for clickable Weiter, then clicking", timeoutSeconds);
+                .info("zmscitizenview: waiting up to {}s for clickable button containing '{}', then clicking", timeoutSeconds, label);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
-                .until(d -> clickButtonContaining(DE_WEITER));
+                .until(d -> clickButtonContaining(label));
     }
 
     /**
@@ -748,11 +753,11 @@ public class CitizenViewPage extends BasePage {
                         });
     }
 
-    /** Preconfirm page: after privacy checkboxes, primary Weiter leads to activation (“Aktivieren Sie Ihren Termin.”). */
+    /** Preconfirm page: after privacy checkboxes, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
     public void continueFromPreconfirmStep() {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Weiter (activation callout)");
-        clickWeiter();
+        ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
+        waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
         try {
             Thread.sleep(1500L);
         } catch (InterruptedException e) {
