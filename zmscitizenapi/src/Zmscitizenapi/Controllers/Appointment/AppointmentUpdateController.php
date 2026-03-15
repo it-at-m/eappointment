@@ -28,7 +28,7 @@ class AppointmentUpdateController extends BaseController
         }
 
         $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
-        $result = $this->service->processUpdate($request->getParsedBody() ?? [], $authenticatedUser);
+        $result = $this->service->processUpdate($request->getParsedBody(), $authenticatedUser);
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);
