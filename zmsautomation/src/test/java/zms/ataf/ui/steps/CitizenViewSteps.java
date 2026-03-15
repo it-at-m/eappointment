@@ -79,8 +79,8 @@ public class CitizenViewSteps {
     @When("I enter default contact details in the citizen view")
     public void iEnterDefaultContactDetails() {
         page.fillContactDetailsRandom();
-        page.clickWeiter();
-        page.waitForPreconfirmPageAfterUpdate(25);
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate(15);
     }
 
     @When("I accept privacy and communication in the citizen view")

@@ -281,14 +281,21 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void clickWeiter() {
+        clickWeiter(DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    /** Wait up to timeoutSeconds for a clickable Weiter, then click it (e.g. use 30 on Kontakt step). */
+    public void clickWeiter(int timeoutSeconds) {
         CONTEXT.set();
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting up to {}s for clickable Weiter, then clicking", timeoutSeconds);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
                 .until(d -> clickButtonContaining(DE_WEITER));
     }
 
     /**
      * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
-     * page to be shown (privacy checkboxes). Prevents the next step from running before the UI has navigated.
+     * page (privacy checkboxes). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
      */
     public void waitForPreconfirmPageAfterUpdate(int timeoutSeconds) {
         CONTEXT.set();
