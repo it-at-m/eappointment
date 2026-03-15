@@ -932,6 +932,8 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
+            // Reload so the app gets the confirm hash on initial load (in-app hash change often doesn't update the view).
+            DriverUtil.getDriver().navigate().refresh();
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
