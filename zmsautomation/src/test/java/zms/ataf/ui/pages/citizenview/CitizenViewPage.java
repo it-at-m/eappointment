@@ -758,11 +758,9 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        try {
-            Thread.sleep(1500L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to 25s for activation callout to appear after reserve");
+        waitUntilShadowContains("Aktivieren Sie Ihren Termin.", 25);
+        ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
     }
 
     /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). Reserve API may take several seconds, so we wait up to 25s for the callout. */
