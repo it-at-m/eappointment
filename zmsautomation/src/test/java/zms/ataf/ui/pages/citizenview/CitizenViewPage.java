@@ -324,14 +324,14 @@ public class CitizenViewPage extends BasePage {
     /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
-        // New citizenview UI: service finder uses muc-select with id=\"service-search\"
-        deepClickRequired("#service-search");
+        // Service finder uses choices.js select with id=\"select-service-search\"
+        deepClickRequired("#select-service-search");
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        deepSetById("service-search", serviceLabel);
+        deepSetById("select-service-search", serviceLabel);
         try {
             Thread.sleep(800);
         } catch (InterruptedException e) {
