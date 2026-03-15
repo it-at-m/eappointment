@@ -331,27 +331,44 @@ public class CitizenViewPage extends BasePage {
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
         String js =
                 "var label='" + esc + "';"
-                        + "function findLink(root){"
+                        + "function matchText(t){"
+                        + "  if(!t)return false;"
+                        + "  var s=t.replace(/\\s+/g,' ').trim();"
+                        + "  return s===label || s.indexOf(label)>=0;"
+                        + "}"
+                        + "function findQuickLink(root){"
                         + "  if(!root)return null;"
                         + "  try{var lists=root.querySelectorAll('.m-linklist-inline__list');"
                         + "      for(var i=0;i<lists.length;i++){"
                         + "        var as=lists[i].querySelectorAll('a');"
                         + "        for(var j=0;j<as.length;j++){"
-                        + "          var t=(as[j].textContent||'').trim();"
-                        + "          if(t===label){return as[j];}"
+                        + "          var t=(as[j].textContent||'');"
+                        + "          if(matchText(t)){return as[j];}"
                         + "        }"
                         + "      }"
                         + "  }catch(e){}"
                         + "  var all=root.querySelectorAll('*');"
-                        + "  for(var k=0;k<all.length;k++){if(all[k].shadowRoot){var r=findLink(all[k].shadowRoot);if(r)return r;}}"
+                        + "  for(var k=0;k<all.length;k++){if(all[k].shadowRoot){var r=findQuickLink(all[k].shadowRoot);if(r)return r;}}"
                         + "  return null;"
                         + "}"
-                        + "var link=findLink(document)||findLink(document.body);"
+                        + "function findAnyServiceLink(root){"
+                        + "  if(!root)return null;"
+                        + "  var as=root.querySelectorAll('a,button');"
+                        + "  for(var i=0;i<as.length;i++){"
+                        + "    var t=(as[i].textContent||'');"
+                        + "    if(matchText(t)){return as[i];}"
+                        + "  }"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var j=0;j<all.length;j++){if(all[j].shadowRoot){var r=findAnyServiceLink(all[j].shadowRoot);if(r)return r;}}"
+                        + "  return null;"
+                        + "}"
+                        + "var link=findQuickLink(document)||findQuickLink(document.body);"
+                        + "if(!link){link=findAnyServiceLink(document)||findAnyServiceLink(document.body);}"
                         + "if(link){link.scrollIntoView({block:'center'});link.click();return true;}return false;";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(js);
         Assert.assertTrue(
                 Boolean.TRUE.equals(clicked),
-                "Service Finder: could not click quick-link for service '" + serviceLabel + "'");
+                "Service Finder: could not click quick-link or button for service '" + serviceLabel + "'");
         // After selecting a service the UI automatically advances to the combination (Ort/Zeit) step.
         // Wait until the combination step is visible (Weiter button present), but don't click it here.
         assertCombinationStepVisible();
