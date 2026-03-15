@@ -324,8 +324,10 @@ public class CitizenViewPage extends BasePage {
     /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
-        // Open the choices dropdown (shadow-safe)
-        deepClickRequired(".choices[data-type='select-one']");
+        // Wait until the Service Finder is rendered, then click its label to open the dropdown
+        waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
+        deepClickRequired("label[for='select-service-search']");
+
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
         String script =
                 "var label='" + esc + "';"
