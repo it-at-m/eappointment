@@ -4,8 +4,6 @@ import static io.restassured.RestAssured.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,7 +90,7 @@ public class ZmsApiMailSteps {
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
     }
 
-    /** Extract confirmation link from GET /mails/ response: find mail by process id, get text/html content, regex href with appointment/confirm/. */
+    /** Extract confirmation link from GET /mails/ response: find mail by process id, get text/html content, find href with appointment/confirm/. */
     private String extractConfirmUrlFromMailResponse(String responseBody, Integer processId) {
         try {
             JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
@@ -105,7 +103,8 @@ public class ZmsApiMailSteps {
                     continue;
                 }
                 JsonNode multipart = mail.path("multipart");
-                if (!multipart.isArray()) {
+                if (!multipart.isArray() || multipart.isEmpty()) {
+                    ScenarioLogManager.getLogger().debug("zmsapi: mail processId={} has no multipart body", processId);
                     continue;
                 }
                 for (JsonNode part : multipart) {
@@ -113,10 +112,12 @@ public class ZmsApiMailSteps {
                         continue;
                     }
                     String content = part.path("content").asText("");
-                    Matcher m = Pattern.compile("href=[\"']([^\"']*appointment/confirm/[^\"']+)[\"']").matcher(content);
-                    if (m.find()) {
-                        return m.group(1).replace("&amp;", "&");
+                    String url = extractConfirmUrlFromHtml(content);
+                    if (url != null) {
+                        return url;
                     }
+                    ScenarioLogManager.getLogger().debug("zmsapi: no confirm URL in text/html (length={}, contains appointment/confirm/={})",
+                        content.length(), content.contains("appointment/confirm/"));
                 }
                 break;
             }
@@ -124,6 +125,43 @@ public class ZmsApiMailSteps {
             ScenarioLogManager.getLogger().debug("zmsapi: could not extract confirm URL from mail body", e);
         }
         return null;
+    }
+
+    /** Find first href containing appointment/confirm/ in HTML; tolerate different quote and escape styles. */
+    private String extractConfirmUrlFromHtml(String html) {
+        if (html == null) {
+            return null;
+        }
+        int anchor = html.indexOf("appointment/confirm/");
+        if (anchor < 0) {
+            return null;
+        }
+        int start = html.lastIndexOf("href=", anchor);
+        if (start < 0) {
+            return null;
+        }
+        start += 5;
+        while (start < html.length() && (html.charAt(start) == ' ' || html.charAt(start) == '\t')) {
+            start++;
+        }
+        if (start >= html.length()) {
+            return null;
+        }
+        char quote = html.charAt(start);
+        if (quote == '\\' && start + 1 < html.length()) {
+            quote = html.charAt(start + 1);
+            start++;
+        }
+        if (quote != '"' && quote != '\'') {
+            return null;
+        }
+        start++;
+        int end = html.indexOf(quote, start);
+        if (end < 0) {
+            return null;
+        }
+        String url = html.substring(start, end).replace("&amp;", "&");
+        return url.contains("appointment/confirm/") ? url : null;
     }
 
     private String getOrLoginXAuthKey() {
