@@ -2,12 +2,13 @@
 test-automation-framework-example
 test-automation-framework
 zms-test-automation
+eappointment-buergeransicht
+zmsautomation/lib
 
 dldb-mapper
 
 # =============== ddev =================
 .ddev/.env
-.ddev/.env.template
 .devcontainer/.env
 
 # =============== Local =================
@@ -148,6 +149,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 logs
+zmsentities/schemavalidation.log
 
 # ============== IDE specific settings ================
 
