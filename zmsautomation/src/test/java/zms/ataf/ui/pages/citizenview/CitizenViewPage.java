@@ -765,10 +765,14 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
+    /** Activation callout after "Termin reservieren": heading + time limit (e.g. 30 Minuten). */
     public void assertPreconfirmationCalloutVisible() {
         assertShadowContains(
                 "Aktivieren Sie Ihren Termin.",
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
+        assertShadowContains(
+                "30 Minuten",
+                "Preconfirmation callout should mention activation time limit (30 Minuten).");
     }
 
     public void assertConfirmationSuccessCalloutVisible() {
@@ -812,15 +816,22 @@ public class CitizenViewPage extends BasePage {
         return p;
     }
 
+    /** Navigate to zmscitizenview #/appointment/confirm/{base64(id,authKey)}. Uses confirm credentials from mail when set (after fetch preconfirmation mail), else booking process from localStorage. */
     public void openConfirmationDeepLinkInBrowser() {
         CONTEXT.set();
-        ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        Assert.assertNotNull(p, "No booking process; sync localStorage first");
+        String processId = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmProcessId();
+        String authKey = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmAuthKey();
+        if (processId == null || authKey == null) {
+            ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+            Assert.assertNotNull(p, "No booking process; sync localStorage and fetch preconfirmation mail first");
+            processId = String.valueOf(p.getProcessId());
+            authKey = p.getAuthKey();
+        }
         String payload =
                 "{\"id\":"
-                        + p.getProcessId()
+                        + processId
                         + ",\"authKey\":"
-                        + mapperQuote(p.getAuthKey())
+                        + mapperQuote(authKey)
                         + "}";
         String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
         String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
