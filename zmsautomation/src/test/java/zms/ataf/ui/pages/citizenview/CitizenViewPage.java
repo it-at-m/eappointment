@@ -324,19 +324,26 @@ public class CitizenViewPage extends BasePage {
     /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
+        // Open the choices dropdown (shadow-safe)
+        deepClickRequired(".choices[data-type='select-one']");
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
         String script =
-                "var select=document.getElementById('select-service-search');"
-                        + "if(!select){return false;}"
-                        + "var container=select.closest('.choices');"
-                        + "if(!container){return false;}"
-                        + "container.click();"
-                        + "var input=container.querySelector('input.choices__input--cloned');"
-                        + "if(!input){return false;}"
+                "var label='" + esc + "';"
+                        + "function findInput(root){"
+                        + "  if(!root)return null;"
+                        + "  try{var q=root.querySelector('input.choices__input--cloned');if(q)return q;}catch(e){}"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var r=findInput(all[i].shadowRoot);if(r)return r;}}"
+                        + "  return null;"
+                        + "}"
+                        + "var input=findInput(document)||findInput(document.body);"
+                        + "if(!input)return false;"
                         + "input.focus();"
-                        + "input.value='" + esc + "';"
-                        + "var e=new Event('input',{bubbles:true});input.dispatchEvent(e);"
-                        + "var label='" + esc + "';"
+                        + "input.value=label;"
+                        + "try{input.dispatchEvent(new InputEvent('input',{bubbles:true,cancelable:true,data:label}));}"
+                        + "catch(e){input.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "var container=input.closest('.choices');"
+                        + "if(!container)return false;"
                         + "var items=container.querySelectorAll('.choices__item--choice');"
                         + "for(var i=0;i<items.length;i++){"
                         + "  var t=(items[i].textContent||'').trim();"
