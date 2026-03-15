@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -38,6 +39,22 @@ public class CitizenApiSteps {
     private int lastServiceId;
     private int lastServiceCount = 1;
     
+    /** Reset static booking state and instance reserve state before each scenario so each test uses its own process and mails. */
+    @Before
+    public void clearBookingStateBeforeScenario() {
+        clearBookingState();
+        lastReserveProcess = null;
+    }
+
+    /** Clear shared booking/confirm state (process, credentials, URLs). Call before each scenario to avoid cross-scenario leakage. */
+    public static void clearBookingState() {
+        bookingProcess = null;
+        bookingConfirmProcessId = null;
+        bookingConfirmAuthKey = null;
+        bookingConfirmUrl = null;
+        bookingAppointmentUrl = null;
+    }
+
     @Given("the Citizen API is available")
     public void theCitizenApiIsAvailable() {
         baseUri = TestConfig.getCitizenApiBaseUri();
@@ -168,7 +185,7 @@ public class CitizenApiSteps {
         if (lastAvailableAppointmentsResponse == null) {
             throw new IllegalStateException("Request available appointments first (for date, office, service).");
         }
-        Long timestamp = lastAvailableAppointmentsResponse.getFirstAppointmentTimestamp();
+        Long timestamp = lastAvailableAppointmentsResponse.getFirstFutureAppointmentTimestamp();
         if (timestamp == null) {
             ScenarioLogManager.getLogger().error("No appointment timestamps found in lastAvailableAppointmentsResponse "
                 + "for officeId=" + lastOfficeId + ", serviceId=" + lastServiceId);

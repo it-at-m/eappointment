@@ -50,20 +50,24 @@ public class ZmsApiMailSteps {
         MailListItem match = null;
         if (booking != null) {
             Integer processId = booking.getProcessId();
-            ScenarioLogManager.getLogger().info("zmsapi: looking for newest mail matching process {} (list is oldest-first)", processId);
+            ScenarioLogManager.getLogger().info("zmsapi: looking for newest mail (max id) matching process {}", processId);
             for (MailListItem mail : mails) {
                 MailProcessRef proc = mail.getProcess();
                 if (proc != null && processId.equals(proc.getId())) {
-                    match = mail;
+                    if (match == null || (mail.getId() != null && (match.getId() == null || mail.getId() > match.getId()))) {
+                        match = mail;
+                    }
                 }
             }
         }
         if (match == null && !mails.isEmpty()) {
-            ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using newest mail from GET /mails/ with process id");
+            ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using newest mail (max id) with process id");
             for (MailListItem mail : mails) {
                 MailProcessRef proc = mail.getProcess();
                 if (proc != null && proc.getId() != null && proc.getAuthKey() != null && !proc.getAuthKey().isBlank()) {
-                    match = mail;
+                    if (match == null || (mail.getId() != null && (match.getId() == null || mail.getId() > match.getId()))) {
+                        match = mail;
+                    }
                 }
             }
         }
@@ -117,19 +121,21 @@ public class ZmsApiMailSteps {
         }
     }
 
-    /** Extract appointment view link (href with appointment/ but not appointment/confirm/) from GET /mails/ for the given process. Uses newest mail for process (list is oldest-first). */
+    /** Extract appointment view link from GET /mails/ for the given process. Uses mail with max id (newest) that contains the link. */
     private String extractAppointmentViewUrlFromMailResponse(String responseBody, Integer processId) {
         try {
             JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
             if (!data.isArray()) {
                 return null;
             }
-            for (int i = data.size() - 1; i >= 0; i--) {
-                JsonNode mail = data.get(i);
+            int maxMailId = -1;
+            String foundUrl = null;
+            for (JsonNode mail : data) {
                 JsonNode proc = mail.path("process");
                 if (proc.isMissingNode() || proc.path("id").asInt(-1) != processId) {
                     continue;
                 }
+                int mailId = mail.path("id").asInt(-1);
                 JsonNode multipart = mail.path("multipart");
                 if (!multipart.isArray() || multipart.isEmpty()) {
                     continue;
@@ -140,11 +146,13 @@ public class ZmsApiMailSteps {
                     }
                     String content = part.path("content").asText("");
                     String url = extractAppointmentViewUrlFromHtml(content);
-                    if (url != null) {
-                        return url;
+                    if (url != null && mailId > maxMailId) {
+                        maxMailId = mailId;
+                        foundUrl = url;
                     }
                 }
             }
+            return foundUrl;
         } catch (Exception e) {
             ScenarioLogManager.getLogger().debug("zmsapi: could not extract appointment view URL from mail body", e);
         }
@@ -200,19 +208,21 @@ public class ZmsApiMailSteps {
         }
     }
 
-    /** Extract confirmation link from GET /mails/ response: find newest mail by process id, get text/html content, find href with appointment/confirm/. */
+    /** Extract confirmation link from GET /mails/ response: find mail with max id (newest) for process that contains href with appointment/confirm/. */
     private String extractConfirmUrlFromMailResponse(String responseBody, Integer processId) {
         try {
             JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
             if (!data.isArray()) {
                 return null;
             }
-            for (int i = data.size() - 1; i >= 0; i--) {
-                JsonNode mail = data.get(i);
+            int maxMailId = -1;
+            String foundUrl = null;
+            for (JsonNode mail : data) {
                 JsonNode proc = mail.path("process");
                 if (proc.isMissingNode() || proc.path("id").asInt(-1) != processId) {
                     continue;
                 }
+                int mailId = mail.path("id").asInt(-1);
                 JsonNode multipart = mail.path("multipart");
                 if (!multipart.isArray() || multipart.isEmpty()) {
                     ScenarioLogManager.getLogger().debug("zmsapi: mail processId={} has no multipart body", processId);
@@ -224,13 +234,17 @@ public class ZmsApiMailSteps {
                     }
                     String content = part.path("content").asText("");
                     String url = extractConfirmUrlFromHtml(content);
-                    if (url != null) {
-                        return url;
+                    if (url != null && mailId > maxMailId) {
+                        maxMailId = mailId;
+                        foundUrl = url;
                     }
-                    ScenarioLogManager.getLogger().debug("zmsapi: no confirm URL in text/html (length={}, contains appointment/confirm/={})",
-                        content.length(), content.contains("appointment/confirm/"));
+                    if (url == null) {
+                        ScenarioLogManager.getLogger().debug("zmsapi: no confirm URL in text/html (length={}, contains appointment/confirm/={})",
+                            content.length(), content.contains("appointment/confirm/"));
+                    }
                 }
             }
+            return foundUrl;
         } catch (Exception e) {
             ScenarioLogManager.getLogger().debug("zmsapi: could not extract confirm URL from mail body", e);
         }
