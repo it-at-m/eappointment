@@ -368,7 +368,12 @@ public class CitizenViewPage extends BasePage {
                         + "  return null;"
                         + "}"
                         + "var link=findLinkDeep(document.documentElement)||findLinkDeep(document.body);"
-                        + "if(link){link.scrollIntoView({block:'center'});link.click();return true;}return false;";
+                        + "if(link){"
+                        + "  link.scrollIntoView({block:'center'});"
+                        + "  var ev=new MouseEvent('click',{bubbles:true,cancelable:true,view:window});"
+                        + "  link.dispatchEvent(ev);"
+                        + "  return true;"
+                        + "}return false;";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(js);
         if (Boolean.TRUE.equals(clicked)) {
             ScenarioLogManager.getLogger().info("Service Finder: found and clicked link for '{}'", serviceLabel);
