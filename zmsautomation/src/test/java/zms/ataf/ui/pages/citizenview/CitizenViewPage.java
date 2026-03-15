@@ -324,26 +324,25 @@ public class CitizenViewPage extends BasePage {
     /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
-        // Service finder uses choices.js select with id=\"select-service-search\"
-        deepClickRequired("#select-service-search");
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        deepSetById("select-service-search", serviceLabel);
-        try {
-            Thread.sleep(800);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
         String script =
-                "var label='" + esc + "';function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
-                        + "if(n.classList&&n.classList.contains('choices__item--choice')||n.classList&&n.classList.contains('choices__item--selectable')){"
-                        + "var t=(n.textContent||'').trim();if(t===label){n.scrollIntoView({block:'center'});n.click();return true;}}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
-                        + "return walkClick(document.body);";
+                "var select=document.getElementById('select-service-search');"
+                        + "if(!select){return false;}"
+                        + "var container=select.closest('.choices');"
+                        + "if(!container){return false;}"
+                        + "container.click();"
+                        + "var input=container.querySelector('input.choices__input--cloned');"
+                        + "if(!input){return false;}"
+                        + "input.focus();"
+                        + "input.value='" + esc + "';"
+                        + "var e=new Event('input',{bubbles:true});input.dispatchEvent(e);"
+                        + "var label='" + esc + "';"
+                        + "var items=container.querySelectorAll('.choices__item--choice');"
+                        + "for(var i=0;i<items.length;i++){"
+                        + "  var t=(items[i].textContent||'').trim();"
+                        + "  if(t===label){items[i].scrollIntoView({block:'center'});items[i].click();return true;}"
+                        + "}"
+                        + "return false;";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         if (!Boolean.TRUE.equals(clicked)) {
             clickButtonContaining(serviceLabel);
