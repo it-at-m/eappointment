@@ -321,41 +321,15 @@ public class CitizenViewPage extends BasePage {
                 "Expected combination step (button Weiter) after jump-in.");
     }
 
-    /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
+    /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
-        // Wait until the Service Finder is rendered, then click its label to open the dropdown
+        // Ensure the Service Finder step is visible first (same heuristic as assertServiceFinderHeadingVisible).
         waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
-        deepClickRequired("label[for='select-service-search']");
-
-        String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
-        String script =
-                "var label='" + esc + "';"
-                        + "function findInput(root){"
-                        + "  if(!root)return null;"
-                        + "  try{var q=root.querySelector('input.choices__input--cloned');if(q)return q;}catch(e){}"
-                        + "  var all=root.querySelectorAll('*');"
-                        + "  for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var r=findInput(all[i].shadowRoot);if(r)return r;}}"
-                        + "  return null;"
-                        + "}"
-                        + "var input=findInput(document)||findInput(document.body);"
-                        + "if(!input)return false;"
-                        + "input.focus();"
-                        + "input.value=label;"
-                        + "try{input.dispatchEvent(new InputEvent('input',{bubbles:true,cancelable:true,data:label}));}"
-                        + "catch(e){input.dispatchEvent(new Event('input',{bubbles:true}));}"
-                        + "var container=input.closest('.choices');"
-                        + "if(!container)return false;"
-                        + "var items=container.querySelectorAll('.choices__item--choice');"
-                        + "for(var i=0;i<items.length;i++){"
-                        + "  var t=(items[i].textContent||'').trim();"
-                        + "  if(t===label){items[i].scrollIntoView({block:'center'});items[i].click();return true;}"
-                        + "}"
-                        + "return false;";
-        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
-        if (!Boolean.TRUE.equals(clicked)) {
-            clickButtonContaining(serviceLabel);
-        }
+        // Prefer the \"Häufig gesuchte Leistungen\" quick links, which are simple <a> elements.
+        Assert.assertTrue(
+                clickButtonContaining(serviceLabel),
+                "Service Finder: could not click quick-link for service '" + serviceLabel + "'");
         // After selecting a service the UI automatically advances to the combination (Ort/Zeit) step.
         // Wait until the combination step is visible (Weiter button present), but don't click it here.
         assertCombinationStepVisible();
