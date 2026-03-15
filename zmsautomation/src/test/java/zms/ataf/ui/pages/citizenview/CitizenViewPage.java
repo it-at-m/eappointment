@@ -791,6 +791,30 @@ public class CitizenViewPage extends BasePage {
                 "Selected-appointment info callout not found after choosing slot.");
     }
 
+    /** Click "Termin absagen" below the summary, then confirm "Absagen" in the modal, then wait for the cancellation success callout. */
+    public void clickCancelAppointmentAndConfirm() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
+        waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: confirming cancellation in modal (Absagen)");
+        waitForAndClickButtonContaining("Absagen", DEFAULT_EXPLICIT_WAIT_TIME);
+        ScenarioLogManager.getLogger().info("zmscitizenview: waiting for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
+        waitUntilShadowContains("Sie haben Ihren Termin erfolgreich abgesagt.", DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    public void assertCancellationSuccessCalloutVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: checking for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
+        assertShadowContains(
+                "Sie haben Ihren Termin erfolgreich abgesagt.",
+                "Cancellation success callout not found after cancelling appointment.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: cancellation success callout found");
+    }
+
     /**
      * Reads {@value #LOCALSTORAGE_APPOINTMENT_KEY} and sets {@link zms.ataf.rest.steps.CitizenApiSteps} booking process
      * so mail steps can run after UI preconfirm. If process was already set (e.g. by continueFromPreconfirmStep), returns it.

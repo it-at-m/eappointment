@@ -132,6 +132,16 @@ public class CitizenViewSteps {
         page.assertConfirmationSuccessCalloutVisible();
     }
 
+    @When("I cancel the appointment in the citizen view")
+    public void iCancelTheAppointmentInTheCitizenView() {
+        page.clickCancelAppointmentAndConfirm();
+    }
+
+    @Then("the cancellation success callout should be visible in the citizen view")
+    public void theCancellationSuccessCalloutShouldBeVisible() {
+        page.assertCancellationSuccessCalloutVisible();
+    }
+
     @Then("the selected appointment callout should be visible in the citizen view")
     public void theSelectedAppointmentCalloutShouldBeVisible() {
         page.assertSelectedAppointmentCalloutVisible();

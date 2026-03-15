@@ -43,6 +43,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
 
   # --- Passkalender 10502: direct jump-in → only Pass services → book → provider-10502 everywhere ---
   @jumpin @passkalender @executeLocally
@@ -68,6 +70,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
 
   # --- Hauptkalender 10489: non-Pass jump-in → Pass combinable → book → provider-10489 ---
   @jumpin @hauptkalender @executeLocally
@@ -90,6 +94,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
 
   # --- Abholung 10295182 only at 10492 (KVR-II/211) ---
   @jumpin @abholung @executeLocally
@@ -114,6 +120,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10492 in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in), optional when captcha absent ---
   @ruppertstrasse @executeLocally
@@ -133,6 +141,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the confirmation success callout should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
 
   @hauptkalender @executeLocally
   Scenario: Personalausweis full entry Hauptkalender 10489
@@ -151,3 +161,5 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the confirmation success callout should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
