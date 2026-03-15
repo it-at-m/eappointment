@@ -806,7 +806,7 @@ public class CitizenViewPage extends BasePage {
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
-            ScenarioLogManager.getLogger().info("zmscitizenview: localStorage lhm-appointment-data not available; fetch preconfirmation mail will use latest mail from GET /mails/");
+            ScenarioLogManager.getLogger().info("zmscitizenview: localStorage lhm-appointment-data not available; ensure continueFromPreconfirmStep captured process from confirm link on page");
             return null;
         }
         ThinnedProcess p = parseAndSetBookingProcessFromJson(json);
@@ -814,8 +814,17 @@ public class CitizenViewPage extends BasePage {
         return p;
     }
 
-    /** Try to read localStorage and set booking process once after activation callout is visible; no assert if missing. */
+    /** Try to set booking process after activation callout: first from localStorage, then from confirm link on page (same process id as mail). */
     private void trySyncBookingProcessFromLocalStorageOnce() {
+        CONTEXT.set();
+        if (trySetBookingProcessFromLocalStorage()) {
+            return;
+        }
+        trySetBookingProcessFromConfirmLinkOnPage();
+    }
+
+    /** @return true if process was set from localStorage */
+    private boolean trySetBookingProcessFromLocalStorage() {
         CONTEXT.set();
         String json =
                 (String)
@@ -823,15 +832,50 @@ public class CitizenViewPage extends BasePage {
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
-            return;
+            return false;
         }
         try {
             ThinnedProcess p = parseAndSetBookingProcessFromJson(json);
             if (p != null) {
                 ScenarioLogManager.getLogger().info("zmscitizenview: captured booking process from localStorage after activation callout (processId={})", p.getProcessId());
+                return true;
             }
         } catch (Exception e) {
             ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse localStorage after activation callout", e);
+        }
+        return false;
+    }
+
+    /** Find confirm link (#/appointment/confirm/{base64}) on page, decode id/authKey, set booking process so mail step can find by process id. */
+    private void trySetBookingProcessFromConfirmLinkOnPage() {
+        CONTEXT.set();
+        String script =
+                "var out=null;function walk(root){if(!root)return;if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + "var as=root.querySelectorAll('a[href]');for(var i=0;i<as.length;i++){var h=as[i].getAttribute('href')||'';var idx=h.indexOf('appointment/confirm/');if(idx>=0){var rest=h.substring(idx+'appointment/confirm/'.length);var end=rest.indexOf('?');if(end>=0)rest=rest.substring(0,end);out=rest;return true;}}"
+                        + "var c=root.children;for(var j=0;j<c.length;j++)if(walk(c[j]))return true;return false;}"
+                        + "walk(document.body);return out;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof String) || ((String) raw).isBlank()) {
+            return;
+        }
+        String b64 = (String) raw;
+        try {
+            String decoded = new String(Base64.getDecoder().decode(b64), StandardCharsets.UTF_8);
+            JsonNode node = new ObjectMapper().readTree(decoded);
+            JsonNode idNode = node.path("id");
+            JsonNode keyNode = node.path("authKey");
+            if (idNode.isMissingNode() || keyNode.isMissingNode() || idNode.isNull() || keyNode.isNull()) {
+                return;
+            }
+            int processId = idNode.asInt();
+            String authKey = keyNode.asText();
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger().info("zmscitizenview: captured booking process from confirm link on activation callout (processId={})", processId);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse confirm link from page", e);
         }
     }
 
