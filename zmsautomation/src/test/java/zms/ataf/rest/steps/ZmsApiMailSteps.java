@@ -21,6 +21,8 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 /**
  * Steps for zmsapi GET /mails/ (superuser X-Authkey) to fetch preconfirmation mail
  * and extract processId/authKey for the confirm-appointment step.
+ * Shared by zmscitizenapi (process from reserve/preconfirm response) and zmscitizenview
+ * (process from sync or continueFromPreconfirmStep); always looks up mail by process id.
  */
 public class ZmsApiMailSteps {
 
@@ -31,7 +33,8 @@ public class ZmsApiMailSteps {
         String authKey = getOrLoginXAuthKey();
         ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
         if (booking == null) {
-            throw new IllegalStateException("No current process. Reserve an appointment first.");
+            throw new IllegalStateException(
+                "No current process. Set booking process first: API flow = reserve/preconfirm; citizenview = sync from localStorage or capture in continueFromPreconfirmStep.");
         }
         Integer processId = booking.getProcessId();
         ScenarioLogManager.getLogger().info("zmsapi: fetching preconfirmation mail from GET /mails/ for process {}", processId);

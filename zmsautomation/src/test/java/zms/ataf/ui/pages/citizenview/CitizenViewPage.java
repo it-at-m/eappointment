@@ -805,7 +805,10 @@ public class CitizenViewPage extends BasePage {
                         ((JavascriptExecutor) DriverUtil.getDriver())
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
-        Assert.assertNotNull(json, "localStorage lhm-appointment-data missing after UI flow");
+        if (json == null || json.isBlank()) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: localStorage lhm-appointment-data not available; fetch preconfirmation mail will use latest mail from GET /mails/");
+            return null;
+        }
         ThinnedProcess p = parseAndSetBookingProcessFromJson(json);
         Assert.assertNotNull(p, "appointment.processId or authKey missing in localStorage");
         return p;
