@@ -127,6 +127,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   @ruppertstrasse @executeLocally
   Scenario: Personalausweis full entry Passkalender 10502
     Given I open the zmscitizenview booking page
+    Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
     And I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
@@ -147,6 +148,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   @hauptkalender @executeLocally
   Scenario: Personalausweis full entry Hauptkalender 10489
     Given I open the zmscitizenview booking page
+    Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
     And I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
