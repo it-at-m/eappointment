@@ -944,6 +944,25 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
+    /** Navigate to the appointment view URL extracted from the confirmation mail (link without /confirm/), then refresh so the app loads it. */
+    public void openAppointmentViewDeepLinkInBrowser() {
+        CONTEXT.set();
+        String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
+        Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL: {}", url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+            DriverUtil.getDriver().navigate().refresh();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to appointment view URL", e);
+        }
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private static String mapperQuote(String s) {
         if (s == null) {
             return "null";

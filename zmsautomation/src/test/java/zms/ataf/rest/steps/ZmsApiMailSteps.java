@@ -90,6 +90,117 @@ public class ZmsApiMailSteps {
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
     }
 
+    @When("I fetch the confirmation mail for the current process")
+    public void iFetchTheConfirmationMailForTheCurrentProcess() {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        if (booking == null) {
+            throw new IllegalStateException("No booking process; confirm the appointment first so the confirmation mail is sent.");
+        }
+        Integer processId = booking.getProcessId();
+        String authKey = getOrLoginXAuthKey();
+        ScenarioLogManager.getLogger().info("zmsapi: fetching confirmation mail from GET /mails/ for process {}", processId);
+        Response response = given()
+            .baseUri(TestConfig.getBaseUri())
+            .header("X-Authkey", authKey)
+            .queryParam("limit", 500)
+        .when()
+            .get("/mails/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            return;
+        }
+        String appointmentUrl = extractAppointmentViewUrlFromMailResponse(response.asString(), processId);
+        if (appointmentUrl != null) {
+            CitizenApiSteps.setBookingAppointmentUrl(appointmentUrl);
+            ScenarioLogManager.getLogger().info("zmsapi: appointment view URL extracted from confirmation mail for process {}", processId);
+        } else {
+            ScenarioLogManager.getLogger().warn("zmsapi: no appointment view URL in confirmation mail for process {}", processId);
+        }
+    }
+
+    /** Extract appointment view link (href with appointment/ but not appointment/confirm/) from GET /mails/ for the given process. */
+    private String extractAppointmentViewUrlFromMailResponse(String responseBody, Integer processId) {
+        try {
+            JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
+            if (!data.isArray()) {
+                return null;
+            }
+            for (JsonNode mail : data) {
+                JsonNode proc = mail.path("process");
+                if (proc.isMissingNode() || proc.path("id").asInt(-1) != processId) {
+                    continue;
+                }
+                JsonNode multipart = mail.path("multipart");
+                if (!multipart.isArray() || multipart.isEmpty()) {
+                    continue;
+                }
+                for (JsonNode part : multipart) {
+                    if (!"text/html".equals(part.path("mime").asText(null))) {
+                        continue;
+                    }
+                    String content = part.path("content").asText("");
+                    String url = extractAppointmentViewUrlFromHtml(content);
+                    if (url != null) {
+                        return url;
+                    }
+                }
+                break;
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmsapi: could not extract appointment view URL from mail body", e);
+        }
+        return null;
+    }
+
+    /** Find first href containing appointment/ but not appointment/confirm/ (view link from confirmation mail). */
+    private String extractAppointmentViewUrlFromHtml(String html) {
+        if (html == null) {
+            return null;
+        }
+        int fromIndex = 0;
+        while (true) {
+            int anchor = html.indexOf("appointment/", fromIndex);
+            if (anchor < 0) {
+                return null;
+            }
+            if (anchor + "appointment/".length() <= html.length() && html.startsWith("appointment/confirm/", anchor)) {
+                fromIndex = anchor + 1;
+                continue;
+            }
+            int start = html.lastIndexOf("href=", anchor);
+            if (start < 0) {
+                fromIndex = anchor + 1;
+                continue;
+            }
+            start += 5;
+            while (start < html.length() && (html.charAt(start) == ' ' || html.charAt(start) == '\t')) {
+                start++;
+            }
+            if (start >= html.length()) {
+                return null;
+            }
+            char quote = html.charAt(start);
+            if (quote == '\\' && start + 1 < html.length()) {
+                quote = html.charAt(start + 1);
+                start++;
+            }
+            if (quote != '"' && quote != '\'') {
+                fromIndex = anchor + 1;
+                continue;
+            }
+            start++;
+            int end = html.indexOf(quote, start);
+            if (end < 0) {
+                return null;
+            }
+            String url = html.substring(start, end).replace("&amp;", "&");
+            if (url.contains("appointment/") && !url.contains("appointment/confirm/")) {
+                return url;
+            }
+            fromIndex = anchor + 1;
+        }
+    }
+
     /** Extract confirmation link from GET /mails/ response: find mail by process id, get text/html content, find href with appointment/confirm/. */
     private String extractConfirmUrlFromMailResponse(String responseBody, Integer processId) {
         try {

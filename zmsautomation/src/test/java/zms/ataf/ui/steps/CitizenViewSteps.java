@@ -122,6 +122,11 @@ public class CitizenViewSteps {
         page.openConfirmationDeepLinkInBrowser();
     }
 
+    @When("I open the appointment view deep link in the browser")
+    public void iOpenTheAppointmentViewDeepLinkInTheBrowser() {
+        page.openAppointmentViewDeepLinkInBrowser();
+    }
+
     @Then("the confirmation success callout should be visible in the citizen view")
     public void theConfirmationSuccessCalloutShouldBeVisible() {
         page.assertConfirmationSuccessCalloutVisible();
