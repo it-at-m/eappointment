@@ -219,6 +219,8 @@ class Munich
      * Merge overwrite JSON into raw SADB export — same role as dldb-mapper mapImport($overwrite).
      * - Services: merge by id, fields merged by name (overwrite wins).
      * - Locations: merge by id (extendedServiceReferences by refId) or append if missing (e.g. 10502).
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function applySadbOverwrite(array $data, ?string $overwritePath = null): array
     {
