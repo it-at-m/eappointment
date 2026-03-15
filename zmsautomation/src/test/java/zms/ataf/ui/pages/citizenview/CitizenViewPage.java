@@ -765,16 +765,15 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). */
+    /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). Reserve API may take several seconds, so we wait up to 25s for the callout. */
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: checking activation callout (Aktivieren Sie Ihren Termin., {} Minuten)", activationMinutes);
-        assertShadowContains(
-                "Aktivieren Sie Ihren Termin.",
+        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to 25s for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)", activationMinutes);
+        waitUntilShadowContains("Aktivieren Sie Ihren Termin.", 25);
+        Assert.assertTrue(shadowDomContainsText("Aktivieren Sie Ihren Termin."),
                 "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
         String timeText = activationMinutes + " Minuten";
-        assertShadowContains(
-                timeText,
+        Assert.assertTrue(shadowDomContainsText(timeText),
                 "Preconfirmation callout should mention activation time limit (" + timeText + ").");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout visible with {} Minuten", activationMinutes);
     }
