@@ -929,13 +929,14 @@ public class CitizenViewPage extends BasePage {
             }
             url = base + "#/appointment/confirm/" + b64;
         }
+        ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
         try {
-            Thread.sleep(4000L);
+            Thread.sleep(10000L);
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
