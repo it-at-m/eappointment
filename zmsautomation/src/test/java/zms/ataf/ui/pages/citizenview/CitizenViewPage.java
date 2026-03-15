@@ -321,16 +321,17 @@ public class CitizenViewPage extends BasePage {
                 "Expected combination step (button Weiter) after jump-in.");
     }
 
-    /** Full entry: open choices, type filter, click option row containing serviceLabel. */
+    /** Full entry: open choices, type filter, click option row containing serviceLabel. Navigates automatically to combination step (no explicit Weiter click). */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
-        deepClickRequired("#select-service-search");
+        // New citizenview UI: service finder uses muc-select with id=\"service-search\"
+        deepClickRequired("#service-search");
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        deepSetById("select-service-search", serviceLabel);
+        deepSetById("service-search", serviceLabel);
         try {
             Thread.sleep(800);
         } catch (InterruptedException e) {
@@ -340,14 +341,16 @@ public class CitizenViewPage extends BasePage {
         String script =
                 "var label='" + esc + "';function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "if(n.classList&&n.classList.contains('choices__item--choice')||n.classList&&n.classList.contains('choices__item--selectable')){"
-                        + "var t=(n.textContent||'');if(t.indexOf(label)>=0){n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "var t=(n.textContent||'').trim();if(t===label){n.scrollIntoView({block:'center'});n.click();return true;}}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         if (!Boolean.TRUE.equals(clicked)) {
             clickButtonContaining(serviceLabel);
         }
-        clickWeiter();
+        // After selecting a service the UI automatically advances to the combination (Ort/Zeit) step.
+        // Wait until the combination step is visible (Weiter button present), but don't click it here.
+        assertCombinationStepVisible();
     }
 
     /**
