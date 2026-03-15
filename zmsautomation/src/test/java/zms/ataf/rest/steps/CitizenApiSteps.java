@@ -443,6 +443,7 @@ public class CitizenApiSteps {
     private static ThinnedProcess bookingProcess;
     private static String bookingConfirmProcessId;
     private static String bookingConfirmAuthKey;
+    private static String bookingConfirmUrl;
 
     public static ThinnedProcess getBookingProcess() {
         return bookingProcess;
@@ -463,6 +464,14 @@ public class CitizenApiSteps {
     public static void setBookingConfirmCredentials(String processId, String authKey) {
         bookingConfirmProcessId = processId;
         bookingConfirmAuthKey = authKey;
+    }
+
+    public static String getBookingConfirmUrl() {
+        return bookingConfirmUrl;
+    }
+
+    public static void setBookingConfirmUrl(String url) {
+        bookingConfirmUrl = url;
     }
 
     public ThinnedProcess getLastReserveProcess() {

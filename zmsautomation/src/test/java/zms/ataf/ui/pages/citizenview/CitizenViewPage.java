@@ -898,32 +898,37 @@ public class CitizenViewPage extends BasePage {
         return p;
     }
 
-    /** Navigate to zmscitizenview #/appointment/confirm/{base64(id,authKey)}. Uses confirm credentials from mail when set (after fetch preconfirmation mail), else booking process from localStorage. */
+    /** Navigate to zmscitizenview confirm page. Prefer URL extracted from mail body (GET /mails/); else build from confirm credentials or booking process. */
     public void openConfirmationDeepLinkInBrowser() {
         CONTEXT.set();
-        String processId = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmProcessId();
-        String authKey = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmAuthKey();
-        boolean fromMail = processId != null && authKey != null;
-        if (!fromMail) {
-            ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-            Assert.assertNotNull(p, "No booking process; sync localStorage and fetch preconfirmation mail first");
-            processId = String.valueOf(p.getProcessId());
-            authKey = p.getAuthKey();
+        String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
+        if (url != null && !url.isBlank()) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (URL from mail body)");
+        } else {
+            String processId = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmProcessId();
+            String authKey = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmAuthKey();
+            boolean fromMail = processId != null && authKey != null;
+            if (!fromMail) {
+                ThinnedProcess p = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+                Assert.assertNotNull(p, "No booking process; sync localStorage and fetch preconfirmation mail first");
+                processId = String.valueOf(p.getProcessId());
+                authKey = p.getAuthKey();
+            }
+            ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (credentials from {})", fromMail ? "GET /mails/" : "localStorage");
+            String payload =
+                    "{\"id\":"
+                            + processId
+                            + ",\"authKey\":"
+                            + mapperQuote(authKey)
+                            + "}";
+            String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+            String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
+            int hashIdx = base.indexOf('#');
+            if (hashIdx >= 0) {
+                base = base.substring(0, hashIdx);
+            }
+            url = base + "#/appointment/confirm/" + b64;
         }
-        ScenarioLogManager.getLogger().info("zmscitizenview: opening confirmation deep link (credentials from {})", fromMail ? "GET /mails/" : "localStorage");
-        String payload =
-                "{\"id\":"
-                        + processId
-                        + ",\"authKey\":"
-                        + mapperQuote(authKey)
-                        + "}";
-        String b64 = Base64.getEncoder().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
-        String base = CONTEXT.lastCitizenViewUrl != null ? CONTEXT.lastCitizenViewUrl : "";
-        int hashIdx = base.indexOf('#');
-        if (hashIdx >= 0) {
-            base = base.substring(0, hashIdx);
-        }
-        String url = base + "#/appointment/confirm/" + b64;
         try {
             DriverUtil.getDriver().navigate().to(url);
         } catch (Exception e) {

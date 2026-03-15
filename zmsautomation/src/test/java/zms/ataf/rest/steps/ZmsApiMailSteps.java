@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +84,46 @@ public class ZmsApiMailSteps {
             p.setAuthKey(confirmAuthKey);
             CitizenApiSteps.setBookingProcess(p);
         }
+        String confirmUrl = extractConfirmUrlFromMailResponse(response.asString(), match.getProcess().getId());
+        if (confirmUrl != null) {
+            CitizenApiSteps.setBookingConfirmUrl(confirmUrl);
+            ScenarioLogManager.getLogger().info("zmsapi: confirm URL extracted from mail body for process {}", match.getProcess().getId());
+        }
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.getProcess().getId());
+    }
+
+    /** Extract confirmation link from GET /mails/ response: find mail by process id, get text/html content, regex href with appointment/confirm/. */
+    private String extractConfirmUrlFromMailResponse(String responseBody, Integer processId) {
+        try {
+            JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
+            if (!data.isArray()) {
+                return null;
+            }
+            for (JsonNode mail : data) {
+                JsonNode proc = mail.path("process");
+                if (proc.isMissingNode() || proc.path("id").asInt(-1) != processId) {
+                    continue;
+                }
+                JsonNode multipart = mail.path("multipart");
+                if (!multipart.isArray()) {
+                    continue;
+                }
+                for (JsonNode part : multipart) {
+                    if (!"text/html".equals(part.path("mime").asText(null))) {
+                        continue;
+                    }
+                    String content = part.path("content").asText("");
+                    Matcher m = Pattern.compile("href=[\"']([^\"']*appointment/confirm/[^\"']+)[\"']").matcher(content);
+                    if (m.find()) {
+                        return m.group(1).replace("&amp;", "&");
+                    }
+                }
+                break;
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmsapi: could not extract confirm URL from mail body", e);
+        }
+        return null;
     }
 
     private String getOrLoginXAuthKey() {
