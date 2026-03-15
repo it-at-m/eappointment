@@ -64,6 +64,8 @@ info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
 
 # File paths
 BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
+# Set SKIP_DB_RESTORE=1 to leave DB as-is after tests (e.g. for debugging)
+SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
 
@@ -116,6 +118,10 @@ backup_db() {
 
 # Restore database
 restore_db() {
+  if [[ "$SKIP_DB_RESTORE" == "1" ]]; then
+    info "Skipping database restore (SKIP_DB_RESTORE=1)."
+    return 0
+  fi
   if [[ -f "$BACKUP_FILE" ]]; then
     info "Restoring database from $BACKUP_FILE..."
     gunzip < "$BACKUP_FILE" | exec_sql
@@ -170,8 +176,8 @@ cleanup_on_exit() {
   # 3. Restore Keycloak configs
   restore_keycloak
   
-  # 4. Clear Flyway test migrations
-  if [[ -n "${BACKUP_FILE:-}" ]]; then
+  # 4. Clear Flyway test migrations (skip when DB restore is disabled)
+  if [[ -n "${BACKUP_FILE:-}" && "$SKIP_DB_RESTORE" != "1" ]]; then
     info "Clearing test data migrations from flyway_schema_history..."
     exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
   fi
@@ -576,9 +582,11 @@ restore_db
 info "Restoring Keycloak config (8091)..."
 restore_keycloak
 
-# Clear test data migrations from flyway_schema_history after restore
-info "Clearing test data migrations from flyway_schema_history after restore..."
-exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+# Clear test data migrations from flyway_schema_history after restore (skip when SKIP_DB_RESTORE=1)
+if [[ "$SKIP_DB_RESTORE" != "1" ]]; then
+  info "Clearing test data migrations from flyway_schema_history after restore..."
+  exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+fi
 
 # 15. Cleanup
 section "15. Cleanup"
