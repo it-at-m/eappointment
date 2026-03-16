@@ -129,7 +129,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
-    And I select office 10502 in the citizen view
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10502 should be visible in the citizen view
+    When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
@@ -140,8 +143,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10502 in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -150,7 +155,10 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
-    And I select office 10489 in the citizen view
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    When I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
@@ -163,5 +171,6 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the confirmation success callout should be visible in the citizen view
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10489 in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
