@@ -493,13 +493,23 @@ public class CitizenViewPage extends BasePage {
     /** Jump-in: combination step shows Weiter + optional counters. */
     public void assertCombinationStepVisible() {
         CONTEXT.set();
-        // Combination (Ort/Zeit) step is identified by the \"Kombinierbare Leistungen\" heading
-        // (or its English equivalent) rather than by a generic \"Weiter\" button label.
-        waitUntilShadowContains("Kombinierbare Leistungen", DEFAULT_EXPLICIT_WAIT_TIME);
+        // Combination (Ort/Zeit) step is usually identified by the "Kombinierbare Leistungen" heading.
+        // For flows without combinable services (e.g. Abholung-only), this heading is absent; in those
+        // cases we fall back to the presence of the "Leistung wechseln" back button as the indicator
+        // that the Leistung step has been replaced by the combination step.
+        String deHeading = "Kombinierbare Leistungen";
+        String enHeading = "Combinable services";
+        String backButton = "Leistung wechseln";
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowDomContainsText(deHeading)
+                        || shadowDomContainsText(enHeading)
+                        || shadowDomContainsText(backButton));
         Assert.assertTrue(
-                shadowDomContainsText("Kombinierbare Leistungen")
-                        || shadowDomContainsText("Combinable services"),
-                "Expected combination step (Kombinierbare Leistungen / Combinable services) after service selection or jump-in.");
+                shadowDomContainsText(deHeading)
+                        || shadowDomContainsText(enHeading)
+                        || shadowDomContainsText(backButton),
+                "Expected combination step after service selection or jump-in "
+                        + "(Kombinierbare Leistungen / Combinable services heading, or Leistung wechseln back button).");
     }
 
     /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */
