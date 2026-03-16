@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.Base64;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -402,7 +403,27 @@ public class CitizenViewPage extends BasePage {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        assertCombinationStepVisible();
+        try {
+            assertCombinationStepVisible();
+        } catch (TimeoutException first) {
+            // In rare cases the first click may race with offices-and-services loading.
+            // Retry once if the combination heading did not appear yet.
+            ScenarioLogManager.getLogger()
+                    .warn("Service Finder: combination step did not appear after first click on '{}', retrying once",
+                            serviceLabel);
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            Boolean retried =
+                    (Boolean)
+                            ((JavascriptExecutor) DriverUtil.getDriver())
+                                    .executeScript(js);
+            ScenarioLogManager.getLogger()
+                    .info("Service Finder: retry click on '{}' success={}", serviceLabel, retried);
+            assertCombinationStepVisible();
+        }
     }
 
     /**
