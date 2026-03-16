@@ -32,7 +32,7 @@
 
                 {% set dateRange = [] %}
                 {% for i in range(0, (end.timestamp - start.timestamp) // 86400) %}
-                    {% set fullDate = (start.timestamp + (i * 86400)) | date('Y-m-d') %}
+                    {% set fullDate = start | date_modify("+" ~ i ~ " day") | date('Y-m-d') %}
                     {% set dateRange = dateRange|merge([fullDate]) %}
                 {% endfor %}
             {% elseif exchangeRequest.period == "month" %}
