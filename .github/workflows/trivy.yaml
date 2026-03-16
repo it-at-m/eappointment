@@ -1,4 +1,4 @@
-name: build
+name: Security Check
 on:
   pull_request:
 jobs:
