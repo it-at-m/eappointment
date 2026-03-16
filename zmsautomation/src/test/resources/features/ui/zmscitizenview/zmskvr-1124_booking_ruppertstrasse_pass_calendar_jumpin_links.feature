@@ -26,12 +26,14 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
     Given I open zmscitizenview with jump-in service "1063441" and location "10489"
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -43,6 +45,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -51,6 +54,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   Scenario: Reisepass jump-in Passkalender 10502 books to provider 10502 with correct summaries
     Given I open zmscitizenview with jump-in service "1063453" and location "10502"
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
     And only Pass calendar services should be offered on the combination step
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
@@ -60,6 +64,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -70,6 +75,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -78,12 +84,14 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   Scenario: Non-Pass jump-in Hauptkalender 10489 shows Pass combinable and books to provider 10489
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 30 minutes
     When I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the booking summary should be 30 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -94,6 +102,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the confirmation view should be 30 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -102,6 +111,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
   Scenario: Abholung jump-in only Abholstandort 10492 and books to provider 10492
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
     When I continue from the service combination step
     Then provider checkbox 10492 should be visible in the citizen view
     And provider checkbox 10489 should not appear in the citizen view
@@ -110,6 +120,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10492 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -120,6 +131,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10492 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -130,12 +142,14 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -147,6 +161,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
@@ -156,6 +171,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 30 minutes
     When I add subservice "Wohnsitz-Anmeldung" with quantity 1 on the service combination step
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
@@ -163,6 +179,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the booking summary should be 30 minutes in the citizen view
     When I accept privacy and communication in the citizen view
     And I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
@@ -173,5 +190,6 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I fetch the confirmation mail for the current process
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the confirmation view should be 30 minutes in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view

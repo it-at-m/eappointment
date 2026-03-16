@@ -45,6 +45,11 @@ public class CitizenViewSteps {
         page.assertCombinationStepVisible();
     }
 
+    @Then("the estimated duration on the service combination step should be {int} minutes")
+    public void theEstimatedDurationOnTheServiceCombinationStepShouldBeMinutes(int minutes) {
+        page.assertEstimatedDurationMinutes(minutes, "service combination step");
+    }
+
     @When("I add subservice {string} with quantity {int} on the service combination step")
     public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
         page.addSubserviceByName(TestDataHelper.transformTestData(subserviceLabel), quantity);
@@ -175,6 +180,16 @@ public class CitizenViewSteps {
     @Then("the booking summary should show provider {int} in the citizen view")
     public void theBookingSummaryShouldShowProvider(int officeId) {
         page.assertProviderSummaryVisible(officeId);
+    }
+
+    @Then("the estimated duration in the booking summary should be {int} minutes in the citizen view")
+    public void theEstimatedDurationInTheBookingSummaryShouldBeMinutesInTheCitizenView(int minutes) {
+        page.assertEstimatedDurationMinutes(minutes, "booking summary view");
+    }
+
+    @Then("the estimated duration in the confirmation view should be {int} minutes in the citizen view")
+    public void theEstimatedDurationInTheConfirmationViewShouldBeMinutesInTheCitizenView(int minutes) {
+        page.assertEstimatedDurationMinutes(minutes, "confirmation view");
     }
 
     @Then("only Pass calendar services should be offered on the combination step")

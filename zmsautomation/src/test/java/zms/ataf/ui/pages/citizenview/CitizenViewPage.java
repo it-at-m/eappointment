@@ -161,6 +161,24 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * Assert that the UI shows an estimated duration with the expected number of minutes. This is a generic shadow-DOM
+     * text assertion used for the service combination step, selected-appointment callout, and booking summaries.
+     */
+    public void assertEstimatedDurationMinutes(int minutes, String context) {
+        CONTEXT.set();
+        String minutesText = minutes + " Minuten";
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: checking estimated duration = {} in {}", minutesText, context);
+        waitUntilShadowContains("Voraussichtliche Termindauer", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText("Voraussichtliche Termindauer"),
+                "Expected 'Voraussichtliche Termindauer' text to be visible in " + context);
+        Assert.assertTrue(
+                shadowDomContainsText(minutesText),
+                "Expected estimated duration '" + minutesText + "' to be visible in " + context);
+    }
+
+    /**
      * Increase the quantity of a subservice by clicking the "+" control on its counter, resolving the subservice by
      * visible name. If the subservice is not yet visible (hidden behind "Alle Leistungen anzeigen"), this method will
      * first click that button once and retry.
