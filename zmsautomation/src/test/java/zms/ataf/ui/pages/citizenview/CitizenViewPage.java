@@ -169,6 +169,12 @@ public class CitizenViewPage extends BasePage {
         String minutesText = minutes + " Minuten";
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: checking estimated duration = {} in {}", minutesText, context);
+        // Some views (especially after opening deep links) may need a brief moment to render
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         waitUntilShadowContains("Voraussichtliche Termindauer", DEFAULT_EXPLICIT_WAIT_TIME);
         Assert.assertTrue(
                 shadowDomContainsText("Voraussichtliche Termindauer"),
