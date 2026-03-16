@@ -172,7 +172,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
     And the estimated duration on the service combination step should be 30 minutes
-    When I add subservice "Wohnsitz-Anmeldung" with quantity 1 on the service combination step
+    When I add subservice "Wohnsitzanmeldung" with quantity 1 on the service combination step
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
