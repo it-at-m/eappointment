@@ -171,7 +171,7 @@ public class CitizenViewPage extends BasePage {
                 .info("zmscitizenview: checking estimated duration = {} in {}", minutesText, context);
         // Some views (especially after opening deep links) may need a brief moment to render
         try {
-            Thread.sleep(1000L);
+            Thread.sleep(3000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
