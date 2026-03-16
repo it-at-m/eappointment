@@ -138,7 +138,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis without preselected office. Passkalender 10502 scenario — only Pass-family services on the combination step and booking tied to provider 10502 throughout. ---
-  @ruppertstrasse @executeLocally
+  @ruppertstrasse @servicefinder @executeLocally
   Scenario: Personalausweis full entry Passkalender 10502
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -168,7 +168,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis with Hauptkalender 10489. Pass is combinable with Wohnsitzanmeldung on the combination step; adding Wohnsitzanmeldung changes duration 15 → 30 minutes and booking must be tied to provider 10489 in all summaries. ---
-  @hauptkalender @executeLocally
+  @hauptkalender @servicefinder @executeLocally
   Scenario: Personalausweis full entry Hauptkalender 10489
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
