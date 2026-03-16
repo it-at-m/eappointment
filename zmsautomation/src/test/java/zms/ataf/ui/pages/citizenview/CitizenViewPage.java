@@ -845,9 +845,9 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Below the calendar: scroll to slot grid, wait for API, click first timeslot, assert {@code Ausgewählter Termin}
-     * callout, then click <strong>Weiter</strong> — that call <em>reserves</em> the appointment (API reserve). The
-     * update-appointment (Kontakt) form is shown only after this Weiter.
+     * Below the calendar: scroll to slot grid, wait for API, click a non-first timeslot (prefer second, then third, else
+     * fallback to first), assert {@code Ausgewählter Termin} callout, then click <strong>Weiter</strong> — that call
+     * <em>reserves</em> the appointment (API reserve). The update-appointment (Kontakt) form is shown only after this Weiter.
      */
     public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
         CONTEXT.set();
@@ -864,12 +864,24 @@ public class CitizenViewPage extends BasePage {
                         + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
                         + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
                         + "window.scrollBy(0,200);"
-                        + "function clickSlot(n){if(!n)return false;if(n.nodeType===1){"
-                        + "if(n.id&&n.id.indexOf('-timeslot-')>=0){if(n.shadowRoot){var b=n.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}try{n.click();return true;}catch(e){}}"
-                        + "if(n.classList&&n.classList.contains('timeslot')){if(n.shadowRoot){var b2=n.shadowRoot.querySelector('button:not([disabled])');if(b2){b2.click();return true;}}try{n.click();return true;}catch(e2){}}}"
-                        + "if(n.shadowRoot&&clickSlot(n.shadowRoot))return true;var c=n.children;if(c)for(var i=0;i<c.length;i++)if(clickSlot(c[i]))return true;return false;}"
-                        + "return clickSlot(document.body);";
-        ScenarioLogManager.getLogger().info("zmscitizenview: scroll + first slot office {}", officeId);
+                        + "function collectSlots(root,arr){if(!root)return;var n=root;"
+                        + "if(n.nodeType===1){"
+                        + " if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
+                        + "   arr.push(n);"
+                        + " }"
+                        + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
+                        + "}"
+                        + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
+                        + "var slots=[];collectSlots(document.body,slots);"
+                        + "if(!slots.length)return false;"
+                        + "var idx = slots.length>2?2:(slots.length>1?1:0);"
+                        + "var target = slots[idx];"
+                        + "function clickSlotNode(node){if(!node)return false;"
+                        + " if(node.shadowRoot){var b=node.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}"
+                        + " try{node.click();return true;}catch(e){}"
+                        + " return false;}"
+                        + "return clickSlotNode(target);";
+        ScenarioLogManager.getLogger().info("zmscitizenview: scroll + non-first slot (prefer 3rd, then 2nd, else 1st) office {}", officeId);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
                 .until(
                         d ->
