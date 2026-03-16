@@ -187,10 +187,22 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: add subservice '{}' quantity {}", subserviceLabel, quantity);
+        // Give the combination list a brief moment to settle (especially after jump-in or service selection).
+        try {
+            Thread.sleep(500L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         for (int i = 0; i < quantity; i++) {
             boolean ok = deepAddSubserviceOnceByName(subserviceLabel);
             Assert.assertTrue(
                     ok, "Could not increase subservice counter for '" + subserviceLabel + "' (iteration " + (i + 1) + ")");
+            // Small delay after each click so Vue state and duration can update before the next assertion.
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
