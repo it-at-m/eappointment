@@ -160,6 +160,83 @@ public class CitizenViewPage extends BasePage {
                 .until(d -> serviceLabelReadyForSelection(serviceLabel));
     }
 
+    /**
+     * Increase the quantity of a subservice by clicking the "+" control on its counter, resolving the subservice by
+     * visible name. If the subservice is not yet visible (hidden behind "Alle Leistungen anzeigen"), this method will
+     * first click that button once and retry.
+     */
+    public void addSubserviceByName(String subserviceLabel, int quantity) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: add subservice '{}' quantity {}", subserviceLabel, quantity);
+        for (int i = 0; i < quantity; i++) {
+            boolean ok = deepAddSubserviceOnceByName(subserviceLabel);
+            Assert.assertTrue(
+                    ok, "Could not increase subservice counter for '" + subserviceLabel + "' (iteration " + (i + 1) + ")");
+        }
+    }
+
+    /**
+     * JS helper: try to click the "+" button for a subservice counter with a matching label once. Returns true on
+     * success. If the subservice is not found, it will attempt to click "Alle Leistungen anzeigen" once and search
+     * again.
+     */
+    private boolean deepAddSubserviceOnceByName(String subserviceLabel) {
+        CONTEXT.set();
+        String esc = subserviceLabel.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function findCounterRoot(){"
+                        + "  var nodes=document.querySelectorAll('[id^=\"service-\"]');"
+                        + "  for(var i=0;i<nodes.length;i++){"
+                        + "    var el=nodes[i];"
+                        + "    var txt=norm(el.textContent||'');"
+                        + "    if(txt.indexOf(label)>=0)return el;"
+                        + "    if(el.shadowRoot){"
+                        + "      var stxt=norm(el.shadowRoot.textContent||'');"
+                        + "      if(stxt.indexOf(label)>=0)return el;"
+                        + "    }"
+                        + "  }"
+                        + "  return null;"
+                        + "}"
+                        + "function clickPlusOn(root){"
+                        + "  if(!root)return false;"
+                        + "  var host=root.shadowRoot||root;"
+                        + "  var buttons=host.querySelectorAll('button');"
+                        + "  if(!buttons||buttons.length===0)return false;"
+                        + "  var btn=buttons[buttons.length-1];"
+                        + "  if(btn.disabled)return false;"
+                        + "  btn.scrollIntoView({block:'center'});"
+                        + "  btn.click();"
+                        + "  return true;"
+                        + "}"
+                        + "function clickShowAllIfPresent(){"
+                        + "  function walk(n){"
+                        + "    if(!n)return null;"
+                        + "    if(n.shadowRoot){var r=walk(n.shadowRoot);if(r)return r;}"
+                        + "    var tag=(n.tagName||'').toUpperCase();"
+                        + "    if(tag==='BUTTON'||tag==='MUC-BUTTON'){"
+                        + "      var txt=norm(n.textContent||'');"
+                        + "      if(txt.indexOf('Alle Leistungen anzeigen')>=0&&!n.disabled)return n;"
+                        + "    }"
+                        + "    var c=n.children||[];"
+                        + "    for(var i=0;i<c.length;i++){var r2=walk(c[i]);if(r2)return r2;}"
+                        + "    return null;"
+                        + "  }"
+                        + "  return walk(document.body);"
+                        + "}"
+                        + "var root=findCounterRoot();"
+                        + "if(!root){"
+                        + "  var showAll=clickShowAllIfPresent();"
+                        + "  if(showAll){showAll.scrollIntoView({block:'center'});showAll.click();}"
+                        + "  root=findCounterRoot();"
+                        + "}"
+                        + "return clickPlusOn(root);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
     public void assertShadowContains(String substring, String message) {
         waitUntilShadowContains(substring, DEFAULT_EXPLICIT_WAIT_TIME);
         Assert.assertTrue(shadowDomContainsText(substring), message);

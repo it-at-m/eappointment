@@ -156,7 +156,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the Service Finder should be visible on the start page
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
-    When I continue from the service combination step
+    When I add subservice "Wohnsitz-Anmeldung" with quantity 1 on the service combination step
+    And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view

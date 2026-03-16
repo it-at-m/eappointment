@@ -45,6 +45,11 @@ public class CitizenViewSteps {
         page.assertCombinationStepVisible();
     }
 
+    @When("I add subservice {string} with quantity {int} on the service combination step")
+    public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
+        page.addSubserviceByName(TestDataHelper.transformTestData(subserviceLabel), quantity);
+    }
+
     @When("I continue from the service combination step")
     public void iContinueFromTheServiceCombinationStep() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Weiter (combination → office/time)");
