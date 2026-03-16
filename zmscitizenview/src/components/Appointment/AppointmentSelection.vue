@@ -202,10 +202,10 @@
     </muc-button>
   </div>
   <AvailabilityInfoModal
-    v-model:open="showAvailabilityInfoModal"
+    :show="showAvailabilityInfoModal"
     :html="availabilityInfoHtmlForModal"
     :closeAriaLabel="t('closeDialog')"
-    :t="t"
+    @close="closeAvailabilityInfoModal"
   />
 </template>
 <script setup lang="ts">

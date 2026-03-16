@@ -21,3 +21,5 @@ export default defineConfig({
     setupFiles: ["./tests/setup/localStorageMock.ts"]
   }
 })
+
+
