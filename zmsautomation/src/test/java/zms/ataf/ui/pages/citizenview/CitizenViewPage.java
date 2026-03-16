@@ -3,6 +3,7 @@ package zms.ataf.ui.pages.citizenview;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -60,6 +61,50 @@ public class CitizenViewPage extends BasePage {
 
     public void navigateWithJumpIn(String serviceId, String locationId) {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
+    }
+
+    /**
+     * Generic helper for asynchronous transitions after actions such as Weiter / confirm links.
+     * Waits in three windows: 5s, then +10s, then +15s (total 30s) while polling {@code condition}.
+     */
+    private void waitWithThreeWindows(BooleanSupplier condition, String context) {
+        long deadlineFirst = System.currentTimeMillis() + 5000L;
+        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineFirst) {
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        if (condition.getAsBoolean()) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn("{} not visible after first 5s window; retrying for additional 10s", context);
+        long deadlineSecond = System.currentTimeMillis() + 10000L;
+        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineSecond) {
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        if (condition.getAsBoolean()) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn("{} still not visible after 15s; retrying for final 15s window", context);
+        long deadlineThird = System.currentTimeMillis() + 15000L;
+        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineThird) {
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
     }
 
     public void assertServiceFinderHeadingVisible() {
@@ -402,6 +447,7 @@ public class CitizenViewPage extends BasePage {
     public void assertProviderSummaryVisible(int officeId) {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
+        waitWithThreeWindows(() -> deepElementExists(sel), "Provider summary " + sel);
         Assert.assertTrue(deepElementExists(sel), "Expected booking summary provider block: " + sel);
         Assert.assertTrue(
                 shadowDomContainsText("Bürgerbüro Ruppertstraße"),
@@ -483,10 +529,11 @@ public class CitizenViewPage extends BasePage {
      */
     public void waitForPreconfirmPageAfterUpdate(int timeoutSeconds) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting up to {}s for preconfirm page after Kontakt Weiter", timeoutSeconds);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(timeoutSeconds))
-                .until(d -> deepElementExists("#checkbox-privacy-policy"));
+        String sel = "#checkbox-privacy-policy";
+        waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
+        Assert.assertTrue(
+                deepElementExists(sel),
+                "Preconfirm page (privacy checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
     }
 
@@ -1023,8 +1070,11 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to 25s for activation callout to appear after reserve");
-        waitUntilShadowContains("Aktivieren Sie Ihren Termin.", 25);
+        String marker = "Aktivieren Sie Ihren Termin.";
+        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Activation callout");
+        Assert.assertTrue(
+                shadowDomContainsText(marker),
+                "Activation callout (Aktivieren Sie Ihren Termin.) not visible after Termin reservieren with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         trySyncBookingProcessFromLocalStorageOnce();
     }
