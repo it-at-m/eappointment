@@ -1082,10 +1082,15 @@ public class CitizenViewPage extends BasePage {
     /** Activation callout after "Termin reservieren": heading + time limit. Time is location-specific (e.g. 30 → "30 Minuten"). Reserve API may take several seconds, so we wait up to 25s for the callout. */
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: waiting up to 25s for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)", activationMinutes);
-        waitUntilShadowContains("Aktivieren Sie Ihren Termin.", 25);
-        Assert.assertTrue(shadowDomContainsText("Aktivieren Sie Ihren Termin."),
-                "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve.");
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)",
+                        activationMinutes);
+        String heading = "Aktivieren Sie Ihren Termin.";
+        waitWithThreeWindows(() -> shadowDomContainsText(heading), "Preconfirmation callout heading");
+        Assert.assertTrue(
+                shadowDomContainsText(heading),
+                "Preconfirmation warning callout (Aktivieren Sie Ihren Termin.) not found after reserve with retries.");
         String timeText = activationMinutes + " Minuten";
         Assert.assertTrue(shadowDomContainsText(timeText),
                 "Preconfirmation callout should mention activation time limit (" + timeText + ").");
@@ -1111,8 +1116,13 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
         waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
-        ScenarioLogManager.getLogger().info("zmscitizenview: waiting for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
-        waitUntilShadowContains("Sie haben Ihren Termin erfolgreich abgesagt.", DEFAULT_EXPLICIT_WAIT_TIME);
+        String marker = "Sie haben Ihren Termin erfolgreich abgesagt.";
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
+        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Cancellation success callout");
+        Assert.assertTrue(
+                shadowDomContainsText(marker),
+                "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
     }
 
     public void assertCancellationSuccessCalloutVisible() {
