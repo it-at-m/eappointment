@@ -116,6 +116,50 @@ public class CitizenViewPage extends BasePage {
                 .until(d -> shadowDomContainsText(substring));
     }
 
+    /**
+     * True once the given service label appears somewhere in the DOM/shadow DOM
+     * <em>outside</em> the static "Häufig gesuchte Leistungen" quick-link list.
+     * This is a proxy for "offices-and-services have loaded and the label is
+     * available in API-backed UI (e.g. select options)".
+     */
+    private boolean serviceLabelReadyForSelection(String serviceLabel) {
+        CONTEXT.set();
+        String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function insideQuick(el){"
+                        + "  while(el){"
+                        + "    if(el.classList&&el.classList.contains('m-linklist-inline__list'))return true;"
+                        + "    var root=el.getRootNode&&el.getRootNode();"
+                        + "    if(root&&root.host){el=root.host;}else{el=el.parentNode;}"
+                        + "  }"
+                        + "  return false;"
+                        + "}"
+                        + "function has(root){"
+                        + "  if(!root)return false;"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var i=0;i<all.length;i++){"
+                        + "    var el=all[i];"
+                        + "    if(insideQuick(el))continue;"
+                        + "    var txt=norm(el.textContent);"
+                        + "    if(txt&&txt.indexOf(label)>=0)return true;"
+                        + "    if(el.shadowRoot&&has(el.shadowRoot))return true;"
+                        + "  }"
+                        + "  return false;"
+                        + "}"
+                        + "return has(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /** Wait until the service label is present outside the quick-link list (API-backed UI ready). */
+    private void waitUntilServiceLabelReadyForSelection(String serviceLabel, int seconds) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
+                .until(d -> serviceLabelReadyForSelection(serviceLabel));
+    }
+
     public void assertShadowContains(String substring, String message) {
         waitUntilShadowContains(substring, DEFAULT_EXPLICIT_WAIT_TIME);
         Assert.assertTrue(shadowDomContainsText(substring), message);
@@ -332,9 +376,11 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("Service Finder: searching for and clicking service '{}'", serviceLabel);
         // Ensure the Service Finder step is visible first (same heuristic as assertServiceFinderHeadingVisible).
         waitUntilShadowContains("Bürgerservice-Suche", DEFAULT_EXPLICIT_WAIT_TIME);
-        // Wait until the desired service label is present in the DOM (links may render after first paint).
-        ScenarioLogManager.getLogger().info("Service Finder: waiting for label '{}' in DOM (up to 15s)", serviceLabel);
-        waitUntilShadowContains(serviceLabel, 15);
+        // Wait until the desired service label is present in API-backed UI (e.g. select options),
+        // not just in the static quick-link list. This ensures offices-and-services have loaded.
+        ScenarioLogManager.getLogger()
+                .info("Service Finder: waiting for label '{}' to be ready in API-backed UI (up to 20s)", serviceLabel);
+        waitUntilServiceLabelReadyForSelection(serviceLabel, 20);
         // Click only the \"Häufig gesuchte Leistungen\" quick link (not the search dropdown).
         // Simulate a full user click: focus, pointer events, then click (so Vue @click fires).
         String esc = serviceLabel.replace("\\", "\\\\").replace("'", "\\'");
