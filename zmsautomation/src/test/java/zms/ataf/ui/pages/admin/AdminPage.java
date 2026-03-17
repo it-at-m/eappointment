@@ -21,7 +21,6 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
-import ataf.web.utils.DriverUtil;
 import zms.ataf.data.TestData;
 
 
