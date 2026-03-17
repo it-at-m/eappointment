@@ -1,6 +1,7 @@
 var fs = require('fs');
 const swaggerJsdoc = require('swagger-jsdoc');
 const yaml = require('js-yaml');
+const path = require('path');
 
 const options = {
     definition: {
@@ -54,5 +55,6 @@ function readFileContent(file) {
 }
 
 function readApiVersion() {
-  return fs.readFileSync('./VERSION', 'utf8').trim();
+  const versionFile = path.resolve(__dirname, '../VERSION');
+  return fs.readFileSync(versionFile, 'utf8').trim();
 }
