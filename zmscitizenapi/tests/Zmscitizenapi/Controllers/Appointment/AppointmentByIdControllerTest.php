@@ -28,6 +28,17 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    public function tearDown(): void
+    {
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=');
+        putenv('CAPTCHA_ENABLED=');
+        putenv('CAPTCHA_TOKEN_SECRET=');
+
+        parent::tearDown();
+    }
+
     public function testRendering()
     {
         $this->setApiCalls(
