@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "",
     "build": "node ./bin/build_swagger.js",
-    "doc": "npm run build && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
+    "doc": "npm run build && npx @redocly/cli lint public/doc/swagger.yaml --config redocly.yaml && npx @redocly/cli bundle public/doc/swagger.yaml -o public/doc/swagger.json --dereferenced"
   },
   "keywords": [
     "eappointment"
