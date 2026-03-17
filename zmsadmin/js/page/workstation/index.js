@@ -476,7 +476,7 @@ class View extends BaseView {
             }), null, event.currentTarget)
         });
     }
-    
+
     onSendCustomNotification($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
