@@ -13,8 +13,8 @@
   },
   "use-resource-role-mappings": true,
   "confidential-port": 0,
-  "auth-redirect-url": "https://localhost:8091/terminvereinbarung/admin/oidc/?provider=keycloak",
-  "logout-redirect-url": "https://localhost:8091/terminvereinbarung/admin/logout/?provider=keycloak",
+  "auth-redirect-url": "https://localhost:443/terminvereinbarung/admin/oidc/?provider=keycloak",
+  "logout-redirect-url": "https://localhost:443/terminvereinbarung/admin/logout/?provider=keycloak",
   "version": "24.0.0",
   "access-role": "user",
   "scopes": {

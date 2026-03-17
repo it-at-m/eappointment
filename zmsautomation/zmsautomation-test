@@ -62,6 +62,19 @@ DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port
 export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-$(TZ=Europe/Berlin date '+%Y-%m-%d %H:%M:%S')}"
 info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
 
+# Selenium / WebDriver configuration for Linux ARM devcontainer:
+# - Disable Selenium Manager (it does not support aarch64)
+# - Force Selenium to use the preinstalled geckodriver binary
+export SELENIUM_MANAGER_DISABLE="${SELENIUM_MANAGER_DISABLE:-true}"
+export WEBDRIVER_GECKO_DRIVER="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}"
+info "SELENIUM_MANAGER_DISABLE=${SELENIUM_MANAGER_DISABLE}"
+info "WEBDRIVER_GECKO_DRIVER=${WEBDRIVER_GECKO_DRIVER}"
+
+# Default: take a screenshot for every ATAF step (can be overridden from the environment).
+# ScreenshotHook uses Boolean.parseBoolean(...) so we must use "true"/"false", not 1/0.
+export SCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP:-true}"
+info "SCREENSHOT_EVERY_STEP=${SCREENSHOT_EVERY_STEP}"
+
 # File paths
 BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 # Set SKIP_DB_RESTORE=1 to leave DB as-is after tests (e.g. for debugging)
@@ -543,6 +556,8 @@ if mvn -B -DtrimStackTrace=false \
   -Pataf \
   -Dbase.uri="$BASE_URI" \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+  -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
+  -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
   -Dsso.username="$SSO_USER" \
   -Dsso.password="$SSO_PASSWORD" \
   test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}"; then

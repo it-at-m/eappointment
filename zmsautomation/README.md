@@ -7,7 +7,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 - Java 21
 - Maven 3.9+
 - MySQL/MariaDB database (for local testing)
-- Access to Artifactory (for ATAF dependencies - city laptop only)
+- Access to Maven Central (ATAF artifacts are published under `de.muenchen.ataf:core|rest|web`).
 
 ## Project Structure
 

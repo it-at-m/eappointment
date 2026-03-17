@@ -121,12 +121,6 @@
 
     <profile>
       <id>ataf</id>
-      <repositories>
-        <repository>
-          <id>lhm-artifactory</id>
-          <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
-        </repository>
-      </repositories>
       <build>
         <plugins>
           <plugin>
@@ -144,19 +138,19 @@
       </build>
       <dependencies>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
 
         <!-- Cucumber -->
@@ -210,12 +204,6 @@
     <!-- ataf-api and ataf-ui profiles similarly updated with messages 8.12.0 -->
     <profile>
       <id>ataf-api</id>
-      <repositories>
-        <repository>
-          <id>lhm-artifactory</id>
-          <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
-        </repository>
-      </repositories>
       <build>
         <plugins>
           <plugin>
@@ -231,14 +219,14 @@
       </build>
       <dependencies>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
@@ -263,12 +251,6 @@
 
     <profile>
       <id>ataf-ui</id>
-      <repositories>
-        <repository>
-          <id>lhm-artifactory</id>
-          <url>https://artifactory.muenchen.de/artifactory/mvn-repos</url>
-        </repository>
-      </repositories>
       <build>
         <plugins>
           <plugin>
@@ -284,19 +266,19 @@
       </build>
       <dependencies>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
-          <groupId>de.muenchen.ataf.java</groupId>
+          <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.2</version>
+          <version>0.3.0</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
