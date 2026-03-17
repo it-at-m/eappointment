@@ -50,44 +50,42 @@ public class AdminPage extends BasePage {
     public void clickOnLoginButton() throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
-        if (!DriverUtil.isLocalExecution() || TestPropertiesHelper.getPropertyAsBoolean("useIncognitoMode", true, DefaultValues.USE_INCOGNITO_MODE)) {
-            ScenarioLogManager.getLogger().info("SSO-Login page detected!");
+        ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-            final StringBuilder clearUserName = new StringBuilder();
-            final StringBuilder clearPassword = new StringBuilder();
-            Exception exception = null;
-            try {
-                AuthenticationHelper.getUserName().access(clearUserName::append);
-                AuthenticationHelper.getUserPassword().access(clearPassword::append);
-                // Wait for Keycloak login form (local and ssodev both use id="username")
-                WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
-                if ("chrome".equals(TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-                    String ssoHost = TestData.getSsoHost();
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-                    DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
-                            "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
-                                    StandardCharsets.UTF_8) + "@"));
-                }
+        final StringBuilder clearUserName = new StringBuilder();
+        final StringBuilder clearPassword = new StringBuilder();
+        Exception exception = null;
+        try {
+            AuthenticationHelper.getUserName().access(clearUserName::append);
+            AuthenticationHelper.getUserPassword().access(clearPassword::append);
+            // Wait for Keycloak login form (local and ssodev both use id="username")
+            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+            if ("chrome".equals(TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
+                String ssoHost = TestData.getSsoHost();
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
+                DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
+                        "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
+                                StandardCharsets.UTF_8) + "@"));
+            }
 
-                ScenarioLogManager.getLogger().info("Trying to enter user name...");
-                enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearUserName.toString(), "username", LocatorType.ID);
+            ScenarioLogManager.getLogger().info("Trying to enter user name...");
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearUserName.toString(), "username", LocatorType.ID);
 
-                ScenarioLogManager.getLogger().info("Trying to enter password...");
-                enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
+            ScenarioLogManager.getLogger().info("Trying to enter password...");
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
-                ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
-                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
-                ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger().error(e.getMessage(), e);
-                exception = e;
-            } finally {
-                clearUserName.setLength(0);
-                clearPassword.setLength(0);
-                if (exception != null) {
-                    throw exception;
-                }
+            ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+            ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().error(e.getMessage(), e);
+            exception = e;
+        } finally {
+            clearUserName.setLength(0);
+            clearPassword.setLength(0);
+            if (exception != null) {
+                throw exception;
             }
         }
     }
