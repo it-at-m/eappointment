@@ -23,7 +23,7 @@
         {% if workstation.scope and workstation.useraccount.rights.scope %}
             <br>
             <br>
-            <a title="{% trans %}Öffnungszeiten{% endtrans %}" href="{{ urlGet('scopeAvailabilityMonth', {'id':workstation.scope.id}, {}) }}">{% trans %}Öffnungszeiten{% endtrans %}</a>
+            <a title="{% trans %}Öffnungszeiten – Monatsansicht{% endtrans %}" href="{{ urlGet('scopeAvailabilityMonth', {'id':workstation.scope.id}, {}) }}">{% trans %}Öffnungszeiten – Monatsansicht{% endtrans %}</a>
         {% endif %}
     {% endblock %}
 {% endembed %}
