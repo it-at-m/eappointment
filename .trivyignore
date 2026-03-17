@@ -1,1 +1,4 @@
 # Ignore known CVEs here
+
+## Ignore ALTCHA CVE - we're not using the obfuscation feature
+CVE-2025-65849
