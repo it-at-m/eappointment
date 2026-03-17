@@ -327,6 +327,53 @@ public class CitizenApiSteps {
             .isEqualTo(officeId);
     }
 
+    @Then("I cancel the appointment")
+    public void iCancelTheAppointment() {
+        // Prefer the most recent process data, but fall back to the shared booking context.
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (process == null) {
+            throw new IllegalStateException("No appointment process available to delete. Reserve and confirm first.");
+        }
+
+        Integer pid = process.getProcessId();
+        String auth = process.getAuthKey();
+        if (pid == null || auth == null) {
+            throw new IllegalStateException("Process for deletion has no processId or authKey.");
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ for processId=%d", pid
+        ));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(Map.of("processId", pid, "authKey", auth))
+        .when()
+            .post("/cancel-appointment/");
+
+        CommonApiSteps.setResponse(response);
+
+        String cancelBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ status=%d body=%s",
+            response.getStatusCode(),
+            cancelBody.length() > 500 ? cancelBody.substring(0, 500) + "..." : cancelBody
+        ));
+
+        // Basic sanity: 200 and a non-empty payload with a thinned process.
+        response.then().statusCode(200);
+        ThinnedProcess cancelled;
+        try {
+            cancelled = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            cancelled = parseDataResponse(response, ThinnedProcess.class);
+        }
+        org.assertj.core.api.Assertions.assertThat(cancelled).isNotNull();
+        lastReserveProcess = cancelled;
+        setLastReserveProcess(cancelled);
+    }
+
     @Then("the response should contain offices and services")
     public void theResponseShouldContainOfficesAndServices() {
         // Try unwrapped first, then wrapped if that fails

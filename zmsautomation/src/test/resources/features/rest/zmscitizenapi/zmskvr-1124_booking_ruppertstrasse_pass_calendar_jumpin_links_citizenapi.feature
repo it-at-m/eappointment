@@ -22,6 +22,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     Then the response status code should be 200
     And the appointment should be confirmed
     And the appointment should be at office 10502
+    And I cancel the appointment
 
   @ruppertstrasse
   Scenario: Personalausweis at Pass Ruppertstraße (10489) – lands at 10489
@@ -35,6 +36,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     Then the response status code should be 200
     And the appointment should be confirmed
     And the appointment should be at office 10489
+    And I cancel the appointment
 
   @abholung
   Scenario: Abholung at 10492 (Bürgerbüro Ruppertstraße KVR-II/211)
@@ -48,6 +50,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     Then the response status code should be 200
     And the appointment should be confirmed
     And the appointment should be at office 10492
+    And I cancel the appointment
 
   @jumpin @allowDisabledServicesMix
   Scenario: JumpIn 10489 with Personalausweis 1063441 – effective office may be 10502
@@ -61,3 +64,4 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     Then the response status code should be 200
     And the appointment should be confirmed
     And the appointment should be at office 10502
+    And I cancel the appointment
