@@ -149,7 +149,8 @@ jobs:
     environment: zms-assemble
     steps:
       - name: Await approval
-        run: echo "Approved: proceeding to assemble zms image."
+        run: |
+          echo 'Approved: proceeding to assemble zms image.'
 
   call-assemble-zms-image:
     needs: [call-php-build-images, call-zmscitizenview-build, approve-assemble-zms-image]
@@ -167,7 +168,8 @@ jobs:
     environment: zmsautomation
     steps:
       - name: Await approval
-        run: echo "Approved: proceeding to zmsautomation."
+        run: |
+          echo 'Approved: proceeding to zmsautomation.'
 
   call-zmsautomation:
     needs: [call-assemble-zms-image, approve-zmsautomation]
