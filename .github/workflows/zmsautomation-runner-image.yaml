@@ -3,8 +3,7 @@ name: zmsautomation runner image
 on:
   push:
     branches:
-      - main
-      - next
+      - "**"
     tags:
       - "*"
   workflow_dispatch:
