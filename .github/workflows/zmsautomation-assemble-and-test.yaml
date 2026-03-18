@@ -1,6 +1,11 @@
 name: zmsautomation assemble and test (manual)
 
 on:
+  # Temporary: allow running this workflow while it's only on the feature branch.
+  # Remove the push trigger before merging to main/next.
+  push:
+    branches:
+      - feat-zmskvr-1124-refactor-to-use-cucumber-and-ataf-compatibility-and-setup-first-test-case
   workflow_dispatch:
     inputs:
       ref:
