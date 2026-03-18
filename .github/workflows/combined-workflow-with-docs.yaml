@@ -36,6 +36,7 @@ jobs:
     uses: ./.github/workflows/php-unit-tests.yaml
 
   call-zmscitizenview-build:
+    needs: [call-php-unit-tests]
     uses: ./.github/workflows/maven-node-build.yaml
 
   call-zmscitizenview-coverage:
@@ -127,12 +128,11 @@ jobs:
       git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests, call-zmscitizenview-build]
+    needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.result == 'success' &&
-      needs.call-zmscitizenview-build.result == 'success'
+      needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
 
   call-assemble-zms-image:
