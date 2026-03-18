@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "Which suite to run: all | zmsadmin-ui | zmsstatistic-ui | zmscitizenview-ui | citizenapi-api | zmsapi-api | smoke | custom-tags"
+        description: "Which suite to run: all | zmsadmin-ui | zmsstatistic-ui | zmscitizenview-ui | zmscitizenapi-api | zmsapi-api | smoke | custom-tags"
         required: true
         default: "all"
       ref:
@@ -539,11 +539,11 @@ jobs:
         run: |
           docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
 
-  citizenapi-api:
-    name: citizenapi-api
+  zmscitizenapi-api:
+    name: zmscitizenapi-api
     runs-on: ubuntu-24.04
     continue-on-error: true
-    if: ${{ inputs.suite == 'all' || inputs.suite == 'citizenapi-api' }}
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'zmscitizenapi-api' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -652,14 +652,14 @@ jobs:
         run: |
           mkdir -p .github/ci-logs
           for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
-            docker logs "$c" > ".github/ci-logs/citizenapi-api-${c}.log" 2>&1 || true
+            docker logs "$c" > ".github/ci-logs/zmscitizenapi-api-${c}.log" 2>&1 || true
           done
 
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-citizenapi-api
+          name: screenshots-zmscitizenapi-api
           path: zmsautomation/target/screenshots/**
           if-no-files-found: ignore
           retention-days: 7
@@ -668,7 +668,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cucumber-html-citizenapi-api
+          name: cucumber-html-zmscitizenapi-api
           path: zmsautomation/target/site/cucumber-pretty/**
           if-no-files-found: ignore
           retention-days: 7
@@ -677,7 +677,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-citizenapi-api
+          name: surefire-zmscitizenapi-api
           path: zmsautomation/target/surefire-reports/**
           if-no-files-found: ignore
           retention-days: 7
@@ -686,8 +686,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: docker-logs-citizenapi-api
-          path: .github/ci-logs/citizenapi-api-*.log
+          name: docker-logs-zmscitizenapi-api
+          path: .github/ci-logs/zmscitizenapi-api-*.log
           if-no-files-found: ignore
           retention-days: 7
 
