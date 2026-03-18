@@ -24,6 +24,9 @@ class ProcessListSummaryMailTest extends Base
         $entity->status = 'confirmed';
         (new \BO\Zmsdb\Process)->updateEntity($entity, \App::getNow());
 
+        $updated = (new \BO\Zmsdb\Process)->readEntity(10118, $entity->authKey, 0);
+        self::assertSame('confirmed', $updated->status);
+
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 50], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
