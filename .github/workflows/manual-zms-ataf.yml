@@ -443,6 +443,9 @@ jobs:
               set -euo pipefail
               set -a
               source /var/www/html/.devcontainer/.env
+              # Open the citizen view via the gateway so relative API paths (/buergeransicht/api/citizen)
+              # resolve correctly (and CORS matches gateway behavior).
+              export CITIZENVIEW_BASE_URI="http://refarch-gateway:8080/buergeransicht/"
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
