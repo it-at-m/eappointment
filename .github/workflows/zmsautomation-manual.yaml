@@ -27,6 +27,28 @@ on:
         description: "Custom cucumber tag expression (e.g. @web and @ZMSKVR-1124). Only used by the custom job."
         required: false
         default: ""
+  workflow_call:
+    inputs:
+      imageTag:
+        type: string
+        required: false
+        default: ""
+      runnerImageTag:
+        type: string
+        required: false
+        default: "latest"
+      browser:
+        type: string
+        required: false
+        default: "chrome"
+      screenshotEveryStep:
+        type: string
+        required: false
+        default: "true"
+      customTags:
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read

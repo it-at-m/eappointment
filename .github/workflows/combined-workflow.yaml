@@ -4,6 +4,23 @@ on:
   push:
     branches-ignore: [next]
     tags: ['*']
+  workflow_dispatch:
+    inputs:
+      runZmsautomation:
+        description: "Run zmsautomation jobs after assembling zms image"
+        type: boolean
+        required: true
+        default: false
+      browser:
+        description: "Browser for UI tests (chrome|firefox)"
+        type: string
+        required: true
+        default: "chrome"
+      customTags:
+        description: "Optional: run custom tag expression in addition to module matrix (leave empty to skip custom job)"
+        type: string
+        required: false
+        default: ""
   workflow_call:
 
 permissions:
@@ -18,19 +35,15 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
-  call-zmsautomation-tests:
-    uses: ./.github/workflows/zmsautomation-tests.yaml
-
   call-zmscitizenview-build:
     uses: ./.github/workflows/maven-node-build.yaml
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests, call-zmsautomation-tests, call-zmscitizenview-build]
+    needs: [call-php-code-quality, call-php-unit-tests, call-zmscitizenview-build]
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-php-unit-tests.result == 'success' &&
-      needs.call-zmsautomation-tests.result == 'success' &&
       needs.call-zmscitizenview-build.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
 
@@ -41,3 +54,14 @@ jobs:
       needs.call-php-build-images.result == 'success' &&
       needs.call-zmscitizenview-build.result == 'success'
     uses: ./.github/workflows/assemble-zms-image.yaml
+
+  call-zmsautomation:
+    needs: [call-assemble-zms-image]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.runZmsautomation }}
+    uses: ./.github/workflows/zmsautomation-manual.yaml
+    with:
+      imageTag: "" # derived inside workflow from ref_name when empty
+      runnerImageTag: "latest"
+      browser: ${{ inputs.browser }}
+      screenshotEveryStep: "true"
+      customTags: ${{ inputs.customTags }}
