@@ -53,7 +53,7 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # —————————————————————————————————————————
 # 5. Copy and enable SSL VirtualHost config
 # —————————————————————————————————————————
-COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+COPY .devcontainer/apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 RUN a2ensite default-ssl
 
 # —————————————————————————————————————————
