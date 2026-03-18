@@ -367,18 +367,31 @@ jobs:
           set -euo pipefail
           WEB_CONT="zms-web"
 
-          port="$(docker exec -u root "$WEB_CONT" bash -lc '
-            set -euo pipefail
-            ports=(8082 80 8080 3000 443)
-            for p in "${ports[@]}"; do
-              code="$(curl -sS -o /dev/null -w "%{http_code}" "http://citizenview:${p}/" --max-time 5 || echo 000)"
-              if [[ "$code" =~ ^[23] ]]; then
-                echo "$p"
-                exit 0
-              fi
-            done
-            echo "8082"
-          ')"
+          port="$(
+            docker exec -u root "$WEB_CONT" bash -lc '
+              set -euo pipefail
+              ports=(8082 80 8080 3000 443)
+              # Wait a bit for nginx to be ready.
+              for p in "${ports[@]}"; do
+                for _ in {1..6}; do
+                  code="$(curl -sS -o /dev/null -w "%{http_code}" "http://citizenview:${p}/" --max-time 3 || echo 000)"
+                  if [[ "$code" =~ ^[23] ]]; then
+                    echo "$p"
+                    exit 0
+                  fi
+                  sleep 2
+                done
+              done
+              echo "__NONE__"
+            '
+          )"
+
+          if [ "$port" = "__NONE__" ]; then
+            echo "CitizenView not reachable on expected ports; dumping diagnostics and falling back to 80."
+            docker ps --filter "name=zms-citizenview" || true
+            docker logs --tail 200 zms-citizenview || true
+            port="80"
+          fi
 
           echo "citizenview_port=$port" >> "$GITHUB_OUTPUT"
           echo "CITIZENVIEW_PORT=$port" >> "$GITHUB_ENV"
