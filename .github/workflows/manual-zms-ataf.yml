@@ -424,10 +424,30 @@ jobs:
               set -euo pipefail
               set -a
               source /var/www/html/.devcontainer/.env
+              tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
               CITIZENVIEW_PORT="$4"
-              bash /var/www/html/zmsautomation/zmsautomation-test -Dcucumber.filter.tags="$1"
+              
+              # The zmsautomation pom enables Cucumber runners per profile:
+              # - `ataf-ui` runs `UiTestRunner`
+              # - `ataf-api` runs `ApiTestRunner`
+              # The base `ataf` profile can result in 0 discovered tests, so we
+              # activate the matching runner profile(s) based on the tag expression.
+              profiles=()
+              if [[ "$tags" == *"@web"* ]]; then
+                profiles+=("-Pataf-ui")
+              fi
+              if [[ "$tags" == *"@rest"* || "$tags" == *"@zmsapi"* || "$tags" == *"@zmscitizenapi"* ]]; then
+                profiles+=("-Pataf-api")
+              fi
+              if [ "${#profiles[@]}" -eq 0 ]; then
+                profiles=("-Pataf-ui")
+              fi
+
+              bash /var/www/html/zmsautomation/zmsautomation-test \
+                "${profiles[@]}" \
+                -Dcucumber.filter.tags="$tags"
             ' -- "$expr" "$SCREENSHOT" "$BROWSER" "${CITIZENVIEW_PORT}"
             rc=$?
             set -e
