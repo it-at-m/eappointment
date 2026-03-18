@@ -105,6 +105,14 @@ jobs:
             echo "citizenview_tag_used=$primary" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Build zms-web base image (Apache+SSL)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Use the same apache/ssl setup as the local devcontainer base,
+          # then overwrite module directories from the prebuilt GHCR module images.
+          docker build -t zms-web-base:ci -f .devcontainer/Containerfile .devcontainer
+
       - name: Start required containers (stack once)
         shell: bash
         run: |
@@ -123,7 +131,7 @@ jobs:
           version: "3.8"
           services:
             web:
-              image: ghcr.io/it-at-m/eappointment-php-base:8.3-base
+              image: zms-web-base:ci
               container_name: zms-web
               user: "root"
               volumes:
@@ -315,6 +323,7 @@ jobs:
                 -keyout /etc/ssl/private/apache-selfsigned.key \
                 -out /etc/ssl/certs/apache-selfsigned.crt \
                 -subj "/C=DE/ST=Dev/L=Dev/O=Dev/OU=Dev/CN=localhost"
+              mkdir -p /etc/apache2/sites-available
               cp /var/www/html/.devcontainer/apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
               # Enable SSL module/site when available.
