@@ -24,22 +24,24 @@
       </template>
       <template #content>
         <div class="m-content">
-          {{ t("apiErrorNoAppointmentForThisScopeText") }}
+          <p>{{ t("apiErrorNoAppointmentForThisScopeText") }}</p>
         </div>
         <div
           class="m-content"
           style="margin-top: 8px"
           v-if="noneSelectedAvailabilityInfoHtml"
         >
-          <muc-button
-            variant="ghost"
-            icon="information"
-            icon-shown-left
-            class="no-bottom-margin"
-            @click="openNoneSelectedInfoModal"
-          >
-            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-          </muc-button>
+          <p>
+            <muc-button
+              variant="ghost"
+              icon="information"
+              icon-shown-left
+              class="no-bottom-margin"
+              @click="openNoneSelectedInfoModal"
+            >
+              <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+            </muc-button>
+          </p>
         </div>
       </template>
     </muc-callout>
@@ -143,7 +145,9 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        <div class="m-content">{{ t(apiErrorTranslation.textKey) }}</div>
+        <div class="m-content">
+          <p>{{ t(apiErrorTranslation.textKey) }}</p>
+        </div>
         <div
           class="m-content"
           style="margin-top: 8px"
@@ -155,15 +159,17 @@
             availabilityInfoHtml
           "
         >
-          <muc-button
-            variant="ghost"
-            icon="information"
-            icon-shown-left
-            class="no-bottom-margin"
-            @click="openAvailabilityInfoModal"
-          >
-            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-          </muc-button>
+          <p>
+            <muc-button
+              variant="ghost"
+              icon="information"
+              icon-shown-left
+              class="no-bottom-margin"
+              @click="openAvailabilityInfoModal"
+            >
+              <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+            </muc-button>
+          </p>
         </div>
       </template>
     </muc-callout>
@@ -196,10 +202,10 @@
     </muc-button>
   </div>
   <AvailabilityInfoModal
-    :show="showAvailabilityInfoModal"
+    v-model:open="showAvailabilityInfoModal"
     :html="availabilityInfoHtmlForModal"
     :closeAriaLabel="t('closeDialog')"
-    @close="closeAvailabilityInfoModal"
+    :t="t"
   />
 </template>
 <script setup lang="ts">

@@ -2,7 +2,7 @@
   <div v-if="isExpired">
     <muc-callout type="error">
       <template #content>
-        {{ t("apiErrorSessionTimeoutText") }}
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -45,7 +45,7 @@
       type="success"
     >
       <template #content>
-        {{ t("loggedinText") }}
+        <p>{{ t("loggedinText") }}</p>
       </template>
       <template #header>{{ t("loggedinHeader") }}</template>
       <template #icon><muc-icon icon="user-fill" /></template>
