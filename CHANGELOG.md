@@ -1,3 +1,42 @@
+
+## Release Muc-38 (06.03.2026) 
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1086'>ZMSKVR-1086</a>] -         Optimierung Ladereihenfolge gegen Flackern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1150'>ZMSKVR-1150</a>] -         Parent DL wird als kombinierbare DL vorgeschlagen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1207'>ZMSKVR-1207</a>] -         Serien/Ausnahmen sollen nicht Feiertage überschreiben 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1234'>ZMSKVR-1234</a>] -         Terminverschiebung durch Sachbearbeitung wird bestätigt, aber Datum/Uhrzeit nicht aktualisiert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1242'>ZMSKVR-1242</a>] -         BF: Kalenderansicht unten abgeschnitten bei 6 KWs
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1256'>ZMSKVR-1256</a>] -         ZMS Admin – Dauerhafter Ladekreis nach Versand der Mail-Funktion in der Warteschlange
+</li>
+</ul>
+                                            
+
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-272'>ZMSKVR-272</a>] -         Terminvarianten Versicherungsamt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-939'>ZMSKVR-939</a>] -         Schritt 5: Bestätigung – Callout in Content-Breite
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1161'>ZMSKVR-1161</a>] -         Tabellen für neues Rollen- und Rechtekonzept anlegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1170'>ZMSKVR-1170</a>] -         Migration der bestehenden Nutzer in das neue Rollenmodell (Befüllung user_role)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1227'>ZMSKVR-1227</a>] -         Schritt 1 – Button &quot;Leistung wechseln&quot; ergänzen
+</li>
+</ul>
+                                                        
+
+
 ## Release Muc-37 (13.02.2026)
 <h2>        Bug
 </h2>

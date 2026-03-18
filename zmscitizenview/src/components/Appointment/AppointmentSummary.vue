@@ -5,7 +5,7 @@
   >
     <muc-callout type="error">
       <template #content>
-        {{ t("apiErrorSessionTimeoutText") }}
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -31,12 +31,7 @@
             >
               {{ selectedService.count }}x
               <a
-                :href="
-                  getServiceBaseURL() +
-                  (selectedService.parentId
-                    ? selectedService.parentId
-                    : selectedService.id)
-                "
+                :href="getServiceBaseURL() + +(serviceLinkId || '')"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -155,10 +150,11 @@
               <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <p
+              <component
+                :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
                 tabindex="0"
-                v-html="sanitizeHtml(appointment.scope.infoForAppointment)"
-              ></p>
+                v-html="sanitizedInfoForAppointment"
+              />
             </div>
           </div>
           <div class="m-content">
@@ -340,6 +336,7 @@ import {
   getVariantHint,
   VARIANTS_WITH_HINTS,
 } from "@/utils/Constants";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -384,6 +381,10 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { serviceLinkId } = inject<ServiceLinkProvider>(
+  "serviceLinkProvider"
+) as ServiceLinkProvider;
 
 const { isExpired } = useReservationTimer();
 
@@ -439,6 +440,14 @@ const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
+
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 </script>
 
 <style lang="scss" scoped>

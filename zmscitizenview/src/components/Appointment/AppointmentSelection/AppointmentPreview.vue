@@ -14,7 +14,7 @@
     >
       <template #content>
         <div v-if="selectedProvider">
-          <strong>{{ t("location") }}</strong>
+          <h3>{{ t("location") }}</h3>
           <p
             :id="`provider-${selectedProvider.id}`"
             class="m-teaser-contained-contact__summary"
@@ -38,8 +38,7 @@
           </p>
         </div>
         <div v-if="selectedDay">
-          <strong>{{ t("time") }}</strong>
-          <br />
+          <h3>{{ t("time") }}</h3>
           <p class="m-teaser-contained-contact__detail">
             {{ formatDayFromDate(selectedDay) }},
             {{ formatTimeFromUnix(selectedTimeslot) }}
@@ -54,11 +53,11 @@
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
-          <strong>{{ t("hint") }}</strong>
-          <br />
-          <div
-            v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></div>
+          <h3>{{ t("hint") }}</h3>
+          <component
+            :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+            v-html="sanitizedInfoForAppointment"
+          />
         </div>
       </template>
 
@@ -75,6 +74,7 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   formatDayFromDate,
   formatTimeFromUnix,
@@ -112,4 +112,12 @@ const detailIcon = computed<string | null>(() => {
   if (variantId.value === 3) return "icon-video-camera";
   return null;
 });
+
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(props.selectedProvider?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 </script>

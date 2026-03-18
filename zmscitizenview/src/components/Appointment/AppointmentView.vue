@@ -141,7 +141,7 @@
               <div v-if="isAppointmentInPast">
                 <muc-callout type="error">
                   <template #content>
-                    {{ t("rescheduleErrorText") }}
+                    <p>{{ t("rescheduleErrorText") }}</p>
                   </template>
 
                   <template #header>
@@ -160,7 +160,7 @@
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -173,7 +173,7 @@
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -192,140 +192,139 @@
         !isInSystemFailureModeComputed &&
         !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
       "
-      class="m-component__grid"
     >
-      <div class="m-component__column">
-        <div
-          v-if="currentView === 4"
-          class="container"
-        >
-          <muc-callout
-            v-if="!cancelAppointmentSuccess"
-            type="warning"
-          >
-            <template #content>
-              {{ confirmText }}
-            </template>
-
-            <template #header>{{ t("confirmAppointmentHeader") }}</template>
-          </muc-callout>
-          <muc-callout
-            v-if="cancelAppointmentSuccess"
-            type="success"
-          >
-            <template #content>
-              {{ t("appointmentSuccessfullyCanceledText") }}
-            </template>
-
-            <template #header
-              >{{ t("appointmentSuccessfullyCanceledHeader") }}
-            </template>
-          </muc-callout>
-          <muc-callout
-            v-if="hasCancelAppointmentError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
-            </template>
-
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
-        </div>
-        <div
-          v-else
-          class="container"
-        >
-          <muc-callout
-            v-if="confirmAppointmentSuccess"
-            type="success"
-          >
-            <template #content>
-              {{ t("appointmentSuccessfullyBookedText") }}
-            </template>
-
-            <template #header
-              >{{ t("appointmentSuccessfullyBookedHeader") }}
-            </template>
-          </muc-callout>
-          <div
-            v-if="confirmAppointmentSuccess"
-            class="m-button-group"
-          >
-            <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
-              <muc-button
-                icon="arrow-right"
-                @click="viewAppointment"
+      <div class="container">
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <template v-if="currentView === 4">
+              <muc-callout
+                v-if="!cancelAppointmentSuccess"
+                type="warning"
               >
-                {{ t("viewAppointment") }}
-              </muc-button>
-            </div>
-            <muc-button
-              v-if="!globalState.isLoggedIn && appointment?.icsContent"
-              icon="download"
-              @click="downloadIcsAppointment"
-            >
-              {{ t("downloadAppointment") }}
-            </muc-button>
-            <muc-button
-              @click="redirectToAppointmentStart"
-              variant="secondary"
-            >
-              {{ t("bookAnotherAppointment") }}
-            </muc-button>
-          </div>
-          <muc-callout
-            v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
+                <template #content>
+                  <p>{{ confirmText }}</p>
+                </template>
+                <template #header>
+                  {{ t("confirmAppointmentHeader") }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="cancelAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyCanceledHeader") }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="hasCancelAppointmentError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
             </template>
 
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
+            <template v-else>
+              <muc-callout
+                v-if="confirmAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyBookedHeader") }}
+                </template>
+              </muc-callout>
 
-          <muc-callout
-            v-if="hasInitializationError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
-            </template>
-
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
-
-          <muc-callout
-            v-if="apiErrorInvalidJumpinLink"
-            type="error"
-          >
-            <template #content>
-              <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
               <div
+                v-if="confirmAppointmentSuccess"
                 class="m-button-group"
-                style="margin-top: 1rem"
               >
+                <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
+                  <muc-button
+                    icon="arrow-right"
+                    @click="viewAppointment"
+                  >
+                    {{ t("viewAppointment") }}
+                  </muc-button>
+                </div>
                 <muc-button
-                  icon="arrow-right"
-                  @click="redirectToAppointmentStart"
-                  style="margin-bottom: 0; margin-right: 0"
+                  v-if="!globalState.isLoggedIn && appointment?.icsContent"
+                  icon="download"
+                  @click="downloadIcsAppointment"
                 >
-                  {{ t("bookAppointmentStart") }}
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                <muc-button
+                  @click="redirectToAppointmentStart"
+                  variant="secondary"
+                >
+                  {{ t("bookAnotherAppointment") }}
                 </muc-button>
               </div>
-            </template>
 
-            <template #header>
-              {{ t("apiErrorInvalidJumpinLinkHeader") }}
+              <muc-callout
+                v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="hasInitializationError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="apiErrorInvalidJumpinLink"
+                type="error"
+              >
+                <template #content>
+                  <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
+                  <div
+                    class="m-button-group"
+                    style="margin-top: 1rem"
+                  >
+                    <p>
+                      <muc-button
+                        icon="arrow-right"
+                        @click="redirectToAppointmentStart"
+                        style="margin-bottom: 0; margin-right: 0"
+                      >
+                        {{ t("bookAppointmentStart") }}
+                      </muc-button>
+                    </p>
+                  </div>
+                </template>
+                <template #header>
+                  {{ t("apiErrorInvalidJumpinLinkHeader") }}
+                </template>
+              </muc-callout>
             </template>
-          </muc-callout>
+          </div>
         </div>
       </div>
     </div>
@@ -379,6 +378,7 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
@@ -463,6 +463,11 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
+
+const serviceLinkId = ref<string | null>(null);
+const updateServiceLinkId = (id: string | null) => {
+  serviceLinkId.value = id;
+};
 
 watch(
   () => props.globalState.accessToken,
@@ -643,6 +648,11 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+provide<ServiceLinkProvider>("serviceLinkProvider", {
+  serviceLinkId,
+  updateServiceLinkId,
+} as ServiceLinkProvider);
 
 provide("reservationStartMs", reservationStartMs);
 

@@ -232,34 +232,22 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
-                <!--                Used after the content of hint has been checked-->
-                <!--                <p-->
-                <!--                  v-if="-->
-                <!--                    selectedProvider &&-->
-                <!--                    selectedProvider.scope &&-->
-                <!--                    selectedProvider.scope.hint-->
-                <!--                  "-->
-                <!--                >-->
-                <!--                  <strong> {{ selectedProvider.scope.hint }} </strong>-->
-                <!--                </p>-->
+                <p v-if="appointment?.scope?.hint">
+                  <strong> {{ appointment.scope.hint }} </strong>
+                </p>
               </div>
+              <muc-callout
+                v-if="appointment?.scope?.infoForAppointment"
+                type="info"
+                class="callout-margin"
+              >
+                <template #content>
+                  {{ appointment.scope.infoForAppointment }}
+                </template>
+                <template #header>{{ t("appointmentHintHeader") }}</template>
+              </muc-callout>
             </div>
           </div>
-          <!--          Used after the content of infoForAppointment has been checked-->
-          <!--          <muc-callout-->
-          <!--            v-if="-->
-          <!--              appointment &&-->
-          <!--              appointment.scope &&-->
-          <!--              appointment.scope.infoForAppointment-->
-          <!--            "-->
-          <!--            type="info"-->
-          <!--          >-->
-          <!--            <template #content>-->
-          <!--              {{ appointment.scope.infoForAppointment }}-->
-          <!--            </template>-->
-
-          <!--            <template #header>{{ t("appointmentHintHeader") }}</template>-->
-          <!--          </muc-callout>-->
         </div>
       </div>
       <div
@@ -328,7 +316,12 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucIntro,
+  MucModal,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -649,6 +642,11 @@ onMounted(() => {
 
 .time-container-margin-bottom {
   margin-bottom: 64px;
+}
+
+.callout-margin {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
 }
 
 .timeBox {
