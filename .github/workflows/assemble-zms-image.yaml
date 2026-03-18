@@ -1,0 +1,75 @@
+name: assemble zms image
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  assemble-and-push:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout (for tag derivation only)
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+          echo "TAG=$tag"
+
+      - name: Pull module images
+        env:
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          set -euo pipefail
+          images=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          for img in "${images[@]}"; do
+            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${img}:${TAG}"
+          done
+
+      - name: Extract module trees
+        env:
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          set -euo pipefail
+          rm -rf assemble && mkdir -p assemble/html
+          images=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          for img in "${images[@]}"; do
+            cid="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${img}:${TAG}")"
+            mkdir -p "assemble/html/${img}"
+            docker cp "${cid}:/var/www/html/." "assemble/html/${img}/"
+            docker rm -f "$cid" >/dev/null
+          done
+
+      - name: Create Dockerfile for assembled runtime
+        run: |
+          set -euo pipefail
+          cat > assemble/Dockerfile <<'EOF'
+          FROM ghcr.io/it-at-m/eappointment-php-base:8.3-base
+          COPY html/ /var/www/html/
+          EOF
+
+      - name: Build and push zms image
+        env:
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          set -euo pipefail
+          docker build assemble \
+            --tag "ghcr.io/${GITHUB_REPOSITORY}/zms:${TAG}"
+          docker push "ghcr.io/${GITHUB_REPOSITORY}/zms:${TAG}"
+

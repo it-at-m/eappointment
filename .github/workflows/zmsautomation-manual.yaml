@@ -1,0 +1,356 @@
+name: zmsautomation (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to test (branch, tag, sha). Empty = current."
+        required: false
+        default: ""
+      imageTag:
+        description: "Application image tag to test. Empty = derived from ref_name (branch-<name> for branches)."
+        required: false
+        default: ""
+      runnerImageTag:
+        description: "Tag of ghcr.io/<repo>/zmsautomation-runner to use (default: latest)"
+        required: false
+        default: "latest"
+      browser:
+        description: "Browser for UI tests (chrome|firefox)"
+        required: true
+        default: "chrome"
+      screenshotEveryStep:
+        description: "Enable per-step screenshots (true|false)"
+        required: true
+        default: "true"
+      customTags:
+        description: "Custom cucumber tag expression (e.g. @web and @ZMSKVR-1124). Only used by the custom job."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: zmsautomation-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  module-tests:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: zmsadmin-ui
+            tags: "@web and @zmsadmin"
+          - name: zmsstatistic-ui
+            tags: "@web and @zmsstatistic"
+          - name: zmscitizenview-ui
+            tags: "@web and @zmscitizenview"
+          - name: citizenapi-api
+            tags: "@rest and @zmscitizenapi"
+          - name: zmsapi-api
+            tags: "@rest and @zmsapi"
+          - name: smoke
+            tags: "@smoke and not @ignore"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='${{ matrix.tags }}' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/${{ matrix.name }}-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.name }}
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-${{ matrix.name }}
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-${{ matrix.name }}
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-${{ matrix.name }}
+          path: .github/ci-logs/${{ matrix.name }}-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  custom-tags:
+    name: custom-tags
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.customTags != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          if [ -f .resources/zms.sql ]; then
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (custom tags)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='${{ inputs.customTags }}' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/custom-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-custom
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-custom
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-custom
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-custom
+          path: .github/ci-logs/custom-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+

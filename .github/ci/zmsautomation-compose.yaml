@@ -1,0 +1,110 @@
+services:
+  zms-web:
+    image: ghcr.io/${GITHUB_REPOSITORY}/zms:${ZMS_IMAGE_TAG:-latest}
+    container_name: zms-web
+    env_file:
+      - .devcontainer/.env
+    environment:
+      - TZ=Europe/Berlin
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      init-keycloak:
+        condition: service_completed_successfully
+      refarch-gateway:
+        condition: service_started
+
+  zms-citizenview:
+    image: ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview:${ZMS_IMAGE_TAG:-latest}
+    container_name: zms-citizenview
+    depends_on:
+      - zms-web
+    restart: "no"
+
+  db:
+    image: mariadb:10.11
+    container_name: zms-db
+    env_file:
+      - .devcontainer/.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-root}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-db}
+      - MYSQL_USER=${MYSQL_USER:-db}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-db}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD:-root} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  refarch-gateway:
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
+    container_name: zms-refarch-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=no-security
+      - WEBCOMPONENT_URI=http://localhost:8080
+    volumes:
+      - ./.devcontainer/local-gateway-application.yml:/deployments/application.yml:ro
+    restart: "no"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+    container_name: zms-keycloak
+    hostname: keycloak
+    command:
+      - start-dev
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+      - KC_HTTP_PORT=8080
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_DB=dev-file
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/auth/health/ready >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    restart: "no"
+
+  init-keycloak:
+    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    container_name: zms-init-keycloak
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+      - BASEURL=http://keycloak:8080/auth
+      - WAIT_FOR_KEYCLOAK=true
+      - FAIL_ON_UNDEFINED_VARIABLES=true
+      - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
+    volumes:
+      - ./.resources/keycloak/migration:/migration:ro
+    restart: "no"
+
+  test-runner:
+    image: ghcr.io/${GITHUB_REPOSITORY}/zmsautomation-runner:${ZMSAUTOMATION_RUNNER_TAG:-latest}
+    container_name: zms-test-runner
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace:ro
+    environment:
+      - TZ=Europe/Berlin
+      - DISPLAY=:99
+      - SELENIUM_MANAGER_DISABLE=${SELENIUM_MANAGER_DISABLE:-true}
+      - WEBDRIVER_GECKO_DRIVER=${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}
+      - WEBDRIVER_CHROME_DRIVER=${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}
+      - ZMS_BROWSER=${ZMS_BROWSER:-chrome}
+      - SCREENSHOT_EVERY_STEP=${SCREENSHOT_EVERY_STEP:-true}
+      - BASE_URI=http://zms-web/terminvereinbarung/api/2
+      - CITIZEN_API_BASE_URI=http://zms-web/terminvereinbarung/api/citizen
+    depends_on:
+      zms-web:
+        condition: service_started
+    restart: "no"
+
