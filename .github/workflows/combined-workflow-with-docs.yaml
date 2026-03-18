@@ -24,11 +24,11 @@ jobs:
   call-zmscitizenview-coverage:
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
-  call-owasp-security-checks:
-    uses: ./.github/workflows/owasp-security-checks.yaml
+  call-trivy-security-checks:
+    uses: ./.github/workflows/trivy.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-owasp-security-checks]
+    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-trivy-security-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
