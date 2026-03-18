@@ -1,6 +1,9 @@
 name: Security Check
+
 on:
   pull_request:
+  workflow_call:
+
 jobs:
   build:
     name: Security Check
