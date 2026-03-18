@@ -159,20 +159,8 @@ jobs:
     if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.assembleZmsImage || inputs.runZmsautomation))) && needs.call-php-build-images.result == 'success' && needs.call-zmscitizenview-build.result == 'success' }}
     uses: ./.github/workflows/assemble-zms-image.yaml
 
-  approve-zmsautomation:
-    name: Approve zmsautomation
-    runs-on: ubuntu-24.04
-    # On push: always require approval to run zmsautomation.
-    # On workflow_dispatch: only require approval if explicitly requested.
-    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.runZmsautomation) }}
-    environment: zmsautomation
-    steps:
-      - name: Await approval
-        run: |
-          echo 'Approved: proceeding to zmsautomation.'
-
   call-zmsautomation:
-    needs: [call-assemble-zms-image, approve-zmsautomation]
+    needs: [call-assemble-zms-image]
     # On push: job exists but is gated by an environment approval (no auto-run).
     # On workflow_dispatch: only schedule when explicitly requested.
     if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.runZmsautomation)) }}

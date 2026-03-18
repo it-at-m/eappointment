@@ -72,6 +72,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsadmin-ui' }}
+    environment: zmsautomation-zmsadmin-ui
 
     steps:
       - name: Checkout
@@ -230,6 +231,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsstatistic-ui' }}
+    environment: zmsautomation-zmsstatistic-ui
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -387,6 +389,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'zmscitizenview-ui' }}
+    environment: zmsautomation-zmscitizenview-ui
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -544,6 +547,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'zmscitizenapi-api' }}
+    environment: zmsautomation-zmscitizenapi-api
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -701,6 +705,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsapi-api' }}
+    environment: zmsautomation-zmsapi-api
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -858,6 +863,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.suite == 'all' || inputs.suite == 'smoke' }}
+    environment: zmsautomation-smoke
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1015,6 +1021,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     if: ${{ inputs.customTags != '' && (inputs.suite == 'all' || inputs.suite == 'custom-tags') }}
+    environment: zmsautomation-custom-tags
     steps:
       - name: Checkout
         uses: actions/checkout@v4
