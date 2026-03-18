@@ -32,7 +32,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     onChange={(_, value) => onParentChange(index, value)}
                     options={[
                         {name: '—', value: ''},
-                        ...parentProviders.map(p => ({name: p.name, value: String(p.id)}))
+                        ...parentProviders.map(p => ({name: `${p.name} (${p.source})`, value: String(p.id)}))
                     ]}
                     attributes={{"aria-label": labels.parent}}
                 />
