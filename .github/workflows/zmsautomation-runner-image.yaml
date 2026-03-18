@@ -1,11 +1,7 @@
 name: zmsautomation runner image
 
 on:
-  push:
-    branches:
-      - "**"
-    tags:
-      - "*"
+  workflow_call:
   workflow_dispatch:
 
 permissions:
