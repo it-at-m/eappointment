@@ -3,6 +3,10 @@ name: zmsautomation (manual)
 on:
   workflow_dispatch:
     inputs:
+      suite:
+        description: "Which suite to run: all | zmsadmin-ui | zmsstatistic-ui | zmscitizenview-ui | citizenapi-api | zmsapi-api | smoke | custom-tags"
+        required: true
+        default: "all"
       ref:
         description: "Git ref to test (branch, tag, sha). Empty = current."
         required: false
@@ -29,6 +33,10 @@ on:
         default: ""
   workflow_call:
     inputs:
+      suite:
+        type: string
+        required: false
+        default: "all"
       imageTag:
         type: string
         required: false
@@ -59,26 +67,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  module-tests:
-    name: ${{ matrix.name }}
+  zmsadmin-ui:
+    name: zmsadmin-ui
     runs-on: ubuntu-24.04
     continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: zmsadmin-ui
-            tags: "@web and @zmsadmin"
-          - name: zmsstatistic-ui
-            tags: "@web and @zmsstatistic"
-          - name: zmscitizenview-ui
-            tags: "@web and @zmscitizenview"
-          - name: citizenapi-api
-            tags: "@rest and @zmscitizenapi"
-          - name: zmsapi-api
-            tags: "@rest and @zmsapi"
-          - name: smoke
-            tags: "@smoke and not @ignore"
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsadmin-ui' }}
 
     steps:
       - name: Checkout
@@ -181,21 +174,21 @@ jobs:
           docker exec \
             -e ZMS_BROWSER="$ZMS_BROWSER" \
             -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
-            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='${{ matrix.tags }}' test"
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@web and @zmsadmin' test"
 
       - name: Collect docker logs
         if: always()
         run: |
           mkdir -p .github/ci-logs
           for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
-            docker logs "$c" > ".github/ci-logs/${{ matrix.name }}-${c}.log" 2>&1 || true
+            docker logs "$c" > ".github/ci-logs/zmsadmin-ui-${c}.log" 2>&1 || true
           done
 
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.name }}
+          name: screenshots-zmsadmin-ui
           path: zmsautomation/target/screenshots/**
           if-no-files-found: ignore
           retention-days: 7
@@ -204,7 +197,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cucumber-html-${{ matrix.name }}
+          name: cucumber-html-zmsadmin-ui
           path: zmsautomation/target/site/cucumber-pretty/**
           if-no-files-found: ignore
           retention-days: 7
@@ -213,7 +206,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-${{ matrix.name }}
+          name: surefire-zmsadmin-ui
           path: zmsautomation/target/surefire-reports/**
           if-no-files-found: ignore
           retention-days: 7
@@ -222,8 +215,793 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: docker-logs-${{ matrix.name }}
-          path: .github/ci-logs/${{ matrix.name }}-*.log
+          name: docker-logs-zmsadmin-ui
+          path: .github/ci-logs/zmsadmin-ui-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  zmsstatistic-ui:
+    name: zmsstatistic-ui
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsstatistic-ui' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@web and @zmsstatistic' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/zmsstatistic-ui-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-zmsstatistic-ui
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-zmsstatistic-ui
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-zmsstatistic-ui
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-zmsstatistic-ui
+          path: .github/ci-logs/zmsstatistic-ui-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  zmscitizenview-ui:
+    name: zmscitizenview-ui
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'zmscitizenview-ui' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@web and @zmscitizenview' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/zmscitizenview-ui-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-zmscitizenview-ui
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-zmscitizenview-ui
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-zmscitizenview-ui
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-zmscitizenview-ui
+          path: .github/ci-logs/zmscitizenview-ui-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  citizenapi-api:
+    name: citizenapi-api
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'citizenapi-api' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@rest and @zmscitizenapi' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/citizenapi-api-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-citizenapi-api
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-citizenapi-api
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-citizenapi-api
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-citizenapi-api
+          path: .github/ci-logs/citizenapi-api-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  zmsapi-api:
+    name: zmsapi-api
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'zmsapi-api' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@rest and @zmsapi' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/zmsapi-api-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-zmsapi-api
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-zmsapi-api
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-zmsapi-api
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-zmsapi-api
+          path: .github/ci-logs/zmsapi-api-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Tear down stack
+        if: always()
+        run: |
+          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+
+  smoke:
+    name: smoke
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    if: ${{ inputs.suite == 'all' || inputs.suite == 'smoke' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.imageTag }}" ]; then
+            echo "value=${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" = "branch" ]; then
+            tag="branch-$(echo "$tag" | sed 's/[\\/:]/-/g')"
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare env file
+        run: |
+          set -e
+          if [ ! -f .devcontainer/.env ]; then
+            cp .devcontainer/.env.template .devcontainer/.env
+          fi
+
+      - name: Start stack (docker compose)
+        env:
+          ZMS_IMAGE_TAG: ${{ steps.tag.outputs.value }}
+          ZMSAUTOMATION_RUNNER_TAG: ${{ inputs.runnerImageTag }}
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+
+      - name: Wait for services (db/keycloak/migrations/api)
+        env:
+          TIMEOUT_SECONDS: "420"
+        run: |
+          set -euo pipefail
+          end=$((SECONDS+TIMEOUT_SECONDS))
+
+          echo "Waiting for DB health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-db 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak health..."
+          while [ $SECONDS -lt $end ]; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' zms-keycloak 2>/dev/null || echo starting)"
+            [ "$status" = "healthy" ] && break
+            sleep 2
+          done
+
+          echo "Waiting for Keycloak migrations to finish..."
+          while [ $SECONDS -lt $end ]; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              code="$(docker inspect -f '{{.State.ExitCode}}' zms-init-keycloak 2>/dev/null || echo 1)"
+              [ "$code" = "0" ] && break
+              docker logs zms-init-keycloak || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Waiting for ZMS API status endpoint..."
+          while [ $SECONDS -lt $end ]; do
+            if docker exec zms-web bash -lc 'curl -fsS --max-time 5 http://localhost/terminvereinbarung/api/2/status/ >/dev/null'; then
+              echo "✓ zmsapi status responding"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Seed test data (DB import + migrations + cron)
+        run: |
+          set -euo pipefail
+          docker exec zms-db bash -lc 'mysql --version' >/dev/null 2>&1 || true
+          if [ -f .resources/zms.sql ]; then
+            echo "Importing .resources/zms.sql ..."
+            docker exec -i zms-db mysql -u root -p"${MYSQL_ROOT_PASSWORD:-root}" "${MYSQL_DATABASE:-db}" < .resources/zms.sql
+          fi
+          echo "Running PHP migrations ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && vendor/bin/migrate --update'
+          echo "Running hourly cron (best-effort) ..."
+          docker exec zms-web bash -lc 'cd /var/www/html/zmsapi && ZMS_CRONROOT=1 ZMS_ENV=dev cron/cronjob.hourly --city=munich || true'
+
+      - name: Run zmsautomation (tagged)
+        env:
+          ZMS_BROWSER: ${{ inputs.browser }}
+          SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
+        run: |
+          set -euo pipefail
+          docker exec \
+            -e ZMS_BROWSER="$ZMS_BROWSER" \
+            -e SCREENSHOT_EVERY_STEP="$SCREENSHOT_EVERY_STEP" \
+            zms-test-runner bash -lc "cd /workspace/zmsautomation && mvn -B -DtrimStackTrace=false -Pataf -Dbrowser=\"$ZMS_BROWSER\" -DSCREENSHOT_EVERY_STEP=\"$SCREENSHOT_EVERY_STEP\" -Dcucumber.filter.tags='@smoke and not @ignore' test"
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p .github/ci-logs
+          for c in zms-web zms-db zms-keycloak zms-init-keycloak zms-refarch-gateway zms-citizenview zms-test-runner; do
+            docker logs "$c" > ".github/ci-logs/smoke-${c}.log" 2>&1 || true
+          done
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-smoke
+          path: zmsautomation/target/screenshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload cucumber html
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-smoke
+          path: zmsautomation/target/site/cucumber-pretty/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-smoke
+          path: zmsautomation/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload docker logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-smoke
+          path: .github/ci-logs/smoke-*.log
           if-no-files-found: ignore
           retention-days: 7
 
@@ -236,7 +1014,7 @@ jobs:
     name: custom-tags
     runs-on: ubuntu-24.04
     continue-on-error: true
-    if: ${{ inputs.customTags != '' }}
+    if: ${{ inputs.customTags != '' && (inputs.suite == 'all' || inputs.suite == 'custom-tags') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
