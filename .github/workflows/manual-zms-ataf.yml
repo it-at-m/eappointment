@@ -360,6 +360,26 @@ jobs:
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
 
+      - name: Ensure writable cache directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+          docker exec -u root "$WEB_CONT" bash -lc '
+            set -euo pipefail
+            # Global cache dir required by CACHE_DIR=/var/www/html/cache in .env.template
+            mkdir -p /var/www/html/cache
+            chown -R www-data:www-data /var/www/html/cache 2>/dev/null || true
+            chmod -R 777 /var/www/html/cache 2>/dev/null || true
+
+            # Module cache dirs (local devcontainer does similar in postStartCommand)
+            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+              mkdir -p "/var/www/html/$dir/cache"
+              chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
+              chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true
+            done
+          '
+
       - name: Detect CitizenView internal port
         id: citizenview-port
         shell: bash
