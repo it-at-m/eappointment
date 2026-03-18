@@ -63,12 +63,17 @@ export ZMS_TIMEADJUST="${ZMS_TIMEADJUST:-$(TZ=Europe/Berlin date '+%Y-%m-%d %H:%
 info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
 
 # Selenium / WebDriver configuration for Linux ARM devcontainer:
-# - Disable Selenium Manager (it does not support aarch64)
-# - Force Selenium to use the preinstalled geckodriver binary
+# - Disable Selenium Manager (it does not support aarch64 reliably)
+# - Prefer Chromium/Chrome (with chromedriver) locally to avoid flaky geckodriver-on-QEMU
+#   but still allow overrides via environment variables.
 export SELENIUM_MANAGER_DISABLE="${SELENIUM_MANAGER_DISABLE:-true}"
 export WEBDRIVER_GECKO_DRIVER="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}"
+export WEBDRIVER_CHROME_DRIVER="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}"
+export ZMS_BROWSER="${ZMS_BROWSER:-chrome}"
 info "SELENIUM_MANAGER_DISABLE=${SELENIUM_MANAGER_DISABLE}"
 info "WEBDRIVER_GECKO_DRIVER=${WEBDRIVER_GECKO_DRIVER}"
+info "WEBDRIVER_CHROME_DRIVER=${WEBDRIVER_CHROME_DRIVER}"
+info "ZMS_BROWSER=${ZMS_BROWSER}"
 
 # Default: take a screenshot for every ATAF step (can be overridden from the environment).
 # ScreenshotHook uses Boolean.parseBoolean(...) so we must use "true"/"false", not 1/0.
@@ -430,25 +435,13 @@ info "All health checks passed."
 
 # 10. Browser Setup (for UI tests)
 section "10. Browser Setup"
-info "Setting up Firefox and Xvfb for UI tests..."
+info "Setting up browsers and Xvfb for UI tests..."
 
 # Ensure DISPLAY is set
 export DISPLAY="${DISPLAY:-:0}"
 info "DISPLAY set to: $DISPLAY"
 
-# Create Firefox symlink if needed
-if [[ ! -L /usr/bin/firefox ]] || [[ ! -e /usr/bin/firefox ]]; then
-  if [[ -f /usr/bin/firefox-esr ]]; then
-    info "Creating symlink from /usr/bin/firefox to /usr/bin/firefox-esr..."
-    ln -sf /usr/bin/firefox-esr /usr/bin/firefox || warn "Failed to create Firefox symlink"
-  else
-    warn "firefox-esr not found at /usr/bin/firefox-esr"
-  fi
-else
-  info "Firefox symlink already exists"
-fi
-
-# Verify Firefox is available
+# Verify Firefox is available (optional – main dev browser is Chromium)
 if command -v firefox >/dev/null 2>&1; then
   FIREFOX_VERSION=$(firefox --version 2>&1 || echo "unknown")
   info "Firefox found: $FIREFOX_VERSION"
@@ -456,12 +449,30 @@ else
   warn "Firefox not found in PATH"
 fi
 
-# Verify geckodriver is available
+# Verify geckodriver is available (optional)
 if command -v geckodriver >/dev/null 2>&1; then
   GECKODRIVER_VERSION=$(geckodriver --version 2>&1 | head -1 || echo "unknown")
   info "Geckodriver found: $GECKODRIVER_VERSION"
 else
   warn "Geckodriver not found in PATH"
+fi
+
+# Verify Chromium / Chrome and chromedriver are available
+if command -v chromium >/dev/null 2>&1; then
+  CHROMIUM_VERSION=$(chromium --version 2>&1 || echo "unknown")
+  info "Chromium found: $CHROMIUM_VERSION"
+elif command -v chromium-browser >/dev/null 2>&1; then
+  CHROMIUM_VERSION=$(chromium-browser --version 2>&1 || echo "unknown")
+  info "Chromium browser found: $CHROMIUM_VERSION"
+else
+  warn "Chromium/Chrome not found in PATH"
+fi
+
+if command -v chromedriver >/dev/null 2>&1; then
+  CHROMEDRIVER_VERSION=$(chromedriver --version 2>&1 | head -1 || echo "unknown")
+  info "Chromedriver found: $CHROMEDRIVER_VERSION"
+else
+  warn "Chromedriver not found in PATH"
 fi
 
 # Ensure Xvfb is running
@@ -556,7 +567,9 @@ if mvn -B -DtrimStackTrace=false \
   -Pataf \
   -Dbase.uri="$BASE_URI" \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+  -Dbrowser="${ZMS_BROWSER:-chrome}" \
   -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
+  -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
   -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
   -Dsso.username="$SSO_USER" \
   -Dsso.password="$SSO_PASSWORD" \

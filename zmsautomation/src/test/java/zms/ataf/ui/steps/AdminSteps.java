@@ -2,7 +2,10 @@ package zms.ataf.ui.steps;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -172,7 +175,22 @@ public class AdminSteps {
             AUTHORITIES_AND_LOCATIONS_PAGE.enterOpeningTime(text);
             break;
         case "Uhrzeit bis":
-            AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(text);
+            String closingTime = text;
+            // Make the closing time robust against running the test late in the day:
+            // if the feature specifies 17:00, interpret it as "now plus up to 8 hours,
+            // but never later than 22:00" in Europe/Berlin.
+            if ("17:00".equals(text)) {
+                LocalTime now = LocalTime.now(ZoneId.of("Europe/Berlin")).truncatedTo(ChronoUnit.MINUTES);
+                LocalTime maxByOffset = now.plusHours(8);
+                LocalTime latestAllowed = LocalTime.of(22, 0);
+                LocalTime effective = maxByOffset.isBefore(latestAllowed) ? maxByOffset : latestAllowed;
+                // Safety net: ensure we never go backwards in time
+                if (effective.isBefore(now)) {
+                    effective = latestAllowed;
+                }
+                closingTime = effective.format(DateTimeFormatter.ofPattern("HH:mm"));
+            }
+            AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(closingTime);
             break;
         case "Datum bis":
             AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingDate(text);
