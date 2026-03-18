@@ -491,5 +491,6 @@ jobs:
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
+            zmsautomation/target/screenshots/**
           if-no-files-found: warn
 
