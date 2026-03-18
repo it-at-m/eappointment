@@ -109,7 +109,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -224,7 +224,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   zmsstatistic-ui:
     name: zmsstatistic-ui
@@ -267,7 +267,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -382,7 +382,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   zmscitizenview-ui:
     name: zmscitizenview-ui
@@ -425,7 +425,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -540,7 +540,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   zmscitizenapi-api:
     name: zmscitizenapi-api
@@ -583,7 +583,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -698,7 +698,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   zmsapi-api:
     name: zmsapi-api
@@ -741,7 +741,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -856,7 +856,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   smoke:
     name: smoke
@@ -899,7 +899,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -1014,7 +1014,7 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
   custom-tags:
     name: custom-tags
@@ -1057,7 +1057,7 @@ jobs:
           SCREENSHOT_EVERY_STEP: ${{ inputs.screenshotEveryStep }}
         run: |
           set -euo pipefail
-          docker compose -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml up -d --pull=always
 
       - name: Wait for services (db/keycloak/migrations/api)
         env:
@@ -1159,5 +1159,5 @@ jobs:
       - name: Tear down stack
         if: always()
         run: |
-          docker compose -f .github/ci/zmsautomation-compose.yaml down -v || true
+          docker compose --project-directory . -f .github/ci/zmsautomation-compose.yaml down -v || true
 
