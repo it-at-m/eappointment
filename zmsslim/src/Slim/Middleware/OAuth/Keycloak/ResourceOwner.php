@@ -9,14 +9,14 @@ class ResourceOwner extends KeycloakResourceOwner
     /**
      * Raw response
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $response;
 
     /**
      * Creates new resource owner.
      *
-     * @param array  $response
+     * @param array<string, mixed>  $response
      */
     public function __construct(array $response = array())
     {
@@ -25,54 +25,32 @@ class ResourceOwner extends KeycloakResourceOwner
 
     /**
      * Get resource owner id
-     *
-     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return \array_key_exists('sub', $this->response) ? $this->response['sub'] : null;
     }
 
     /**
      * Get resource owner email
-     *
-     * @return string|null
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return \array_key_exists('email', $this->response) ? $this->response['email'] : null;
     }
 
     /**
-     * Get verified resource owner email
-     *
-     * @return string|null
-     */
-    public function getVerifiedEmail()
-    {
-        $email = null;
-        if (\array_key_exists('email_verified', $this->response) && $this->response['email_verified']) {
-            $email = $this->getEmail();
-        }
-        return $email;
-    }
-
-    /**
      * Get resource owner name
-     *
-     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return \array_key_exists('preferred_username', $this->response) ? $this->response['preferred_username'] : null;
     }
 
     /**
      * Return all of the owner details available as an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->response;
     }
