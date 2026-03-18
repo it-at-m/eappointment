@@ -24,6 +24,48 @@ class ProcessListSummaryMailTest extends Base
         $entity->status = 'confirmed';
         (new \BO\Zmsdb\Process)->updateEntity($entity, \App::getNow());
 
+        // Diagnose: kommt 10118 überhaupt in der confirmed-Liste vor, wenn wir mehr ziehen?
+        $repo = new \BO\Zmsdb\Process();
+        $confirmedBig = $repo->readListByMailAndStatusList(
+            'zms@service.berlinonline.de',
+            [\BO\Zmsentities\Process::STATUS_CONFIRMED],
+            2,
+            300
+        );
+
+        error_log('CONFIRMED IDs (limit=300): ' . implode(',', $confirmedBig->getIds()));
+        self::assertContains(10118, $confirmedBig->getIds(), '10118 fehlt schon bei limit=300');
+
+        $repo = new \BO\Zmsdb\Process();
+
+        $confirmed3 = $repo->readListByMailAndStatusList(
+            'zms@service.berlinonline.de',
+            [\BO\Zmsentities\Process::STATUS_CONFIRMED],
+            2,
+            3
+        );
+
+        $confirmed300 = $repo->readListByMailAndStatusList(
+            'zms@service.berlinonline.de',
+            [\BO\Zmsentities\Process::STATUS_CONFIRMED],
+            2,
+            300
+        );
+
+        error_log('CONFIRMED IDs (limit=3): ' . implode(',', $confirmed3->getIds()));
+        error_log('CONFIRMED IDs (limit=300): ' . implode(',', $confirmed300->getIds()));
+
+        // Erwartung für LIMIT/ORDER-Artefakt: 10118 ist in 300 drin, aber nicht in 3
+        self::assertContains(10118, $confirmed300->getIds(), '10118 fehlt bei limit=300');
+
+        // Wenn das hier TRUE wird, ist das sehr starkes Indiz für ORDER/LIMIT-Problematik
+        if (!in_array(10118, $confirmed3->getIds(), true) && in_array(10118, $confirmed300->getIds(), true)) {
+            self::assertTrue(true);
+        } else {
+            // Nicht zwingend Fehler, aber dann liegt es eher nicht am LIMIT
+            error_log('Hinweis: Unterschied limit=3 vs limit=300 zeigt sich nicht wie erwartet.');
+        }
+
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
