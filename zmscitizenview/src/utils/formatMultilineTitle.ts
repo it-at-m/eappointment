@@ -12,5 +12,5 @@ export function formatMultilineTitle(appointment: AppointmentDTO): string {
     .sort((a, b) => a.name.localeCompare(b.name, "de"))
     .map((subCount) => subCount.count + "x " + subCount.name)
     .join("\n");
-  return [serviceTitle, subserviceTitle].filter(Boolean) .join("\n");
+  return [serviceTitle, subserviceTitle].filter(Boolean).join("\n");
 }
