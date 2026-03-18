@@ -409,16 +409,26 @@ jobs:
           # Split by newlines and run sequentially.
           fail_any=0
           while IFS= read -r line; do
-            expr="$(echo "$line" | xargs || true)"
+            # Normalize input:
+            # - strip possible Windows CR (\r)
+            # - trim leading/trailing whitespace
+            expr="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
             if [ -z "$expr" ]; then
               continue
             fi
 
             echo "Running zmsautomation-test for tags: $expr"
             set +e
-            docker exec -u root "$WEB_CONT" bash -lc "set -euo pipefail; set -a; source /var/www/html/.devcontainer/.env; \
-              SCREENSHOT_EVERY_STEP='${SCREENSHOT}' ZMS_BROWSER='${BROWSER}' CITIZENVIEW_PORT='${CITIZENVIEW_PORT}' \
-              bash /var/www/html/zmsautomation/zmsautomation-test -Dcucumber.filter.tags=\"$expr\""
+            # Pass arguments positionally to avoid accidental quoting issues with -Dcucumber.filter.tags.
+            docker exec -u root "$WEB_CONT" bash -lc '
+              set -euo pipefail
+              set -a
+              source /var/www/html/.devcontainer/.env
+              SCREENSHOT_EVERY_STEP="$2"
+              ZMS_BROWSER="$3"
+              CITIZENVIEW_PORT="$4"
+              bash /var/www/html/zmsautomation/zmsautomation-test -Dcucumber.filter.tags="$1"
+            ' -- "$expr" "$SCREENSHOT" "$BROWSER" "${CITIZENVIEW_PORT}"
             rc=$?
             set -e
 
