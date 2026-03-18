@@ -2,7 +2,8 @@
   <muc-modal
     :open="open"
     :close-aria-label="closeAriaLabel"
-    @close="emit('update:open', false)"
+    @close="handleClose"
+    @cancel="handleClose"
   >
     <template #title>
       {{ t("newAppointmentsInfoLink") }}
@@ -30,4 +31,8 @@ const props = defineProps<{
 const emit = defineEmits<(e: "update:open", value: boolean) => void>();
 
 const sanitizedHtml = computed(() => sanitizeHtml(props.html ?? ""));
+
+const handleClose = () => {
+  emit("update:open", false);
+};
 </script>
