@@ -142,10 +142,11 @@ jobs:
 
   approve-assemble-zms-image:
     name: Approve assemble zms image
+    needs: [call-php-build-images, call-zmscitizenview-build]
     runs-on: ubuntu-24.04
     # On push: always require approval to run assemble.
     # On workflow_dispatch: only require approval if explicitly requested (assembleZmsImage or runZmsautomation).
-    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.assembleZmsImage || inputs.runZmsautomation)) }}
+    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.assembleZmsImage || inputs.runZmsautomation))) && needs.call-php-build-images.result == 'success' && needs.call-zmscitizenview-build.result == 'success' }}
     environment: zms-assemble
     steps:
       - name: Await approval
