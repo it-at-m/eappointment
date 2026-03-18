@@ -1,0 +1,7 @@
+# Ignore known CVEs here
+
+## Ignore ALTCHA related CVE - we're not using the obfuscation feature
+CVE-2025-65849
+
+## Ignore swiper related CVE until we completed ZMSKVR-1321
+CVE-2026-27212
