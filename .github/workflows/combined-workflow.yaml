@@ -4,28 +4,6 @@ on:
   push:
     branches-ignore: [next]
     tags: ['*']
-  workflow_dispatch:
-    inputs:
-      runZmsautomation:
-        description: "Run zmsautomation jobs after assembling zms image"
-        type: boolean
-        required: true
-        default: false
-      assembleZmsImage:
-        description: "Assemble and push ghcr.io/<repo>/zms:<tag> from module images (slow)"
-        type: boolean
-        required: true
-        default: false
-      browser:
-        description: "Browser for UI tests (chrome|firefox)"
-        type: string
-        required: true
-        default: "chrome"
-      customTags:
-        description: "Optional: run custom tag expression in addition to module matrix (leave empty to skip custom job)"
-        type: string
-        required: false
-        default: ""
   workflow_call:
 
 permissions:
@@ -51,74 +29,3 @@ jobs:
       needs.call-php-code-quality.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
-
-  prepare-zmsautomation:
-    name: Prepare zmsautomation
-    needs: [call-php-build-images, call-zmscitizenview-build]
-    runs-on: ubuntu-24.04
-    # On push: always require approval to run assemble.
-    # On workflow_dispatch: only require approval if explicitly requested (assembleZmsImage or runZmsautomation).
-    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.assembleZmsImage || inputs.runZmsautomation))) && needs.call-php-build-images.result == 'success' && needs.call-zmscitizenview-build.result == 'success' }}
-    environment: zms-assemble
-    steps:
-      - name: Await approval
-        run: |
-          echo 'Approved: proceeding to prepare zmsautomation (runner + assemble + tests).'
-
-  build-zmsautomation-runner:
-    name: Build zmsautomation-runner image
-    needs: [prepare-zmsautomation]
-    runs-on: ubuntu-24.04
-    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.runZmsautomation)) }}
-    outputs:
-      runnerTag: ${{ steps.runner-tag.outputs.value }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Derive runner tag
-        id: runner-tag
-        run: |
-          set -euo pipefail
-          echo "value=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: .devcontainer/Containerfile
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/zmsautomation-runner:${{ steps.runner-tag.outputs.value }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  call-assemble-zms-image:
-    needs: [call-php-build-images, call-zmscitizenview-build, prepare-zmsautomation]
-    # On push: job exists but is gated by an environment approval (no auto-run).
-    # On workflow_dispatch: only schedule when explicitly requested (assembleZmsImage or runZmsautomation).
-    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.assembleZmsImage || inputs.runZmsautomation))) && needs.call-php-build-images.result == 'success' && needs.call-zmscitizenview-build.result == 'success' }}
-    uses: ./.github/workflows/assemble-zms-image.yaml
-
-  call-zmsautomation:
-    needs: [call-assemble-zms-image, build-zmsautomation-runner]
-    # On push: job exists but is gated by an environment approval (no auto-run).
-    # On workflow_dispatch: only schedule when explicitly requested.
-    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.runZmsautomation)) }}
-    uses: ./.github/workflows/zmsautomation-manual.yaml
-    with:
-      imageTag: "" # derived inside workflow from ref_name when empty
-      runnerImageTag: ${{ needs.build-zmsautomation-runner.outputs.runnerTag }}
-      browser: ${{ inputs.browser }}
-      screenshotEveryStep: "true"
-      customTags: ${{ inputs.customTags }}
