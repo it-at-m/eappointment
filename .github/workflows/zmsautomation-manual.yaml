@@ -63,7 +63,9 @@ permissions:
   packages: read
 
 concurrency:
-  group: zmsautomation-manual-${{ github.ref }}
+  # Use a per-run group to avoid environment-approved suite jobs
+  # being blocked behind other runs on the same ref.
+  group: zmsautomation-manual-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
