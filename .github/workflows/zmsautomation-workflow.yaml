@@ -1,5 +1,5 @@
 name: zmsautomation-workflow
-run-name: zmsautomation-workflow | ${{ inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome' }} | ${{ inputs.cucumber_tag_expressions }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation-workflow | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation-workflow | {0} | {1}', inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome', inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
@@ -35,6 +35,8 @@ on:
         required: true
         type: boolean
         default: true
+  schedule:
+    - cron: "0 6 * * *"
 
 permissions:
   contents: read
@@ -43,6 +45,10 @@ permissions:
 jobs:
   zms-automation:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: ${{ fromJson(github.event_name == 'schedule' && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
     env:
       # Align with php-build-images.yaml tagging logic for branches
       # (branch- + sanitize / and :)
@@ -50,6 +56,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          # Scheduled runs should execute against the `next` branch.
+          ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
 
       - name: Create runtime env file
         run: cp .devcontainer/.env.template .devcontainer/.env
@@ -397,9 +406,9 @@ jobs:
           set -euo pipefail
 
           WEB_CONT="zms-web"
-          BROWSER="${{ inputs.browser }}"
+          BROWSER="${{ matrix.browser }}"
           SCREENSHOT="${{ inputs.per_step_screenshots }}"
-          INPUTS="${{ inputs.cucumber_tag_expressions }}"
+          INPUTS="${{ github.event_name == 'schedule' && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
 
           # Split by newlines and run sequentially.
           fail_any=0
