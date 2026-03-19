@@ -568,6 +568,7 @@ if mvn -B -DtrimStackTrace=false \
   -Dbase.uri="$BASE_URI" \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
   -Dbrowser="${ZMS_BROWSER:-chrome}" \
+  -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
   -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
   -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
   -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
