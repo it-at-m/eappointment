@@ -411,8 +411,6 @@ jobs:
             if [ -z "$expr" ]; then
               continue
             fi
-            # Accept common boolean shorthand from manual input and normalize to Cucumber syntax.
-            expr="$(printf '%s' "$expr" | sed -E 's/[[:space:]]*&&[[:space:]]*/ and /g; s/[[:space:]]*\\|\\|[[:space:]]*/ or /g')"
 
             echo "Running zmsautomation-test for tags: $expr"
             set +e
