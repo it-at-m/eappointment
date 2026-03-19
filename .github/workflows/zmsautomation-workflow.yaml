@@ -1,5 +1,5 @@
 name: zmsautomation-workflow
-run-name: zmsautomation-workflow | ${{ inputs.browser }} | ${{ inputs.cucumber_tag_expressions }}
+run-name: zmsautomation-workflow | ${{ inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome' }} | ${{ inputs.cucumber_tag_expressions }}
 
 on:
   workflow_dispatch:
