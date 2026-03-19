@@ -311,9 +311,15 @@ jobs:
               apt-get update
               apt-get install -y --no-install-recommends microsoft-edge-stable
 
-              EDGE_MAJOR="$(microsoft-edge --version | awk "{print \$3}" | cut -d. -f1)"
-              EDGE_DRIVER_VERSION="$( (curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR}" \
-                || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}") | tr -d '\r' )"
+              EDGE_VERSION="$(microsoft-edge --version | awk "{print \$3}")"
+              EDGE_MAJOR_BUILD="$(printf "%s" "$EDGE_VERSION" | cut -d. -f1-3)"
+              EDGE_MAJOR="$(printf "%s" "$EDGE_VERSION" | cut -d. -f1)"
+              EDGE_DRIVER_VERSION="$( (curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR_BUILD}" \
+                || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR}" \
+                || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_STABLE" \
+                || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR_BUILD}" \
+                || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}" \
+                || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_STABLE") | tr -d '\r' )"
               if ! curl -fsSL -o /tmp/msedgedriver.zip \
                 "https://msedgedriver.microsoft.com/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip"; then
                 curl -fsSL -o /tmp/msedgedriver.zip \
