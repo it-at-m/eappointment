@@ -3,6 +3,8 @@ package zms.ataf.ui.pages.citizenview;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -715,6 +717,84 @@ public class CitizenViewPage extends BasePage {
                             officeId);
         } else {
             Assert.fail("Ort: no checkbox and no single-provider teaser for provider " + officeId);
+        }
+    }
+
+    /**
+     * Normalize Ort provider checkboxes so only {@code allowedOfficeIds} remain checked.
+     * Single-provider teaser layouts have no checkboxes and are left unchanged.
+     */
+    public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
+        CONTEXT.set();
+        Set<Integer> allowed = new HashSet<>(allowedOfficeIds);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: keep only providers {} checked on Ort step", allowed);
+
+        String script =
+                "function collect(root,out){"
+                        + "  if(!root)return;"
+                        + "  var nodes=root.querySelectorAll('[id^=\"checkbox-provider-\"]');"
+                        + "  for(var i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].id)out.push(nodes[i].id);}"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collect(all[j].shadowRoot,out);"
+                        + "}"
+                        + "var ids=[];collect(document.body,ids);"
+                        + "return ids;";
+        String allowedCsv = allowed.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+        Object idsObj = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, allowedCsv);
+        Set<Integer> presentIds = new HashSet<>();
+        if (idsObj instanceof java.util.List<?>) {
+            for (Object rawId : (java.util.List<?>) idsObj) {
+                String idStr = String.valueOf(rawId);
+                if (idStr.startsWith("checkbox-provider-")) {
+                    try {
+                        presentIds.add(Integer.parseInt(idStr.substring("checkbox-provider-".length())));
+                    } catch (NumberFormatException ignored) {
+                        // Ignore malformed provider ids.
+                    }
+                }
+            }
+        }
+        int checkboxCount = presentIds.size();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Ort provider checkbox count detected={}", checkboxCount);
+
+        if (checkboxCount == 0) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no provider checkboxes found (single-provider teaser layout), nothing to normalize");
+            return;
+        }
+
+        for (Integer officeId : presentIds) {
+            boolean shouldBeChecked = allowed.contains(officeId);
+            boolean currentlyChecked = deepProviderCheckboxChecked(officeId);
+            if (shouldBeChecked != currentlyChecked) {
+                deepClickRequired("#checkbox-provider-" + officeId);
+                waitUntilProviderToggleSettled(15);
+            }
+        }
+
+        for (Integer officeId : allowed) {
+            Assert.assertTrue(
+                    deepProviderCheckboxChecked(officeId),
+                    "Expected provider checkbox " + officeId + " to be checked after provider normalization.");
+        }
+    }
+
+    /** Wait until provider-toggle spinner activity has settled (best effort). */
+    private void waitUntilProviderToggleSettled(int maxSeconds) {
+        CONTEXT.set();
+        long deadline = System.currentTimeMillis() + maxSeconds * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()) {
+                return;
+            }
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
 

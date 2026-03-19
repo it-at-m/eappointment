@@ -138,7 +138,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis without preselected office. Passkalender 10502 scenario — only Pass-family services on the combination step and booking tied to provider 10502 throughout. ---
-  @passCalendar @serviceFinder
+  @serviceFinder @passCalendar
   Scenario: Personalausweis full entry Passkalender 10502
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -147,6 +147,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And the estimated duration on the service combination step should be 15 minutes
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
+    And I keep only providers "10502" checked in the citizen view
     When I select office 10502 in the citizen view
     And I choose the first slot below the calendar for office 10502 and continue in the citizen view
     When I enter default contact details in the citizen view
@@ -168,7 +169,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis with Hauptkalender 10489. Pass is combinable with Wohnsitzanmeldung on the combination step; adding Wohnsitzanmeldung changes duration 15 → 30 minutes and booking must be tied to provider 10489 in all summaries. ---
-  @mainCalendar @serviceFinder
+  @serviceFinder @mainCalendar
   Scenario: Personalausweis full entry Hauptkalender 10489
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -179,6 +180,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the estimated duration on the service combination step should be 30 minutes
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
+    And I keep only providers "10489" checked in the citizen view
     When I select office 10489 in the citizen view
     And I choose the first slot below the calendar for office 10489 and continue in the citizen view
     When I enter default contact details in the citizen view

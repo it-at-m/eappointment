@@ -1,5 +1,8 @@
 package zms.ataf.ui.steps;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
@@ -203,6 +206,22 @@ public class CitizenViewSteps {
         }
         ScenarioLogManager.getLogger().info("zmscitizenview: assert provider checkbox {} NOT visible", officeId);
         page.assertProviderCheckboxAbsent(officeId);
+    }
+
+    @When("I keep only providers {string} checked in the citizen view")
+    public void iKeepOnlyProvidersCheckedInTheCitizenView(String officeIdsCsv) {
+        String raw = TestDataHelper.transformTestData(officeIdsCsv);
+        Set<Integer> allowedOfficeIds = new HashSet<>();
+        for (String token : raw.split(",")) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            allowedOfficeIds.add(Integer.parseInt(trimmed));
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: keep only providers {} checked", allowedOfficeIds);
+        page.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
     }
 
     @Then("the booking summary should show provider {int} in the citizen view")
