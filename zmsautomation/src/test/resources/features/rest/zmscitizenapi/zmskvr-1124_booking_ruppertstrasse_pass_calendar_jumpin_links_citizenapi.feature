@@ -9,7 +9,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     When I request the offices and services endpoint
     And the response should contain offices and services
 
-  @ruppertstrasse
+  @passCalendar
   Scenario: Personalausweis at Bürgerbüro Ruppertstraße (10502) – lands at 10502
     When I request available days for office 10502 and service 1063441
     And I request available appointments for the first available day
@@ -44,7 +44,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     When I fetch the cancellation mail for the current process
     Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
 
-  @ruppertstrasse
+  @mainCalendar
   Scenario: Personalausweis at Pass Ruppertstraße (10489) – lands at 10489
     When I request available days for office 10489 and service 1063441
     And I request available appointments for the first available day
@@ -79,7 +79,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     When I fetch the cancellation mail for the current process
     Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
 
-  @abholung
+  @pickupCalendar
   Scenario: Abholung at 10492 (Bürgerbüro Ruppertstraße KVR-II/211)
     When I request available days for office 10492 and service 10295182
     And I request available appointments for the first available day
@@ -114,7 +114,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 104
     When I fetch the cancellation mail for the current process
     Then the cancellation mail should indicate the appointment was deleted with the word gelöscht
 
-  @jumpin @allowDisabledServicesMix
+  @passCalendar @jumpin
   Scenario: JumpIn 10489 with Personalausweis 1063441 – effective office may be 10502
     When I request available days for office 10502 and service 1063441
     And I request available appointments for the first available day

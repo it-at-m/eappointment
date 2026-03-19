@@ -16,13 +16,13 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And the response should contain offices and services
 
   # --- Invalid jump-in: Passkalender 10502 only offers Pass family services (three Pass services). Hauptkalender 10489 also supports a Non-Pass service (e.g. 1063475 Wohnsitzanmeldung) in combination with Pass. Jumping in with this Non-Pass alone on 10502 has no relation → invalid jump-in callout. ---
-  @jumpin @passkalender @executeLocally
+  @jumpin @passCalendar
   Scenario: Non-Pass service jump-in with Passkalender 10502 is rejected
     Given I open zmscitizenview with jump-in service "1063475" and location "10502"
     Then the invalid jump-in callout should be visible in the citizen view
 
   # --- allowDisabledServicesMix (jump-in): Pass service 1063441 with location 10489 (Hauptkalender) is valid. The Pass-only combination must still list and book to Passkalender 10502; confirms allowDisabledServicesMix behaviour across locations. ---
-  @jumpin @allowDisabledServicesMix @passkalender @executeLocally
+  @jumpin @allowDisabledServicesMix @passCalendar
   Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
     Given I open zmscitizenview with jump-in service "1063441" and location "10489"
     Then the service combination step should be visible
@@ -50,7 +50,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Passkalender 10502 (jump-in): direct Reisepass jump-in must show only Pass-family combination services and book consistently to provider 10502 in Ort, Ausgewählter Termin, booking summary, and confirmation views. ---
-  @jumpin @passkalender @executeLocally
+  @jumpin @passCalendar
   Scenario: Reisepass jump-in Passkalender 10502 books to provider 10502 with correct summaries
     Given I open zmscitizenview with jump-in service "1063453" and location "10502"
     Then the service combination step should be visible
@@ -80,7 +80,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Hauptkalender 10489 (jump-in, allowDisabledServicesMix): Pass jump-in lands on the combination step where Pass is combinable with Wohnsitzanmeldung. Booking must stay on Hauptkalender provider 10489, with duration 15 → 30 minutes after adding Wohnsitzanmeldung. ---
-  @jumpin @hauptkalender @executeLocally
+  @jumpin @mainCalendar
   Scenario: Non-Pass jump-in Hauptkalender 10489 shows Pass combinable and books to provider 10489
     Given I open zmscitizenview with jump-in service "1063453" and location "10489"
     Then the service combination step should be visible
@@ -109,7 +109,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Abholung 10295182 (jump-in): pick-up service is only offered at provider 10492 (KVR-II/211). Jump-in must show only 10492 on Ort, and the booking must stay on 10492 in all summary views. ---
-  @jumpin @abholung @executeLocally
+  @jumpin @pickupCalendar
   Scenario: Abholung jump-in only Abholstandort 10492 and books to provider 10492
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
@@ -138,7 +138,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis without preselected office. Passkalender 10502 scenario — only Pass-family services on the combination step and booking tied to provider 10502 throughout. ---
-  @passCalendar @serviceFinder @executeLocally
+  @passCalendar @serviceFinder
   Scenario: Personalausweis full entry Passkalender 10502
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -168,7 +168,7 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis with Hauptkalender 10489. Pass is combinable with Wohnsitzanmeldung on the combination step; adding Wohnsitzanmeldung changes duration 15 → 30 minutes and booking must be tied to provider 10489 in all summaries. ---
-  @mainCalendar @serviceFinder @executeLocally
+  @mainCalendar @serviceFinder
   Scenario: Personalausweis full entry Hauptkalender 10489
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
