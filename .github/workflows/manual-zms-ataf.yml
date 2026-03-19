@@ -494,3 +494,34 @@ jobs:
             zmsautomation/target/screenshots/**
           if-no-files-found: warn
 
+      - name: Collect docker container logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/container-logs
+
+          containers=(
+            zms-web
+            zms-citizenview
+            zms-db
+            zms-keycloak
+            zms-refarch-gateway
+            zms-init-keycloak
+          )
+
+          for c in "${containers[@]}"; do
+            if docker ps -a --format '{{.Names}}' | rg "^${c}$" >/dev/null; then
+              docker logs "$c" > "artifacts/container-logs/${c}.log" 2>&1 || true
+              docker inspect "$c" > "artifacts/container-logs/${c}.inspect.json" 2>/dev/null || true
+            fi
+          done
+
+      - name: Upload container logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zmsautomation-container-logs
+          path: artifacts/container-logs/**
+          if-no-files-found: warn
+
