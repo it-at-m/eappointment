@@ -117,14 +117,22 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     }
 
     public int getOpeningHoursSlotTimeInMinutes() {
-        String raw = findElementByLocatorType("//input[@id='AvDaySlottime']", LocatorType.XPATH, true).getAttribute("value");
-        try {
-            int parsed = Integer.parseInt(raw.trim());
-            return parsed > 0 ? parsed : 5;
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Could not parse opening-hours slot time '{}', falling back to 5 minutes", raw);
-            return 5;
-        }
+        // Terminabstand is effectively static in our test data (5 minutes). Avoid hard waits here:
+        // this field may not be editable/visible on every form variant.
+        return DRIVER.findElements(By.id("AvDaySlottime")).stream()
+                .map(e -> e.getAttribute("value"))
+                .filter(v -> v != null && !v.isBlank())
+                .map(String::trim)
+                .mapToInt(v -> {
+                    try {
+                        return Integer.parseInt(v);
+                    } catch (NumberFormatException ignore) {
+                        return 0;
+                    }
+                })
+                .filter(v -> v > 0)
+                .findFirst()
+                .orElse(5);
     }
 
 public void saveLocationChanges() {
