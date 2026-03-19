@@ -410,8 +410,9 @@ jobs:
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
-              # Fixed port for production zmscitizenview nginx image in CI.
-              CITIZENVIEW_PORT="8080"
+              # Use one canonical citizenview base URL in CI for both health checks
+              # and mail links written into the test database.
+              CITIZENVIEW_BASE_URI="http://citizenview:8080/"
               
               # The zmsautomation pom enables Cucumber runners per profile:
               # - `ataf-ui` runs `UiTestRunner`

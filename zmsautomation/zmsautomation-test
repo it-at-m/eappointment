@@ -93,6 +93,7 @@ CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarun
 CITIZENVIEW_PORT="${CITIZENVIEW_PORT:-8082}"
 # Inside the devcontainer network, citizenview is reachable via its service name.
 CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_PORT}}"
+CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI%/}/"
 # Make the base URI also available for ATAF's Environment as ZMS-Citizen-View.
 export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
 
@@ -327,6 +328,7 @@ info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
     -Dflyway.user="$DB_USER" \
     -Dflyway.password="$DB_PASSWORD" \
     -Dflyway.locations="filesystem:$FLYWAY_DIR" \
+    -Dflyway.placeholders.citizenviewBaseUrl="$CITIZENVIEW_BASE_URI" \
     -Dflyway.baselineOnMigrate=true \
     flyway:migrate || warn "Flyway (Maven plugin) failed; continuing."
 )
