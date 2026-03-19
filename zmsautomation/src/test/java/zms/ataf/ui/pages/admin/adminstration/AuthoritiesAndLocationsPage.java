@@ -274,7 +274,7 @@ public void saveLocationChanges() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter opening time \"" + time + "\"");
         //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement openingTimeTextField = findElementByLocatorType("//input[@id='AvDatesStart_time']", LocatorType.XPATH, true);
+        WebElement openingTimeTextField = findVisibleInputById("AvDatesStart_time");
         moveToElementAction(openingTimeTextField);
         new Actions(DRIVER)
                 .sendKeys(openingTimeTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE)
@@ -286,7 +286,7 @@ public void saveLocationChanges() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter closing time \"" + time + "\"");
         //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement closingTimeTextField = findElementByLocatorType("//input[@id='AvDatesEnd_time']", LocatorType.XPATH, true);
+        WebElement closingTimeTextField = findVisibleInputById("AvDatesEnd_time");
         moveToElementAction(closingTimeTextField);
         new Actions(DRIVER)
                 .sendKeys(closingTimeTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE)
@@ -307,6 +307,14 @@ public void saveLocationChanges() {
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(date)
                 .perform();
+    }
+
+    private WebElement findVisibleInputById(String id) {
+        return DRIVER.findElements(By.id(id)).stream()
+                .filter(WebElement::isDisplayed)
+                .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
+                .findFirst()
+                .orElseGet(() -> findElementByLocatorType("//input[@id='" + id + "']", LocatorType.XPATH, true));
     }
 
     public void selectOverallAvailableCounters(String numberOfCounters) {
