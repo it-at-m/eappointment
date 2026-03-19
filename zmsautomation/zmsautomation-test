@@ -565,21 +565,59 @@ fi
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
 SSO_USER="${SSO_USER:-ataf}"
 SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
-if mvn -B -DtrimStackTrace=false \
-  -Dbase.uri="$BASE_URI" \
-  -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
-  -Dbrowser="${ZMS_BROWSER:-chrome}" \
-  -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
-  -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
-  -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
-  -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
-  -Dsso.username="$SSO_USER" \
-  -Dsso.password="$SSO_PASSWORD" \
-  test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}"; then
-    TEST_EXIT=0
-  else
-    TEST_EXIT=$?
+
+is_webdriver_bootstrap_failure() {
+  local log_file="$1"
+  [[ -f "$log_file" ]] || return 1
+  grep -E -q \
+    "SessionNotCreatedException|Connection error \(POST http://localhost:4444/wd/hub/session\)|No WebDriver instance for thread|java\.net\.ConnectException" \
+    "$log_file"
+}
+
+MAX_UI_RETRIES="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
+RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
+if [[ "$RUN_UI_TESTS" != true ]]; then
+  MAX_UI_RETRIES=1
+fi
+if ! [[ "$MAX_UI_RETRIES" =~ ^[0-9]+$ ]] || (( MAX_UI_RETRIES < 1 )); then
+  MAX_UI_RETRIES=1
+fi
+if [[ "$RUN_UI_TESTS" == true ]] && (( MAX_UI_RETRIES < 4 )); then
+  MAX_UI_RETRIES=4
+fi
+
+attempt=1
+while (( attempt <= MAX_UI_RETRIES )); do
+  attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
+  info "Starting Maven test attempt ${attempt}/${MAX_UI_RETRIES}"
+  set +e
+  mvn -B -DtrimStackTrace=false \
+    -Dbase.uri="$BASE_URI" \
+    -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+    -Dbrowser="${ZMS_BROWSER:-chrome}" \
+    -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
+    -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
+    -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
+    -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
+    -Dsso.username="$SSO_USER" \
+    -Dsso.password="$SSO_PASSWORD" \
+    test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" 2>&1 | tee "$attempt_log"
+  TEST_EXIT=${PIPESTATUS[0]}
+  set -e
+
+  if [[ $TEST_EXIT -eq 0 ]]; then
+    break
   fi
+
+  if (( attempt < MAX_UI_RETRIES )) && is_webdriver_bootstrap_failure "$attempt_log"; then
+    warn "Detected WebDriver bootstrap failure on attempt ${attempt}; retrying in ${RETRY_DELAY_SECONDS}s"
+    sleep "$RETRY_DELAY_SECONDS"
+    attempt=$((attempt + 1))
+    continue
+  fi
+
+  break
+done
 
 # 12. Test Results
 section "12. Test Results"
