@@ -845,9 +845,11 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * Below the calendar: scroll to slot grid, wait for API, click a non-first timeslot (prefer second, then third, else
-     * fallback to first), assert {@code Ausgewählter Termin} callout, then click <strong>Weiter</strong> — that call
-     * <em>reserves</em> the appointment (API reserve). The update-appointment (Kontakt) form is shown only after this Weiter.
+     * Below the calendar: scroll to slot grid, wait for API, then prefer a timeslot that is at least one hour in the future
+     * to avoid bookings drifting into the past during slower CI runs. If no such slot exists, use the previous non-first
+     * fallback (prefer third, then second, else first). After that, assert {@code Ausgewählter Termin} callout and click
+     * <strong>Weiter</strong> — that call <em>reserves</em> the appointment (API reserve). The update-appointment
+     * (Kontakt) form is shown only after this Weiter.
      */
     public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
         CONTEXT.set();
@@ -874,14 +876,28 @@ public class CitizenViewPage extends BasePage {
                         + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
                         + "var slots=[];collectSlots(document.body,slots);"
                         + "if(!slots.length)return false;"
-                        + "var idx = slots.length>2?2:(slots.length>1?1:0);"
-                        + "var target = slots[idx];"
+                        + "var minTs=Math.floor(Date.now()/1000)+3600;"
+                        + "function slotTs(node){"
+                        + " if(!node||!node.id)return null;"
+                        + " var m=node.id.match(/-timeslot-(\\d+)$/);"
+                        + " return m?parseInt(m[1],10):null;}"
+                        + "var target=null;"
+                        + "for(var j=0;j<slots.length;j++){"
+                        + " var ts=slotTs(slots[j]);"
+                        + " if(ts!==null&&ts>=minTs){target=slots[j];break;}"
+                        + "}"
+                        + "if(!target){"
+                        + " var idx = slots.length>2?2:(slots.length>1?1:0);"
+                        + " target = slots[idx];"
+                        + "}"
                         + "function clickSlotNode(node){if(!node)return false;"
                         + " if(node.shadowRoot){var b=node.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}"
                         + " try{node.click();return true;}catch(e){}"
                         + " return false;}"
                         + "return clickSlotNode(target);";
-        ScenarioLogManager.getLogger().info("zmscitizenview: scroll + non-first slot (prefer 3rd, then 2nd, else 1st) office {}", officeId);
+        ScenarioLogManager.getLogger().info(
+                "zmscitizenview: scroll + choose slot at least 60 minutes ahead (fallback: prefer 3rd, then 2nd, else 1st) office {}",
+                officeId);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
                 .until(
                         d ->
