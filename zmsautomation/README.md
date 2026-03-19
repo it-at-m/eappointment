@@ -179,10 +179,12 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@passkalender` - Passkalender 10502 (three Pass services only); invalid jump-in if non-Pass + 10502
   - `@hauptkalender` - Hauptkalender (10489); non-Pass + Pass combinable
   - `@abholung` - Abholung 10295182 / standort 10492 only (KVR-II/211)
-  - `@executeLocally` - Often skipped in CI (captcha, Selenium, mail); run locally when needed
+  - `@executeLocally` - Forces ATAF web tests to use local browser drivers instead of Selenium Grid; add this tag on UI scenarios/features that must not use `localhost:4444` in CI
   - `@allowDisabledServicesMix` - Jump-in scenario that may mix disabled services (environment-dependent)
 - **Other**
   - `@smoke` - Smoke tests (critical path)
+
+`@executeLocally` is a UI-only tag (`@web` scenarios). Do not add it to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver.
 
 ## Feature Files
 
