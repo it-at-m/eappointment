@@ -71,9 +71,12 @@ RUN mkdir -p /etc/apt/keyrings \
  && apt-get update \
  && apt-get install -y microsoft-edge-stable \
  && EDGE_MAJOR="$(microsoft-edge --version | awk '{print $3}' | cut -d. -f1)" \
- && EDGE_DRIVER_VERSION="$(curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}")" \
- && curl -fsSL -o /tmp/msedgedriver.zip \
-    "https://msedgedriver.azureedge.net/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip" \
+ && EDGE_DRIVER_VERSION="$( (curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR}" \
+      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}") | tr -d '\r' )" \
+ && (curl -fsSL -o /tmp/msedgedriver.zip \
+      "https://msedgedriver.microsoft.com/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip" \
+      || curl -fsSL -o /tmp/msedgedriver.zip \
+      "https://msedgedriver.azureedge.net/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip") \
  && unzip -o /tmp/msedgedriver.zip -d /tmp \
  && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
  && chmod +x /usr/local/bin/msedgedriver \
