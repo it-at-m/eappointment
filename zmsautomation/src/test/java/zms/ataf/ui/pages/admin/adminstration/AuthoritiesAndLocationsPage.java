@@ -273,25 +273,13 @@ public void saveLocationChanges() {
     public void enterOpeningTime(String time) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter opening time \"" + time + "\"");
-        //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement openingTimeTextField = findVisibleInputById("AvDatesStart_time");
-        moveToElementAction(openingTimeTextField);
-        new Actions(DRIVER)
-                .sendKeys(openingTimeTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE)
-                .sendKeys(openingTimeTextField, time)
-                .perform();
+        enterTimeViaPicker("AvDatesStart_time", "Uhrzeit von wählen", time);
     }
 
     public void enterClosingTime(String time) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter closing time \"" + time + "\"");
-        //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement closingTimeTextField = findVisibleInputById("AvDatesEnd_time");
-        moveToElementAction(closingTimeTextField);
-        new Actions(DRIVER)
-                .sendKeys(closingTimeTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE)
-                .sendKeys(closingTimeTextField, time)
-                .perform();
+        enterTimeViaPicker("AvDatesEnd_time", "Uhrzeit bis wählen", time);
     }
 
     public void enterClosingDate(String date) {
@@ -315,6 +303,42 @@ public void saveLocationChanges() {
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
                 .findFirst()
                 .orElseGet(() -> findElementByLocatorType("//input[@id='" + id + "']", LocatorType.XPATH, true));
+    }
+
+    private void enterTimeViaPicker(String inputId, String clockTitle, String time) {
+        WebElement timeTextField = findVisibleInputById(inputId);
+        moveToElementAction(timeTextField);
+
+        DRIVER.findElements(By.xpath("//a[@title='" + clockTitle + "']")).stream()
+                .filter(WebElement::isDisplayed)
+                .findFirst()
+                .ifPresent(clockIcon -> clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clockIcon, true));
+
+        WebElement timeOption = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> d.findElements(By.xpath(
+                                "//li[contains(@class,'react-datepicker__time-list-item')"
+                                        + " and normalize-space()='" + time + "'"
+                                        + " and not(contains(@class,'--disabled'))]"))
+                        .stream()
+                        .filter(WebElement::isDisplayed)
+                        .findFirst()
+                        .orElse(null));
+
+        if (timeOption != null) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, timeOption, true);
+            return;
+        }
+
+        // Fallback for unexpected picker markup changes: use the visible input directly.
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var el=arguments[0], val=arguments[1];"
+                        + "var setter=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;"
+                        + "setter.call(el,val);"
+                        + "el.dispatchEvent(new Event('input',{bubbles:true}));"
+                        + "el.dispatchEvent(new Event('change',{bubbles:true}));"
+                        + "el.dispatchEvent(new Event('blur',{bubbles:true}));",
+                timeTextField,
+                time);
     }
 
     public void selectOverallAvailableCounters(String numberOfCounters) {
