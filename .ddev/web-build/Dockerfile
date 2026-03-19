@@ -61,3 +61,22 @@ RUN GECKODRIVER_VERSION="v0.36.0" \
  && mv /tmp/geckodriver /usr/local/bin/geckodriver \
  && chmod +x /usr/local/bin/geckodriver \
  && rm /tmp/geckodriver.tar.gz
+
+# Install Microsoft Edge + matching EdgeDriver for local UI runs with ZMS_BROWSER=edge
+RUN mkdir -p /etc/apt/keyrings \
+ && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+    | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+ && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
+    > /etc/apt/sources.list.d/microsoft-edge.list \
+ && apt-get update \
+ && apt-get install -y microsoft-edge-stable \
+ && EDGE_MAJOR="$(microsoft-edge --version | awk '{print $3}' | cut -d. -f1)" \
+ && EDGE_DRIVER_VERSION="$(curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}")" \
+ && curl -fsSL -o /tmp/msedgedriver.zip \
+    "https://msedgedriver.azureedge.net/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip" \
+ && unzip -o /tmp/msedgedriver.zip -d /tmp \
+ && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
+ && chmod +x /usr/local/bin/msedgedriver \
+ && rm -f /tmp/msedgedriver.zip \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*

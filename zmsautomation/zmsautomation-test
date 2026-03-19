@@ -598,6 +598,7 @@ while (( attempt <= MAX_UI_RETRIES )); do
     -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
     -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
     -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
+    -Dwebdriver.edge.driver="${WEBDRIVER_EDGE_DRIVER:-/usr/local/bin/msedgedriver}" \
     -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
     -Dsso.username="$SSO_USER" \
     -Dsso.password="$SSO_PASSWORD" \

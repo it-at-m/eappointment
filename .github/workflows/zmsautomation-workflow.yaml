@@ -1,5 +1,5 @@
 name: ⚙️ zmsautomation-workflow
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation-workflow | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation-workflow | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome') || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome')), inputs.cucumber_tag_expressions) }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation-workflow | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation-workflow | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
@@ -29,6 +29,7 @@ on:
         options:
           - chrome
           - firefox
+          - edge
         default: chrome
       per_step_screenshots:
         description: Enable/disable per-step screenshots
@@ -281,8 +282,9 @@ jobs:
         run: |
           set -euo pipefail
           WEB_CONT="zms-web"
+          TARGET_BROWSER="${{ matrix.browser }}"
 
-          docker exec -u root "$WEB_CONT" bash -lc '
+          docker exec -u root -e TARGET_BROWSER="$TARGET_BROWSER" "$WEB_CONT" bash -lc '
             set -euo pipefail
             apt-get update
 
@@ -298,6 +300,26 @@ jobs:
 
             # Prefer symlink for "firefox" path used by Selenium setups.
             ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true
+
+            # Install Edge + EdgeDriver only when edge browser is selected.
+            if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
+              mkdir -p /etc/apt/keyrings
+              curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+                | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg
+              echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
+                > /etc/apt/sources.list.d/microsoft-edge.list
+              apt-get update
+              apt-get install -y --no-install-recommends microsoft-edge-stable
+
+              EDGE_MAJOR="$(microsoft-edge --version | awk "{print \$3}" | cut -d. -f1)"
+              EDGE_DRIVER_VERSION="$(curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}")"
+              curl -fsSL -o /tmp/msedgedriver.zip \
+                "https://msedgedriver.azureedge.net/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip"
+              unzip -o /tmp/msedgedriver.zip -d /tmp
+              mv /tmp/msedgedriver /usr/local/bin/msedgedriver
+              chmod +x /usr/local/bin/msedgedriver
+              rm -f /tmp/msedgedriver.zip
+            fi
 
             # geckodriver is not always present; install the version used by the devcontainer.
             if ! command -v geckodriver >/dev/null 2>&1; then
