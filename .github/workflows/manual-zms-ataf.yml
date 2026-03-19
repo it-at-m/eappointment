@@ -501,6 +501,9 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/container-logs
 
+          # Always capture container overview for debugging.
+          docker ps -a > artifacts/container-logs/docker-ps-a.txt 2>&1 || true
+
           containers=(
             zms-web
             zms-citizenview
@@ -511,7 +514,7 @@ jobs:
           )
 
           for c in "${containers[@]}"; do
-            if docker ps -a --format '{{.Names}}' | rg "^${c}$" >/dev/null; then
+            if docker inspect "$c" >/dev/null 2>&1; then
               docker logs "$c" > "artifacts/container-logs/${c}.log" 2>&1 || true
               docker inspect "$c" > "artifacts/container-logs/${c}.inspect.json" 2>/dev/null || true
             fi
