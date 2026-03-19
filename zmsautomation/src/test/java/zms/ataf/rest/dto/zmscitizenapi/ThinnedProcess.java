@@ -25,8 +25,29 @@ public class ThinnedProcess {
     @JsonProperty("officeId")
     private Integer officeId;
 
+    @JsonProperty("timestamp")
+    private Long timestamp;
+
+    @JsonProperty("serviceId")
+    private Integer serviceId;
+
+    @JsonProperty("serviceName")
+    private String serviceName;
+
     @JsonProperty("scope")
     private Object scope;
+
+    @JsonProperty("slotCount")
+    private Integer slotCount;
+
+    @JsonProperty("displayNumber")
+    private String displayNumber;
+
+    @JsonProperty("captchaToken")
+    private String captchaToken;
+
+    @JsonProperty("icsContent")
+    private String icsContent;
 
     @JsonProperty("queue")
     private Object queue;
@@ -71,12 +92,68 @@ public class ThinnedProcess {
         this.officeId = officeId;
     }
 
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Integer getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Integer serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     public Object getScope() {
         return scope;
     }
 
     public void setScope(Object scope) {
         this.scope = scope;
+    }
+
+    public Integer getSlotCount() {
+        return slotCount;
+    }
+
+    public void setSlotCount(Integer slotCount) {
+        this.slotCount = slotCount;
+    }
+
+    public String getDisplayNumber() {
+        return displayNumber;
+    }
+
+    public void setDisplayNumber(String displayNumber) {
+        this.displayNumber = displayNumber;
+    }
+
+    public String getCaptchaToken() {
+        return captchaToken;
+    }
+
+    public void setCaptchaToken(String captchaToken) {
+        this.captchaToken = captchaToken;
+    }
+
+    public String getIcsContent() {
+        return icsContent;
+    }
+
+    public void setIcsContent(String icsContent) {
+        this.icsContent = icsContent;
     }
 
     public Object getQueue() {

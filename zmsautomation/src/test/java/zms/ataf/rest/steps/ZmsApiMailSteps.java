@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.rest.dto.common.ApiResponse;
@@ -28,6 +29,7 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 public class ZmsApiMailSteps {
 
     private static String cachedXAuthKey;
+    private String lastCancellationMailHtml;
 
     @When("I fetch the preconfirmation mail for the current process")
     public void iFetchThePreconfirmationMailForTheCurrentProcess() {
@@ -119,6 +121,117 @@ public class ZmsApiMailSteps {
         } else {
             ScenarioLogManager.getLogger().warn("zmsapi: no appointment view URL in any mail for process {} (check second mail has link to /appointment/ without /confirm/)", processId);
         }
+    }
+
+    @When("I fetch the cancellation mail for the current process")
+    public void iFetchTheCancellationMailForTheCurrentProcess() {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        if (booking == null || booking.getProcessId() == null) {
+            throw new IllegalStateException("No booking process available to fetch cancellation mail for.");
+        }
+        Integer processId = booking.getProcessId();
+        String authKey = getOrLoginXAuthKey();
+        ScenarioLogManager.getLogger().info(
+                "zmsapi: fetching cancellation mail from GET /mails/ for process {}", processId);
+
+        Response response = given()
+                .baseUri(TestConfig.getBaseUri())
+                .header("X-Authkey", authKey)
+                .queryParam("limit", 500)
+                .when()
+                .get("/mails/");
+        CommonApiSteps.setResponse(response);
+
+        if (response.getStatusCode() != 200) {
+            throw new IllegalStateException(
+                    "Failed to fetch mails for cancellation mail. HTTP " + response.getStatusCode());
+        }
+
+        String html = extractCancellationMailHtmlFromMailResponse(response.asString(), processId);
+        if (html == null || html.isBlank()) {
+            throw new IllegalStateException("Cancellation mail not found or HTML content empty for process " + processId);
+        }
+        lastCancellationMailHtml = html;
+    }
+
+    @Then("the cancellation mail should indicate the appointment was deleted with the word {word}")
+    public void theCancellationMailShouldIndicateTheAppointmentWasDeletedWithTheWord(String expectedWord) {
+        org.assertj.core.api.Assertions.assertThat(lastCancellationMailHtml)
+                .as("cancellation mail HTML must have been fetched")
+                .isNotBlank();
+        String lower = lastCancellationMailHtml.toLowerCase();
+        String expectedLower = expectedWord != null ? expectedWord.toLowerCase() : "";
+
+        // 1) Straight match.
+        boolean hasExpected = !expectedLower.isBlank() && lower.contains(expectedLower);
+
+        // 2) Known encoding-mangled variant for German umlauts.
+        // Example: "gelöscht" may appear as "gel?scht".
+        boolean hasGeloeschtEncodingVariant =
+                "gelöscht".equals(expectedLower) && (lower.contains("gel?scht") || java.util.regex.Pattern
+                    .compile("wurde\\s+gel.*sch", java.util.regex.Pattern.DOTALL)
+                    .matcher(lower)
+                    .find());
+
+        org.assertj.core.api.Assertions.assertThat(hasExpected || hasGeloeschtEncodingVariant)
+                .as("cancellation mail HTML should include expected deletion word '%s' (or encoding variant)", expectedWord)
+                .isTrue();
+    }
+
+    private String extractCancellationMailHtmlFromMailResponse(String responseBody, Integer processId) {
+        try {
+            JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
+            if (!data.isArray()) {
+                return null;
+            }
+            // IMPORTANT: in our current test setup we do NOT delete old mails.
+            // So multiple mails can exist for the same processId (reserve / preconfirm / confirm / cancel).
+            // We must therefore pick the correct cancellation mail, not just "the first HTML part".
+            String newestHtmlCandidate = null;
+            int newestMailId = -1;
+
+            String matchedAbgesagtHtml = null;
+            int matchedAbgesagtMailId = -1;
+            for (JsonNode mail : data) {
+                JsonNode proc = mail.path("process");
+                if (proc.isMissingNode() || proc.path("id").asInt(-1) != processId) {
+                    continue;
+                }
+                int mailId = mail.path("id").asInt(-1);
+                JsonNode multipart = mail.path("multipart");
+                if (!multipart.isArray() || multipart.isEmpty()) {
+                    continue;
+                }
+                for (JsonNode part : multipart) {
+                    if (!"text/html".equals(part.path("mime").asText(null))) {
+                        continue;
+                    }
+                    String content = part.path("content").asText("");
+                    if (content == null || content.isBlank()) {
+                        continue;
+                    }
+
+                    // Always track the newest HTML content as a fallback.
+                    if (mailId != -1 && mailId >= newestMailId) {
+                        newestMailId = mailId;
+                        newestHtmlCandidate = content;
+                    }
+
+                    // Prefer the actual cancellation mail by marker.
+                    String lower = content.toLowerCase();
+                    if (lower.contains("abgesagt")) {
+                        if (mailId != -1 && mailId >= matchedAbgesagtMailId) {
+                            matchedAbgesagtMailId = mailId;
+                            matchedAbgesagtHtml = content;
+                        }
+                    }
+                }
+            }
+            return matchedAbgesagtHtml != null ? matchedAbgesagtHtml : newestHtmlCandidate;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmsapi: could not extract cancellation mail html", e);
+        }
+        return null;
     }
 
     /** Extract appointment view link from GET /mails/ for the given process. Uses mail with max id (newest) that contains the link. */
