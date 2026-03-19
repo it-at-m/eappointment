@@ -1,4 +1,4 @@
-name: Combined Workflow with Documentation
+name: Combined Workflow with Documentation 🐘
 
 on:
   push:
