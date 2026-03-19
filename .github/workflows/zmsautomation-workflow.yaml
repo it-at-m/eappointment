@@ -9,15 +9,15 @@ on:
           Newline-separated Cucumber tag expressions. Each line is executed sequentially.
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
           Examples:⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web and not @ignore ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @rest and @zmsapi and not @ignore ⠀⠀⠀⠀
-          - @web and @zmscitizenview and @ZMSKVR-1124 ⠀
-          - @rest and @zmscitizenapi and @ZMSKVR-1124 ⠀
-          - (@rest or @web) and not @ignore ⠀⠀⠀⠀⠀
+          - @web and not @ignore 
+          - @rest and @zmsapi and not @ignore 
+          - @web and @zmscitizenview and @ZMSKVR-1124 
+          - @rest and @zmscitizenapi and @ZMSKVR-1124 
+          - (@rest or @web) and not @ignore 
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
           Available tags: ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @web @rest ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          - @zmsadmin @zmsstatistic @zmscitizenview ⠀
+          - @web @rest 
+          - @zmsadmin @zmsstatistic @zmscitizenview 
           - @zmsapi @zmscitizenapi
         required: true
         default: |
