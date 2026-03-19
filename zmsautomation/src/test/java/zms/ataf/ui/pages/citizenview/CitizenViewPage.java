@@ -65,7 +65,7 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * Generic helper for asynchronous transitions after actions such as Weiter / confirm links.
-     * Waits in three windows: 5s, then +10s, then +15s (total 30s) while polling {@code condition}.
+     * Waits in four windows: 5s, then +10s, then +15s, then +30s (total 60s) while polling {@code condition}.
      */
     private void waitWithThreeWindows(BooleanSupplier condition, String context) {
         long deadlineFirst = System.currentTimeMillis() + 5000L;
@@ -95,9 +95,23 @@ public class CitizenViewPage extends BasePage {
             return;
         }
         ScenarioLogManager.getLogger()
-                .warn("{} still not visible after 15s; retrying for final 15s window", context);
+                .warn("{} not visible after first 15s window; retrying for additional 15s", context);
         long deadlineThird = System.currentTimeMillis() + 15000L;
         while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineThird) {
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        if (condition.getAsBoolean()) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn("{} still not visible after 30s; retrying for final 30s window", context);
+        long deadlineFourth = System.currentTimeMillis() + 30000L;
+        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineFourth) {
             try {
                 Thread.sleep(250L);
             } catch (InterruptedException ie) {
