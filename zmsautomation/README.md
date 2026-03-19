@@ -74,16 +74,18 @@ The script will:
 11. Restore database
 12. Cleanup
 
-### Standalone Profile (Default - CI)
+### Standalone Profile (Legacy REST-assured tests)
 
 Runs the original JUnit-based REST-assured tests:
 
 ```bash
 cd zmsautomation
-mvn test
+mvn test -Pstandalone
 ```
 
-This profile is used in GitHub Actions CI.
+### ATAF as default
+
+The `ataf` Maven profile is active by default in this module, so `mvn test` / `mvn test-compile` already includes the ATAF/Cucumber/TestNG/Selenium dependencies.
 
 ### ATAF Profiles (Local Development - Manual)
 
@@ -93,7 +95,7 @@ Requires Artifactory access (closed-source ATAF artifacts).
 
 ```bash
 cd zmsautomation
-mvn test -Pataf
+mvn test
 ```
 
 - **API-only tests (REST Assured, no Selenium)**:
@@ -153,7 +155,7 @@ export MYSQL_DATABASE="zmsbo"
 export MYSQL_USER="zmsbo"
 export MYSQL_PASSWORD="zmsbo"
 
-mvn test -Pataf
+mvn test
 ```
 
 ## Database Setup

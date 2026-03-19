@@ -500,7 +500,7 @@ section "10.1 Setup client side mocked time"
 
 # 11. Running Tests
 section "11. Running ATAF Tests"
-info "Running Cucumber/ATAF tests with -Pataf profile..."
+info "Running Cucumber/ATAF tests with default ataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
@@ -540,7 +540,7 @@ rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || 
 TEST_EXIT=0
 cd "$PROJECT_ROOT/zmsautomation"
 
-# Run with ATAF profile
+# Run with default ataf profile
 # Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
 # Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
 ATAF_MAVEN_ARGS=()
@@ -566,7 +566,6 @@ fi
 SSO_USER="${SSO_USER:-ataf}"
 SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
 if mvn -B -DtrimStackTrace=false \
-  -Pataf \
   -Dbase.uri="$BASE_URI" \
   -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
   -Dbrowser="${ZMS_BROWSER:-chrome}" \
