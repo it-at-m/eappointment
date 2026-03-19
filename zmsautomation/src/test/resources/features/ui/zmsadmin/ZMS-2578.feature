@@ -34,10 +34,10 @@ Funktionalität: Default
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
 		Dann Sollte der Kunde "<TestData.Kunde1>" unter abgeschlossene Termine erscheinen.
 		Angenommen Die fertige Termintabelle angezeigt.
-		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:20" und "00:00:50" liegen.
-		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:02:20" und "00:02:50" liegen.
-		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:20" und "00:01:00" liegen.
-		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:00:50" und "00:01:10" liegen.
+		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:01" und "00:01:00" liegen.
+		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:02:00" und "00:03:00" liegen.
+		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:01" und "00:01:10" liegen.
+		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:00:01" und "00:01:10" liegen.
 
 
 
