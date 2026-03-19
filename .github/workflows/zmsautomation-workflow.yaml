@@ -8,14 +8,14 @@ on:
         description: |
           Newline-separated Cucumber tag expressions. Each line is executed sequentially.
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          Examples:⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+          Examples:⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
           - @web and not @ignore 
           - @rest and @zmsapi and not @ignore 
           - @web and @zmscitizenview and @ZMSKVR-1124 
           - @rest and @zmscitizenapi and @ZMSKVR-1124 
           - (@rest or @web) and not @ignore 
           ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-          Available tags: ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+          Available tags: ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
           - @web @rest 
           - @zmsadmin @zmsstatistic @zmscitizenview 
           - @zmsapi @zmscitizenapi
