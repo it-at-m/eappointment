@@ -1,4 +1,4 @@
-name: manual-zms-ataf
+name: zmsautomation-workflow
 
 on:
   workflow_dispatch:
@@ -492,4 +492,3 @@ jobs:
           name: zmsautomation-container-logs
           path: artifacts/container-logs/**
           if-no-files-found: warn
-
