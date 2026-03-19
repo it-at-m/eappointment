@@ -396,67 +396,6 @@ public class CitizenApiSteps {
         org.assertj.core.api.Assertions.assertThat(officesAndServices.getRelations()).isNotNull();
     }
     
-    @Then("I should receive a confirmation number")
-    public void iShouldReceiveAConfirmationNumber() {
-        // TODO: Implement confirmation number validation
-        // This will need to be implemented based on the actual booking response structure
-        response.then()
-            .body("confirmationNumber", notNullValue());
-    }
-    
-    @Given("I have a valid appointment confirmation number")
-    public void iHaveAValidAppointmentConfirmationNumber() {
-        // TODO: This would typically set up test data or retrieve a valid confirmation number
-        // For now, this is a placeholder that would be implemented based on actual API structure
-        baseUri = TestConfig.getCitizenApiBaseUri();
-    }
-    
-    @Given("I have an invalid appointment confirmation number")
-    public void iHaveAnInvalidAppointmentConfirmationNumber() {
-        // Placeholder for invalid confirmation number setup
-        baseUri = TestConfig.getCitizenApiBaseUri();
-    }
-    
-    @Given("I have a cancelled appointment confirmation number")
-    public void iHaveACancelledAppointmentConfirmationNumber() {
-        // Placeholder for cancelled appointment setup
-        baseUri = TestConfig.getCitizenApiBaseUri();
-    }
-    
-    @When("I submit a cancellation request")
-    public void iSubmitACancellationRequest() {
-        // TODO: Implement cancellation request
-        // This will need to be implemented based on the actual cancellation API structure
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .contentType("application/json")
-            .body("{\"confirmationNumber\": \"placeholder\"}") // Placeholder - needs actual confirmation number
-        .when()
-            .delete("/appointments/");
-        CommonApiSteps.setResponse(response);
-    }
-    
-    @Then("the appointment should be cancelled")
-    public void theAppointmentShouldBeCancelled() {
-        response.then()
-            .body(not(empty()));
-        // TODO: Add specific assertions for cancellation confirmation
-    }
-    
-    @Then("the response should indicate the appointment was not found")
-    public void theResponseShouldIndicateAppointmentNotFound() {
-        response.then()
-            .body(not(empty()));
-        // TODO: Add specific assertions for not found error
-    }
-    
-    @Then("the response should indicate the appointment is already cancelled")
-    public void theResponseShouldIndicateAppointmentAlreadyCancelled() {
-        response.then()
-            .body(not(empty()));
-        // TODO: Add specific assertions for already cancelled error
-    }
-    
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
