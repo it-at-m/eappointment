@@ -30,13 +30,6 @@ public class ZmsApiSteps {
             .statusCode(200);
     }
     
-    @Given("the ZMS API is available with logging {string}")
-    public void theZmsApiIsAvailableWithLogging(String loggingEnabled) {
-        baseUri = TestConfig.getBaseUri();
-        // Logging configuration would be set here if needed
-        theZmsApiIsAvailable();
-    }
-    
     @When("I request the status endpoint")
     public void iRequestTheStatusEndpoint() {
         response = given()
