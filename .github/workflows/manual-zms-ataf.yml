@@ -9,7 +9,7 @@ on:
           Example: @smoke and not @ignore
         required: true
         default: |
-          @web and not @ignore
+          (@rest or @web) and not @ignore
       browser:
         description: Choose browser for UI tests
         required: true
