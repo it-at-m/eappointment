@@ -1,4 +1,4 @@
-name: Frontend Build
+name: Frontend Build zmscitizenview
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: # hier müssen die Pfade angegeben werden
+        include:
           - app-path: zmscitizenview
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@e012d3bda6f9d5511415e2d885f32826049284a4 # v1.0.23
