@@ -1,4 +1,4 @@
-name: Prune Untagged Packages 🧹
+name: 🧹 Prune Untagged Packages
 
 on:
   schedule:

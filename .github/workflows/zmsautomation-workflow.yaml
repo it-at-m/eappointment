@@ -1,4 +1,4 @@
-name: zmsautomation-workflow
+name: ⚙️ zmsautomation-workflow
 run-name: ${{ github.event_name == 'schedule' && 'zmsautomation-workflow | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation-workflow | {0} | {1}', inputs.browser == 'firefox' && '🦊 firefox' || '🌐 chrome', inputs.cucumber_tag_expressions) }}
 
 on:

@@ -1,4 +1,4 @@
-name: Prune Old Workflow Runs 🧹
+name: 🧹 Prune Old Workflow Runs
 
 on:
   schedule:

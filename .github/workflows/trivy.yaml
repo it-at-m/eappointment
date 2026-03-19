@@ -1,4 +1,4 @@
-name: Security Check 🛡️
+name: 🛡️ Trivy Security Check
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Security Check
+    name: 🛡️ Trivy Security Check
     runs-on: ubuntu-latest
     permissions:
       contents: read

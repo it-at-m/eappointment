@@ -1,4 +1,4 @@
-name: zmsautomation-maven-build
+name: ☕ zmsautomation-maven-build
 
 on:
   pull_request:
