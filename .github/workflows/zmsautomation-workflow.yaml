@@ -29,7 +29,7 @@ permissions:
   packages: read
 
 jobs:
-  zms-ataf:
+  zms-automation:
     runs-on: ubuntu-latest
     env:
       # Align with php-build-images.yaml tagging logic for branches
