@@ -116,6 +116,17 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
         return findElementByLocatorType("//input[@name='preferences[queue][callCountMax]']", LocatorType.XPATH, true).getAttribute("value");
     }
 
+    public int getOpeningHoursSlotTimeInMinutes() {
+        String raw = findElementByLocatorType("//input[@id='AvDaySlottime']", LocatorType.XPATH, true).getAttribute("value");
+        try {
+            int parsed = Integer.parseInt(raw.trim());
+            return parsed > 0 ? parsed : 5;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Could not parse opening-hours slot time '{}', falling back to 5 minutes", raw);
+            return 5;
+        }
+    }
+
 public void saveLocationChanges() {
     ScenarioLogManager.getLogger().info("Trying to click 'Speichern' to save location changes...");
 
@@ -273,13 +284,13 @@ public void saveLocationChanges() {
     public void enterOpeningTime(String time) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter opening time \"" + time + "\"");
-        enterTimeViaPicker("AvDatesStart_time", "Uhrzeit von wählen", time);
+        enterTimeDirectly("AvDatesStart_time", time);
     }
 
     public void enterClosingTime(String time) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter closing time \"" + time + "\"");
-        enterTimeViaPicker("AvDatesEnd_time", "Uhrzeit bis wählen", time);
+        enterTimeDirectly("AvDatesEnd_time", time);
     }
 
     public void enterClosingDate(String date) {
@@ -305,33 +316,12 @@ public void saveLocationChanges() {
                 .orElseGet(() -> findElementByLocatorType("//input[@id='" + id + "']", LocatorType.XPATH, true));
     }
 
-    private void enterTimeViaPicker(String inputId, String clockTitle, String time) {
+    private void enterTimeDirectly(String inputId, String time) {
         WebElement timeTextField = findVisibleInputById(inputId);
         moveToElementAction(timeTextField);
-
-        DRIVER.findElements(By.xpath("//a[@title='" + clockTitle + "']")).stream()
-                .filter(WebElement::isDisplayed)
-                .findFirst()
-                .ifPresent(clockIcon -> clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clockIcon, true));
-
-        WebElement timeOption = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> d.findElements(By.xpath(
-                                "//li[contains(@class,'react-datepicker__time-list-item')"
-                                        + " and normalize-space()='" + time + "'"
-                                        + " and not(contains(@class,'--disabled'))]"))
-                        .stream()
-                        .filter(WebElement::isDisplayed)
-                        .findFirst()
-                        .orElse(null));
-
-        if (timeOption != null) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, timeOption, true);
-            return;
-        }
-
-        // Fallback for unexpected picker markup changes: use the visible input directly.
         ((JavascriptExecutor) DRIVER).executeScript(
                 "var el=arguments[0], val=arguments[1];"
+                        + "el.focus();"
                         + "var setter=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;"
                         + "setter.call(el,val);"
                         + "el.dispatchEvent(new Event('input',{bubbles:true}));"

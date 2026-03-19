@@ -188,6 +188,8 @@ public class AdminSteps {
                 if (effective.isBefore(now)) {
                     effective = latestAllowed;
                 }
+                int slotMinutes = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+                effective = roundUpToSlotTime(effective, slotMinutes, latestAllowed);
                 closingTime = effective.format(DateTimeFormatter.ofPattern("HH:mm"));
             }
             AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(closingTime);
@@ -198,6 +200,21 @@ public class AdminSteps {
         default:
             throw new IllegalArgumentException("For text field \"" + field + "\" no action is implemented yet!");
         }
+    }
+
+    private LocalTime roundUpToSlotTime(LocalTime time, int slotMinutes, LocalTime latestAllowed) {
+        if (slotMinutes <= 1) {
+            return time;
+        }
+        int minute = time.getMinute();
+        int roundedMinute = ((minute + slotMinutes - 1) / slotMinutes) * slotMinutes;
+        LocalTime rounded = time.withSecond(0).withNano(0);
+        if (roundedMinute >= 60) {
+            rounded = rounded.plusHours(1).withMinute(0);
+        } else {
+            rounded = rounded.withMinute(roundedMinute);
+        }
+        return rounded.isAfter(latestAllowed) ? latestAllowed : rounded;
     }
 
     //TODO: 1
