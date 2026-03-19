@@ -6,7 +6,16 @@ on:
       cucumber_tag_expressions:
         description: |
           Newline-separated Cucumber tag expressions. Each line is executed sequentially.
-          Example: @smoke and not @ignore
+          Examples:
+            @web and not @ignore
+            @rest and @zmsapi and not @ignore
+            @web and @zmscitizenview and @ZMSKVR-1124
+            @rest and @zmscitizenapi and @ZMSKVR-1124
+            (@rest or @web) and not @ignore
+          Available tags include:
+            @web @rest
+            @zmsadmin @zmsstatistic @zmscitizenview
+            @zmsapi @zmscitizenapi
         required: true
         default: |
           (@rest or @web) and not @ignore
