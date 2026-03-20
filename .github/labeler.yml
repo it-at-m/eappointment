@@ -10,3 +10,6 @@
   - head-branch: [ '^dep', '-dependency-' ]
 "Type: Security":
   - head-branch: [ '^sec', '-security-' ]
+
+"Type: Chore":
+  - head-branch: [ '^chore', '-chore-' ]
