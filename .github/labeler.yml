@@ -1,0 +1,28 @@
+"Type: Feature":
+  - head-branch: [ '^feat', '-feature-' ]
+"Type: Bug":
+  - head-branch: [ '^bug', '-bug-' ]
+"Type: Maintenance":
+  - head-branch: [ '^maint', '-maintenance-' ]
+"Type: Documentation":
+  - head-branch: [ '^docs', '-documentation-' ]
+"Type: Dependency":
+  - head-branch: [ '^dep', '-dependency-' ]
+"Type: Security":
+  - head-branch: [ '^sec', '-security-' ]
+"Template: Backend":
+  - changed-files:
+    - any-glob-to-any-file: ['refarch-backend/**']
+"Template: EAI":
+  - changed-files:
+    - any-glob-to-any-file: ['refarch-eai/**']
+"Template: Frontend":
+  - changed-files:
+    - any-glob-to-any-file: ['refarch-frontend/**']
+"Template: Webcomponent":
+  - changed-files:
+    - any-glob-to-any-file: ['refarch-webcomponent/**']
+"Template: Documentation":
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**']
+
