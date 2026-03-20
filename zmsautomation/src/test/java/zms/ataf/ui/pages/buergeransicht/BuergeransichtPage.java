@@ -80,6 +80,7 @@ public class BuergeransichtPage extends BasePage {
         return webElementAtomicReference.get();
     }
 
+    @Override
     public boolean isWebElementVisible(int explicitWaitTimeOut, String locator, LocatorType locatorType, boolean clickable) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(explicitWaitTimeOut));
         try {
@@ -118,6 +119,7 @@ public class BuergeransichtPage extends BasePage {
         return true;
     }
 
+    @Override
     public boolean isWebElementInvisible(int explicitWaitTimeOut, String locator, LocatorType locatorType, Context context) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(explicitWaitTimeOut));
         try {
