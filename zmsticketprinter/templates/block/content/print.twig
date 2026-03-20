@@ -8,7 +8,16 @@
 			<br>
 			{% if printText %}{{ printText }}{% endif %}
 			<br>
-    		{{ process.queue.arrivalTime|format_date(pattern="EE dd. MMMM Y") }}, {{ process.queue.arrivalTime|format_date(pattern="HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
+			{% if ticketprinter.customText1 or ticketprinter.customText2 %}
+				{% if ticketprinter.customText1 %}
+					{{ ticketprinter.customText1 }}<br>
+				{% endif %}
+				{% if ticketprinter.customText2 %}
+					{{ ticketprinter.customText2 }}<br>
+				{% endif %}
+				<br>
+			{% endif %}
+			{{ process.queue.arrivalTime|format_date(pattern="EE dd. MMMM Y") }}, {{ process.queue.arrivalTime|format_date(pattern="HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
 		</span>
 	</span>
 </div>

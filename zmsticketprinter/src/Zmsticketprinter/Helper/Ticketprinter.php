@@ -115,6 +115,8 @@ class Ticketprinter
         if ($this->scopeId) {
             $entity = new Entity();
             $entity->buttonlist = 's' . $this->scopeId;
+            $entity->customText1 = $this->requestParams['customText1'] ?? null;
+            $entity->customText2 = $this->requestParams['customText2'] ?? null;
         }
         $entity = $entity->toStructuredButtonList();
         return $entity;
