@@ -739,6 +739,21 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.showTheFinishedAppointmentTable();
     }
 
+    private Duration parseHmsDuration(String hms, String label) {
+        try {
+            String[] parts = hms.split(":");
+            if (parts.length != 3) {
+                throw new IllegalArgumentException(
+                        "Expected format H:mm:ss for " + label + ", but got \"" + hms + "\"");
+            }
+            return Duration.ofHours(Long.parseLong(parts[0]))
+                    .plusMinutes(Long.parseLong(parts[1]))
+                    .plusSeconds(Long.parseLong(parts[2]));
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse numeric values for " + label + " from \"" + hms + "\"", nfe);
+        }
+    }
+
     // Es geht über den Kundennamen
     @Dann("Sollte der Kunde {string} unter abgeschlossene Termine erscheinen.")
     public void sollte_der_kunde_unter_abgeschlossene_termine_erscheinen(String kunde) {
@@ -759,13 +774,8 @@ public class AdminSteps {
     @Dann("Die Wartezeit-H:mm:ss für {string} sollte zwischen {string} und {string} liegen.")
     public void die_wartezeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleWartezeit, String maximaleWartezeit) {
         ScenarioLogManager.getLogger().info("Verifying if waiting time for {} is between {} and {}.", kunde, minimaleWartezeit, maximaleWartezeit);
-        Duration minDuration = Duration.ofHours(Long.parseLong(minimaleWartezeit.split(":")[0]))
-                .plusMinutes(Long.parseLong(minimaleWartezeit.split(":")[1]))
-                .plusSeconds(Long.parseLong(minimaleWartezeit.split(":")[2]));
-
-        Duration maxDuration = Duration.ofHours(Long.parseLong(maximaleWartezeit.split(":")[0]))
-                .plusMinutes(Long.parseLong(maximaleWartezeit.split(":")[1]))
-                .plusSeconds(Long.parseLong(maximaleWartezeit.split(":")[2]));
+        Duration minDuration = parseHmsDuration(minimaleWartezeit, "minimaleWartezeit");
+        Duration maxDuration = parseHmsDuration(maximaleWartezeit, "maximaleWartezeit");
 
         Duration effektiveWartezeit = COUNTER_PROCESSING_STATION_PAGE.getFinishedAppointmentWaitingTime(TestDataHelper.transformTestData(kunde));
         // Überprüfen, ob die effektive Wartezeit innerhalb des angegebenen Bereichs liegt
@@ -784,13 +794,8 @@ public class AdminSteps {
             String maximaleBearbeitungszeit) {
         ScenarioLogManager.getLogger()
                 .info("Verifying if processing time for {} is between {} and {}.", kunde, minimaleBearbeitungszeit, maximaleBearbeitungszeit);
-        Duration minDuration = Duration.ofHours(Long.parseLong(minimaleBearbeitungszeit.split(":")[0]))
-                .plusMinutes(Long.parseLong(minimaleBearbeitungszeit.split(":")[1]))
-                .plusSeconds(Long.parseLong(minimaleBearbeitungszeit.split(":")[2]));
-
-        Duration maxDuration = Duration.ofHours(Long.parseLong(maximaleBearbeitungszeit.split(":")[0]))
-                .plusMinutes(Long.parseLong(maximaleBearbeitungszeit.split(":")[1]))
-                .plusSeconds(Long.parseLong(maximaleBearbeitungszeit.split(":")[2]));
+        Duration minDuration = parseHmsDuration(minimaleBearbeitungszeit, "minimaleBearbeitungszeit");
+        Duration maxDuration = parseHmsDuration(maximaleBearbeitungszeit, "maximaleBearbeitungszeit");
 
         Duration effektiveBearbeitungszeit = COUNTER_PROCESSING_STATION_PAGE.getFinishedAppointmentProcessingTime(TestDataHelper.transformTestData(kunde));
         // Überprüfen, ob die effektive Bearbeitungszeit innerhalb des angegebenen Bereichs liegt
