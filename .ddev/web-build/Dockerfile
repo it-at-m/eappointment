@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y \
     x11-xserver-utils \
     chromium \
     chromium-driver \
+    unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create Firefox symlink
@@ -62,22 +63,56 @@ RUN GECKODRIVER_VERSION="v0.36.0" \
  && chmod +x /usr/local/bin/geckodriver \
  && rm /tmp/geckodriver.tar.gz
 
-# Install Microsoft Edge + matching EdgeDriver for local UI runs with ZMS_BROWSER=edge
+# Install Microsoft Edge + matching EdgeDriver for local UI runs with ZMS_BROWSER=edge.
 # EdgeDriver URL uses the same full version string as the installed Edge package.
-RUN mkdir -p /etc/apt/keyrings \
- && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-    | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg \
- && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
-    > /etc/apt/sources.list.d/microsoft-edge.list \
- && apt-get update \
- && apt-get install -y microsoft-edge-stable \
- && EDGE_VERSION="$(microsoft-edge --version | awk '{print $3}')" \
- && EDGE_VERSION="${EDGE_VERSION%%-*}" \
- && curl -fsSL -o /tmp/msedgedriver.zip \
-      "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
- && unzip -o /tmp/msedgedriver.zip -d /tmp \
- && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
- && chmod +x /usr/local/bin/msedgedriver \
- && rm -f /tmp/msedgedriver.zip \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+# On linux/arm64, we attempt to install Edge; if that fails, we still install the arm64 EdgeDriver.
+ARG EDGE_DRIVER_VERSION=146.0.3856.62
+RUN set -euo pipefail; \
+    ARCH="$(dpkg --print-architecture)"; \
+    if [ "$ARCH" = "amd64" ]; then \
+      mkdir -p /etc/apt/keyrings \
+   && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+      | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+   && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
+      > /etc/apt/sources.list.d/microsoft-edge.list \
+   && apt-get update \
+   && apt-get install -y microsoft-edge-stable \
+   && EDGE_VERSION="$(microsoft-edge --version | awk '{print $3}')" \
+   && EDGE_VERSION="${EDGE_VERSION%%-*}" \
+   && curl -fsSL -o /tmp/msedgedriver.zip \
+        "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
+   && unzip -o /tmp/msedgedriver.zip -d /tmp \
+   && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
+   && chmod +x /usr/local/bin/msedgedriver \
+   && rm -f /tmp/msedgedriver.zip \
+   && apt-get clean \
+   && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "$ARCH" = "arm64" ]; then \
+      mkdir -p /etc/apt/keyrings \
+   && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+      | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+   && echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
+      > /etc/apt/sources.list.d/microsoft-edge.list \
+   && apt-get update || true \
+   && apt-get install -y microsoft-edge-stable || true \
+   && if command -v microsoft-edge >/dev/null 2>&1; then \
+        EDGE_VERSION="$(microsoft-edge --version | awk '{print $3}')"; \
+      else \
+        EDGE_VERSION="${EDGE_DRIVER_VERSION}"; \
+      fi \
+   && EDGE_VERSION="${EDGE_VERSION%%-*}" \
+   && curl -fsSL -o /tmp/msedgedriver.zip \
+        "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_arm64.zip" \
+   && unzip -o /tmp/msedgedriver.zip -d /tmp \
+   && if [ -f /tmp/msedgedriver ]; then \
+        mv /tmp/msedgedriver /usr/local/bin/msedgedriver; \
+      else \
+        mv /tmp/*/msedgedriver /usr/local/bin/msedgedriver; \
+      fi \
+   && chmod +x /usr/local/bin/msedgedriver \
+   && rm -f /tmp/msedgedriver.zip \
+   && apt-get clean || true \
+   && rm -rf /var/lib/apt/lists/* || true ; \
+    else \
+      echo "Skipping Microsoft EdgeDriver install for unsupported arch: $ARCH"; \
+    fi
