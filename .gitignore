@@ -9,6 +9,7 @@ dldb-mapper
 .ddev/.env
 .ddev/.env.template
 .devcontainer/.env
+.devcontainer/php/xdebug.ini
 
 # =============== Local =================
 /local/
@@ -24,6 +25,7 @@ cache/
 .sass-cache
 .cache
 qemu*.core
+
 
 # =============== Java =================
 # Compiled class file
@@ -217,4 +219,4 @@ nbdist/
 *.njsproj
 *.sln
 *.sw?
-.devcontainer/php/xdebug.ini
+
