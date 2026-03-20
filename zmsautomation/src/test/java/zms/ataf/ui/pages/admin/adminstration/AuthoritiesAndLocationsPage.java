@@ -22,9 +22,9 @@ import org.testng.Assert;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
-import zms.ataf.helpers.RandomNameHelper;
 
 public class AuthoritiesAndLocationsPage extends AdminPage {
 
