@@ -304,8 +304,9 @@ jobs:
             # Install Edge + EdgeDriver only when edge browser is selected.
             if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
               mkdir -p /etc/apt/keyrings
+              rm -f /etc/apt/keyrings/microsoft.gpg
               curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-                | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg
+                | gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg
               echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
                 > /etc/apt/sources.list.d/microsoft-edge.list
               apt-get update
@@ -335,8 +336,9 @@ jobs:
             # Ensure Java/Maven are available for Flyway migrations (via Maven plugin).
             if ! command -v mvn >/dev/null 2>&1; then
               apt-get install -y --no-install-recommends gnupg
+              rm -f /usr/share/keyrings/adoptium.gpg
               curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
-                | gpg --batch --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
+                | gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
               echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
                 > /etc/apt/sources.list.d/adoptium.list
               apt-get update
