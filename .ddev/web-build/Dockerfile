@@ -6,7 +6,7 @@ ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install Java 21 (Eclipse Temurin LTS)
-RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null \
+RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --batch --no-tty --dearmor | tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null \
  && echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print $2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list \
  && apt-get update && apt-get install -y temurin-21-jdk \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -66,7 +66,7 @@ RUN GECKODRIVER_VERSION="v0.36.0" \
 # EdgeDriver URL uses the same full version string as the installed Edge package.
 RUN mkdir -p /etc/apt/keyrings \
  && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-    | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+    | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg \
  && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
     > /etc/apt/sources.list.d/microsoft-edge.list \
  && apt-get update \
