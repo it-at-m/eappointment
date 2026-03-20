@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -381,7 +380,7 @@ public class AdminSteps {
             if (TestDataHelper.getTestData("customer_name") != null) {
                 email = RandomNameHelper.getEmailConformName(TestDataHelper.getTestData("customer_name")) + "@mailinator.com";
             } else {
-                email = RandomStringUtils.randomAlphanumeric(8).toLowerCase() + "@mailinator.com";
+                email = RandomNameHelper.randomAlphanumeric(8) + "@mailinator.com";
             }
 
             Assert.assertTrue(email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"));

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
@@ -151,7 +150,7 @@ public class BuergeransichtSteps {
             if (TestDataHelper.getTestData("customer_name") != null) {
                 email = RandomNameHelper.getEmailConformName(TestDataHelper.getTestData("customer_name")) + "@mailinator.com";
             } else {
-                email = RandomStringUtils.randomAlphanumeric(8).toLowerCase() + "@mailinator.com";
+                email = RandomNameHelper.randomAlphanumeric(8) + "@mailinator.com";
             }
         }
         TestDataHelper.setTestData("customer_email", email);

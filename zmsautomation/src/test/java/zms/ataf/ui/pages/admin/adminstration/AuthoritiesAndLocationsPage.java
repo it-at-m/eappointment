@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -25,6 +24,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
+import zms.ataf.helpers.RandomNameHelper;
 
 public class AuthoritiesAndLocationsPage extends AdminPage {
 
@@ -250,7 +250,7 @@ public void saveLocationChanges() {
 
     public void enterNoteForOpeningHours(String noteKey) {
         CONTEXT.set();
-        String note = "Note- " + RandomStringUtils.randomAlphanumeric(10);
+        String note = "Note- " + RandomNameHelper.randomAlphanumeric(10);
         ScenarioLogManager.getLogger().info("Trying to enter random generated note for opening hours \"" + note + "\"");
         TestDataHelper.setTestData(noteKey, note);
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, note, "//input[@id='AvDayDescription']", LocatorType.XPATH);

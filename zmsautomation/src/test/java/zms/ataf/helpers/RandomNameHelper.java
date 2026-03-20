@@ -109,4 +109,20 @@ public final class RandomNameHelper {
         }
         return new String[] {first, last};
     }
+
+    /**
+     * Generates a lowercase alphanumeric string (a-z + 0-9) with exactly the requested length.
+     * Intended to replace deprecated commons-lang {@code RandomStringUtils.randomAlphanumeric(...)}.
+     */
+    public static String randomAlphanumeric(int length) {
+        if (length <= 0) {
+            return "";
+        }
+        final char[] alphabet = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(alphabet[random.nextInt(alphabet.length)]);
+        }
+        return sb.toString();
+    }
 }
