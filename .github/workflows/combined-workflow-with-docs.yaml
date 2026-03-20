@@ -1,4 +1,4 @@
-name: 🐘 Combined PHP Workflow Build with Documentation
+name: 🐘 Combined PHP Build with Documentation
 
 on:
   push:
