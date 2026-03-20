@@ -4,11 +4,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Office model based on schema: zmsentities/schema/citizenapi/office.json
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = OfficeDeserializer.class)
 public class Office {
     @JsonProperty("id")
     private Integer id;
@@ -165,6 +167,7 @@ public class Office {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonDeserialize(using = AddressDeserializer.class)
     public static class Address {
         @JsonProperty("house_number")
         private String houseNumber;
