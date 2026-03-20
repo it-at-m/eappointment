@@ -479,9 +479,7 @@ jobs:
 
               bash /var/www/html/zmsautomation/zmsautomation-test \
                 "${profiles[@]}" \
-                -Dcucumber.filter.tags="$tags" \
-                -Dtestautomation.browserHeadless=true \
-                -Dtestautomation.browserVisible=false
+                -Dcucumber.filter.tags="$tags"
             ' -- "$expr" "$SCREENSHOT" "$BROWSER"
             rc=$?
             set -e
