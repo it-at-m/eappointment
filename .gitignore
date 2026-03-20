@@ -220,3 +220,7 @@ nbdist/
 *.njsproj
 *.sln
 *.sw?
+
+# Local Keycloak redirect URL overrides (generated/modified locally)
+zmsadmin/keycloak.json
+zmsstatistic/keycloak.json
