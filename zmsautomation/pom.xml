@@ -143,17 +143,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
 
         <!-- Cucumber -->
@@ -231,17 +231,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
@@ -315,17 +315,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.0</version>
+          <version>0.3.1</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
