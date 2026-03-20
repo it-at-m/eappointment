@@ -12,3 +12,75 @@
   - head-branch: [ '^sec', '-security-' ]
 "Type: Chore":
   - head-branch: [ '^chore', '-chore-' ]
+
+"actions":
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**']
+
+"devcontainer":
+  - changed-files:
+    - any-glob-to-any-file: ['.devcontainer/**']
+
+"ddev":
+  - changed-files:
+    - any-glob-to-any-file: ['.ddev/**']
+
+"mellon":
+  - changed-files:
+    - any-glob-to-any-file: ['mellon/**']
+
+"zmsadmin":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsadmin/**']
+
+"zmsapi":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsapi/**']
+
+"zmsautomation":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsautomation/**']
+
+"zmscalldisplay":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscalldisplay/**']
+
+"zmscitizenapi":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscitizenapi/**']
+
+"zmscitizenview":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscitizenview/**']
+
+"zmsclient":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsclient/**']
+
+"zmsdb":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsdb/**']
+
+"zmsdldb":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsdldb/**']
+
+"zmsentities":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsentities/**']
+
+"zmsmessaging":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsmessaging/**']
+
+"zmsslim":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsslim/**']
+
+"zmsstatistic":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsstatistic/**']
+
+"zmsticketprinter":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsticketprinter/**']
