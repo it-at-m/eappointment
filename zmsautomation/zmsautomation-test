@@ -587,8 +587,16 @@ fi
 attempt=1
 PLATFORM_ARGS=()
 if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
-  PLATFORM_ARGS+=("-DplatformName=${TESTAUTOMATION_PLATFORM_NAME:-linux}")
-  info "For Edge runs, forcing Selenium platformName=${TESTAUTOMATION_PLATFORM_NAME:-linux}"
+  EDGE_PLATFORM="${TESTAUTOMATION_PLATFORM_NAME:-linux}"
+  # ATAF capability wiring differs by version; provide both generic and
+  # testautomation-prefixed keys so platformName does not default to Windows.
+  PLATFORM_ARGS+=(
+    "-DplatformName=${EDGE_PLATFORM}"
+    "-Dplatform=${EDGE_PLATFORM}"
+    "-Dtestautomation.platformName=${EDGE_PLATFORM}"
+    "-Dtestautomation.platform=${EDGE_PLATFORM}"
+  )
+  info "For Edge runs, forcing Selenium platform to ${EDGE_PLATFORM}"
 fi
 while (( attempt <= MAX_UI_RETRIES )); do
   attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
