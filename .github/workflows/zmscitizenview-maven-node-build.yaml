@@ -3,6 +3,10 @@ name: 📱 Frontend Build zmscitizenview
 on:
   push:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/next' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write
