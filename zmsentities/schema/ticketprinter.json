@@ -116,6 +116,14 @@
       "type": "number",
       "description": "time to redirect to homepage in seconds"
     },
+    "customText1": {
+      "type": "string",
+      "description": "Custom text 1 for ticketprinter output"
+    },
+    "customText2": {
+      "type": "string",
+      "description": "Custom text 2 for ticketprinter output"
+    },
     "contact": {
       "$ref": "contact.json"
     }
