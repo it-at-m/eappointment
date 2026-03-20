@@ -587,11 +587,17 @@ if [[ "$RUN_UI_TESTS" == true ]] && (( MAX_UI_RETRIES < 4 )); then
 fi
 
 attempt=1
+PLATFORM_ARGS=()
+if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
+  PLATFORM_ARGS+=("-DplatformName=${TESTAUTOMATION_PLATFORM_NAME:-linux}")
+  info "For Edge runs, forcing Selenium platformName=${TESTAUTOMATION_PLATFORM_NAME:-linux}"
+fi
 while (( attempt <= MAX_UI_RETRIES )); do
   attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
   info "Starting Maven test attempt ${attempt}/${MAX_UI_RETRIES}"
   set +e
   mvn -B -DtrimStackTrace=false \
+    "${PLATFORM_ARGS[@]}" \
     -Dbase.uri="$BASE_URI" \
     -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
     -Dbrowser="${ZMS_BROWSER:-chrome}" \
