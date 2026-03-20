@@ -40,6 +40,14 @@ public class CitizenApiSteps {
     private int lastServiceId;
     private int lastServiceCount = 1;
     private String lastDisplayNumberBeforeCancel;
+
+    private int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse integer for " + label + " from value \"" + value + "\"", nfe);
+        }
+    }
     
     /** Reset static booking state and instance reserve state before each scenario so each test uses its own process and mails. */
     @Before
@@ -331,7 +339,7 @@ public class CitizenApiSteps {
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
             .contentType("application/json")
-            .body(Map.of("processId", Integer.parseInt(processId), "authKey", authKey))
+            .body(Map.of("processId", parseIntOrFail(processId, "processId"), "authKey", authKey))
         .when()
             .post("/confirm-appointment/");
         CommonApiSteps.setResponse(response);
@@ -353,7 +361,7 @@ public class CitizenApiSteps {
         org.assertj.core.api.Assertions.assertThat(confirmed)
             .as("confirm-appointment response payload must deserialize")
             .isNotNull();
-        Integer expectedPid = Integer.parseInt(processId);
+        Integer expectedPid = parseIntOrFail(processId, "processId");
         org.assertj.core.api.Assertions.assertThat(confirmed.getProcessId()).isEqualTo(expectedPid);
         org.assertj.core.api.Assertions.assertThat(confirmed.getAuthKey()).isEqualTo(authKey);
         // Prefer scenario requested office (via lastOfficeId), but fall back to the last preconfirmed payload.
