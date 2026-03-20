@@ -26,7 +26,6 @@ cache/
 .cache
 qemu*.core
 
-
 # =============== Java =================
 # Compiled class file
 *.class
@@ -219,4 +218,3 @@ nbdist/
 *.njsproj
 *.sln
 *.sw?
-
