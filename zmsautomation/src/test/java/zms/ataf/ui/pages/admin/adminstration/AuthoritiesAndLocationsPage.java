@@ -181,7 +181,7 @@ public void saveLocationChanges() {
     boolean successSeen = false;
     for (By ok : successDetectors) {
         try {
-            WebElement banner = wait.until(ExpectedConditions.visibilityOfElementLocated(ok));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(ok));
             ScenarioLogManager.getLogger().info("Save success banner: ");
             successSeen = true;
             break;

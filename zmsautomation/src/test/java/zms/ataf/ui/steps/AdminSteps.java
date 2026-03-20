@@ -731,7 +731,7 @@ public class AdminSteps {
 
     @Dann("erscheint der Termin {string} unter geparkte Termine.")
     public void erscheint_der_termin_unter_geparkte_termine(String termin) {
-        PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin), true);
+        PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin));
     }
 
     @Angenommen("Die fertige Termintabelle angezeigt.")

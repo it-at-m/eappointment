@@ -21,7 +21,6 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
-import zms.ataf.data.TestData;
 
 
 public class AdminPage extends BasePage {
@@ -61,7 +60,6 @@ public class AdminPage extends BasePage {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
-                String ssoHost = TestData.getSsoHost();
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
                 DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("https://",
                         "https://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),

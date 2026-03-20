@@ -251,7 +251,7 @@ public class CounterProcessingStationPage extends AdminPage {
             "Parked row with Name '" + customerName + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
-    public void isCustomerVisibleInParkingTable(String token, boolean isSpontaneousCustomer) {
+    public void isCustomerVisibleInParkingTable(String token) {
         String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
         if (!numOnly.isBlank()) {
             try {

@@ -106,7 +106,7 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger().info("zmscitizenview: fill default contact details and Weiter");
         page.fillContactDetailsRandom();
         page.clickWeiter(30);
-        page.waitForPreconfirmPageAfterUpdate(15);
+        page.waitForPreconfirmPageAfterUpdate();
     }
 
     @When("I accept privacy and communication in the citizen view")

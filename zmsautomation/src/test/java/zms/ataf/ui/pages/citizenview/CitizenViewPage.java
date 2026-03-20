@@ -543,7 +543,7 @@ public class CitizenViewPage extends BasePage {
      * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
      * page (privacy checkboxes). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
      */
-    public void waitForPreconfirmPageAfterUpdate(int timeoutSeconds) {
+    public void waitForPreconfirmPageAfterUpdate() {
         CONTEXT.set();
         String sel = "#checkbox-privacy-policy";
         waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
@@ -682,7 +682,6 @@ public class CitizenViewPage extends BasePage {
      */
     public boolean deepProviderCheckboxChecked(int officeId) {
         CONTEXT.set();
-        String sel = "#checkbox-provider-" + officeId;
         String script =
                 "var id=arguments[0];function find(root,id){if(!root)return null;"
                         + "var q=root.querySelector('#checkbox-provider-'+id);if(q)return q;"
