@@ -45,6 +45,6 @@
     "postcss": "^8.5.8",
     "qrcode-generator": "2.0.4",
     "sass": "^1.98.0",
-    "svgo": "^4.0.1"
+    "svgo": "^4.0.0"
   }
 }
