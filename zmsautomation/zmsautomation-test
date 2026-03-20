@@ -109,6 +109,24 @@ cleanup_data_folder() {
   fi
 }
 
+# Clean up QEMU/geckodriver crash dump files that can accumulate on ARM hosts.
+cleanup_qemu_geckodriver_cores() {
+  local dump_dir="$PROJECT_ROOT/zmsautomation"
+  if [ ! -d "$dump_dir" ]; then
+    return 0
+  fi
+
+  local removed=0
+  while IFS= read -r -d '' f; do
+    rm -f "$f" || true
+    removed=$((removed + 1))
+  done < <(find "$dump_dir" -maxdepth 1 -type f -name 'qemu_geckodriver_*.core' -print0 2>/dev/null)
+
+  if (( removed > 0 )); then
+    info "Removed ${removed} qemu_geckodriver core dump file(s)."
+  fi
+}
+
 # Clear caches
 clear_caches() {
   if [[ -n "${CACHE_DIR:-}" && -d "$CACHE_DIR" ]]; then
@@ -206,6 +224,9 @@ cleanup_on_exit() {
   
   # 6. Clean data folder
   cleanup_data_folder
+
+  # 7. Remove stale qemu/geckodriver crash dumps
+  cleanup_qemu_geckodriver_cores
   
   info "Cleanup completed."
 }
@@ -280,6 +301,9 @@ run_hourly_with_retries() {
 
 # Ensure cleanup on exit
 trap 'cleanup_on_exit' EXIT INT TERM
+
+# Remove stale dumps from earlier runs right away, so each run starts clean.
+cleanup_qemu_geckodriver_cores
 
 # 1. Database Backup
 section "1. Database Backup"
