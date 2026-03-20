@@ -23,6 +23,16 @@ public class BuergeransichtPageContext extends Context {
     public static final String TITLE = "ZMS Bürgeransicht";
     private WindowType windowType;
 
+    private static int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError(
+                    "Failed to parse integer for " + label + " from value \"" + value + "\"",
+                    nfe);
+        }
+    }
+
     BuergeransichtPageContext(RemoteWebDriver driver) {
         super(driver);
     }
@@ -47,7 +57,8 @@ public class BuergeransichtPageContext extends Context {
 
     public static void incrementAppointmentCount() {
         if (TestDataHelper.getTestData("appointment_count") != null) {
-            TestDataHelper.setTestData("appointment_count", String.valueOf((Integer.parseInt(TestDataHelper.getTestData("appointment_count")) + 1)));
+            TestDataHelper.setTestData("appointment_count",
+                    String.valueOf((parseIntOrFail(TestDataHelper.getTestData("appointment_count"), "appointment_count") + 1)));
         } else {
             TestDataHelper.setTestData("appointment_count", "1");
         }
@@ -56,7 +67,7 @@ public class BuergeransichtPageContext extends Context {
     public static void incrementAppointmentCanceledCount() {
         if (TestDataHelper.getTestData("appointment_canceled_count") != null) {
             TestDataHelper.setTestData("appointment_canceled_count",
-                    String.valueOf((Integer.parseInt(TestDataHelper.getTestData("appointment_canceled_count")) + 1)));
+                    String.valueOf((parseIntOrFail(TestDataHelper.getTestData("appointment_canceled_count"), "appointment_canceled_count") + 1)));
         } else {
             TestDataHelper.setTestData("appointment_canceled_count", "1");
         }
