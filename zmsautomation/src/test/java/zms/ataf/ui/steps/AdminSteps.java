@@ -588,6 +588,7 @@ public class AdminSteps {
             String apptNoOnly = apptNo.replaceAll("\\D+", "");
             if (apptNoOnly.isBlank()) {
                 CustomAssertions.fail("Captured appointment number contains no digits: '" + apptNo + "'");
+                throw new AssertionError("Unreachable: failure did not throw (apptNoOnly was blank)");
             }
     
             // Terminname -> Termin-/Vorgangsnummer speichern (verschlüsselt über TestDataHelper)
