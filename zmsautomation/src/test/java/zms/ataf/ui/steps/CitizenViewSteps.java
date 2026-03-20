@@ -217,11 +217,19 @@ public class CitizenViewSteps {
             if (trimmed.isEmpty()) {
                 continue;
             }
-            allowedOfficeIds.add(Integer.parseInt(trimmed));
+            allowedOfficeIds.add(parseIntOrFail(trimmed, "officeId"));
         }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: keep only providers {} checked", allowedOfficeIds);
         page.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+    }
+
+    private int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse integer for " + label + " from value \"" + value + "\"", nfe);
+        }
     }
 
     @Then("the booking summary should show provider {int} in the citizen view")
