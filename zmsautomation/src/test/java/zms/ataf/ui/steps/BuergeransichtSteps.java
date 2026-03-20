@@ -99,7 +99,8 @@ public class BuergeransichtSteps {
     public void wenn_sie_auf_der_buergeransicht_das_jahr_string_auswaehlen(String year) {
         year = TestDataHelper.transformTestData(year);
         LocalDate currentDate = DateUtils.getDateWithOffset(0, ChronoUnit.YEARS);
-        Assert.assertTrue(Integer.parseInt(year) >= currentDate.getYear(), "Given year \"" + year + "\" cannot be in the past!");
+        Assert.assertTrue(parseIntOrFail(year, "year") >= currentDate.getYear(),
+                "Given year \"" + year + "\" cannot be in the past!");
         if (year.length() == 2 && !year.startsWith("20")) {
             TestDataHelper.setTestData("year", "20" + year);
         } else {
