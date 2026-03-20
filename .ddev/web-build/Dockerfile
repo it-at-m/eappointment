@@ -63,6 +63,7 @@ RUN GECKODRIVER_VERSION="v0.36.0" \
  && rm /tmp/geckodriver.tar.gz
 
 # Install Microsoft Edge + matching EdgeDriver for local UI runs with ZMS_BROWSER=edge
+# EdgeDriver URL uses the same full version string as the installed Edge package.
 RUN mkdir -p /etc/apt/keyrings \
  && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
     | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
@@ -71,22 +72,9 @@ RUN mkdir -p /etc/apt/keyrings \
  && apt-get update \
  && apt-get install -y microsoft-edge-stable \
  && EDGE_VERSION="$(microsoft-edge --version | awk '{print $3}')" \
- && EDGE_MAJOR_BUILD="$(printf '%s' "$EDGE_VERSION" | cut -d. -f1-3)" \
- && EDGE_MAJOR="$(printf '%s' "$EDGE_VERSION" | cut -d. -f1)" \
- && EDGE_DRIVER_VERSION="$( (curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR_BUILD}_LINUX" \
-      || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR}_LINUX" \
-      || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR_BUILD}" \
-      || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_RELEASE_${EDGE_MAJOR}" \
-      || curl -fsSL "https://msedgedriver.microsoft.com/LATEST_STABLE" \
-      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR_BUILD}_LINUX" \
-      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}_LINUX" \
-      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR_BUILD}" \
-      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_RELEASE_${EDGE_MAJOR}" \
-      || curl -fsSL "https://msedgedriver.azureedge.net/LATEST_STABLE") | tr -d '\r' )" \
- && (curl -fsSL -o /tmp/msedgedriver.zip \
-      "https://msedgedriver.microsoft.com/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip" \
-      || curl -fsSL -o /tmp/msedgedriver.zip \
-      "https://msedgedriver.azureedge.net/${EDGE_DRIVER_VERSION}/edgedriver_linux64.zip") \
+ && EDGE_VERSION="${EDGE_VERSION%%-*}" \
+ && curl -fsSL -o /tmp/msedgedriver.zip \
+      "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
  && unzip -o /tmp/msedgedriver.zip -d /tmp \
  && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
  && chmod +x /usr/local/bin/msedgedriver \
