@@ -235,6 +235,7 @@ restore_keycloak() {
 drop_all_tables() {
   info "Dropping all existing tables..."
   local drop_sql="SET FOREIGN_KEY_CHECKS = 0;
+SET SESSION group_concat_max_len = 1000000;
 SET @tables = (SELECT GROUP_CONCAT(CONCAT('\`', table_name, '\`')) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_type = 'BASE TABLE');
 SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
 PREPARE stmt FROM @sql;
