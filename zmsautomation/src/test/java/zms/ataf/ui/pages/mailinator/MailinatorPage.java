@@ -42,6 +42,14 @@ public class MailinatorPage extends BasePage {
         EMAIL_WAIT_TIME = DEFAULT_EXPLICIT_WAIT_TIME * 8L;
     }
 
+    private int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse integer for " + label + " from value \"" + value + "\"", nfe);
+        }
+    }
+
     public void navigateToPage() {
         if (navigateToPageByUrl(DEFAULT_EXPLICIT_WAIT_TIME, MailinatorPageContext.URL, MailinatorPageContext.TITLE)) {
             WindowControls.updateWindowList(DriverUtil.getDriver(), new WindowType("Mailinator", new System("Mailinator", MailinatorPageContext.URL)));
@@ -74,7 +82,7 @@ public class MailinatorPage extends BasePage {
             clickOnBackToInboxLink();
         }
         CONTEXT.set();
-        int activationMessageAmount = Integer.parseInt(TestDataHelper.getTestData("appointment_count"));
+        int activationMessageAmount = parseIntOrFail(TestDataHelper.getTestData("appointment_count"), "appointment_count");
         AtomicReference<Exception> exceptionAtomicReference = new AtomicReference<>(null);
         ScenarioLogManager.getLogger().info("Waiting for activation message...");
         try {
@@ -102,7 +110,7 @@ public class MailinatorPage extends BasePage {
             clickOnBackToInboxLink();
         }
         CONTEXT.set();
-        int activationMessageAmount = Integer.parseInt(TestDataHelper.getTestData("appointment_count"));
+        int activationMessageAmount = parseIntOrFail(TestDataHelper.getTestData("appointment_count"), "appointment_count");
         ScenarioLogManager.getLogger().info("Trying to click on \"activation\" message...");
         try {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(EMAIL_WAIT_TIME));
@@ -176,7 +184,7 @@ public class MailinatorPage extends BasePage {
             clickOnBackToInboxLink();
         }
         CONTEXT.set();
-        int appointmentMessageAmount = Integer.parseInt(TestDataHelper.getTestData("appointment_count"));
+        int appointmentMessageAmount = parseIntOrFail(TestDataHelper.getTestData("appointment_count"), "appointment_count");
         ScenarioLogManager.getLogger().info("Checking if confirmation message is visible!");
         try {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(EMAIL_WAIT_TIME));
@@ -205,7 +213,7 @@ public class MailinatorPage extends BasePage {
         CONTEXT.set();
         int appointmentsCanceledAmount;
         if (TestDataHelper.getTestData("appointment_canceled_count") != null){
-            appointmentsCanceledAmount = Integer.parseInt(TestDataHelper.getTestData("appointment_canceled_count"));
+            appointmentsCanceledAmount = parseIntOrFail(TestDataHelper.getTestData("appointment_canceled_count"), "appointment_canceled_count");
         } else {
             appointmentsCanceledAmount = 0;
         }
