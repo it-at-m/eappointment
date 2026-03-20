@@ -47,7 +47,7 @@ public class ServiceStatisticsPage extends StatisticsPage {
 
         try {
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-            WebElement serviceRow = wait.until(
+            wait.until(
                     ExpectedConditions.visibilityOfElementLocated(By.xpath("//table[@class='table--base']//tr[th[contains(text(), '" + serviceName + "')]]")));
             return true;
         } catch (NoSuchElementException e) {
