@@ -581,6 +581,8 @@ public class AdminSteps {
                 CustomAssertions.fail("No appointment number captured after booking. " +
                     "Ensure the success dialog appeared and the number was parsed before encrypting/storing. " +
                     "Terminname: " + terminName + ", Dienstleistung: " + dienstleistung);
+                throw new AssertionError(
+                        "Unreachable: failure did not throw (apptNo was null/blank)");
             }
     
             // Optional: nur Ziffern verwenden (falls UI in Klammern o.Ä. loggt)
