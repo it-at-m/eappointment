@@ -276,11 +276,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "eab6b69a6b18db19a6c9747c7067b620f6771a1d"
             },
             "require": {
                 "ext-json": ">=0",
@@ -325,7 +325,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -384,11 +384,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "d21f7878d4766176392afacf79dd8dc5d4076eb3"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -441,11 +441,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "4a3c76528fa7224a2dbc6db542a16a10c5f61686"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -1143,16 +1143,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.8.1",
+            "version": "2.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "84b1ca48347efdbe775426f108622a42735a6579"
+                "reference": "59fb075d2101740c337c7216e3f32b36c204218b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/84b1ca48347efdbe775426f108622a42735a6579",
-                "reference": "84b1ca48347efdbe775426f108622a42735a6579",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/59fb075d2101740c337c7216e3f32b36c204218b",
+                "reference": "59fb075d2101740c337c7216e3f32b36c204218b",
                 "shasum": ""
             },
             "require": {
@@ -1246,7 +1246,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-05T21:37:03+00:00"
+            "time": "2026-03-19T13:16:38+00:00"
         },
         {
             "name": "league/config",
