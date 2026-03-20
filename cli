@@ -34,6 +34,84 @@ modules = [
 ]
 
 
+def run_cmd(args, cwd=None, env=None):
+  print_info("Running: " + " ".join(args))
+  subprocess.run(args, cwd=cwd, env=env, check=True)
+
+
+def parse_mysql_port(value: str) -> str:
+  # Accept plain port ("3306") or docker-style "tcp://host:3306".
+  if not value:
+    return "3306"
+  if value.startswith("tcp://"):
+    return value.rsplit(":", 1)[-1]
+  return value
+
+
+def db_env():
+  host = os.getenv("MYSQL_HOST", "db")
+  port = parse_mysql_port(os.getenv("MYSQL_PORT", "3306"))
+  name = os.getenv("MYSQL_DATABASE", "db")
+  user = os.getenv("MYSQL_USER", "db")
+  password = os.getenv("MYSQL_PASSWORD", "db")
+  return host, port, name, user, password
+
+
+def run_flyway_test_data_migrations(citizenview_base_url=None):
+  host, port, name, user, password = db_env()
+  flyway_dir = os.path.join(repo_dir, "zmsautomation", "src", "main", "resources", "db", "migration")
+  zmsautomation_dir = os.path.join(repo_dir, "zmsautomation")
+  citizenview = citizenview_base_url or os.getenv("CITIZENVIEW_BASE_URI", "http://citizenview:8082/")
+
+  run_cmd([
+    "mvn", "-B", "-q",
+    f"-Dflyway.url=jdbc:mysql://{host}:{port}/{name}",
+    f"-Dflyway.user={user}",
+    f"-Dflyway.password={password}",
+    f"-Dflyway.locations=filesystem:{flyway_dir}",
+    f"-Dflyway.placeholders.citizenviewBaseUrl={citizenview}",
+    "-Dflyway.baselineOnMigrate=true",
+    "flyway:migrate",
+  ], cwd=zmsautomation_dir)
+
+
+def clear_local_cache_folder():
+  cache_dir = os.path.join(repo_dir, "cache", "@")
+  if not os.path.isdir(cache_dir):
+    print_info(f"Cache folder does not exist, skipping: {cache_dir}")
+    return
+
+  removed_entries = 0
+  for entry in os.listdir(cache_dir):
+    entry_path = os.path.join(cache_dir, entry)
+    if os.path.isdir(entry_path):
+      subprocess.run(["rm", "-rf", entry_path], check=True)
+    else:
+      os.remove(entry_path)
+    removed_entries += 1
+
+  print_info(f"Cleared {removed_entries} cache entries from {cache_dir}")
+
+
+def clear_all_database_tables():
+  host, port, name, user, password = db_env()
+  drop_sql = """SET FOREIGN_KEY_CHECKS = 0;
+SET SESSION group_concat_max_len = 1000000;
+SET @tables = (SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE');
+SET @sql = IF(@tables IS NULL OR @tables = '', 'DO 0', CONCAT('DROP TABLE IF EXISTS ', @tables));
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;"""
+  print_info("Dropping all existing database tables...")
+  subprocess.run(
+    ["mysql", "--ssl=0", "-h", host, "-P", port, "-u", user, f"--password={password}", name],
+    input=drop_sql.encode("utf-8"),
+    check=True,
+  )
+  print_info("Database tables dropped.")
+
+
 # cli
 
 
@@ -45,6 +123,88 @@ def cli():
 @cli.group("modules")
 def cli_modules():
   pass
+
+
+@cli_modules.command("clear-local-cache")
+def cli_modules_clear_local_cache():
+  """Clear local cache/@ directory."""
+  clear_local_cache_folder()
+
+
+@cli.group("db")
+def cli_db():
+  """Database setup helpers for local development and tests."""
+  pass
+
+
+@cli_db.command("migrate-test-data")
+@click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
+def cli_db_migrate_test_data(citizenview_base_url):
+  """Run Flyway migrations used for test data setup."""
+  run_flyway_test_data_migrations(citizenview_base_url)
+
+
+@cli_db.command("drop-all-tables")
+def cli_db_clear_all_tables():
+  """Drop all tables in configured database."""
+  clear_all_database_tables()
+
+
+@cli_db.command("full-setup")
+@click.option("--city", default="munich", show_default=True)
+@click.option("--skip-import", is_flag=True, default=False)
+@click.option("--skip-flyway", is_flag=True, default=False)
+@click.option("--skip-php-migrate", is_flag=True, default=False)
+@click.option("--skip-hourly", is_flag=True, default=False)
+@click.option("--skip-minutly", is_flag=True, default=False)
+@click.option("--skip-clear-cache", is_flag=True, default=False)
+@click.option("--citizenview-base-url", default=None, help="Flyway placeholder citizenviewBaseUrl (default: from env or http://citizenview:8082/).")
+def cli_db_full_setup(city, skip_import, skip_flyway, skip_php_migrate, skip_hourly, skip_minutly, skip_clear_cache, citizenview_base_url):
+  """Import base DB and run full local setup sequence."""
+  host, port, name, user, password = db_env()
+  base_sql = os.path.join(repo_dir, ".resources", "zms.sql")
+  zmsapi_dir = os.path.join(repo_dir, "zmsapi")
+  run_env = os.environ.copy()
+  run_env.setdefault("ZMS_CRONROOT", "1")
+  run_env.setdefault("ZMS_ENV", "dev")
+
+  if not skip_import:
+    if not os.path.isfile(base_sql):
+      raise FileNotFoundError(f"Base SQL file not found: {base_sql}")
+    clear_all_database_tables()
+    print_info(f"Importing base database from {base_sql}")
+    with open(base_sql, "rb") as f:
+      subprocess.run(
+        [
+          "mysql",
+          "--ssl=0",
+          "--init-command=SET SESSION FOREIGN_KEY_CHECKS=0;",
+          "-h", host,
+          "-P", port,
+          "-u", user,
+          f"--password={password}",
+          name,
+        ],
+        stdin=f,
+        check=True,
+      )
+
+  if not skip_flyway:
+    run_flyway_test_data_migrations(citizenview_base_url)
+
+  if not skip_php_migrate:
+    run_cmd(["vendor/bin/migrate", "--update"], cwd=zmsapi_dir, env=run_env)
+
+  if not skip_hourly:
+    run_cmd(["./cron/cronjob.hourly", f"--city={city}"], cwd=zmsapi_dir, env=run_env)
+
+  if not skip_minutly:
+    run_cmd(["./cron/cronjob.minutly"], cwd=zmsapi_dir, env=run_env)
+
+  if not skip_clear_cache:
+    clear_local_cache_folder()
+
+  print_info("Database full setup completed.")
 
 
 @cli_modules.command("reference-libraries")

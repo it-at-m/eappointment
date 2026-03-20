@@ -242,14 +242,28 @@ ddev restart
 ## Import Database
 
 ### Using DDEV
-- `ddev import-db --file=.resources/zms.sql`
-- `ddev exec zmsapi/vendor/bin/migrate --update`
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `ddev exec ./cli db full-setup`
+- Optional manual steps:
+  - `ddev exec ./cli db drop-all-tables`
+  - `ddev import-db --file=.resources/zms.sql`
+  - `ddev exec ./cli db migrate-test-data`
+  - `ddev exec zmsapi/vendor/bin/migrate --update`
+  - `ddev exec zmsapi/cron/cronjob.hourly --city=munich`
+  - `ddev exec zmsapi/cron/cronjob.minutly`
+  - `ddev exec ./cli modules clear-local-cache`
 
 ### Using Podman
-- `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
-- `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
-
-Import Berlin or Munich DLDB data via the [hourly cronjob](#cronjobs).
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `podman exec -it zms-web bash -lc "./cli db full-setup"`
+- Optional manual steps:
+  - `podman exec -it zms-web bash -lc "./cli db drop-all-tables"`
+  - `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
+  - `podman exec -it zms-web bash -lc "./cli db migrate-test-data"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.hourly --city=munich"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.minutly"`
+  - `podman exec -it zms-web bash -lc "./cli modules clear-local-cache"`
 
 ## Dependency Check for PHP Upgrades
 Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
