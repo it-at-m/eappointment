@@ -1,7 +1,6 @@
 package zms.ataf.ui.pages.mailinator;
 
 import java.time.Duration;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 

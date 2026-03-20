@@ -912,7 +912,7 @@ public class BuergeransichtPage extends BasePage {
         Assert.assertTrue(info.isDisplayed(), "Information for the appointment booking is not visible!");
 
         String fontWeight = info.getCssValue("font-weight");
-        boolean isBold = fontWeight.equals("bold") || Integer.parseInt(fontWeight) >= 700;
+        boolean isBold = "bold".equals(fontWeight) || parseIntOrFail(fontWeight, "font-weight") >= 700;
         Assert.assertTrue(isBold, "The text is not bold!");
 
         String backgroundColor = info.getCssValue("background-color");
@@ -921,6 +921,14 @@ public class BuergeransichtPage extends BasePage {
         Assert.assertTrue(isBackgroundRed, "The background color is not Red!");
 
         ScenarioLogManager.getLogger().info("The information for the appointment booking is correctly styled and visible.");
+    }
+
+    private int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse integer for " + label + " from value \"" + value + "\"", nfe);
+        }
     }
 
 }
