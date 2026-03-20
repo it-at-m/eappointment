@@ -1,7 +1,6 @@
 package zms.ataf.ui.pages.mailinator;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -139,9 +138,6 @@ public class MailinatorPage extends BasePage {
         if (!FrameControls.getCurrentFrame().equals(ACTIVATION_MESSAGE_FRAME)) {
             FrameControls.switchToFrame(DRIVER, DEFAULT_EXPLICIT_WAIT_TIME, ACTIVATION_MESSAGE_FRAME);
         }
-        LocalDate reservationDate = LocalDate.parse(
-                TestDataHelper.getTestData("day") + "." + TestDataHelper.getTestData("month") + "." + TestDataHelper.getTestData("year"),
-                DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         String reservationTime = TestDataHelper.getTestData("time");
         if (reservationTime.length() == 4) {
             reservationTime = '0' + reservationTime;
