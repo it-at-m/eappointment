@@ -9,6 +9,7 @@ dldb-mapper
 .ddev/.env
 .ddev/.env.template
 .devcontainer/.env
+.devcontainer/php/xdebug.ini
 
 # =============== Local =================
 /local/
