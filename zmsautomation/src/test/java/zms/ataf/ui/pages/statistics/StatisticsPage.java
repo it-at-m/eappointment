@@ -376,8 +376,9 @@ public class StatisticsPage extends BasePage {
                 }
                 return false;
             } else {
-                return !((HasDownloads) waitDriver).getDownloadableFiles()
+                return !((HasDownloads) waitDriver).getDownloadedFiles()
                         .stream()
+                        .map(HasDownloads.DownloadedFile::getName)
                         .filter(string -> string.matches(expectedFileNameRegex))
                         .toList()
                         .isEmpty();
