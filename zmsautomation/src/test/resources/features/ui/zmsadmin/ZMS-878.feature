@@ -4,7 +4,7 @@ Funktionalität: Aufbau ZMS-Testautomatisierung,Kernsystem
 	#Testschwerpunkt: Der Terminadministrator kann Arbeitszeiten und deren Gültigkeitszeiträume frei definieren
 	#
 	# 
-	@web @zmsadmin @ZMS-878 @ZMS-811 @ZMS-1910 @ZMS-2228 @ZMS-2561 @ZMS-2385 @ZMS-2479 @ZMS-2290 @ZMS-2202 @automatisiert @executeLocally
+	@web @zmsadmin @openingHours @ZMS-878 @ZMS-811 @ZMS-1910 @ZMS-2228 @ZMS-2561 @ZMS-2385 @ZMS-2479 @ZMS-2290 @ZMS-2202 @automatisiert @executeLocally
 	Szenario: [AUT] Arbeitszeiten konfigurierbar
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
