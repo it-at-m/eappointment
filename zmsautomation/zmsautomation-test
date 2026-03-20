@@ -279,8 +279,6 @@ run_hourly_with_retries() {
 
 # Ensure cleanup on exit
 trap 'cleanup_on_exit' EXIT INT TERM
-trap 'warn "Failure detected, running cleanup..."; 
-cleanup_on_exit; exit 1' ERR
 
 # 1. Database Backup
 section "1. Database Backup"
