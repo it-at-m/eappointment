@@ -363,6 +363,9 @@ public class BuergeransichtPage extends BasePage {
                 } else {
                     break;
                 }
+            default:
+                // Only MONTHS and YEARS are expected here; handle everything else explicitly for CodeQL.
+                break;
             }
         }
         return textContainingDateString;
