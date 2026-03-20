@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build-path: ["./refarch-backend", "./refarch-eai"] # JSON array formatted as string, contains the paths to the java projects to build
+        build-path: ["./zmsautomation", "./agile-test-automation-framework"] # java project roots containing pom.xml
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
         if: ${{ env.analyze-java == 'true' && (github.ref_name == 'main' || needs.check-changes.outputs.java == 'true') }}
