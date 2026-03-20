@@ -30,6 +30,14 @@ public class BuergeransichtSteps {
         BUERGERANSICHT_PAGE = new BuergeransichtPage(DriverUtil.getDriver());
     }
 
+    private int parseIntOrFail(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            throw new AssertionError("Failed to parse integer for " + label + " from value \"" + value + "\"", nfe);
+        }
+    }
+
     @Wenn("Sie auf der " + BuergeransichtPageContext.NAME + " ins Textfeld Dienstleistungen {string} eingeben.")
     public void wenn_sie_auf_der_buergeransicht_ins_textfeld_dienstleistungen_string_eingeben(String service) {
         service = TestDataHelper.transformTestData(service);
@@ -249,7 +257,8 @@ public class BuergeransichtSteps {
         Map<Service, Integer> servicesWithSlots = servicesUtil.getSlotsForServiceAndCombinable(serviceId, standortId);
 
         // get only services with a specific number of slots
-        Predicate<Map.Entry<Service, Integer>> filterByValue = entry -> entry.getValue() == Integer.parseInt(slots);
+        int expectedSlots = parseIntOrFail(slots, "slots");
+        Predicate<Map.Entry<Service, Integer>> filterByValue = entry -> entry.getValue() == expectedSlots;
         List<String> filteredNames = servicesWithSlots.entrySet().stream()
                 .filter(filterByValue)
                 .map(entry -> entry.getKey().getName())
