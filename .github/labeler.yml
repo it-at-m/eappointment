@@ -13,74 +13,94 @@
 "Type: Chore":
   - head-branch: [ '^chore', '-chore-' ]
 
-"actions":
+"Documentation: README":
+  - changed-files:
+    - any-glob-to-any-file: ['README.md']
+
+"Documentation: CHANGELOG":
+  - changed-files:
+    - any-glob-to-any-file: ['CHANGELOG.md']
+
+"Documentation: CONTRIBUTING":
+  - changed-files:
+    - any-glob-to-any-file: ['CONTRIBUTING.md']
+
+"Documentation: CODE_OF_CONDUCT":
+  - changed-files:
+    - any-glob-to-any-file: ['CODE_OF_CONDUCT.md']
+
+"Documentation: SECURITY":
+  - changed-files:
+    - any-glob-to-any-file: ['SECURITY.md']
+
+"Infrastructure: actions":
   - changed-files:
     - any-glob-to-any-file: ['.github/workflows/**']
 
-"devcontainer":
+"Infrastructure: devcontainer":
   - changed-files:
     - any-glob-to-any-file: ['.devcontainer/**']
 
-"ddev":
+"Infrastructure: ddev":
   - changed-files:
     - any-glob-to-any-file: ['.ddev/**']
 
-"mellon":
+"Module: mellon":
   - changed-files:
     - any-glob-to-any-file: ['mellon/**']
 
-"zmsadmin":
+"Module: zmsadmin":
   - changed-files:
     - any-glob-to-any-file: ['zmsadmin/**']
 
-"zmsapi":
+"Module: zmsapi":
   - changed-files:
     - any-glob-to-any-file: ['zmsapi/**']
 
-"zmsautomation":
+"Module: zmsautomation":
   - changed-files:
     - any-glob-to-any-file: ['zmsautomation/**']
 
-"zmscalldisplay":
+"Module: zmscalldisplay":
   - changed-files:
     - any-glob-to-any-file: ['zmscalldisplay/**']
 
-"zmscitizenapi":
+"Module: zmscitizenapi":
   - changed-files:
     - any-glob-to-any-file: ['zmscitizenapi/**']
 
-"zmscitizenview":
+"Module: zmscitizenview":
   - changed-files:
     - any-glob-to-any-file: ['zmscitizenview/**']
 
-"zmsclient":
+"Module: zmsclient":
   - changed-files:
     - any-glob-to-any-file: ['zmsclient/**']
 
-"zmsdb":
+"Module: zmsdb":
   - changed-files:
     - any-glob-to-any-file: ['zmsdb/**']
 
-"zmsdldb":
+"Module: zmsdldb":
   - changed-files:
     - any-glob-to-any-file: ['zmsdldb/**']
 
-"zmsentities":
+"Module: zmsentities":
   - changed-files:
     - any-glob-to-any-file: ['zmsentities/**']
 
-"zmsmessaging":
+"Module: zmsmessaging":
   - changed-files:
     - any-glob-to-any-file: ['zmsmessaging/**']
 
-"zmsslim":
+"Module: zmsslim":
   - changed-files:
     - any-glob-to-any-file: ['zmsslim/**']
 
-"zmsstatistic":
+"Module: zmsstatistic":
   - changed-files:
     - any-glob-to-any-file: ['zmsstatistic/**']
 
-"zmsticketprinter":
+"Module: zmsticketprinter":
   - changed-files:
     - any-glob-to-any-file: ['zmsticketprinter/**']
