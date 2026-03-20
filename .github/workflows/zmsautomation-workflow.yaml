@@ -499,7 +499,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zmsautomation-ataf-reports
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
@@ -537,6 +537,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zmsautomation-container-logs
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn
