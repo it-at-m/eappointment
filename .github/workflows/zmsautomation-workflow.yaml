@@ -179,22 +179,6 @@ jobs:
               networks:
                 - zms-ci-net
 
-            phpmyadmin:
-              image: phpmyadmin:5
-              container_name: zms-phpmyadmin
-              restart: unless-stopped
-              ports:
-                - "8036:80"
-              environment:
-                PMA_USER: root
-                PMA_PASSWORD: root
-                PMA_HOST: zms-db
-                PMA_PORT: 3306
-              depends_on:
-                - db
-              networks:
-                - zms-ci-net
-
             refarch-gateway:
               image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
               container_name: zms-refarch-gateway
