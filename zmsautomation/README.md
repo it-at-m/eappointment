@@ -129,6 +129,7 @@ From the **repository root**, install JDK 21, Maven, and Chrome/Firefox/Edge dri
 # load DB + Flyway test data like CI (requires `MYSQL_*` env pointing at your local DB)
 
 ./cli tests install-mac-deps
+# Homebrew deps + Edge driver + runs `sudo safaridriver --enable` for Safari WebDriver (password prompt in terminal).
 # Sets BASE_URI / CITIZEN_API_BASE_URI (https://localhost:8091/...) and CITIZEN_VIEW_BASE_URI (http://localhost:8082/) for you.
 # First run imports the gateway TLS cert into ~/.config/eappointment/cacerts-with-local-gateway-8091.jks so RestAssured (JVM) trusts :8091.
 

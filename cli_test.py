@@ -247,6 +247,31 @@ class TestCli(EappointmentCli):
     print_info(f"Installed: {dest}")
     print_info("Ensure ~/.local/bin is on PATH, e.g. add: export PATH=\"$HOME/.local/bin:$PATH\"")
 
+  def enable_safari_webdriver_mac(self):
+    """Run ``sudo safaridriver --enable`` so Selenium can drive Safari (ships with macOS)."""
+    sd = shutil.which("safaridriver")
+    if not sd:
+      print_info(
+        "safaridriver not on PATH (usually /usr/bin/safaridriver). "
+        "Enable Safari → Settings → Advanced → Show Develop menu, then retry."
+      )
+      return
+    sudo = shutil.which("sudo")
+    if not sudo:
+      print_info("sudo not found; run manually: sudo safaridriver --enable")
+      return
+    print_info("Enabling Safari WebDriver: sudo safaridriver --enable …")
+    print_info("(Enter your macOS login password if prompted.)")
+    # Do not capture stdout/stderr — sudo needs a TTY for the password prompt.
+    r = subprocess.run([sudo, sd, "--enable"], check=False)
+    if r.returncode == 0:
+      print_info("Safari WebDriver enabled.")
+      return
+    print_info(
+      f"sudo safaridriver --enable failed (exit {r.returncode}). "
+      "Run manually in a terminal: sudo safaridriver --enable"
+    )
+
   def register_tests(self, cli: click.Group) -> None:
     """Attach the ``tests`` command group."""
     app = self
@@ -266,7 +291,7 @@ class TestCli(EappointmentCli):
       ),
     )
     def cli_tests_install_mac_deps(edge_driver_version):
-      """Install Maven, JDK 21 (Homebrew), Chrome/Firefox WebDrivers (Homebrew), and Edge WebDriver (Microsoft)."""
+      """Install Maven, JDK 21 (Homebrew), Chrome/Firefox WebDrivers (Homebrew), Edge WebDriver (Microsoft), enable Safari WebDriver."""
       app.mac_require_darwin()
       brew = shutil.which("brew")
       if not brew:
@@ -283,6 +308,8 @@ class TestCli(EappointmentCli):
       app.run_cmd([brew, "install"] + pkgs)
 
       app.install_msedgedriver_mac(version=edge_driver_version)
+
+      app.enable_safari_webdriver_mac()
 
       print_info("Suggested ~/.zshrc (adjust if you use bash):")
       print(
