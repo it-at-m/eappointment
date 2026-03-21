@@ -120,23 +120,17 @@ mvn test -Pataf-ui
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
 
-### macOS host (outside containers)
+### macOS host (CLI)
 
-From the **repository root**, install JDK 21, Maven, and Chrome/Firefox/Edge drivers via Homebrew, then run ATAF with auto-detected `JAVA_HOME` and driver paths:
+From the repo root: `./cli tests install-mac-deps` (drivers + `sudo safaridriver --enable`). For Safari also enable **Safari → Develop → Allow Remote Automation**.
 
 ```bash
-./cli tests run-mac-local --db-full-setup
-# load DB + Flyway test data like CI (requires `MYSQL_*` env pointing at your local DB)
-
-./cli tests install-mac-deps
-# Homebrew deps + Edge driver + runs `sudo safaridriver --enable` for Safari WebDriver (password prompt in terminal).
-# Sets BASE_URI / CITIZEN_API_BASE_URI (https://localhost:8091/...) and CITIZEN_VIEW_BASE_URI (http://localhost:8082/) for you.
-# First run imports the gateway TLS cert into ~/.config/eappointment/cacerts-with-local-gateway-8091.jks so RestAssured (JVM) trusts :8091.
-
-./cli tests run-mac-local
-# Optional: --api-http (HTTP :8080, skips trust import), --skip-gateway-trust (if you manage cacerts yourself).
-# Refresh trust only: ./cli tests trust-local-gateway
+./cli tests run-mac-local --db-full-setup   # optional; needs MYSQL_* for your DB
+./cli tests run-mac-local                   # HTTPS :8091 + gateway truststore on first run; use --api-http / --skip-gateway-trust if needed
+./cli tests trust-local-gateway             # re-import gateway cert only
 ```
+
+Use `--browser safari` (or `chrome` / `firefox` / `edge` / `safari`) as needed.
 
 ## Environment Variables
 
@@ -241,14 +235,11 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 ## CI/CD
 
-- **GitHub Actions**: Uses `zmsautomation` module (currently disabled until ATAF is open source)
-- **Local Development**: Use `zmsautomation` module with ATAF profile
+See `.github/workflows/` for automation that runs `zmsautomation` with the expected stack and env vars.
 
 ## Migration Notes
 
-- `zmsautomation` is the new module with ATAF integration and Cucumber
-- GitHub Actions workflow is set up but disabled until ATAF becomes open source
-- ATAF tests require Artifactory access (city laptop only) until Phase 7
+- `zmsautomation` uses ATAF + Cucumber; CI/workflows may pin environments separately.
 
 ## Phase 6: Migration Examples
 

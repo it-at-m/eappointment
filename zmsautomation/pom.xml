@@ -20,6 +20,7 @@
     <cucumber.version>7.18.0</cucumber.version>
     <testng.version>7.8.0</testng.version>
     <flyway.version>10.0.1</flyway.version>
+    <ataf.version>0.3.2</ataf.version>
   </properties>
 
   <dependencies>
@@ -143,17 +144,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
 
         <!-- Cucumber -->
@@ -231,17 +232,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>
@@ -315,17 +316,17 @@
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>core</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>rest</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>de.muenchen.ataf</groupId>
           <artifactId>web</artifactId>
-          <version>0.3.2</version>
+          <version>${ataf.version}</version>
         </dependency>
         <dependency>
           <groupId>io.cucumber</groupId>

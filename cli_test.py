@@ -167,6 +167,7 @@ class TestCli(EappointmentCli):
       "chrome": ("chromedriver", ["chromedriver"]),
       "firefox": ("geckodriver", ["geckodriver"]),
       "edge": ("msedgedriver", ["msedgedriver", "edgedriver"]),
+      "safari": ("safaridriver", ["safaridriver"]),
     }
     out = {}
     for key, (label, names) in candidates.items():
@@ -376,7 +377,7 @@ class TestCli(EappointmentCli):
     )
     @click.option(
       "--browser",
-      type=click.Choice(["chrome", "firefox", "edge"], case_sensitive=False),
+      type=click.Choice(["chrome", "firefox", "edge", "safari"], case_sensitive=False),
       default="chrome",
       show_default=True,
     )
@@ -520,8 +521,10 @@ class TestCli(EappointmentCli):
         mvn_args.append(f"-Dwebdriver.gecko.driver={wd['firefox']}")
       if wd.get("edge"):
         mvn_args.append(f"-Dwebdriver.edge.driver={wd['edge']}")
+      if wd.get("safari"):
+        mvn_args.append(f"-Dwebdriver.safari.driver={wd['safari']}")
 
-      if browser == "edge":
+      if browser in ("edge", "safari"):
         mvn_args.extend(
           [
             "-Dtestautomation.platformName=mac",
@@ -540,6 +543,12 @@ class TestCli(EappointmentCli):
             f"-Djavax.net.ssl.trustStore={ts}",
             f"-Djavax.net.ssl.trustStorePassword={app.CACERTS_DEFAULT_PASSWORD}",
           ]
+        )
+
+      if browser == "safari":
+        print_info(
+          "Safari: enable Develop → Allow Remote Automation (Safari menu). "
+          "Also run ./cli tests install-mac-deps (sudo safaridriver --enable) if you have not."
         )
 
       print_info(f"JAVA_HOME={java_home}")
