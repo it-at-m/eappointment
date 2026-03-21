@@ -48,6 +48,12 @@ public class CitizenViewPage extends BasePage {
 
     private final CitizenViewPageContext CONTEXT;
 
+    /**
+     * Last office chosen on the Ort step; used to scroll {@code #timeslot-grid-provider-{id}} into view before
+     * {@code @AfterStep} screenshots.
+     */
+    private int lastSlotBookingOfficeId = -1;
+
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
         CONTEXT = new CitizenViewPageContext(driver);
@@ -717,6 +723,34 @@ public class CitizenViewPage extends BasePage {
         } else {
             Assert.fail("Ort: no checkbox and no single-provider teaser for provider " + officeId);
         }
+        lastSlotBookingOfficeId = officeId;
+    }
+
+    /**
+     * Scrolls the provider's time slot grid into the viewport center so {@code @AfterStep} full-page screenshots show
+     * the slot area (not only the calendar above the fold). Safe to call after Ort selection when slots exist.
+     */
+    public void scrollTimeSlotGridIntoViewForScreenshots() {
+        CONTEXT.set();
+        String script;
+        if (lastSlotBookingOfficeId < 0) {
+            script =
+                    "function fg(r){if(!r)return null;var q=r.querySelector('[id^=\"timeslot-grid-provider-\"]');"
+                            + "if(q)return q;var a=r.querySelectorAll('*');for(var i=0;i<a.length;i++)"
+                            + "if(a[i].shadowRoot){var x=fg(a[i].shadowRoot);if(x)return x;}return null;}"
+                            + "var g=fg(document.body);if(g){g.scrollIntoView({block:'center'});window.scrollBy(0,72);}"
+                            + "return true;";
+            ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+            return;
+        }
+        script =
+                "var oid=arguments[0];"
+                        + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
+                        + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
+                        + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
+                        + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'center'});"
+                        + "window.scrollBy(0,72);}return true;";
+        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, lastSlotBookingOfficeId);
     }
 
     /**
@@ -912,6 +946,81 @@ public class CitizenViewPage extends BasePage {
         return deepTimeslotClickablePresent() && !deepMucSpinnerVisible();
     }
 
+    /**
+     * Clicks <strong>Später</strong> (later) next to the time slot grid when the earlier/later controls are shown —
+     * only when {@code providersWithAppointments.length &gt; 1} (see {@code CalendarView.vue} / {@code ListView.vue}).
+     * Moves to the next available hour or PM half-day so slots sit further in the future; no-op if absent/disabled.
+     *
+     * @return {@code true} if a click was performed
+     */
+    public boolean clickCitizenViewLaterOnceIfAvailable() {
+        CONTEXT.set();
+        String findHighlight =
+                "function findLaterBtn(root){"
+                        + "if(!root)return null;"
+                        + "try{"
+                        + "var groups=root.querySelectorAll('.m-button-group');"
+                        + "for(var g=0;g<groups.length;g++){"
+                        + "var grp=groups[g];"
+                        + "var later=grp.querySelector('muc-button.float-right[icon-shown-right]');"
+                        + "if(!later)later=grp.querySelector('muc-button[icon-shown-right]');"
+                        + "if(later&&later.shadowRoot){"
+                        + "var btn=later.shadowRoot.querySelector('button:not([disabled])');"
+                        + "if(btn&&btn.getAttribute('aria-disabled')!=='true')return btn;"
+                        + "}"
+                        + "var bs=grp.querySelectorAll('button.float-right.m-button--ghost');"
+                        + "for(var b=0;b<bs.length;b++){"
+                        + "var bb=bs[b];"
+                        + "if(bb.disabled||bb.getAttribute('aria-disabled')==='true')continue;"
+                        + "var tx=(bb.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(tx.indexOf('Später')>=0||tx.indexOf('Later')>=0)return bb;"
+                        + "}"
+                        + "}"
+                        + "}catch(e){}"
+                        + "var all=root.querySelectorAll('*');"
+                        + "for(var i=0;i<all.length;i++){"
+                        + "if(all[i].shadowRoot){var f=findLaterBtn(all[i].shadowRoot);if(f)return f;}"
+                        + "}"
+                        + "return null;"
+                        + "}"
+                        + "function hl(el){"
+                        + "if(!el)return false;"
+                        + "el.scrollIntoView({block:'center'});"
+                        + "try{"
+                        + "el.style.outline='4px solid #ffbf00';"
+                        + "el.style.outlineOffset='3px';"
+                        + "el.style.backgroundColor='rgba(255,191,0,0.25)';"
+                        + "}catch(e){}"
+                        + "return true;"
+                        + "}"
+                        + "var btn=findLaterBtn(document.body);"
+                        + "if(!btn)return false;"
+                        + "hl(btn);"
+                        + "window.__zmsCitizenViewLaterBtn=btn;"
+                        + "return true;";
+        String doClick =
+                "var b=window.__zmsCitizenViewLaterBtn;"
+                        + "if(!b)return false;"
+                        + "try{b.click();}catch(e){return false;}"
+                        + "try{window.__zmsCitizenViewLaterBtn=null;}catch(e2){}"
+                        + "return true;";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHighlight);
+        if (!Boolean.TRUE.equals(found)) {
+            return false;
+        }
+        try {
+            Thread.sleep(350L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(doClick);
+        if (Boolean.TRUE.equals(clicked)) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: clicked Später in time slot grid (next hour / day-part)");
+        }
+        return Boolean.TRUE.equals(clicked);
+    }
+
     /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
     public void waitUntilAppointmentSlotsReady(int maxSeconds) {
         CONTEXT.set();
@@ -937,75 +1046,202 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
     }
 
+    /** Max wait for slot grid + spinner (calendar / office load). */
+    private int slotBookingWaitTimeoutSeconds() {
+        return Math.max(DEFAULT_EXPLICIT_WAIT_TIME, 90);
+    }
+
     /**
-     * Below the calendar: scroll to slot grid, wait for API, then prefer a timeslot that is at least one hour in the future
-     * to avoid bookings drifting into the past during slower CI runs. If no such slot exists, use the previous non-first
-     * fallback (prefer third, then second, else first). After that, assert {@code Ausgewählter Termin} callout and click
-     * <strong>Weiter</strong> — that call <em>reserves</em> the appointment (API reserve). The update-appointment
-     * (Kontakt) form is shown only after this Weiter.
+     * Step 1 of slot booking: wait until MucSpinner is gone and at least one timeslot exists (see
+     * {@link #waitUntilAppointmentSlotsReady(int)}).
      */
-    public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
+    public void waitUntilSlotsReadyForBooking() {
         CONTEXT.set();
-        int timeout = Math.max(DEFAULT_EXPLICIT_WAIT_TIME, 90);
+        int timeout = slotBookingWaitTimeoutSeconds();
         try {
             waitUntilAppointmentSlotsReady(timeout);
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
         }
-        String scrollClick =
-                "var oid=arguments[0];"
-                        + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
-                        + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
-                        + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
-                        + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
-                        + "window.scrollBy(0,200);"
-                        + "function collectSlots(root,arr){if(!root)return;var n=root;"
-                        + "if(n.nodeType===1){"
-                        + " if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
-                        + "   arr.push(n);"
-                        + " }"
-                        + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
-                        + "}"
-                        + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
-                        + "var slots=[];collectSlots(document.body,slots);"
-                        + "if(!slots.length)return false;"
-                        + "var minTs=Math.floor(Date.now()/1000)+3600;"
-                        + "function slotTs(node){"
-                        + " if(!node||!node.id)return null;"
-                        + " var m=node.id.match(/-timeslot-(\\d+)$/);"
-                        + " return m?parseInt(m[1],10):null;}"
-                        + "var target=null;"
-                        + "for(var j=0;j<slots.length;j++){"
-                        + " var ts=slotTs(slots[j]);"
-                        + " if(ts!==null&&ts>=minTs){target=slots[j];break;}"
-                        + "}"
-                        + "if(!target){"
-                        + " var idx = slots.length>2?2:(slots.length>1?1:0);"
-                        + " target = slots[idx];"
-                        + "}"
-                        + "function clickSlotNode(node){if(!node)return false;"
-                        + " if(node.shadowRoot){var b=node.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}"
-                        + " try{node.click();return true;}catch(e){}"
-                        + " return false;}"
-                        + "return clickSlotNode(target);";
+        scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
+     * Step 2: click <strong>Später</strong> beside the time slot grid (hour/day-part navigation) when shown
+     * (multi-provider), then wait for slots to reload. No-op if the button is absent or disabled.
+     */
+    public void clickSpäterIfAvailableAndReloadSlots() {
+        CONTEXT.set();
+        int timeout = slotBookingWaitTimeoutSeconds();
+        if (clickCitizenViewLaterOnceIfAvailable()) {
+            try {
+                Thread.sleep(1200L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(45, timeout));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview slot wait after Später: {}", e.toString());
+            }
+        }
+        scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /** JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click). */
+    private static String buildScrollSlotHighlightScript() {
+        return "var oid=arguments[0];"
+                + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
+                + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
+                + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
+                + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
+                + "window.scrollBy(0,200);"
+                + "function collectSlots(root,arr){if(!root)return;var n=root;"
+                + "if(n.nodeType===1){"
+                + " if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
+                + "   arr.push(n);"
+                + " }"
+                + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
+                + "}"
+                + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
+                + "var slots=[];collectSlots(document.body,slots);"
+                + "if(!slots.length)return false;"
+                + "var minTs=Math.floor(Date.now()/1000)+3600;"
+                + "function slotTs(node){"
+                + " if(!node||!node.id)return null;"
+                + " var m=node.id.match(/-timeslot-(\\d+)$/);"
+                + " return m?parseInt(m[1],10):null;}"
+                + "var target=null;"
+                + "for(var j=0;j<slots.length;j++){"
+                + " var ts=slotTs(slots[j]);"
+                + " if(ts!==null&&ts>=minTs){target=slots[j];break;}"
+                + "}"
+                + "if(!target){"
+                + " var nowSec=Math.floor(Date.now()/1000);"
+                + " var minSafe=nowSec+300;"
+                + " var best=null,bestTs=-1;"
+                + " for(var k=0;k<slots.length;k++){"
+                + "  var ts2=slotTs(slots[k]);"
+                + "  if(ts2!==null&&ts2>=minSafe&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
+                + " }"
+                + " target=best;"
+                + "}"
+                + "if(!target){"
+                + " var idx = slots.length>2?2:(slots.length>1?1:0);"
+                + " target = slots[idx];"
+                + "}"
+                + "function highlightSlot(node){"
+                + " if(!node)return;"
+                + " node.scrollIntoView({block:'center'});"
+                + " try{"
+                + " node.style.outline='4px solid #ffbf00';"
+                + " node.style.outlineOffset='3px';"
+                + " node.style.backgroundColor='rgba(255,191,0,0.25)';"
+                + " if(node.shadowRoot){"
+                + "  var ib=node.shadowRoot.querySelector('button');"
+                + "  if(ib){"
+                + "   ib.style.outline='4px solid #ffbf00';"
+                + "   ib.style.outlineOffset='3px';"
+                + "   ib.style.backgroundColor='rgba(255,191,0,0.2)';"
+                + "  }"
+                + " }"
+                + " }catch(e){}"
+                + "}"
+                + "highlightSlot(target);"
+                + "window.__zmsCitizenViewSlotTarget=target;"
+                + "return true;";
+    }
+
+    private static final String SCROLL_SLOT_CLICK_SCRIPT =
+            "var t=window.__zmsCitizenViewSlotTarget;"
+                    + "if(!t)return false;"
+                    + "function clickSlotNode(node){if(!node)return false;"
+                    + " if(node.shadowRoot){var b=node.shadowRoot.querySelector('button:not([disabled])');if(b){b.click();return true;}}"
+                    + " try{node.click();return true;}catch(e){}"
+                    + " return false;}"
+                    + "var ok=clickSlotNode(t);"
+                    + "try{window.__zmsCitizenViewSlotTarget=null;}catch(e){}"
+                    + "return ok;";
+
+    /**
+     * Step 3a: scroll to grid and highlight the preferred timeslot (no click). The next Cucumber step’s
+     * {@code @AfterStep} screenshot then shows the orange outline before Vue updates.
+     */
+    public void highlightPreferredTimeslotForOffice(int officeId) {
+        CONTEXT.set();
+        String scrollSlotHighlight = buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
-                "zmscitizenview: scroll + choose slot at least 60 minutes ahead (fallback: prefer 3rd, then 2nd, else 1st) office {}",
+                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else 3rd/2nd/1st) office {}",
                 officeId);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
                 .until(
                         d ->
                                 Boolean.TRUE.equals(
-                                        ((JavascriptExecutor) d).executeScript(scrollClick, officeId)));
+                                        ((JavascriptExecutor) d).executeScript(scrollSlotHighlight, officeId)));
+        try {
+            Thread.sleep(200L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        scrollTimeSlotGridIntoViewForScreenshots();
+        try {
+            Thread.sleep(250L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
+    public void clickHighlightedTimeslotSelection() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted timeslot");
+        Object slotClickResult =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(SCROLL_SLOT_CLICK_SCRIPT);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(slotClickResult),
+                "zmscitizenview: could not click highlighted timeslot");
         try {
             Thread.sleep(800L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Step 3 (combined): highlight + click — use split steps in features so {@code @AfterStep} captures the slot area.
+     */
+    public void selectPreferredTimeslotBelowCalendar(int officeId) {
+        highlightPreferredTimeslotForOffice(officeId);
+        clickHighlightedTimeslotSelection();
+    }
+
+    /**
+     * Step 4: assert {@code Ausgewählter Termin} callout for the office, then <strong>Weiter</strong> to reserve (API).
+     */
+    public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
+        CONTEXT.set();
         assertSelectedAppointmentCalloutShowsProvider(officeId);
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
         clickWeiter();
         waitForReserveToSettle();
+    }
+
+    /**
+     * Full slot booking sequence (single step); prefer the split steps in feature files for clearer reports and
+     * per-step screenshots.
+     *
+     * @see #waitUntilSlotsReadyForBooking()
+     * @see #clickSpäterIfAvailableAndReloadSlots()
+     * @see #selectPreferredTimeslotBelowCalendar(int)
+     * @see #assertCalloutAndReserveAfterSlotSelection(int)
+     */
+    public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
+        waitUntilSlotsReadyForBooking();
+        clickSpäterIfAvailableAndReloadSlots();
+        selectPreferredTimeslotBelowCalendar(officeId);
+        assertCalloutAndReserveAfterSlotSelection(officeId);
     }
 
     /**

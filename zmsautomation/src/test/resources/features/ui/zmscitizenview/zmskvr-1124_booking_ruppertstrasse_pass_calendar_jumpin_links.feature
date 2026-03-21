@@ -8,6 +8,8 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
 
   # Flow: calendar + slot → Ausgewählter Termin callout → Weiter (= reserve) → Kontakt form → Weiter (= update) →
   # preconfirm (summary + privacy) → Weiter → activation callout (“Aktivieren Sie Ihren Termin.”)
+  # Slot selection is split into steps (wait for slots → Später if available → scroll/highlight timeslot → click slot → Weiter/reserve)
+  # so Cucumber reports and per-step @AfterStep screenshots show the time slot grid (highlight step) before the click.
 
   Background:
     Given the Citizen API is available
@@ -30,7 +32,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
-    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
@@ -61,7 +67,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10489 should not appear in the citizen view
     And provider checkbox 10492 should not appear in the citizen view
     When I select office 10502 in the citizen view
-    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
@@ -90,7 +100,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
     When I select office 10489 in the citizen view
-    And I choose the first slot below the calendar for office 10489 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view
@@ -119,7 +133,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     And provider checkbox 10489 should not appear in the citizen view
     And provider checkbox 10502 should not appear in the citizen view
     When I select office 10492 in the citizen view
-    And I choose the first slot below the calendar for office 10492 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10492 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10492 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10492 in the citizen view
     And the estimated duration in the booking summary should be 10 minutes in the citizen view
@@ -149,7 +167,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then provider checkbox 10502 should be visible in the citizen view
     And I keep only providers "10502" checked in the citizen view
     When I select office 10502 in the citizen view
-    And I choose the first slot below the calendar for office 10502 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
     And the estimated duration in the booking summary should be 15 minutes in the citizen view
@@ -182,7 +204,11 @@ Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 105
     Then provider checkbox 10489 should be visible in the citizen view
     And I keep only providers "10489" checked in the citizen view
     When I select office 10489 in the citizen view
-    And I choose the first slot below the calendar for office 10489 and continue in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
     When I enter default contact details in the citizen view
     Then the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the booking summary should be 30 minutes in the citizen view

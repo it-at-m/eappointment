@@ -90,10 +90,57 @@ public class CitizenViewSteps {
         }
     }
 
+    @When("I wait for appointment slots to be ready in the citizen view")
+    public void iWaitForAppointmentSlotsToBeReadyInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: wait for appointment slots (spinner cleared)");
+        page.waitUntilSlotsReadyForBooking();
+    }
+
+    @When("I click Später in the time slot grid if available in the citizen view")
+    public void iClickSpaeterInTheTimeSlotGridIfAvailableInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Später beside time slot grid (later hour/day-part) if multi-provider UI");
+        page.clickSpäterIfAvailableAndReloadSlots();
+    }
+
+    @When("I scroll to and highlight the preferred timeslot for office {int} in the citizen view")
+    public void iScrollToAndHighlightPreferredTimeslotForOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: scroll + highlight preferred timeslot for office {} (screenshot before click)",
+                        officeId);
+        page.highlightPreferredTimeslotForOffice(officeId);
+    }
+
+    @When("I click the highlighted timeslot in the citizen view")
+    public void iClickTheHighlightedTimeslotInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: click highlighted timeslot (after highlight step screenshot)");
+        page.clickHighlightedTimeslotSelection();
+    }
+
+    @When("I select a preferred timeslot below the calendar for office {int} in the citizen view")
+    public void iSelectPreferredTimeslotBelowCalendarForOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select preferred timeslot below calendar for office {}", officeId);
+        page.selectPreferredTimeslotBelowCalendar(officeId);
+    }
+
+    @When("I continue after slot selection with Weiter for office {int} in the citizen view")
+    public void iContinueAfterSlotSelectionWithWeiterForOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Ausgewählter Termin + Weiter (reserve) for office {}", officeId);
+        page.assertCalloutAndReserveAfterSlotSelection(officeId);
+    }
+
+    /**
+     * Legacy single-step slot booking (all of the above in one step). Prefer the split steps in feature files for
+     * clearer Cucumber reports and per-step screenshots.
+     */
     @When("I choose the first slot below the calendar for office {int} and continue in the citizen view")
     public void iChooseFirstSlotBelowCalendarForOfficeAndContinue(int officeId) {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: choose first slot below calendar for office {} and Weiter", officeId);
+                .info("zmscitizenview: choose first slot below calendar for office {} and Weiter (combined step)",
+                        officeId);
         page.scrollClickFirstSlotAssertCalloutWeiter(officeId);
     }
 
