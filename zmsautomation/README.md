@@ -120,6 +120,23 @@ mvn test -Pataf-ui
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
 
+### macOS host (outside containers)
+
+From the **repository root**, install JDK 21, Maven, and Chrome/Firefox/Edge drivers via Homebrew, then run ATAF with auto-detected `JAVA_HOME` and driver paths:
+
+```bash
+./cli tests run-mac-local --db-full-setup
+# load DB + Flyway test data like CI (requires `MYSQL_*` env pointing at your local DB)
+
+./cli tests install-mac-deps
+# Sets BASE_URI / CITIZEN_API_BASE_URI (https://localhost:8091/...) and CITIZEN_VIEW_BASE_URI (http://localhost:8082/) for you.
+# First run imports the gateway TLS cert into ~/.config/eappointment/cacerts-with-local-gateway-8091.jks so RestAssured (JVM) trusts :8091.
+
+./cli tests run-mac-local
+# Optional: --api-http (HTTP :8080, skips trust import), --skip-gateway-trust (if you manage cacerts yourself).
+# Refresh trust only: ./cli tests trust-local-gateway
+```
+
 ## Environment Variables
 
 Required environment variables for ATAF tests:

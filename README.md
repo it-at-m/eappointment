@@ -254,6 +254,9 @@ ddev restart
   - `ddev exec ./cli modules clear-local-cache`
 
 ### Using Podman
+- One-shot local dev setup (`db full-setup` first, then composer + npm install + npm build), same as chaining `./cli` yourself:
+  - From the **host**: `podman exec -it zms-web bash -lc "./cli dev setup-local"`
+  - Or run `./cli dev setup-local` wherever the repo is already mounted (e.g. already inside `zms-web` container)
 - Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
   - `podman exec -it zms-web bash -lc "./cli db full-setup"`
 - Optional manual steps:

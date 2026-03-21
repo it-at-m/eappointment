@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -1630,6 +1631,7 @@ public class CitizenViewPage extends BasePage {
             }
             url = base + "#/appointment/confirm/" + b64;
         }
+        url = ensureAbsoluteCitizenViewUrl(url);
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
@@ -1653,6 +1655,7 @@ public class CitizenViewPage extends BasePage {
             ScenarioLogManager.getLogger().warn("zmscitizenview: no appointment view URL set; fetch the confirmation mail (second mail) first.");
         }
         Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
+        url = ensureAbsoluteCitizenViewUrl(url);
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL (from second email): {}", url);
         try {
             DriverUtil.getDriver().navigate().to(url);
@@ -1672,5 +1675,36 @@ public class CitizenViewPage extends BasePage {
             return "null";
         }
         return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+    }
+
+    /**
+     * Mail bodies often contain {@code localhost:8082/#/...} without a scheme. WebDriver then mis-resolves the URL
+     * (e.g. only {@code http://localhost:8082/#}). Always produce a proper absolute URL with {@code http://} or {@code https://}.
+     */
+    static String ensureAbsoluteCitizenViewUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String u = url.trim();
+        if (u.length() >= 7 && u.regionMatches(true, 0, "http://", 0, 7)) {
+            return u;
+        }
+        if (u.length() >= 8 && u.regionMatches(true, 0, "https://", 0, 8)) {
+            return u;
+        }
+        if (u.startsWith("//")) {
+            return "http:" + u;
+        }
+        if (u.startsWith("#")) {
+            String origin = Objects.requireNonNullElse(
+                System.getenv("CITIZEN_VIEW_BASE_URI"),
+                "http://localhost:8082/"
+            ).trim();
+            if (!origin.endsWith("/")) {
+                origin = origin + "/";
+            }
+            return origin + u;
+        }
+        return "http://" + u;
     }
 }

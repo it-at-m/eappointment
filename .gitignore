@@ -16,6 +16,9 @@ dldb-mapper
 /local/
 coverage/
 
+# Python
+__pycache__/
+
 # =============== PHP =================
 vendor/
 vendor.zmsbase
