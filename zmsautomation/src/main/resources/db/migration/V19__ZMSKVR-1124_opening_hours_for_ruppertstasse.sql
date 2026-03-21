@@ -26,6 +26,20 @@ SET @desired_end :=
 SET @rounded_end :=
   LEAST(@desired_end, '23:55:00');
 
+-- If the capped end is not after the rounded start (e.g. late night / 24:00:00 start),
+-- use the next calendar day with appointment window 00:05–03:05 (still capped at 23:55).
+SET @start_sec := TIME_TO_SEC(@rounded_start);
+SET @end_sec := TIME_TO_SEC(@rounded_end);
+SET @use_next_day := (@end_sec <= @start_sec);
+
+SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
+SET @appt_end :=
+  IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
+
+SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
+SET @range_end :=
+  IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 8 DAY), DATE_ADD(CURDATE(), INTERVAL 7 DAY));
+
 INSERT IGNORE INTO `oeffnungszeit`
 (
   `OeffnungszeitID`,
@@ -51,10 +65,10 @@ INSERT IGNORE INTO `oeffnungszeit`
 )
 VALUES
   -- Bürgerbüro Ruppertstraße (KVR-II/211) – Abholung (officeId 10492)
-  (136200, 148, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136200, 148, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
@@ -63,10 +77,10 @@ VALUES
    NOW()),
 
   -- Bürgerbüro Ruppertstraße (KVR-II/22) – WB04 (officeId 10489)
-  (136201, 160, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136201, 160, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
@@ -75,10 +89,10 @@ VALUES
    NOW()),
 
   -- Bürgerbüro Ruppertstraße (KVR-II/22) – WB03 (officeId 10489)
-  (136202, 181, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136202, 181, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
@@ -87,10 +101,10 @@ VALUES
    NOW()),
 
   -- Bürgerbüro Ruppertstraße (KVR-II/221) – WB04 Pass (officeId 10502)
-  (136203, 172, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136203, 172, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
@@ -99,10 +113,10 @@ VALUES
    NOW()),
 
   -- Bürgerbüro Ruppertstraße (KVR-II/221) – WB03 Pass (officeId 10502)
-  (136204, 184, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136204, 184, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
@@ -111,10 +125,10 @@ VALUES
    NOW()),
 
   -- Bürgerbüro Ruppertstraße (KVR-II/221) – Serviceschalter Pass (officeId 10502)
-  (136205, 342, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY),
+  (136205, 342, @range_start, @range_end,
    1, 0, 127,
-   '00:00:00', @rounded_start,
-   '00:00:00', @rounded_end,
+   '00:00:00', @appt_start,
+   '00:00:00', @appt_end,
    '00:05:00',
    0, 5,
    'ZMSKVR-1124 Ruppertstraße Öffnungszeit',
