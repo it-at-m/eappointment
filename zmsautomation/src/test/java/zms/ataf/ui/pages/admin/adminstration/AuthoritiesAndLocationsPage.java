@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -16,6 +18,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -27,6 +30,11 @@ import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
 public class AuthoritiesAndLocationsPage extends AdminPage {
+
+    private static final int WORKSTATION_SELECT_MAX_ATTEMPTS = 5;
+    private static final long WORKSTATION_SELECT_RETRY_PAUSE_MS = 500L;
+    private static final int WORKSTATION_SELECT_WAIT_PER_ATTEMPT_SEC = 12;
+    private static final Pattern WORKSTATION_COUNT_LEADING_DIGITS = Pattern.compile("^\\s*(\\d+)");
 
     public AuthoritiesAndLocationsPage(RemoteWebDriver driver, AdminPageContext adminPageContext) {
         super(driver, adminPageContext);
@@ -340,15 +348,49 @@ public void saveLocationChanges() {
     }
 
     public void selectOverallAvailableCounters(String numberOfCounters) {
-        CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Trying to select overall available counters \"" + numberOfCounters + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='WsCountIntern']", LocatorType.XPATH, numberOfCounters);
+        selectWorkstationCountDropdownWithRetry("WsCountIntern", numberOfCounters);
     }
 
     public void selectInternetAvailableCounters(String numberOfCounters) {
+        selectWorkstationCountDropdownWithRetry("WsCountPublic", numberOfCounters);
+    }
+
+    /**
+     * Terminarbeitsplätze selects can sit below the fold and briefly stay disabled while React updates state.
+     * Retries mitigate flakiness; {@link Select#selectByValue(String)} avoids fragile visible-text matching.
+     */
+    private void selectWorkstationCountDropdownWithRetry(String selectId, String numberOfCountersLabel) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Trying to select internet available counters \"" + numberOfCounters + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='WsCountPublic']", LocatorType.XPATH, numberOfCounters);
+        Matcher m = WORKSTATION_COUNT_LEADING_DIGITS.matcher(numberOfCountersLabel.trim());
+        Assert.assertTrue(m.find(), "Could not parse workstation count from: " + numberOfCountersLabel);
+        String optionValue = m.group(1);
+
+        By selectLocator = By.id(selectId);
+        Exception lastFailure = null;
+        for (int attempt = 1; attempt <= WORKSTATION_SELECT_MAX_ATTEMPTS; attempt++) {
+            ScenarioLogManager.getLogger().info("Trying to select workstation count \"" + numberOfCountersLabel + "\" on #"
+                    + selectId + " (attempt " + attempt + "/" + WORKSTATION_SELECT_MAX_ATTEMPTS + ")");
+            try {
+                WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(WORKSTATION_SELECT_WAIT_PER_ATTEMPT_SEC));
+                WebElement selectEl = wait.until(ExpectedConditions.elementToBeClickable(selectLocator));
+                scrollToCenterByVisibleElement(selectEl);
+                new Select(selectEl).selectByValue(optionValue);
+                return;
+            } catch (Exception e) {
+                lastFailure = e;
+                ScenarioLogManager.getLogger().warn("Workstation select attempt " + attempt + " failed: " + e.getMessage());
+                if (attempt < WORKSTATION_SELECT_MAX_ATTEMPTS) {
+                    try {
+                        Thread.sleep(WORKSTATION_SELECT_RETRY_PAUSE_MS);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        Assert.fail("Interrupted while retrying workstation select", ie);
+                    }
+                }
+            }
+        }
+        Assert.fail("Could not select workstation count on #" + selectId + " after " + WORKSTATION_SELECT_MAX_ATTEMPTS + " attempts",
+                lastFailure);
     }
 
     public void clickOnSaveButton() {
