@@ -1,4 +1,4 @@
-package zms.ataf.ui.pages.admin.adminstration;
+package zms.ataf.ui.pages.admin.administration;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
 

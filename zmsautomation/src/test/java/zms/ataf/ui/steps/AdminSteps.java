@@ -37,7 +37,7 @@ import io.cucumber.java.de.Wenn;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
-import zms.ataf.ui.pages.admin.adminstration.AuthoritiesAndLocationsPage;
+import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterSection;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStationSection;
