@@ -311,7 +311,7 @@ public void saveLocationChanges() {
 
     public void enterClosingDate(String date) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("Trying to enter opening Date \"" + date + "\"");
+        ScenarioLogManager.getLogger().info("Trying to enter closing date \"" + date + "\"");
         WebElement closingDateTextField = findElementByLocatorType("//input[@id='AvDatesEnd']", LocatorType.XPATH, true);
         moveToElementAction(closingDateTextField);
         new Actions(DRIVER)
