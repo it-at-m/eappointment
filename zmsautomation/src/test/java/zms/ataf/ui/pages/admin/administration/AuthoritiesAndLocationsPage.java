@@ -86,42 +86,56 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
                 "Page title 'Behörden und Standorte' is not visible!");
     }
 
-    // setMaxSlotsForLocation — clear before type
+    /**
+     * Sets slots per appointment on the currently opened Standort page. The UI exposes a single pair of preference fields;
+     * {@code location} is for log context only (callers must navigate to that Standort first).
+     */
     public void setMaxSlotsForLocation(String location, String number) {
         ScenarioLogManager.getLogger().info("Trying to set the maximal slots for location: " + location);
         WebElement field = findElementByLocatorType(
             "//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH, true);
         moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
         new Actions(DRIVER)
             .click(field)
-            .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+            .keyDown(selectAllMod).sendKeys("a").keyUp(selectAllMod)
             .sendKeys(Keys.DELETE)
             .sendKeys(number)
             .perform();
     }
 
-    // setRepeatCallsForLocation — clear before type
+    /**
+     * @see #setMaxSlotsForLocation(String, String)
+     */
     public void setRepeatCallsForLocation(String location, String number) {
         ScenarioLogManager.getLogger().info("Trying to set 'Wiederholungsaufrufe' for location: " + location);
         WebElement field = findElementByLocatorType(
             "//input[@name='preferences[queue][callCountMax]']", LocatorType.XPATH, true);
         moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
         new Actions(DRIVER)
             .click(field)
-            .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+            .keyDown(selectAllMod).sendKeys("a").keyUp(selectAllMod)
             .sendKeys(Keys.DELETE)
             .sendKeys(number)
             .perform();
     }
 
+    /** @see #setMaxSlotsForLocation(String, String) */
     public String getMaxSlotsForLocation(String location) {
         ScenarioLogManager.getLogger().info("Trying to get the maximal slots for location: " + location);
         return findElementByLocatorType("//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH, true).getAttribute("value");
     }
 
+    /** @see #setMaxSlotsForLocation(String, String) */
     public String getRepeatCallsForLocation(String location) {
         ScenarioLogManager.getLogger().info("Trying to get 'Wiederholungsaufrufe' for location: " + location);
         return findElementByLocatorType("//input[@name='preferences[queue][callCountMax]']", LocatorType.XPATH, true).getAttribute("value");
+    }
+
+    private static Keys selectAllModifierKey() {
+        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        return os.contains("mac") ? Keys.COMMAND : Keys.CONTROL;
     }
 
     public int getOpeningHoursSlotTimeInMinutes() {
@@ -314,11 +328,12 @@ public void saveLocationChanges() {
         ScenarioLogManager.getLogger().info("Trying to enter closing date \"" + date + "\"");
         WebElement closingDateTextField = findElementByLocatorType("//input[@id='AvDatesEnd']", LocatorType.XPATH, true);
         moveToElementAction(closingDateTextField);
+        Keys selectAllMod = selectAllModifierKey();
         new Actions(DRIVER)
                 .click(closingDateTextField)
-                .keyDown(Keys.CONTROL)
+                .keyDown(selectAllMod)
                 .sendKeys("a")
-                .keyUp(Keys.CONTROL)
+                .keyUp(selectAllMod)
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(date)
                 .perform();
