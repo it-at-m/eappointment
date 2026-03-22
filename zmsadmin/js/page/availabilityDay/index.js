@@ -255,7 +255,7 @@ class AvailabilityPage extends Component {
             () => {
                 showSpinner();
                 $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                    method: 'GET'
+                    method: 'DELETE'
                 }).done(() => {
                     const newState = deleteAvailabilityInState(this.state, availability);
 
@@ -284,11 +284,12 @@ class AvailabilityPage extends Component {
                     }
                     hideSpinner();
                 }).fail(err => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.error('delete error', err);
@@ -623,11 +624,12 @@ class AvailabilityPage extends Component {
                     }
                 },
                 (err) => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.log('conflict error', err);
@@ -683,11 +685,12 @@ class AvailabilityPage extends Component {
             if (err.status === 404) {
                 console.log('404 error, ignored')
             } else {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
-                        message: err.responseText
+                        message: responseText
                     });
                 } else {
                     console.log('reading calculated availability list error', err);

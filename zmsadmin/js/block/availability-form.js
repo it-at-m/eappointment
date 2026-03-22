@@ -35,7 +35,7 @@ class View extends BaseView {
             dialogHtml,
             () => {
                 $.ajax(`/availability/delete/${id}/`, {
-                    method: 'GET'
+                    method: 'DELETE'
                 }).done(() => {
                     removeAvailability(id);
                     $form.hide();
