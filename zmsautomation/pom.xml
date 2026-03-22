@@ -21,7 +21,7 @@
     <testng.version>7.8.0</testng.version>
     <flyway.version>10.0.1</flyway.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
-    <ataf.version>0.3.3-SNAPSHOT</ataf.version>
+    <ataf.version>0.3.2-SNAPSHOT</ataf.version>
   </properties>
 
   <dependencies>
