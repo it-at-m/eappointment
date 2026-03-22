@@ -464,10 +464,6 @@ class Availability extends Schema\Entity
         $errorList = [];
 
         $startTime = (clone $startDate)->setTime(0, 0);
-        $startHour = (int) $startDate->format('H');
-        $endHour = (int) $endDate->format('H');
-        $startMinute = (int) $startDate->format('i');
-        $endMinute = (int) $endDate->format('i');
         $isFuture = ($kind && $kind === 'future');
 
         if (
