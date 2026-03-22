@@ -459,7 +459,7 @@ class Availability extends Schema\Entity
         return false;
     }
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
 
