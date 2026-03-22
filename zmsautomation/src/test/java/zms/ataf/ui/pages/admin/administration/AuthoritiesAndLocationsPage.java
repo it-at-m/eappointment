@@ -204,7 +204,9 @@ public void saveLocationChanges() {
     for (By ok : successDetectors) {
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(ok));
-            ScenarioLogManager.getLogger().info("Save success banner: ");
+            WebElement successEl = DRIVER.findElement(ok);
+            ScenarioLogManager.getLogger().info("Save success banner: "
+                    + successEl.getText().replaceAll("\\s+", " ").trim());
             successSeen = true;
             break;
         } catch (TimeoutException ignored) {}
