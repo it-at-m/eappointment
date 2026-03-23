@@ -62,7 +62,10 @@ public class ZmsApiMailSteps {
                 }
             }
         }
-        if (match == null && !mails.isEmpty()) {
+        // Citizenview (booking == null) has no process context yet; in that case we can only fall back
+        // to the newest mail that has a process/auth reference so confirm deep links can be extracted.
+        // If booking is known but the expected mail is not there yet, we must NOT pick a mail from a different process.
+        if (booking == null && !mails.isEmpty()) {
             ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using newest mail (max id) with process id");
             for (MailListItem mail : mails) {
                 MailProcessRef proc = mail.getProcess();
