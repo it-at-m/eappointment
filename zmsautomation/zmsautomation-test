@@ -423,7 +423,8 @@ wait_http() { # name url
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
     code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
-    [[ "$code" =~ ^2|3 ]] && { info "✓ ${n} responding (${code})"; return 0; }
+    # Accept only real HTTP 2xx or 3xx responses.
+    [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
   done
   warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
@@ -435,7 +436,8 @@ wait_http_direct() { # name url
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
     code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy '*' "$u" || echo 000)"
-    [[ "$code" =~ ^2|3 ]] && { info "✓ ${n} responding (${code})"; return 0; }
+    # Accept only real HTTP 2xx or 3xx responses.
+    [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
   done
   warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
