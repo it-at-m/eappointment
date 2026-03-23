@@ -529,6 +529,8 @@ jobs:
 
   zms-automation-safari:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.browser == 'safari' }}
+    # https://github.blog/changelog/2026-02-26-macos-26-is-now-generally-available-for-github-hosted-runners/
+    # https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md#browsers
     runs-on: macos-26-intel
     steps:
       - name: Checkout repository
