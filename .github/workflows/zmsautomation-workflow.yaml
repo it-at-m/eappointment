@@ -37,6 +37,21 @@ on:
         required: true
         type: boolean
         default: true
+      install_chrome:
+        description: Install Chromium + driver in built web image
+        required: true
+        type: boolean
+        default: true
+      install_firefox:
+        description: Install Firefox + geckodriver in built web image
+        required: true
+        type: boolean
+        default: true
+      install_edge:
+        description: Install Microsoft Edge + msedgedriver in built web image
+        required: true
+        type: boolean
+        default: true
   schedule:
     - cron: "0 6 * * *"
 
@@ -134,7 +149,14 @@ jobs:
           set -euo pipefail
           # Use the same apache/ssl setup as the local devcontainer base,
           # then overwrite module directories from the prebuilt GHCR module images.
-          docker build -t zms-web-base:ci -f .devcontainer/Containerfile .devcontainer
+          INSTALL_CHROME="${{ github.event_name == 'schedule' && '1' || (inputs.install_chrome && '1' || '0') }}"
+          INSTALL_FIREFOX="${{ github.event_name == 'schedule' && '1' || (inputs.install_firefox && '1' || '0') }}"
+          INSTALL_EDGE="${{ github.event_name == 'schedule' && '1' || (inputs.install_edge && '1' || '0') }}"
+          docker build -t zms-web-base:ci \
+            --build-arg INSTALL_CHROME="$INSTALL_CHROME" \
+            --build-arg INSTALL_FIREFOX="$INSTALL_FIREFOX" \
+            --build-arg INSTALL_EDGE="$INSTALL_EDGE" \
+            -f .devcontainer/Containerfile .devcontainer
 
       - name: Start required containers (stack once)
         shell: bash
@@ -655,7 +677,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build -t zms-web-base:ci -f .devcontainer/Containerfile .devcontainer
+          # Safari job runs tests on host Safari, so browser binaries in zms-web are unnecessary.
+          docker build -t zms-web-base:ci \
+            --build-arg INSTALL_CHROME=0 \
+            --build-arg INSTALL_FIREFOX=0 \
+            --build-arg INSTALL_EDGE=0 \
+            -f .devcontainer/Containerfile .devcontainer
 
       - name: Start required containers (stack once) - host mapped ports
         shell: bash
