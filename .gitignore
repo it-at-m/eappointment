@@ -1,18 +1,23 @@
 # Prevent accidental commit
+agile-test-automation-framework
 test-automation-framework-example
 test-automation-framework
 zms-test-automation
+eappointment-buergeransicht
+zmsautomation/lib
 
 dldb-mapper
 
 # =============== ddev =================
 .ddev/.env
-.ddev/.env.template
 .devcontainer/.env
 
 # =============== Local =================
 /local/
 coverage/
+
+# Python
+__pycache__/
 
 # =============== PHP =================
 vendor/
@@ -51,6 +56,7 @@ replay_pid*
 
 # =============== Maven ================
 target/
+.m2/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -217,3 +223,7 @@ nbdist/
 *.njsproj
 *.sln
 *.sw?
+
+# Local Keycloak redirect URL overrides (generated/modified locally)
+zmsadmin/keycloak.json
+zmsstatistic/keycloak.json

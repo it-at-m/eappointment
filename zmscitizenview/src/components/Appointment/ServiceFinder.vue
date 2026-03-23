@@ -597,6 +597,8 @@ const setOftenSearchedService = (serviceId: string) => {
       subServices: [],
       combinable: foundService.combinable as unknown as Combinable,
     } as ServiceImpl;
+
+    nextStep();
   }
 };
 
