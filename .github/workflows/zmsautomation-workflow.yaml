@@ -559,7 +559,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.browser == 'safari' }}
     # https://github.blog/changelog/2026-02-26-macos-26-is-now-generally-available-for-github-hosted-runners/
     # https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md#browsers
-    runs-on: macos-26-intel
+    # Large x64 runner (more CPU/RAM than macos-26-intel) — helps Docker/Colima throughput.
+    runs-on: macos-26-large
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
