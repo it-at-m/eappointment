@@ -810,7 +810,8 @@ jobs:
             chown -R www-data:www-data /var/www/html/cache 2>/dev/null || true
             chmod -R 777 /var/www/html/cache 2>/dev/null || true
 
-            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+            # Match slim Safari prepare image: only modules baked into zms-web for zmscitizenview CI.
+            for dir in zmsapi zmscitizenapi zmsmessaging; do
               mkdir -p "/var/www/html/$dir/cache"
               chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
               chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true
@@ -1036,12 +1037,13 @@ jobs:
           fi
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Pull prebuilt PHP module images
+      - name: Pull prebuilt PHP module images (Safari / zmscitizenview-only)
         shell: bash
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          # Smaller stack than full Linux CI: zmscitizenview is a separate image; zms-web only needs API + messaging.
+          modules=(zmsapi zmscitizenapi zmsmessaging)
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
@@ -1053,7 +1055,7 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          modules=(zmsapi zmscitizenapi zmsmessaging)
 
           docker build -t zms-web-base:ci \
             --build-arg INSTALL_CHROME=0 \
@@ -1066,22 +1068,19 @@ jobs:
             --build-arg INSTALL_XDEBUG=0 \
             -f .devcontainer/Containerfile .devcontainer
 
-          # Build a prepared image directly (avoids docker commit layer bloat that is slow to extract on macOS runners).
-          cat > .devcontainer/Containerfile.ci.prepared <<EOF
-          FROM zms-web-base:ci
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsadmin:${PHP_TAG} /var/www/html/. /var/www/html/zmsadmin/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsapi:${PHP_TAG} /var/www/html/. /var/www/html/zmsapi/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmscalldisplay:${PHP_TAG} /var/www/html/. /var/www/html/zmscalldisplay/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmscitizenapi:${PHP_TAG} /var/www/html/. /var/www/html/zmscitizenapi/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsmessaging:${PHP_TAG} /var/www/html/. /var/www/html/zmsmessaging/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsstatistic:${PHP_TAG} /var/www/html/. /var/www/html/zmsstatistic/
-          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsticketprinter:${PHP_TAG} /var/www/html/. /var/www/html/zmsticketprinter/
-          RUN set -e; \
-            for m in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter; do \
-              chown -R www-data:www-data "/var/www/html/\$m" 2>/dev/null || true; \
-              chmod -R 755 "/var/www/html/\$m" 2>/dev/null || true; \
+          # Prepared image: COPY only the modules listed above (smaller image → faster pull/extract on macOS).
+          mods_for_run="${modules[*]}"
+          {
+            echo "FROM zms-web-base:ci"
+            for m in "${modules[@]}"; do
+              echo "COPY --from=ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG} /var/www/html/. /var/www/html/${m}/"
             done
-          EOF
+            echo "RUN set -e; \\"
+            echo "  for m in ${mods_for_run}; do \\"
+            echo "    chown -R www-data:www-data \"/var/www/html/\$m\" 2>/dev/null || true; \\"
+            echo "    chmod -R 755 \"/var/www/html/\$m\" 2>/dev/null || true; \\"
+            echo "  done"
+          } > .devcontainer/Containerfile.ci.prepared
 
           WEB_IMAGE="ghcr.io/${GITHUB_REPOSITORY}/zms-web-prepared:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           docker build -t "$WEB_IMAGE" -f .devcontainer/Containerfile.ci.prepared .devcontainer
