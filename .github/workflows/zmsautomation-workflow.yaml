@@ -152,6 +152,11 @@ jobs:
             --build-arg INSTALL_CHROME="$INSTALL_CHROME" \
             --build-arg INSTALL_FIREFOX="$INSTALL_FIREFOX" \
             --build-arg INSTALL_EDGE="$INSTALL_EDGE" \
+            --build-arg INSTALL_X11_TOOLS=1 \
+            --build-arg INSTALL_PYTHON_TOOLS=1 \
+            --build-arg INSTALL_NODE=1 \
+            --build-arg INSTALL_COMPOSER=1 \
+            --build-arg INSTALL_XDEBUG=0 \
             -f .devcontainer/Containerfile .devcontainer
 
       - name: Start required containers (stack once)
@@ -678,6 +683,11 @@ jobs:
             --build-arg INSTALL_CHROME=0 \
             --build-arg INSTALL_FIREFOX=0 \
             --build-arg INSTALL_EDGE=0 \
+            --build-arg INSTALL_X11_TOOLS=0 \
+            --build-arg INSTALL_PYTHON_TOOLS=0 \
+            --build-arg INSTALL_NODE=0 \
+            --build-arg INSTALL_COMPOSER=0 \
+            --build-arg INSTALL_XDEBUG=0 \
             -f .devcontainer/Containerfile .devcontainer
 
       - name: Start required containers (stack once) - host mapped ports

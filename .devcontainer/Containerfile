@@ -13,6 +13,11 @@ ARG USER_GID=1000
 ARG INSTALL_FIREFOX=1
 ARG INSTALL_CHROME=1
 ARG INSTALL_EDGE=1
+ARG INSTALL_X11_TOOLS=1
+ARG INSTALL_PYTHON_TOOLS=1
+ARG INSTALL_NODE=1
+ARG INSTALL_COMPOSER=1
+ARG INSTALL_XDEBUG=1
 
 RUN groupadd --gid $USER_GID $USERNAME \
  && useradd -m -u $USER_UID -g $USER_GID -s /bin/bash $USERNAME
@@ -24,13 +29,25 @@ RUN apt-get update && apt-get install -y \
       git curl unzip make wget gnupg \
       libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
       libicu-dev libonig-dev libzip-dev \
-      python3-click python3-git python3-colorama \
       mariadb-client \
-      xvfb x11-utils x11-xserver-utils \
       nano \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl gd pdo pdo_mysql zip calendar \
     && apt-get clean
+
+RUN set -e; \
+    if [ "${INSTALL_X11_TOOLS}" = "1" ]; then \
+      apt-get update && apt-get install -y --no-install-recommends xvfb x11-utils x11-xserver-utils; \
+      apt-get clean; \
+    else \
+      echo "Skipping X11 tooling install"; \
+    fi; \
+    if [ "${INSTALL_PYTHON_TOOLS}" = "1" ]; then \
+      apt-get update && apt-get install -y --no-install-recommends python3-click python3-git python3-colorama; \
+      apt-get clean; \
+    else \
+      echo "Skipping Python helper tooling install"; \
+    fi
 
 RUN set -e; \
     if [ "${INSTALL_FIREFOX}" = "1" ]; then \
@@ -136,16 +153,24 @@ COPY apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 RUN a2ensite default-ssl
 
 # —————————————————————————————————————————
-# 6. Install Node.js
+# 6. Install Node.js (optional)
 # —————————————————————————————————————————
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
- && apt-get install -y nodejs
+RUN if [ "${INSTALL_NODE}" = "1" ]; then \
+      curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+      && apt-get install -y nodejs; \
+    else \
+      echo "Skipping Node.js install"; \
+    fi
 
 # —————————————————————————————————————————
-# 7. Install Composer
+# 7. Install Composer (optional)
 # —————————————————————————————————————————
-RUN curl -sS https://getcomposer.org/installer | php \
- && mv composer.phar /usr/local/bin/composer
+RUN if [ "${INSTALL_COMPOSER}" = "1" ]; then \
+      curl -sS https://getcomposer.org/installer | php \
+      && mv composer.phar /usr/local/bin/composer; \
+    else \
+      echo "Skipping Composer install"; \
+    fi
 
 # —————————————————————————————————————————
 # 8. Install Java 21 (Eclipse Temurin LTS) & Maven
@@ -197,8 +222,12 @@ EXPOSE 80
 # —————————————————————————————————————————
 # 12. xdebug
 # —————————————————————————————————————————
-RUN pecl install xdebug \
-  && docker-php-ext-enable xdebug
+RUN if [ "${INSTALL_XDEBUG}" = "1" ]; then \
+      pecl install xdebug \
+      && docker-php-ext-enable xdebug; \
+    else \
+      echo "Skipping xdebug install"; \
+    fi
 
 # Copy PHP overrides (upload limits etc.)
 COPY php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
