@@ -132,6 +132,19 @@ From the repo root: `./cli tests install-mac-deps` (drivers + `sudo safaridriver
 
 Use `--browser safari` (or `chrome` / `firefox` / `edge` / `safari`) as needed.
 
+### GitHub Actions (Safari)
+
+The `zmsautomation-workflow.yaml` can run Safari when you select `browser: safari` via `workflow_dispatch`.
+
+- The job runs on `macos-latest` and drives Safari via WebDriver.
+- The workflow runs `sudo safaridriver --enable` and then executes `zmsautomation-test` on the runner host (while the app stack stays in Docker containers).
+- If Safari still blocks WebDriver on the runner, switch to a self-hosted Mac runner with “Allow Remote Automation” enabled (host setup is required).
+
+To validate the setup:
+- Trigger the workflow with `browser: chrome` (Ubuntu path).
+- Trigger the workflow with `browser: safari` (macOS path).
+- Check scheduled runs still use the Ubuntu matrix (Chrome/Firefox only).
+
 ## Environment Variables
 
 Required environment variables for ATAF tests:

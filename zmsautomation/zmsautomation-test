@@ -69,10 +69,12 @@ info "Using mocked time for all processes and requests: $ZMS_TIMEADJUST"
 export SELENIUM_MANAGER_DISABLE="${SELENIUM_MANAGER_DISABLE:-true}"
 export WEBDRIVER_GECKO_DRIVER="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}"
 export WEBDRIVER_CHROME_DRIVER="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}"
+export WEBDRIVER_SAFARI_DRIVER="${WEBDRIVER_SAFARI_DRIVER:-/usr/bin/safaridriver}"
 export ZMS_BROWSER="${ZMS_BROWSER:-chrome}"
 info "SELENIUM_MANAGER_DISABLE=${SELENIUM_MANAGER_DISABLE}"
 info "WEBDRIVER_GECKO_DRIVER=${WEBDRIVER_GECKO_DRIVER}"
 info "WEBDRIVER_CHROME_DRIVER=${WEBDRIVER_CHROME_DRIVER}"
+info "WEBDRIVER_SAFARI_DRIVER=${WEBDRIVER_SAFARI_DRIVER}"
 info "ZMS_BROWSER=${ZMS_BROWSER}"
 
 # Default: take a screenshot for every ATAF step (can be overridden from the environment).
@@ -416,13 +418,21 @@ AVAIL_DAYS_END_DATE="$(TZ=Europe/Berlin date -d "${AVAIL_DAYS_START_DATE} +6 mon
 CITIZEN_API_AVAIL_DAYS_URL="$(join_url "${CITIZEN_API_BASE_URI}" "available-days-by-office/")?officeId=10502&serviceId=1063441&startDate=${AVAIL_DAYS_START_DATE}&endDate=${AVAIL_DAYS_END_DATE}&serviceCount=1"
 
 # one-shot warm-up (ignore exit code)
-curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
+if [[ "$CITIZEN_API_HEALTH_URL" == https://localhost* || "$CITIZEN_API_HEALTH_URL" == https://127.0.0.1* ]]; then
+  curl -k -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
+else
+  curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
+fi
 
 wait_http() { # name url
   local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  local curl_insecure_args=()
+  if [[ "$u" == https://localhost* || "$u" == https://127.0.0.1* ]]; then
+    curl_insecure_args+=(--insecure)
+  fi
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
-    code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
+    code="$(curl "${curl_insecure_args[@]}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
     # Accept only real HTTP 2xx or 3xx responses.
     [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
@@ -433,9 +443,13 @@ wait_http() { # name url
 # Same as wait_http but never use HTTP proxy (refarch-gateway / Docker DNS must not go via corporate proxy)
 wait_http_direct() { # name url
   local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  local curl_insecure_args=()
+  if [[ "$u" == https://localhost* || "$u" == https://127.0.0.1* ]]; then
+    curl_insecure_args+=(--insecure)
+  fi
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
-    code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy '*' "$u" || echo 000)"
+    code="$(curl "${curl_insecure_args[@]}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy '*' "$u" || echo 000)"
     # Accept only real HTTP 2xx or 3xx responses.
     [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
@@ -503,16 +517,22 @@ else
 fi
 
 # Ensure Xvfb is running
-if pgrep -x Xvfb > /dev/null; then
-  info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
-else
-  info "Starting Xvfb on display $DISPLAY..."
-  Xvfb "$DISPLAY" -screen 0 1024x768x24 > /dev/null 2>&1 &
-  sleep 2
+if [[ "${ZMS_BROWSER:-chrome}" != "safari" ]]; then
   if pgrep -x Xvfb > /dev/null; then
-    info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+    info "Xvfb is already running (PID: $(pgrep -x Xvfb))"
   else
-    warn "Failed to start Xvfb - UI tests may fail"
+    if command -v Xvfb >/dev/null 2>&1; then
+      info "Starting Xvfb on display $DISPLAY..."
+      Xvfb "${DISPLAY:-:99}" -screen 0 1024x768x24 > /dev/null 2>&1 &
+      sleep 2
+      if pgrep -x Xvfb > /dev/null; then
+        info "Xvfb started successfully (PID: $(pgrep -x Xvfb))"
+      else
+        warn "Failed to start Xvfb - UI tests may fail"
+      fi
+    else
+      warn "Xvfb not found; skipping Xvfb startup"
+    fi
   fi
 fi
 
@@ -617,6 +637,17 @@ if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
     "-Dtestautomation.platform=${EDGE_PLATFORM}"
   )
   info "For Edge runs, forcing Selenium platform to ${EDGE_PLATFORM}"
+fi
+
+if [[ "${ZMS_BROWSER:-chrome}" == "safari" ]]; then
+  # Ensure Selenium/ATAF selects the macOS platform wiring for Safari.
+  PLATFORM_ARGS+=(
+    "-DplatformName=mac"
+    "-Dplatform=mac"
+    "-Dtestautomation.platformName=mac"
+    "-Dtestautomation.platform=mac"
+    "-Dwebdriver.safari.driver=${WEBDRIVER_SAFARI_DRIVER}"
+  )
 fi
 while (( attempt <= MAX_UI_RETRIES )); do
   attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
