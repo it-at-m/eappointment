@@ -768,7 +768,8 @@ jobs:
                 KC_HTTP_RELATIVE_PATH: /auth
                 KC_DB: dev-file
               ports:
-                - "8080:8080"
+                # Avoid host-port conflict with citizenview (mapped to 8080 above).
+                - "8081:8080"
               volumes:
                 - ./keycloak/plugins:/opt/keycloak/providers/
               networks:
