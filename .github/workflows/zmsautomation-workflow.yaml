@@ -536,55 +536,55 @@ jobs:
         with:
           ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
 
-      - name: Create runtime env file
-        run: cp .devcontainer/.env.template .devcontainer/.env
+      # - name: Create runtime env file
+      #   run: cp .devcontainer/.env.template .devcontainer/.env
 
-      - name: Setup Docker on macOS
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Colima needs a Docker CLI on the host.
-          if ! command -v docker >/dev/null 2>&1; then
-            brew install docker >/dev/null
-          fi
-          # qemu backend needs qemu-img available.
-          if ! command -v qemu-img >/dev/null 2>&1; then
-            brew install qemu >/dev/null
-          fi
+      # - name: Setup Docker on macOS
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
+      #     # Colima needs a Docker CLI on the host.
+      #     if ! command -v docker >/dev/null 2>&1; then
+      #       brew install docker >/dev/null
+      #     fi
+      #     # qemu backend needs qemu-img available.
+      #     if ! command -v qemu-img >/dev/null 2>&1; then
+      #       brew install qemu >/dev/null
+      #     fi
 
-          # Prefer Colima over Docker Desktop for CI-friendly Docker CLI.
-          # (Hosted runners may already have a Docker engine; this is best-effort.)
-          if ! command -v colima >/dev/null 2>&1; then
-            brew install colima >/dev/null
-          fi
-          if ! colima status >/dev/null 2>&1; then
-            # Runner images occasionally fail on one backend (e.g. Lima hostagent panic).
-            # Try both backends with cleanup between attempts.
-            started=0
-            for backend in vz qemu; do
-              echo "Starting Colima with backend: $backend"
-              colima delete --force >/dev/null 2>&1 || true
-              if colima start --runtime docker --vm-type "$backend" --cpu 4 --memory 6 --disk 40; then
-                started=1
-                echo "Colima started with backend: $backend"
-                break
-              fi
-              echo "Colima start failed for backend: $backend"
-            done
-            if [ "$started" -ne 1 ]; then
-              echo "Unable to start Colima with any supported backend."
-              exit 1
-            fi
-          fi
+      #     # Prefer Colima over Docker Desktop for CI-friendly Docker CLI.
+      #     # (Hosted runners may already have a Docker engine; this is best-effort.)
+      #     if ! command -v colima >/dev/null 2>&1; then
+      #       brew install colima >/dev/null
+      #     fi
+      #     if ! colima status >/dev/null 2>&1; then
+      #       # Runner images occasionally fail on one backend (e.g. Lima hostagent panic).
+      #       # Try both backends with cleanup between attempts.
+      #       started=0
+      #       for backend in vz qemu; do
+      #         echo "Starting Colima with backend: $backend"
+      #         colima delete --force >/dev/null 2>&1 || true
+      #         if colima start --runtime docker --vm-type "$backend" --cpu 4 --memory 6 --disk 40; then
+      #           started=1
+      #           echo "Colima started with backend: $backend"
+      #           break
+      #         fi
+      #         echo "Colima start failed for backend: $backend"
+      #       done
+      #       if [ "$started" -ne 1 ]; then
+      #         echo "Unable to start Colima with any supported backend."
+      #         exit 1
+      #       fi
+      #     fi
 
-          # Ensure Docker CLI can reach the daemon.
-          docker version
+      #     # Ensure Docker CLI can reach the daemon.
+      #     docker version
 
-          # Ensure `docker compose` subcommand is available (Colima often provides it, but hosted runners may vary).
-          if ! docker compose version >/dev/null 2>&1; then
-            brew install docker-compose >/dev/null || true
-          fi
-          docker compose version
+      #     # Ensure `docker compose` subcommand is available (Colima often provides it, but hosted runners may vary).
+      #     if ! docker compose version >/dev/null 2>&1; then
+      #       brew install docker-compose >/dev/null || true
+      #     fi
+      #     docker compose version
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
