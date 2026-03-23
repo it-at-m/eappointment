@@ -889,6 +889,11 @@ jobs:
           export MYSQL_HOST="127.0.0.1"
           export MYSQL_ROOT_PASSWORD="${MARIADB_ROOT_PASSWORD:-root}"
 
+          # .env sets MYSQL_PORT=tcp://db:3306 for in-network containers. PHP migrate runs on the host and
+          # builds DSN from MYSQL_PORT / MYSQL_PORT_RO (see zmsapi/config.php) — host "db" is not resolvable.
+          export MYSQL_PORT="tcp://127.0.0.1:3306"
+          export MYSQL_PORT_RO="tcp://127.0.0.1:3306"
+
           # Cache dir must exist on the host (it is mounted into containers via the repo volume).
           mkdir -p "${GITHUB_WORKSPACE}/cache"
           export CACHE_DIR="${GITHUB_WORKSPACE}/cache"
