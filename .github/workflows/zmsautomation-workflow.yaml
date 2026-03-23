@@ -682,8 +682,6 @@ jobs:
               image: REPLACE_WEB_IMAGE
               container_name: zms-web
               user: "root"
-              volumes:
-                - ..:/var/www/html
               env_file:
                 - .env
               networks:
@@ -793,27 +791,6 @@ jobs:
               break
             fi
             sleep 2
-          done
-
-      - name: Inject prebuilt module directories into zms-web
-        shell: bash
-        run: |
-          set -euo pipefail
-          WEB_CONT="zms-web"
-          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
-
-          for m in "${modules[@]}"; do
-            echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
-            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
-
-            docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
 
       - name: Ensure writable cache directories
@@ -1052,24 +1029,25 @@ jobs:
             --build-arg INSTALL_XDEBUG=0 \
             -f .devcontainer/Containerfile .devcontainer
 
-          PREP_CONT="zms-web-prep"
-          docker rm -f "$PREP_CONT" >/dev/null 2>&1 || true
-          docker run -d --name "$PREP_CONT" zms-web-base:ci sleep infinity
-
-          for m in "${modules[@]}"; do
-            echo "Injecting $m from GHCR image tag $PHP_TAG into $PREP_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
-            docker exec -u root "$PREP_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$PREP_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
-            docker exec -u root "$PREP_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
-          done
+          # Build a prepared image directly (avoids docker commit layer bloat that is slow to extract on macOS runners).
+          cat > .devcontainer/Containerfile.ci.prepared <<EOF
+          FROM zms-web-base:ci
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsadmin:${PHP_TAG} /var/www/html/. /var/www/html/zmsadmin/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsapi:${PHP_TAG} /var/www/html/. /var/www/html/zmsapi/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmscalldisplay:${PHP_TAG} /var/www/html/. /var/www/html/zmscalldisplay/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmscitizenapi:${PHP_TAG} /var/www/html/. /var/www/html/zmscitizenapi/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsmessaging:${PHP_TAG} /var/www/html/. /var/www/html/zmsmessaging/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsstatistic:${PHP_TAG} /var/www/html/. /var/www/html/zmsstatistic/
+          COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsticketprinter:${PHP_TAG} /var/www/html/. /var/www/html/zmsticketprinter/
+          RUN set -e; \
+            for m in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter; do \
+              chown -R www-data:www-data "/var/www/html/\$m" 2>/dev/null || true; \
+              chmod -R 755 "/var/www/html/\$m" 2>/dev/null || true; \
+            done
+          EOF
 
           WEB_IMAGE="ghcr.io/${GITHUB_REPOSITORY}/zms-web-prepared:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          docker commit "$PREP_CONT" "$WEB_IMAGE"
+          docker build -t "$WEB_IMAGE" -f .devcontainer/Containerfile.ci.prepared .devcontainer
           docker push "$WEB_IMAGE"
-          docker rm -f "$PREP_CONT" >/dev/null 2>&1 || true
+          rm -f .devcontainer/Containerfile.ci.prepared
           echo "web_image=$WEB_IMAGE" >> "$GITHUB_OUTPUT"
