@@ -529,7 +529,7 @@ jobs:
 
   zms-automation-safari:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.browser == 'safari' }}
-    runs-on: macos-latest
+    runs-on: macos-26-intel
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
