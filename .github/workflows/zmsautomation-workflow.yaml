@@ -802,7 +802,8 @@ jobs:
               name: zms-ci-net
           YAML
 
-          sed -i "s|REPLACE_CITIZENVIEW_IMAGE|${CITIZENVIEW_IMAGE}|g" docker-compose.ci.macos.yml
+          # BSD sed (macOS) requires an explicit in-place backup suffix argument.
+          sed -i '' -e "s|REPLACE_CITIZENVIEW_IMAGE|${CITIZENVIEW_IMAGE}|g" docker-compose.ci.macos.yml
 
           docker compose -f docker-compose.ci.macos.yml down -v --remove-orphans || true
           docker compose -f docker-compose.ci.macos.yml up -d
