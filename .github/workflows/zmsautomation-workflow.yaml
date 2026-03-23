@@ -558,9 +558,23 @@ jobs:
             brew install colima >/dev/null
           fi
           if ! colima status >/dev/null 2>&1; then
-            # GitHub-hosted macOS runners often fail with the default VZ backend.
-            # Prefer qemu in CI for better compatibility.
-            colima start --runtime docker --vm-type qemu --cpu 4 --memory 6 --disk 40
+            # Runner images occasionally fail on one backend (e.g. Lima hostagent panic).
+            # Try both backends with cleanup between attempts.
+            started=0
+            for backend in vz qemu; do
+              echo "Starting Colima with backend: $backend"
+              colima delete --force >/dev/null 2>&1 || true
+              if colima start --runtime docker --vm-type "$backend" --cpu 4 --memory 6 --disk 40; then
+                started=1
+                echo "Colima started with backend: $backend"
+                break
+              fi
+              echo "Colima start failed for backend: $backend"
+            done
+            if [ "$started" -ne 1 ]; then
+              echo "Unable to start Colima with any supported backend."
+              exit 1
+            fi
           fi
 
           # Ensure Docker CLI can reach the daemon.
