@@ -543,6 +543,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Colima needs a Docker CLI on the host.
+          if ! command -v docker >/dev/null 2>&1; then
+            brew install docker >/dev/null
+          fi
+
           # Prefer Colima over Docker Desktop for CI-friendly Docker CLI.
           # (Hosted runners may already have a Docker engine; this is best-effort.)
           if ! command -v colima >/dev/null 2>&1; then
