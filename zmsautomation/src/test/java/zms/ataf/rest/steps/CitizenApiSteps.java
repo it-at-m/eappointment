@@ -146,7 +146,7 @@ public class CitizenApiSteps {
             officeId,
             serviceId,
             response.getStatusCode(),
-            daysBody.length() > 500 ? daysBody.substring(0, 500) + "..." : daysBody
+            daysBody.length() > 500 ? daysBody.substring(0, 1250) + "..." : daysBody
         ));
 
         // Citizen API may return either a plain AvailableDaysResponse payload
@@ -199,7 +199,7 @@ public class CitizenApiSteps {
             officeId,
             serviceId,
             response.getStatusCode(),
-            appointmentsBody.length() > 500 ? appointmentsBody.substring(0, 500) + "..." : appointmentsBody
+            appointmentsBody.length() > 500 ? appointmentsBody.substring(0, 1250) + "..." : appointmentsBody
         ));
 
         // As with available-days, available-appointments endpoints may return either
@@ -241,7 +241,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /reserve-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            reserveBody.length() > 500 ? reserveBody.substring(0, 500) + "..." : reserveBody
+            reserveBody.length() > 500 ? reserveBody.substring(0, 1250) + "..." : reserveBody
         ));
         response.then().statusCode(200);
 
@@ -298,7 +298,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /preconfirm-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            preconfirmBody.length() > 500 ? preconfirmBody.substring(0, 500) + "..." : preconfirmBody
+            preconfirmBody.length() > 500 ? preconfirmBody.substring(0, 1250) + "..." : preconfirmBody
         ));
         response.then().statusCode(200);
 
@@ -348,7 +348,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /confirm-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            confirmBody.length() > 500 ? confirmBody.substring(0, 500) + "..." : confirmBody
+            confirmBody.length() > 500 ? confirmBody.substring(0, 1250) + "..." : confirmBody
         ));
         response.then().statusCode(200);
 
@@ -544,7 +544,7 @@ public class CitizenApiSteps {
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API /cancel-appointment/ status=%d body=%s",
             response.getStatusCode(),
-            cancelBody.length() > 500 ? cancelBody.substring(0, 500) + "..." : cancelBody
+            cancelBody.length() > 500 ? cancelBody.substring(0, 1250) + "..." : cancelBody
         ));
 
         // Basic sanity: 200 and a non-empty payload with a thinned process.
@@ -781,7 +781,7 @@ public class CitizenApiSteps {
                 "Failed to deserialize response. Status: %d, Response body (first 500 chars): %s",
                 response.getStatusCode(),
                 responseBody != null && responseBody.length() > 500
-                    ? responseBody.substring(0, 500) + "..."
+                    ? responseBody.substring(0, 1250) + "..."
                     : responseBody
             );
             throw new RuntimeException(errorMsg, e);
@@ -799,7 +799,7 @@ public class CitizenApiSteps {
                 "Failed to deserialize response. Status: %d, Response body (first 500 chars): %s",
                 response.getStatusCode(),
                 responseBody != null && responseBody.length() > 500
-                    ? responseBody.substring(0, 500) + "..."
+                    ? responseBody.substring(0, 1250) + "..."
                     : responseBody
             );
             throw new RuntimeException(errorMsg, e);
