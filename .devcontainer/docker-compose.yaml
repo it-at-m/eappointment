@@ -59,7 +59,6 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
     container_name: zms-keycloak
-    hostname: keycloak.local
     command:
       - start-dev
     environment:
@@ -74,9 +73,7 @@ services:
     volumes:
       - ./keycloak/plugins:/opt/keycloak/providers/
     networks:
-      default:
-        aliases:
-          - keycloak.local
+      - default
     restart: unless-stopped
 
   init-keycloak:
