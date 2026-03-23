@@ -280,15 +280,19 @@ jobs:
               mariadb-client \
               x11-utils x11-xserver-utils \
               xvfb \
-              firefox-esr \
-              chromium chromium-driver \
               ;
 
-            # Prefer symlink for "firefox" path used by Selenium setups.
-            ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true
+            # Install only the selected browser + matching driver.
+            if [[ "${TARGET_BROWSER:-}" == "firefox" ]]; then
+              apt-get install -y --no-install-recommends firefox-esr
+              # Prefer symlink for "firefox" path used by Selenium setups.
+              ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true
 
-            # Install Edge + EdgeDriver only when edge browser is selected.
-            if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
+            elif [[ "${TARGET_BROWSER:-}" == "chrome" ]]; then
+              apt-get install -y --no-install-recommends chromium chromium-driver
+
+            elif [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
+              # Edge + EdgeDriver are installed only for edge runs.
               mkdir -p /etc/apt/keyrings
               rm -f /etc/apt/keyrings/microsoft.gpg
               curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
@@ -308,8 +312,8 @@ jobs:
               rm -f /tmp/msedgedriver.zip
             fi
 
-            # geckodriver is not always present; install the version used by the devcontainer.
-            if ! command -v geckodriver >/dev/null 2>&1; then
+            # geckodriver is needed only for firefox.
+            if [[ "${TARGET_BROWSER:-}" == "firefox" ]] && ! command -v geckodriver >/dev/null 2>&1; then
               GECKODRIVER_VERSION="v0.36.0"
               wget -O /tmp/geckodriver.tar.gz \
                 "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
