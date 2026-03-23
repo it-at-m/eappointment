@@ -664,22 +664,6 @@ jobs:
             echo "citizenview_tag_used=$primary" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Download prepared zms-web image (from Ubuntu prepare job)
-        uses: actions/download-artifact@v4
-        with:
-          name: zms-web-prepared-${{ github.run_id }}-${{ github.run_attempt }}
-          path: .
-
-      - name: Load prepared zms-web image into Docker (avoid slow GHCR pull on macOS)
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f zms-web-prepared.tar.gz
-          ls -lh zms-web-prepared.tar.gz
-          echo "Loading image tarball into local Docker (Colima)..."
-          gunzip -c zms-web-prepared.tar.gz | docker load
-          rm -f zms-web-prepared.tar.gz
-
       - name: Start required containers (stack once) - host mapped ports
         shell: bash
         run: |
@@ -688,6 +672,11 @@ jobs:
           CITIZENVIEW_TAG="${{ steps.citizenview.outputs.citizenview_tag_used }}"
           CITIZENVIEW_IMAGE="ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview:${CITIZENVIEW_TAG}"
           WEB_IMAGE="${{ needs.zms-automation-safari-prepare.outputs.web_image }}"
+
+          # docker pull and docker load both unpack the same layers into Colima — same slow disk I/O.
+          # Pull from GHCR only (no artifact save/load) to avoid extra upload + download time.
+          echo "Pulling prepared web image: ${WEB_IMAGE}"
+          docker pull "${WEB_IMAGE}"
 
           cd .devcontainer
 
@@ -1098,18 +1087,3 @@ jobs:
           docker push "$WEB_IMAGE"
           rm -f .devcontainer/Containerfile.ci.prepared
           echo "web_image=$WEB_IMAGE" >> "$GITHUB_OUTPUT"
-
-          # One tarball for the Safari macOS job: pulling the same image from GHCR + extracting into Colima
-          # is often extremely slow (many small files → long "Extracting …B" spam). Loading a saved image
-          # is usually much faster than registry pull+unpack on hosted macOS runners.
-          echo "Saving ${WEB_IMAGE} for artifact handoff to Safari job..."
-          docker save "$WEB_IMAGE" | gzip -1 > "${GITHUB_WORKSPACE}/zms-web-prepared.tar.gz"
-          ls -lh "${GITHUB_WORKSPACE}/zms-web-prepared.tar.gz"
-
-      - name: Upload zms-web-prepared image tarball for Safari
-        uses: actions/upload-artifact@v4
-        with:
-          name: zms-web-prepared-${{ github.run_id }}-${{ github.run_attempt }}
-          path: zms-web-prepared.tar.gz
-          retention-days: 1
-          if-no-files-found: error
