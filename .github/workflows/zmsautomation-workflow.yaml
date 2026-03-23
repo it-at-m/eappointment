@@ -553,7 +553,12 @@ jobs:
           if ! command -v colima >/dev/null 2>&1; then
             brew install colima >/dev/null
           fi
-          colima status >/dev/null 2>&1 || colima start --cpu 4 --memory 6 --disk 40
+          if ! colima status >/dev/null 2>&1; then
+            # GitHub-hosted macOS runners often fail with the default VZ backend.
+            # Prefer qemu in CI for better compatibility.
+            colima start --runtime docker --vm-type qemu --cpu 4 --memory 6 --disk 40 || \
+              colima start --runtime docker --cpu 4 --memory 6 --disk 40
+          fi
 
           # Ensure Docker CLI can reach the daemon.
           docker version
