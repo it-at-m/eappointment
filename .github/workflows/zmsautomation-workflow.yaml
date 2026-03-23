@@ -37,21 +37,6 @@ on:
         required: true
         type: boolean
         default: true
-      install_chrome:
-        description: Install Chromium + driver in built web image
-        required: true
-        type: boolean
-        default: true
-      install_firefox:
-        description: Install Firefox + geckodriver in built web image
-        required: true
-        type: boolean
-        default: true
-      install_edge:
-        description: Install Microsoft Edge + msedgedriver in built web image
-        required: true
-        type: boolean
-        default: true
   schedule:
     - cron: "0 6 * * *"
 
@@ -149,9 +134,20 @@ jobs:
           set -euo pipefail
           # Use the same apache/ssl setup as the local devcontainer base,
           # then overwrite module directories from the prebuilt GHCR module images.
-          INSTALL_CHROME="${{ github.event_name == 'schedule' && '1' || (inputs.install_chrome && '1' || '0') }}"
-          INSTALL_FIREFOX="${{ github.event_name == 'schedule' && '1' || (inputs.install_firefox && '1' || '0') }}"
-          INSTALL_EDGE="${{ github.event_name == 'schedule' && '1' || (inputs.install_edge && '1' || '0') }}"
+          INSTALL_CHROME=0
+          INSTALL_FIREFOX=0
+          INSTALL_EDGE=0
+          case "${{ matrix.browser }}" in
+            chrome)
+              INSTALL_CHROME=1
+              ;;
+            firefox)
+              INSTALL_FIREFOX=1
+              ;;
+            edge)
+              INSTALL_EDGE=1
+              ;;
+          esac
           docker build -t zms-web-base:ci \
             --build-arg INSTALL_CHROME="$INSTALL_CHROME" \
             --build-arg INSTALL_FIREFOX="$INSTALL_FIREFOX" \
