@@ -819,9 +819,10 @@ jobs:
           '
 
       # zmsautomation-test runs on the macOS host (Safari WebDriver). The Git checkout has no Composer
-      # vendor tree, but the prepared zms-web image does. Linux avoids this by docker exec'ing the script
-      # inside zms-web; copy vendor once so PHP migrations + cron steps can run on the host.
-      - name: Sync zmsapi vendor from zms-web for host-side PHP tooling
+      # vendor tree and no config.php (gitignored), but the prepared zms-web image does. Linux avoids
+      # this by docker exec'ing the script inside zms-web. Copy vendor + config so migrate finds
+      # zmsapi/config.php (otherwise script_bootstrap walks to / and fails with require('//config.php')).
+      - name: Sync zmsapi vendor and config from zms-web for host-side PHP tooling
         shell: bash
         run: |
           set -euo pipefail
@@ -833,6 +834,8 @@ jobs:
             find "${GITHUB_WORKSPACE}/zmsapi/vendor/bin" -type f -exec chmod +x {} \;
           fi
           test -f "${GITHUB_WORKSPACE}/zmsapi/vendor/bin/migrate"
+          docker cp "${WEB_CONT}:/var/www/html/zmsapi/config.php" "${GITHUB_WORKSPACE}/zmsapi/config.php"
+          test -f "${GITHUB_WORKSPACE}/zmsapi/config.php"
 
       - name: Enable Safari WebDriver
         shell: bash
