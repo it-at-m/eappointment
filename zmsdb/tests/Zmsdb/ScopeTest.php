@@ -16,10 +16,6 @@ class ScopeTest extends Base
         $entity = (new Query())->readEntity(141, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Scope", $entity);
         $this->assertEquals('Bürgeramt Heerstraße', $entity->getName());
-        $this->assertEquals(
-            '1',
-            $entity->toProperty()->preferences->appointment->notificationConfirmationEnabled->get()
-        );
 
         $entity = (new Query())->readEntity(999);
         $this->assertTrue(null === $entity);

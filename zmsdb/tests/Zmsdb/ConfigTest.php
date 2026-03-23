@@ -11,15 +11,15 @@ class ConfigTest extends Base
         $query = new Query();
         $entity = $query->readEntity();
         $this->assertEntity("\\BO\\Zmsentities\\Config", $entity);
-        $testPreference = $entity->getPreference('notifications', 'costs');
+        $testPreference = $entity->getPreference('emergency', 'refreshInterval');
 
-        $entity->setPreference('notifications', 'costs', '0.25');
+        $entity->setPreference('emergency', 'refreshInterval', 10);
         $config = $query->updateEntity($entity);
-        $this->assertEquals('0.25', $config->getPreference('notifications', 'costs'));
+        $this->assertEquals(10, $config->getPreference('emergency', 'refreshInterval'));
 
-        $entity->setPreference('notifications', 'costs', $testPreference);
+        $entity->setPreference('emergency', 'refreshInterval', $testPreference);
         $config = $query->updateEntity($entity);
-        $this->assertEquals($testPreference, $config->getPreference('notifications', 'costs'));
+        $this->assertEquals($testPreference, $config->getPreference('emergency', 'refreshInterval'));
 
         $entity['test'] = true;
         $config = $query->updateEntity($entity);

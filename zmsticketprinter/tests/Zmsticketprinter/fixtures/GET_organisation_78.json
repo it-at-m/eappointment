@@ -64,11 +64,6 @@
                     "telephoneActivated": 1,
                     "telephoneRequired": 1
                   },
-                  "notifications": {
-                    "confirmationContent": "",
-                    "headsUpContent": "",
-                    "headsUpTime": 0
-                  },
                   "queue": {
                     "callCountMax": 0,
                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
@@ -84,11 +79,7 @@
                   },
                   "ticketprinter": {
                     "buttonName": "Bürgeramt I in Köpenick",
-                    "confirmationEnabled": 0,
-                    "deactivatedText": "",
-                    "notificationsAmendmentEnabled": 0,
-                    "notificationsEnabled": 0,
-                    "notificationsDelay": 0
+                    "deactivatedText": ""
                   },
                   "workstation": {
                     "emergencyEnabled": 1
@@ -154,11 +145,6 @@
                     "telephoneActivated": 1,
                     "telephoneRequired": 1
                   },
-                  "notifications": {
-                    "confirmationContent": "",
-                    "headsUpContent": "",
-                    "headsUpTime": 0
-                  },
                   "queue": {
                     "callCountMax": 0,
                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
@@ -174,11 +160,7 @@
                   },
                   "ticketprinter": {
                     "buttonName": "Bürgeramt II in Schöneweide",
-                    "confirmationEnabled": 0,
-                    "deactivatedText": "",
-                    "notificationsAmendmentEnabled": 0,
-                    "notificationsEnabled": 0,
-                    "notificationsDelay": 0
+                    "deactivatedText": ""
                   },
                   "workstation": {
                     "emergencyEnabled": 1
