@@ -593,7 +593,7 @@ jobs:
             for backend in vz qemu; do
               echo "Starting Colima with backend: $backend"
               colima delete --force >/dev/null 2>&1 || true
-              if colima start --runtime docker --vm-type "$backend" --cpu 4 --memory 6 --disk 40; then
+              if colima start --runtime docker --vm-type "$backend" --cpu 4 --memory 12 --disk 40; then
                 started=1
                 echo "Colima started with backend: $backend"
                 break
