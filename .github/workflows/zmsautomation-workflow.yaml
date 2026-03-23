@@ -664,6 +664,22 @@ jobs:
             echo "citizenview_tag_used=$primary" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Download prepared zms-web image (from Ubuntu prepare job)
+        uses: actions/download-artifact@v4
+        with:
+          name: zms-web-prepared-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .
+
+      - name: Load prepared zms-web image into Docker (avoid slow GHCR pull on macOS)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f zms-web-prepared.tar.gz
+          ls -lh zms-web-prepared.tar.gz
+          echo "Loading image tarball into local Docker (Colima)..."
+          gunzip -c zms-web-prepared.tar.gz | docker load
+          rm -f zms-web-prepared.tar.gz
+
       - name: Start required containers (stack once) - host mapped ports
         shell: bash
         run: |
@@ -811,6 +827,22 @@ jobs:
             done
           '
 
+      # zmsautomation-test runs on the macOS host (Safari WebDriver). The Git checkout has no Composer
+      # vendor tree, but the prepared zms-web image does. Linux avoids this by docker exec'ing the script
+      # inside zms-web; copy vendor once so PHP migrations + cron steps can run on the host.
+      - name: Sync zmsapi vendor from zms-web for host-side PHP tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+          rm -rf "${GITHUB_WORKSPACE}/zmsapi/vendor"
+          docker cp "${WEB_CONT}:/var/www/html/zmsapi/vendor" "${GITHUB_WORKSPACE}/zmsapi/vendor"
+          # docker cp from Linux image → macOS can drop execute bits; fix bin/* only (avoid chmod -R on huge vendor).
+          if [ -d "${GITHUB_WORKSPACE}/zmsapi/vendor/bin" ]; then
+            find "${GITHUB_WORKSPACE}/zmsapi/vendor/bin" -type f -exec chmod +x {} \;
+          fi
+          test -f "${GITHUB_WORKSPACE}/zmsapi/vendor/bin/migrate"
+
       - name: Enable Safari WebDriver
         shell: bash
         run: |
@@ -864,6 +896,7 @@ jobs:
           export MYSQL_ROOT_PASSWORD="${MARIADB_ROOT_PASSWORD:-root}"
 
           # Cache dir must exist on the host (it is mounted into containers via the repo volume).
+          mkdir -p "${GITHUB_WORKSPACE}/cache"
           export CACHE_DIR="${GITHUB_WORKSPACE}/cache"
 
           # Mirror the local CLI expectations: gateway/admin on HTTPS via zms-web.
@@ -890,6 +923,8 @@ jobs:
           export ZMS_BROWSER="safari"
           export SCREENSHOT_EVERY_STEP="${{ inputs.per_step_screenshots }}"
           export WEBDRIVER_SAFARI_DRIVER="$(which safaridriver)"
+          export WEBDRIVER_RETRY_MAX_ATTEMPTS="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
+          export WEBDRIVER_RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
 
           # Split by newlines and run sequentially (same contract as the Linux job).
           fail_any=0
@@ -901,9 +936,21 @@ jobs:
             fi
 
             echo "Running zmsautomation-test for tags: $expr"
+            # Same profile selection as Linux (docker exec) job: mixed @web + API tags need both runners.
+            profiles=()
+            if [[ "$expr" == *"@web"* ]]; then
+              profiles+=("-Pataf-ui")
+            fi
+            if [[ "$expr" == *"@rest"* || "$expr" == *"@zmsapi"* || "$expr" == *"@zmscitizenapi"* ]]; then
+              profiles+=("-Pataf-api")
+            fi
+            if [ "${#profiles[@]}" -eq 0 ]; then
+              profiles=("-Pataf-ui")
+            fi
+
             set +e
             bash ./zmsautomation/zmsautomation-test \
-              -Pataf-ui \
+              "${profiles[@]}" \
               -Dcucumber.filter.tags="$expr"
             rc=$?
             set -e
@@ -1051,3 +1098,18 @@ jobs:
           docker push "$WEB_IMAGE"
           rm -f .devcontainer/Containerfile.ci.prepared
           echo "web_image=$WEB_IMAGE" >> "$GITHUB_OUTPUT"
+
+          # One tarball for the Safari macOS job: pulling the same image from GHCR + extracting into Colima
+          # is often extremely slow (many small files → long "Extracting …B" spam). Loading a saved image
+          # is usually much faster than registry pull+unpack on hosted macOS runners.
+          echo "Saving ${WEB_IMAGE} for artifact handoff to Safari job..."
+          docker save "$WEB_IMAGE" | gzip -1 > "${GITHUB_WORKSPACE}/zms-web-prepared.tar.gz"
+          ls -lh "${GITHUB_WORKSPACE}/zms-web-prepared.tar.gz"
+
+      - name: Upload zms-web-prepared image tarball for Safari
+        uses: actions/upload-artifact@v4
+        with:
+          name: zms-web-prepared-${{ github.run_id }}-${{ github.run_attempt }}
+          path: zms-web-prepared.tar.gz
+          retention-days: 1
+          if-no-files-found: error
