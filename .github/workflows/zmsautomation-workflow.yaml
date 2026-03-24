@@ -1083,7 +1083,7 @@ jobs:
             echo "FROM zms-web-base:ci"
             # Keep root rewrite rules when running without repo bind-mount.
             # .htaccess maps /terminvereinbarung/... to module front controllers.
-            echo "COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsapi:${PHP_TAG} /var/www/html/.htaccess /var/www/html/.htaccess"
+            echo "COPY ./.htaccess /var/www/html/.htaccess"
             for m in "${modules[@]}"; do
               echo "COPY --from=ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG} /var/www/html/. /var/www/html/${m}/"
             done
@@ -1095,7 +1095,7 @@ jobs:
           } > .devcontainer/Containerfile.ci.prepared
 
           WEB_IMAGE="ghcr.io/${GITHUB_REPOSITORY}/zms-web-prepared:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          docker build -t "$WEB_IMAGE" -f .devcontainer/Containerfile.ci.prepared .devcontainer
+          docker build -t "$WEB_IMAGE" -f .devcontainer/Containerfile.ci.prepared .
           docker push "$WEB_IMAGE"
           rm -f .devcontainer/Containerfile.ci.prepared
           echo "web_image=$WEB_IMAGE" >> "$GITHUB_OUTPUT"
