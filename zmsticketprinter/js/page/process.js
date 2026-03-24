@@ -6,7 +6,6 @@ class View extends BaseView {
     constructor (element) {
         super(element);
         this.bindPublicMethods('printDialog', 'reload');
-        console.log('Print data and redirect to home url after presetted time');
         $(() => {
             this.printDialog();
         });
@@ -25,9 +24,7 @@ class View extends BaseView {
         document.title = "Anmeldung an Warteschlange";
         window.print();
 
-        var beforePrint = () => {
-            console.log('start printing');
-        };
+        var beforePrint = () => {};
         var afterPrint = () => {
             let reloadTime = window.bo.zmsticketprinter.reloadInterval;
             setTimeout(() => {
