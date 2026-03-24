@@ -18,3 +18,4 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $API config cron resetApiQuota|grep -q "$ZMS_ENV" && $BIN/resetApiQuota --commit
     fi
 fi
+exit 0

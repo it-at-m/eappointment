@@ -18,6 +18,21 @@ services:
     networks:
       - default
 
+  citizenview:
+    image: node:22
+    container_name: zms-citizenview
+    working_dir: /workspace/zmscitizenview
+    volumes:
+      - ..:/workspace:cached
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 8082"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - web
+    networks:
+      - default
+    restart: unless-stopped
+
   db:
     image: mariadb:10.11
     container_name: zms-db
@@ -59,7 +74,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
     container_name: zms-keycloak
-    hostname: keycloak.local
+    hostname: keycloak
     command:
       - start-dev
     environment:
@@ -76,7 +91,7 @@ services:
     networks:
       default:
         aliases:
-          - keycloak.local
+          - keycloak
     restart: unless-stopped
 
   init-keycloak:
