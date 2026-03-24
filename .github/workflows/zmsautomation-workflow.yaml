@@ -692,9 +692,10 @@ jobs:
                 - .env
               networks:
                 - zms-ci-net
+              # Match .devcontainer/docker-compose.yaml (run-mac-local): avoid host :443; HTTPS on :8091.
               ports:
-                - "80:80"
-                - "443:443"
+                - "8090:80"
+                - "8091:443"
 
             citizenview:
               image: REPLACE_CITIZENVIEW_IMAGE
@@ -898,10 +899,10 @@ jobs:
           mkdir -p "${GITHUB_WORKSPACE}/cache"
           export CACHE_DIR="${GITHUB_WORKSPACE}/cache"
 
-          # Mirror the local CLI expectations: gateway/admin on HTTPS via zms-web.
-          export BASE_URI="https://localhost/terminvereinbarung/api/2"
-          export CITIZEN_API_BASE_URI="https://localhost/terminvereinbarung/api/citizen"
-          export ADMIN_BASE_URI="https://localhost/terminvereinbarung/admin/"
+          # Match devcontainer / run-mac-local: Apache HTTPS is published on host :8091 (not :443).
+          export BASE_URI="https://localhost:8091/terminvereinbarung/api/2"
+          export CITIZEN_API_BASE_URI="https://localhost:8091/terminvereinbarung/api/citizen"
+          export ADMIN_BASE_URI="https://localhost:8091/terminvereinbarung/admin/"
 
           # CitizenView port differs between images (Linux CI often uses 8080 internally).
           # Probe both host-mapped ports and use the first one that responds with 2xx/3xx.

@@ -136,7 +136,8 @@ Use `--browser safari` (or `chrome` / `firefox` / `edge` / `safari`) as needed.
 
 The `zmsautomation-workflow.yaml` can run Safari when you select `browser: safari` via `workflow_dispatch`.
 
-- The job runs on `macos-latest` and drives Safari via WebDriver.
+- The job runs on a macOS runner and drives Safari via WebDriver.
+- The workflow maps Apache HTTPS like local dev (`8091:443`), so health checks and `BASE_URI` use **`https://localhost:8091/...`** (same idea as `./cli tests run-mac-local`).
 - The workflow runs `sudo safaridriver --enable` and then executes `zmsautomation-test` on the runner host (while the app stack stays in Docker containers).
 - If Safari still blocks WebDriver on the runner, switch to a self-hosted Mac runner with “Allow Remote Automation” enabled (host setup is required).
 

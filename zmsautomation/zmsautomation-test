@@ -562,11 +562,17 @@ if [[ "$RUN_UI_TESTS" == true ]]; then
     SWAP_STATISTIC=true
     SWAP_ADMIN=true
   fi
-  if [[ "$SWAP_STATISTIC" == true ]]; then
-    backup_and_rewrite_keycloak "$KEYCLOAK_STATISTIC_JSON"
-  fi
-  if [[ "$SWAP_ADMIN" == true ]]; then
-    backup_and_rewrite_keycloak "$KEYCLOAK_ADMIN_JSON"
+  # Safari runs on the macOS host with HTTPS on :8091 (see devcontainer / CI). Keep Keycloak JSON on :8091;
+  # rewriting 8091→443 is for browsers inside the Linux container hitting :443.
+  if [[ "${ZMS_BROWSER:-}" != "safari" ]]; then
+    if [[ "$SWAP_STATISTIC" == true ]]; then
+      backup_and_rewrite_keycloak "$KEYCLOAK_STATISTIC_JSON"
+    fi
+    if [[ "$SWAP_ADMIN" == true ]]; then
+      backup_and_rewrite_keycloak "$KEYCLOAK_ADMIN_JSON"
+    fi
+  else
+    info "ZMS_BROWSER=safari — skipping Keycloak 8091→443 rewrite (host uses :8091 for HTTPS)."
   fi
 fi
 
