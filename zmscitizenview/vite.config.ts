@@ -36,7 +36,16 @@ export default defineConfig({
     ],
   },
   server: {
+    host: '0.0.0.0',
     port: 8082,
+    watch: {
+      // In containerized dev on macOS/Podman, inotify events may not
+      // propagate correctly for bind mounts, so force polling.
+      usePolling: true,
+    },
+    // Allow dev server access via the Docker service name "citizenview"
+    // from the zms-web container (used by ATAF UI tests).
+    allowedHosts: ['citizenview'],
   },
   build: {
     ssrManifest: true,

@@ -256,28 +256,6 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
         }
     */
 
-    if (data.startTime && data.endTime) {
-        const startHourInt = parseInt(startHour);
-        const endHourInt = parseInt(endHour);
-        const startMinuteInt = parseInt(startMinute);
-        const endMinuteInt = parseInt(endMinute);
-        if (
-            (startHourInt === 22 && startMinuteInt > 0) || 
-            startHourInt === 23 || 
-            startHourInt === 0 || 
-            (endHourInt === 22 && endMinuteInt > 0) || 
-            endHourInt === 23 || 
-            endHourInt === 0 ||
-            (startHourInt === 1 && startMinuteInt > 0) ||
-            (endHourInt === 1 && endMinuteInt > 0)
-        ) {
-            errorList.push({
-                type: 'startOfDay',
-                message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-            });
-        }
-    }
-
     return errorList;
 }
 
