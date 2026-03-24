@@ -53,7 +53,7 @@
       "permissions": {
         "appointment": true,
         "availability": true
-      }
+      },
       "departments": [
         {
           "id": 123
