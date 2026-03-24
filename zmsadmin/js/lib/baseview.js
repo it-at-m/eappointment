@@ -153,8 +153,11 @@ class BaseView extends ErrorHandler {
         }
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
-            destroyLightbox();
-            (callbackAsBackgroundAction) ? callback() : (abortCallback) ? abortCallback() : () => { }
+            if (callbackAsBackgroundAction) {
+                callback();
+            } else if (abortCallback) {
+                abortCallback();
+            }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,
@@ -164,7 +167,9 @@ class BaseView extends ErrorHandler {
                 returnTarget && returnTarget.focus();
             },
             abortCallback: () => {
-                (abortCallback) ? abortCallback() : () => { }
+                if (abortCallback) {
+                    abortCallback();
+                }
                 destroyLightbox();
                 returnTarget && returnTarget.focus();
             },

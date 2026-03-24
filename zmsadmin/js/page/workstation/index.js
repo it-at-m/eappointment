@@ -27,7 +27,7 @@ class View extends BaseView {
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
         this.slotsRequired = 0;
-        this.reloadTimer;
+        this.reloadTimer = null;
         this.lastReload = 0;
         this.initiator = 'Sachbearbeiter';
         this.bindPublicMethods(

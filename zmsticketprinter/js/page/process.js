@@ -7,7 +7,9 @@ class View extends BaseView {
         super(element);
         this.bindPublicMethods('printDialog', 'reload');
         console.log('Print data and redirect to home url after presetted time');
-        $(function() {this.printDialog});
+        $(() => {
+            this.printDialog();
+        });
     }
 
     reload () {
