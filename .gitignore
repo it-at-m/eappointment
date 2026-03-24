@@ -30,6 +30,7 @@ cache/
 .sass-cache
 .cache
 qemu*.core
+schemavalidation.log
 
 # =============== Java =================
 # Compiled class file
