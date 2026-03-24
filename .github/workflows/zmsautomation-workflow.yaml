@@ -1081,6 +1081,9 @@ jobs:
           mods_for_run="${modules[*]}"
           {
             echo "FROM zms-web-base:ci"
+            # Keep root rewrite rules when running without repo bind-mount.
+            # .htaccess maps /terminvereinbarung/... to module front controllers.
+            echo "COPY --from=ghcr.io/${GITHUB_REPOSITORY}/zmsapi:${PHP_TAG} /var/www/html/.htaccess /var/www/html/.htaccess"
             for m in "${modules[@]}"; do
               echo "COPY --from=ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG} /var/www/html/. /var/www/html/${m}/"
             done
