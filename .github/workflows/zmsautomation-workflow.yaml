@@ -847,6 +847,30 @@ jobs:
           safaridriver --version || true
           which safaridriver || true
 
+          # Pre-warm Safari + WebDriver to reduce first-session timeout flakes on hosted macOS.
+          # (SessionNotCreatedException: timed out while launching compatible Safari instance)
+          pkill -x Safari >/dev/null 2>&1 || true
+          open -a Safari || true
+          sleep 4
+          osascript -e 'tell application "Safari" to quit' >/dev/null 2>&1 || true
+          sleep 2
+
+          # Start/stop a temporary safaridriver once so WebKit automation services are primed.
+          for attempt in 1 2 3; do
+            echo "Safari WebDriver warmup attempt $attempt"
+            safaridriver -p 0 > /tmp/safaridriver-warmup.log 2>&1 &
+            drv_pid=$!
+            sleep 6
+            if ps -p "$drv_pid" >/dev/null 2>&1; then
+              kill "$drv_pid" >/dev/null 2>&1 || true
+              wait "$drv_pid" >/dev/null 2>&1 || true
+              echo "Safari WebDriver warmup succeeded."
+              break
+            fi
+            cat /tmp/safaridriver-warmup.log || true
+            sleep 3
+          done
+
       - name: Setup Java and Maven (host)
         uses: actions/setup-java@v4
         with:
