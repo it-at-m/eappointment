@@ -33,7 +33,7 @@ class View extends BaseView {
             const key = ev.key;
             switch (key) {
                 case 'Escape': // ESC
-                    console.log('ESC');
+                     this.minimize();
                     this.minimize();
                     break;
             }
