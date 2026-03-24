@@ -408,15 +408,6 @@ class AvailabilityPage extends Component {
 
         // Update weekdays for each availability using the same algorithm as validateWeekdays
         const weekdayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        const germanWeekdays = {
-            'sunday': 'Sonntag',
-            'monday': 'Montag',
-            'tuesday': 'Dienstag',
-            'wednesday': 'Mittwoch',
-            'thursday': 'Donnerstag',
-            'friday': 'Freitag',
-            'saturday': 'Samstag'
-        };
 
         // First, get the original selected weekdays
         const originalSelectedWeekdays = new Set();

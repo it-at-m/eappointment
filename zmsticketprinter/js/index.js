@@ -30,7 +30,7 @@ $('.smsbox').each(function() { new NotificationKeyboardHandheldView(this);});
 
 $('form').each(function() {
     preventFormResubmit(this);
-})
+});
 
 console.log("Welcome to the ZMS Ticketprinter interface...");
 

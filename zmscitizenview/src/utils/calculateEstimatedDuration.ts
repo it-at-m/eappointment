@@ -1,6 +1,5 @@
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SubService } from "@/types/SubService";
 
 /**
  * Calculates the total estimated duration for the selected service and subservices for a given provider.
