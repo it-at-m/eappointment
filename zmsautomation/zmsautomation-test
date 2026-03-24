@@ -399,8 +399,8 @@ export no_proxy="${NO_PROXY}"
 
 join_url(){ local b="${1%/}"; local p="${2#/}"; printf '%s/%s\n' "$b" "$p"; }
 
-HEALTH_MAX_WAIT="${HEALTH_MAX_WAIT:-300}"          # total seconds
 HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"            # seconds between tries
+HEALTH_MAX_TRIES="${HEALTH_MAX_TRIES:-15}"         # max curl attempts per health URL (~75s default with 5s interval)
 HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}"
 
 ZMS_API_HEALTH_URL="$(join_url "${BASE_URI}" "status/")"
@@ -425,36 +425,37 @@ else
 fi
 
 wait_http() { # name url
-  local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  local n="$1" u="$2" tries="${HEALTH_MAX_TRIES}"
   local curl_insecure_args=()
   if [[ "$u" == https://localhost* || "$u" == https://127.0.0.1* ]]; then
     curl_insecure_args+=(--insecure)
   fi
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
-    code="$(curl "${curl_insecure_args[@]}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
+    # Empty array + `set -u` (macOS bash 3.2): "${a[@]}" errors; use ${a[@]+"${a[@]}"} to expand to nothing.
+    code="$(curl "${curl_insecure_args[@]+"${curl_insecure_args[@]}"}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy "localhost,127.0.0.1,::1" "$u" || echo 000)"
     # Accept only real HTTP 2xx or 3xx responses.
     [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
   done
-  warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
+  warn "✗ ${n} NOT responding after ${tries} attempts (${HEALTH_INTERVAL}s interval)"; return 1
 }
 
 # Same as wait_http but never use HTTP proxy (refarch-gateway / Docker DNS must not go via corporate proxy)
 wait_http_direct() { # name url
-  local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
+  local n="$1" u="$2" tries="${HEALTH_MAX_TRIES}"
   local curl_insecure_args=()
   if [[ "$u" == https://localhost* || "$u" == https://127.0.0.1* ]]; then
     curl_insecure_args+=(--insecure)
   fi
   info "Pinging ${n}: ${u}"
   for ((i=1;i<=tries;i++)); do
-    code="$(curl "${curl_insecure_args[@]}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy '*' "$u" || echo 000)"
+    code="$(curl "${curl_insecure_args[@]+"${curl_insecure_args[@]}"}" -sS -o /dev/null -w "%{http_code}" --max-time "${HEALTH_PERTRY_TIMEOUT}" --noproxy '*' "$u" || echo 000)"
     # Accept only real HTTP 2xx or 3xx responses.
     [[ "$code" =~ ^[23][0-9][0-9]$ ]] && { info "✓ ${n} responding (${code})"; return 0; }
     (( i<tries )) && { warn "… ${n} not ready (${code}); retry in ${HEALTH_INTERVAL}s (${i}/${tries})"; sleep "${HEALTH_INTERVAL}"; }
   done
-  warn "✗ ${n} NOT responding after ${HEALTH_MAX_WAIT}s"; return 1
+  warn "✗ ${n} NOT responding after ${tries} attempts (${HEALTH_INTERVAL}s interval)"; return 1
 }
 
 fail=false
