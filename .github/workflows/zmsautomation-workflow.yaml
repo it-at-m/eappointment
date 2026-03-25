@@ -76,7 +76,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Scheduled workflows are triggered from the repository default branch context.
+          # Schedule events don't provide the target branch as workflow_dispatch does.
           # Force `next` as effective ref so scheduled runs consume `next` images/tags.
           REF_TYPE="${{ github.event_name == 'schedule' && 'branch' || github.ref_type }}"
           REF_NAME="${{ github.event_name == 'schedule' && 'next' || github.ref_name }}"
