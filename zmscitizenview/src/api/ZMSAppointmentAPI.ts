@@ -17,6 +17,7 @@ import {
   VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
   VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
+  VUE_APP_ZMS_API_SCOPE_BY_TIMESLOT_ENDPOINT,
   VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
 } from "@/utils/Constants";
 
@@ -318,5 +319,32 @@ export function fetchCaptchaDetails(
     globalState,
     method: "GET",
     path: VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
+  });
+}
+
+export function fetchScopeByTimeslot(
+  globalState: GlobalState,
+  officeId: string | number,
+  timestamp: number,
+  serviceIds: string[],
+  serviceCounts: number[],
+  source?: string
+): Promise<any | ErrorDTO> {
+  const params: Record<string, string> = {
+    officeId: String(officeId),
+    timestamp: String(timestamp),
+    serviceId: serviceIds.join(","),
+    serviceCount: serviceCounts.join(","),
+  };
+
+  if (source) {
+    params.source = source;
+  }
+
+  return request({
+    globalState,
+    method: "GET",
+    path: VUE_APP_ZMS_API_SCOPE_BY_TIMESLOT_ENDPOINT,
+    params,
   });
 }

@@ -234,6 +234,7 @@ import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlo
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
+  fetchScopeByTimeslot,
 } from "@/api/ZMSAppointmentAPI";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -348,6 +349,28 @@ const getOfficeById = (id: number | string): OfficeImpl | undefined => {
 
 const officeNameById = (id: number | string): string | null => {
   return getOfficeById(id)?.name ?? null;
+};
+
+const replaceSelectedProviderScope = (newScope: any) => {
+  const provider = selectedProvider.value;
+  if (!provider) return;
+
+  selectedProvider.value = new OfficeImpl(
+    provider.id,
+    provider.name,
+    provider.address,
+    provider.showAlternativeLocations,
+    provider.displayNameAlternatives,
+    provider.organization,
+    provider.organizationUnit,
+    provider.slotTimeInMinutes,
+    provider.disabledByServices,
+    provider.allowDisabledServicesMix,
+    newScope,
+    provider.slotsPerAppointment,
+    provider.slots,
+    provider.priority ?? 1
+  );
 };
 
 const timeSlotsInHoursByOffice = computed(() => {
@@ -578,7 +601,25 @@ const hasSelectedProviderWithAppointments = computed(() => {
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
-  selectedProvider.value = getOfficeById(officeId);
+
+  const provider = getOfficeById(officeId);
+  selectedProvider.value = provider;
+
+  if (provider) {
+    const result = await fetchScopeByTimeslot(
+      props.globalState,
+      provider.id,
+      timeSlot,
+      Array.from(props.selectedServiceMap.keys()),
+      Array.from(props.selectedServiceMap.values()),
+      (provider.scope as any)?.provider?.source
+    );
+
+    if (result && !("errors" in result)) {
+      replaceSelectedProviderScope(result);
+    }
+  }
+
   if (summary.value) {
     await nextTick();
     summary.value.scrollIntoView({ behavior: "smooth", block: "center" });

@@ -167,14 +167,25 @@ class ZmsApiClientService
                 $src = self::fetchSourceDataFor($name);
                 $list = $src?->getScopeList();
 
-                if ($list instanceof ScopeList) {
-                    foreach ($list as $scope) {
-                        $prov = $scope->getProvider();
-                        $key = (($prov->source ?? '') . '_' . $prov->id);
-                        if (!isset($seen[$key])) {
-                            $combined->addEntity($scope);
-                            $seen[$key] = true;
-                        }
+                if (!($list instanceof ScopeList)) {
+                    continue;
+                }
+
+                foreach ($list as $scope) {
+                    $prov = $scope->getProvider();
+
+                    $scopeId = (string)($scope->id ?? '');
+                    $source = (string)($prov->source ?? $name ?? '');
+
+                    if ($scopeId === '') {
+                        continue;
+                    }
+
+                    $key = $source . '_' . $scopeId;
+
+                    if (!isset($seen[$key])) {
+                        $combined->addEntity($scope);
+                        $seen[$key] = true;
                     }
                 }
             }
@@ -182,6 +193,7 @@ class ZmsApiClientService
             return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
+            return new ScopeList();
         }
     }
 

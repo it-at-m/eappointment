@@ -17,6 +17,8 @@ export const VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT =
   "/cancel-appointment/";
 export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
   "/preconfirm-appointment/";
+export const VUE_APP_ZMS_API_SCOPE_BY_TIMESLOT_ENDPOINT =
+  "/scope-by-timeslot";
 export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT = "/captcha-details/";
 export const VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT = "/captcha-challenge/";
 export const VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT = "/captcha-verify/";

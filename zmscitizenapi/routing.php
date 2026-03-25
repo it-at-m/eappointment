@@ -116,6 +116,57 @@
 
 /**
  * @swagger
+ * /scope-by-timeslot/:
+ *   get:
+ *     summary: Get the scope for a concrete selectable timeslot
+ *     tags:
+ *       - scopes
+ *     parameters:
+ *       - name: officeId
+ *         description: Office ID
+ *         in: query
+ *         required: true
+ *         type: integer
+ *       - name: timestamp
+ *         description: Unix timestamp of the selected appointment slot
+ *         in: query
+ *         required: true
+ *         type: integer
+ *       - name: serviceId
+ *         description: Service ID or comma separated Service IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceCount
+ *         description: Service count or comma separated counts
+ *         in: query
+ *         required: false
+ *         type: string
+ *       - name: source
+ *         description: Provider source, e.g. dldb
+ *         in: query
+ *         required: false
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Scope details for the selected timeslot
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/thinnedScope.json"
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: No matching scope found
+ */
+\App::$slim->get('/scope-by-timeslot/', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByTimeslotController')->setName("ScopeByTimeslotController");
+\App::$slim->get('/scope-by-timeslot', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByTimeslotController')->setName("ScopeByTimeslotController");
+
+/**
+ * @swagger
  * /services-by-office/:
  *   get:
  *     summary: Get the services offered by a specific office

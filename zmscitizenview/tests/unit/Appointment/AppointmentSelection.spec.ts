@@ -7,6 +7,7 @@ import { ref, nextTick } from "vue";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
+  fetchScopeByTimeslot,
 // @ts-expect-error: API import for test
 } from "@/api/ZMSAppointmentAPI";
 
@@ -29,6 +30,7 @@ const baseProps = {
 vi.mock('@/api/ZMSAppointmentAPI', () => ({
   fetchAvailableDays: vi.fn(),
   fetchAvailableTimeSlots: vi.fn(),
+  fetchScopeByTimeslot: vi.fn(),
 }));
 
 interface WrapperOverrides {
@@ -111,6 +113,8 @@ describe("AppointmentSelection", () => {
       }
     ]
   });
+
+  (fetchScopeByTimeslot as Mock).mockResolvedValue(undefined);
 
   describe("ProviderSelection Integration", () => {
     it("renders nothing if no provider is selected", () => {
@@ -332,6 +336,149 @@ describe("AppointmentSelection", () => {
 
       const locationTitles = wrapper.findAll('.location-title');
       expect(locationTitles.length).toBe(0);
+    });
+  });
+
+  describe("Timeslot scope resolution", () => {
+    it("replaces the selected provider scope with the scope returned by scope-by-timeslot", async () => {
+      // Mock the scope that should be returned for the selected timeslot
+      // This simulates the backend resolving the real booking scope (e.g. WB04)
+      (fetchScopeByTimeslot as Mock).mockResolvedValue({
+        id: 45,
+        provider: {
+          id: 10489,
+          source: "dldb",
+        },
+        shortName: "WB 04",
+        emailRequired: false,
+        telephoneActivated: false,
+        telephoneRequired: false,
+        customTextfieldActivated: false,
+        customTextfieldRequired: false,
+        customTextfieldLabel: null,
+        customTextfield2Activated: false,
+        customTextfield2Required: false,
+        customTextfield2Label: null,
+        captchaActivatedRequired: false,
+        infoForAppointment: "WB04",
+        infoForAllAppointments: "Hey there WB04",
+        slotsPerAppointment: null,
+        appointmentsPerMail: null,
+        whitelistedMails: null,
+        reservationDuration: 15,
+        activationDuration: 20,
+        hint: "Hinweis WB04",
+      });
+
+      // Start with a provider that still contains the original scope data (e.g. WB03)
+      // The test verifies that this scope is replaced after selecting a timeslot
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "1063475",
+          providers: [
+            {
+              name: "Bürgerbüro Ruppertstraße",
+              id: 10489,
+              priority: 1,
+              address: { street: "Ruppertstraße", house_number: "19" },
+              scope: {
+                id: 36,
+                provider: {
+                  id: 10489,
+                  source: "dldb",
+                },
+                infoForAppointment: "WB03",
+                infoForAllAppointments: "Hey there WB03",
+              },
+            },
+          ],
+        },
+        props: {
+          selectedServiceMap: new Map([["1063475", 1]]),
+        },
+      });
+
+      // Wait until the component setup and initial watchers are finished
+      await flushPromises();
+
+      // Simulate selecting a concrete timeslot for the provider
+      // This should trigger the additional scope lookup by office + timestamp
+      await wrapper.vm.handleTimeSlotSelection(10489, 1750154400);
+      await flushPromises();
+
+      // Verify that the API was called with the expected booking context
+      expect(fetchScopeByTimeslot).toHaveBeenCalledWith(
+        { baseUrl: "http://test.url" },
+        10489,
+        1750154400,
+        ["1063475"],
+        [1],
+        "dldb"
+      );
+
+      // Verify that the provider scope was updated with the resolved scope,
+      // so the UI uses the correct info texts for the actual booking scope
+      expect(wrapper.vm.selectedProvider).toBeTruthy();
+      expect(wrapper.vm.selectedProvider.scope.infoForAppointment).toBe("WB04");
+      expect(wrapper.vm.selectedProvider.scope.infoForAllAppointments).toBe("Hey there WB04");
+    });
+
+    it("keeps the original provider scope when scope-by-timeslot returns an error", async () => {
+      // Simulate a backend error: no matching scope could be resolved for the timeslot
+      (fetchScopeByTimeslot as Mock).mockResolvedValue({
+        errors: [
+          {
+            errorCode: "scopesNotFound",
+            errorMessage: "No scopes found.",
+            statusCode: 404,
+            errorType: "error",
+          },
+        ],
+      });
+
+      // Start with an existing scope on the provider
+      // This scope must remain unchanged if the lookup fails
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "1063475",
+          providers: [
+            {
+              name: "Bürgerbüro Ruppertstraße",
+              id: 10489,
+              priority: 1,
+              address: { street: "Ruppertstraße", house_number: "19" },
+              scope: {
+                id: 36,
+                provider: {
+                  id: 10489,
+                  source: "dldb",
+                },
+                infoForAppointment: "WB03",
+                infoForAllAppointments: "Hey there WB03",
+              },
+            },
+          ],
+        },
+        props: {
+          selectedServiceMap: new Map([["1063475", 1]]),
+        },
+      });
+
+      await flushPromises();
+
+      // Simulate selecting the timeslot. The lookup is executed,
+      // but the returned error must prevent the scope replacement
+      await wrapper.vm.handleTimeSlotSelection(10489, 1750154400);
+      await flushPromises();
+
+      // Ensure the lookup was actually triggered
+      expect(fetchScopeByTimeslot).toHaveBeenCalled();
+
+      // Verify that the original scope information is still present,
+      // because the replacement must only happen on a successful response
+      expect(wrapper.vm.selectedProvider).toBeTruthy();
+      expect(wrapper.vm.selectedProvider.scope.infoForAppointment).toBe("WB03");
+      expect(wrapper.vm.selectedProvider.scope.infoForAllAppointments).toBe("Hey there WB03");
     });
   });
 
