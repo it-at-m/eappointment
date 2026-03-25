@@ -76,8 +76,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REF_TYPE="${{ github.ref_type }}"
-          REF_NAME="${{ github.ref_name }}"
+          # Scheduled workflows are triggered from the repository default branch context.
+          # Force `next` as effective ref so scheduled runs consume `next` images/tags.
+          REF_TYPE="${{ github.event_name == 'schedule' && 'branch' || github.ref_type }}"
+          REF_NAME="${{ github.event_name == 'schedule' && 'next' || github.ref_name }}"
 
           # Match `.github/workflows/php-build-images.yaml` tagging logic:
           # - for branches: branch-<sanitized>
