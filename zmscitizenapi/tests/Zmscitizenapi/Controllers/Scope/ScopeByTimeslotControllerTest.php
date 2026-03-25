@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Scope;
 
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 /**
  * @runTestsInSeparateProcesses
@@ -71,12 +72,9 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
     public function testScopeNotFound(): void
     {
         $expectedResponse = [
-            'errors' => [[
-                'errorCode' => 'scopeNotFound',
-                'errorMessage' => 'Scope could not be resolved.',
-                'statusCode' => 404,
-                'errorType' => 'error',
-            ]]
+            'errors' => [
+                ErrorMessages::get('scopeNotFound')
+            ]
         ];
 
         \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedResponse;
