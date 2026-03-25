@@ -30,7 +30,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
         }
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         if ($this->originalRequestUri !== null) {
             $_SERVER['REQUEST_URI'] = $this->originalRequestUri;
