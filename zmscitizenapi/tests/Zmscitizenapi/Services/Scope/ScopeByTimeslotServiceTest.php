@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Services\Scope;
 
+use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService;
 use BO\Zmsentities\Collection\ProcessList;
@@ -231,12 +232,19 @@ class ScopeByTimeslotServiceTest extends TestCase
         string $infoForAppointment = 'WB04',
         string $infoForAllAppointments = 'Hey there WB04'
     ): ThinnedScope {
+        $provider = new ThinnedProvider(
+            id: 10489,
+            name: 'Bürgerbüro Ruppertstraße',
+            displayName: null,
+            lat: null,
+            lon: null,
+            source: $providerSource,
+            contact: null
+        );
+
         return new ThinnedScope(
             id: $scopeId,
-            provider: (object) [
-                'id' => 10489,
-                'source' => $providerSource,
-            ],
+            provider: $provider,
             shortName: 'WB 04',
             emailRequired: false,
             telephoneActivated: false,
