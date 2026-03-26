@@ -125,12 +125,9 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
     public function testUpstreamErrorIsReturnedWithOriginalStatusCode(): void
     {
         $expectedResponse = [
-            'errors' => [[
-                'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Appointment not available.',
-                'statusCode' => 500,
-                'errorType' => 'error',
-            ]]
+            'errors' => [
+                ErrorMessages::get('appointmentNotAvailable')
+            ]
         ];
 
         \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedResponse;
@@ -143,7 +140,10 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
             'source' => 'dldb',
         ], []);
 
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(
+            ErrorMessages::get('appointmentNotAvailable')['statusCode'],
+            $response->getStatusCode()
+        );
         $this->assertEqualsCanonicalizing(
             $expectedResponse,
             json_decode((string) $response->getBody(), true)
