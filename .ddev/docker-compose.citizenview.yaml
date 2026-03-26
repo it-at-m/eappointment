@@ -1,0 +1,16 @@
+version: '3.6'
+
+services:
+  citizenview:
+    image: node:22
+    container_name: ddev-${DDEV_SITENAME}-citizenview
+    working_dir: /var/www/html/zmscitizenview
+    volumes:
+      - ..:/var/www/html:cached
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 8082"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - web
+    restart: unless-stopped
+

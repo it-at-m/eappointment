@@ -459,15 +459,11 @@ class Availability extends Schema\Entity
         return false;
     }
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
 
         $startTime = (clone $startDate)->setTime(0, 0);
-        $startHour = (int) $startDate->format('H');
-        $endHour = (int) $endDate->format('H');
-        $startMinute = (int) $startDate->format('i');
-        $endMinute = (int) $endDate->format('i');
         $isFuture = ($kind && $kind === 'future');
 
         if (
@@ -478,22 +474,6 @@ class Availability extends Schema\Entity
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
-            ];
-        }
-
-        if (
-            ($startHour === 22 && $startMinute > 0) ||
-            $startHour === 23 ||
-            $startHour === 0 ||
-            ($endHour === 22 && $endMinute > 0) ||
-            $endHour === 23 ||
-            $endHour === 0 ||
-            ($startHour === 1 && $startMinute > 0) ||
-            ($endHour === 1 && $endMinute > 0)
-        ) {
-            $errorList[] = [
-                'type' => 'startOfDay',
-                'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
             ];
         }
 

@@ -38,11 +38,12 @@ class BaseView extends ErrorHandler {
                 DialogHandler.hideMessages();
                 resolve(responseData);
             }).fail((err) => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
-                        message: err.responseText,
+                        message: responseText,
                         parent: this
                     });
                     hideSpinner(this.$main);
@@ -75,11 +76,12 @@ class BaseView extends ErrorHandler {
             $.ajax(url, ajaxSettings).done(responseData => {
                 resolve(responseData);
             }).fail(err => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
-                        message: err.responseText,
+                        message: responseText,
                         parent: this.$main
                     });
                     hideSpinner(this.$main);
