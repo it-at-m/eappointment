@@ -8,7 +8,7 @@ use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
-use BO\Zmsentities\Process;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmsentities\Collection\ProcessList;
 
 class ScopeByTimeslotService
@@ -44,7 +44,7 @@ class ScopeByTimeslotService
                 ? (int) $queryParams['timestamp']
                 : null,
             'serviceIds' => array_values(array_map('strval', $serviceIds)),
-            'serviceCounts' => array_values(array_map('intval', $serviceCounts)),
+            'serviceCounts' => array_values(array_map('strval', $serviceCounts)),
             'source' => isset($queryParams['source']) && $queryParams['source'] !== ''
                 ? (string) $queryParams['source']
                 : null,
@@ -57,24 +57,42 @@ class ScopeByTimeslotService
             $clientData->serviceCounts = array_fill(0, count($clientData->serviceIds), 1);
         }
 
-        return ValidationService::validateGetScopeByTimeslot(
-            $clientData->officeId,
-            $clientData->timestamp,
-            $clientData->serviceIds,
-            $clientData->serviceCounts
-        );
-    }
-
-    private function getMatchingScope(object $clientData): ThinnedScope|array
-    {
-        $process = $this->findMatchingProcess(
+        $errors = ValidationService::validatePostAppointmentReserve(
             $clientData->officeId,
             $clientData->serviceIds,
             $clientData->serviceCounts,
             $clientData->timestamp
         );
 
-        if (!$process instanceof Process) {
+        if (
+            is_array($clientData->serviceIds) &&
+            is_array($clientData->serviceCounts) &&
+            count($clientData->serviceIds) !== count($clientData->serviceCounts)
+        ) {
+            $errors['errors'][] = ErrorMessages::get('mismatchedArrays');
+        }
+
+        if (empty($errors['errors'])) {
+            $clientData->serviceCounts = array_values(array_map('intval', $clientData->serviceCounts));
+        }
+
+        return $errors;
+    }
+
+    private function getMatchingScope(object $clientData): ThinnedScope|array
+    {
+        $matchingProcesses = $this->findMatchingProcesses(
+            $clientData->officeId,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->timestamp
+        );
+
+        if (is_array($matchingProcesses) && isset($matchingProcesses['errors'])) {
+            return $matchingProcesses;
+        }
+
+        if ($matchingProcesses->count() === 0) {
             return [
                 'errors' => [[
                     'errorCode' => 'scopesNotFound',
@@ -85,61 +103,57 @@ class ScopeByTimeslotService
             ];
         }
 
-        $scopeId = $process->scope?->id ?? null;
+        foreach ($matchingProcesses as $process) {
+            $scopeId = $process->scope?->id ?? null;
 
-        if (!$scopeId) {
-            return [
-                'errors' => [[
-                    'errorCode' => 'scopeNotFound',
-                    'errorMessage' => 'No scope id found on selected timeslot process.',
-                    'statusCode' => 404,
-                    'errorType' => 'error',
-                ]]
-            ];
-        }
+            if (!$scopeId) {
+                continue;
+            }
 
-        $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
+            $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
 
-        if (is_array($scope) && isset($scope['errors'])) {
+            if (is_array($scope) && isset($scope['errors'])) {
+                $highestStatusCode = ErrorMessages::getHighestStatusCode($scope['errors']);
+
+                if ($highestStatusCode >= 500) {
+                    return $scope;
+                }
+
+                continue;
+            }
+
+            if (!$scope instanceof ThinnedScope) {
+                continue;
+            }
+
+            if (
+                $clientData->source !== null &&
+                isset($scope->provider) &&
+                isset($scope->provider->source) &&
+                (string) $scope->provider->source !== (string) $clientData->source
+            ) {
+                continue;
+            }
+
             return $scope;
         }
 
-        if (!$scope instanceof ThinnedScope) {
-            return [
-                'errors' => [[
-                    'errorCode' => 'scopeNotFound',
-                    'errorMessage' => 'Scope could not be resolved.',
-                    'statusCode' => 404,
-                    'errorType' => 'error',
-                ]]
-            ];
-        }
-
-        if (
-            $clientData->source !== null &&
-            isset($scope->provider) &&
-            isset($scope->provider->source) &&
-            (string) $scope->provider->source !== (string) $clientData->source
-        ) {
-            return [
-                'errors' => [[
-                    'errorCode' => 'scopeNotFound',
-                    'errorMessage' => 'Scope source does not match requested source.',
-                    'statusCode' => 404,
-                    'errorType' => 'error',
-                ]]
-            ];
-        }
-
-        return $scope;
+        return [
+            'errors' => [[
+                'errorCode' => 'scopeNotFound',
+                'errorMessage' => 'Scope could not be resolved.',
+                'statusCode' => 404,
+                'errorType' => 'error',
+            ]]
+        ];
     }
 
-    private function findMatchingProcess(
+    private function findMatchingProcesses(
         int $officeId,
         array $serviceIds,
         array $serviceCounts,
         int $timestamp
-    ): ?Process {
+    ): ProcessList|array {
         $date = DateTimeFormatHelper::getInternalDateFromTimestamp($timestamp);
 
         $freeAppointments = ZmsApiFacadeService::getFreeAppointments(
@@ -149,8 +163,14 @@ class ScopeByTimeslotService
             $date
         );
 
+        if (is_array($freeAppointments) && isset($freeAppointments['errors'])) {
+            return $freeAppointments;
+        }
+
+        $matchingProcesses = new ProcessList();
+
         if (!$freeAppointments instanceof ProcessList) {
-            return null;
+            return $matchingProcesses;
         }
 
         foreach ($freeAppointments as $process) {
@@ -160,11 +180,12 @@ class ScopeByTimeslotService
 
             foreach ($process->appointments as $appointment) {
                 if ((int) $appointment->date === $timestamp) {
-                    return $process;
+                    $matchingProcesses->addEntity($process);
+                    break;
                 }
             }
         }
 
-        return null;
+        return $matchingProcesses;
     }
 }

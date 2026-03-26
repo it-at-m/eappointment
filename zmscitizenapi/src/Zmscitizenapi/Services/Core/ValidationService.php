@@ -302,41 +302,6 @@ class ValidationService
             : [];
     }
 
-    public static function validateGetScopeByTimeslot(
-        ?int $officeId,
-        ?int $timestamp,
-        ?array $serviceIds,
-        ?array $serviceCounts
-    ): array {
-        $errors = [];
-
-        if (!self::isValidOfficeId($officeId)) {
-            $errors[] = self::getError('invalidOfficeId');
-        }
-
-        if (!self::isValidTimestamp($timestamp)) {
-            $errors[] = self::getError('invalidTimestamp');
-        }
-
-        if (!self::isValidServiceIds($serviceIds)) {
-            $errors[] = self::getError('invalidServiceId');
-        }
-
-        if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = self::getError('invalidServiceCount');
-        }
-
-        if (
-            is_array($serviceIds) &&
-            is_array($serviceCounts) &&
-            count($serviceIds) !== count($serviceCounts)
-        ) {
-            $errors[] = self::getError('mismatchedArrays');
-        }
-
-        return ['errors' => $errors];
-    }
-
     public static function validateGetServicesByOfficeId(?int $officeId): array
     {
         return !self::isValidOfficeId($officeId)

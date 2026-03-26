@@ -335,6 +335,7 @@ const isLoadingComplete = ref(false);
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
+const latestScopeRequestId = ref(0);
 /**
  * Reference to the appointment summary.
  * After selecting a time slot, the view is placed on the appointment summary, the focus on the 'next' button.
@@ -605,17 +606,33 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   const provider = getOfficeById(officeId);
   selectedProvider.value = provider;
 
+  const requestId = ++latestScopeRequestId.value;
+
   if (provider) {
+    const providerId = provider.id;
+    const providerSource = (provider.scope as any)?.provider?.source;
+
     const result = await fetchScopeByTimeslot(
       props.globalState,
-      provider.id,
+      providerId,
       timeSlot,
       Array.from(props.selectedServiceMap.keys()),
       Array.from(props.selectedServiceMap.values()),
-      (provider.scope as any)?.provider?.source
+      providerSource
     );
 
-    if (result && !("errors" in result)) {
+    const isLatestRequest = requestId === latestScopeRequestId.value;
+    const isStillSelectedTimeslot = selectedTimeslot.value === timeSlot;
+    const isStillSelectedProvider =
+      selectedProvider.value?.id?.toString() === providerId.toString();
+
+    if (
+      isLatestRequest &&
+      isStillSelectedTimeslot &&
+      isStillSelectedProvider &&
+      result &&
+      !("errors" in result)
+    ) {
       replaceSelectedProviderScope(result);
     }
   }

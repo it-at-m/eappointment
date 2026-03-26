@@ -122,6 +122,34 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
         );
     }
 
+    public function testUpstreamErrorIsReturnedWithOriginalStatusCode(): void
+    {
+        $expectedResponse = [
+            'errors' => [[
+                'errorCode' => 'appointmentNotAvailable',
+                'errorMessage' => 'Appointment not available.',
+                'statusCode' => 500,
+                'errorType' => 'error',
+            ]]
+        ];
+
+        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedResponse;
+
+        $response = $this->render([], [
+            'officeId' => '10489',
+            'timestamp' => '1774328700',
+            'serviceId' => '1063475',
+            'serviceCount' => '1',
+            'source' => 'dldb',
+        ], []);
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            $expectedResponse,
+            json_decode((string) $response->getBody(), true)
+        );
+    }
+
     private function createMockThinnedScope(): ThinnedScope
     {
         return new ThinnedScope(

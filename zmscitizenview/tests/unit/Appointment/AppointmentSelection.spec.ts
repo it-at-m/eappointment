@@ -480,6 +480,163 @@ describe("AppointmentSelection", () => {
       expect(wrapper.vm.selectedProvider.scope.infoForAppointment).toBe("WB03");
       expect(wrapper.vm.selectedProvider.scope.infoForAllAppointments).toBe("Hey there WB03");
     });
+
+    it("ignores stale scope-by-timeslot responses when timeslots are selected rapidly", async () => {
+      const createDeferred = () => {
+        let resolve!: (value: any) => void;
+        const promise = new Promise((res) => {
+          resolve = res;
+        });
+        return { promise, resolve };
+      };
+
+      const firstRequest = createDeferred();
+      const secondRequest = createDeferred();
+
+      // Simulate two overlapping requests:
+      // the first request starts earlier but resolves later than the second one.
+      (fetchScopeByTimeslot as Mock)
+        .mockReturnValueOnce(firstRequest.promise)
+        .mockReturnValueOnce(secondRequest.promise);
+
+      // Start with the original scope on the provider.
+      // The first request returns an older scope, the second request returns the latest one.
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "1063475",
+          providers: [
+            {
+              name: "Bürgerbüro Ruppertstraße",
+              id: 10489,
+              priority: 1,
+              address: { street: "Ruppertstraße", house_number: "19" },
+              scope: {
+                id: 36,
+                provider: {
+                  id: 10489,
+                  source: "dldb",
+                },
+                infoForAppointment: "WB03",
+                infoForAllAppointments: "Hey there WB03",
+              },
+            },
+          ],
+        },
+        props: {
+          selectedServiceMap: new Map([["1063475", 1]]),
+        },
+      });
+
+      await flushPromises();
+
+      // Trigger two rapid timeslot selections without waiting for the first request to finish.
+      const firstSelectionPromise = wrapper.vm.handleTimeSlotSelection(
+        10489,
+        1750154400
+      );
+      const secondSelectionPromise = wrapper.vm.handleTimeSlotSelection(
+        10489,
+        1750154700
+      );
+
+      // Resolve the newer request first.
+      // This scope must be applied because it belongs to the latest selection.
+      secondRequest.resolve({
+        id: 46,
+        provider: {
+          id: 10489,
+          source: "dldb",
+        },
+        shortName: "WB 05",
+        emailRequired: false,
+        telephoneActivated: false,
+        telephoneRequired: false,
+        customTextfieldActivated: false,
+        customTextfieldRequired: false,
+        customTextfieldLabel: null,
+        customTextfield2Activated: false,
+        customTextfield2Required: false,
+        customTextfield2Label: null,
+        captchaActivatedRequired: false,
+        infoForAppointment: "WB05",
+        infoForAllAppointments: "Hey there WB05",
+        slotsPerAppointment: null,
+        appointmentsPerMail: null,
+        whitelistedMails: null,
+        reservationDuration: 15,
+        activationDuration: 20,
+        hint: "Hinweis WB05",
+      });
+
+      await secondSelectionPromise;
+      await flushPromises();
+
+      expect(wrapper.vm.selectedTimeslot).toBe(1750154700);
+      expect(wrapper.vm.selectedProvider).toBeTruthy();
+      expect(wrapper.vm.selectedProvider.scope.infoForAppointment).toBe("WB05");
+      expect(wrapper.vm.selectedProvider.scope.infoForAllAppointments).toBe(
+        "Hey there WB05"
+      );
+
+      // Resolve the older request afterwards.
+      // Its result must be ignored and must not overwrite the already applied newer scope.
+      firstRequest.resolve({
+        id: 45,
+        provider: {
+          id: 10489,
+          source: "dldb",
+        },
+        shortName: "WB 04",
+        emailRequired: false,
+        telephoneActivated: false,
+        telephoneRequired: false,
+        customTextfieldActivated: false,
+        customTextfieldRequired: false,
+        customTextfieldLabel: null,
+        customTextfield2Activated: false,
+        customTextfield2Required: false,
+        customTextfield2Label: null,
+        captchaActivatedRequired: false,
+        infoForAppointment: "WB04",
+        infoForAllAppointments: "Hey there WB04",
+        slotsPerAppointment: null,
+        appointmentsPerMail: null,
+        whitelistedMails: null,
+        reservationDuration: 15,
+        activationDuration: 20,
+        hint: "Hinweis WB04",
+      });
+
+      await firstSelectionPromise;
+      await flushPromises();
+
+      // The component must still show the scope from the latest selection.
+      expect(wrapper.vm.selectedTimeslot).toBe(1750154700);
+      expect(wrapper.vm.selectedProvider.scope.infoForAppointment).toBe("WB05");
+      expect(wrapper.vm.selectedProvider.scope.infoForAllAppointments).toBe(
+        "Hey there WB05"
+      );
+
+      expect(fetchScopeByTimeslot).toHaveBeenCalledTimes(2);
+      expect(fetchScopeByTimeslot).toHaveBeenNthCalledWith(
+        1,
+        { baseUrl: "http://test.url" },
+        10489,
+        1750154400,
+        ["1063475"],
+        [1],
+        "dldb"
+      );
+      expect(fetchScopeByTimeslot).toHaveBeenNthCalledWith(
+        2,
+        { baseUrl: "http://test.url" },
+        10489,
+        1750154700,
+        ["1063475"],
+        [1],
+        "dldb"
+      );
+    });
   });
 
   describe("CalendarView Integration", () => {

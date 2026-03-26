@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Controllers\Scope;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService;
+use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -21,6 +22,15 @@ class ScopeByTimeslotController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
+            );
+        }
+
         $result = $this->service->getScopeByTimeslot($this->getNormalizedQueryParams($request));
 
         return is_array($result) && isset($result['errors'])
@@ -44,6 +54,9 @@ class ScopeByTimeslotController extends BaseController
             return $queryParams;
         }
 
+        // Fallback: When query params aren't properly parsed by the request object
+        // (e.g., in certain Slim routing configurations), extract them from REQUEST_URI.
+        // The '/' prefix removal handles URL-encoded query strings that include the path.
         $rawQuery = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY) ?? '';
         parse_str($rawQuery, $queryParams);
 
