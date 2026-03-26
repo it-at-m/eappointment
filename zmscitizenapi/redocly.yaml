@@ -1,0 +1,7 @@
+extends:
+  - recommended
+
+rules:
+  struct: off
+  no-path-trailing-slash: off
+  security-defined: off

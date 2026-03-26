@@ -1,0 +1,106 @@
+"Type: Feature":
+  - head-branch: [ '^feat', '-feature-' ]
+"Type: Bug":
+  - head-branch: [ '^bug', '-bug-' ]
+"Type: Maintenance":
+  - head-branch: [ '^maint', '-maintenance-' ]
+"Type: Documentation":
+  - head-branch: [ '^docs', '-documentation-' ]
+"Type: Dependency":
+  - head-branch: [ '^dep', '-dependency-' ]
+"Type: Security":
+  - head-branch: [ '^sec', '-security-' ]
+"Type: Chore":
+  - head-branch: [ '^chore', '-chore-' ]
+
+"Documentation: README":
+  - changed-files:
+    - any-glob-to-any-file: ['README.md']
+
+"Documentation: CHANGELOG":
+  - changed-files:
+    - any-glob-to-any-file: ['CHANGELOG.md']
+
+"Documentation: CONTRIBUTING":
+  - changed-files:
+    - any-glob-to-any-file: ['CONTRIBUTING.md']
+
+"Documentation: CODE_OF_CONDUCT":
+  - changed-files:
+    - any-glob-to-any-file: ['CODE_OF_CONDUCT.md']
+
+"Documentation: SECURITY":
+  - changed-files:
+    - any-glob-to-any-file: ['SECURITY.md']
+
+"Infrastructure: actions":
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**']
+
+"Infrastructure: devcontainer":
+  - changed-files:
+    - any-glob-to-any-file: ['.devcontainer/**']
+
+"Infrastructure: ddev":
+  - changed-files:
+    - any-glob-to-any-file: ['.ddev/**']
+
+"Module: mellon":
+  - changed-files:
+    - any-glob-to-any-file: ['mellon/**']
+
+"Module: zmsadmin":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsadmin/**']
+
+"Module: zmsapi":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsapi/**']
+
+"Module: zmsautomation":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsautomation/**']
+
+"Module: zmscalldisplay":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscalldisplay/**']
+
+"Module: zmscitizenapi":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscitizenapi/**']
+
+"Module: zmscitizenview":
+  - changed-files:
+    - any-glob-to-any-file: ['zmscitizenview/**']
+
+"Module: zmsclient":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsclient/**']
+
+"Module: zmsdb":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsdb/**']
+
+"Module: zmsdldb":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsdldb/**']
+
+"Module: zmsentities":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsentities/**']
+
+"Module: zmsmessaging":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsmessaging/**']
+
+"Module: zmsslim":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsslim/**']
+
+"Module: zmsstatistic":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsstatistic/**']
+
+"Module: zmsticketprinter":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsticketprinter/**']
