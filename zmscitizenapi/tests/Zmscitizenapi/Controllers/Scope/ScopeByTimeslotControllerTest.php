@@ -22,9 +22,13 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
 
         $this->originalRequestUri = $_SERVER['REQUEST_URI'] ?? null;
 
-        $this->createMockScopeByTimeslotServiceClass();
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$lastQueryParams = [];
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = null;
+        if (!$this->createMockScopeByTimeslotServiceClass()) {
+            $this->markTestSkipped(
+                'ScopeByTimeslotService was already loaded and cannot be replaced by the test mock.'
+            );
+        }
+
+        $this->resetMockScopeByTimeslotServiceState();
 
         if (\App::$cache) {
             \App::$cache->clear();
@@ -46,7 +50,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
     {
         $expectedScope = $this->createMockThinnedScope();
 
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedScope;
+        $this->setMockScopeByTimeslotServiceReturnValue($expectedScope);
 
         $response = $this->render([], [
             'officeId' => '10489',
@@ -66,7 +70,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
             'serviceId' => '1063475',
             'serviceCount' => '1',
             'source' => 'dldb',
-        ], \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$lastQueryParams);
+        ], $this->getMockScopeByTimeslotServiceLastQueryParams());
     }
 
     public function testScopeNotFound(): void
@@ -77,7 +81,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
             ]
         ];
 
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedResponse;
+        $this->setMockScopeByTimeslotServiceReturnValue($expectedResponse);
 
         $response = $this->render([], [
             'officeId' => '10489',
@@ -98,7 +102,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
     {
         $expectedScope = $this->createMockThinnedScope();
 
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedScope;
+        $this->setMockScopeByTimeslotServiceReturnValue($expectedScope);
 
         $_SERVER['REQUEST_URI'] = '/terminvereinbarung/api/citizen/scope-by-timeslot?/scope-by-timeslot&officeId=10489&timestamp=1774328700&serviceId=1063475&serviceCount=1&source=dldb';
 
@@ -114,11 +118,11 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
             'serviceId' => '1063475',
             'serviceCount' => '1',
             'source' => 'dldb',
-        ], \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$lastQueryParams);
+        ], $this->getMockScopeByTimeslotServiceLastQueryParams());
 
         $this->assertArrayNotHasKey(
             '/scope-by-timeslot',
-            \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$lastQueryParams
+            $this->getMockScopeByTimeslotServiceLastQueryParams()
         );
     }
 
@@ -130,7 +134,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
             ]
         ];
 
-        \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::$returnValue = $expectedResponse;
+        $this->setMockScopeByTimeslotServiceReturnValue($expectedResponse);
 
         $response = $this->render([], [
             'officeId' => '10489',
@@ -169,10 +173,48 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
         );
     }
 
-    private function createMockScopeByTimeslotServiceClass(): void
+    private function resetMockScopeByTimeslotServiceState(): void
     {
-        if (class_exists(\BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::class, false)) {
-            return;
+        $className = \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::class;
+
+        if (property_exists($className, 'lastQueryParams')) {
+            $className::$lastQueryParams = [];
+        }
+
+        if (property_exists($className, 'returnValue')) {
+            $className::$returnValue = null;
+        }
+    }
+
+    private function setMockScopeByTimeslotServiceReturnValue(mixed $returnValue): void
+    {
+        $className = \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::class;
+
+        if (!property_exists($className, 'returnValue')) {
+            $this->fail('Mocked ScopeByTimeslotService does not expose static property $returnValue.');
+        }
+
+        $className::$returnValue = $returnValue;
+    }
+
+    private function getMockScopeByTimeslotServiceLastQueryParams(): array
+    {
+        $className = \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::class;
+
+        if (!property_exists($className, 'lastQueryParams')) {
+            $this->fail('Mocked ScopeByTimeslotService does not expose static property $lastQueryParams.');
+        }
+
+        return $className::$lastQueryParams;
+    }
+
+    private function createMockScopeByTimeslotServiceClass(): bool
+    {
+        $className = \BO\Zmscitizenapi\Services\Scope\ScopeByTimeslotService::class;
+
+        if (class_exists($className, false)) {
+            return property_exists($className, 'returnValue')
+                && property_exists($className, 'lastQueryParams');
         }
 
         eval('
@@ -190,5 +232,7 @@ class ScopeByTimeslotControllerTest extends ControllerTestCase
                 }
             }
         ');
+
+        return true;
     }
 }

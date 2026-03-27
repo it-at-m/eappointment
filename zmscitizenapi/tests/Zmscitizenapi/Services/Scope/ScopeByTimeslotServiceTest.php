@@ -33,19 +33,11 @@ class ScopeByTimeslotServiceTest extends TestCase
         $this->service = new ScopeByTimeslotService();
     }
 
-    public function testGetScopeByTimeslotReturnsThinnedScope(): void
+    public function testGetScopeByTimeslotReturnsThinnedScopeInstance(): void
     {
-        // Arrange
         $timestamp = time() + 3600;
         $scopeId = 45;
-
-        $queryParams = [
-            'officeId' => '10489',
-            'timestamp' => (string) $timestamp,
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-            'source' => 'dldb',
-        ];
+        $queryParams = $this->getDefaultQueryParams($timestamp);
 
         $expectedScope = $this->createMockThinnedScope(
             $scopeId,
@@ -63,72 +55,98 @@ class ScopeByTimeslotServiceTest extends TestCase
             $scopeId => $expectedScope,
         ];
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
         $this->assertInstanceOf(ThinnedScope::class, $result);
+    }
+
+    public function testGetScopeByTimeslotReturnsExpectedThinnedScope(): void
+    {
+        $timestamp = time() + 3600;
+        $scopeId = 45;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        $expectedScope = $this->createMockThinnedScope(
+            $scopeId,
+            'dldb',
+            'WB04',
+            'Hey there WB04'
+        );
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue =
+            $this->createProcessList([
+                ['timestamp' => $timestamp, 'scopeId' => $scopeId],
+            ]);
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$scopeReturnValues = [
+            $scopeId => $expectedScope,
+        ];
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertEquals($expectedScope, $result);
     }
 
-    public function testGetScopeByTimeslotWithMissingOfficeIdReturnsValidationError(): void
+    public function testGetScopeByTimeslotWithMissingOfficeIdReturnsArray(): void
     {
-        // Arrange
-        $queryParams = [
-            'timestamp' => (string) (time() + 3600),
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-        ];
+        $timestamp = time() + 3600;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+        unset($queryParams['officeId']);
 
         $expectedError = ['errors' => ['Invalid office ID']];
 
         \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = $expectedError;
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
         $this->assertIsArray($result);
+    }
+
+    public function testGetScopeByTimeslotWithMissingOfficeIdReturnsExpectedValidationError(): void
+    {
+        $timestamp = time() + 3600;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+        unset($queryParams['officeId']);
+
+        $expectedError = ['errors' => ['Invalid office ID']];
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = $expectedError;
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertEquals($expectedError, $result);
     }
 
-    public function testGetScopeByTimeslotWithoutMatchingProcessReturnsScopesNotFoundError(): void
+    public function testGetScopeByTimeslotWithoutMatchingProcessContainsErrorsKey(): void
     {
-        // Arrange
         $timestamp = time() + 3600;
-
-        $queryParams = [
-            'officeId' => '10489',
-            'timestamp' => (string) $timestamp,
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-            'source' => 'dldb',
-        ];
+        $queryParams = $this->getDefaultQueryParams($timestamp);
 
         \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
         \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue = new ProcessList();
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('errors', $result);
+    }
+
+    public function testGetScopeByTimeslotWithoutMatchingProcessReturnsScopesNotFoundErrorCode(): void
+    {
+        $timestamp = time() + 3600;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue = new ProcessList();
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertSame('scopesNotFound', $result['errors'][0]['errorCode']);
     }
 
-    public function testGetScopeByTimeslotWithoutUsableScopeReturnsScopeNotFoundError(): void
+    public function testGetScopeByTimeslotWithoutUsableScopeContainsErrorsKey(): void
     {
-        // Arrange
         $timestamp = time() + 3600;
-
-        $queryParams = [
-            'officeId' => '10489',
-            'timestamp' => (string) $timestamp,
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-            'source' => 'dldb',
-        ];
+        $queryParams = $this->getDefaultQueryParams($timestamp);
 
         \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
         \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue =
@@ -136,27 +154,31 @@ class ScopeByTimeslotServiceTest extends TestCase
                 ['timestamp' => $timestamp, 'scopeId' => null],
             ]);
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('errors', $result);
+    }
+
+    public function testGetScopeByTimeslotWithoutUsableScopeReturnsScopeNotFoundErrorCode(): void
+    {
+        $timestamp = time() + 3600;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue =
+            $this->createProcessList([
+                ['timestamp' => $timestamp, 'scopeId' => null],
+            ]);
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertSame('scopeNotFound', $result['errors'][0]['errorCode']);
     }
 
-    public function testGetScopeByTimeslotPropagatesUpstreamFreeAppointmentsError(): void
+    public function testGetScopeByTimeslotPropagatesUpstreamFreeAppointmentsErrorAsArray(): void
     {
-        // Arrange
         $timestamp = time() + 3600;
-
-        $queryParams = [
-            'officeId' => '10489',
-            'timestamp' => (string) $timestamp,
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-            'source' => 'dldb',
-        ];
+        $queryParams = $this->getDefaultQueryParams($timestamp);
 
         $expectedError = [
             'errors' => [[
@@ -170,28 +192,39 @@ class ScopeByTimeslotServiceTest extends TestCase
         \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
         \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue = $expectedError;
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
         $this->assertIsArray($result);
+    }
+
+    public function testGetScopeByTimeslotPropagatesUpstreamFreeAppointmentsErrorUnchanged(): void
+    {
+        $timestamp = time() + 3600;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        $expectedError = [
+            'errors' => [[
+                'errorCode' => 'appointmentNotAvailable',
+                'errorMessage' => 'Appointment not available.',
+                'statusCode' => 500,
+                'errorType' => 'error',
+            ]]
+        ];
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue = $expectedError;
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertEquals($expectedError, $result);
     }
 
-    public function testGetScopeByTimeslotContinuesScanningUntilUsableScopeIsFound(): void
+    public function testGetScopeByTimeslotContinuesScanningUntilUsableScopeIsFoundReturnsThinnedScopeInstance(): void
     {
-        // Arrange
         $timestamp = time() + 3600;
         $firstScopeId = 36;
         $secondScopeId = 45;
-
-        $queryParams = [
-            'officeId' => '10489',
-            'timestamp' => (string) $timestamp,
-            'serviceId' => '1063475',
-            'serviceCount' => '1',
-            'source' => 'dldb',
-        ];
+        $queryParams = $this->getDefaultQueryParams($timestamp);
 
         $wrongSourceScope = $this->createMockThinnedScope(
             $firstScopeId,
@@ -217,13 +250,92 @@ class ScopeByTimeslotServiceTest extends TestCase
             $secondScopeId => $expectedScope,
         ];
 
-        // Act
         $result = $this->service->getScopeByTimeslot($queryParams);
 
-        // Assert
         $this->assertInstanceOf(ThinnedScope::class, $result);
+    }
+
+    public function testGetScopeByTimeslotContinuesScanningUntilUsableScopeIsFoundReturnsExpectedScope(): void
+    {
+        $timestamp = time() + 3600;
+        $firstScopeId = 36;
+        $secondScopeId = 45;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        $wrongSourceScope = $this->createMockThinnedScope(
+            $firstScopeId,
+            'zms',
+            'WB03',
+            'Hey there WB03'
+        );
+        $expectedScope = $this->createMockThinnedScope(
+            $secondScopeId,
+            'dldb',
+            'WB04',
+            'Hey there WB04'
+        );
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue =
+            $this->createProcessList([
+                ['timestamp' => $timestamp, 'scopeId' => $firstScopeId],
+                ['timestamp' => $timestamp, 'scopeId' => $secondScopeId],
+            ]);
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$scopeReturnValues = [
+            $firstScopeId => $wrongSourceScope,
+            $secondScopeId => $expectedScope,
+        ];
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertEquals($expectedScope, $result);
+    }
+
+    public function testGetScopeByTimeslotContinuesScanningUntilUsableScopeIsFoundReturnsExpectedInfoForAppointment(): void
+    {
+        $timestamp = time() + 3600;
+        $firstScopeId = 36;
+        $secondScopeId = 45;
+        $queryParams = $this->getDefaultQueryParams($timestamp);
+
+        $wrongSourceScope = $this->createMockThinnedScope(
+            $firstScopeId,
+            'zms',
+            'WB03',
+            'Hey there WB03'
+        );
+        $expectedScope = $this->createMockThinnedScope(
+            $secondScopeId,
+            'dldb',
+            'WB04',
+            'Hey there WB04'
+        );
+
+        \BO\Zmscitizenapi\Services\Core\ValidationService::$returnValue = [];
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$freeAppointmentsReturnValue =
+            $this->createProcessList([
+                ['timestamp' => $timestamp, 'scopeId' => $firstScopeId],
+                ['timestamp' => $timestamp, 'scopeId' => $secondScopeId],
+            ]);
+        \BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::$scopeReturnValues = [
+            $firstScopeId => $wrongSourceScope,
+            $secondScopeId => $expectedScope,
+        ];
+
+        $result = $this->service->getScopeByTimeslot($queryParams);
+
         $this->assertSame('WB04', $result->infoForAppointment);
+    }
+
+    private function getDefaultQueryParams(int $timestamp, array $overrides = []): array
+    {
+        return array_merge([
+            'officeId' => '10489',
+            'timestamp' => (string) $timestamp,
+            'serviceId' => '1063475',
+            'serviceCount' => '1',
+            'source' => 'dldb',
+        ], $overrides);
     }
 
     private function createMockThinnedScope(
