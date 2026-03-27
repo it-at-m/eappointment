@@ -108,6 +108,14 @@ class Process extends Base implements MappingInterface
         return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId FOR UPDATE';
     }
 
+    public function getLockAssignedWorkstationId()
+    {
+        return 'SELECT p.`NutzerID`
+            FROM `' . self::getTablename() . '` p
+            WHERE p.`BuergerID` = :processId
+            FOR UPDATE';
+    }
+
     public function addJoin()
     {
         $joins = [];
