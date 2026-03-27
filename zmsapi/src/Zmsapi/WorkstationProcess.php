@@ -56,21 +56,21 @@ class WorkstationProcess extends BaseController
                 $workstation->getUseraccount()
             );
 
-                $process = new \BO\Zmsentities\Process($input);
-                $this->testProcess($process, $workstation, $allowClusterWideCall);
-                $process->setCallTime(\App::$now);
-                $process->queue['callCount']++;
+            $process = new \BO\Zmsentities\Process($input);
+            $this->testProcess($process, $workstation, $allowClusterWideCall);
+            $process->setCallTime(\App::$now);
+            $process->queue['callCount']++;
 
-                $process->status = 'called';
+            $process->status = 'called';
 
-                $workstation->process = (new Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
-                \BO\Zmsdb\Connection\Select::writeCommit();
-                $message = Response\Message::create($request);
-                $message->data = $workstation;
+            $workstation->process = (new Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
+            \BO\Zmsdb\Connection\Select::writeCommit();
+            $message = Response\Message::create($request);
+            $message->data = $workstation;
 
-                $response = Render::withLastModified($response, time(), '0');
-                $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-                return $response;
+            $response = Render::withLastModified($response, time(), '0');
+            $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+            return $response;
         } catch (\DomainException $e) {
             \BO\Zmsdb\Connection\Select::writeRollback();
 
