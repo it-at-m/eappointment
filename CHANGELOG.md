@@ -1,4 +1,43 @@
-
+## Release Muc-39 (27.03.2026) 
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1038'>ZMSKVR-1038</a>] -         Oktober-Statistik-GUI - Falsche Anzeige der Kalendertage
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1121'>ZMSKVR-1121</a>] -         Fehlerhafte Fehlermeldung beim Aktivierungslink – trotz erfolgreicher Terminaktivierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1151'>ZMSKVR-1151</a>] -         Schritt 2: Termin – Hover bei inaktiven Tagen in Kalender entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1209'>ZMSKVR-1209</a>] -         Termine über Safari nicht stornierbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1216'>ZMSKVR-1216</a>] -         Termindauer bei „Eheschließung ohne Auslandsbezug“ auf 10 Min. überschrieben (statt 30 Min.)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1228'>ZMSKVR-1228</a>] -         Tastaturbedienbares Modal-Pattern einbauen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1229'>ZMSKVR-1229</a>] -         HTML-Struktur bei Callout &quot;Ausgewählter Termin&quot; korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1275'>ZMSKVR-1275</a>] -         Zeichenlänge im Mailbetreff
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1305'>ZMSKVR-1305</a>] -         Bürgerfrontend: Jumpin-Link und Button &quot;Leistung wechseln&quot;
+</li>
+</ul>
+                                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1087'>ZMSKVR-1087</a>] -         LOGIN Wartezone und Hinweis in Termin-Detailseite ergänzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1124'>ZMSKVR-1124</a>] -         Testautomatisierung erster Testfall
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1145'>ZMSKVR-1145</a>] -         Migration der CAP-Konfiguration für Cluster CAPK
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1146'>ZMSKVR-1146</a>] -         Migration der CAP-Konfiguration für Cluster CAPP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1265'>ZMSKVR-1265</a>] -         Kalender-Tag wird nicht korrekt berücksichtigt – Terminzeiten &amp; Öffnungszeiten-Link reagieren nicht auf Datumswechsel
+</li>
+</ul>
+                                                        
 ## Release Muc-38 (06.03.2026) 
                                 
 <h2>        Bug

@@ -333,4 +333,14 @@ To update the list:
 * grep BERLIN PLZ.tab > src/Zmsdldb/Plz/PLZ_Berlin.tab
 * bin/geoDbPlz2Json -f src/Zmsdldb/Plz/PLZ_Berlin.tab > src/Zmsdldb/Plz/plz_geodb.json
 * rm PLZ.tab
- 
+
+---------------------
+Munich SADB (`dldbget-munich`)
+---------------------
+
+Internal **dldb-mapper** runs `mapImport(..., $overwrite)` with `app/overwriting/prod.json` before building locations/services. The open **zmsdldb** hourly cron (`cronjob.hourly --city=munich`) used to skip that step, so **10502** (Passkalender KVR-II/221) and its Pass-only service links could be missing locally → jump-in `#/services/1063441/locations/10502/` and Pass-only UI tests failed.
+
+**Bundled overwrite:** `resources/munich_sadb_overwrite.json` (same content as prod.json). **`dldbget-munich`** applies it after every SADB fetch via `Munich::applySadbOverwrite()` (merge services by id; merge or **append** locations by id so 10502 exists).
+
+After upgrading zmsdldb, re-run the Munich hourly import so DB/offices-and-services match prod parity.
+

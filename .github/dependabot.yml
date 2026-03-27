@@ -202,11 +202,11 @@ updates:
   # Maven (planned)
   ##################################################
 
-  # - package-ecosystem: "maven"
-  #   directory: "/zmsautomation"
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "saturday"
-  #     time: "04:00"
-  #     timezone: "Europe/Berlin"
-  #   target-branch: "next"
+  - package-ecosystem: "maven"
+    directory: "/zmsautomation"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
