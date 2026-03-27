@@ -208,7 +208,8 @@ class Workstation extends Base
 
         $assignedWorkstationId = $processDb->readAssignedWorkstationIdForUpdate((int) $process->getId());
 
-        if ($assignedWorkstationId !== null
+        if (
+            $assignedWorkstationId !== null
             && $assignedWorkstationId !== 0
             && $assignedWorkstationId !== (int) $workstation->getId()
         ) {
