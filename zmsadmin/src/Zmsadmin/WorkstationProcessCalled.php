@@ -24,9 +24,17 @@ class WorkstationProcessCalled extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
             $process = \App::$http->readGetResult('/process/' . $args['id'] . '/')->getEntity();
-            $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
-                'allowClusterWideCall' => \App::$allowClusterWideCall
-            ])->getEntity();
+            try {
+                $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
+                    'allowClusterWideCall' => \App::$allowClusterWideCall
+                ])->getEntity();
+            } catch (\Exception $e) {
+                return \BO\Slim\Render::redirect(
+                    'workstationProcessCalled',
+                    ['id' => $processId],
+                    ['error' => 'has_called_process']
+                );
+            }
         }
 
         $excludedIds = $validator->getParameter('exclude')->isString()->setDefault('')->getValue();
