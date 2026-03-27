@@ -28,12 +28,16 @@ class WorkstationProcessCalled extends BaseController
                 $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ])->getEntity();
-            } catch (\Exception $e) {
-                return \BO\Slim\Render::redirect(
-                    'workstationProcessCalled',
-                    ['id' => $processId],
-                    ['error' => 'has_called_process']
-                );
+            } catch (\BO\Zmsclient\Exception $e) {
+                if ($e->template === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
+                    return \BO\Slim\Render::redirect(
+                        'workstationProcessCalled',
+                        ['id' => $processId],
+                        ['error' => 'has_called_process']
+                    );
+                }
+
+                throw $e;
             }
         }
 
