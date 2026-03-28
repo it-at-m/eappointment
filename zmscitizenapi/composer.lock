@@ -122,11 +122,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "eab6b69a6b18db19a6c9747c7067b620f6771a1d"
             },
             "require": {
                 "ext-json": ">=0",
@@ -171,7 +171,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -230,11 +230,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "d21f7878d4766176392afacf79dd8dc5d4076eb3"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -287,11 +287,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-bugfix-zmskvr-1038-statistic-gui-account-for-time-change",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "ac0f9950f63184315c428368fb78bbbb97c0df51"
+                "reference": "4a3c76528fa7224a2dbc6db542a16a10c5f61686"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -404,16 +404,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v7.0.3",
+            "version": "v7.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "28aa0694bcfdfa5e2959c394d5a1ee7a5083629e"
+                "reference": "e41f1bd7dbe3c5455c3f72d4338cfeb083b71931"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/28aa0694bcfdfa5e2959c394d5a1ee7a5083629e",
-                "reference": "28aa0694bcfdfa5e2959c394d5a1ee7a5083629e",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/e41f1bd7dbe3c5455c3f72d4338cfeb083b71931",
+                "reference": "e41f1bd7dbe3c5455c3f72d4338cfeb083b71931",
                 "shasum": ""
             },
             "require": {
@@ -421,6 +421,7 @@
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^7.4",
+                "phpfastcache/phpfastcache": "^9.2",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
                 "psr/cache": "^2.0||^3.0",
@@ -461,9 +462,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v7.0.3"
+                "source": "https://github.com/firebase/php-jwt/tree/v7.0.4"
             },
-            "time": "2026-02-25T22:16:40+00:00"
+            "time": "2026-03-27T21:17:19+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
