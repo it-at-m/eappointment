@@ -17,7 +17,7 @@
     }
   },
   "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ ! -f zmsadmin/.env ]; then cp zmsadmin/.env.template zmsadmin/.env; fi; if [ ! -f zmsstatistic/.env ]; then cp zmsstatistic/.env.template zmsstatistic/.env; fi'",
-  "postCreateCommand": "bash -c './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build && cd zmsapi && vendor/bin/migrate --update && cd ../zmscitizenview && npm install'",
+  "postCreateCommand": "bash -c './cli modules loop composer install && ./cli modules loop npm install && ./cli modules loop npm build && cd zmsapi && vendor/bin/migrate --update",
   "postStartCommand": [
   // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
   // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
