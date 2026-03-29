@@ -1,9 +1,7 @@
 services:
   web:
     container_name: zms-web
-    build:
-      context: .
-      dockerfile: Containerfile
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-local
     volumes:
       - ..:/var/www/html:cached
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro
