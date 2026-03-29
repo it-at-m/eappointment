@@ -4,7 +4,7 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443],
+  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443, 8082],
   "customizations": {
     "vscode": {
       "extensions": [
