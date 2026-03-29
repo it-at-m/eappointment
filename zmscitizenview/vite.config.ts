@@ -46,6 +46,12 @@ export default defineConfig({
     // Allow dev server access via the Docker service name "citizenview"
     // from the zms-web container (used by ATAF UI tests).
     allowedHosts: ['citizenview'],
+    proxy: {
+      '/buergeransicht/api': {
+        target: 'http://refarch-gateway:8080',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     ssrManifest: true,
@@ -74,5 +80,5 @@ export default defineConfig({
   esbuild: {
     drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],
   },
-  base: './',
+  base: '/',
 })
