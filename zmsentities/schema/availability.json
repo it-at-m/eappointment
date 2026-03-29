@@ -35,7 +35,6 @@
       "thursday": true
     },
     "workstationCount": {
-      "callcenter": 8,
       "intern": 10,
       "public": 3
     }
@@ -349,22 +348,6 @@
     "workstationCount": {
       "type": "object",
       "properties": {
-        "callcenter": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "string",
-              "pattern": "^[0-9]+$"
-            }
-          ],
-          "default": 0,
-          "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
-        },
         "intern": {
           "oneOf": [
             {

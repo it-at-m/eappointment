@@ -54,7 +54,7 @@ describe("ZMSAppointmentAPI", () => {
               slotTimeInMinutes: 30,
               disabledByServices: [],
               scope: { captchaActivatedRequired: false },
-              maxSlotsPerAppointment: "10",
+              slotsPerAppointment: "10",
               slots: 5,
               priority: 1
             },
@@ -69,7 +69,7 @@ describe("ZMSAppointmentAPI", () => {
               slotTimeInMinutes: 45,
               disabledByServices: ["1"],
               scope: { captchaActivatedRequired: true },
-              maxSlotsPerAppointment: "8",
+              slotsPerAppointment: "8",
               slots: 3,
               priority: 2
             }

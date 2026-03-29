@@ -49,7 +49,6 @@
                     "sunday": "0"
                 },
                 "workstationCount": {
-                    "callcenter": "2",
                     "intern": "2",
                     "public": "2"
                 }

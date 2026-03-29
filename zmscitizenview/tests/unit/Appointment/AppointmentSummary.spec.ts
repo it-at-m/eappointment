@@ -75,6 +75,10 @@ describe("AppointmentSummary", () => {
             isBookingAppointment: ref(false),
             isCancelingAppointment: ref(false),
           },
+          serviceLinkProvider: {
+            serviceLinkId: ref<string | null>(null),
+            updateServiceLinkId: () => {},
+          },
         },
         stubs: {
           "muc-button": {

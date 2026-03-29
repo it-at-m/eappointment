@@ -22,17 +22,12 @@
         {% block board_body %}
         {% if selected or dateRange %}
             {% if exchangeRequest.period == "day" %}
-                {% set startDate = "%s-%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month, exchangeRequest.firstDay.day) %}
-                {% set endDate = "%s-%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month, exchangeRequest.lastDay.day) %}
-                {% set month = exchangeRequest.firstDay.month %} 
-                {% set year = exchangeRequest.firstDay.year %}
-
-                {% set start = date(startDate) %}
-                {% set end = date(endDate) %}
-
+                {% set start = date("%s-%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month, exchangeRequest.firstDay.day)) %}
+                {% set end = date("%s-%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month, exchangeRequest.lastDay.day)) %}
+                {% set days = start.diff(end).days %}
                 {% set dateRange = [] %}
-                {% for i in range(0, (end.timestamp - start.timestamp) // 86400) %}
-                    {% set fullDate = (start.timestamp + (i * 86400)) | date('Y-m-d') %}
+                {% for i in range(0, days) %}
+                    {% set fullDate = start | date_modify("+" ~ i ~ " day") | date('Y-m-d') %}
                     {% set dateRange = dateRange|merge([fullDate]) %}
                 {% endfor %}
             {% elseif exchangeRequest.period == "month" %}

@@ -12,6 +12,8 @@ import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 import ExceptionHandler from '../../lib/exceptionHandler';
+import BaseView from '../../lib/baseview';
+import { buildConfirmDialogHtml } from '../../lib/confirmDialog';
 
 import {
     getInitialState,
@@ -101,42 +103,55 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
-        if (ok) {
-            showSpinner();
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendData = this.state.availabilitylist
-                .filter((availability) => {
-                    return (
-                        (availability.__modified ||
-                            (availability.tempId && availability.tempId.includes('__temp__'))) &&
-                        !this.hasErrors(availability)
+        const payload = this.prepareAvailabilityPayload();
+        $.ajax({
+            url: `${this.props.links.includeurl}/availability/checkdayoff/`,
+            method: 'POST',
+            data: JSON.stringify(payload),
+            contentType: 'application/json',
+            success: response => {
+                if (response.overridesDayOff) {
+                    const dialogHtml = buildConfirmDialogHtml(
+                        'Öffnungszeit für Feiertag',
+                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind.<br><br>Möchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?',
+                        'Fortfahren'
                     );
-                })
-                .map(availability => {
-                    const sendAvailability = Object.assign({}, availability);
-                    if (availability.tempId) {
-                        delete sendAvailability.tempId;
-                    }
-                    if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
-                        sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
-                    }
-                    if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
-                        sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
-                    }
-                    return {
-                        ...sendAvailability,
-                        kind: availability.kind || 'default',
-                    };
-                })
-                .map(cleanupAvailabilityForSave);
+                    BaseView.loadDialogStatic(
+                        dialogHtml,
+                        () => this.doSaveUpdates(payload),
+                        () => {},
+                        { $main: $('body') }
+                    );
+                    return;
+                }
+                this.doSaveUpdates(payload);
+            },
+            error: (err) => {
+                let isException = err.responseText?.toLowerCase().includes('exception');
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.error('checkdayoff error', err);
+                }
+            }
+        });
+    }
 
-            const payload = {
-                availabilityList: sendData,
-                selectedDate: selectedDate
-            };
+    doSaveUpdates(payload) {
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeiten speichern',
+            'Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?',
+            'Speichern'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
 
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
@@ -150,21 +165,59 @@ class AvailabilityPage extends Component {
                 }
                 hideSpinner();
             }).fail((err) => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                let isException = err.responseText?.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
+                } else {
+                    console.error('save error', err);
                 }
                 this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
             });
-        } else {
-            hideSpinner();
-        }
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
+
+    prepareAvailabilityPayload() {
+    const selectedDate = formatTimestampDate(this.props.timestamp);
+
+    const defaultStartInDays = this.props.scope?.preferences?.appointment?.startInDaysDefault ?? 0;
+    const defaultEndInDays   = this.props.scope?.preferences?.appointment?.endInDaysDefault   ?? 60;
+
+    const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
+        const isModified = availability.__modified === true;
+        const isTemporary = availability.tempId?.includes('__temp__');
+        const hasErrors = this.hasErrors(availability);
+
+        return (isModified || isTemporary) && !hasErrors;
+    });
+
+    const availabilityPayload = modifiedAvailabilities.map(availability => {
+
+        const availabilityForBackend = { ...availability };
+        delete availabilityForBackend.tempId;
+        availabilityForBackend.bookable.startInDays =
+            availabilityForBackend.bookable.startInDays ?? defaultStartInDays;
+
+        availabilityForBackend.bookable.endInDays =
+            availabilityForBackend.bookable.endInDays ?? defaultEndInDays;
+
+        availabilityForBackend.kind = availability.kind || 'default';
+
+        return cleanupAvailabilityForSave(availabilityForBackend);
+    });
+
+    return {
+        availabilityList: availabilityPayload,
+        selectedDate
+    };
+}
 
     updateSaveBarState(type, success) {
 
@@ -191,56 +244,63 @@ class AvailabilityPage extends Component {
     }
 
     onDeleteAvailability(availability) {
-        showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
-        const id = availability.id
-        if (ok) {
-            $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                method: 'GET'
-            }).done(() => {
-                const newState = deleteAvailabilityInState(this.state, availability);
+        const id = availability.id;
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeit löschen',
+            'Soll diese Öffnungszeit wirklich gelöscht werden?',
+            'Löschen'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
+                $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
+                    method: 'DELETE'
+                }).done(() => {
+                    const newState = deleteAvailabilityInState(this.state, availability);
 
-                if (this.state.fullAvailabilityList) {
-                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
-                        item => item.id !== availability.id
-                    );
-                }
-
-                if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
-                    newState.selectedAvailability = null;
-                }
-
-                this.setState(newState, () => {
-                    this.refreshData();
-                    if (newState.availabilitylist.length > 0) {
-                        this.getConflictList();
+                    if (this.state.fullAvailabilityList) {
+                        newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
+                            item => item.id !== availability.id
+                        );
                     }
-                    this.getValidationList();
-                });
 
-                this.updateSaveBarState('delete', true);
+                    if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
+                        newState.selectedAvailability = null;
+                    }
 
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
-                hideSpinner();
-            }).fail(err => {
-                console.log('delete error', err);
-                let isException = err.responseText.toLowerCase().includes('exception');
-                if (err.status >= 400 && isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
+                    this.setState(newState, () => {
+                        this.refreshData();
+                        if (newState.availabilitylist.length > 0) {
+                            this.getConflictList();
+                        }
+                        this.getValidationList();
                     });
-                } else {
-                    console.log('delete error', err);
-                }
-                this.updateSaveBarState('delete', false);
-                hideSpinner();
-            })
-        } else {
-            hideSpinner();
-        }
+
+                    this.updateSaveBarState('delete', true);
+
+                    if (this.successElement) {
+                        this.successElement.scrollIntoView();
+                    }
+                    hideSpinner();
+                }).fail(err => {
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
+                    if (err.status >= 400 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: responseText
+                        });
+                    } else {
+                        console.error('delete error', err);
+                    }
+                    this.updateSaveBarState('delete', false);
+                    hideSpinner();
+                });
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
 
     onCopyAvailability(availability) {
@@ -564,11 +624,12 @@ class AvailabilityPage extends Component {
                     }
                 },
                 (err) => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.log('conflict error', err);
@@ -624,11 +685,12 @@ class AvailabilityPage extends Component {
             if (err.status === 404) {
                 console.log('404 error, ignored')
             } else {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
-                        message: err.responseText
+                        message: responseText
                     });
                 } else {
                     console.log('reading calculated availability list error', err);

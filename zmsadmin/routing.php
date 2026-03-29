@@ -21,11 +21,14 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->post('/availability/slots/', \BO\Zmsadmin\Helper\AvailabilityCalcSlots::class)
      ->setName("AvailabilityCalcSlots");
 
- \App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
+ \App::$slim->delete('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
 
- \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
+ \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\Helper\AvailabilityConflicts::class)
      ->setName("AvailabilityConflicts");
+
+ \App::$slim->post('/availability/checkdayoff/', \BO\Zmsadmin\Helper\AvailabilityCheckDayOff::class)
+     ->setName("AvailabilityCheckDayOff");
 
  /*
   * ---------------------------------------------------------------------------

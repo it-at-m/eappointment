@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   mockup:
-    image: jordimartin/mmock:v4.3.0
+    image: jordimartin/mmock:v4.3.12
     ports:
       - 8082:8082
       - 8083:8083

@@ -135,18 +135,49 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `ddev exec ./cli modules loop npm build`
 
 ### Using Podman (Devcontainer)
-> **Note for macOS users:** You may need to add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or run it in your terminal before using devcontainer commands.
-> ```
-> source ~/.zshrc
-> podman machine stop
-> podman machine start
-> devcontainer up --workspace-folder .
-> ```
-
 - `devcontainer up --workspace-folder .`
 - `podman exec -it zms-web bash -lc "./cli modules loop composer install"`
 - `podman exec -it zms-web bash -lc "./cli modules loop npm install"`
 - `podman exec -it zms-web bash -lc "./cli modules loop npm build"`
+- 
+> **Note for macOS users:** You may need to install the missing `krunkit` package before install Podman and add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or `~/.bashrc` or run it in your terminal before using devcontainer commands.
+> 1️⃣ Stop & remove any Podman machines
+> ```
+> podman machine stop 2>/dev/null && podman machine rm -f 2>/dev/null
+> ```
+> 2️⃣ Delete all Podman configuration & VM data
+> ```
+> rm -rf ~/.config/containers ~/.local/share/containers ~/.cache/containers && rm -rf ~/Library/Containers/io.podman* 2>/dev/null || true && rm -rf ~/Library/Application\ Support/Podman* 2>/dev/null || true && rm -rf ~/Library/Preferences/io.podman* 2>/dev/null || true
+> ```
+> 3️⃣ Uninstall Homebrew Podman and Podman Desktop
+> ```
+> brew uninstall -f podman podman-desktop 2>/dev/null && brew cleanup
+> ```
+> 4️⃣ ⚠️ Install missing package krunkit in Podman 5.8.0 (This is the issue) https://github.com/containers/podman/issues/27056#issuecomment-3434700252
+> ```
+> brew tap slp/krunkit && brew install krunkit && krunkit --version
+> ```
+> 5️⃣ Install Podman CLI and Podman Desktop
+> ```
+> brew install podman && brew install --cask podman-desktop
+> ```
+> 6️⃣ Initialize a new QEMU VM for Podman with 8GB RAM
+> ```
+> podman machine init --cpus 4 --memory 8192 --disk-size 100
+> ```
+> 7️⃣ Export Docker-compatible socket for Dev Containers
+> ```
+> echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.zshrc && echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.bashrc
+> source ~/.zshrc && source ~/.bashrc
+> ```
+> 8️⃣ Start the VM and list machines
+> ```
+> podman machine stop && podman machine start && podman machine list
+> ```
+> 9 Start the Project
+> ```
+> devcontainer up --workspace-folder .
+> ```
 
 <br>
 
@@ -158,26 +189,26 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 
 ## Keycloak Setup
 
-Keycloak is configured to use the hostname `keycloak.local` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
+Keycloak is configured to use the hostname `keycloak` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
 
 - **Browser** (running on your host machine) needs to access Keycloak via a hostname that resolves to `127.0.0.1`
 - **PHP code** (running inside the container) needs to access Keycloak via a hostname that resolves through Docker/Podman network DNS
 
 Using `localhost` doesn't work because inside the container, `localhost` refers to the container itself, not the host machine where Keycloak is exposed.
 
-### Adding keycloak.local to /etc/hosts
+### Adding keycloak to /etc/hosts
 
-You need to add `keycloak.local` to your system's hosts file so it resolves to `127.0.0.1`:
+You need to add `keycloak` to your system's hosts file so it resolves to `127.0.0.1`:
 
 **macOS:**
 ```bash
-echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
 Enter your Mac password when prompted.
 
 **Ubuntu/Linux:**
 ```bash
-echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
 
 **Windows:**
@@ -185,17 +216,17 @@ echo "127.0.0.1 keycloak.local" | sudo tee -a /etc/hosts
 2. Open `C:\Windows\System32\drivers\etc\hosts`
 3. Add this line at the end:
    ```
-   127.0.0.1 keycloak.local
+   127.0.0.1 keycloak
    ```
 4. Save the file
 
 **Verify it worked:**
 ```bash
 # macOS/Linux
-ping -c 1 keycloak.local
+ping -c 1 keycloak
 
 # Windows
-ping keycloak.local
+ping keycloak
 ```
 You should see it resolve to `127.0.0.1`.
 
@@ -211,14 +242,31 @@ ddev restart
 ## Import Database
 
 ### Using DDEV
-- `ddev import-db --file=.resources/zms.sql`
-- `ddev exec zmsapi/vendor/bin/migrate --update`
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `ddev exec ./cli db full-setup`
+- Optional manual steps:
+  - `ddev exec ./cli db drop-all-tables`
+  - `ddev import-db --file=.resources/zms.sql`
+  - `ddev exec ./cli db migrate-test-data`
+  - `ddev exec zmsapi/vendor/bin/migrate --update`
+  - `ddev exec zmsapi/cron/cronjob.hourly --city=munich`
+  - `ddev exec zmsapi/cron/cronjob.minutly`
+  - `ddev exec ./cli modules clear-local-cache`
 
 ### Using Podman
-- `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
-- `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
-
-Import Berlin or Munich DLDB data via the [hourly cronjob](#cronjobs).
+- One-shot local dev setup (`db full-setup` first, then composer + npm install + npm build), same as chaining `./cli` yourself:
+  - From the **host**: `podman exec -it zms-web bash -lc "./cli dev setup-local"`
+  - Or run `./cli dev setup-local` wherever the repo is already mounted (e.g. already inside `zms-web` container)
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `podman exec -it zms-web bash -lc "./cli db full-setup"`
+- Optional manual steps:
+  - `podman exec -it zms-web bash -lc "./cli db drop-all-tables"`
+  - `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
+  - `podman exec -it zms-web bash -lc "./cli db migrate-test-data"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.hourly --city=munich"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.minutly"`
+  - `podman exec -it zms-web bash -lc "./cli modules clear-local-cache"`
 
 ## Dependency Check for PHP Upgrades
 Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
@@ -422,25 +470,25 @@ bash zmsdb-test --coverage-text
 bash zmsapi-test --exclude-group="slow"
 ```
 
-### API Testing (zmsapiautomation)
+### API Testing (zmsautomation)
 
-**zmsapiautomation** provides Java REST-assured based API tests for ZMS APIs. These tests validate the REST API endpoints directly.
+**zmsautomation** provides Java-based API tests for ZMS APIs using Cucumber, ATAF (Test Automation Framework), and REST-assured. These tests validate the REST API endpoints using behavior-driven development (BDD) with feature files.
 
 **Using the test runner script (Recommended):**
 
-The `zmsapiautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
+The `zmsautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
 
 ```bash
 # Enter your web container first
 podman exec -it zms-web bash  # Podman
 ddev ssh                      # DDEV
 
-# Run zmsapiautomation tests
-cd zmsapiautomation
-bash zmsapiautomation-test                    # Run all tests
-bash zmsapiautomation-test -Dtest=StatusEndpointTest  # Run specific test class
-bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
-bash zmsapiautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+# Run zmsautomation tests
+cd zmsautomation
+bash zmsautomation-test                    # Run all tests
+bash zmsautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+bash zmsautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
 ```
 
 **Maven Test Filtering:**
@@ -449,19 +497,19 @@ The script supports Maven Surefire test filtering using the `-Dtest` parameter:
 
 ```bash
 # Run a specific test class
-bash zmsapiautomation-test -Dtest=StatusEndpointTest
+bash zmsautomation-test -Dtest=StatusEndpointTest
 
 # Run a specific test method
-bash zmsapiautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
 
 # Run multiple test classes
-bash zmsapiautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+bash zmsautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
 
 # Run tests matching a pattern
-bash zmsapiautomation-test -Dtest=*EndpointTest
+bash zmsautomation-test -Dtest=*EndpointTest
 
 # Run tests with additional Maven options
-bash zmsapiautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+bash zmsautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
 ```
 
 **Environment Configuration:**
@@ -474,8 +522,8 @@ The script runs natively inside the container and uses environment variables. De
 You can override these defaults:
 
 ```bash
-BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsapiautomation-test
-CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapiautomation-test
+BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsautomation-test
 ```
 
 **What the Script Does:**
@@ -488,7 +536,7 @@ CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapi
 6. Runs PHP migrations
 7. Executes hourly cronjob to import Munich DLDB data (if configured)
 8. Performs health checks on both APIs
-9. Runs Maven tests with REST-assured
+9. Runs Cucumber tests with ATAF and REST-assured
 10. Collects and displays test results
 11. Restores the original database
 12. Cleans up test artifacts
@@ -498,7 +546,7 @@ CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsapi
 To import Munich DLDB data during test setup:
 
 ```bash
-ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomation-test
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsautomation-test
 ```
 
 **Running Tests Directly with Maven (inside container):**
@@ -506,13 +554,25 @@ ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsapiautomatio
 For development without the full setup script (assumes database is already prepared):
 
 ```bash
-cd zmsapiautomation
+cd zmsautomation
 mvn test
 mvn test -Dtest=StatusEndpointTest
 ```
 
+**Running Cucumber Feature Files:**
+
+Tests are organized as Cucumber feature files in `src/test/resources/features/`. You can run specific feature files:
+
+```bash
+cd zmsautomation
+mvn test -Dcucumber.filter.tags="@api"  # Run tests tagged with @api
+mvn test -Dcucumber.features="src/test/resources/features/zmsapi/availability.feature"  # Run specific feature file
+```
+
 **References:**
+- Cucumber: https://cucumber.io/
 - REST-assured: https://github.com/rest-assured/rest-assured
+- ATAF: Test Automation Framework (will be open source)
 
 ### Common Errors
 
@@ -593,7 +653,7 @@ To keep our branch names organized and easily understandable, we follow a specif
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|chore|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
 - **feat(ZMS-123): commit message**

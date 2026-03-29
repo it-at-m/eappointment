@@ -50,7 +50,6 @@ response:
               },
               "workstationCount": {
                 "public": 0,
-                "callcenter": 0,
                 "intern": 0
               },
               "lastChange": 0,

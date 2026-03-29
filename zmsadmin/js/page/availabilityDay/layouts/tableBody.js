@@ -147,7 +147,7 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
                 {availability.slotTimeInMinutes}min
             </td>
             <td>
-                {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
+                {availability.workstationCount.intern}/{availability.workstationCount.public}
             </td>
             <td>
                 {(availability.bookable?.startInDays !== undefined && availability.bookable?.startInDays !== null && availability.bookable?.startInDays !== '' 

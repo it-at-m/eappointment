@@ -106,8 +106,10 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        if ('counter' == this.page)
+        if ('counter' == this.page){
+            this.loadAppointmentTimes();
             this.loadQueueInfo();
+        }
         this.loadQueueTable();
         this.loadAppointmentForm(true, !this.selectedProcess).loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
@@ -458,7 +460,7 @@ class View extends BaseView {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
-            this.loadDialog(response, (() => {
+            const submitDialog = () => {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
@@ -466,10 +468,18 @@ class View extends BaseView {
                     { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
-                    (response) => this.loadMessage(response, () => {
-                    }, null, event.currentTarget)
+                    (response) => {
+                        hideSpinner($container);
+                        const hasDialogForm = $(response).find('form[name="mail"]').length > 0;
+                        if (hasDialogForm) {
+                            this.loadDialog(response, submitDialog, null, event.currentTarget);
+                            return;
+                        }
+                        this.loadMessage(response, () => {}, null, event.currentTarget);
+                    }
                 );
-            }), null, event.currentTarget)
+            };
+            this.loadDialog(response, submitDialog, null, event.currentTarget)
         });
     }
 
@@ -485,9 +495,11 @@ class View extends BaseView {
                     { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-                    (response) => this.loadMessage(response, () => {
+                    (response) => {
+                        hideSpinner($container);
+                        this.loadMessage(response, () => {
                     }, null, event.currentTarget)
-                );
+                });
             }), null, event.currentTarget)
         });
     }

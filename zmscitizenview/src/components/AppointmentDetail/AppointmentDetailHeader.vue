@@ -4,6 +4,7 @@
     :tagline="t('appointment')"
     :title="formatMultilineTitle(appointment)"
     variant="detail"
+    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
     <div class="appointment-data">
       <p>
@@ -22,12 +23,14 @@
       <br />
       <muc-link
         v-if="selectedProvider"
+        :id="`provider-${selectedProvider.id}`"
         :label="
           selectedProvider.address.street +
           ' ' +
           selectedProvider.address.house_number
         "
         prepend-icon="map-pin"
+        :aria-label="selectedProvider.name"
         @click.prevent="focusLocation"
       />
       <br />

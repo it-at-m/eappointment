@@ -59,7 +59,6 @@ class View extends BaseView {
         $form.find('select[name=type]').val(data.type);
         $form.find('select[name=repeat]').val('-1');
         $form.find('input[name=workstationCount_intern]').val(data.workstationCount.intern);
-        $form.find('select[name=workstationCount_callcenter]').val(data.workstationCount.callcenter);
         $form.find('select[name=workstationCount_public]').val(data.workstationCount.public);
     }
 
