@@ -29,6 +29,86 @@ class ReportHelper
         return $entity;
     }
 
+    public static function withTotalCustomers($entity)
+    {
+        foreach ($entity->data as $dateKey => $dateItems) {
+            if (!is_array($dateItems)) {
+                continue;
+            }
+
+            foreach ($dateItems as $hour => $hourItems) {
+                if (!is_array($hourItems)) {
+                    continue;
+                }
+
+                $countSpontan = (int) ($hourItems['waitingcount'] ?? 0);
+                $countTermin  = (int) ($hourItems['waitingcount_termin'] ?? 0);
+                $countTotal   = $countSpontan + $countTermin;
+
+                $waitSpontan = (float) ($hourItems['waitingtime'] ?? 0);
+                $waitTermin  = (float) ($hourItems['waitingtime_termin'] ?? 0);
+
+                $waySpontan  = (float) ($hourItems['waytime'] ?? 0);
+                $wayTermin   = (float) ($hourItems['waytime_termin'] ?? 0);
+
+                $entity->data[$dateKey][$hour]['waitingcount_total'] = $countTotal;
+
+                $entity->data[$dateKey][$hour]['waitingtime_total'] = ($countTotal > 0)
+                    ? (($waitSpontan * $countSpontan) + ($waitTermin * $countTermin)) / $countTotal
+                    : 0;
+
+                $entity->data[$dateKey][$hour]['waytime_total'] = ($countTotal > 0)
+                    ? (($waySpontan * $countSpontan) + ($wayTermin * $countTermin)) / $countTotal
+                    : 0;
+            }
+        }
+
+        return $entity;
+    }
+
+    public static function withGlobalMaxAndAverage($entity, string $targetKey)
+    {
+        $maxima = 0;
+        $total  = 0;
+        $count  = 0;
+
+        foreach ($entity->data as $dateItems) {
+            if (!is_array($dateItems)) {
+                continue;
+            }
+            foreach ($dateItems as $hourItems) {
+                if (!is_array($hourItems)) {
+                    continue;
+                }
+                $value = $hourItems[$targetKey] ?? null;
+                if (is_numeric($value) && $value > 0) {
+                    $value  = (float) $value;
+                    $maxima = ($maxima > $value) ? $maxima : $value;
+                    $total += $value;
+                    $count++;
+                }
+            }
+        }
+
+        $average = ($count > 0) ? ($total / $count) : 0;
+
+        if (is_object($entity->data)) {
+            if (!isset($entity->data->max) || !is_array($entity->data->max)) {
+                $entity->data->max = [];
+            }
+            $entity->data->max['max_' . $targetKey] = $maxima;
+            $entity->data->max['average_' . $targetKey] = $average;
+        } elseif (is_array($entity->data)) {
+            if (!isset($entity->data['max']) || !is_array($entity->data['max'])) {
+                $entity->data['max'] = [];
+            }
+            $entity->data['max']['max_' . $targetKey] = $maxima;
+            $entity->data['max']['average_' . $targetKey] = $average;
+        }
+
+        return $entity;
+    }
+
     public static function formatTimeValue($value)
     {
         if (!is_numeric($value)) {

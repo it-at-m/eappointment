@@ -1,8 +1,12 @@
-name: Combined Workflow with Documentation
+name: 🐘 Combined PHP Build with Documentation
 
 on:
   push:
     branches: [next]
+
+concurrency:
+  group: combined-php-build-with-docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -18,17 +22,14 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
-  call-zmsautomation-tests:
-    uses: ./.github/workflows/zmsautomation-tests.yaml
-
   call-zmscitizenview-coverage:
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
-  call-owasp-security-checks:
-    uses: ./.github/workflows/owasp-security-checks.yaml
+  call-trivy-security-checks:
+    uses: ./.github/workflows/trivy.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-owasp-security-checks]
+    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-trivy-security-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
@@ -37,14 +38,14 @@ jobs:
           mkdir -p public/security
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: 'coverage-*'
           path: public/coverage-temp
           merge-multiple: false
 
       - name: Download security reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: 'security-report-*'
           path: public/security-temp
@@ -79,7 +80,7 @@ jobs:
           ls -R public/security/
 
       - name: Upload aggregated reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: aggregated-reports
           path: public/
@@ -110,10 +111,9 @@ jobs:
       git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-php-unit-tests, call-zmsautomation-tests]
+    needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.result == 'success' &&
-      needs.call-zmsautomation-tests.result == 'success'
+      needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml

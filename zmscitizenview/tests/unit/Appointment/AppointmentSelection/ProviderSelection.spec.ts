@@ -83,8 +83,8 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       selectedService: {
         id: "service1",
         providers: [
-          { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
-          { name: "Office B", id: 2, address: { street: "Elm", house_number: "99" } },
+          { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+          { name: "Office B", id: 2, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
         ],
       },
     });
@@ -96,15 +96,32 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     expect(wrapper.text()).toContain("Office B");
   });
 
-  it("filters providers correctly based on disabledByServices", async () => {
+  it("filters providers correctly based on disabledByServices and allowDisabledServicesMix for Ruppertstraße", async () => {
     const testProviders = [
-      { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [], address: { street: 'Test', house_number: '1' } },
-      { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [], address: { street: 'Test', house_number: '2' } },
-      { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [], address: { street: 'Test', house_number: '3' } },
-      { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [], address: { street: 'Test', house_number: '4' } },
-      { id: 10489, name: 'Bürgerbüro Ruppertstraße', disabledByServices: ['1063453', '1063441', '1080582'], address: { street: 'Test', house_number: '5' } },
-      { id: 10502, name: 'Bürgerbüro Ruppertstraße', disabledByServices: [], address: { street: 'Test', house_number: '6' } },
-      { id: 54261, name: 'Bürgerbüro Pasing', disabledByServices: [], address: { street: 'Test', house_number: '7' } },
+      { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [], address: { street: 'Test', house_number: '1' }, scope: { id: "102522" } },
+      { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [], address: { street: 'Test', house_number: '2' }, scope: { id: "102523" } },
+      { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [], address: { street: 'Test', house_number: '3' }, scope: { id: "102524" } },
+      { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [], address: { street: 'Test', house_number: '4' }, scope: { id: "102526" } },
+      // Realistic Ruppertstraße pair: 10489 is restricted, 10502 is clean.
+      // Both carry allowDisabledServicesMix group [10489, 10502] so they are kept
+      // and resolved by grouping. JumpIn with 10489 auto-selects 10502 when exclusive.
+      {
+        id: 10489,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: ['1063453', '1063441', '1080582'],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '5' },
+        scope: { id: "10489" },
+      },
+      {
+        id: 10502,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: [],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '6' },
+        scope: { id: "10502" },
+      },
+      { id: 54261, name: 'Bürgerbüro Pasing', disabledByServices: [], address: { street: 'Test', house_number: '7' }, scope: { id: "54261" } },
     ];
 
     const runTest = async (selectedServiceIds: number[], expectedIds: number[]) => {
@@ -121,32 +138,118 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       });
 
       await nextTick(); // Wait for onMounted to run
+      await flushPromises(); // Wait for showSelectionForProvider -> fetchAvailableDays
       const renderedProviders = wrapper.vm.selectableProviders as typeof testProviders;
       const resultIds = renderedProviders.map(p => p.id).sort();
       expect(resultIds).toEqual(expectedIds.sort());
     };
 
-    // 1. service 1063453 disables 10489 (1063453 is in 10489's disabledByServices)
+    // 1. Only core passport service 1063453 selected:
+    //    10489 is restricted for 1063453, 10502 is clean.
+    //    Grouping sees all selected services are in disabledByServices → shows 10502.
     await runTest([1063453], [102522, 102523, 102524, 102526, 10502, 54261]);
 
-    // 2. service 1234567 doesn't disable 10489 (1234567 is not in anyone's disabledByServices)
-    // Both 10489 and 10502 pass, but 10489 comes first so it's returned for the "Bürgerbüro Ruppertstraße" group
+    // 2. Harmless service 1234567:
+    //    Not present in any disabledByServices → both 10489 and 10502 allowed.
+    //    Grouping prefers the restricted/clean combo so 10489 is returned for Ruppertstraße.
     await runTest([1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
 
-    // 3. services 1063453 + 1063441 - 10489 is filtered out (has 1063453 in disabledByServices)
+    // 3. Two core passport services 1063453 + 1063441:
+    //    All selected services are in 10489.disabledByServices → exclusive match → show 10502.
     await runTest([1063453, 1063441], [102522, 102523, 102524, 102526, 10502, 54261]);
 
-    // 4. services 1063453 + 1234567 - 10489 is filtered out (has 1063453 in disabledByServices)
-    // If ANY selected service is in disabledByServices, provider is filtered out
-    await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10502, 54261]);
+    // 4. Mixed core + harmless: 1063453 + 1234567.
+    //    Only some selected services are in 10489.disabledByServices → mixed → keep 10489 for Ruppertstraße.
+    await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
+  });
+
+  it("auto-selects equivalent office in mix group when JumpIn has different ID (10489 vs 10502)", async () => {
+    const testProviders = [
+      { id: 102522, name: 'Other', disabledByServices: [], address: { street: 'Test', house_number: '1' }, scope: { id: "102522" } },
+      {
+        id: 10489,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: ['1063441'],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '5' },
+        scope: { id: "10489" },
+      },
+      {
+        id: 10502,
+        name: 'Bürgerbüro Ruppertstraße',
+        disabledByServices: [],
+        allowDisabledServicesMix: [10489, 10502],
+        address: { street: 'Test', house_number: '6' },
+        scope: { id: "10502" },
+      },
+    ];
+    const wrapper = createWrapper({
+      props: { preselectedOfficeId: '10489' },
+      selectedService: {
+        id: 1063441,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+    await nextTick();
+    await flushPromises();
+    // Exclusive mode: only 10502 shown (10489 restricted for 1063441)
+    const selectableIds = wrapper.vm.selectableProviders.map((p: { id: number }) => p.id);
+    expect(selectableIds).toContain(10502);
+    expect(selectableIds).not.toContain(10489);
+    // 10502 should be auto-selected because JumpIn had 10489 (same mix group)
+    const selectedProviders = wrapper.vm.selectedProviders as Record<string, boolean>;
+    expect(selectedProviders['10502']).toBe(true);
+  });
+
+  it("filters providers correctly for pickup service 10295182 (only bookable at 10492)", async () => {
+    const testProviders = [
+      {
+        id: 10489,
+        name: "Bürgerbüro Ruppertstraße (KVR-II/22)",
+        disabledByServices: ["10295182"], // Abholung disabled here
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "10489" },
+      },
+      {
+        id: 10492,
+        name: "Bürgerbüro Ruppertstraße (KVR-II/211)",
+        disabledByServices: [], // Abholung allowed only here
+        address: { street: "Ruppertstraße", house_number: "19" },
+        scope: { id: "10492" },
+      },
+      {
+        id: 10286848,
+        name: "Bürgerbüro XYZ",
+        disabledByServices: ["10295182"], // disabled by DONT_SHOW_LOCATION_BY_SERVICES mapping
+        address: { street: "Test", house_number: "1" },
+        scope: { id: "10286848" },
+      },
+    ];
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 10295182,
+        subServices: [],
+        providers: testProviders,
+      },
+    });
+
+    await nextTick();
+    await flushPromises();
+    const renderedProviders = wrapper.vm.selectableProviders as typeof testProviders;
+    const resultIds = renderedProviders.map((p) => p.id).sort();
+
+    // Only 10492 should remain selectable for 10295182
+    expect(resultIds).toEqual([10492]);
   });
 
   it("shows providers in correct prio", async () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" } },
-          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" } },
+          { name: "Office AAA", id: 1, priority: 5, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+          { name: "Office BBB", id: 2, priority: 10, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } },
         ] }
     });
 
@@ -168,7 +271,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
   it("renders a single provider view", async () => {
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-          { name: "Office ABC", id: 1, address: { street: "Elm", house_number: "99" } }
+          { name: "Office ABC", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } }
         ] }
     });
 
@@ -183,13 +286,13 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [
-        { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
-        { name: "Office B", id: 2, address: { street: "Elm", house_number: "99" } }
+        { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } },
+        { name: "Office B", id: 2, address: { street: "Elm", house_number: "99" }, scope: { id: "2" } }
       ] }
     });
 
     // Trigger a provider selection which will call fetchAvailableDays
-    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" }, scope: { id: "1" } });
     await nextTick();
 
     // Test initial state
@@ -210,9 +313,9 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       selectedService: {
         id: 'service1',
         providers: [
-          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', showAlternativeLocations: true, address: { street: 'Test', house_number: '2' } },
-          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' } }
+          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: '2', showAlternativeLocations: true, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } },
+          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' }, scope: { id: "3" } }
         ]
       },
       props: {
@@ -220,7 +323,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       }
     });
 
-    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } });
     await nextTick();
 
     expect(wrapper.vm.selectedProviders).toEqual({
@@ -236,9 +339,9 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       selectedService: {
         id: 'service1',
         providers: [
-          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', showAlternativeLocations: false, address: { street: 'Test', house_number: '2' } },
-          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' } }
+          { name: 'Office A', id: '1', showAlternativeLocations: true, address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+          { name: 'Office B', id: '2', showAlternativeLocations: false, address: { street: 'Test', house_number: '2' }, scope: { id: "2" } },
+          { name: 'Office C', id: '3', showAlternativeLocations: true, address: { street: 'Test', house_number: '3' }, scope: { id: "3" } }
         ]
       },
       props: {
@@ -246,7 +349,7 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
       }
     });
 
-    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } });
     await nextTick();
 
     expect(wrapper.vm.selectedProviders).toEqual({
@@ -258,15 +361,15 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
 
     const wrapper = createWrapper({
       selectedService: { id: 'service1', providers: [
-        { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-        { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } },
-        { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' } },
-        { name: 'Office D', id: '4', address: { street: 'Test', house_number: '4' } }
+        { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } },
+        { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' }, scope: { id: "2" } },
+        { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' }, scope: { id: "3" } },
+        { name: 'Office D', id: '4', address: { street: 'Test', house_number: '4' }, scope: { id: "4" } }
       ] }
     });
 
     // Wait for availableDays to be loaded
-    await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+    await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' }, scope: { id: "1" } });
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();

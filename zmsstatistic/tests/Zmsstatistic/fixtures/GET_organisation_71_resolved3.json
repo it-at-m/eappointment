@@ -616,7 +616,7 @@
             "name": "Charlottenburg-Wilmersdorf"
         },
         "preferences": {
-            "ticketPrinterProtectionEnabled": "0"
+            "ticketPrinterActivation": "0"
         },
         "ticketprinters": [
             {

@@ -20,7 +20,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -34,7 +33,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -48,7 +46,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -62,7 +59,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -76,7 +72,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -90,7 +85,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -104,7 +98,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -118,7 +111,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -132,7 +124,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -146,7 +137,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 3,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -160,7 +150,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -3,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -174,7 +163,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -2,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -188,7 +176,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -202,7 +189,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -216,7 +202,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -230,7 +215,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -244,7 +228,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -258,7 +241,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -272,7 +254,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -286,7 +267,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -300,7 +280,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -314,7 +293,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -328,7 +306,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -342,7 +319,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -356,7 +332,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -370,7 +345,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -384,7 +358,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -398,7 +371,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -412,7 +384,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -426,7 +397,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -440,7 +410,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -454,7 +423,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -468,7 +436,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -482,7 +449,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -496,7 +462,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -510,7 +475,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -524,7 +488,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -538,7 +501,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -552,7 +514,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -3,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -566,7 +527,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -580,7 +540,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -594,7 +553,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -608,7 +566,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -622,7 +579,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -636,7 +592,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -650,7 +605,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -664,7 +618,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -678,7 +631,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -692,7 +644,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -706,7 +657,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -720,7 +670,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -734,7 +683,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -748,7 +696,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -762,7 +709,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -776,7 +722,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -790,7 +735,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "sum"
                 }
             },
@@ -804,7 +748,6 @@
                 "freeAppointments": {
                     "public": 2,
                     "intern": 2,
-                    "callcenter": 2,
                     "type": "sum"
                 }
             },
@@ -818,7 +761,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -832,7 +774,6 @@
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
-                    "callcenter": 0,
                     "type": "free"
                 }
             },
@@ -846,7 +787,6 @@
                 "freeAppointments": {
                     "public": 72,
                     "intern": 72,
-                    "callcenter": 72,
                     "type": "sum"
                 }
             },
@@ -860,7 +800,6 @@
                 "freeAppointments": {
                     "public": 60,
                     "intern": 60,
-                    "callcenter": 60,
                     "type": "sum"
                 }
             }

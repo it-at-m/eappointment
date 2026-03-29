@@ -61,6 +61,10 @@ try {
     exit(1);
 }
 
+// Same as dldb-mapper mapImport mergeExports(prod.json): Passkalender 10502 + relations for E2E/prod parity
+$data = $transformer->applySadbOverwrite($data);
+print("Applied bundled munich_sadb_overwrite.json (dldb-mapper parity).\n\n");
+
 // Helper to safely write JSON files (defined before first use)
 function writeJsonFile($path, $data) {
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

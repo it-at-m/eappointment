@@ -21,7 +21,7 @@
         "id": 456,
         "name": "Flughafen",
         "preferences": {
-            "ticketPrinterProtectionEnabled": false
+            "ticketPrinterActivation": false
         },
         "ticketprinters": [
             {
@@ -65,7 +65,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "ticketPrinterProtectionEnabled": {
+                "ticketPrinterActivation": {
                     "oneOf": [
                         {
                             "type": "number"
@@ -78,7 +78,7 @@
                             "pattern": "^[01]$"
                         }
                     ],
-                    "description": "true if protection for ticket printer is enabled"
+                    "description": "true if kiosks must be explicitly activated before use"
                 }
             }
         },

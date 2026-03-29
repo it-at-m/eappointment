@@ -1,0 +1,79 @@
+id: add system users
+author: ZMS Development
+realm: zms
+changes:
+  - addUser:
+      name: ataf
+      lastName: Test
+      firstName: ATAF
+      enabled: true
+      emailVerified: true
+      email: ataf@localhost
+  - updateUserPassword:
+      name: ataf
+      password: "vorschau"
+  - assignRole:
+      user: ataf
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_115
+      lastName: System
+      firstName: 115
+      enabled: true
+      emailVerified: true
+      email: _system_115@localhost
+  - updateUserPassword:
+      name: _system_115
+      password: "vorschau"
+  - assignRole:
+      user: _system_115
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_citizenapi
+      lastName: System
+      firstName: citizenapi
+      enabled: true
+      emailVerified: true
+      email: _system_citizenapi@localhost
+  - updateUserPassword:
+      name: _system_citizenapi
+      password: "vorschau"
+  - assignRole:
+      user: _system_citizenapi
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger
+      lastName: System
+      firstName: messenger
+      enabled: true
+      emailVerified: true
+      email: _system_messenger@localhost
+  - updateUserPassword:
+      name: _system_messenger
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_soap
+      lastName: System
+      firstName: soap
+      enabled: true
+      emailVerified: true
+      email: _system_soap@localhost
+  - updateUserPassword:
+      name: _system_soap
+      password: "vorschau"
+  - assignRole:
+      user: _system_soap
+      role: user
+      clientId: zms
+

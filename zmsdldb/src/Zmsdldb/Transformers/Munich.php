@@ -46,15 +46,29 @@ class Munich
         ],
         [
             "locations" => [10286848, 10286849, 10181770, 10204387, 10204388, 10227989, 1060068], // Bürgerbüros ohne Abholung Personalausweis, Reisepass oder eID-Karte
-            "services" => [10295182] // Abholung Personalausweis, Reisepass oder eID-Karte - only available at Ruppertstraße (10489)
+            "services" => [10295182] // Abholung Personalausweis, Reisepass oder eID-Karte - only available at Ruppertstraße (10492)
         ]
     ];
 
+    /**
+     * Offices where disabledByServices/DONT_SHOW_LOCATION_BY_SERVICES are interpreted with special
+     * "exclusive vs mixed" semantics. Grouped so JumpIn with one office auto-selects the
+     * equivalent in the same group (e.g. 10489 ⟷ 10502). Mirrors dldb-mapper/app/map.php.
+     */
+    const LOCATIONS_ALLOW_DISABLED_MIX = [
+        [10489, 10502],
+    ];
+
+    /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
     const DONT_SHOW_SERVICE_ON_START_PAGE = [
-        10396802, // Anmeldung einer Eheschließung mit Auslandsbezug
-        1063648, // Anmeldung einer Eheschließung ohne Auslandsbezug
-        1063731, // Kirchenaustritt
-        1071907, // Einbürgerung
+        10396802,
+        1063648,
+        1063731,
+        1071907,
+        10502137,
+        10314100,
+        10416410,
+        10323113,
     ];
 
     const SERVICE_COMBINATIONS = [
@@ -131,12 +145,31 @@ class Munich
     }
 
     /**
+     * Apply corporate proxy to Httpful request when HTTPS_PROXY / HTTP_PROXY is set.
+     * Cron and CI often do not inherit .bashrc; sourcing in cronjob.hourly helps, this is a second safeguard.
+     */
+    private function requestWithOptionalProxy(string $url): Request
+    {
+        $req = Request::get($url);
+        $proxy = getenv('HTTPS_PROXY') ?: getenv('https_proxy')
+            ?: getenv('HTTP_PROXY') ?: getenv('http_proxy');
+        if ($proxy !== false && $proxy !== '') {
+            $parts = parse_url($proxy);
+            if (!empty($parts['host'])) {
+                $port = isset($parts['port']) ? (int) $parts['port'] : 80;
+                $req->useProxy($parts['host'], $port);
+            }
+        }
+        return $req;
+    }
+
+    /**
      * Fetch latest Munich SADB export and return the data
      */
     public function fetchLatestExport(string $indexUrl): array
     {
         try {
-            $response = Request::get($indexUrl)->timeout(15)->send();
+            $response = $this->requestWithOptionalProxy($indexUrl)->timeout(45)->send();
             if ((int)($response->code ?? 0) !== 200) {
                 throw new \RuntimeException("Index fetch failed with status {$response->code}");
             }
@@ -150,16 +183,130 @@ class Munich
 
             $this->logger?->info('Fetching Munich export', ['url' => $latestUrl]);
 
-            $exportResponse = Request::get($latestUrl)->timeout(30)->send();
+            $exportResponse = $this->requestWithOptionalProxy($latestUrl)->timeout(120)->send();
             if ((int)($exportResponse->code ?? 0) !== 200) {
                 throw new \RuntimeException("Export fetch failed with status {$exportResponse->code}");
             }
 
-            return json_decode($exportResponse->raw_body, true, 512, JSON_THROW_ON_ERROR);
+            $body = $exportResponse->raw_body;
+            try {
+                return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                $snippet = preg_replace('/\s+/', ' ', substr((string) $body, 0, 400));
+                throw new \RuntimeException(
+                    'Export JSON parse failed (' . $e->getMessage() . '). '
+                    . 'Often means the HTTP response was not JSON (e.g. block page or missing HTTPS_PROXY in cron). '
+                    . 'Body preview: ' . $snippet,
+                    0,
+                    $e
+                );
+            }
         } catch (\Throwable $e) {
             $this->logger?->error('Failed to fetch Munich export', ['error' => $e->getMessage(), 'url' => $indexUrl]);
             throw $e;
         }
+    }
+
+    /**
+     * Path to bundled SADB overwrite (ex-dldb-mapper prod.json). Passkalender 10502 + Pass services.
+     */
+    public static function defaultSadbOverwritePath(): string
+    {
+        return dirname(__DIR__, 3) . '/resources/munich_sadb_overwrite.json';
+    }
+
+    /**
+     * Merge overwrite JSON into raw SADB export — same role as dldb-mapper mapImport($overwrite).
+     * - Services: merge by id, fields merged by name (overwrite wins).
+     * - Locations: merge by id (extendedServiceReferences by refId) or append if missing (e.g. 10502).
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public function applySadbOverwrite(array $data, ?string $overwritePath = null): array
+    {
+        $path = $overwritePath ?: self::defaultSadbOverwritePath();
+        if (!is_readable($path)) {
+            $this->logger?->warning('Munich SADB overwrite not readable, skipping merge', ['path' => $path]);
+            return $data;
+        }
+        $raw = file_get_contents($path);
+        if ($raw === false) {
+            return $data;
+        }
+        try {
+            $additional = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger?->error('Munich SADB overwrite JSON invalid', ['path' => $path, 'error' => $e->getMessage()]);
+            return $data;
+        }
+
+        $data['services'] = $data['services'] ?? [];
+        $data['locations'] = $data['locations'] ?? [];
+
+        foreach ($additional['services'] ?? [] as $svc) {
+            $id = $svc['id'] ?? null;
+            if ($id === null) {
+                continue;
+            }
+            foreach ($data['services'] as $k => $existing) {
+                if ((string)($existing['id'] ?? '') !== (string)$id) {
+                    continue;
+                }
+                $origFields = $existing['fields'] ?? [];
+                $newFields = $svc['fields'] ?? [];
+                $data['services'][$k] = array_merge($existing, $svc);
+                $data['services'][$k]['fields'] = $this->mergeListByKey($origFields, $newFields, 'name');
+                break;
+            }
+        }
+
+        foreach ($additional['locations'] ?? [] as $ov) {
+            $oid = (string)($ov['id'] ?? '');
+            if ($oid === '') {
+                continue;
+            }
+            $idx = null;
+            foreach ($data['locations'] as $k => $loc) {
+                if ((string)($loc['id'] ?? '') === $oid) {
+                    $idx = $k;
+                    break;
+                }
+            }
+            if ($idx === null) {
+                $data['locations'][] = $ov;
+                $this->logger?->info('Munich SADB overwrite: appended location', ['id' => $oid]);
+                continue;
+            }
+            $existing = $data['locations'][$idx];
+            $origRefs = $existing['extendedServiceReferences'] ?? [];
+            $newRefs = $ov['extendedServiceReferences'] ?? [];
+            $data['locations'][$idx] = array_merge($existing, $ov);
+            $data['locations'][$idx]['extendedServiceReferences'] = $this->mergeListByKey($origRefs, $newRefs, 'refId');
+            $this->logger?->info('Munich SADB overwrite: merged location', ['id' => $oid]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $originalList
+     * @param array<int, array<string, mixed>> $additionalList
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeListByKey(array $originalList, array $additionalList, string $key): array
+    {
+        $by = [];
+        foreach ($originalList as $el) {
+            if (isset($el[$key])) {
+                $by[(string)$el[$key]] = $el;
+            }
+        }
+        foreach ($additionalList as $el) {
+            if (isset($el[$key])) {
+                $by[(string)$el[$key]] = $el;
+            }
+        }
+        return array_values($by);
     }
 
     /**
@@ -349,6 +496,15 @@ class Munich
         foreach (self::DONT_SHOW_LOCATION_BY_SERVICES as $avoidByServices) {
             if (in_array((int) $mappedLocation['id'], $avoidByServices['locations'])) {
                 $mappedLocation['dontShowByServices'] = $avoidByServices['services'];
+                break;
+            }
+        }
+
+        // Mark locations that participate in the "exclusive vs mixed" disabled-services logic.
+        // Output group IDs so JumpIn with one office can auto-select the equivalent.
+        foreach (self::LOCATIONS_ALLOW_DISABLED_MIX as $group) {
+            if (in_array((int) $mappedLocation['id'], $group, true)) {
+                $mappedLocation['allowDisabledServicesMix'] = $group;
                 break;
             }
         }

@@ -95,7 +95,7 @@ class ApplicationTest extends TestCase
         // Test with custom values
         putenv('CAPTCHA_ENABLED=true');
         putenv('CAPTCHA_TOKEN_TTL=300');
-        putenv('CAPTCHA_TOKEN_SECRET=test_token_secret');
+        putenv('CAPTCHA_TOKEN_SECRET=test_token_secret_that_is_sufficiently_long');
         putenv('ALTCHA_CAPTCHA_SITE_KEY=test_site_key');
         putenv('ALTCHA_CAPTCHA_SITE_SECRET=test_site_secret');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
@@ -105,7 +105,7 @@ class ApplicationTest extends TestCase
 
         $this->assertTrue(Application::$CAPTCHA_ENABLED);
         $this->assertEquals(300, Application::$CAPTCHA_TOKEN_TTL);
-        $this->assertEquals('test_token_secret', Application::$CAPTCHA_TOKEN_SECRET);
+        $this->assertEquals('test_token_secret_that_is_sufficiently_long', Application::$CAPTCHA_TOKEN_SECRET);
         $this->assertEquals('test_site_key', Application::$ALTCHA_CAPTCHA_SITE_KEY);
         $this->assertEquals('test_site_secret', Application::$ALTCHA_CAPTCHA_SITE_SECRET);
         $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/challenge', Application::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE);

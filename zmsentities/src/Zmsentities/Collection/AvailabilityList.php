@@ -201,6 +201,16 @@ class AvailabilityList extends Base
         return $processList;
     }
 
+    public function hasDayOffOverride(): bool
+    {
+        foreach ($this as $availability) {
+            if ($availability->overridesDayOff()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function validateTimeRangesAndRules(
         \DateTimeImmutable $startDate,
         \DateTimeImmutable $endDate,
@@ -220,7 +230,7 @@ class AvailabilityList extends Base
             $errorList = array_merge(
                 $errorList,
                 $availability->validateWeekdays($startDate, $endDate, $weekday, $kind),
-                $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
+                $availability->validateStartTime($today, $tomorrow, $startDate, $selectedDate, $kind),
                 $availability->validateEndTime($startDate, $endDate),
                 $availability->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, $kind),
                 $availability->validateType($kind),

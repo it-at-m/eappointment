@@ -103,6 +103,7 @@
           </p>
           <p
             v-if="appointment && selectedProvider"
+            :id="`appointment-${appointment.processId}-displayNumber-${appointment.displayNumber}-provider-${selectedProvider.id}`"
             style="margin-bottom: 0"
           >
             <strong>{{ t("affectedAppointment") }}</strong>
@@ -138,7 +139,7 @@
         <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
         <template #body>
           <p style="margin-bottom: 16px">
-            {{ t("cancleAppointmentModalText") }}
+            {{ t("cancelAppointmentModalText") }}
           </p>
           <p
             v-if="appointment && selectedProvider"
@@ -219,6 +220,7 @@
               <div
                 v-if="selectedProvider"
                 class="m-content location-text-margin-top"
+                :id="`provider-${selectedProvider.id}`"
               >
                 <p>
                   {{ selectedProvider.organization }}<br />
@@ -230,34 +232,22 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
-                <!--                Used after the content of hint has been checked-->
-                <!--                <p-->
-                <!--                  v-if="-->
-                <!--                    selectedProvider &&-->
-                <!--                    selectedProvider.scope &&-->
-                <!--                    selectedProvider.scope.hint-->
-                <!--                  "-->
-                <!--                >-->
-                <!--                  <strong> {{ selectedProvider.scope.hint }} </strong>-->
-                <!--                </p>-->
+                <p v-if="appointment?.scope?.hint">
+                  <strong> {{ appointment.scope.hint }} </strong>
+                </p>
               </div>
+              <muc-callout
+                v-if="appointment?.scope?.infoForAppointment"
+                type="info"
+                class="callout-margin"
+              >
+                <template #content>
+                  {{ appointment.scope.infoForAppointment }}
+                </template>
+                <template #header>{{ t("appointmentHintHeader") }}</template>
+              </muc-callout>
             </div>
           </div>
-          <!--          Used after the content of infoForAppointment has been checked-->
-          <!--          <muc-callout-->
-          <!--            v-if="-->
-          <!--              appointment &&-->
-          <!--              appointment.scope &&-->
-          <!--              appointment.scope.infoForAppointment-->
-          <!--            "-->
-          <!--            type="info"-->
-          <!--          >-->
-          <!--            <template #content>-->
-          <!--              {{ appointment.scope.infoForAppointment }}-->
-          <!--            </template>-->
-
-          <!--            <template #header>{{ t("appointmentHintHeader") }}</template>-->
-          <!--          </muc-callout>-->
         </div>
       </div>
       <div
@@ -277,6 +267,7 @@
                       class="m-linklist-element m-linklist-element--external"
                       :href="getServiceBaseURL() + appointment.serviceId"
                       target="_blank"
+                      :id="`service-${appointment.serviceId}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
@@ -299,6 +290,7 @@
                     <a
                       class="m-linklist-element m-linklist-element"
                       :href="getServiceBaseURL() + subrequest.id"
+                      :id="`service-${subrequest.id}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
@@ -324,7 +316,12 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucIntro, MucModal } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucIntro,
+  MucModal,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, onMounted, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -645,6 +642,11 @@ onMounted(() => {
 
 .time-container-margin-bottom {
   margin-bottom: 64px;
+}
+
+.callout-margin {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
 }
 
 .timeBox {

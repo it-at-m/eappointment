@@ -1,5 +1,111 @@
+## Release Muc-39 (27.03.2026) 
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1038'>ZMSKVR-1038</a>] -         Oktober-Statistik-GUI - Falsche Anzeige der Kalendertage
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1121'>ZMSKVR-1121</a>] -         Fehlerhafte Fehlermeldung beim Aktivierungslink – trotz erfolgreicher Terminaktivierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1151'>ZMSKVR-1151</a>] -         Schritt 2: Termin – Hover bei inaktiven Tagen in Kalender entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1209'>ZMSKVR-1209</a>] -         Termine über Safari nicht stornierbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1216'>ZMSKVR-1216</a>] -         Termindauer bei „Eheschließung ohne Auslandsbezug“ auf 10 Min. überschrieben (statt 30 Min.)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1228'>ZMSKVR-1228</a>] -         Tastaturbedienbares Modal-Pattern einbauen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1229'>ZMSKVR-1229</a>] -         HTML-Struktur bei Callout &quot;Ausgewählter Termin&quot; korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1275'>ZMSKVR-1275</a>] -         Zeichenlänge im Mailbetreff
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1305'>ZMSKVR-1305</a>] -         Bürgerfrontend: Jumpin-Link und Button &quot;Leistung wechseln&quot;
+</li>
+</ul>
+                                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1087'>ZMSKVR-1087</a>] -         LOGIN Wartezone und Hinweis in Termin-Detailseite ergänzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1124'>ZMSKVR-1124</a>] -         Testautomatisierung erster Testfall
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1145'>ZMSKVR-1145</a>] -         Migration der CAP-Konfiguration für Cluster CAPK
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1146'>ZMSKVR-1146</a>] -         Migration der CAP-Konfiguration für Cluster CAPP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1265'>ZMSKVR-1265</a>] -         Kalender-Tag wird nicht korrekt berücksichtigt – Terminzeiten &amp; Öffnungszeiten-Link reagieren nicht auf Datumswechsel
+</li>
+</ul>
+                                                        
+## Release Muc-38 (06.03.2026) 
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1086'>ZMSKVR-1086</a>] -         Optimierung Ladereihenfolge gegen Flackern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1150'>ZMSKVR-1150</a>] -         Parent DL wird als kombinierbare DL vorgeschlagen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1207'>ZMSKVR-1207</a>] -         Serien/Ausnahmen sollen nicht Feiertage überschreiben 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1234'>ZMSKVR-1234</a>] -         Terminverschiebung durch Sachbearbeitung wird bestätigt, aber Datum/Uhrzeit nicht aktualisiert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1242'>ZMSKVR-1242</a>] -         BF: Kalenderansicht unten abgeschnitten bei 6 KWs
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1256'>ZMSKVR-1256</a>] -         ZMS Admin – Dauerhafter Ladekreis nach Versand der Mail-Funktion in der Warteschlange
+</li>
+</ul>
+                                            
 
-       
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-272'>ZMSKVR-272</a>] -         Terminvarianten Versicherungsamt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-939'>ZMSKVR-939</a>] -         Schritt 5: Bestätigung – Callout in Content-Breite
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1161'>ZMSKVR-1161</a>] -         Tabellen für neues Rollen- und Rechtekonzept anlegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1170'>ZMSKVR-1170</a>] -         Migration der bestehenden Nutzer in das neue Rollenmodell (Befüllung user_role)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1227'>ZMSKVR-1227</a>] -         Schritt 1 – Button &quot;Leistung wechseln&quot; ergänzen
+</li>
+</ul>
+                                                        
+
+
+## Release Muc-37 (13.02.2026)
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1162'>ZMSKVR-1162</a>] -         Fehlerhafte Smart-Features und Antwortlogik in Termin-E-Mails
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1258'>ZMSKVR-1258</a>] -         ZMS Bürgeransicht – Kombination von Pass-Leistungen mit anderen Leistungen (RUP)
+</li>
+</ul>
+                                            
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-168'>ZMSKVR-168</a>] -         Slow PHP Queries
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-774'>ZMSKVR-774</a>] -         BF2: Braille-Zeile: Schalterauswahl Listenansicht/Kalenderansicht unklar bezeichnet
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1123'>ZMSKVR-1123</a>] -         Zusammenführung der Warte- und Wegezeiten für Termin- &amp; Spontankunden (GUI + Excel)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1164'>ZMSKVR-1164</a>] -         Callcenter-Arbeitsplätze aus der Öffnungszeiten-Konfiguration entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1221'>ZMSKVR-1221</a>] -         Barrierefreiheit: Button &quot;Alle Leistungen anzeigen&quot; ein- und ausklappen
+</li>
+</ul>
+                                                     
     
 ## Release Muc-36 (23.01.2026)
                     

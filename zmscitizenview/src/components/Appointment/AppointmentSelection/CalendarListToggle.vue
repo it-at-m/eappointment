@@ -3,33 +3,39 @@
     <h2 id="viewToggleLabel">
       {{ t("time") }}
     </h2>
-    <div
+    <button
       class="m-toggle-switch"
-      role="switch"
-      :aria-checked="localIsListView"
-      :aria-labelledby="'viewToggleLabel'"
-      tabindex="0"
+      :class="{ 'm-toggle-switch--pressed': localIsListView }"
+      type="button"
+      :aria-label="toggleAriaLabel"
       @click="toggleView"
-      @keydown.enter.prevent="toggleView"
-      @keydown.space.prevent="toggleView"
     >
       <span
         class="m-toggle-switch__label"
         :class="{ disabled: localIsListView }"
-        >{{ t("calendarView") }}</span
+        aria-hidden="true"
       >
-      <span class="m-toggle-switch__indicator"><span></span></span>
+        {{ t("calendarView") }}
+      </span>
+      <span
+        class="m-toggle-switch__indicator"
+        aria-hidden="true"
+      >
+        <span></span>
+      </span>
       <span
         class="m-toggle-switch__label"
         :class="{ disabled: !localIsListView }"
-        >{{ t("listView") }}</span
+        aria-hidden="true"
       >
-    </div>
+        {{ t("listView") }}
+      </span>
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, withDefaults } from "vue";
+import { computed, ref, watch, withDefaults } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -51,6 +57,16 @@ watch(
     localIsListView.value = v;
   }
 );
+
+const toggleAriaLabel = computed(() => {
+  const current = localIsListView.value
+    ? props.t("listViewActiveLabel")
+    : props.t("calendarViewActiveLabel");
+  const action = localIsListView.value
+    ? props.t("switchToCalendarViewAriaLabel")
+    : props.t("switchToListViewAriaLabel");
+  return `${current} ${action}`;
+});
 
 const toggleView = () => {
   const next = !localIsListView.value;
