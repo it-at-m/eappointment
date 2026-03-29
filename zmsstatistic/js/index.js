@@ -18,8 +18,13 @@ window.$ = $;
 
 moment.locale('de')
 
-// Force https protocol
-forceHttps();
+// ZMS_STATISTIC_FORCE_HTTPS in .env: 'false' keeps HTTP (local dev); unset or any other value enforces HTTPS
+switch (process.env.ZMS_STATISTIC_FORCE_HTTPS) {
+    case 'false':
+        break;
+    default:
+        forceHttps();
+}
 
 // Say hello
 console.log("Welcome to the ZMS statistics interface...");

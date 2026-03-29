@@ -69,11 +69,12 @@ window.$ = $;
 
 moment.locale('de')
 
-// Force https protocol (controlled via ZMS_ADMIN_FORCE_HTTPS environment variable)
-// Set ZMS_ADMIN_FORCE_HTTPS=false in .env file for local development
-const forceHttpsEnabled = process.env.ZMS_ADMIN_FORCE_HTTPS !== 'false';
-if (forceHttpsEnabled) {
-    forceHttps();
+// ZMS_ADMIN_FORCE_HTTPS in .env: 'false' keeps HTTP (local dev); unset or any other value enforces HTTPS
+switch (process.env.ZMS_ADMIN_FORCE_HTTPS) {
+    case 'false':
+        break;
+    default:
+        forceHttps();
 }
 
 // Init Views
