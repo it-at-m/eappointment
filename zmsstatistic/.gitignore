@@ -20,6 +20,9 @@ public/_css/statistic.css.map
 .idea
 .parcel-cache
 coverage
+.env
+.env.local
+.env.*.local
 
 # Composer
 /vendor/
