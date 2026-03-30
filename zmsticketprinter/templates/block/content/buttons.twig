@@ -11,18 +11,19 @@
 		{% else %}
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
 				{% set button = ticketprinter.buttons|first %}
+				{% set translation = translations[button.requestId] ?? {} %}
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
 				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": ticketprinter.customText1 }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": ticketprinter.customText2 }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": translation.customText1 ?? '' }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": translation.customText2 ?? '' }) }}
     			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
     			{% endif %}
     			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
-					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translation.label ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
 				</div>
             </form>
         {% endif %}
@@ -43,15 +44,16 @@
             </div>
 		{% else %}
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
+				{% set translation = translations[button.requestId] ?? {} %}
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
                 {{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
 				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": ticketprinter.customText1 }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": ticketprinter.customText2 }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": translation.customText1 ?? '' }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": translation.customText2 ?? '' }) }}
     			{% set label = buttonLabelPrefix ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translation.label ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
 				</div>
             </form>
         {% endif %}
@@ -72,16 +74,17 @@
 			</div>
 		{% else %}
 			<form action="{{ urlGet('Process', {}, {}) }}" method="post">
+				{% set translation = translations[button.requestId] ?? {} %}
 				{{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
 				{{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
 				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": ticketprinter.customText1 }) }}
-				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": ticketprinter.customText2 }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText1]", "value": translation.customText1 ?? '' }) }}
+				{{ hiddenfield({ "name": "ticketprinter[customText2]", "value": translation.customText2 ?? '' }) }}
 				{% set label = buttonLabelPrefix ~ button.name %}
 
 				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translation.label ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
 				</div>
 			</form>
 		{% endif %}

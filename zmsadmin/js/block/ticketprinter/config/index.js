@@ -55,9 +55,7 @@ class TicketPrinterConfigView extends Component {
             generatedUrl: "",
             homeUrl: "",
             template: "default",
-            ticketPrinterName: "",
-            customText1: "",
-            customText2: ""
+            ticketPrinterName: ""
         }
     }
 
@@ -81,14 +79,6 @@ class TicketPrinterConfigView extends Component {
 
         if (this.state.template !== 'default') {
             parameters.push(`template=${this.state.template}`)
-        }
-
-        if (this.state.customText1) {
-            parameters.push(`ticketprinter[customText1]=${encodeURIComponent(this.state.customText1)}`)
-        }
-
-        if (this.state.customText2) {
-            parameters.push(`ticketprinter[customText2]=${encodeURIComponent(this.state.customText2)}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -225,14 +215,6 @@ class TicketPrinterConfigView extends Component {
             })
         }
 
-        const onCustomText1Change = (name, value) => {
-            this.setState({ customText1: value })
-        }
-
-        const onCustomText2Change = (name, value) => {
-            this.setState({ customText2: value })
-        }
-
         const generatedUrl = this.buildUrl()
 
         return (
@@ -271,24 +253,6 @@ class TicketPrinterConfigView extends Component {
                                 ]}
                                 value={this.state.template}
                                 onChange={onTemplateStatusChange} />
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup key="ticketprinter-customText1">
-                        <Label attributes={{ "htmlFor": "ticketprinterCustomText1" }} value="Custom Text 1 (optional)"></Label>
-                        <Controls>
-                            <Inputs.Text
-                                attributes={{ "id": "ticketprinterCustomText1" }}
-                                onChange={onCustomText1Change}
-                            />
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup key="ticketprinter-customText2">
-                        <Label attributes={{ "htmlFor": "ticketprinterCustomText2" }} value="Custom Text 2 (optional)"></Label>
-                        <Controls>
-                            <Inputs.Text
-                                attributes={{ "id": "ticketprinterCustomText2" }}
-                                onChange={onCustomText2Change}
-                            />
                         </Controls>
                     </FormGroup>
                     <FormGroup key="ticketprinter-url">
