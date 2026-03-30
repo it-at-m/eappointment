@@ -33,7 +33,7 @@ class Index extends BaseController
         $defaultTemplate = $this->getDefaultTemplate($validator);
         $languageConfig = $this->getLanguageConfig($validator);
 
-        $currentLang = $this->getCurrentLanguage($validator);
+        $currentLang = $this->getCurrentLanguage($validator, $languageConfig);
         $queryString = $this->getQueryStringWithLang();
 
         $translations = $this->getTranslations($languageConfig, $currentLang);
@@ -107,9 +107,11 @@ class Index extends BaseController
         return json_decode($decoded, true);
     }
 
-    private function getCurrentLanguage($validator)
+    private function getCurrentLanguage($validator, $languageConfig)
     {
-        return $validator->getParameter("lang")->isString()->getValue();
+        $lang = $validator->getParameter("lang")->isString()->getValue();
+
+        return $lang ?: ($languageConfig['defaultLanguage'] ?? 'de');
     }
 
     private function getQueryStringWithLang()
@@ -129,10 +131,8 @@ class Index extends BaseController
             return $translations;
         }
 
-        $effectiveLang = $currentLang ?: ($languageConfig['defaultLanguage'] ?? 'de');
-
         foreach ($languageConfig['languages'] as $language) {
-            if (($language['language'] ?? null) !== $effectiveLang) {
+            if (($language['language'] ?? null) !== $currentLang) {
                 continue;
             }
 
@@ -147,7 +147,7 @@ class Index extends BaseController
             }
         }
 
-        if ($effectiveLang === 'de') {
+        if ($currentLang === 'de') {
             $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
         }
 
@@ -156,7 +156,9 @@ class Index extends BaseController
 
     private function getAvailableLanguages($languageConfig)
     {
-        return array_column($languageConfig['languages'] ?? [], 'language');
+        return array_values(array_unique(
+            array_column($languageConfig['languages'] ?? [], 'language')
+        ));
     }
 
     private function getDepartment($scope)
