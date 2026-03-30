@@ -13,6 +13,7 @@ import PageLayout from './layouts/page'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 import ExceptionHandler from '../../lib/exceptionHandler';
 import BaseView from '../../lib/baseview';
+import { buildConfirmDialogHtml } from '../../lib/confirmDialog';
 
 import {
     getInitialState,
@@ -35,31 +36,6 @@ const tempId = (() => {
         return `__temp__${lastId}`
     }
 })()
-
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(str)));
-    return div.innerHTML;
-}
-
-function buildConfirmDialogHtml(title, message, okButtonText = 'Bestätigen') {
-    const safeTitle = escapeHtml(title);
-    const safeOk = escapeHtml(okButtonText);
-    // NOTE: message may contain intentional HTML (e.g. <br>); callers must pass only trusted markup.
-    return '<div class="lightbox__content" role="dialog" aria-modal="true"><section tabindex="0" class="board dialog" data-reload="">' +
-        '<div class="header board__header">' +
-        '<h2 tabindex="0" class="board__heading">' +
-        '<i aria-hidden="true" title="' + safeTitle + '" class="fas fa-info-circle"></i> ' + safeTitle + '</h2>' +
-        '</div>' +
-        '<div tabindex="0" class="body board__body">' +
-        '<p>' + message + '</p>' +
-        '<div class="form-actions">' +
-        '<a data-action-abort="" class="button button--diamond button-abort" href="#">Abbruch</a>' +
-        '<a data-action-ok="" class="button button--destructive button-ok" href="#">' + safeOk + '</a>' +
-        '</div>' +
-        '</div>' +
-        '</section></div>';
-}
 
 class AvailabilityPage extends Component {
     constructor(props) {
@@ -279,7 +255,7 @@ class AvailabilityPage extends Component {
             () => {
                 showSpinner();
                 $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                    method: 'GET'
+                    method: 'DELETE'
                 }).done(() => {
                     const newState = deleteAvailabilityInState(this.state, availability);
 
@@ -308,11 +284,12 @@ class AvailabilityPage extends Component {
                     }
                     hideSpinner();
                 }).fail(err => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.error('delete error', err);
@@ -647,11 +624,12 @@ class AvailabilityPage extends Component {
                     }
                 },
                 (err) => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.log('conflict error', err);
@@ -707,11 +685,12 @@ class AvailabilityPage extends Component {
             if (err.status === 404) {
                 console.log('404 error, ignored')
             } else {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
-                        message: err.responseText
+                        message: responseText
                     });
                 } else {
                     console.log('reading calculated availability list error', err);

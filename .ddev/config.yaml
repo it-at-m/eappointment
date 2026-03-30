@@ -5,7 +5,8 @@ php_version: "8.3"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
-additional_fqdns: []
+additional_fqdns:
+  - keycloak
 database:
   type: mariadb
   version: "10.4"
@@ -13,6 +14,7 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment:
   - TZ=Europe/Berlin
+  - DISPLAY=:99
 nodejs_version: "18"
 hooks:
   pre-start:
@@ -22,6 +24,9 @@ hooks:
     - exec: "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
     - exec: "git config --global --add safe.directory /var/www/html"
+    - exec: "ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true"
+    - exec: "if [ ! -f /usr/local/bin/geckodriver ]; then GECKODRIVER_VERSION=v0.34.0 && wget -q -O /tmp/geckodriver.tar.gz \"https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz\" && tar -xzf /tmp/geckodriver.tar.gz -C /tmp && mv /tmp/geckodriver /usr/local/bin/geckodriver && chmod +x /usr/local/bin/geckodriver && rm /tmp/geckodriver.tar.gz; fi"
+    - exec: "if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi"
 
 timezone: Europe/Berlin
 
@@ -177,6 +182,10 @@ webimage_extra_packages:
   - python3-colorama
   - make
   - php8.3-calendar
+  - firefox-esr
+  - xvfb
+  - x11-utils
+  - x11-xserver-utils
 
 # Extra Debian packages that are needed in the webimage can be added here
 
