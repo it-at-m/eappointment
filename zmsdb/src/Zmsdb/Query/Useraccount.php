@@ -60,6 +60,25 @@ class Useraccount extends Base implements MappingInterface
         ORDER BY useraccount.Name, userAssignment.`behoerdenid`
     ';
 
+    /**
+     * Build an SQL expression that checks whether the current useraccount has
+     * a permission via user_role -> role_permission -> permission.
+     */
+    protected function permissionExists(string $permissionName)
+    {
+        $quoted = "'" . addslashes($permissionName) . "'";
+        return self::expression(
+            'EXISTS('
+            . 'SELECT 1 '
+            . 'FROM user_role ur '
+            . 'JOIN role_permission rp ON rp.role_id = ur.role_id '
+            . 'JOIN permission p ON p.id = rp.permission_id '
+            . 'WHERE ur.user_id = useraccount.NutzerID '
+            . 'AND p.name = ' . $quoted
+            . ')'
+        );
+    }
+
     public function getEntityMapping()
     {
         return [
@@ -78,34 +97,34 @@ class Useraccount extends Base implements MappingInterface
             'rights__sms' => self::expression('`useraccount`.`Berechtigung` >= 10'),
             'rights__audit' => self::expression('`useraccount`.`Berechtigung` = 5 OR `useraccount`.`Berechtigung` = 90'),
             'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
-            'permissions__appointment' => self::expression('0'),
-            'permissions__availability' => self::expression('0'),
-            'permissions__calldisplay' => self::expression('0'),
-            'permissions__cherrypick' => self::expression('0'),
-            'permissions__cluster' => self::expression('0'),
-            'permissions__config' => self::expression('0'),
-            'permissions__counter' => self::expression('0'),
-            'permissions__customersearch' => self::expression('0'),
-            'permissions__dayoff' => self::expression('0'),
-            'permissions__department' => self::expression('0'),
-            'permissions__emergency' => self::expression('0'),
-            'permissions__finishedqueue' => self::expression('0'),
-            'permissions__finishedqueuepast' => self::expression('0'),
-            'permissions__logs' => self::expression('0'),
-            'permissions__mailtemplates' => self::expression('0'),
-            'permissions__missedqueue' => self::expression('0'),
-            'permissions__openqueue' => self::expression('0'),
-            'permissions__organisation' => self::expression('0'),
-            'permissions__overviewcalendar' => self::expression('0'),
-            'permissions__parkedqueue' => self::expression('0'),
-            'permissions__restrictedscope' => self::expression('0'),
-            'permissions__scope' => self::expression('0'),
-            'permissions__source' => self::expression('0'),
-            'permissions__statistic' => self::expression('0'),
-            'permissions__ticketprinter' => self::expression('0'),
-            'permissions__useraccount' => self::expression('0'),
-            'permissions__waitingqueue' => self::expression('0'),
-            'permissions__superuser' => self::expression('0'),
+            'permissions__appointment' => $this->permissionExists('appointment'),
+            'permissions__availability' => $this->permissionExists('availability'),
+            'permissions__calldisplay' => $this->permissionExists('calldisplay'),
+            'permissions__cherrypick' => $this->permissionExists('cherrypick'),
+            'permissions__cluster' => $this->permissionExists('cluster'),
+            'permissions__config' => $this->permissionExists('config'),
+            'permissions__counter' => $this->permissionExists('counter'),
+            'permissions__customersearch' => $this->permissionExists('customersearch'),
+            'permissions__dayoff' => $this->permissionExists('dayoff'),
+            'permissions__department' => $this->permissionExists('department'),
+            'permissions__emergency' => $this->permissionExists('emergency'),
+            'permissions__finishedqueue' => $this->permissionExists('finishedqueue'),
+            'permissions__finishedqueuepast' => $this->permissionExists('finishedqueuepast'),
+            'permissions__logs' => $this->permissionExists('logs'),
+            'permissions__mailtemplates' => $this->permissionExists('mailtemplates'),
+            'permissions__missedqueue' => $this->permissionExists('missedqueue'),
+            'permissions__openqueue' => $this->permissionExists('openqueue'),
+            'permissions__organisation' => $this->permissionExists('organisation'),
+            'permissions__overviewcalendar' => $this->permissionExists('overviewcalendar'),
+            'permissions__parkedqueue' => $this->permissionExists('parkedqueue'),
+            'permissions__restrictedscope' => $this->permissionExists('restrictedscope'),
+            'permissions__scope' => $this->permissionExists('scope'),
+            'permissions__source' => $this->permissionExists('source'),
+            'permissions__statistic' => $this->permissionExists('statistic'),
+            'permissions__ticketprinter' => $this->permissionExists('ticketprinter'),
+            'permissions__useraccount' => $this->permissionExists('useraccount'),
+            'permissions__waitingqueue' => $this->permissionExists('waitingqueue'),
+            'permissions__superuser' => $this->permissionExists('superuser'),
         ];
     }
 
