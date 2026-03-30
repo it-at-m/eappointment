@@ -64,7 +64,7 @@ class Index extends BaseController
             $template->getTemplate(),
             [
                 'debug' => \App::DEBUG,
-                'refreshInSeconds' => 3000,
+                'refreshInSeconds' => 30,
                 'urlQueryString' => $queryString,
                 'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
