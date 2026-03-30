@@ -64,7 +64,7 @@ class Index extends BaseController
             $template->getTemplate(),
             [
                 'debug' => \App::DEBUG,
-                'refreshInSeconds' => 30,
+                'refreshInSeconds' => 3000,
                 'urlQueryString' => $queryString,
                 'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
@@ -121,24 +121,36 @@ class Index extends BaseController
         return str_replace('/&', '', $queryString ?? '');
     }
 
-    private function getTranslations($languageConfig, $currentLang)
-    {
-        $translations = ['printText' => ''];
-        if ($languageConfig) {
-            foreach ($languageConfig['languages'] as $language) {
-                if ($language['language'] !== $currentLang) {
-                    continue;
-                }
-                foreach ($language['translations'] as $requestId => $translation) {
-                    $translations[$requestId] = $translation;
-                }
-            }
-            if (empty($currentLang) || $currentLang === 'de') {
-                $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
-            }
-        }
+private function getTranslations($languageConfig, $currentLang)
+{
+    $translations = ['printText' => ''];
+
+    if (!$languageConfig || empty($languageConfig['languages'])) {
         return $translations;
     }
+
+    foreach ($languageConfig['languages'] as $language) {
+        if (($language['language'] ?? null) !== $currentLang) {
+            continue;
+        }
+
+        if (!empty($language['services'])) {
+            foreach ($language['services'] as $serviceId => $serviceData) {
+                $translations[$serviceId] = [
+                    'label' => $serviceData['label'] ?? '',
+                    'customText1' => $serviceData['customText1'] ?? '',
+                    'customText2' => $serviceData['customText2'] ?? '',
+                ];
+            }
+        }
+    }
+
+    if (empty($currentLang) || $currentLang === 'de') {
+        $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
+    }
+
+    return $translations;
+}
 
     private function getAvailableLanguages($languageConfig)
     {
