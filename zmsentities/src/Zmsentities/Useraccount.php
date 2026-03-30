@@ -153,7 +153,7 @@ class Useraccount extends Schema\Entity
             $hasPermission = $permissions?->$required?->get() ?? false;
             $hasRight = $rights?->$required?->get() ?? false;
 
-            if (!($hasPermission || $hasRight)) {
+            if (!$hasPermission && !$hasRight) {
                 return false;
             }
         }
