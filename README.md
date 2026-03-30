@@ -200,13 +200,6 @@ Using `localhost` doesn't work because inside the container, `localhost` refers 
 
 You need to add `keycloak` to your system's hosts file so it resolves to `127.0.0.1`:
 
-**macOS:**
-```bash
-echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
-```
-Enter your Mac password when prompted.
-
-**Ubuntu/Linux:**
 ```bash
 echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
@@ -222,10 +215,6 @@ echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 
 **Verify it worked:**
 ```bash
-# macOS/Linux
-ping -c 1 keycloak
-
-# Windows
 ping keycloak
 ```
 You should see it resolve to `127.0.0.1`.
@@ -237,6 +226,15 @@ podman restart zms-keycloak
 
 # DDEV
 ddev restart
+```
+
+### Podman (Linux)
+
+Podman merges the host `/etc/hosts` into containers, so `keycloak` may resolve to `127.0.0.1` inside containers and break Keycloak. Add the following to `~/.config/containers/containers.conf`, then restart containers:
+
+```ini
+[containers]
+base_hosts_file="none"
 ```
 
 ## Import Database
