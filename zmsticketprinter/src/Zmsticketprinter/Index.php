@@ -121,36 +121,36 @@ class Index extends BaseController
         return str_replace('/&', '', $queryString ?? '');
     }
 
-private function getTranslations($languageConfig, $currentLang)
-{
-    $translations = ['printText' => ''];
+    private function getTranslations($languageConfig, $currentLang)
+    {
+        $translations = ['printText' => ''];
 
-    if (!$languageConfig || empty($languageConfig['languages'])) {
-        return $translations;
-    }
-
-    foreach ($languageConfig['languages'] as $language) {
-        if (($language['language'] ?? null) !== $currentLang) {
-            continue;
+        if (!$languageConfig || empty($languageConfig['languages'])) {
+            return $translations;
         }
 
-        if (!empty($language['services'])) {
-            foreach ($language['services'] as $serviceId => $serviceData) {
-                $translations[$serviceId] = [
+        foreach ($languageConfig['languages'] as $language) {
+            if (($language['language'] ?? null) !== $currentLang) {
+                continue;
+            }
+
+            if (!empty($language['services'])) {
+                foreach ($language['services'] as $serviceId => $serviceData) {
+                    $translations[$serviceId] = [
                     'label' => $serviceData['label'] ?? '',
                     'customText1' => $serviceData['customText1'] ?? '',
                     'customText2' => $serviceData['customText2'] ?? '',
-                ];
+                    ];
+                }
             }
         }
-    }
 
-    if (empty($currentLang) || $currentLang === 'de') {
-        $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
-    }
+        if (empty($currentLang) || $currentLang === 'de') {
+            $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
+        }
 
-    return $translations;
-}
+        return $translations;
+    }
 
     private function getAvailableLanguages($languageConfig)
     {
