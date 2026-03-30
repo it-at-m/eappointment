@@ -129,23 +129,25 @@ class Index extends BaseController
             return $translations;
         }
 
+        $effectiveLang = $currentLang ?: ($languageConfig['defaultLanguage'] ?? 'de');
+
         foreach ($languageConfig['languages'] as $language) {
-            if (($language['language'] ?? null) !== $currentLang) {
+            if (($language['language'] ?? null) !== $effectiveLang) {
                 continue;
             }
 
             if (!empty($language['services'])) {
-                foreach ($language['services'] as $serviceId => $serviceData) {
-                    $translations[$serviceId] = [
-                    'label' => $serviceData['label'] ?? '',
-                    'customText1' => $serviceData['customText1'] ?? '',
-                    'customText2' => $serviceData['customText2'] ?? '',
+                foreach ($language['services'] as $requestId => $serviceData) {
+                    $translations[$requestId] = [
+                        'label' => $serviceData['label'] ?? null,
+                        'customText1' => $serviceData['customText1'] ?? '',
+                        'customText2' => $serviceData['customText2'] ?? '',
                     ];
                 }
             }
         }
 
-        if (empty($currentLang) || $currentLang === 'de') {
+        if ($effectiveLang === 'de') {
             $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
         }
 
