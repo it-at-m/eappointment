@@ -136,7 +136,7 @@ class Useraccount extends Schema\Entity
     public function hasRights(array $requiredRights): bool
     {
         if ($this->isSuperUser()) {
-          return true;
+            return true;
         }
 
         $permissions = $this->toProperty()->permissions ?? null;
@@ -185,8 +185,8 @@ class Useraccount extends Schema\Entity
 
     public function isSuperUser(): bool
     {
-        return $this->toProperty()->rights?->superuser?->get() 
-            || $this->toProperty()->permissions?->superuser?->get() 
+        return $this->toProperty()->rights?->superuser?->get()
+            || $this->toProperty()->permissions?->superuser?->get()
             ?? false;
     }
 
