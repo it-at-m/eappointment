@@ -199,6 +199,14 @@ class Useraccount extends Base implements MappingInterface
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
             strtotime($data[$this->getPrefixed("lastLogin")]) :
             null;
+
+        $permissionsPrefix = $this->getPrefixed('permissions__');
+        foreach ($data as $key => $value) {
+            if (0 === strpos($key, $permissionsPrefix)) {
+                $data[$key] = (bool) $value;
+            }
+        }
+
         return $data;
     }
 
