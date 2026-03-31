@@ -15,7 +15,23 @@ class Role extends Base implements MappingInterface
             'id' => 'role.id',
             'name' => 'role.name',
             'description' => 'role.description',
+            'permissions' => self::expression(
+                '(SELECT GROUP_CONCAT(DISTINCT p.name ORDER BY p.name SEPARATOR \',\') '
+                . 'FROM role_permission rp '
+                . 'JOIN permission p ON p.id = rp.permission_id '
+                . 'WHERE rp.role_id = role.id)'
+            ),
         ];
+    }
+
+    public function postProcess($data)
+    {
+        $permissionsKey = $this->getPrefixed('permissions');
+        $rawPermissions = $data[$permissionsKey] ?? null;
+        $data[$permissionsKey] = ($rawPermissions === null || $rawPermissions === '')
+            ? []
+            : explode(',', (string) $rawPermissions);
+        return $data;
     }
 
     public function addConditionName(string $name): self
