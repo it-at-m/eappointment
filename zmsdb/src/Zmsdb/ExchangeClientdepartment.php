@@ -18,9 +18,6 @@ class ExchangeClientdepartment extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config())->readEntity();
-        $costs = $config->getNotificationPreferences()['costs'];
-
         $department = (new Department())->readEntity($subjectid);
         $organisation = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
@@ -28,8 +25,6 @@ class ExchangeClientdepartment extends Base
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date');
-        $entity->addDictionaryEntry('notificationscount');
-        $entity->addDictionaryEntry('notificationscost');
         $entity->addDictionaryEntry('clientscount');
         $entity->addDictionaryEntry('missed');
         $entity->addDictionaryEntry('withappointment');
@@ -50,7 +45,6 @@ class ExchangeClientdepartment extends Base
                     ]
                 );
             foreach ($raw as $entry) {
-                $entry['notificationscost'] = $entry['notificationscount'] * $costs;
                 $entity->addDataSet(array_values($entry));
             }
         }

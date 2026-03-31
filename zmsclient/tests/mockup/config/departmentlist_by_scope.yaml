@@ -23,11 +23,6 @@ response:
       "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/department.json",
         "id": "74",
-        "name": "Bürgeramt",
-        "preferences": {
-          "notifications": {
-            "enabled": "1"
-          }
-        }
+        "name": "Bürgeramt"
       }
     }

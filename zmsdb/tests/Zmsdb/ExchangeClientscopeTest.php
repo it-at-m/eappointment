@@ -13,12 +13,12 @@ class ExchangeClientscopeTest extends Base
         $query = new Query();
         $entity = $query->readEntity(141, new DateTime('2016-04-01'), new DateTime('2016-04-30'), 'day');
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(20, count($entity->data));
+        $this->assertEquals(1, count($entity->data));
         $this->assertEquals(["141"], $entity->data[0][0]); // scopeids
-        $this->assertEquals(84, $entity->data[0][4]); // clients COUNT
-        $this->assertEquals(16, $entity->data[0][5]); // clients missed COUNT
-        $this->assertEquals(84, $entity->data[0][6]); // clients with appointment COUNT
-        $this->assertEquals(61, $entity->data[0][8]); // requests COUNT
+        $this->assertEquals(84, $entity->data[0][2]); // clients COUNT
+        $this->assertEquals(16, $entity->data[0][3]); // clients missed COUNT
+        $this->assertEquals(84, $entity->data[0][4]); // clients with appointment COUNT
+        $this->assertEquals(61, $entity->data[0][6]); // requests COUNT
     }
 
     public function testSubjectList()

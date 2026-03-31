@@ -292,8 +292,6 @@
                         "infoForAllAppointments": "",
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": true,
-                        "notificationConfirmationEnabled": true,
-                        "notificationHeadsUpEnabled": true,
                         "reservationDuration": "5",
                         "startInDaysDefault": "2"
                     },
@@ -312,11 +310,6 @@
                         "telephoneActivated": true,
                         "telephoneRequired": false
                     },
-                    "notifications": {
-                        "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
-                        "headsUpTime": 15,
-                        "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
-                    },
                     "queue": {
                         "callCountMax": 3,
                         "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
@@ -332,11 +325,7 @@
                     },
                     "ticketprinter": {
                         "buttonName": "Bürgeramt",
-                        "confirmationEnabled": true,
-                        "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
-                        "notificationsAmendmentEnabled": true,
-                        "notificationsEnabled": true,
-                        "notificationsDelay": 30
+                        "deactivatedText": "Die Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis."
                     },
                     "workstation": {
                         "emergencyEnabled": false,
@@ -467,54 +456,6 @@
                                     ],
                                     "description": "true if more than one timeslot per appointment is allowed",
                                     "default": true
-                                },
-                                "notificationConfirmationEnabled": {
-                                    "oneOf": [
-                                        {
-                                            "type": "null"
-                                        },
-                                        {
-                                            "type": "number",
-                                            "enum": [0, 1]
-                                        },
-                                        {
-                                            "type": "boolean"
-                                        },
-                                        {
-                                            "type": "string",
-                                            "pattern": "^[01]$"
-                                        },
-                                        {
-                                            "type": "string",
-                                            "enum": ["true", "false"]
-                                        }
-                                    ],
-                                    "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convenient preferences, see department for origin)",
-                                    "default": false
-                                },
-                                "notificationHeadsUpEnabled": {
-                                    "oneOf": [
-                                        {
-                                            "type": "null"
-                                        },
-                                        {
-                                            "type": "number",
-                                            "enum": [0, 1]
-                                        },
-                                        {
-                                            "type": "boolean"
-                                        },
-                                        {
-                                            "type": "string",
-                                            "pattern": "^[01]$"
-                                        },
-                                        {
-                                            "type": "string",
-                                            "enum": ["true", "false"]
-                                        }
-                                    ],
-                                    "description": "true if client should get a notification as reminder (Convenient preferences, see department for origin)",
-                                    "default": false
                                 },
                                 "reservationDuration": {
                                     "oneOf": [
@@ -712,27 +653,6 @@
                                 }
                             }
                         },
-                        "notifications": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "confirmationContent": {
-                                    "type": "string",
-                                    "description": "text to send to client to confirm the appointment",
-                                    "default": ""
-                                },
-                                "headsUpTime": {
-                                    "type": "number",
-                                    "description": "minutes before call to send a sms to the client",
-                                    "default": 15
-                                },
-                                "headsUpContent": {
-                                    "type": "string",
-                                    "description": "text to send a short time before a call",
-                                    "default": ""
-                                }
-                            }
-                        },
                         "queue": {
                             "type": "object",
                             "additionalProperties": false,
@@ -811,39 +731,10 @@
                                     "description": "name\/value of button in ticketprinter",
                                     "default": ""
                                 },
-                                "confirmationEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
-                                    ],
-                                    "description": "true if client should get a notification to confirm that notifications are enabled for him\/her",
-                                    "default": false
-                                },
                                 "deactivatedText": {
                                     "type": "string",
                                     "description": "text to display on the ticket printer, if all ticket printers are disabled",
                                     "default": ""
-                                },
-                                "notificationsAmendmentEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
-                                    ],
-                                    "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
-                                    "default": false
-                                },
-                                "notificationsEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
-                                    ],
-                                    "description": "true if notifications for calling up clients are enabled. A client is allowed to enter a telephone number if waitingtime is greater than notificationDelay.",
-                                    "default": false
-                                },
-                                "notificationsDelay": {
-                                    "type": "number",
-                                    "description": "minutes of calculated waiting time before a client is able to enter a notification address",
-                                    "default": 20
                                 }
                             }
                         },
@@ -1110,13 +1001,6 @@
                         },
                         "scope": {
                             "description": "Allow editing scopes",
-                            "type": [
-                                "boolean",
-                                "number"
-                            ]
-                        },
-                        "sms": {
-                            "description": "Allow sending SMS",
                             "type": [
                                 "boolean",
                                 "number"
