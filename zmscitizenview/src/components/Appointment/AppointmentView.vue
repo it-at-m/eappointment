@@ -681,27 +681,44 @@ const changeStep = (step: string) => {
  * Creation of a map that prepares the services and their counts for the backend call.
  */
 const setServices = () => {
-  selectedServiceMap.value = new Map<string, number>();
-  if (selectedService.value) {
-    if (selectedService.value.count) {
-      selectedServiceMap.value.set(
-        selectedService.value.id,
-        selectedService.value.count
-      );
-    }
-
-    if (selectedService.value.subServices) {
-      selectedService.value.subServices.forEach((subservice) => {
-        if (subservice.count > 0) {
-          selectedServiceMap.value.set(
-            subservice.id.toString(),
-            subservice.count
-          );
-        }
-      });
-    }
-    increaseCurrentView();
+  if (!selectedService.value) {
+    return;
   }
+  const { serviceIds, serviceCounts } = getOrderedSelectedServices();
+  selectedServiceMap.value = new Map<string, number>(
+    serviceIds.map((id, index) => [id, serviceCounts[index]])
+  );
+  increaseCurrentView();
+};
+
+const getOrderedSelectedServices = (): {
+  serviceIds: string[];
+  serviceCounts: number[];
+} => {
+  const serviceIds: string[] = [];
+  const serviceCounts: number[] = [];
+
+  if (selectedService.value?.count) {
+    // Keep primary service first in every payload sent to the API.
+    serviceIds.push(selectedService.value.id.toString());
+    serviceCounts.push(selectedService.value.count);
+  }
+
+  selectedService.value?.subServices?.forEach((subservice) => {
+    if (subservice.count > 0) {
+      serviceIds.push(subservice.id.toString());
+      serviceCounts.push(subservice.count);
+    }
+  });
+
+  if (serviceIds.length === 0) {
+    return {
+      serviceIds: Array.from(selectedServiceMap.value.keys()),
+      serviceCounts: Array.from(selectedServiceMap.value.values()),
+    };
+  }
+
+  return { serviceIds, serviceCounts };
 };
 
 const setRebookData = () => {
@@ -740,11 +757,13 @@ const nextReserveAppointment = () => {
   captchaError.value = false;
   rebookOrCancelDialog.value = false;
 
+  const { serviceIds, serviceCounts } = getOrderedSelectedServices();
+
   reserveAppointment(
     props.globalState,
     selectedTimeslot.value,
-    Array.from(selectedServiceMap.value.keys()),
-    Array.from(selectedServiceMap.value.values()),
+    serviceIds,
+    serviceCounts,
     selectedProvider.value?.id ?? "",
     captchaToken.value ?? undefined
   )
@@ -1308,6 +1327,10 @@ onMounted(() => {
           selectedService.value = localStorageData.selectedService;
           selectedServiceMap.value = new Map(
             Object.entries(localStorageData.selectedServiceMap)
+          );
+          const { serviceIds, serviceCounts } = getOrderedSelectedServices();
+          selectedServiceMap.value = new Map<string, number>(
+            serviceIds.map((id, index) => [id, serviceCounts[index]])
           );
           selectedProvider.value = localStorageData.selectedProvider;
           selectedTimeslot.value = localStorageData.selectedTimeslot;
