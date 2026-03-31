@@ -157,21 +157,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getProvider()->getRequestList();
     }
 
-    public function getNotificationPreferences()
-    {
-        return $this->toProperty()->preferences->notifications->get();
-    }
-
-    public function getConfirmationContent()
-    {
-        return $this->toProperty()->preferences->notifications->confirmationContent->get();
-    }
-
-    public function getHeadsUpContent()
-    {
-        return $this->toProperty()->preferences->notifications->headsUpContent->get();
-    }
-
     public function getPreference($preferenceKey, $index, $isBool = false, $default = null)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
@@ -320,18 +305,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         $emailFrom = $this->getPreference('client', 'emailFrom');
         return ($emailFrom) ? true : false;
-    }
-
-    public function hasNotificationEnabled()
-    {
-        $notificationEnabled = $this->getPreference('appointment', 'notificationConfirmationEnabled');
-        return ($notificationEnabled) ? true : false;
-    }
-
-    public function hasNotificationReminderEnabled()
-    {
-        $hasReminderEnabled = $this->getPreference('appointment', 'notificationHeadsUpEnabled');
-        return ($hasReminderEnabled) ? true : false;
     }
 
     public function isEmailRequired()

@@ -61,16 +61,5 @@ class ProcessDelete extends BaseController
                     ['initiator' => 'admin']
                 )->getEntity();
         }
-        #sms notifications for clients with and without appointment if telephone number is given
-        if (
-            $process->scope->hasNotificationEnabled() &&
-            $process->getFirstClient()->hasTelephone()
-        ) {
-            \App::$http
-                ->readPostResult(
-                    '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/notification/',
-                    $process
-                )->getEntity();
-        }
     }
 }

@@ -16,7 +16,6 @@ import log from "bo-zmsentities/schema/dereferenced/log.json"
 import mail from "bo-zmsentities/schema/dereferenced/mail.json"
 import mimepart from "bo-zmsentities/schema/dereferenced/mimepart.json"
 import metaresult from "bo-zmsentities/schema/dereferenced/metaresult.json"
-import notification from "bo-zmsentities/schema/dereferenced/notification.json"
 import organisation from "bo-zmsentities/schema/dereferenced/organisation.json"
 import owner from "bo-zmsentities/schema/dereferenced/owner.json"
 import process from "bo-zmsentities/schema/dereferenced/process.json"
@@ -33,4 +32,4 @@ import ticketprinter from "bo-zmsentities/schema/dereferenced/ticketprinter.json
 import useraccount from "bo-zmsentities/schema/dereferenced/useraccount.json"
 import workstation from "bo-zmsentities/schema/dereferenced/workstation.json"
 
-export default { apikey, appointment, availability, calendar, calldisplay, client, cluster, config, contact, day, dayoff, department, exchange, link, log, mail, mimepart, metaresult, notification, organisation, owner, process, provider, queue, request, requestrelation, scope, session, slot, source, status, ticketprinter, useraccount, workstation }
+export default { apikey, appointment, availability, calendar, calldisplay, client, cluster, config, contact, day, dayoff, department, exchange, link, log, mail, mimepart, metaresult, organisation, owner, process, provider, queue, request, requestrelation, scope, session, slot, source, status, ticketprinter, useraccount, workstation }

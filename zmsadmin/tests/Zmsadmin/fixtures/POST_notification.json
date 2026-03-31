@@ -63,7 +63,6 @@
                     "familyName": "S4524",
                     "email": "test@example.com",
                     "emailSendCount": "0",
-                    "notificationsSendCount": "0",
                     "surveyAccepted": "0",
                     "telephone": ""
                 }
@@ -108,14 +107,6 @@
                 "street": "Otto-Suhr-Allee 100, 10585 Berlin",
                 "country": "Germany",
                 "name": ""
-            },
-            "preferences": {
-                "notifications": {
-                    "enabled": "1",
-                    "identification": "test@example.com",
-                    "sendConfirmationEnabled": "1",
-                    "sendReminderEnabled": "1"
-                }
             }
         }
     }

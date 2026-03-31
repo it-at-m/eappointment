@@ -35,9 +35,6 @@
       "oldestSeconds": "479",
       "newestSeconds": "446"
     },
-    "notification": {
-      "queueCount": "0"
-    },
     "version": {
       "major": "2",
       "minor": "24",

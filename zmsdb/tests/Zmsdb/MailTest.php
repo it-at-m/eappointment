@@ -108,15 +108,7 @@ class MailTest extends Base
                 "familyName" => "Test Entity",
                 ],
             "department" => [
-                "id" => 72,
-                "preferences" => [
-                    "notifications" => [
-                        "enabled" => true,
-                        "identification" => "terminvereinbarung@mitte.berlin.de",
-                        "sendConfirmationEnabled" => true,
-                        "sendReminderEnabled" => true
-                    ]
-                ]
+                "id" => 72
             ],
             "multipart" => array(
                 [
@@ -176,12 +168,6 @@ class MailTest extends Base
                             "telephoneActivated" => "1",
                             "telephoneRequired" => "1"
                         ],
-                        "notifications" => [
-                            "confirmationContent" => "",
-                            "enabled" => "1",
-                            "headsUpContent" => "",
-                            "headsUpTime" => "0"
-                        ],
                         "queue" => [
                             "callCountMax" => "0",
                             "callDisplayText" => "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP => Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter =>\r\nhttp =>//www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -196,10 +182,7 @@ class MailTest extends Base
                             "label" => ""
                         ],
                         "ticketprinter" => [
-                            "confirmationEnabled" => "0",
-                            "deactivatedText" => "",
-                            "notificationsAmendmentEnabled" => "0",
-                            "notificationsDelay" => "0"
+                            "deactivatedText" => ""
                         ],
                     ],
                     "contact" => [
