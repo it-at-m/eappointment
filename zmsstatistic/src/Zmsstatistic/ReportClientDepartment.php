@@ -38,27 +38,17 @@ class ReportClientDepartment extends BaseController
           ->getEntity();
 
         $exchangeClient = null;
-        $exchangeNotification = null;
         if (isset($args['period'])) {
             $exchangeClient = \App::$http
                 ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/' . $args['period'] . '/')
                 ->getEntity()
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
-
-            $exchangeNotification = \App::$http
-                ->readGetResult(
-                    '/warehouse/notificationdepartment/' . $this->department->id . '/' . $args['period'] . '/',
-                    ['groupby' => 'month']
-                )
-                ->getEntity()
-                ->toHashed();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'clientdepartment';
-            $args['reports'][] = $exchangeNotification;
             $args['reports'][] = $exchangeClient;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
@@ -79,7 +69,6 @@ class ReportClientDepartment extends BaseController
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
                 'exchangeClient' => $exchangeClient,
-                'exchangeNotification' => $exchangeNotification,
                 'source' => ['entity' => 'ClientDepartment'],
                 'workstation' => $this->workstation->getArrayCopy()
             )

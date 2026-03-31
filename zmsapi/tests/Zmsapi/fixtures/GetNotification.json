@@ -4,14 +4,6 @@
     "createTimestamp": 1447931596000,
     "department": {
         "id": 74,
-        "preferences": {
-            "notifications": {
-                "enabled": true,
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": true,
-                "sendReminderEnabled": true
-            }
-        },
         "email": "test@example.com"
     },
     "message": "Denken Sie an ihren Termin mit der Nummer 10029",
@@ -77,7 +69,6 @@
                 "familyName": "J525",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": "0987654321"
             }

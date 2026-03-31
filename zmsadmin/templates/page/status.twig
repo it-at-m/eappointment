@@ -56,10 +56,6 @@
             <td class="alert alert-{% if status.mail.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.mail.oldestSeconds|default(0) }}&nbsp;Sekunden<td>
         </tr>
         <tr class="status-database-nodeconnections">
-            <th>Alter noch nicht versendeter SMS</th>
-            <td class="alert alert-{% if status.notification.oldestSeconds < 300 %}success{% else %}error{% endif %}">{{ status.notification.oldestSeconds|default(0) }}&nbsp;Sekunden<td>
-        </tr>
-        <tr class="status-database-nodeconnections">
             <th>Auslastung der Datenbankverbindungen</th>
             <td class="alert alert-{% if status.database.nodeConnections < 51 %}success{% else %}error{% endif %}">{{ status.database.nodeConnections }}%</td>
         </tr>

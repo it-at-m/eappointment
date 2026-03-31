@@ -43,14 +43,6 @@
         "country": "Germany",
         "name": "Fr. Krause-Jentsch"
       },
-      "preferences": {
-        "notifications": {
-          "enabled": "0",
-          "identification": "support@berlin.de",
-          "sendConfirmationEnabled": "1",
-          "sendReminderEnabled": "1"
-        }
-      },
       "clusters": [
         {
           "scopes": [

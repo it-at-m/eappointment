@@ -28,9 +28,6 @@ class Process extends BaseController
         array $args
     ) {
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
-
-        // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
-        //$config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $requestId = $validator->getParameter('requestId')->isNumber()->getValue();
@@ -61,7 +58,6 @@ class Process extends BaseController
                 'printText' => $printText,
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
                 'waitingClients' => ($queueListHelper->getClientsBefore()),
-                //'config' => $config,
                 'department' => $department
             )
         );

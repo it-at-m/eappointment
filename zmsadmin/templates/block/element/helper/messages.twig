@@ -38,12 +38,6 @@
 				Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
 			{{ block('error_end') }}
 		{% endblock %}
-		{% block notification_failed %}
-			{% set errorTitle = "E-Mail Versand gescheitert." %}
-			{{ block('error_start') }}
-				Beim Versand der SMS ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
-			{{ block('error_end') }}
-		{% endblock %}
 		{% block has_called_process %}
 			{% set errorTitle = "Es ist schon ein Kunde in Bearbeitung" %}
 			{{ block('error_start') }}
@@ -307,16 +301,6 @@
 			{% set successTitle = "E-Mail versendet" %}
 			{{ block('success_start') }}
 				Der Versand der E-Mail war erfolgreich.
-				<div class="form-actions">
-                    <button type="button" data-action-ok class="button button-ok btn right">OK</button>
-                </div>
-			{{ block('success_end') }}
-		{% endblock %}
-
-		{% block notification_sent %}
-			{% set successTitle = "SMS versendet" %}
-			{{ block('success_start') }}
-				SMS-Versand an {{ process.clients|first.telephone }} initiiert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>

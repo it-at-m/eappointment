@@ -39,14 +39,6 @@
 					"street": "Otto-Suhr-Allee 100, 10585 Berlin",
 					"country": "Germany",
 					"name": "Fr. Muster"
-				},
-				"preferences": {
-					"notifications": {
-						"enabled": "1",
-						"identification": "test@example.com",
-						"sendConfirmationEnabled": "1",
-						"sendReminderEnabled": "1"
-					}
 				}
 			}, {
 				"id": "127",
