@@ -9,7 +9,6 @@ import Reload from "./page/main";
 import GetHash from "./page/newhash";
 import PrintDialog from "./page/process";
 import DigitalTime from "./block/digital-clock";
-import NotificationKeyboardHandheldView from "./block/notification-keyboard-handheld";
 import preventFormResubmit from './element/form/preventFormResubmit'
 
 window.$ = $;
@@ -26,7 +25,6 @@ if ($('.digitaluhr').length > 0) {
 } else {
     console.log('No digitaluhr elements found.');
 }
-$('.smsbox').each(function() { new NotificationKeyboardHandheldView(this);});
 
 $('form').each(function() {
     preventFormResubmit(this);

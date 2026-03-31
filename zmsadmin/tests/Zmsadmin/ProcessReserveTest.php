@@ -210,11 +210,6 @@ class ProcessReserveTest extends Base
                     'response' => $this->readFixture("POST_mail.json")
                 ],
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/process/194104/2b88/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
-                ],
-                [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/conflict/',
                     'parameters' => [

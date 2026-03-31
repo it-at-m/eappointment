@@ -44,11 +44,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "Ihre Handynummer wurde\r\nerfolgreich registriert.\r\nIhre Wartenummer lautet:",
-                                            "headsUpContent": "Ihre Wartenummer im Bürgeramt\r\nKarow/Buch wird in ca. 10\r\nMinuten aufgerufen.",
-                                            "headsUpTime": "15"
-                                        },
                                         "queue": {
                                             "callCountMax": "1",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -65,11 +60,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Karow / Buch",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "aus Kapazitätsgründen\r\nkönnen heute im Bürgeramt\r\nKarow/Buch keine Wartenummern\r\nmehr vergeben werden. In dringenden Fällen und für Terminvergaben melden Sie sich bitte an der Kasse.           \r\n",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "aus Kapazitätsgründen\r\nkönnen heute im Bürgeramt\r\nKarow/Buch keine Wartenummern\r\nmehr vergeben werden. In dringenden Fällen und für Terminvergaben melden Sie sich bitte an der Kasse.           \r\n"
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "1",
@@ -137,11 +128,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "Ihre Handynummer wurde übertragen.",
-                                            "headsUpContent": "Ihre Wartenummer im Bürgeramt Pankow wird in ca. 10 Minuten aufgerufen.",
-                                            "headsUpTime": "15"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -158,11 +144,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Pankow",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "Streik in den Pankower Bürgerämtern am Donnerstag, den 26.03.2015\r\n- Terminkunden werden bearbeitet (bitte im Wartebereich Platz nehmen)\r\n- Die Dokumentenausgabe ist geöffnet.\r\n- Der Informationstresen (Schnellschalter) ist geschlossen.",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "Streik in den Pankower Bürgerämtern am Donnerstag, den 26.03.2015\r\n- Terminkunden werden bearbeitet (bitte im Wartebereich Platz nehmen)\r\n- Die Dokumentenausgabe ist geöffnet.\r\n- Der Informationstresen (Schnellschalter) ist geschlossen."
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "1",
@@ -252,11 +234,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Handynummer wurde übertragen.",
-                                                    "headsUpContent": "Ihre Wartenummer im Bürgeramt Prenzlauer Berg wird in ca. 10 Minuten aufgerufen.",
-                                                    "headsUpTime": "15"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -273,11 +250,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Achtung: Ab 07. Juli bieten wir unsere Sprechstunde von Montags bis Freitags ausschließlich Terminkunden an. Fertiggestellte Dokumente können Sie direkt am Platz 8 abholen.\r\nIn Notfällen können Sie sich zu den Sprechzeiten an die Information gegenüber wenden. \r\n",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Achtung: Ab 07. Juli bieten wir unsere Sprechstunde von Montags bis Freitags ausschließlich Terminkunden an. Fertiggestellte Dokumente können Sie direkt am Platz 8 abholen.\r\nIn Notfällen können Sie sich zu den Sprechzeiten an die Information gegenüber wenden. \r\n"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -343,11 +316,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Handynummer wurde übertragen. Ihre Wartenummer lautet ",
-                                                    "headsUpContent": "Ihre Wartenummer im Bürgeramt Weißensee wird in ca. 10 Minuten aufgerufen.",
-                                                    "headsUpTime": "15"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Pankow\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-pankow/buergerdienste/buergeramt.html",
@@ -364,11 +332,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt Weißensee",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "In den Pankower Bürgerämtern werden nur Terminkunden bedient. In dringenden Angelegenheiten und zur Terminvereinbarung wenden Sie sich bitte an die Information.",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "In den Pankower Bürgerämtern werden nur Terminkunden bedient. In dringenden Angelegenheiten und zur Terminvereinbarung wenden Sie sich bitte an die Information."
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -476,11 +440,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen im Bürgeramt 1 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nhttp://www.berlin.de\r\n\r\n                 Ihr Bürgeramt",
@@ -497,11 +456,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt 1 (Kreuzberg), Yorckstr. ",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -567,11 +522,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen im Bürgeramt 3 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nhttp://www.berlin.de\r\n\r\n                 Ihr Bürgeramt",
@@ -588,11 +538,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -686,11 +632,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "1"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n===================\r\nAn jedem Arbeitsplatz nur noch bargeldlos mit PIN. Halten Sie dafür unbedingt Ihre EC-Karte bereit.\r\n================================\r\nAM 14. und 15.01. sowie am 22. und 25.01.2016 sind die Bürgerämer von Marzahn-Hellersdorf geschlossen !!!!!!\r\n================================\r\n",
@@ -707,11 +648,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt      ",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -777,11 +714,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "1"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=============================\r\nPRO TERMIN UND WARTEMARKE NUR EIN KUNDE\r\n================================\r\nAb 01.11.2015 Anmeldung nur noch mit Einzugsbestätigung des Wohnungsgeber möglich !!!!",
@@ -798,11 +730,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt       ( pro Kunde eine Marke )",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Heute sind sind keine Wartemarken mehr zu erhalten. ",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Heute sind sind keine Wartemarken mehr zu erhalten. "
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -868,11 +796,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "1"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n================================\r\nAb 01.11.2015 Anmeldung nur noch mit Einzugsbestätigung des Wohnungsgeber möglich !!!!",
@@ -889,11 +812,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt       ",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Heute keine Ausgabe von Wartemarken - Nur Bedienung von Terminkunden!",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Heute keine Ausgabe von Wartemarken - Nur Bedienung von Terminkunden!"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -981,14 +900,6 @@
                                 "country": "Germany",
                                 "name": ""
                             },
-                            "preferences": {
-                                "notifications": {
-                                    "enabled": "1",
-                                    "identification": "test@example.com",
-                                    "sendConfirmationEnabled": "1",
-                                    "sendReminderEnabled": "1"
-                                }
-                            },
                             "clusters": [
                                 {
                                     "scopes": [
@@ -1010,9 +921,7 @@
                                                     "endInDaysDefault": "56",
                                                     "multipleSlotsEnabled": "1",
                                                     "reservationDuration": "30",
-                                                    "startInDaysDefault": "1",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "1"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1022,11 +931,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert.\r\nIhreWartenummer Lautet:",
-                                                    "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                                                    "headsUpTime": "15"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1044,11 +948,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "1",
-                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nNutzen Sie die Terminvergabe über unser Bürgertelefon: 115\r\noder buchen Sie online einen Termin: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt",
-                                                    "notificationsAmendmentEnabled": "1",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nNutzen Sie die Terminvergabe über unser Bürgertelefon: 115\r\noder buchen Sie online einen Termin: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1103,9 +1003,7 @@
                                                     "endInDaysDefault": "56",
                                                     "multipleSlotsEnabled": "1",
                                                     "reservationDuration": "30",
-                                                    "startInDaysDefault": "1",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "1"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1115,11 +1013,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenummer lautet:",
-                                                    "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                                                    "headsUpTime": "15"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1137,11 +1030,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "1",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "1",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1196,9 +1085,7 @@
                                                     "endInDaysDefault": "56",
                                                     "multipleSlotsEnabled": "1",
                                                     "reservationDuration": "30",
-                                                    "startInDaysDefault": "1",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "1"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1208,11 +1095,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert.\r\nIhre Wartenummer lautet:",
-                                                    "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                                                    "headsUpTime": "20"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1230,11 +1112,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "1",
-                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nNutzen Sie die Terminvergabe über unser Bürgertelefon: 115 \r\noder buchen Sie online einen Termin: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt\r\n",
-                                                    "notificationsAmendmentEnabled": "1",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nNutzen Sie die Terminvergabe über unser Bürgertelefon: 115 \r\noder buchen Sie online einen Termin: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt\r\n"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1289,9 +1167,7 @@
                                                     "endInDaysDefault": "56",
                                                     "multipleSlotsEnabled": "1",
                                                     "reservationDuration": "30",
-                                                    "startInDaysDefault": "1",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "1"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1301,11 +1177,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenummer lautet:",
-                                                    "headsUpContent": "Sie sind in Kürze an der Reihe.\r\nIhre Wartenummer lautet:",
-                                                    "headsUpTime": "15"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1323,11 +1194,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "1",
-                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nBitte nutzen Sie die Terminvergabe über das Berlintelefon: 115 \r\noder buchen Sie online einen Termin unter: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt",
-                                                    "notificationsAmendmentEnabled": "1",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Vorübergehend kann aus organisatorischen Gründen leider keine Ausgabe von Wartenummern erfolgen.\r\nBitte nutzen Sie die Terminvergabe über das Berlintelefon: 115 \r\noder buchen Sie online einen Termin unter: www.berlin.de/ba-lichtenberg/\r\nIhr Bürgeramt"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1406,11 +1273,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "3",
                                                     "callDisplayText": "Wir wünschen Ihnen frohe Festtage und einen guten Start in das Neue Jahr!",
@@ -1427,11 +1289,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Ordnungsamt _A-Z",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -1514,9 +1372,7 @@
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "60",
-                                            "startInDaysDefault": "1",
-                                            "notificationConfirmationEnabled": "1",
-                                            "notificationHeadsUpEnabled": "1"
+                                            "startInDaysDefault": "1"
                                         },
                                         "client": {
                                             "amendmentActivated": "0",
@@ -1526,11 +1382,6 @@
                                             "adminMailOnDeleted": "0",
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
-                                        },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                            "headsUpTime": "30"
                                         },
                                         "queue": {
                                             "callCountMax": "2",
@@ -1548,11 +1399,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Halemweg (Außenstelle)",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "1",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -1609,9 +1456,7 @@
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "20",
-                                            "startInDaysDefault": "0",
-                                            "notificationConfirmationEnabled": "1",
-                                            "notificationHeadsUpEnabled": "1"
+                                            "startInDaysDefault": "0"
                                         },
                                         "client": {
                                             "amendmentActivated": "0",
@@ -1621,11 +1466,6 @@
                                             "adminMailOnDeleted": "0",
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
-                                        },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
-                                            "headsUpTime": "30"
                                         },
                                         "queue": {
                                             "callCountMax": "0",
@@ -1643,11 +1483,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "0",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "0"
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "1",
@@ -1709,14 +1545,6 @@
                                 "country": "Germany",
                                 "name": ""
                             },
-                            "preferences": {
-                                "notifications": {
-                                    "enabled": "1",
-                                    "identification": "test@example.com",
-                                    "sendConfirmationEnabled": "1",
-                                    "sendReminderEnabled": "1"
-                                }
-                            },
                             "clusters": [
                                 {
                                     "scopes": [
@@ -1738,9 +1566,7 @@
                                                     "endInDaysDefault": "60",
                                                     "multipleSlotsEnabled": "0",
                                                     "reservationDuration": "20",
-                                                    "startInDaysDefault": "0",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "0"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1750,11 +1576,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
-                                                    "headsUpTime": "30"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1772,11 +1593,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt Hohenzollerndamm",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1831,9 +1648,7 @@
                                                     "endInDaysDefault": "60",
                                                     "multipleSlotsEnabled": "0",
                                                     "reservationDuration": "20",
-                                                    "startInDaysDefault": "0",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "0"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1843,11 +1658,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                                    "headsUpTime": "30"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1865,11 +1675,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -1924,9 +1730,7 @@
                                                     "endInDaysDefault": "60",
                                                     "multipleSlotsEnabled": "0",
                                                     "reservationDuration": "20",
-                                                    "startInDaysDefault": "0",
-                                                    "notificationConfirmationEnabled": "1",
-                                                    "notificationHeadsUpEnabled": "1"
+                                                    "startInDaysDefault": "0"
                                                 },
                                                 "client": {
                                                     "amendmentActivated": "0",
@@ -1936,11 +1740,6 @@
                                                     "adminMailOnDeleted": "0",
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
-                                                },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                                    "headsUpTime": "30"
                                                 },
                                                 "queue": {
                                                     "callCountMax": "0",
@@ -1958,11 +1757,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt Wilmersdorfer Straße",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "1",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -2040,11 +1835,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail",
@@ -2061,11 +1851,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Ordnungsamt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -2159,11 +1945,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen im\r\nRathaus Mitte",
@@ -2180,11 +1961,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Rathaus Mitte",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "Sehr geehrte Kundin, sehr geehrter Kunde, \r\n\r\nVon Montag bis Freitag erfolgt die Kundenbedienung  ausschließlich nach vorheriger Terminbuchung.\r\n\r\nIhr Bürgeramt\r\n\r\n\r\n",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "Sehr geehrte Kundin, sehr geehrter Kunde, \r\n\r\nVon Montag bis Freitag erfolgt die Kundenbedienung  ausschließlich nach vorheriger Terminbuchung.\r\n\r\nIhr Bürgeramt\r\n\r\n\r\n"
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "1",
@@ -2252,11 +2029,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -2273,11 +2045,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "\r\n\r\n\r\nDIE NUMMERNVERGABE IST GESCHLOSSEN.\r\n\r\nBITTE  AM  INFORMATIONSSCHALTER MELDEN.\r\n",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "\r\n\r\n\r\nDIE NUMMERNVERGABE IST GESCHLOSSEN.\r\n\r\nBITTE  AM  INFORMATIONSSCHALTER MELDEN.\r\n"
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -2357,11 +2125,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -2378,11 +2141,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt ",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Sehr geehrte Kundin, sehr geehrter Kunde, von Dienstag bis Samstag finden ausschließlich  Terminsprechstunden statt, d.h. es werden nur Kundinnen und Kunden mit vorheriger Terminbuchung bedient. Der Wartenummernautomat steht in dieser Zeit nicht zur Verfügung. Ihr Bürgeramt",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Sehr geehrte Kundin, sehr geehrter Kunde, von Dienstag bis Samstag finden ausschließlich  Terminsprechstunden statt, d.h. es werden nur Kundinnen und Kunden mit vorheriger Terminbuchung bedient. Der Wartenummernautomat steht in dieser Zeit nicht zur Verfügung. Ihr Bürgeramt"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -2580,11 +2339,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -2601,11 +2355,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "RH Schöneberg",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche.",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche."
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -2662,11 +2412,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -2683,11 +2428,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Azubi",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -2753,11 +2494,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -2774,11 +2510,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "RH Tempelhof",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche.",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche."
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -2844,11 +2576,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -2865,11 +2592,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgerzentrum Christophorus",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche.",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzufügen\" auf der ZMS-Oberfläche."
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -2953,11 +2676,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -2974,11 +2692,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3046,11 +2760,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3067,11 +2776,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt MV",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3139,11 +2844,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3160,11 +2860,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Rathaus",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "Die Nummernausgabe ist  geschlossen.",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": "Die Nummernausgabe ist  geschlossen."
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3232,11 +2928,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3253,11 +2944,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3325,11 +3012,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "1"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3346,11 +3028,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgeramt Tegel",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": " Wartenummernvergabe für heute gesperrt !",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": " Wartenummernvergabe für heute gesperrt !"
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3418,11 +3096,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -3439,11 +3112,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Mobiles Bürgeramt Hermsdorf",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3511,11 +3180,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3532,11 +3196,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Mobiles Bürgeramt MV",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3604,11 +3264,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3625,11 +3280,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Mobiles Bürgeramt Reinickendorf",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3697,11 +3348,6 @@
                                             "telephoneActivated": "0",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "3",
                                             "callDisplayText": "",
@@ -3718,11 +3364,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Mobiles Bürgeramt Reinickendorf Ost",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3840,11 +3482,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -3861,11 +3498,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgerbüro Falkenhagener Feld",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -3933,11 +3566,6 @@
                                             "telephoneActivated": "1",
                                             "telephoneRequired": "0"
                                         },
-                                        "notifications": {
-                                            "confirmationContent": "",
-                                            "headsUpContent": "",
-                                            "headsUpTime": "0"
-                                        },
                                         "queue": {
                                             "callCountMax": "0",
                                             "callDisplayText": "",
@@ -3954,11 +3582,7 @@
                                         },
                                         "ticketprinter": {
                                             "buttonName": "Bürgerbüro Kladow",
-                                            "confirmationEnabled": "0",
-                                            "deactivatedText": "",
-                                            "notificationsAmendmentEnabled": "0",
-                                            "notificationsEnabled": "0",
-                                            "notificationsDelay": "0"
+                                            "deactivatedText": ""
                                         },
                                         "workstation": {
                                             "emergencyEnabled": "0",
@@ -4044,11 +3668,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Vereinbarte Termine sind Richtwerte.\r\nEs kann mitunter zu zeitlichen Abweichungen kommen.",
@@ -4065,11 +3684,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -4135,11 +3750,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "1",
                                                     "callDisplayText": "Willkommen \r\nim Bürgerbüro Wasserstadt\r\n",
@@ -4156,11 +3766,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgerbüro Wasserstadt nur EC- Zahlung:",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -4254,11 +3860,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTipp: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-neukoelln/org/buergeramt/",
@@ -4275,11 +3876,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Aufgrund des hohen Publikumsaufkommens werden nur Termine und die wartenden Bürger bearbeitet - die Wartenummernausgabe ist abgeschaltet! Personalausweisabholer und Antragsteller für den BerlinPass wenden sich bitte direkt an die Info. Dort können auch Termine für die nächsten Tage vereinbart werden. Danke für Ihr Verständnis.",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Aufgrund des hohen Publikumsaufkommens werden nur Termine und die wartenden Bürger bearbeitet - die Wartenummernausgabe ist abgeschaltet! Personalausweisabholer und Antragsteller für den BerlinPass wenden sich bitte direkt an die Info. Dort können auch Termine für die nächsten Tage vereinbart werden. Danke für Ihr Verständnis."
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -4345,11 +3942,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -4366,11 +3958,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Die Wartenummernvergabe erfolgt an der Information/Zimmer 111",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Die Wartenummernvergabe erfolgt an der Information/Zimmer 111"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -4436,11 +4024,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -4457,11 +4040,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -4518,11 +4097,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "",
@@ -4539,11 +4113,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Wohnungsamt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "0",
@@ -4609,11 +4179,6 @@
                                                     "telephoneActivated": "0",
                                                     "telephoneRequired": "0"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung\r\n\r\nAchtung:\r\nBezahlung nur mit EC Karte möglich,\r\nkeine Bargeldannahme \r\n ",
@@ -4630,11 +4195,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "Die Ausgabe der Wartenummern erfolt am\r\nPlatz 10 - Info",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": "Die Ausgabe der Wartenummern erfolt am\r\nPlatz 10 - Info"
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -4752,11 +4313,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "1"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
@@ -4773,11 +4329,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",
@@ -4843,11 +4395,6 @@
                                                     "telephoneActivated": "1",
                                                     "telephoneRequired": "1"
                                                 },
-                                                "notifications": {
-                                                    "confirmationContent": "",
-                                                    "headsUpContent": "",
-                                                    "headsUpTime": "0"
-                                                },
                                                 "queue": {
                                                     "callCountMax": "0",
                                                     "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
@@ -4864,11 +4411,7 @@
                                                 },
                                                 "ticketprinter": {
                                                     "buttonName": "Bürgeramt",
-                                                    "confirmationEnabled": "0",
-                                                    "deactivatedText": "",
-                                                    "notificationsAmendmentEnabled": "0",
-                                                    "notificationsEnabled": "0",
-                                                    "notificationsDelay": "0"
+                                                    "deactivatedText": ""
                                                 },
                                                 "workstation": {
                                                     "emergencyEnabled": "1",

@@ -15,8 +15,7 @@
                 "clientEmail": "max@zms-bo.de",
                 "clientTelephone": "03023232323",
                 "clientAmendment": "Notiz zum Termin",
-                "authKey": "1234",
-                "notificationConfirmation": false
+                "authKey": "1234"
             },
             "human": {
                 "captcha_text": "kck6Qz",
@@ -117,9 +116,6 @@
                         },
                         "authKey": {
                             "type": "string"
-                        },
-                        "notificationConfirmation": {
-                            "type": "boolean"
                         }
                     }
                 },
