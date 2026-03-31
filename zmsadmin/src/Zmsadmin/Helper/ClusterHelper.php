@@ -37,13 +37,13 @@ class ClusterHelper
             $processList = \App::$http
                 ->readGetResult(
                     '/cluster/' . static::$cluster->id . '/process/' . $selectedDate . '/',
-                    ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
+                    ['gql' => GraphDefaults::getProcess()]
                 );
         } else {
             $processList = \App::$http
                 ->readGetResult(
                     '/scope/' . static::$workstation->scope['id'] . '/process/' . $selectedDate . '/',
-                    ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
+                    ['gql' => GraphDefaults::getProcess()]
                 );
         }
         return ($processList) ? $processList->getCollection() : new \BO\Zmsentities\Collection\ProcessList();
@@ -51,14 +51,6 @@ class ClusterHelper
 
     public static function getNextProcess($excludedIds)
     {
-        $queueList = static::getProcessList(\App::$now->format('Y-m-d'))
-            ->toQueueList(\App::$now)
-            ->withoutStatus(['fake','missed', 'parked']);
-        $excludedIds = (0 < $queueList->count()) ? $excludedIds : '';
-
-        if (1 > $queueList->count()) {
-            return new \BO\Zmsentities\Process();
-        }
         if (static::isClusterEnabled()) {
             $nextProcess =  \App::$http->readGetResult(
                 '/cluster/' . static::$cluster['id'] . '/queue/next/',
@@ -66,16 +58,15 @@ class ClusterHelper
                     'exclude' => $excludedIds,
                     'allowClusterWideCall' => \App::$allowClusterWideCall
                 ]
-            )->getEntity();
+            )?->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(
                 '/scope/' . static::$workstation->scope['id'] . '/queue/next/',
                 ['exclude' => $excludedIds]
-            )->getEntity();
+            )?->getEntity();
         }
 
-
-        return ($nextProcess) ? $nextProcess : new \BO\Zmsentities\Process();
+        return $nextProcess;
     }
 
     public static function isClusterEnabled()

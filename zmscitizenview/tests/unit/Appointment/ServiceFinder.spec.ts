@@ -13,6 +13,7 @@ interface ServiceImpl {
   count?: number;
   subServices?: any[];
   combinable?: any;
+  showOnStartPage?: boolean;
 }
 
 describe("ServiceFinder", () => {
@@ -22,24 +23,28 @@ describe("ServiceFinder", () => {
       name: "Gewerbe-Ummeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "2",
       name: "Gewerbe-Anmeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "3",
       name: "Führerschein-Ummeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: true,
     },
     {
       id: "4",
       name: "Führerschein-Anmeldung",
       maxQuantity: 1,
       combinable: null,
+      showOnStartPage: false,
     },
   ];
 
@@ -59,7 +64,7 @@ describe("ServiceFinder", () => {
   const mockRelations = [
     {
       officeId: "1",
-      serviceId: "1", 
+      serviceId: "1",
       slots: 1,
       public: true,
       maxQuantity: 4
@@ -83,7 +88,7 @@ describe("ServiceFinder", () => {
   beforeAll(() => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       status: 200,
-      json: async () => ({ 
+      json: async () => ({
         services: mockServices,
         offices: mockOffices,
         relations: mockRelations
@@ -139,12 +144,17 @@ describe("ServiceFinder", () => {
             selectedService: ref(service),
             updateSelectedService: () => {},
           },
+          serviceLinkProvider: {
+            serviceLinkId: ref<string | null>(null),
+            updateServiceLinkId: () => {},
+          },
         },
         stubs: {
           SubserviceListItem: {
             template: '<li class="subservice-stub"></li>',
           },
           MucSelect: {
+            name: "MucSelect",
             template: '<div class="muc-select-stub"></div>',
             props: ['id', 'items', 'label', 'hint', 'multiple', 'noItemFoundMessage', 'itemTitle', 'modelValue'],
             emits: ['update:modelValue'],
@@ -189,6 +199,25 @@ describe("ServiceFinder", () => {
 
       expect(wrapper.vm.service).toStrictEqual(gewerbeService);
       expect(wrapper.text()).toContain(gewerbeService.name);
+    });
+
+    it("should only show services with showOnStartPage === true in the selection", async () => {
+      const wrapper = createWrapper(null);
+
+      await new Promise((r) => setTimeout(r, 0));
+      await nextTick();
+
+      const select = wrapper.findComponent({ name: "MucSelect" });
+      expect(select.exists()).toBe(true);
+
+      const items: any[] = select.props("items") as any[] || [];
+
+      const visibleServices = items.filter((s: any) => s.showOnStartPage === true);
+      expect(visibleServices).toHaveLength(3);
+
+      const visibleIds = visibleServices.map((s: any) => s.id);
+      expect(visibleIds).toEqual(expect.arrayContaining(["1", "2", "3"]));
+      expect(visibleIds).not.toContain("4");
     });
 
     it("should show no results message when no matches found", async () => {
@@ -248,7 +277,8 @@ describe("ServiceFinder", () => {
     it("should emit next event when next button is clicked", async () => {
       const wrapper = createWrapper(makeService(0));
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button");
+      const buttons = wrapper.findAll(".m-button-group button");
+      const nextButton = buttons.find(b => b.text().includes("next"));
       await nextButton.trigger("click");
       expect(wrapper.emitted("next")).toBeTruthy();
     });
@@ -256,8 +286,9 @@ describe("ServiceFinder", () => {
     it("should not show next button when no service is selected", async () => {
       const wrapper = createWrapper(null);
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button");
-      expect(nextButton.exists()).toBe(false);
+      const buttons = wrapper.findAll(".m-button-group button");
+      const nextButton = buttons.find(b => b.text().includes("next"));
+      expect(nextButton).toBeUndefined();
     });
   });
 
@@ -265,7 +296,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when preselected service is not found", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           relations: [],
           offices: []
@@ -288,6 +319,10 @@ describe("ServiceFinder", () => {
               selectedService: ref(null),
               updateSelectedService: () => {},
             },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
+            },
           },
           stubs: {
             "muc-select": true,
@@ -307,7 +342,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when API returns empty services for preselected ID", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: [],
           relations: [],
           offices: []
@@ -330,6 +365,10 @@ describe("ServiceFinder", () => {
               selectedService: ref(null),
               updateSelectedService: () => {},
             },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
+            },
           },
           stubs: {
             "muc-select": true,
@@ -349,7 +388,7 @@ describe("ServiceFinder", () => {
     it("should not emit invalidJumpinLink when preselected service is found", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           relations: [],
           offices: []
@@ -371,6 +410,10 @@ describe("ServiceFinder", () => {
             selectedServiceProvider: {
               selectedService: ref(null),
               updateSelectedService: () => {},
+            },
+            serviceLinkProvider: {
+              serviceLinkId: ref<string | null>(null),
+              updateServiceLinkId: () => {},
             },
           },
           stubs: {
@@ -468,7 +511,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when preselected office ID is not found", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -479,7 +522,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: "999999"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -490,7 +533,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when both service and office IDs are invalid", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -501,7 +544,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "000000000000",
         preselectedOfficeId: "000000000000"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -512,7 +555,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when API returns empty offices array with preselected office", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: [],
           relations: []
@@ -523,7 +566,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: "1"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -534,7 +577,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when both service and office IDs are valid and have a relation", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -545,7 +588,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: "1"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -555,7 +598,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when no preselected IDs are provided", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -564,7 +607,7 @@ describe("ServiceFinder", () => {
 
       const wrapper = createWrapper(null, {
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -574,7 +617,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when office ID is invalid but service ID is valid", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -585,7 +628,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: "nonexistent-office-id"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -596,7 +639,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when valid service and office IDs don't work together (no relation)", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: [],
           offices: [],
           relations: []
@@ -607,7 +650,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: "2"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -618,7 +661,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when service is not available at any office", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: [],
           offices: mockOffices,
           relations: []
@@ -629,7 +672,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "4",
         preselectedOfficeId: "1"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -642,7 +685,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when only valid serviceId is provided", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -653,7 +696,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: undefined
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -663,7 +706,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when only valid officeId is provided", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -674,7 +717,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: undefined,
         preselectedOfficeId: "1"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -684,7 +727,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when only invalid serviceId is provided", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -695,7 +738,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "999999",
         preselectedOfficeId: undefined
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -706,7 +749,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when only invalid officeId is provided", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -717,7 +760,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: undefined,
         preselectedOfficeId: "999999"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -728,7 +771,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when API returns filtered results for valid serviceId only", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: [mockServices[0]],
           offices: [mockOffices[0]],
           relations: [mockRelations[0]]
@@ -739,7 +782,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "1",
         preselectedOfficeId: undefined
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -749,7 +792,7 @@ describe("ServiceFinder", () => {
     it("should NOT emit invalidJumpinLink when API returns filtered results for valid officeId only", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: [mockServices[0], mockServices[1]],
           offices: [mockOffices[0]],
           relations: [mockRelations[0], mockRelations[1]]
@@ -757,10 +800,10 @@ describe("ServiceFinder", () => {
       }));
 
       const wrapper = createWrapper(null, {
-        preselectedServiceId: undefined,  
+        preselectedServiceId: undefined,
         preselectedOfficeId: "1"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -770,7 +813,7 @@ describe("ServiceFinder", () => {
     it("should emit invalidJumpinLink when both serviceId and officeId are null strings", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
-        json: async () => ({ 
+        json: async () => ({
           services: mockServices,
           offices: mockOffices,
           relations: mockRelations
@@ -781,12 +824,105 @@ describe("ServiceFinder", () => {
         preselectedServiceId: "null",
         preselectedOfficeId: "null"
       });
-      
+
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(3);
+    });
+  });
+
+  describe("Variants", () => {
+    const makeBaseAndVariants = () => {
+      const base = {
+        id: "10",
+        name: "Basis Service",
+        parentId: null,
+        variantId: null,
+        maxQuantity: 5,
+        combinable: null,
+      };
+      const variant2 = {
+        id: "12",
+        name: "Basis Service (Variante 2)",
+        parentId: "10",
+        variantId: 2,
+        maxQuantity: 5,
+        combinable: null,
+      };
+      return { base, variant2 };
+    };
+
+    it("should include synthetic variant 1 (id 10) and real variant 2 (id 12) in sorted order", async () => {
+      const { base, variant2 } = makeBaseAndVariants();
+      const wrapper = createWrapper(base);
+      wrapper.vm.services = [variant2, base];
+      wrapper.vm.service = base;
+      await nextTick();
+
+      const vs = wrapper.vm.variantServices;
+      expect(Array.isArray(vs)).toBeTruthy();
+      expect(vs.map((v: any) => v.variantId)).toEqual([1, 2]);
+      expect(vs[0].id).toBe("10");
+      expect(vs[1].id).toBe("12");
+    });
+
+    it("should switch service correctly when changing selectedVariant (2 -> 1)", async () => {
+      const { base, variant2 } = makeBaseAndVariants();
+      const wrapper = createWrapper(base);
+      wrapper.vm.services = [base, variant2];
+      wrapper.vm.service = base;
+      await nextTick();
+
+      wrapper.vm.selectedVariant = "2";
+      await nextTick();
+      expect(wrapper.vm.service.id).toBe("12");
+      expect(wrapper.vm.service.name).toContain("Variante 2");
+
+      wrapper.vm.selectedVariant = "1";
+      await nextTick();
+      expect(wrapper.vm.service.id).toBe("10");
+    });
+
+    it("should show subservices only for variant 1 (base) and hide them for variant 2", async () => {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+        status: 200,
+        json: async () => ({ services: [], offices: [], relations: [] }),
+      }));
+
+      const base = {
+        id: "10",
+        name: "Basis Service",
+        parentId: null,
+        variantId: null,
+        maxQuantity: 5,
+        combinable: { a: { "2": ["1"] } },
+      };
+      const variant2 = {
+        id: "12",
+        name: "Basis Service (Variante 2)",
+        parentId: "10",
+        variantId: 2,
+        maxQuantity: 5,
+        combinable: null,
+      };
+      const sub = { id: "2", name: "Sub Service", maxQuantity: 5, combinable: null };
+
+      const wrapper = createWrapper(base);
+      wrapper.vm.services = [base, variant2, sub];
+      wrapper.vm.service = base;
+      await nextTick();
+
+      expect(wrapper.vm.showSubservices).toBeFalsy();
+
+      wrapper.vm.selectedVariant = "1";
+      await nextTick();
+      expect(wrapper.vm.showSubservices).toBeTruthy();
+
+      wrapper.vm.selectedVariant = "2";
+      await nextTick();
+      expect(wrapper.vm.showSubservices).toBeFalsy();
     });
   });
 });

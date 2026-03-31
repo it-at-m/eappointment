@@ -35,6 +35,12 @@ const TimeSlotGridStub = {
   template: '<div class="timeslot-grid"><span class="time-label">{{ timeLabel }}</span></div>',
 };
 
+const MucSpinnerStub = {
+  name: "muc-spinner",
+  props: ["ariaLabel", "text"],
+  template: '<div class="muc-spinner" />',
+};
+
 function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
   const timeSlotsInHoursByOffice = overrides.timeSlotsInHoursByOffice ?? new Map();
   const timeSlotsInDayPartByOffice = overrides.timeSlotsInDayPartByOffice ?? new Map();
@@ -44,6 +50,7 @@ function mountCalendarView(overrides: Partial<Record<string, any>> = {}) {
         MucCalendar: MucCalendarStub,
         MucButton: MucButtonStub,
         TimeSlotGrid: TimeSlotGridStub,
+        MucSpinner: MucSpinnerStub,
       },
     },
     props: {
@@ -224,5 +231,75 @@ describe("CalendarView", () => {
       selectedDay: new Date("2025-07-02"),
     });
     expect(wrapper.html()).toContain("availableTimes");
+  });
+
+  describe("CalendarView – Loading Spinner", () => {
+    it("shows the spinner during loading (hourly view) and hides the info link and daily headline", async () => {
+      // map with at least one slot so that the hourly view remains active even after loading
+      const hoursMap = new Map<number, number[]>([[10, [111]]]);
+
+      const wrapper = mountCalendarView({
+        // hourly view
+        appointmentsCount: 19,
+        timeSlotsInHoursByOffice: new Map([[1, { appointments: new Map(hoursMap) }]]),
+        currentHour: 10,
+        firstHour: 10,
+        lastHour: 10,
+        isLoadingAppointments: true,
+        isLoadingComplete: false,
+        availabilityInfoHtml: "some html",
+      });
+
+      // heading available
+      expect(wrapper.html()).toContain("availableTimes");
+      // spinner container visible
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
+      // spinner visible
+      expect(wrapper.findComponent(MucSpinnerStub).exists()).toBe(true);
+      // neither daily headline (<h4>) nor info link
+      expect(wrapper.find("h4").exists()).toBe(false);
+      expect(wrapper.text()).not.toContain("newAppointmentsInfoLink");
+
+      // simulate end of loading
+      await wrapper.setProps({
+        isLoadingAppointments: false,
+        isLoadingComplete: true,
+      });
+      await nextTick();
+
+      // spinner gone, info link and daily headline visible
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+      expect(wrapper.find("h4").exists()).toBe(true);
+      expect(wrapper.text()).toContain("newAppointmentsInfoLink");
+    });
+
+    it("shows the spinner during loading (day part view) and hides the info link and daily headline.", async () => {
+      const dayPartMap = new Map<string, number[]>([["am", [1]]]);
+
+      const wrapper = mountCalendarView({
+        // day part view
+        appointmentsCount: 18,
+        timeSlotsInDayPartByOffice: new Map([[1, { appointments: new Map(dayPartMap) }]]),
+        isLoadingAppointments: true,
+        isLoadingComplete: false,
+        availabilityInfoHtml: "some html",
+      });
+
+      expect(wrapper.html()).toContain("availableTimes");
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(true);
+      expect(wrapper.findComponent(MucSpinnerStub).exists()).toBe(true);
+      expect(wrapper.find("h4").exists()).toBe(false);
+      expect(wrapper.text()).not.toContain("newAppointmentsInfoLink");
+
+      await wrapper.setProps({
+        isLoadingAppointments: false,
+        isLoadingComplete: true,
+      });
+      await nextTick();
+
+      expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
+      expect(wrapper.find("h4").exists()).toBe(true);
+      expect(wrapper.text()).toContain("newAppointmentsInfoLink");
+    });
   });
 });

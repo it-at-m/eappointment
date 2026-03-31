@@ -34,6 +34,14 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
+    private static function resolveAllowDisabledServicesMix(Provider $provider): ?array
+    {
+        if (!isset($provider->data['allowDisabledServicesMix']) || !is_array($provider->data['allowDisabledServicesMix'])) {
+            return null;
+        }
+        return array_map('intval', $provider->data['allowDisabledServicesMix']);
+    }
+
     public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
@@ -166,13 +174,15 @@ class MapperService
                         ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
-                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
-                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
+                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
+                allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider)
             );
         }
 
@@ -241,7 +251,15 @@ class MapperService
             $variantId = isset($service->variant_id) ? (int)$service->variant_id : (isset($extra['variant_id']) ? (int)$extra['variant_id'] : null);
 
             if (!empty($servicesProviderIds[$service->getId()])) {
-                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable(), parentId: $parentId, variantId: $variantId);
+                $services[] = new Service(
+                    id: (int) $service->getId(),
+                    name: $service->getName(),
+                    maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1,
+                    combinable: $combinable ?? new Combinable(),
+                    parentId: $parentId,
+                    variantId: $variantId,
+                    showOnStartPage: $service->getAdditionalData()['showOnStartPage'] ?? true,
+                );
             }
         }
 
@@ -303,33 +321,51 @@ class MapperService
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
-            emailRequired: isset($scope->data['emailRequired']) ? (bool) $scope->data['emailRequired'] : null,
-            telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
-            telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
-            customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
-            customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
-            customTextfieldLabel: isset($scope->data['customTextfieldLabel']) ? (string) $scope->data['customTextfieldLabel'] : null,
-            customTextfield2Activated: isset($scope->data['customTextfield2Activated']) ? (bool) $scope->data['customTextfield2Activated'] : null,
-            customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
-            customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
-            captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            infoForAppointment: isset($scope->data['infoForAppointment'])
-                ? ((string) $scope->data['infoForAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAppointment'])
+            emailRequired: $scope->getEmailRequired() === null
+                ? null
+                : (bool) $scope->getEmailRequired(),
+            telephoneActivated: $scope->getTelephoneActivated() === null
+                ? null
+                : (bool) $scope->getTelephoneActivated(),
+            telephoneRequired: $scope->getTelephoneRequired() === null
+                ? null
+                : (bool) $scope->getTelephoneRequired(),
+            customTextfieldActivated: $scope->getCustomTextfieldActivated() === null
+                ? null
+                : (bool) $scope->getCustomTextfieldActivated(),
+            customTextfieldRequired: $scope->getCustomTextfieldRequired() === null
+                ? null
+                : (bool) $scope->getCustomTextfieldRequired(),
+            customTextfieldLabel: $scope->getCustomTextfieldLabel() === null
+                ? null
+                : (string) $scope->getCustomTextfieldLabel(),
+            customTextfield2Activated: $scope->getCustomTextfield2Activated() === null
+                ? null
+                : (bool) $scope->getCustomTextfield2Activated(),
+            customTextfield2Required: $scope->getCustomTextfield2Required() === null
+                ? null
+                : (bool) $scope->getCustomTextfield2Required(),
+            customTextfield2Label: $scope->getCustomTextfield2Label() === null
+                ? null
+                : (string) $scope->getCustomTextfield2Label(),
+            captchaActivatedRequired: $scope->getCaptchaActivatedRequired() === null
+                ? null
+                : (bool) $scope->getCaptchaActivatedRequired(),
+            infoForAppointment: $scope->getInfoForAppointment() === null
+                ? null
+                : (string) $scope->getInfoForAppointment(),
+            infoForAllAppointments: $scope->getInfoForAllAppointments() === null
+                ? null
+                : (string) $scope->getInfoForAllAppointments(),
+            slotsPerAppointment: $scope->getSlotsPerAppointment() === null
+                ? null
+                : (string) $scope->getSlotsPerAppointment(),
+            appointmentsPerMail: $scope->getAppointmentsPerMail() !== null
+                ? (string) $scope->getAppointmentsPerMail()
                 : null,
-            infoForAllAppointments: isset($scope->data['infoForAllAppointments'])
-                ? ((string) $scope->data['infoForAllAppointments'] === ''
-                    ? null
-                    : (string) $scope->data['infoForAllAppointments'])
-                : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
-                ? ((string) $scope->data['slotsPerAppointment'] === ''
-                    ? null
-                    : (string) $scope->data['slotsPerAppointment'])
-                : null,
-            appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            whitelistedMails: $scope->getWhitelistedMails() === null
+                ? null
+                : (string) $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
             hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
@@ -398,6 +434,7 @@ class MapperService
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            displayNumber: ($myProcess->getDisplayNumber() ?: null),
             icsContent: isset($icsContent) ? $icsContent : null
         );
     }
@@ -434,6 +471,10 @@ class MapperService
             $processEntity->status = $thinnedProcess->status;
         }
 
+        if (isset($thinnedProcess->displayNumber)) {
+            $processEntity->displayNumber = $thinnedProcess->displayNumber;
+        }
+
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
@@ -452,6 +493,7 @@ class MapperService
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
+                    'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
                     'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,

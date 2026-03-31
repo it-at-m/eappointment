@@ -38,14 +38,16 @@ class TicketprinterByScopeTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/scope/312/queue/',
                 'response' => $this->readFixture("GET_queuelist_312.json"), //Bürgeramt 1 in Köpenick
-            ],
+            ]
+            // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
+            /*,
             [
                 'function' => 'readGetResult',
                 'url' => '/config/',
                 'parameters' => [],
                 'xtoken' => 'secure-token',
                 'response' => $this->readFixture("GET_config.json"),
-            ]
+            ]*/
         ];
     }
 

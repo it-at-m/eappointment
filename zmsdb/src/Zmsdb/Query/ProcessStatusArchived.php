@@ -13,9 +13,9 @@ class ProcessStatusArchived extends Base implements MappingInterface
      *
      * @var String TABLE mysql table reference
      */
-    const TABLE = 'buergerarchiv';
-    const STATISTIC_TABLE = 'statistik';
-    const ALIAS = 'process';
+    public const TABLE = 'buergerarchiv';
+    public const STATISTIC_TABLE = 'statistik';
+    public const ALIAS = 'process';
 
     const QUERY_INSERT_IN_STATISTIC = '
         INSERT INTO ' . self::STATISTIC_TABLE . ' SET
@@ -61,6 +61,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                     "finished"
                 )'
             ),
+            'isTicketprinter' => 'process.is_ticketprinter',
         ];
     }
 
@@ -159,6 +160,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             $warteZeit = $totalMinutes;
         }
 
+        $isTicketprinter = isset($process->isTicketprinter) && $process->isTicketprinter ? 1 : 0;
+
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'name' => $process->getFirstClient()['familyName'],
@@ -171,7 +174,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'wegezeit' => ($process->getWaySeconds() > 0) ? $process->getWayMinutes() : 0,
             'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
             'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
-            'AnzahlPersonen' => $process->getClients()->count()
+            'AnzahlPersonen' => $process->getClients()->count(),
+            'is_ticketprinter' => $isTicketprinter
         ]);
     }
 

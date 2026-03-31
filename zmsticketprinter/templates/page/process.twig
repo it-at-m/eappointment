@@ -46,11 +46,12 @@
 				{% trans %}keine{% endtrans %}
 			{% endif %}
 
+			{# TODO: Remove SMS notification block - https://github.com/it-at-m/eappointment/issues/1807 #}
 			{% if
 				waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
 				process.scope.preferences.ticketprinter.notificationsEnabled and department.preferences.notifications.enabled
 			%}
-				{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
+				{% set headsUpTime = config.notifications.erinnerungsvorlauf|default(0) %}
 				{% if process.scope.preferences.notifications.headsUpTime %}
 					{% set headsUpTime = process.scope.preferences.notifications.headsUpTime %}
 				{% endif %}

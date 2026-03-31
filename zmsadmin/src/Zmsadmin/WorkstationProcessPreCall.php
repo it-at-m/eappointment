@@ -35,9 +35,6 @@ class WorkstationProcessPreCall extends BaseController
             if ($workstation->process->getId() != $processId) {
                 $error = 'has_called_process';
             }
-            if ('pickup' == $workstation->process->getStatus()) {
-                $error = 'has_called_pickup';
-            }
         }
 
         if ('called' == $workstation->process->getStatus()) {

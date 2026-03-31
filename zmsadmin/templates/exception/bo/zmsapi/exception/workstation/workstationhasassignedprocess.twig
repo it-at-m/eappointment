@@ -8,13 +8,6 @@
         <div class="form-actions left">
             <a class="button" href="{{ urlGet('workstation', {}, {}) }}">Zum Sachbearbeiterplatz</a>
         </div>
-        {% elseif sourceData.process.status == 'pickup' %}
-        <p>
-            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Schließen Sie den vorhanden Vorgang hier ab.{% endtrans %}
-        </p>
-        <div class="form-actions left">
-            <a class="button" href="{{ urlGet('pickup', {}, {'selectedprocess': sourceData.process.id}) }}">Vorgang weiter bearbeiten</a>
-        </div>
         {% else %}
         <p>
             Ist der Kunde{% if workstation.process.clients|first.familyName %} <strong>"{{ workstation.process.clients|first.familyName }}{% endif %} (Wartenr. {{ workstation.process.displayNumber }})"</strong> gekommen?

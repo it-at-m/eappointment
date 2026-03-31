@@ -8,7 +8,7 @@
 <!-- [![EUPL License][license-shield]][license-url] -->
 
 # E-Appointment
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 This monorepo contains the Munich-specific adjustments to the original Berlin version. You can explore the original project here: https://gitlab.com/eappointment/eappointment
 
@@ -26,13 +26,13 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
 * manage opening hours including closed days
 * login-system with different access levels
-* pickup for documents
 * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
 * calldisplay support
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
 [Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
+
 
 ## Projects
 
@@ -67,7 +67,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
 
 ---
 
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
+<img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 Dieses Monorepo enthält die München-spezifischen Anpassungen der ursprünglichen Berliner Version. Das ursprüngliche Projekt kannst du hier erkunden: https://gitlab.com/eappointment/eappointment
 
@@ -127,10 +127,57 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 ----
 
 ## Getting Started
+
+### Using DDEV
 - `ddev start`
 - `ddev exec ./cli modules loop composer install`
 - `ddev exec ./cli modules loop npm install`
 - `ddev exec ./cli modules loop npm build`
+
+### Using Podman (Devcontainer)
+- `devcontainer up --workspace-folder .`
+- `podman exec -it zms-web bash -lc "./cli modules loop composer install"`
+- `podman exec -it zms-web bash -lc "./cli modules loop npm install"`
+- `podman exec -it zms-web bash -lc "./cli modules loop npm build"`
+- 
+> **Note for macOS users:** You may need to install the missing `krunkit` package before install Podman and add `export DOCKER_HOST=unix:///var/run/docker.sock` to your `~/.zshrc` or `~/.bashrc` or run it in your terminal before using devcontainer commands.
+> 1️⃣ Stop & remove any Podman machines
+> ```
+> podman machine stop 2>/dev/null && podman machine rm -f 2>/dev/null
+> ```
+> 2️⃣ Delete all Podman configuration & VM data
+> ```
+> rm -rf ~/.config/containers ~/.local/share/containers ~/.cache/containers && rm -rf ~/Library/Containers/io.podman* 2>/dev/null || true && rm -rf ~/Library/Application\ Support/Podman* 2>/dev/null || true && rm -rf ~/Library/Preferences/io.podman* 2>/dev/null || true
+> ```
+> 3️⃣ Uninstall Homebrew Podman and Podman Desktop
+> ```
+> brew uninstall -f podman podman-desktop 2>/dev/null && brew cleanup
+> ```
+> 4️⃣ ⚠️ Install missing package krunkit in Podman 5.8.0 (This is the issue) https://github.com/containers/podman/issues/27056#issuecomment-3434700252
+> ```
+> brew tap slp/krunkit && brew install krunkit && krunkit --version
+> ```
+> 5️⃣ Install Podman CLI and Podman Desktop
+> ```
+> brew install podman && brew install --cask podman-desktop
+> ```
+> 6️⃣ Initialize a new QEMU VM for Podman with 8GB RAM
+> ```
+> podman machine init --cpus 4 --memory 8192 --disk-size 100
+> ```
+> 7️⃣ Export Docker-compatible socket for Dev Containers
+> ```
+> echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.zshrc && echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.bashrc
+> source ~/.zshrc && source ~/.bashrc
+> ```
+> 8️⃣ Start the VM and list machines
+> ```
+> podman machine stop && podman machine start && podman machine list
+> ```
+> 9 Start the Project
+> ```
+> devcontainer up --workspace-folder .
+> ```
 
 <br>
 
@@ -140,9 +187,86 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run dev`
 - `npm run test`
 
+## Keycloak Setup
+
+Keycloak is configured to use the hostname `keycloak` instead of `localhost` to work for both browser redirects and server-side API calls from inside containers. This is necessary because:
+
+- **Browser** (running on your host machine) needs to access Keycloak via a hostname that resolves to `127.0.0.1`
+- **PHP code** (running inside the container) needs to access Keycloak via a hostname that resolves through Docker/Podman network DNS
+
+Using `localhost` doesn't work because inside the container, `localhost` refers to the container itself, not the host machine where Keycloak is exposed.
+
+### Adding keycloak to /etc/hosts
+
+You need to add `keycloak` to your system's hosts file so it resolves to `127.0.0.1`:
+
+**macOS:**
+```bash
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
+```
+Enter your Mac password when prompted.
+
+**Ubuntu/Linux:**
+```bash
+echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
+```
+
+**Windows:**
+1. Open Notepad as Administrator (Right-click → Run as administrator)
+2. Open `C:\Windows\System32\drivers\etc\hosts`
+3. Add this line at the end:
+   ```
+   127.0.0.1 keycloak
+   ```
+4. Save the file
+
+**Verify it worked:**
+```bash
+# macOS/Linux
+ping -c 1 keycloak
+
+# Windows
+ping keycloak
+```
+You should see it resolve to `127.0.0.1`.
+
+After adding the entry, restart the Keycloak container:
+```bash
+# Podman
+podman restart zms-keycloak
+
+# DDEV
+ddev restart
+```
+
 ## Import Database
-- `ddev import-db --file=.resources/zms.sql`
-- `ddev exec zmsapi/vendor/bin/migrate --update`
+
+### Using DDEV
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `ddev exec ./cli db full-setup`
+- Optional manual steps:
+  - `ddev exec ./cli db drop-all-tables`
+  - `ddev import-db --file=.resources/zms.sql`
+  - `ddev exec ./cli db migrate-test-data`
+  - `ddev exec zmsapi/vendor/bin/migrate --update`
+  - `ddev exec zmsapi/cron/cronjob.hourly --city=munich`
+  - `ddev exec zmsapi/cron/cronjob.minutly`
+  - `ddev exec ./cli modules clear-local-cache`
+
+### Using Podman
+- One-shot local dev setup (`db full-setup` first, then composer + npm install + npm build), same as chaining `./cli` yourself:
+  - From the **host**: `podman exec -it zms-web bash -lc "./cli dev setup-local"`
+  - Or run `./cli dev setup-local` wherever the repo is already mounted (e.g. already inside `zms-web` container)
+- Full setup (drop all tables + base import + test data Flyway + PHP migrate + hourly + minutly + local cache clear):
+  - `podman exec -it zms-web bash -lc "./cli db full-setup"`
+- Optional manual steps:
+  - `podman exec -it zms-web bash -lc "./cli db drop-all-tables"`
+  - `podman exec -i zms-db mysql -u root -proot db < .resources/zms.sql`
+  - `podman exec -it zms-web bash -lc "./cli db migrate-test-data"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && vendor/bin/migrate --update"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.hourly --city=munich"`
+  - `podman exec -it zms-web bash -lc "cd zmsapi && ./cron/cronjob.minutly"`
+  - `podman exec -it zms-web bash -lc "./cli modules clear-local-cache"`
 
 ## Dependency Check for PHP Upgrades
 Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
@@ -154,12 +278,29 @@ e.g.
 ## Code Quality Checks
 We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and detect possible issues early. These checks run automatically in our GitHub Actions pipeline but can also be executed locally.
 
-To run Checks locally in your local docker container:
-
-0. Run all at once:
+### Using DDEV
+0. Run PHP code formatting all at once:
 - `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
-1. Enter the container (if using DDEV or Docker):
+1. Enter the container:
 - `ddev ssh`
+2. Go to the desired module directory:
+- `cd zmsadmin`
+3. Run PHPCS (PSR-12 standard):
+- `vendor/bin/phpcs --standard=psr12 src/`
+- ```
+  You can automatically fix many PHPCS formatting issues by running:
+  - vendor/bin/phpcbf --standard=psr12 src/
+  or
+  - phpcs --standard=psr12 --fix src/
+  ```
+4. Run PHPMD (using the phpmd.rules.xml in the project root):
+- `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
+
+### Using Podman
+0. Run PHP code formatting all at once:
+- `podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && podman exec -it zms-web bash -lc "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
+1. Enter the container:
+- `podman exec -it zms-web bash`
 2. Go to the desired module directory:
 - `cd zmsadmin`
 3. Run PHPCS (PSR-12 standard):
@@ -181,7 +322,13 @@ code style (lint) problems:
 ## Unit Testing
 To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 
+### Using DDEV
 - `ddev ssh`
+- `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
+- `./vendor/bin/phpunit`
+
+### Using Podman
+- `podman exec -it zms-web bash`
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`
 
@@ -200,15 +347,29 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
 
+**Using Docker:**
+
 ```bash
 cd zmsclient
 docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
-#### Traditional DDEV Method (overwrites local DB)
+**Using Podman:**
+
+```bash
+cd zmsclient
+./zmsclient-test
+./zmsclient-test --filter "testSetKeyBasic"
+```
+
+The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
+
+#### Traditional Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
 **zmsapi:**
+
+Using DDEV:
 ```bash
 cd zmsapi
 rm -rf data
@@ -219,7 +380,20 @@ vendor/bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
+Using Podman:
+```bash
+cd zmsapi
+rm -rf data
+ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+podman exec -it zms-web bash
+cd zmsapi
+vendor/bin/importTestData --commit
+./vendor/bin/phpunit
+```
+
 **zmsdb:**
+
+Using DDEV:
 ```bash
 ddev ssh
 cd zmsdb
@@ -227,76 +401,178 @@ bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
-#### Containerized Testing (Recommended - isolated environment)
-To run isolated, repeatable tests without touching your local database, use Docker Compose:
-
-**Smart Testing Scripts (Recommended):**
+Using Podman:
 ```bash
-# For zmsdb
+podman exec -it zms-web bash
 cd zmsdb
-./zmsdb-test                    # Run all tests
-./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
-./zmsdb-test --reset            # Reset all containers and volumes
+bin/importTestData --commit
+./vendor/bin/phpunit
+```
 
-# For zmsapi  
-cd zmsapi
-./zmsapi-test                   # Run all tests
-./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
-./zmsapi-test --reset           # Reset all containers and volumes
+#### Containerized Testing (Recommended - isolated environment)
+
+Run your tests in clean, disposable containers to ensure they don’t affect your local system or database:
+
+```bash
+# Enter your web container
+podman exec -it zms-web bash  # Podman
+ddev ssh                      # DDEV
+
+# Run zmsdb tests
+./zmsdb/zmsdb-test                    # Run all tests
+./zmsdb/zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
+
+# Run zmsapi tests
+./zmsapi/zmsapi-test                   # Run all tests
+./zmsapi/zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
 ```
 
 **Available PHPUnit Flags:**
+
 ```bash
-# Test Selection
---filter="TestClass::testMethod"    # Run specific test method
---filter="TestClass"                # Run all tests in a class
---filter="testMethod"               # Run all tests with matching method name
---filter="pattern"                  # Run tests matching regex pattern
+# Test Selection (filter is a regex matching against "Namespace\TestClass::testMethod")
+--filter="TestClass::testMethod"  # Run specific test method
+--filter="TestClass"              # Run all tests in a class
+--filter="testMethod"             # Run all tests with matching method name
+--filter="pattern"                # Run tests matching regex pattern
 
 # Output & Verbosity
---verbose                           # More detailed output
---debug                            # Debug information
---stop-on-failure                  # Stop on first failure
---stop-on-error                    # Stop on first error
---stop-on-warning                  # Stop on first warning
+--verbose                         # More detailed output
+--debug                           # Debug information
+--stop-on-failure                 # Stop on first failure
+--stop-on-error                   # Stop on first error
+--stop-on-warning                 # Stop on first warning
 
 # Coverage & Reports
---coverage-text                    # Text coverage report
+--coverage-text                   # Text coverage report
 --coverage-html=dir               # HTML coverage report
 --coverage-clover=file.xml        # XML coverage report
 
 # Test Execution
---group="groupName"                # Run tests in specific group
---exclude-group="groupName"        # Exclude tests in group
---testsuite="suiteName"            # Run specific test suite
+--group="groupName"               # Run tests in specific group
+--exclude-group="groupName"       # Exclude tests in group
+--testsuite="suiteName"           # Run specific test suite
 ```
 
 **Examples:**
+
 ```bash
 # Run specific test with verbose output
-./zmsdb-test --filter="StatusTest::testBasic" --verbose
+bash zmsdb-test --filter="StatusTest::testBasic" --verbose
 
 # Run all tests in a class and stop on first failure
-./zmsapi-test --filter="StatusGetTest" --stop-on-failure
+bash zmsapi-test --filter="StatusGetTest" --stop-on-failure
 
 # Run tests with coverage report
-./zmsdb-test --coverage-text
+bash zmsdb-test --coverage-text
 
 # Run tests excluding a specific group
-./zmsapi-test --exclude-group="slow"
+bash zmsapi-test --exclude-group="slow"
 ```
 
-**How the Scripts Work:**
-* **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
-* **Subsequent runs**: Reuses existing setup for fast test execution
-* **Filter support**: Accepts all PHPUnit arguments for flexible test execution
-* **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
+### API Testing (zmsautomation)
 
-**Reset Functionality:**
-* **`--reset`**: Completely removes all containers, volumes, and networks for a fresh start
-* **Use when**: You want to clear all cached dependencies and start completely fresh
-* **What it does**: Runs `docker-compose down -v` to remove everything
-* **After reset**: Next run will be treated as a "first run" with full setup
+**zmsautomation** provides Java-based API tests for ZMS APIs using Cucumber, ATAF (Test Automation Framework), and REST-assured. These tests validate the REST API endpoints using behavior-driven development (BDD) with feature files.
+
+**Using the test runner script (Recommended):**
+
+The `zmsautomation-test` script must be run from inside the container. It automatically handles database setup, migrations, and test execution:
+
+```bash
+# Enter your web container first
+podman exec -it zms-web bash  # Podman
+ddev ssh                      # DDEV
+
+# Run zmsautomation tests
+cd zmsautomation
+bash zmsautomation-test                    # Run all tests
+bash zmsautomation-test -Dtest=StatusEndpointTest  # Run specific test class
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk  # Run specific test method
+bash zmsautomation-test -Dtest=*EndpointTest  # Run all tests matching pattern
+```
+
+**Maven Test Filtering:**
+
+The script supports Maven Surefire test filtering using the `-Dtest` parameter:
+
+```bash
+# Run a specific test class
+bash zmsautomation-test -Dtest=StatusEndpointTest
+
+# Run a specific test method
+bash zmsautomation-test -Dtest=StatusEndpointTest#statusEndpointShouldBeOk
+
+# Run multiple test classes
+bash zmsautomation-test -Dtest=StatusEndpointTest,OfficesAndServicesEndpointTest
+
+# Run tests matching a pattern
+bash zmsautomation-test -Dtest=*EndpointTest
+
+# Run tests with additional Maven options
+bash zmsautomation-test -Dtest=StatusEndpointTest -Dmaven.test.failure.ignore=true
+```
+
+**Environment Configuration:**
+
+The script runs natively inside the container and uses environment variables. Default endpoints:
+
+- `BASE_URI`: `http://localhost/terminvereinbarung/api/2`
+- `CITIZEN_API_BASE_URI`: `http://localhost/terminvereinbarung/api/citizen`
+
+You can override these defaults:
+
+```bash
+BASE_URI=http://localhost/terminvereinbarung/api/2 bash zmsautomation-test
+CITIZEN_API_BASE_URI=http://localhost/terminvereinbarung/api/citizen bash zmsautomation-test
+```
+
+**What the Script Does:**
+
+1. Backs up the current database
+2. Clears application caches
+3. Drops all database tables for a clean state
+4. Imports base database schema from `.resources/zms.sql`
+5. Runs Flyway migrations for test data
+6. Runs PHP migrations
+7. Executes hourly cronjob to import Munich DLDB data (if configured)
+8. Performs health checks on both APIs
+9. Runs Cucumber tests with ATAF and REST-assured
+10. Collects and displays test results
+11. Restores the original database
+12. Cleans up test artifacts
+
+**Data Preparation (Optional):**
+
+To import Munich DLDB data during test setup:
+
+```bash
+ZMS_CRONROOT=1 ZMS_SOURCE_DLDB_MUNICH="<munich-source-url>" bash zmsautomation-test
+```
+
+**Running Tests Directly with Maven (inside container):**
+
+For development without the full setup script (assumes database is already prepared):
+
+```bash
+cd zmsautomation
+mvn test
+mvn test -Dtest=StatusEndpointTest
+```
+
+**Running Cucumber Feature Files:**
+
+Tests are organized as Cucumber feature files in `src/test/resources/features/`. You can run specific feature files:
+
+```bash
+cd zmsautomation
+mvn test -Dcucumber.filter.tags="@api"  # Run tests tagged with @api
+mvn test -Dcucumber.features="src/test/resources/features/zmsapi/availability.feature"  # Run specific feature file
+```
+
+**References:**
+- Cucumber: https://cucumber.io/
+- REST-assured: https://github.com/rest-assured/rest-assured
+- ATAF: Test Automation Framework (will be open source)
 
 ### Common Errors
 
@@ -307,11 +583,36 @@ cd zmsapi
   ```
 
 ## Cronjobs
-To run cronjobs locally use ddev
-```
-ddev exec zmsapi/cron/cronjob.minutly
+To run cronjobs locally use ddev or podman
+
+### Using DDEV
+
+**Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
+```bash
 ddev exec zmsapi/cron/cronjob.hourly
+ddev exec zmsapi/cron/cronjob.hourly --city=berlin
+ddev exec zmsapi/cron/cronjob.hourly --city=munich
+```
+
+**Other cronjobs:**
+```bash
+ddev exec zmsapi/cron/cronjob.minutly
 ddev exec zmsapi/cron/cronjob.daily
+```
+
+### Using Podman
+
+**Hourly cronjob with city-specific flags or default (which is also Berlin but compatible with dldb-mapper for now):**
+```bash
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=berlin"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.hourly --city=munich"
+```
+
+**Other cronjobs:**
+```bash
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.minutly"
+podman exec -it zms-web bash -lc "zmsapi/cron/cronjob.daily"
 ```
 
 ## Branch Naming Convention
@@ -352,7 +653,7 @@ To keep our branch names organized and easily understandable, we follow a specif
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|chore|docs)-(zms|zmskvr|mpdzbs|muxdbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
 - **feat(ZMS-123): commit message**

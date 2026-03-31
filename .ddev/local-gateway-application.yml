@@ -1,3 +1,17 @@
+# Verbose gateway logs: ddev logs -s refarch-gateway
+# (or: docker logs -f ddev-<project>-refarch-gateway)
+# CORS is enforced in the browser; gateway still logs each request (incl. OPTIONS).
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.web.cors: DEBUG
+    org.springframework.web.cors.reactive: DEBUG
+    org.springframework.web.server.adapter: DEBUG
+    reactor.netty.http.server: DEBUG
+
 spring:
   cloud:
     gateway:
@@ -7,6 +21,13 @@ spring:
             allowedOriginPatterns:
               - "https://*.ddev.site"
               - "http://localhost:*"
+              - "https://localhost:*"
+              - "http://citizenview:*"
+              - "https://citizenview:*"
+              - "http://ddev-zms-web:*"
+              - "https://ddev-zms-web:*"
+              - "http://refarch-gateway:*"
+              - "https://refarch-gateway:*"
             allowedMethods:
               - '*'
             allowedHeaders:

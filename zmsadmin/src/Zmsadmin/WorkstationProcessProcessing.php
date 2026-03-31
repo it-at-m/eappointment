@@ -20,6 +20,7 @@ class WorkstationProcessProcessing extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstation->process->status = 'processing';
+        $workstation->process->parkedBy = null;
         if (! $workstation->process->hasId()) {
             throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
         }

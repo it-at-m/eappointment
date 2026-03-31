@@ -13,11 +13,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const FAKE_WAITINGNUMBER = -1;
 
-    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked', 'deleted', 'pickup'];
+    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked'];
 
-    public const STATUS_APPEND = ['missed', 'parked', 'deleted'];
+    public const STATUS_APPEND = ['missed', 'parked'];
 
-    public const STATUS_CALLED = ['called', 'processing', 'pickup'];
+    public const STATUS_CALLED = ['called', 'processing'];
 
     public const STATUS_FAKE = ['fake'];
 
@@ -146,7 +146,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withWaitingTime(\DateTimeInterface $dateTime)
     {
-        $queueList = clone $this;
+        $queueList = $this;
         $timestamp = $dateTime->getTimestamp();
         foreach ($queueList as $entity) {
             if ($timestamp > $entity->arrivalTime) {
@@ -158,7 +158,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withSortedArrival()
     {
-        $queueList = clone $this;
+        $queueList = $this;
         $queueList->uasort(function ($first, $second) {
             $firstPriority = $this->getSortPriority($first);
             $secondPriority = $this->getSortPriority($second);
@@ -173,7 +173,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withSortedWaitingTime()
     {
-        $queueList = clone $this;
+        $queueList = $this;
         return $queueList->sortByCustomKey('waitingTimeEstimate');
     }
 
@@ -182,7 +182,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = new self();
         foreach ($this as $entity) {
             if ($entity->withAppointment) {
-                $queueList->addEntity(clone $entity);
+                $queueList->addEntity($entity);
             }
         }
         return $queueList;
@@ -193,7 +193,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = new self();
         foreach ($this as $entity) {
             if (! $entity->withAppointment) {
-                $queueList->addEntity(clone $entity);
+                $queueList->addEntity($entity);
             }
         }
         return $queueList;
@@ -214,7 +214,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withFakeWaitingnumber(\DateTimeInterface $dateTime)
     {
-        $queueList = clone $this;
+        $queueList = $this;
         $process = new \BO\Zmsentities\Process(['status' => 'deleted']);
         $entity = (new \BO\Zmsentities\Queue())->setProcess($process);
         $entity->number = self::FAKE_WAITINGNUMBER;
@@ -287,7 +287,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = new self();
         foreach ($this as $entity) {
             if ($entity->waitingTime || ! $entity->withAppointment) {
-                $queueList->addEntity(clone $entity);
+                $queueList->addEntity($entity);
             }
         }
         return $queueList;
@@ -302,7 +302,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = new self();
         foreach ($this as $entity) {
             if ($entity->toProperty()->status->isAvailable() && in_array($entity->status, $statusList)) {
-                $queueList->addEntity(clone $entity);
+                $queueList->addEntity($entity);
             }
         }
         return $queueList;
@@ -317,7 +317,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = new self();
         foreach ($this as $entity) {
             if ($entity->toProperty()->status->isAvailable() && ! in_array($entity->status, $statusList)) {
-                $queueList->addEntity(clone $entity);
+                $queueList->addEntity($entity);
             }
         }
         return $queueList;
@@ -325,25 +325,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withShortNameDestinationHint(\BO\Zmsentities\Cluster $cluster, \BO\Zmsentities\Scope $scope)
     {
-        $queueList = clone $this;
+        $queueList = $this;
         $list = new self();
         foreach ($queueList as $entity) {
             if ($cluster->shortNameEnabled && $scope->shortName) {
                 $entity->destinationHint = $scope->shortName;
-            }
-            $list->addEntity($entity);
-        }
-        $listWithPickups = $list->withPickupDestination($scope);
-        return $listWithPickups;
-    }
-
-    public function withPickupDestination(\BO\Zmsentities\Scope $scope)
-    {
-        $queueList = clone $this;
-        $list = new self();
-        foreach ($queueList as $entity) {
-            if (! $entity->toProperty()->destination->get()) {
-                $entity->destination = $scope->toProperty()->preferences->pickup->alternateName->get();
             }
             $list->addEntity($entity);
         }
@@ -392,7 +378,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withSelectedProcessFirst(\BO\Zmsentities\Process $process)
     {
-        $queueList = clone $this;
+        $queueList = $this;
         $list = new self();
         $list->addEntity($process->queue);
         foreach ($queueList as $entity) {

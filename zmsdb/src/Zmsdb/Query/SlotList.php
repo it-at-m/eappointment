@@ -29,8 +29,6 @@ class SlotList extends Base
             -- as grouped by slot, we can calculate available free appointments
             GREATEST(0, o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet - COUNT(b.Datum))
                 AS `freeAppointments__public`,
-            GREATEST(0, o.Anzahlterminarbeitsplaetze - o.reduktionTermineCallcenter - COUNT(b.Datum))
-                AS `freeAppointments__callcenter`,
             o.Anzahlterminarbeitsplaetze - COUNT(b.Datum)
                 AS `freeAppointments__intern`,
 
@@ -59,7 +57,6 @@ class SlotList extends Base
 
             -- calculate available slots, do not use reduction values
             o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet AS availability__workstationCount__public,
-            o.Anzahlterminarbeitsplaetze - o.reduktionTermineCallcenter AS availability__workstationCount__callcenter,
             o.Anzahlterminarbeitsplaetze AS availability__workstationCount__intern,
 
             -- availability overwrites scope settings if greater zero
@@ -300,8 +297,6 @@ class SlotList extends Base
     {
         $slot->public += $slotData['freeAppointments__public'] -
             $slotData['availability__workstationCount__public'];
-        $slot->callcenter += $slotData['freeAppointments__callcenter'] -
-            $slotData['availability__workstationCount__callcenter'];
         $slot->intern += $slotData['freeAppointments__intern'] -
             $slotData['availability__workstationCount__intern'];
         $slot->time = (new DateTime($slotData['slottime']))->format('H:i');
@@ -349,7 +344,7 @@ class SlotList extends Base
     }
 
     /**
-     * TODO Unterscheidung nach intern/callcenter/public sollte erst nach der API erfolgen!
+     * TODO Unterscheidung nach intern/public sollte erst nach der API erfolgen!
      */
     public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,

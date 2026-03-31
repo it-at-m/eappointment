@@ -44,9 +44,6 @@
                             <td>
                                 <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'xlsx'}) }}" target="_blank" title="Download">Download XLSX</a>
                             </td>
-                            <td>
-                                <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'csv'}) }}" target="_blank" title="Download">Download CSV</a>
-                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

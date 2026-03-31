@@ -112,10 +112,17 @@ class Workstation extends Base implements MappingInterface
 
     public function addJoin()
     {
-        return [
-            $this->addJoinUseraccount(),
-            $this->addJoinScope(),
-        ];
+        $joins = [];
+
+        if ($this->shouldLoadEntity('useraccount')) {
+            $joins[] = $this->addJoinUseraccount();
+        }
+
+        if ($this->shouldLoadEntity('scope')) {
+            $joins[] = $this->addJoinScope();
+        }
+
+        return $joins;
     }
 
     public function addJoinScope()

@@ -8,7 +8,6 @@
                 "month": 11,
                 "day": 19,
                 "freeAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 2,
                     "type": "free"
@@ -26,7 +25,6 @@
             "month": 11,
             "day": 19,
             "freeAppointments": {
-                "callcenter": 0,
                 "intern": 3,
                 "public": 0
             },
@@ -42,7 +40,6 @@
             "month": 11,
             "day": 19,
             "freeAppointments": {
-                "callcenter": 0,
                 "intern": 3,
                 "public": 0
             },
@@ -151,19 +148,17 @@
             "description": "list of days containing appointments",
             "items": {
                 "type": "object",
-                "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+                "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While public values might be positive, the intern value can be negative. This is due to calculation. The public values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
                 "example": {
                     "year": 2015,
                     "month": 11,
                     "day": 19,
                     "freeAppointments": {
-                        "callcenter": 0,
                         "intern": 3,
                         "public": 0,
                         "type": "sum"
                     },
                     "allAppointments": {
-                        "callcenter": 0,
                         "intern": 3,
                         "public": 3,
                         "type": "sum"
@@ -229,19 +224,17 @@
         },
         "firstDay": {
             "type": "object",
-            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While public values might be positive, the intern value can be negative. This is due to calculation. The public values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
             "example": {
                 "year": 2015,
                 "month": 11,
                 "day": 19,
                 "freeAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 0,
                     "type": "sum"
                 },
                 "allAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 3,
                     "type": "sum"
@@ -306,19 +299,17 @@
         },
         "lastDay": {
             "type": "object",
-            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While public values might be positive, the intern value can be negative. This is due to calculation. The public values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
             "example": {
                 "year": 2015,
                 "month": 11,
                 "day": 19,
                 "freeAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 0,
                     "type": "sum"
                 },
                 "allAppointments": {
-                    "callcenter": 0,
                     "intern": 3,
                     "public": 3,
                     "type": "sum"
@@ -782,7 +773,6 @@
                             "called",
                             "processing",
                             "pending",
-                            "pickup",
                             "finished",
                             "missed",
                             "parked",
@@ -792,7 +782,7 @@
                             "blocked",
                             "conflict"
                         ],
-                        "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+                        "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
                     }
                 }
             }
@@ -830,7 +820,6 @@
                             "startInDaysDefault": "2"
                         },
                         "client": {
-                            "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                             "appointmentsPerMail": "",
                             "slotsPerAppointment": "",
                             "whitelistedMails": "",
@@ -850,16 +839,11 @@
                             "headsUpTime": 15,
                             "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
                         },
-                        "pickup": {
-                            "alternateName": "Ausgabe von Dokumenten",
-                            "isDefault": false
-                        },
                         "queue": {
                             "callCountMax": 3,
                             "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
                             "firstNumber": 300,
                             "lastNumber": 500,
-                            "publishWaitingTimeEnabled": true,
                             "processingTimeAverage": 12,
                             "statisticsEnabled": true
                         },
@@ -1124,11 +1108,6 @@
                                 "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
-                                    "alternateAppointmentUrl": {
-                                        "type": "string",
-                                        "description": "redirect url if client should book appointments over a specialised application",
-                                        "default": ""
-                                    },
                                     "appointmentsPerMail": {
                                         "type": ["string", "null", "integer"],
                                         "description": "allowed appointments per e-mail address",
@@ -1276,25 +1255,6 @@
                                     }
                                 }
                             },
-                            "pickup": {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "alternateName": {
-                                        "type": "string",
-                                        "description": "alternate text to display on call display if pickup of documents is required",
-                                        "default": ""
-                                    },
-                                    "isDefault": {
-                                        "type": [
-                                            "boolean",
-                                            "number"
-                                        ],
-                                        "description": "a pickup of documents is default, this scope is preselected for pickup",
-                                        "default": false
-                                    }
-                                }
-                            },
                             "queue": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -1324,14 +1284,6 @@
                                         "description": "contingent of given waiting numbers for ticket printer per day",
                                         "maximum": 999,
                                         "default": 999
-                                    },
-                                    "publishWaitingTimeEnabled": {
-                                        "type": [
-                                            "boolean",
-                                            "number"
-                                        ],
-                                        "description": "true if waiting times are allowed to be published for public use",
-                                        "default": true
                                     },
                                     "processingTimeAverage": {
                                         "type": "number",

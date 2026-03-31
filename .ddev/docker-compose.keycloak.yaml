@@ -1,0 +1,40 @@
+version: '3.6'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+    container_name: ddev-${DDEV_SITENAME}-keycloak
+    command:
+      - start-dev
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+      - KC_HTTP_PORT=8080
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_DB=dev-file
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/plugins:/opt/keycloak/providers/
+    networks:
+      - default
+    restart: unless-stopped
+
+  init-keycloak:
+    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    depends_on:
+      keycloak:
+        condition: service_started
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+      - BASEURL=http://keycloak:8080/auth
+      - WAIT_FOR_KEYCLOAK=true
+      - FAIL_ON_UNDEFINED_VARIABLES=true
+      - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
+    volumes:
+      - ../.resources/keycloak/migration:/migration
+    networks:
+      - default
+    restart: "no"
+

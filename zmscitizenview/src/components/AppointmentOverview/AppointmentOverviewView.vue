@@ -97,12 +97,12 @@
       >
         <appointment-card
           v-for="(appointment, index) in appointments"
+          :id="`appointment-${appointment.processId}-displayNumber-${appointment.displayNumber}`"
           :key="index"
           :appointment="appointment"
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
           :t="t"
-          tabindex="0"
         >
         </appointment-card>
         <add-appointment-card

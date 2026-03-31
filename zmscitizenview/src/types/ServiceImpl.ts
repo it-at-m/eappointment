@@ -18,6 +18,11 @@ export class ServiceImpl implements Service {
 
   count?: number;
 
+  parentId: string | number | null;
+  variantId: number | null;
+
+  showOnStartPage?: boolean;
+
   constructor(
     id: string,
     name: string,
@@ -25,7 +30,10 @@ export class ServiceImpl implements Service {
     combinable: Combinable | undefined,
     providers: OfficeImpl[] | undefined,
     subServices: SubService[] | undefined,
-    count: number | undefined
+    count: number | undefined,
+    parentId: string | number | null,
+    variantId: number | null,
+    showOnStartPage: boolean | undefined
   ) {
     this.id = id;
     this.name = name;
@@ -34,5 +42,8 @@ export class ServiceImpl implements Service {
     this.providers = providers;
     this.subServices = subServices;
     this.count = count;
+    this.parentId = parentId;
+    this.variantId = variantId;
+    this.showOnStartPage = showOnStartPage;
   }
 }

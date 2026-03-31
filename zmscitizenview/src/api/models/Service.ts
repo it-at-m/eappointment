@@ -29,4 +29,19 @@ export interface Service {
    * @memberof Service
    */
   combinable?: Combinable;
+  /**
+   * @type {(string | number | null)}
+   * @memberof Service
+   */
+  parentId: string | number | null;
+  /**
+   * @type {(number | null)}
+   * @memberof Service
+   */
+  variantId: number | null;
+  /**
+   * @type {(boolean)}
+   * @memberof Service
+   */
+  showOnStartPage?: boolean;
 }

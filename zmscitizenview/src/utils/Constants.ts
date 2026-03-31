@@ -40,6 +40,7 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
 ]);
 
 export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
+export const QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER = "ap-display";
 
 export const LOCALSTORAGE_PARAM_APPOINTMENT_DATA = "lhm-appointment-data";
 
@@ -53,15 +54,39 @@ export const API_BASE_URL_AUTHENTICATED_EXTENSION =
   "/authenticated/api/citizen";
 
 function getRawApiBaseURL(baseUrl: string | undefined): string {
+  // Explicit override from caller always wins.
   if (baseUrl) {
     return baseUrl;
   }
+
+  // Special handling for ATAF / in-container runs:
+  // When the citizenview dev server is accessed via the Docker/DDEV
+  // service name "citizenview" (e.g. http://citizenview:8082),
+  // use a container-specific API base URL if configured.
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname === "citizenview" &&
+    import.meta.env.VITE_VUE_APP_API_URL_CONTAINER
+  ) {
+    return import.meta.env.VITE_VUE_APP_API_URL_CONTAINER;
+  }
+
   if (import.meta.env.VITE_VUE_APP_API_URL) {
     return import.meta.env.VITE_VUE_APP_API_URL;
   } else {
     return new URL(import.meta.url).origin;
   }
 }
+
+export const VARIANTS_WITH_HINTS = [1, 2, 3] as const;
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string
+) => {
+  return VARIANTS_WITH_HINTS.includes(variantId)
+    ? t(`locationVariantText.${variantId}`)
+    : undefined;
+};
 
 export function getAPIBaseURL(
   baseUrl: string | undefined,

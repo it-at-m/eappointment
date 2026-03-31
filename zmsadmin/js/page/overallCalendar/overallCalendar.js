@@ -134,6 +134,7 @@ async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}
 
     if (fullReload) {
         calendarCache = json.data.days;
+        sortCalendarCache();
     } else {
         mergeDelta(json.data.days, json.data.deletedProcessIds || []);
     }
@@ -177,6 +178,7 @@ async function handleSubmit(event) {
             fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload: true}),
             fetchClosures({scopeIds, dateFrom, dateUntil})
         ]);
+        SCOPE_COLORS = buildScopeColorMap(calendarCache);
         renderMultiDayCalendar(calendarCache);
         startAutoRefresh();
     } catch (e) {
@@ -350,7 +352,6 @@ function renderMultiDayCalendar(days) {
 
     const axis = calendarMeta.axis;
     const allTimes = buildTimeAxis(axis);
-    SCOPE_COLORS = buildScopeColorMap(days);
     const frag = document.createDocumentFragment();
 
     const laneCache = new Map();
@@ -634,5 +635,3 @@ function deferredRemove(node) {
         setTimeout(remove, 0);
     }
 }
-
-

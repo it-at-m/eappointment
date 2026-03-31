@@ -34,47 +34,52 @@ class ExchangeClientscope extends Base
         $entity->addDictionaryEntry('withappointment', 'number', 'Amount of clients with an appointment');
         $entity->addDictionaryEntry('missedwithappointment', 'number', 'Amount of missed clients with an appointment');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
+        $entity->addDictionaryEntry('ticketprinter', 'number', 'Amount of spontaneous clients via E-Kiosk (appeared)');
+        $entity->addDictionaryEntry('ticketprintermissed', 'number', 'Amount of spontaneous clients via E-Kiosk (missed)');
         $subjectIdList = explode(',', $subjectid);
         $aggregatedData = [];
 
-        foreach ($subjectIdList as $scopeId) {
-            $raw = $this->getReader()->fetchAll(
-                constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_READ_REPORT"),
-                [
-                    'scopeid' => $scopeId,
-                    'datestart' => $datestart->format('Y-m-d'),
-                    'dateend' => $dateend->format('Y-m-d'),
-                    'groupby' => $this->groupBy[$period]
-                ]
-            );
+        $raw = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_READ_REPORT"),
+            [
+                'scopeids' => $subjectIdList,
+                'datestart' => $datestart->format('Y-m-d'),
+                'dateend' => $dateend->format('Y-m-d'),
+                'groupby' => $this->groupBy[$period]
+            ]
+        );
 
-            foreach ($raw as $entry) {
-                $date = $entry['date'];
+        foreach ($raw as $entry) {
+            $date = $entry['date'];
+            $scopeId = implode(',', $subjectIdList);
 
-                if (!isset($aggregatedData[$date])) {
-                    $aggregatedData[$date] = [
-                        'scopeids' => [],
-                        'date' => $date,
-                        'notificationscount' => 0,
-                        'notificationscost' => 0,
-                        'clientscount' => 0,
-                        'missed' => 0,
-                        'withappointment' => 0,
-                        'missedwithappointment' => 0,
-                        'requestscount' => 0
-                    ];
-                }
+            if (!isset($aggregatedData[$date])) {
+                $aggregatedData[$date] = [
+                    'scopeids' => [],
+                    'date' => $date,
+                    'notificationscount' => 0,
+                    'notificationscost' => 0,
+                    'clientscount' => 0,
+                    'missed' => 0,
+                    'withappointment' => 0,
+                    'missedwithappointment' => 0,
+                    'requestscount' => 0,
+                    'ticketprinter' => 0,
+                    'ticketprintermissed' => 0
+                ];
+            }
 
-                $aggregatedData[$date]['notificationscount'] += $entry['notificationscount'];
-                $aggregatedData[$date]['clientscount'] += $entry['clientscount'];
-                $aggregatedData[$date]['missed'] += $entry['missed'];
-                $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
-                $aggregatedData[$date]['missedwithappointment'] += $entry['missedwithappointment'];
-                $aggregatedData[$date]['requestscount'] += $entry['requestcount'];
+            $aggregatedData[$date]['notificationscount'] += $entry['notificationscount'];
+            $aggregatedData[$date]['clientscount'] += $entry['clientscount'];
+            $aggregatedData[$date]['missed'] += $entry['missed'];
+            $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
+            $aggregatedData[$date]['missedwithappointment'] += $entry['missedwithappointment'];
+            $aggregatedData[$date]['requestscount'] += $entry['requestcount'];
+            $aggregatedData[$date]['ticketprinter'] += $entry['ticketprinter'] ?? 0;
+            $aggregatedData[$date]['ticketprintermissed'] += $entry['ticketprintermissed'] ?? 0;
 
-                if (!in_array($scopeId, $aggregatedData[$date]['scopeids'])) {
-                    $aggregatedData[$date]['scopeids'][] = $scopeId;
-                }
+            if (!in_array($scopeId, $aggregatedData[$date]['scopeids'])) {
+                $aggregatedData[$date]['scopeids'][] = $scopeId;
             }
         }
 

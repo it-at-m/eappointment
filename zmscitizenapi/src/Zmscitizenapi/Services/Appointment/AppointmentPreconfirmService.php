@@ -38,8 +38,6 @@ class AppointmentPreconfirmService
         return $result;
     }
 
-
-
     private function extractClientData(array $body): object
     {
         return (object) [

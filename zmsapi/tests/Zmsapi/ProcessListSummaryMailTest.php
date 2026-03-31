@@ -8,6 +8,14 @@ class ProcessListSummaryMailTest extends Base
 {
     protected $classname = "ProcessListSummaryMail";
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        if (getenv('SKIP_DNS_VALIDATION') === '1') {
+            // Mark this test class as skipped when DNS validation cannot work locally
+            $this->markTestSkipped('Skipping DNS-dependent ProcessListSummaryMailTest locally');
+        }
+    }
 
     public function testRendering()
     {

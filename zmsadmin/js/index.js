@@ -20,9 +20,6 @@ import ConfigView from './page/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
-import PickupView from './page/pickup'
-import PickupHandheldView from './page/pickup/handheld'
-import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
@@ -37,6 +34,7 @@ import { getDataAttributes, forceHttps } from './lib/utils'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
+import validateClusterScopes from './element/form/validateClusterScopes'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
@@ -116,23 +114,14 @@ $('.emergency-end').each(function () {
     new EmergencyEnd(this, getDataAttributes(this));
 })
 
-$('.pickup-view').each(function () {
-    new PickupView(this, getDataAttributes(this));
-})
-
-$('.pickup-handheld-view').each(function () {
-    new PickupHandheldView(this, getDataAttributes(this));
-})
-
-$('.pickup-keyboard-handheld').each(function () {
-    new PickupKeyboardHandheldView(this);
-});
-
 $('.client-processed').each(function () {
     new StatisticView(this, getDataAttributes(this));
 })
 
 $('form').each(function () {
+    if ($(this).find('#scope-validation-error').length > 0) {
+        validateClusterScopes(this);
+    }
     preventFormResubmit(this);
     focusFirstErrorElement(this);
 })

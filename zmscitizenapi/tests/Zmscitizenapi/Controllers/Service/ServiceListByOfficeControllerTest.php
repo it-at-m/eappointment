@@ -44,7 +44,8 @@ class ServiceListByOfficeControllerTest extends ControllerTestCase
                     'maxQuantity' => 1,
                     "combinable" => null,
                     "parent_id" => null,
-                    "variant_id" => null
+                    "variant_id" => null,
+                    "showOnStartPage" => null
                 ]
             ]
         ];

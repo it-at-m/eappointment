@@ -35,9 +35,8 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
-        $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
-        $parentProviders = $parents->providers ?? [];
-        $parentRequests  = $parents->requests  ?? [];
+        $currentSource = $args['name'] ?? null;
+        [$parentProviders, $parentRequests] = $this->loadParentsFromSources($currentSource);
 
         try {
             $apiRes  = \App::$http->readGetResult('/requestvariants/');
@@ -51,7 +50,7 @@ class SourceEdit extends BaseController
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            $result = $this->testUpdateEntity($input);
+            $result = $this->writeUpdatedEntity($input);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect('sourceEdit', ['name' => $result->getSource()], [
                     'success' => 'source_saved'
@@ -76,22 +75,44 @@ class SourceEdit extends BaseController
         );
     }
 
-    protected function testUpdateEntity($input)
+    protected function writeUpdatedEntity($input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        try {
-            $entity = \App::$http->readPostResult('/source/', $entity)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
-                $exceptionData = [
-                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
-                ];
-                $exceptionData['data'] = $exception->data;
-                return $exceptionData;
-            } else {
-                throw $exception;
+        return $this->handleEntityWrite(function () use ($entity) {
+            return \App::$http->readPostResult('/source/', $entity)->getEntity();
+        });
+    }
+
+    private function loadParentsFromSources(?string $currentSource): array
+    {
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 2])->getCollection();
+
+        $allowed = ['dldb'];
+        if ($currentSource && $currentSource !== 'add') {
+            $allowed[] = $currentSource;
+        }
+        $allowed = array_unique($allowed);
+
+        $parentProviders = [];
+        $parentRequests  = [];
+
+        foreach ($sourceList as $fullSource) {
+            $srcName = $fullSource->source ?? null;
+            if (!$srcName || !in_array($srcName, $allowed, true)) {
+                continue;
+            }
+
+            foreach (($fullSource->providers ?? []) as $provider) {
+                $parentProviders[] = $provider;
+            }
+            foreach (($fullSource->requests ?? []) as $req) {
+                $parentRequests[] = $req;
             }
         }
-        return $entity;
+
+        usort($parentProviders, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+        usort($parentRequests, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+
+        return [$parentProviders, $parentRequests];
     }
 }

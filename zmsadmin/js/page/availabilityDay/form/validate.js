@@ -256,28 +256,6 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
         }
     */
 
-    if (data.startTime && data.endTime) {
-        const startHourInt = parseInt(startHour);
-        const endHourInt = parseInt(endHour);
-        const startMinuteInt = parseInt(startMinute);
-        const endMinuteInt = parseInt(endMinute);
-        if (
-            (startHourInt === 22 && startMinuteInt > 0) || 
-            startHourInt === 23 || 
-            startHourInt === 0 || 
-            (endHourInt === 22 && endMinuteInt > 0) || 
-            endHourInt === 23 || 
-            endHourInt === 0 ||
-            (startHourInt === 1 && startMinuteInt > 0) ||
-            (endHourInt === 1 && endMinuteInt > 0)
-        ) {
-            errorList.push({
-                type: 'startOfDay',
-                message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-            });
-        }
-    }
-
     return errorList;
 }
 
@@ -326,6 +304,10 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     const endTimestamp = endDateTime.unix();
     const startTimestamp = startDateTime.unix();
     const isOrigin = (data.kind && 'origin' == data.kind)
+    
+    const hasTimesSet = data.startTime && data.endTime && 
+        !(data.startTime === '00:00' && data.endTime === '00:00') &&
+        !(data.startTime === '00:00:00' && data.endTime === '00:00:00');
 
     if (!isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
         errorList.push({
@@ -334,13 +316,12 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    // Check if dates are today but times are in the past
     const isStartDateToday = startTime.isSame(today, 'day');
     const isEndDateToday = endTime.isSame(today, 'day');
     const isStartTimePast = startTimestamp < today.unix();
     const isEndTimePast = endTimestamp < today.unix();
 
-    if (!isOrigin && isStartDateToday && isEndDateToday && isStartTimePast && isEndTimePast) {
+    if (!isOrigin && hasTimesSet && isStartDateToday && isEndDateToday && isStartTimePast && isEndTimePast) {
         errorList.push({
             type: 'timePastToday',
             message: 'Die ausgewählten Zeiten liegen in der Vergangenheit. '
@@ -349,8 +330,7 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
                 + startDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr").'
         })
     }
-    // Check if dates are in the past (not today)
-    else if (!isOrigin && startTimestamp < today.startOf('day').unix() && endTimestamp < today.startOf('day').unix()) {
+    else if (!isOrigin && hasTimesSet && startTimestamp < today.startOf('day').unix() && endTimestamp < today.startOf('day').unix()) {
         errorList.push({
             type: 'endTimePast',
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
@@ -394,6 +374,40 @@ function validateSlotTime(data) {
 }
 
 export default validate;
+
+/**
+ * Check if there are any blocking errors that should prevent saving.
+ * 
+ * For EXISTING availabilities: past-time errors (endTimePast, timePastToday) are ignored
+ * because they shouldn't block saving other availabilities.
+ * 
+ * For NEW availabilities: timePastToday errors ARE blocking because users shouldn't
+ * be able to create new availabilities with times in the past.
+ */
+export function hasBlockingErrors(errorList, availabilityList) {
+    if (!errorList || Object.keys(errorList).length === 0) {
+        return false;
+    }
+
+    return Object.values(errorList).some(error => {
+        // Find the availability this error belongs to
+        const errorAvailability = availabilityList?.find(
+            a => (a.id && a.id === error.id) || (a.tempId && a.tempId === error.id)
+        );
+        const isNewAvailability = errorAvailability && !errorAvailability.id && errorAvailability.tempId;
+
+        // Filter errors: 
+        // - Always exclude endTimePast (existing past availabilities)
+        // - Exclude timePastToday only for existing availabilities (not new ones)
+        const blockingErrors = error.itemList?.flat(2).filter(item => {
+            if (item?.type === 'endTimePast') return false;
+            if (item?.type === 'timePastToday' && !isNewAvailability) return false;
+            return true;
+        });
+
+        return blockingErrors && blockingErrors.length > 0;
+    });
+}
 
 export function hasSlotCountError(dataObject) {
     const errorList = dataObject?.errorList;

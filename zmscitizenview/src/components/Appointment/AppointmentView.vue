@@ -67,6 +67,8 @@
       "
     >
       <muc-stepper
+        v-if="!isAppointmentInPast"
+        ref="stepperRef"
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="!!appointmentHash"
@@ -123,10 +125,12 @@
             <div v-if="currentView === 3">
               <appointment-summary
                 v-if="
-                  !hasUpdateAppointmentError && !hasPreconfirmAppointmentError
+                  !hasUpdateAppointmentError &&
+                  !hasPreconfirmAppointmentError &&
+                  !isAppointmentInPast
                 "
                 :is-rebooking="isRebooking"
-                :rebook-or-cancel-dialog="rebookOrCanelDialog"
+                :rebook-or-cancel-dialog="rebookOrCancelDialog"
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
@@ -134,12 +138,29 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
+              <div v-if="isAppointmentInPast">
+                <muc-callout type="error">
+                  <template #content>
+                    <p>{{ t("rescheduleErrorText") }}</p>
+                  </template>
+
+                  <template #header>
+                    {{ t("rescheduleErrorHeader") }}
+                  </template>
+                </muc-callout>
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                >
+                  {{ t("newAppointmentButton") }}
+                </muc-button>
+              </div>
               <div v-if="hasUpdateAppointmentError">
                 <muc-callout
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -152,7 +173,7 @@
                   :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
-                    {{ t(apiErrorTranslation.textKey) }}
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
                   </template>
 
                   <template #header>
@@ -171,140 +192,139 @@
         !isInSystemFailureModeComputed &&
         !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
       "
-      class="m-component__grid"
     >
-      <div class="m-component__column">
-        <div
-          v-if="currentView === 4"
-          class="container"
-        >
-          <muc-callout
-            v-if="!cancelAppointmentSuccess"
-            type="warning"
-          >
-            <template #content>
-              {{ confirmText }}
-            </template>
-
-            <template #header>{{ t("confirmAppointmentHeader") }}</template>
-          </muc-callout>
-          <muc-callout
-            v-if="cancelAppointmentSuccess"
-            type="success"
-          >
-            <template #content>
-              {{ t("appointmentSuccessfullyCanceledText") }}
-            </template>
-
-            <template #header>{{
-              t("appointmentSuccessfullyCanceledHeader")
-            }}</template>
-          </muc-callout>
-          <muc-callout
-            v-if="hasCancelAppointmentError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
-            </template>
-
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
-        </div>
-        <div
-          v-else
-          class="container"
-        >
-          <muc-callout
-            v-if="confirmAppointmentSuccess"
-            type="success"
-          >
-            <template #content>
-              {{ t("appointmentSuccessfullyBookedText") }}
-            </template>
-
-            <template #header>{{
-              t("appointmentSuccessfullyBookedHeader")
-            }}</template>
-          </muc-callout>
-          <div
-            v-if="confirmAppointmentSuccess"
-            class="m-button-group"
-          >
-            <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
-              <muc-button
-                icon="arrow-right"
-                @click="viewAppointment"
+      <div class="container">
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <template v-if="currentView === 4">
+              <muc-callout
+                v-if="!cancelAppointmentSuccess"
+                type="warning"
               >
-                {{ t("viewAppointment") }}
-              </muc-button>
-            </div>
-            <muc-button
-              v-if="!globalState.isLoggedIn && appointment?.icsContent"
-              icon="download"
-              @click="downloadIcsAppointment"
-            >
-              {{ t("downloadAppointment") }}
-            </muc-button>
-            <muc-button
-              @click="redirectToAppointmentStart"
-              variant="secondary"
-            >
-              {{ t("bookAnotherAppointment") }}
-            </muc-button>
-          </div>
-          <muc-callout
-            v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
+                <template #content>
+                  <p>{{ confirmText }}</p>
+                </template>
+                <template #header>
+                  {{ t("confirmAppointmentHeader") }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="cancelAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyCanceledHeader") }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="hasCancelAppointmentError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
             </template>
 
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
+            <template v-else>
+              <muc-callout
+                v-if="confirmAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyBookedHeader") }}
+                </template>
+              </muc-callout>
 
-          <muc-callout
-            v-if="hasInitializationError"
-            :type="toCalloutType(apiErrorTranslation.errorType)"
-          >
-            <template #content>
-              {{ t(apiErrorTranslation.textKey) }}
-            </template>
-
-            <template #header>
-              {{ t(apiErrorTranslation.headerKey) }}
-            </template>
-          </muc-callout>
-
-          <muc-callout
-            v-if="apiErrorInvalidJumpinLink"
-            type="error"
-          >
-            <template #content>
-              <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
               <div
+                v-if="confirmAppointmentSuccess"
                 class="m-button-group"
-                style="margin-top: 1rem"
               >
+                <div v-if="globalState.isLoggedIn && appointmentDetailUrl">
+                  <muc-button
+                    icon="arrow-right"
+                    @click="viewAppointment"
+                  >
+                    {{ t("viewAppointment") }}
+                  </muc-button>
+                </div>
                 <muc-button
-                  icon="arrow-right"
-                  @click="redirectToAppointmentStart"
-                  style="margin-bottom: 0; margin-right: 0"
+                  v-if="!globalState.isLoggedIn && appointment?.icsContent"
+                  icon="download"
+                  @click="downloadIcsAppointment"
                 >
-                  {{ t("bookAppointmentStart") }}
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                <muc-button
+                  @click="redirectToAppointmentStart"
+                  variant="secondary"
+                >
+                  {{ t("bookAnotherAppointment") }}
                 </muc-button>
               </div>
-            </template>
 
-            <template #header>
-              {{ t("apiErrorInvalidJumpinLinkHeader") }}
+              <muc-callout
+                v-if="!confirmAppointmentSuccess && hasConfirmAppointmentError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="hasInitializationError"
+                :type="toCalloutType(apiErrorTranslation.errorType)"
+              >
+                <template #content>
+                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                </template>
+                <template #header>
+                  {{ t(apiErrorTranslation.headerKey) }}
+                </template>
+              </muc-callout>
+
+              <muc-callout
+                v-if="apiErrorInvalidJumpinLink"
+                type="error"
+              >
+                <template #content>
+                  <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
+                  <div
+                    class="m-button-group"
+                    style="margin-top: 1rem"
+                  >
+                    <p>
+                      <muc-button
+                        icon="arrow-right"
+                        @click="redirectToAppointmentStart"
+                        style="margin-bottom: 0; margin-right: 0"
+                      >
+                        {{ t("bookAppointmentStart") }}
+                      </muc-button>
+                    </p>
+                  </div>
+                </template>
+                <template #header>
+                  {{ t("apiErrorInvalidJumpinLinkHeader") }}
+                </template>
+              </muc-callout>
             </template>
-          </muc-callout>
+          </div>
         </div>
       </div>
     </div>
@@ -319,7 +339,15 @@ import {
   MucCallout,
   MucStepper,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -350,6 +378,7 @@ import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
+  ServiceLinkProvider,
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
@@ -365,6 +394,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   APPOINTMENT_ACTION_TYPE,
   LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -379,6 +409,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { isExpired } from "@/utils/timestampInPast";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -433,17 +464,22 @@ const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
 
+const serviceLinkId = ref<string | null>(null);
+const updateServiceLinkId = (id: string | null) => {
+  serviceLinkId.value = id;
+};
+
 watch(
   () => props.globalState.accessToken,
   (newAccessToken) => {
     if (!newAccessToken) return;
     const tokenData = getTokenData(newAccessToken);
     customerData.value.firstName =
-      customerData.value.firstName || tokenData.given_name;
+      customerData.value.firstName || tokenData.given_name || "";
     customerData.value.lastName =
-      customerData.value.lastName || tokenData.family_name;
+      customerData.value.lastName || tokenData.family_name || "";
     customerData.value.mailAddress =
-      customerData.value.mailAddress || tokenData.email;
+      customerData.value.mailAddress || tokenData.email || "";
   },
   { immediate: true }
 );
@@ -455,10 +491,14 @@ const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
-const rebookOrCanelDialog = ref<boolean>(false);
+const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
+const forcedPast = ref(false);
+const isAppointmentInPast = computed(() => {
+  return forcedPast.value || isExpired((appointment.value as any)?.timestamp);
+});
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
@@ -525,6 +565,26 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   );
 });
 
+type StepperInstance = ComponentPublicInstance | HTMLElement | null;
+const stepperRef = ref<StepperInstance>(null);
+
+const focusActiveStepperItem = async () => {
+  await nextTick();
+
+  // Zugriff auf das gerenderte DOM des Steppers
+  const rootEl =
+    (stepperRef.value as ComponentPublicInstance | null)?.$el ??
+    (stepperRef.value as HTMLElement | null);
+
+  if (!rootEl) return;
+
+  const activeIcon = rootEl.querySelector<HTMLElement>(
+    ".m-form-step__icon[aria-current='step']"
+  );
+
+  activeIcon?.focus();
+};
+
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
 
@@ -588,6 +648,11 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+provide<ServiceLinkProvider>("serviceLinkProvider", {
+  serviceLinkId,
+  updateServiceLinkId,
+} as ServiceLinkProvider);
 
 provide("reservationStartMs", reservationStartMs);
 
@@ -673,7 +738,7 @@ const nextReserveAppointment = () => {
   isReservingAppointment.value = true;
   clearContextErrors(errorStateMap.value);
   captchaError.value = false;
-  rebookOrCanelDialog.value = false;
+  rebookOrCancelDialog.value = false;
 
   reserveAppointment(
     props.globalState,
@@ -758,37 +823,45 @@ const nextBookAppointment = () => {
   if (appointment.value) {
     isBookingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
-    if (props.globalState.isLoggedIn) {
+
+    const canDirectConfirm =
+      !!appointment.value?.processId && !!appointment.value?.authKey;
+
+    if (
+      canDirectConfirm &&
+      (isRebooking.value || props.globalState.isLoggedIn)
+    ) {
       nextConfirmAppointment({
         id: appointment.value.processId,
         authKey: appointment.value.authKey,
       });
-    } else {
-      currentContext.value = "preconfirm";
-      preconfirmAppointment(props.globalState, appointment.value)
-        .then((data) => {
-          if ((data as any)?.errors?.length > 0) {
-            handleErrorApiResponse(
-              data,
-              errorStates.errorStateMap,
-              currentErrorData.value
-            );
-            return;
-          }
-
-          if ((data as AppointmentDTO).processId != undefined) {
-            appointment.value = data as AppointmentDTO;
-            if (isRebooking.value && rebookedAppointment.value) {
-              currentContext.value = "cancel";
-              cancelAppointment(props.globalState, rebookedAppointment.value);
-            }
-            increaseCurrentView();
-          }
-        })
-        .finally(() => {
-          isBookingAppointment.value = false;
-        });
+      return;
     }
+
+    currentContext.value = "preconfirm";
+    preconfirmAppointment(props.globalState, appointment.value)
+      .then((data) => {
+        if ((data as any)?.errors?.length > 0) {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          return;
+        }
+
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          if (isRebooking.value && rebookedAppointment.value) {
+            currentContext.value = "cancel";
+            cancelAppointment(props.globalState, rebookedAppointment.value);
+          }
+          increaseCurrentView();
+        }
+      })
+      .finally(() => {
+        isBookingAppointment.value = false;
+      });
   }
 };
 
@@ -827,6 +900,15 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
+
+  if (isExpired((appointment.value as any)?.timestamp)) {
+    forcedPast.value = true;
+    currentView.value = 3;
+    goToTop();
+    return;
+  }
+
+  // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -836,7 +918,7 @@ const nextRescheduleAppointment = () => {
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
-  rebookOrCanelDialog.value = true;
+  rebookOrCancelDialog.value = true;
 };
 
 /**
@@ -845,6 +927,7 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
+  focusActiveStepperItem();
 });
 
 /**
@@ -892,7 +975,18 @@ const saveAppointmentToLocalstorage = () => {
 };
 
 const viewAppointment = () => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointment.value?.processId}`;
+  const url = new URL(props.appointmentDetailUrl, window.location.origin);
+  url.searchParams.set(
+    QUERY_PARAM_APPOINTMENT_ID,
+    appointment.value?.processId || ""
+  );
+  if (appointment.value?.displayNumber) {
+    url.searchParams.set(
+      QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
+      appointment.value.displayNumber
+    );
+  }
+  location.href = url.toString();
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
@@ -913,8 +1007,9 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
           office.organizationUnit,
           office.slotTimeInMinutes,
           office.disabledByServices,
+          office.allowDisabledServicesMix,
           office.scope,
-          office.maxSlotsPerAppointment,
+          office.slotsPerAppointment,
           office.slots,
           office.priority || 1
         );
@@ -932,7 +1027,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
 
 const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   try {
-    const appointmentData = JSON.parse(window.atob(hash));
+    // Add missing base64 padding if needed (padding may be stripped from URL)
+    const padding = (4 - (hash.length % 4)) % 4;
+    const paddedHash = padding > 0 ? hash + "=".repeat(padding) : hash;
+    const appointmentData = JSON.parse(window.atob(paddedHash));
     if (
       appointmentData.id == undefined ||
       appointmentData.authKey == undefined
@@ -1006,38 +1104,42 @@ const downloadIcsAppointment = () => {
 };
 
 function nextConfirmAppointment(appointmentData: AppointmentHash) {
-  confirmAppointment(props.globalState, appointmentData).then((data) => {
-    currentView.value = 5;
+  confirmAppointment(props.globalState, appointmentData)
+    .then((data) => {
+      currentView.value = 5;
 
-    if ((data as AppointmentDTO).processId != undefined) {
-      confirmAppointmentSuccess.value = true;
-      appointment.value = data as AppointmentDTO;
-      clearContextErrors(errorStateMap.value);
-      if (isRebooking.value && rebookedAppointment.value) {
-        currentContext.value = "cancel";
-        cancelAppointment(props.globalState, rebookedAppointment.value);
-      }
-    } else {
-      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-      if (
-        firstErrorCode === "processNotPreconfirmedAnymore" ||
-        firstErrorCode === "appointmentNotFound"
-      ) {
-        handleApiError(
-          "preconfirmationExpired",
-          errorStateMap.value,
-          currentErrorData.value
-        );
+      if ((data as AppointmentDTO).processId != undefined) {
+        confirmAppointmentSuccess.value = true;
+        appointment.value = data as AppointmentDTO;
+        clearContextErrors(errorStateMap.value);
+        if (isRebooking.value && rebookedAppointment.value) {
+          currentContext.value = "cancel";
+          cancelAppointment(props.globalState, rebookedAppointment.value);
+        }
       } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
+        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+
+        if (
+          firstErrorCode === "processNotPreconfirmedAnymore" ||
+          firstErrorCode === "appointmentNotFound"
+        ) {
+          handleApiError(
+            "preconfirmationExpired",
+            errorStateMap.value,
+            currentErrorData.value
+          );
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+        }
       }
-    }
-  });
+    })
+    .finally(() => {
+      isBookingAppointment.value = false;
+    });
 }
 
 onMounted(() => {
@@ -1057,7 +1159,7 @@ onMounted(() => {
 
   if (props.appointmentHash) {
     clearContextErrors(errorStateMap.value);
-    rebookOrCanelDialog.value = true;
+    rebookOrCancelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined,
@@ -1120,8 +1222,9 @@ onMounted(() => {
                 foundOffice.organizationUnit,
                 foundOffice.slotTimeInMinutes,
                 undefined, // disabledByServices
+                foundOffice.allowDisabledServicesMix,
                 foundOffice.scope,
-                foundOffice.maxSlotsPerAppointment,
+                foundOffice.slotsPerAppointment,
                 undefined, // slots
                 foundOffice.priority || 1
               );
@@ -1148,16 +1251,14 @@ onMounted(() => {
                 selectedService.value?.subServices?.push(subService);
               });
             }
-            if (appointmentData.action) {
-              if (
-                appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-              ) {
-                nextRescheduleAppointment();
-              } else {
-                nextCancelAppointment();
-              }
-            } else {
+            if (!appointmentData.action || isAppointmentInPast.value) {
               currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
             }
           }
         } else {
@@ -1215,7 +1316,9 @@ onMounted(() => {
           appointment.value = localStorageData.appointment;
           captchaToken.value = localStorageData.captchaToken;
 
-          currentView.value = localStorageData.currentView;
+          currentView.value = isAppointmentInPast.value
+            ? 3
+            : localStorageData.currentView;
         });
       }
     }
@@ -1223,6 +1326,7 @@ onMounted(() => {
   if (localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)) {
     localStorage.removeItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA);
   }
+  focusActiveStepperItem();
 });
 </script>
 <style lang="scss" scoped>

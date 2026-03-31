@@ -37,9 +37,7 @@ class WorkstationProcessCalled extends BaseController
 
         $error = $validator->getParameter('error')->isString()->getValue();
         if (isset($processId) && $workstation->process->getId() != $processId) {
-            $error = ('pickup' == $workstation->process->getStatus()) ?
-                'has_called_pickup' :
-                'has_called_process';
+            $error = 'has_called_process';
         }
 
         if ($workstation->process->getStatus() == 'processing') {

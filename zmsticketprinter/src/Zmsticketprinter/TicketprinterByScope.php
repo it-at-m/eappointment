@@ -28,7 +28,8 @@ class TicketprinterByScope extends BaseController
     ) {
         Helper\HomeUrl::create($request);
 
-        $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
+        // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
+        //$config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
@@ -58,7 +59,7 @@ class TicketprinterByScope extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'enabled' => $ticketprinter->isEnabled()
-                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
+                    || !$organisation->getPreference('ticketPrinterActivation'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
@@ -69,7 +70,7 @@ class TicketprinterByScope extends BaseController
                 'waitingTimeOptimistic' => $queueListHelper->getOptimisticWaitingTime(),
                 'waitingClients' => $queueListHelper->getClientsBefore(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                'config' => $config,
+                //'config' => $config,
                 'hasDisabledButton' => $hasDisabledButton
             )
         );

@@ -7,9 +7,8 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Availability;
-use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Mellon\Validator;
+use Slim\Psr7\Factory\StreamFactory;
 
 /**
  * Delete availability, API proxy
@@ -28,6 +27,13 @@ class AvailabilityDelete extends BaseController
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $result = \App::$http->readDeleteResult('/availability/' . $entityId . '/');
-        return $result->getResponse();
+        $apiResponse = $result->getResponse();
+        $body = (string) $apiResponse->getBody();
+        $stream = (new StreamFactory())->createStream($body);
+        return $apiResponse
+            ->withBody($stream)
+            ->withoutHeader('Transfer-Encoding')
+            ->withoutHeader('Content-Length')
+            ->withHeader('Content-Length', (string) strlen($body));
     }
 }

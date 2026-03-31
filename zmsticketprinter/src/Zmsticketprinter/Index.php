@@ -26,7 +26,8 @@ class Index extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Helper\HomeUrl::create($request);
-        $config = $this->getConfig();
+        // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
+        //$config = $this->getConfig();
 
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $this->getDefaultTemplate($validator);
@@ -67,13 +68,13 @@ class Index extends BaseController
                 'urlQueryString' => $queryString,
                 'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
-                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
+                    || !$organisation->getPreference('ticketPrinterActivation'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
                 'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                'config' => $config,
+                //'config' => $config,
                 'defaultLanguage' => $defaultLanguage,
                 'languages' => $languages,
                 'translations' => $translations,
@@ -82,10 +83,11 @@ class Index extends BaseController
         );
     }
 
-    private function getConfig()
+    // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
+    /*private function getConfig()
     {
         return \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
-    }
+    }*/
 
     private function getDefaultTemplate($validator)
     {

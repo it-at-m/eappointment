@@ -57,7 +57,6 @@ class Availability extends Schema\Entity
             ],
             'workstationCount' => [
                 'public' => 0,
-                'callcenter' => 0,
                 'intern' => 0,
             ],
             'lastChange' => 0,
@@ -68,6 +67,7 @@ class Availability extends Schema\Entity
             'startTime' => '0:00',
             'endTime' => '23:59',
             'type' => 'appointment',
+            'version' => 1,
             'scope' => [
                 'id' => 123,
                 'provider' => [
@@ -134,12 +134,35 @@ class Availability extends Schema\Entity
             || ($type !== false && $this->type != $type)
             || !$this->hasDay($dateTime)
             || !$this->hasWeek($dateTime)
-            || ($this->getDuration() > 2 && $this->hasDayOff($dateTime))
+            || ($this->getDuration() > 1 && $this->hasDayOff($dateTime))
         ) {
             // Out of date range
             return false;
         }
         return true;
+    }
+
+    public function overridesDayOff(): bool
+    {
+        if ($this->getDuration() >= 2) {
+            return false;
+        }
+
+        $start = $this->getStartDateTime()->modify('00:00:00');
+        $end   = $this->getEndDateTime()->modify('23:59:59');
+        $current = clone $start;
+
+        while ($current <= $end) {
+            try {
+                if ($this->hasWeekDay($current) && $this->hasDayOff($current)) {
+                    return true;
+                }
+            } catch (Exception\DayoffMissing $e) {
+                // Scope doesn't have dayoff data, skip this day
+            }
+            $current = $current->modify('+1 day');
+        }
+        return false;
     }
 
     /**
@@ -417,7 +440,7 @@ class Availability extends Schema\Entity
     /**
      * Check, if a day between two dates is included
      *
-     * @return Array of arrays with the keys time, public, callcenter, intern
+     * @return Array of arrays with the keys time, public, intern
      */
     public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
@@ -436,15 +459,11 @@ class Availability extends Schema\Entity
         return false;
     }
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
 
         $startTime = (clone $startDate)->setTime(0, 0);
-        $startHour = (int) $startDate->format('H');
-        $endHour = (int) $endDate->format('H');
-        $startMinute = (int) $startDate->format('i');
-        $endMinute = (int) $endDate->format('i');
         $isFuture = ($kind && $kind === 'future');
 
         if (
@@ -455,22 +474,6 @@ class Availability extends Schema\Entity
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
-            ];
-        }
-
-        if (
-            ($startHour === 22 && $startMinute > 0) ||
-            $startHour === 23 ||
-            $startHour === 0 ||
-            ($endHour === 22 && $endMinute > 0) ||
-            $endHour === 23 ||
-            $endHour === 0 ||
-            ($startHour === 1 && $startMinute > 0) ||
-            ($endHour === 1 && $endMinute > 0)
-        ) {
-            $errorList[] = [
-                'type' => 'startOfDay',
-                'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
             ];
         }
 
@@ -668,7 +671,7 @@ class Availability extends Schema\Entity
     /**
      * Creates a list of slots available on a valid day
      *
-     * @return Array of arrays with the keys time, public, callcenter, intern
+     * @return Array of arrays with the keys time, public, intern
      */
     public function getSlotList()
     {
@@ -933,7 +936,6 @@ class Availability extends Schema\Entity
         $slot = new Slot([
             'type' => Slot::FREE,
             'intern' => $this['workstationCount']['intern'] * $slices,
-            'callcenter' => $this['workstationCount']['callcenter'] * $slices,
             'public' => $this['workstationCount']['public'] * $slices,
         ]);
         $availability['workstationCount'] = $slot;
@@ -969,7 +971,6 @@ class Availability extends Schema\Entity
         $info .= " to " . $this->getEndDateTime()->format('H:i');
         $info .= " using " . $this['slotTimeInMinutes'] . "min slots";
         $info .= " with p{$this['workstationCount']['public']}/";
-        $info .= "c{$this['workstationCount']['callcenter']}/";
         $info .= "i{$this['workstationCount']['intern']}";
         $day = $this->getSlotList()->getSummerizedSlot();
         $info .= " day $day";

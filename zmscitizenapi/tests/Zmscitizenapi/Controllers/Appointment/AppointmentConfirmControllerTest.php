@@ -120,6 +120,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             'serviceCount' => 1,
             'status' => 'confirmed',
             'slotCount' => 1,
+            'displayNumber' => null
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

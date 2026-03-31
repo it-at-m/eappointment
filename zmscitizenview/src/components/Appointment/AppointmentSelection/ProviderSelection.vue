@@ -1,7 +1,11 @@
 <template>
   <div>
     <div
-      v-if="providersWithAppointments && providersWithAppointments.length > 1"
+      v-if="
+        providersWithAppointments &&
+        providersWithAppointments.length > 1 &&
+        selectableProviders.length > 1
+      "
     >
       <div class="m-component slider-no-margin">
         <div class="m-content">
@@ -15,7 +19,7 @@
               <MucCheckbox
                 v-for="provider in selectableProviders"
                 :key="provider.id"
-                :id="'checkbox-' + provider.id"
+                :id="`provider-${provider.id}`"
                 :label="provider.name"
                 :hint="
                   provider.address.street + ' ' + provider.address.house_number
@@ -53,7 +57,10 @@
                   <use xlink:href="#icon-place"></use>
                 </svg>
               </div>
-              <h3 class="m-teaser-contained-contact__headline">
+              <h3
+                :id="`provider-${selectedProvider.id}`"
+                class="m-teaser-contained-contact__headline"
+              >
                 {{ selectedProvider.name }}
               </h3>
               <div class="m-teaser-contained-contact__details">
@@ -62,9 +69,18 @@
                     aria-hidden="true"
                     class="icon icon--before"
                   >
-                    <use xlink:href="#icon-map-pin"></use>
+                    <use :xlink:href="`#${detailIcon}`"></use>
                   </svg>
-                  <span>
+                  <span
+                    v-if="
+                      variantId === VARIANT_ID_TEL ||
+                      variantId === VARIANT_ID_VIDEO
+                    "
+                  >
+                    {{ t(`appointmentTypes.${variantId}`) }}
+                  </span>
+
+                  <span v-else>
                     {{ selectedProvider.address.street }}
                     {{ selectedProvider.address.house_number }}
                   </span>
@@ -82,7 +98,12 @@
 import type { OfficeImpl } from "@/types/OfficeImpl";
 
 import { MucCheckbox, MucCheckboxGroup } from "@muenchen/muc-patternlab-vue";
-import { computed } from "vue";
+import { computed, inject } from "vue";
+
+import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+
+const VARIANT_ID_TEL = 2;
+const VARIANT_ID_VIDEO = 3;
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -106,4 +127,19 @@ const onToggle = (id: string | number, val: boolean) => {
   next[idStr] = val;
   emit("update:selectedProviders", next);
 };
+
+const { selectedService } = inject<SelectedServiceProvider>(
+  "selectedServiceProvider"
+)!;
+
+const variantId = computed<number | null>(() => {
+  const id = (selectedService.value as any)?.variantId;
+  return Number.isFinite(id) ? (id as number) : null;
+});
+
+const detailIcon = computed<string>(() => {
+  if (variantId.value === VARIANT_ID_TEL) return "icon-telephone";
+  if (variantId.value === VARIANT_ID_VIDEO) return "icon-video-camera";
+  return "icon-map-pin";
+});
 </script>

@@ -48,7 +48,8 @@ class CalendarPage extends BaseController
                 'selectedWeek' => $calendar->getDateTime()->format('W'),
                 'dayoffList' => $scope->getDayoffList(),
                 'scopeList' => $scopeList,
-                'monthList' => $calendar->readMonthListByScopeList($scopeList, $slotType, $slotsRequired)
+                'monthList' => $calendar->readMonthListByScopeList($scopeList, $slotType, $slotsRequired),
+                'workstation' => $workstation
             )
         );
     }

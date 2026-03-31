@@ -2,7 +2,7 @@
   <div v-if="isExpired">
     <muc-callout type="error">
       <template #content>
-        {{ t("apiErrorSessionTimeoutText") }}
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -45,7 +45,7 @@
       type="success"
     >
       <template #content>
-        {{ t("loggedinText") }}
+        <p>{{ t("loggedinText") }}</p>
       </template>
       <template #header>{{ t("loggedinHeader") }}</template>
       <template #icon><muc-icon icon="user-fill" /></template>
@@ -64,6 +64,7 @@
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
+      autocomplete="given-name"
       :error-msg="errorDisplayFirstName"
       :label="t('firstName')"
       max="50"
@@ -72,6 +73,7 @@
     <muc-input
       id="lastname"
       v-model="customerData.lastName"
+      autocomplete="family-name"
       :error-msg="errorDisplayLastName"
       :label="t('lastName')"
       max="50"
@@ -80,6 +82,7 @@
     <muc-input
       id="mailaddress"
       v-model="customerData.mailAddress"
+      autocomplete="email"
       :error-msg="errorDisplayMailAddress"
       :label="t('mailAddress')"
       max="50"
@@ -93,6 +96,7 @@
       "
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
+      autocomplete="tel"
       :error-msg="errorDisplayTelephoneNumber"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
@@ -110,7 +114,9 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
+      :rows="textfieldRows1"
+      @input="handleInput1"
     />
     <muc-text-area
       v-if="
@@ -123,7 +129,9 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="100"
+      :maxlength="250"
+      :rows="textfieldRows2"
+      @input="handleInput2"
     />
   </form>
   <div class="m-button-group">
@@ -159,11 +167,23 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+
+const inputLines1 = ref<number>(3);
+const inputLines2 = ref<number>(3);
+const textfieldRows1 = computed(() => inputLines1.value);
+const textfieldRows2 = computed(() => inputLines2.value);
+const handleInput1 = (event: Event) => {
+  handleInput(inputLines1, event);
+};
+const handleInput2 = (event: Event) => {
+  handleInput(inputLines2, event);
+};
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -193,11 +213,12 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired, timeLeftString } = useReservationTimer();
+const { isExpired } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern =
+  /^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() => {
@@ -298,8 +319,8 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 
@@ -321,8 +342,8 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length >= 100
-    ? props.t("errorMessageMaxLength", { max: 100 })
+  (customerData.value.customTextfield2 ?? "").length >= 250
+    ? props.t("errorMessageMaxLength", { max: 250 })
     : undefined
 );
 
@@ -330,6 +351,11 @@ const errorDisplayCustomTextfield2 = computed(
   () =>
     errorMessageCustomTextfield2.value ?? maxLengthMessageCustomTextfield2.value
 );
+
+onMounted(() => {
+  inputLines1.value = countLines(customerData.value.customTextfield ?? "");
+  inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
+});
 
 const validForm = computed(
   () =>

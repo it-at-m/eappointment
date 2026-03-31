@@ -61,13 +61,13 @@
   >
     <no-login-warning
       v-if="!globalState.isLoggedIn"
-      :appointment-id="appointmentId"
+      :appointment-id="appointmentDisplayNumber ?? appointmentId"
       :t="t"
     />
     <div v-else-if="loadingError">
       <muc-intro
         :tagline="t('appointment')"
-        :title="appointmentId ? appointmentId : ''"
+        :title="appointmentDisplayNumber ?? appointmentId ?? ''"
         variant="detail"
       />
       <div class="m-component m-component-form">
@@ -103,6 +103,7 @@
           </p>
           <p
             v-if="appointment && selectedProvider"
+            :id="`appointment-${appointment.processId}-displayNumber-${appointment.displayNumber}-provider-${selectedProvider.id}`"
             style="margin-bottom: 0"
           >
             <strong>{{ t("affectedAppointment") }}</strong>
@@ -138,7 +139,7 @@
         <template #title>{{ t("cancleAppointmentModalHeading") }}</template>
         <template #body>
           <p style="margin-bottom: 16px">
-            {{ t("cancleAppointmentModalText") }}
+            {{ t("cancelAppointmentModalText") }}
           </p>
           <p
             v-if="appointment && selectedProvider"
@@ -219,6 +220,7 @@
               <div
                 v-if="selectedProvider"
                 class="m-content location-text-margin-top"
+                :id="`provider-${selectedProvider.id}`"
               >
                 <p>
                   {{ selectedProvider.organization }}<br />
@@ -230,34 +232,22 @@
                   {{ selectedProvider.address.postal_code }}
                   {{ selectedProvider.address.city }}
                 </p>
-                <!--                Used after the content of hint has been checked-->
-                <!--                <p-->
-                <!--                  v-if="-->
-                <!--                    selectedProvider &&-->
-                <!--                    selectedProvider.scope &&-->
-                <!--                    selectedProvider.scope.hint-->
-                <!--                  "-->
-                <!--                >-->
-                <!--                  <strong> {{ selectedProvider.scope.hint }} </strong>-->
-                <!--                </p>-->
+                <p v-if="appointment?.scope?.hint">
+                  <strong> {{ appointment.scope.hint }} </strong>
+                </p>
               </div>
+              <muc-callout
+                v-if="appointment?.scope?.infoForAppointment"
+                type="info"
+                class="callout-margin"
+              >
+                <template #content>
+                  {{ appointment.scope.infoForAppointment }}
+                </template>
+                <template #header>{{ t("appointmentHintHeader") }}</template>
+              </muc-callout>
             </div>
           </div>
-          <!--          Used after the content of infoForAppointment has been checked-->
-          <!--          <muc-callout-->
-          <!--            v-if="-->
-          <!--              appointment &&-->
-          <!--              appointment.scope &&-->
-          <!--              appointment.scope.infoForAppointment-->
-          <!--            "-->
-          <!--            type="info"-->
-          <!--          >-->
-          <!--            <template #content>-->
-          <!--              {{ appointment.scope.infoForAppointment }}-->
-          <!--            </template>-->
-
-          <!--            <template #header>{{ t("appointmentHintHeader") }}</template>-->
-          <!--          </muc-callout>-->
         </div>
       </div>
       <div
@@ -277,6 +267,7 @@
                       class="m-linklist-element m-linklist-element--external"
                       :href="getServiceBaseURL() + appointment.serviceId"
                       target="_blank"
+                      :id="`service-${appointment.serviceId}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
@@ -299,6 +290,7 @@
                     <a
                       class="m-linklist-element m-linklist-element"
                       :href="getServiceBaseURL() + subrequest.id"
+                      :id="`service-${subrequest.id}`"
                     >
                       <div class="m-linklist-element__meta">
                         <span class="m-linklist-element__title">{{
@@ -356,6 +348,7 @@ import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   APPOINTMENT_ACTION_TYPE,
   getServiceBaseURL,
+  QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
 import {
@@ -378,7 +371,8 @@ const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
-const appointmentId = ref<string | undefined>();
+const appointmentId = ref<string | null>();
+const appointmentDisplayNumber = ref<string | null>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
@@ -390,6 +384,8 @@ const locationTitleElement = ref<HTMLElement | null>(null);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
+
+const CLASS_NAME_HEADER = "m-page-header";
 
 // API status state
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
@@ -446,7 +442,7 @@ const getServiceSummary = () => {
     const subserviceSummary = appointment.value.subRequestCounts
       .map((subCount) => subCount.count + "x " + subCount.name)
       .join(", ");
-    return serviceSummary
+    return subserviceSummary
       ? serviceSummary + ", " + subserviceSummary
       : serviceSummary;
   } else {
@@ -457,9 +453,12 @@ const getServiceSummary = () => {
 const focusTimeTitle = () => {
   if (timeTitleElement.value) {
     timeTitleElement.value.focus();
-    timeTitleElement.value.scrollIntoView({
+    const scrollPosition =
+      getOffsetTop(timeTitleElement.value) - getOffsetHeader();
+    window.scroll({
       behavior: "smooth",
-      block: "start",
+      left: 0,
+      top: scrollPosition,
     });
   }
 };
@@ -467,11 +466,30 @@ const focusTimeTitle = () => {
 const focusLocationTitle = () => {
   if (locationTitleElement.value) {
     locationTitleElement.value.focus();
-    locationTitleElement.value.scrollIntoView({
+    const scrollPosition =
+      getOffsetTop(locationTitleElement.value) - getOffsetHeader();
+    window.scroll({
       behavior: "smooth",
-      block: "start",
+      left: 0,
+      top: scrollPosition,
     });
   }
+};
+
+const getOffsetTop = (element: HTMLElement | null) => {
+  if (!element) return 0;
+  const rec = element.getBoundingClientRect();
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+  return rec.top + scrollTop;
+};
+
+const getOffsetHeader = () => {
+  const elementHeader = document.getElementsByClassName(CLASS_NAME_HEADER);
+  if (elementHeader.length) {
+    return elementHeader[0].getBoundingClientRect().height;
+  }
+  return 0;
 };
 
 const checksMobile = () => {
@@ -494,7 +512,17 @@ function setBreadcrumbAndTitle(appointmentId: string) {
 
 const loadAppointment = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
+  appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID) ?? undefined;
+  appointmentDisplayNumber.value =
+    urlParams.get(QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER) ?? undefined;
+
+  // Set breadcrumb/title early if we have displayNumber from URL
+  if (appointmentDisplayNumber.value) {
+    setBreadcrumbAndTitle(appointmentDisplayNumber.value);
+  } else if (appointmentId.value) {
+    setBreadcrumbAndTitle(appointmentId.value);
+  }
+
   fetchServicesAndProviders(
     undefined,
     undefined,
@@ -522,7 +550,11 @@ const loadAppointment = () => {
           if ((data as AppointmentDTO)?.processId !== undefined) {
             appointment.value = data;
 
-            setBreadcrumbAndTitle(appointment.value.processId);
+            setBreadcrumbAndTitle(
+              appointment.value.displayNumber ??
+                appointmentDisplayNumber.value ??
+                appointment.value.processId
+            );
 
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value?.serviceId
@@ -612,19 +644,18 @@ onMounted(() => {
   margin-bottom: 64px;
 }
 
+.callout-margin {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
+}
+
 .timeBox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 32px;
   margin-bottom: 32px;
 }
 .timeBox p {
   margin-bottom: 0 !important;
-}
-
-@media all and (max-width: 767px) {
-  :deep(dialog) {
-    min-width: 300px !important;
-  }
 }
 </style>

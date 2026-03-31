@@ -6,20 +6,18 @@
   "scripts": {
     "preinstall": "",
     "build": "node ./bin/build_swagger.js",
-    "doc": "npm run build && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
+    "doc": "npm run build && npx @redocly/cli lint public/doc/swagger.yaml --config redocly.yaml && npx @redocly/cli bundle public/doc/swagger.yaml -o public/doc/swagger.json --dereferenced"
   },
   "keywords": [
     "eappointment"
   ],
   "author": "it@m - opensource@muenchen.de",
   "license": "SEE LICENSE IN LICENSE FILE",
-  "dependencies": {
-    "@apidevtools/swagger-cli": "^4.0.4"
-  },
   "devDependencies": {
-    "swagger-jsdoc": "^6.1.0",
-    "swagger-parser": "^10.0.0",
+    "@apidevtools/swagger-parser": "^12.1.0",
+    "@redocly/cli": "^2.25.1",
+    "js-yaml": "^4.1.0",
     "openapi-types": "^12.0.0",
-    "js-yaml": "^4.1.0"
+    "swagger-jsdoc": "^6.1.0"
   }
 }

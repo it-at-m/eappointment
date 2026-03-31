@@ -32,6 +32,10 @@ UNLOCK TABLES;
 
 UPDATE `buerger` SET `bestaetigt` = 1 WHERE `BuergerID` IN (10118, 10114, 10030);
 
+-- Fix ProcessReserveTest and ProcessFreeTest for QUERY_CANCEL_AVAILABILITY_AFTER_BOOKABLE:
+-- Set Offen_bis = 60 for availability 94678 to match the expected endInDays: 60 in the test fixtures
+UPDATE `oeffnungszeit` SET `Offen_bis` = 60 WHERE `OeffnungszeitID` = 94678;
+
 LOCK TABLES `closures` WRITE;
 
 DELETE FROM closures WHERE (StandortID IN (58,59) AND year=2025 AND month=9 AND day IN (3,4));
@@ -56,6 +60,7 @@ INSERT INTO `request_variant` (`id`, `name`) VALUES
 
 UNLOCK TABLES;
 
+UPDATE `buerger` SET `status` = 'confirmed' WHERE `BuergerID` IN (10118, 10114, 10030);
 
 /* ------------------------------------------------------------------
    Test-Daten OverviewCalendarTest, OverallCalendarRead
@@ -92,14 +97,14 @@ INSERT INTO `oeffnungszeit`
  `Timeslot`,
  `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
  `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
- `reduktionTermineCallcenter`,`Offen_ab`,`Offen_bis`,`updateTimestamp`)
+ `Offen_ab`,`Offen_bis`,`updateTimestamp`)
 VALUES
     (965202, 65202, '2025-05-14','2025-05-14',
      0,1,32,
      '09:00:00','09:00:00','11:00:00','11:00:00',
      '00:05:00',
      3,3,
-     'UT Availability 65202', 0,1, 0,0,0, '2025-05-05 00:00:00');
+     'UT Availability 65202', 0,1,0,0, '2025-05-05 00:00:00');
 
 INSERT INTO `overview_calendar`
 (`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)
@@ -109,4 +114,3 @@ VALUES
     (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
 
 UNLOCK TABLES;
-

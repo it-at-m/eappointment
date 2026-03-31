@@ -6,7 +6,7 @@ class AvailabilityConflictsTest extends Base
 {
     protected $arguments = [];
 
-    protected $classname = "AvailabilityConflicts";
+    protected $classname = "\BO\Zmsadmin\Helper\AvailabilityConflicts";
 
     public function testRendering()
     {
@@ -35,7 +35,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -88,7 +87,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -101,10 +99,6 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -112,7 +106,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -499,7 +492,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": 0,
-                            "callcenter": 0,
                             "intern": 0
                         },
                         "lastChange": 1566566532,
@@ -552,7 +544,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -565,10 +556,6 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -576,7 +563,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -964,7 +950,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -1017,7 +1002,6 @@ class AvailabilityConflictsTest extends Base
                                     "notificationHeadsUpEnabled": "1"
                                 },
                                 "client": {
-                                    "alternateAppointmentUrl": "",
                                     "amendmentActivated": "0",
                                     "amendmentLabel": "",
                                     "emailFrom": "test@example.com",
@@ -1030,10 +1014,6 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
-                                "pickup": {
-                                    "alternateName": "Ausgabe",
-                                    "isDefault": "0"
-                                },
                                 "queue": {
                                     "callCountMax": "0",
                                     "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1041,7 +1021,6 @@ class AvailabilityConflictsTest extends Base
                                     "lastNumber": "499",
                                     "maxNumberContingent": "0",
                                     "processingTimeAverage": "15",
-                                    "publishWaitingTimeEnabled": "1",
                                     "statisticsEnabled": "1"
                                 },
                                 "survey": {
@@ -1431,7 +1410,6 @@ class AvailabilityConflictsTest extends Base
                     },
                     "workstationCount": {
                         "public": "3",
-                        "callcenter": "3",
                         "intern": "3"
                     },
                     "lastChange": 1566566532,
@@ -1484,7 +1462,6 @@ class AvailabilityConflictsTest extends Base
                                 "notificationHeadsUpEnabled": "1"
                             },
                             "client": {
-                                "alternateAppointmentUrl": "",
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailFrom": "test@example.com",
@@ -1497,10 +1474,6 @@ class AvailabilityConflictsTest extends Base
                                 "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                 "headsUpTime": "30"
                             },
-                            "pickup": {
-                                "alternateName": "Ausgabe",
-                                "isDefault": "0"
-                            },
                             "queue": {
                                 "callCountMax": "0",
                                 "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
@@ -1508,7 +1481,6 @@ class AvailabilityConflictsTest extends Base
                                 "lastNumber": "499",
                                 "maxNumberContingent": "0",
                                 "processingTimeAverage": "15",
-                                "publishWaitingTimeEnabled": "1",
                                 "statisticsEnabled": "1"
                             },
                             "survey": {

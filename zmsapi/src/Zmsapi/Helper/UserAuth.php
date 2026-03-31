@@ -15,14 +15,21 @@ class UserAuth
     public static function getVerifiedUseraccount($entity)
     {
         $useraccountQuery = new Useraccount();
-        $useraccount = $useraccountQuery->readEntity($entity->getId())->withVerifiedHash($entity->password);
-        $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        $useraccount = $useraccountQuery->readEntity($entity->getId());
+        // TODO: Remove the password fields when password authentication is removed in the future
+        $originalPassword = $useraccount->password;
+        $useraccount = $useraccount->withVerifiedHash($entity->password);
+        // Only write if password was actually updated (rehashing needed) for system users
+        if ($useraccount->password !== $originalPassword) {
+            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        }
         return $useraccount;
     }
 
     public static function testPasswordMatching($useraccount, $password)
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
+        // TODO: Remove the password fields when password authentication is removed in the future
         $result = (strpos($useraccount->password, '$') !== 0) ?
             ($useraccount->password === md5($password)) :
             password_verify($password, $useraccount->password);
@@ -49,12 +56,16 @@ class UserAuth
         $xAuthKey = static::getXAuthKey($request);
         $useraccountQuery = new Useraccount();
 
+        // TODO: Remove the password fields when password authentication is removed in the future
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
-            $useraccount = $useraccountQuery
-                ->readEntity($basicAuth['username'])
-                ->withVerifiedHash($basicAuth['password']);
+            $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
+            $originalPassword = $useraccount->password;
+            $useraccount = $useraccount->withVerifiedHash($basicAuth['password']);
             static::testPasswordMatching($useraccount, $basicAuth['password']);
-            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+            // Only write if password was actually updated (rehashing needed) for system users
+            if ($useraccount->password !== $originalPassword) {
+                $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+            }
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
         }

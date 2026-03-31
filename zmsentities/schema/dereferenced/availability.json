@@ -19,13 +19,13 @@
             "id": 141
         },
         "slotTimeInMinutes": 12,
+        "version": 1,
         "startDate": 1447919543,
         "startTime": "10:00",
         "weekday": {
             "thursday": true
         },
         "workstationCount": {
-            "callcenter": 8,
             "intern": 10,
             "public": 3
         }
@@ -138,7 +138,6 @@
                         "startInDaysDefault": "2"
                     },
                     "client": {
-                        "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                         "appointmentsPerMail": "",
                         "slotsPerAppointment": "",
                         "whitelistedMails": "",
@@ -158,16 +157,11 @@
                         "headsUpTime": 15,
                         "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
                     },
-                    "pickup": {
-                        "alternateName": "Ausgabe von Dokumenten",
-                        "isDefault": false
-                    },
                     "queue": {
                         "callCountMax": 3,
                         "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
                         "firstNumber": 300,
                         "lastNumber": 500,
-                        "publishWaitingTimeEnabled": true,
                         "processingTimeAverage": 12,
                         "statisticsEnabled": true
                     },
@@ -432,11 +426,6 @@
                             "type": "object",
                             "additionalProperties": false,
                             "properties": {
-                                "alternateAppointmentUrl": {
-                                    "type": "string",
-                                    "description": "redirect url if client should book appointments over a specialised application",
-                                    "default": ""
-                                },
                                 "appointmentsPerMail": {
                                     "type": ["string", "null", "integer"],
                                     "description": "allowed appointments per e-mail address",
@@ -584,25 +573,6 @@
                                 }
                             }
                         },
-                        "pickup": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "alternateName": {
-                                    "type": "string",
-                                    "description": "alternate text to display on call display if pickup of documents is required",
-                                    "default": ""
-                                },
-                                "isDefault": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
-                                    ],
-                                    "description": "a pickup of documents is default, this scope is preselected for pickup",
-                                    "default": false
-                                }
-                            }
-                        },
                         "queue": {
                             "type": "object",
                             "additionalProperties": false,
@@ -632,14 +602,6 @@
                                     "description": "contingent of given waiting numbers for ticket printer per day",
                                     "maximum": 999,
                                     "default": 999
-                                },
-                                "publishWaitingTimeEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
-                                    ],
-                                    "description": "true if waiting times are allowed to be published for public use",
-                                    "default": true
                                 },
                                 "processingTimeAverage": {
                                     "type": "number",
@@ -851,6 +813,11 @@
             "default": 10,
             "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment\/process."
         },
+        "version": {
+            "type": ["number", "null"],
+            "default": 1,
+            "description": "Numeric version of the availability"
+        },
         "startDate": {
             "type": ["null", "number"],
             "description": "unix timestamp of a day to start offering appointments"
@@ -925,11 +892,6 @@
         "workstationCount": {
             "type": "object",
             "properties": {
-                "callcenter": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
-                },
                 "intern": {
                     "type": "number",
                     "default": 0,

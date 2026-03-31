@@ -51,6 +51,7 @@ class Availability extends Base implements MappingInterface
                 'IF(`availability`.`Terminanfangszeit`, `availability`.`Terminendzeit`, `availability`.`Endzeit`)'
             ),
             'lastChange' => 'availability.updateTimestamp',
+            'version' => 'availability.version',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
@@ -66,9 +67,6 @@ class Availability extends Base implements MappingInterface
             'weekday__friday' => self::expression('`availability`.`Wochentag` & 32'),
             'weekday__saturday' => self::expression('`availability`.`Wochentag` & 64'),
             'weekday__sunday' => self::expression('`availability`.`Wochentag` & 1'),
-            'workstationCount__callcenter' => self::expression(
-                'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineCallcenter`)'
-            ),
             'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
             'workstationCount__public' => self::expression(
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
@@ -222,6 +220,7 @@ class Availability extends Base implements MappingInterface
         $data['kommentar'] = $entity->description;
         $data['Startdatum'] = $entity->getStartDateTime()->format('Y-m-d');
         $data['Endedatum'] = $entity->getEndDateTime()->format('Y-m-d');
+        $data['version'] = $entity->version;
         if ('openinghours' == $entity->type) {
             $data['Anfangszeit'] = $entity->startTime;
             $data['Endzeit'] = $entity->endTime;
@@ -256,8 +255,6 @@ class Availability extends Base implements MappingInterface
         $data['Anzahlterminarbeitsplaetze'] = $entity->workstationCount['intern'];
         $data['reduktionTermineImInternet'] =
             $entity->workstationCount['intern'] - $entity->workstationCount['public'];
-        $data['reduktionTermineCallcenter'] =
-            $entity->workstationCount['intern'] - $entity->workstationCount['callcenter'];
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);

@@ -84,7 +84,7 @@ class View extends BaseView {
         this.updateLists(true);
     }
 
-    calculateSlotCount() {
+    calculateSlotCount(isInit = false) {
         let slotCount = 1;
         var requestList = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function () {
             return $(this).data().slots;
@@ -96,10 +96,15 @@ class View extends BaseView {
             });
         }
         slotCount = slotCount == 0 ? 1 : slotCount;
-        $('#appointmentForm_slotCount').val(Math.ceil(slotCount)).trigger('change');
+        let slotCountElement = $('#appointmentForm_slotCount').val(Math.ceil(slotCount));
+
+        if (!isInit) {
+            slotCountElement.trigger('change');
+        }
+
         if (slotCount > $('#appointmentForm_slotCount option:last').val()) {
             $('#exceeded-slot-count').show()
-        }else {
+        } else {
             $('#exceeded-slot-count').hide()
         }
     }

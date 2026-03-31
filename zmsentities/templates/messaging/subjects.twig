@@ -13,8 +13,6 @@
     Information Terminänderung
     {% elseif status == 'queued' %}
     Wartenummerbestaetigung
-    {% elseif status == 'pickup' %}
-    Ihr Dokument {% if process.requests|first.name %}({{ process.requests|first.name }}) {% endif %}ist fertig und liegt zur Abholung bereit.
     {% elseif status == 'survey' and process.clients|first.surveyAccepted %}
     Kundenbefragung des Standorts {{ process.scope.contact.name }}
     {% else %}

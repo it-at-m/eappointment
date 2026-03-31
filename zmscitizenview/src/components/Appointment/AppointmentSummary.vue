@@ -1,8 +1,11 @@
 <template>
-  <div v-if="isExpired">
+  <div
+    v-if="isExpired"
+    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
+  >
     <muc-callout type="error">
       <template #content>
-        {{ t("apiErrorSessionTimeoutText") }}
+        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
       </template>
       <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
@@ -10,6 +13,7 @@
   <div
     v-if="!isExpired"
     class="m-component"
+    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
     <div class="m-contact">
       <div class="m-contact__body">
@@ -21,10 +25,13 @@
             <h3>{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p v-if="selectedService">
+            <p
+              :id="`service-${selectedService.id}`"
+              v-if="selectedService"
+            >
               {{ selectedService.count }}x
               <a
-                :href="getServiceBaseURL() + selectedService.id"
+                :href="getServiceBaseURL() + +(serviceLinkId || '')"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -40,6 +47,7 @@
                 <p v-if="subService.count > 0">
                   {{ subService.count }}x
                   <a
+                    :id="`subservice-${subService.id}`"
                     :href="getServiceBaseURL() + subService.id"
                     target="_blank"
                     class="m-link"
@@ -56,27 +64,65 @@
           <div
             v-if="selectedProvider"
             class="m-content border-bottom"
+            :id="`provider-${selectedProvider.id}`"
           >
-            <p>{{ selectedProvider.name }}<br /></p>
-            <p class="no-bottom-margin smaller-front-size">
-              <strong>{{ t("address") }}</strong>
-              <br />
+            <p :id="`provider-${selectedProvider.id}`">
+              {{ selectedProvider.name }}<br />
             </p>
-            <p>
-              {{ selectedProvider.address.street }}
-              {{ selectedProvider.address.house_number }}<br />
-              {{ selectedProvider.address.postal_code }}
-              {{ selectedProvider.address.city }}<br />
-              <br />
-              <span
-                v-if="
-                  selectedProvider &&
-                  selectedProvider.scope &&
-                  selectedProvider.scope.hint
-                "
-                v-html="sanitizeHtml(selectedProvider.scope.hint)"
-              ></span>
-            </p>
+
+            <template v-if="!variantId">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("address") }}</strong
+                ><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="appointment?.scope?.hint"
+                  v-html="sanitizeHtml(appointment.scope.hint)"
+                ></span>
+              </p>
+            </template>
+
+            <template v-else-if="variantId === 1">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("address") }}</strong
+                ><br />
+              </p>
+              <p>
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br /><br />
+                <span
+                  v-if="selectedProvider?.scope?.hint"
+                  v-html="sanitizeHtml(selectedProvider.scope.hint)"
+                ></span>
+              </p>
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t("appointmentTypes.1") }}</strong
+                ><br />
+              </p>
+              <p>{{ t("locationVariantText.1") }}</p>
+            </template>
+
+            <template v-else-if="VARIANTS_WITH_HINTS.includes(variantId)">
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                ><br />
+              </p>
+              <p>{{ getVariantHint(variantId, t) }}</p>
+            </template>
+
+            <template v-else>
+              <p>
+                <strong>{{ t(`appointmentTypes.${variantId}`) }}</strong
+                ><br />
+              </p>
+            </template>
           </div>
 
           <div class="m-content">
@@ -95,19 +141,20 @@
           </div>
           <div
             v-if="
-              selectedProvider &&
-              selectedProvider.scope &&
-              selectedProvider.scope.infoForAppointment
+              appointment &&
+              appointment.scope &&
+              appointment.scope.infoForAppointment
             "
           >
             <div class="m-content">
               <h3>{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <div
+              <component
+                :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
                 tabindex="0"
-                v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-              ></div>
+                v-html="sanitizedInfoForAppointment"
+              />
             </div>
           </div>
           <div class="m-content">
@@ -125,28 +172,22 @@
             </p>
             <div
               v-if="
-                appointment &&
-                selectedProvider &&
-                selectedProvider.scope &&
-                appointment.customTextfield
+                appointment && appointment.scope && appointment.customTextfield
               "
               tabindex="0"
             >
-              <strong>{{ selectedProvider.scope.customTextfieldLabel }}</strong
+              <strong>{{ appointment.scope.customTextfieldLabel }}</strong
               ><br />
               <p>{{ appointment.customTextfield }}</p>
               <br />
             </div>
             <div
               v-if="
-                appointment &&
-                selectedProvider &&
-                selectedProvider.scope &&
-                appointment.customTextfield2
+                appointment && appointment.scope && appointment.customTextfield2
               "
               tabindex="0"
             >
-              <strong>{{ selectedProvider.scope.customTextfield2Label }}</strong
+              <strong>{{ appointment.scope.customTextfield2Label }}</strong
               ><br />
               <p>{{ appointment.customTextfield2 }}</p>
               <br />
@@ -290,7 +331,12 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import { getServiceBaseURL } from "@/utils/Constants";
+import {
+  getServiceBaseURL,
+  getVariantHint,
+  VARIANTS_WITH_HINTS,
+} from "@/utils/Constants";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -335,6 +381,10 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { serviceLinkId } = inject<ServiceLinkProvider>(
+  "serviceLinkProvider"
+) as ServiceLinkProvider;
 
 const { isExpired } = useReservationTimer();
 
@@ -385,6 +435,19 @@ const estimatedDuration = () => {
     selectedProvider.value
   );
 };
+
+const variantId = computed<number | null>(() => {
+  const id = (selectedService.value as any)?.variantId;
+  return typeof id === "number" && Number.isFinite(id) ? id : null;
+});
+
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(appointment.value?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
+);
 </script>
 
 <style lang="scss" scoped>

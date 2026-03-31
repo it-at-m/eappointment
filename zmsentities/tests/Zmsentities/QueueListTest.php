@@ -159,9 +159,6 @@ class QueueListTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
 
-        $withPickup = $collection->withPickupDestination($scope);
-        $this->assertEquals("Ausgabe von Dokumenten", $withPickup->getFirst()->destination);
-
         $withShortName = $collection->withShortNameDestinationHint($cluster, $scope);
         $this->assertEquals("Zentrale", $withShortName->getFirst()->destinationHint);
     }

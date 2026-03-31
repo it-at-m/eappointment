@@ -7,3 +7,4 @@ tags
 clover.xml
 coverage
 .phpunit.cache
+qemu*.core

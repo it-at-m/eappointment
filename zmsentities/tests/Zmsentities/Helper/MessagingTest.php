@@ -42,16 +42,6 @@ class MessagingTest extends Base
         self::assertStringContainsString('Terminnummer: 123456', $result);
         self::assertStringContainsString('Bitte gehen Sie rechtzeitig zur "Unter den Linden 1"', $result);
 
-        $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'pickup'));
-        self::assertStringContainsString(
-            'Ihr Dokument (Abmeldung einer Wohnung) ist fertig und liegt zur Abholung bereit.', 
-            $result
-        );
-        self::assertStringContainsString(
-            'Die Adresse lautet: 001 Unter den Linden 1, 12345 Berlin', 
-            $result
-        );
-
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'deleted'));
         self::assertStringContainsString('Ihr Termin am Mittwoch, 18. November 2015  um 18:52 Uhr  wurde gelöscht.', $result);
 

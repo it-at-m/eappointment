@@ -61,14 +61,12 @@ class Messaging
             'queued' => 'notification_confirmation.twig',
             'called' => 'notification_headsup.twig',
             'reminder' => 'notification_reminder.twig',
-            'pickup' => 'notification_pickup.twig',
             'deleted' => 'notification_deleted.twig'
         ),
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
             'reminder' => 'mail_reminder.twig',
-            'pickup' => 'mail_pickup.twig',
             'deleted' => 'mail_delete.twig',
             'blocked' => 'mail_delete.twig',
             'survey' => 'mail_survey.twig',

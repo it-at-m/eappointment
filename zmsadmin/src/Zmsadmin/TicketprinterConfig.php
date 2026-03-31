@@ -51,6 +51,11 @@ class TicketprinterConfig extends BaseController
 
                 foreach ($scope->provider->data['services'] as $serviceArray) {
                     $service = $requestList->getEntity($serviceArray['service']);
+
+                    if (! $service) {
+                        continue;
+                    }
+
                     $scope->services[] = [
                         'id' => $scope->id . '-' . $service->id,
                         'name' => $service->name

@@ -110,10 +110,17 @@ class Process extends Base implements MappingInterface
 
     public function addJoin()
     {
-        return [
-            $this->addJoinAvailability(),
-            $this->addJoinScope(),
-        ];
+        $joins = [];
+
+        if ($this->shouldLoadEntity('availability')) {
+            $joins[] = $this->addJoinAvailability();
+        }
+
+        if ($this->shouldLoadEntity('scope')) {
+            $joins[] = $this->addJoinScope();
+        }
+
+        return $joins;
     }
 
     /**
@@ -198,13 +205,6 @@ class Process extends Base implements MappingInterface
         }
 
         if (
-            $this->query->value('AbholortID') != 0
-            && $this->query->value('NutzerID') != 0
-        ) {
-            return 'pickup';
-        }
-
-        if (
             $this->query->value('AbholortID') == 0
             && $this->query->value('aufruferfolgreich') != 0
             && $this->query->value('NutzerID') != 0
@@ -245,34 +245,17 @@ class Process extends Base implements MappingInterface
     {
         $status_expression = self::expression(
             'CASE
-                WHEN process.Name = "(abgesagt)"
-                    THEN "deleted"
-                WHEN process.StandortID = 0 AND process.AbholortID = 0
-                    THEN "blocked"
-                WHEN process.vorlaeufigeBuchung = 1 AND process.bestaetigt = 0 
-                    THEN "reserved"
-                WHEN process.nicht_erschienen != 0
-                    THEN "missed"
-                WHEN process.parked != 0
-                    THEN "parked"
-                WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
-                    THEN "pending"
-                WHEN process.AbholortID != 0 AND process.NutzerID != 0
-                    THEN "pickup"
-                WHEN process.AbholortID = 0 AND process.aufruferfolgreich != 0 AND process.NutzerID != 0
-                    THEN "processing"
-                WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
+                WHEN process.status = "called" AND process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
                     THEN "called"
-                WHEN process.Uhrzeit = "00:00:00"
+                WHEN process.status = "called" AND process.Uhrzeit = "00:00:00"
                     THEN "queued"
-                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 0 
-                    THEN "preconfirmed"
-                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
+                WHEN process.status = "called" AND process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
                     THEN "confirmed"
-                ELSE "free"
+                ELSE process.status
             END'
         );
-        return [
+
+        return array_filter([
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
@@ -309,7 +292,6 @@ class Process extends Base implements MappingInterface
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
-            'dbstatus' => 'process.status',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -337,13 +319,12 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
-            'queue__destination' => self::expression(
-                'IF(`process`.`AbholortID`,
-                    `processscope`.`ausgabeschaltername`,
-                    `processuser`.`Arbeitsplatznr`
-)'
-            ),
-            'queue__destinationHint' => 'processuser.aufrufzusatz',
+            'queue__destination' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.Arbeitsplatznr'
+                : '',
+            'queue__destinationHint' => $this->shouldLoadEntity('processuser')
+                ? 'processuser.aufrufzusatz'
+                : '',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
@@ -356,7 +337,9 @@ class Process extends Base implements MappingInterface
             '__clientsCount' => 'process.AnzahlPersonen',
             'wasMissed' => 'process.wasMissed',
             'externalUserId' => 'process.external_user_id',
-        ];
+            'isTicketprinter' => 'process.is_ticketprinter',
+            'parkedBy' => 'process.parkedBy',
+        ], 'strlen');
     }
 
     public function addCountValue()
@@ -504,6 +487,21 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds($scopeIds)
+    {
+        if (count($scopeIds) == 1) {
+            return $this->addConditionScopeId($scopeIds[0]);
+        }
+
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($scopeIds) {
+            $query
+                ->andWith('process.StandortID', 'IN', $scopeIds)
+                ->orWith('process.AbholortID', 'IN', $scopeIds);
+        });
+
+        return $this;
+    }
+
     public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
     {
         ($queueLimit > $queueNumber)
@@ -558,96 +556,9 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status, $scopeId = 0)
+    public function addConditionStatus($status)
     {
-        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($status, $scopeId) {
-            if ('deleted' == $status) {
-                $query
-                    ->andWith('process.Name', '=', '(abgesagt)');
-            }
-            if ('blocked' == $status) {
-                $query
-                    ->andWith('process.StandortID', '=', 0)
-                    ->andWith('process.AbholortID', '=', 0);
-            }
-            if ('reserved' == $status) {
-                $query
-                    ->andWith('process.name', '!=', '(abgesagt)')
-                    ->andWith('process.vorlaeufigeBuchung', '=', 1)
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.istFolgeterminvon', 'is', null);
-            }
-            if ('missed' == $status) {
-                $query->andWith('process.nicht_erschienen', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0);
-            }
-            if ('parked' == $status) {
-                $query
-                    ->andWith('process.parked', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0);
-            }
-            if ('pending' == $status) {
-                $query
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.Abholer', '!=', 0)
-                    ->andWith('process.NutzerID', '=', 0);
-                if (0 != $scopeId) {
-                    $query->andWith('process.AbholortID', '=', $scopeId);
-                } else {
-                    $query->andWith('process.AbholortID', '!=', 0);
-                }
-            }
-            if ('processing' == $status) {
-                $query
-                    ->andWith('process.aufruferfolgreich', '!=', 0)
-                    ->andWith('process.NutzerID', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0);
-            }
-            if ('pickup' == $status) {
-                $query
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.NutzerID', '!=', 0);
-                if (0 != $scopeId) {
-                    $query->andWith('process.AbholortID', '=', $scopeId);
-                } else {
-                    $query->andWith('process.AbholortID', '!=', 0);
-                }
-            }
-            if ('called' == $status) {
-                $query
-                    ->andWith('process.aufrufzeit', '!=', '00:00:00')
-                    ->andWith('process.NutzerID', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', 0);
-            }
-            if ('queued' == $status) {
-                $query->andWith('process.Uhrzeit', '=', '00:00:00')
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', 0);
-                ;
-            }
-            if ('confirmed' == $status) {
-                $query
-                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
-                    ->andWith('process.Abholer', '=', 0)
-                    ->andWith('process.Uhrzeit', '!=', '00:00:00')
-                    ->andWith('process.bestaetigt', '=', 1)
-                    ->andWith('process.IPTimeStamp', '!=', 0);
-            }
-            if ('preconfirmed' == $status) {
-                $query
-                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
-                    ->andWith('process.Abholer', '=', 0)
-                    ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.Uhrzeit', '!=', '00:00:00')
-                    ->andWith('process.bestaetigt', '=', 0)
-                    ->andWith('process.IPTimeStamp', '!=', 0);
-                if (0 != $scopeId) {
-                    $query
-                        ->andWith('process.StandortID', '=', $scopeId);
-                }
-            }
-        });
+        $this->query->where('process.status', '=', $status);
         return $this;
     }
 
@@ -794,6 +705,9 @@ class Process extends Base implements MappingInterface
         if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
             $values['apiClientID'] = $process->apiclient->apiClientID;
         }
+        if (isset($process->isTicketprinter) && $process->isTicketprinter) {
+            $values['is_ticketprinter'] = 1;
+        }
         $this->addValues($values);
     }
 
@@ -913,13 +827,6 @@ class Process extends Base implements MappingInterface
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
         }
-        if ($process->status == 'pickup') {
-            $data['AbholortID'] = $process->scope['id'];
-            $data['Abholer'] = 1;
-            $data['Timestamp'] = 0;
-            $data['nicht_erschienen'] = 0;
-            $data['parked'] = 0;
-        }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
@@ -943,6 +850,7 @@ class Process extends Base implements MappingInterface
             $data['bestaetigt'] = 0;
         }
         $data['status'] = $process['status'] ?? $process->status;
+        $data['parkedBy'] = $process->getParkedBy();
 
         $this->addValues($data);
     }
@@ -967,15 +875,9 @@ class Process extends Base implements MappingInterface
         if ($client && $client->offsetExists('notificationsSendCount')) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
-        if ($process->getAmendment()) {
-            $data['Anmerkung'] = $process->getAmendment();
-        }
-        if ($process->getCustomTextfield()) {
-            $data['custom_text_field'] = $process->getCustomTextfield();
-        }
-        if ($process->getCustomTextfield2()) {
-            $data['custom_text_field2'] = $process->getCustomTextfield2();
-        }
+        $data['Anmerkung'] = $process->getAmendment();
+        $data['custom_text_field'] = $process->getCustomTextfield();
+        $data['custom_text_field2'] = $process->getCustomTextfield2();
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
@@ -1159,7 +1061,7 @@ class Process extends Base implements MappingInterface
     protected function addValuesExternalUserId($process)
     {
         $data = [
-            'external_user_id' => $process->external_user_id,
+            'external_user_id' => $process->externalUserId,
         ];
 
         $this->addValues($data);
@@ -1218,19 +1120,23 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        $this->leftJoin(
-            new Alias(Useraccount::TABLE, 'processuser'),
-            'process.NutzerID',
-            '=',
-            'processuser.NutzerID'
-        );
+        if ($this->shouldLoadEntity('processuser')) {
+            $this->leftJoin(
+                new Alias(Useraccount::TABLE, 'processuser'),
+                'process.NutzerID',
+                '=',
+                'processuser.NutzerID'
+            );
+        }
 
-        $this->leftJoin(
-            new Alias(Scope::TABLE, 'processscope'),
-            'process.StandortID',
-            '=',
-            'processscope.StandortID'
-        );
+        if ($this->shouldLoadEntity('processscope')) {
+            $this->leftJoin(
+                new Alias(Scope::TABLE, 'processscope'),
+                'process.StandortID',
+                '=',
+                'processscope.StandortID'
+            );
+        }
     }
 
     public function addConditionExternalUserId(string $externalUserId)

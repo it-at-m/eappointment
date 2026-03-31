@@ -35,7 +35,6 @@
                 },
                 "workstationCount": {
                     "public": 2,
-                    "callcenter": 2,
                     "intern": 2
                 },
                 "lastChange": 1566566532,
@@ -141,7 +140,6 @@
                 "startInDaysDefault": 2
             },
             "client": {
-                "alternateAppointmentUrl": "",
                 "amendmentActivated": 0,
                 "amendmentLabel": "Anmerkung",
                 "emailFrom": "test@example.com",
@@ -157,10 +155,6 @@
                 "headsUpContent": "",
                 "headsUpTime": 0
             },
-            "pickup": {
-                "alternateName": "",
-                "isDefault": 0
-            },
             "queue": {
                 "callCountMax": 3,
                 "callDisplayText": "",
@@ -168,7 +162,6 @@
                 "lastNumber": 999,
                 "maxNumberContingent": 0,
                 "processingTimeAverage": 15,
-                "publishWaitingTimeEnabled": 0,
                 "statisticsEnabled": 1
             },
             "survey": {

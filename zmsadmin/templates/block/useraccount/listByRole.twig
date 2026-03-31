@@ -39,7 +39,6 @@
                     <thead>
                         <tr>
                             <th>Loginname</th>
-                            <th>E-Mail Adresse</th>
                             <th>Letzter Login</th>
                             <th>Aktion</th>
                         </tr>
@@ -48,7 +47,6 @@
                     {% for useraccount in useraccountListByRole %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
-                            <td>{% if useraccount.email %}{{ useraccount.email }}{% endif %}</td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
                             <td>
                                 {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fa fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}

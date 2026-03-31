@@ -6,7 +6,7 @@
     {% endblock %}
     
     {% block board_body %}
-    <form method="GET" action="{{ urlGet('useraccountSearch', {}, {}) }}" class="form--base">
+    <form method="GET" action="{{ urlGet('useraccountList', {}, {}) }}" class="form--base">
         {{ formgroup(
         {},
         [{

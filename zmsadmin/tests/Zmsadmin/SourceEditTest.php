@@ -28,9 +28,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -73,9 +73,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json'),
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -104,7 +104,6 @@ class SourceEditTest extends Base
 
     public function testAddNewFailed()
     {
-        $this->expectException('\BO\Zmsclient\Exception\ApiFailed');
         $exception = new \BO\Zmsclient\Exception\ApiFailed();
         $this->setApiCalls(
             [
@@ -116,9 +115,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',
@@ -132,7 +131,7 @@ class SourceEditTest extends Base
                 ]
             ]
         );
-        $this->render(['name' => 'add'], [
+        $response = $this->render(['name' => 'add'], [
             'source' => 'unittest',
             'contact' => [
                 'name' => 'BerlinOnline Stadtportal GmbH',
@@ -141,6 +140,10 @@ class SourceEditTest extends Base
             'label' => 'Unittest Source',
             'save' => 'save'
         ], [], 'POST');
+
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Zuviele API Abrufe registriert', $body);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testAddNewValidationFailed()
@@ -161,9 +164,9 @@ class SourceEditTest extends Base
                 ],
                 [
                     'function'   => 'readGetResult',
-                    'url'        => '/source/dldb/',
+                    'url'        => '/source/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response'   => $this->readFixture('GET_source_unittest.json')
+                    'response'   => $this->readFixture('GET_sourcelist.json'),
                 ],
                 [
                     'function'   => 'readGetResult',

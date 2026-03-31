@@ -23,6 +23,9 @@ class ReportWaitingService
         'waitingcalculated_termin',
         'waytime',
         'waytime_termin',
+        'waitingcount_total',
+        'waitingtime_total',
+        'waytime_total',
     ];
 
     protected $groupfields = [
@@ -59,19 +62,18 @@ class ReportWaitingService
         try {
             $reportHelper = new ReportHelper();
             $years = $reportHelper->getYearsForDateRange($fromDate, $toDate);
-            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
+            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years, $fromDate, $toDate);
 
             if (empty($combinedData['data'])) {
                 return null;
             }
 
-            $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
-
-            if (empty($filteredData)) {
-                return null;
-            }
-
-            return $this->createFilteredExchangeWaiting($combinedData['entity'], $filteredData, $fromDate, $toDate);
+            return $this->createFilteredExchangeWaiting(
+                $combinedData['entity'],
+                $combinedData['data'],
+                $fromDate,
+                $toDate
+            );
         } catch (Exception $exception) {
             return null;
         }
@@ -86,7 +88,11 @@ class ReportWaitingService
             $exchangeWaiting = \App::$http
                 ->readGetResult('/warehouse/waitingscope/' . $scopeId . '/' . $period . '/')
                 ->getEntity()
-                ->toGrouped($this->groupfields, $this->hashset)
+                ->toGrouped($this->groupfields, $this->hashset);
+
+            $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
+
+            $exchangeWaiting = $exchangeWaiting
                 ->withMaxByHour($this->hashset)
                 ->withMaxAndAverageFromWaitingTime();
 
@@ -95,6 +101,14 @@ class ReportWaitingService
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');
+
+            // per-date max/avg for total
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_total');
+
+            // global max/avg for total
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waytime_total');
 
             return $exchangeWaiting;
         } catch (Exception $exception) {
@@ -119,7 +133,7 @@ class ReportWaitingService
     /**
      * Fetch and combine data from multiple years
      */
-    private function fetchAndCombineDataFromYears(string $scopeId, array $years): array
+    private function fetchAndCombineDataFromYears(string $scopeId, array $years, string $fromDate, string $toDate): array
     {
         $combinedData = [];
         $baseEntity = null;
@@ -129,16 +143,21 @@ class ReportWaitingService
                 $exchangeWaiting = \App::$http
                     ->readGetResult(
                         '/warehouse/waitingscope/' . $scopeId . '/' . $year . '/',
-                        ['groupby' => 'day']
+                        [
+                            'groupby' => 'day',
+                            'fromDate' => $fromDate,
+                            'toDate' => $toDate
+                        ]
                     )
                     ->getEntity();
 
-                if ($baseEntity === null) {
-                    $baseEntity = $exchangeWaiting;
-                }
-
                 if (isset($exchangeWaiting->data) && is_array($exchangeWaiting->data)) {
                     $combinedData = array_merge($combinedData, $exchangeWaiting->data);
+                }
+
+                if ($baseEntity === null) {
+                    unset($exchangeWaiting->data);
+                    $baseEntity = $exchangeWaiting;
                 }
             } catch (Exception $exception) {
                 // continue with other years
@@ -152,29 +171,15 @@ class ReportWaitingService
     }
 
     /**
-     * Filter data array by date range
-     */
-    private function filterDataByDateRange(array $data, string $fromDate, string $toDate): array
-    {
-        $filteredData = [];
-        foreach ($data as $row) {
-            if ($row[1] >= $fromDate && $row[1] <= $toDate) {
-                $filteredData[] = $row;
-            }
-        }
-        return $filteredData;
-    }
-
-    /**
      * Create filtered exchange waiting with updated properties
      */
     private function createFilteredExchangeWaiting(
-        $exchangeWaitingFull,
+        $exchangeWaitingBasic,
         array $filteredData,
         string $fromDate,
         string $toDate
     ): mixed {
-        $exchangeWaiting = clone $exchangeWaitingFull;
+        $exchangeWaiting = $exchangeWaitingBasic;
         $exchangeWaiting->data = $filteredData;
 
         if (!isset($exchangeWaiting->period)) {
@@ -186,14 +191,22 @@ class ReportWaitingService
 
         if (!empty($filteredData)) {
             $exchangeWaiting = $exchangeWaiting
-                ->toGrouped($this->groupfields, $this->hashset)
-                ->withMaxByHour($this->hashset)
+                ->toGrouped($this->groupfields, $this->hashset);
+
+            $exchangeWaiting = ReportHelper::withTotalCustomers($exchangeWaiting);
+
+            $exchangeWaiting = $exchangeWaiting->withMaxByHour($this->hashset)
                 ->withMaxAndAverageFromWaitingTime();
 
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');
+
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_total');
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waitingtime_total');
+            $exchangeWaiting = ReportHelper::withGlobalMaxAndAverage($exchangeWaiting, 'waytime_total');
 
             return $exchangeWaiting;
         }

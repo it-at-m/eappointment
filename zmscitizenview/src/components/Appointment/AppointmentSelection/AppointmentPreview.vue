@@ -1,5 +1,8 @@
 <template>
-  <div ref="summary">
+  <div
+    aria-live="polite"
+    ref="summary"
+  >
     <muc-callout
       v-if="
         selectedProvider &&
@@ -11,17 +14,31 @@
     >
       <template #content>
         <div v-if="selectedProvider">
-          <strong>{{ t("location") }}</strong>
-          <p class="m-teaser-contained-contact__summary">
+          <h3>{{ t("location") }}</h3>
+          <p
+            :id="`provider-${selectedProvider.id}`"
+            class="m-teaser-contained-contact__summary"
+          >
             {{ selectedProvider.name }}
             <br />
-            {{ selectedProvider.address.street }}
-            {{ selectedProvider.address.house_number }}
+            <span v-if="detailIcon">
+              <br />
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
+                <use :xlink:href="`#${detailIcon}`"></use>
+              </svg>
+              {{ t(`appointmentTypes.${variantId}`) }}
+            </span>
+            <span v-else>
+              {{ selectedProvider.address.street }}
+              {{ selectedProvider.address.house_number }}
+            </span>
           </p>
         </div>
         <div v-if="selectedDay">
-          <strong>{{ t("time") }}</strong>
-          <br />
+          <h3>{{ t("time") }}</h3>
           <p class="m-teaser-contained-contact__detail">
             {{ formatDayFromDate(selectedDay) }},
             {{ formatTimeFromUnix(selectedTimeslot) }}
@@ -36,11 +53,11 @@
             selectedProvider.scope && selectedProvider.scope.infoForAppointment
           "
         >
-          <strong>{{ t("hint") }}</strong>
-          <br />
-          <div
-            v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
-          ></div>
+          <h3>{{ t("hint") }}</h3>
+          <component
+            :is="infoForAppointmentContainsPTag ? 'div' : 'p'"
+            v-html="sanitizedInfoForAppointment"
+          />
         </div>
       </template>
 
@@ -57,6 +74,7 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   formatDayFromDate,
   formatTimeFromUnix,
@@ -82,5 +100,24 @@ const localEstimatedDuration = computed(() =>
     props.selectedService,
     (props.selectedProvider ?? undefined) as OfficeImpl | undefined
   )
+);
+
+const variantId = computed<number | null>(() => {
+  const id = (props.selectedService as any)?.variantId;
+  return Number.isFinite(id) ? id : null;
+});
+
+const detailIcon = computed<string | null>(() => {
+  if (variantId.value === 2) return "icon-telephone";
+  if (variantId.value === 3) return "icon-video-camera";
+  return null;
+});
+
+const sanitizedInfoForAppointment = computed(() =>
+  sanitizeHtml(props.selectedProvider?.scope?.infoForAppointment)
+);
+
+const infoForAppointmentContainsPTag = computed(() =>
+  containsParagraphTag(sanitizedInfoForAppointment.value)
 );
 </script>

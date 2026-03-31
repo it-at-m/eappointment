@@ -35,7 +35,7 @@ class LogoutBySuperuser extends BaseController
 
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         return \BO\Slim\Render::redirect(
-            'useraccountByDepartment',
+            'useraccountListByDepartment',
             array('id' => $departmentId),
             array()
         );

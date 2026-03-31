@@ -126,7 +126,7 @@ class ZmsApiFacadeService
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
                     hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
                 ) : null,
-                maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
+                slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
         }
 
@@ -137,6 +137,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopes(): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
@@ -322,7 +325,7 @@ class ZmsApiFacadeService
             'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
             'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
             'activationDuration' => MapperService::extractActivationDuration($matchingScope),
-            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint(),
+            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint()
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -406,7 +409,7 @@ class ZmsApiFacadeService
                     address: $provider->address ?? null,
                     geo: $provider->geo ?? null,
                     scope: $scope,
-                    maxSlotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
+                    slotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
                 );
             }
         }
@@ -601,11 +604,18 @@ class ZmsApiFacadeService
         }
 
         foreach ($daysCollection as $day) {
+            $scopeIdList = isset($day->scopeIDs) && $day->scopeIDs !== ''
+                ? array_filter(explode(',', $day->scopeIDs))
+                : [];
+            $providerIds = [];
+            foreach ($scopeIdList as $scopeId) {
+                if (isset($scopeToProvider[$scopeId])) {
+                    $providerIds[] = $scopeToProvider[$scopeId];
+                }
+            }
             $formattedDays[] = [
                 'time'        => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
-                'providerIDs' => isset($day->scopeIDs)
-                    ? implode(',', array_map(fn($scopeId) => $scopeToProvider[$scopeId], explode(',', $day->scopeIDs)))
-                    : ''
+                'providerIDs' => implode(',', $providerIds)
             ];
         }
 
@@ -809,6 +819,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         $process = self::getProcessById($processId, $authKey, $user);
