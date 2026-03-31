@@ -423,7 +423,6 @@
                 "bin/resetGhostWorkstationCount",
                 "bin/resetWorkstations",
                 "bin/sendMailReminder",
-                "bin/sendNotificationReminder",
                 "bin/sendProcessListToScopeAdmin",
                 "bin/updateDldbData"
             ],

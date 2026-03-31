@@ -146,7 +146,7 @@ class ProcessQueue extends BaseController
     protected function writeQueuedProcess($input, $process)
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
-        AppointmentFormHelper::updateMailAndNotification($input, $process);
+        AppointmentFormHelper::updateMail($input, $process);
         return $process;
     }
 

@@ -37,11 +37,6 @@ class MailTemplateProvider
     {
 
         $this->templates = array(
-            'notification_appointment.twig' => "template is empty",
-            'notification_confirmation.twig' => "template is empty",
-            'notification_headsup.twig' => "template is empty",
-            'notification_reminder.twig' => "template is empty",
-            'notification_deleted.twig' => "template is empty",
             'mail_queued.twig' => "template is empty",
             'mail_confirmation.twig' => "template is empty",
             'mail_reminder.twig' => "template is empty",
