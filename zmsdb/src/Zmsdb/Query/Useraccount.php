@@ -119,6 +119,12 @@ class Useraccount extends Base implements MappingInterface
             'id' => 'useraccount.Name',
             'password' => 'useraccount.Passworthash',
             'lastLogin' => 'useraccount.lastUpdate',
+            'roles' => self::expression(
+                '(SELECT GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR \',\') '
+                . 'FROM user_role ur '
+                . 'JOIN role r ON r.id = ur.role_id '
+                . 'WHERE ur.user_id = useraccount.NutzerID)'
+            ),
             'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
             'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
@@ -233,6 +239,16 @@ class Useraccount extends Base implements MappingInterface
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
             strtotime($data[$this->getPrefixed("lastLogin")]) :
             null;
+
+        $rolesKey = $this->getPrefixed('roles');
+        $rawRoles = $data[$rolesKey] ?? null;
+        if ($rawRoles === null || $rawRoles === '') {
+            $data[$rolesKey] = [];
+        } elseif (is_string($rawRoles)) {
+            $data[$rolesKey] = array_values(array_filter(array_map('trim', explode(',', $rawRoles)), function ($v) {
+                return $v !== '';
+            }));
+        }
 
         $permissionsPrefix = $this->getPrefixed('permissions__');
         foreach ($data as $key => $value) {
