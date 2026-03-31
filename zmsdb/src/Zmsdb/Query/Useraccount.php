@@ -6,6 +6,37 @@ use BO\Slim\Application as App;
 
 class Useraccount extends Base implements MappingInterface
 {
+    private const VALID_PERMISSION_NAMES = [
+        'appointment',
+        'availability',
+        'calldisplay',
+        'cherrypick',
+        'cluster',
+        'config',
+        'counter',
+        'customersearch',
+        'dayoff',
+        'department',
+        'emergency',
+        'finishedqueue',
+        'finishedqueuepast',
+        'logs',
+        'mailtemplates',
+        'missedqueue',
+        'openqueue',
+        'organisation',
+        'overviewcalendar',
+        'parkedqueue',
+        'restrictedscope',
+        'scope',
+        'source',
+        'statistic',
+        'ticketprinter',
+        'useraccount',
+        'waitingqueue',
+        'superuser',
+    ];
+
     /**
      * @var String TABLE mysql table reference
      */
@@ -66,7 +97,10 @@ class Useraccount extends Base implements MappingInterface
      */
     protected function permissionExists(string $permissionName)
     {
-        $quoted = "'" . addslashes($permissionName) . "'";
+        if (!in_array($permissionName, self::VALID_PERMISSION_NAMES, true)) {
+            throw new \InvalidArgumentException("Invalid permission name: $permissionName");
+        }
+        $quoted = "'" . $permissionName . "'";
         return self::expression(
             'EXISTS('
             . 'SELECT 1 '
