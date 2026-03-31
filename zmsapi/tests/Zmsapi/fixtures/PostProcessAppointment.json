@@ -57,7 +57,6 @@
             "familyName": "Test",
             "email": "test@example.com",
             "emailSendCount": 0,
-            "notificationsSendCount": 0,
             "surveyAccepted": 1,
             "telephone": "01795724"
         }
@@ -122,9 +121,7 @@
                 "endInDaysDefault": "60",
                 "multipleSlotsEnabled": "0",
                 "reservationDuration": "20",
-                "startInDaysDefault": "0",
-                "notificationConfirmationEnabled": "1",
-                "notificationHeadsUpEnabled": "1"
+                "startInDaysDefault": "0"
             },
             "client": {
                 "amendmentActivated": 0,
@@ -133,11 +130,6 @@
                 "emailRequired": 0,
                 "telephoneActivated": 0,
                 "telephoneRequired": 0
-            },
-            "notifications": {
-                "confirmationContent": "",
-                "headsUpContent": "Ihre Wartezeit betr\u00e4gt noch ca. 30 Min., bitte informieren Sie sich \u00fcber die Aufrufanzeige im B\u00fcrgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                "headsUpTime": 30
             },
             "queue": {
                 "callCountMax": 0,
@@ -155,11 +147,7 @@
             },
             "ticketprinter": {
                 "buttonName": "B\u00fcrgeramt",
-                "confirmationEnabled": 0,
-                "deactivatedText": "0",
-                "notificationsAmendmentEnabled": 0,
-                "notificationsEnabled": 0,
-                "notificationsDelay": 0
+                "deactivatedText": "0"
             },
             "workstation": {
                 "emergencyEnabled": 1,

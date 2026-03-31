@@ -98,12 +98,6 @@ class ReportClientOrganisationTest extends Base
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientorganisation/71/2016-04/',
                   'response' => $this->readFixture("GET_clientorganisation_71_042016.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/warehouse/notificationorganisation/71/2016-04/',
-                  'parameters' => ['groupby' => 'month'],
-                  'response' => $this->readFixture("GET_notificationorganisation_71_042016.json")
               ]
             ]
         );
@@ -163,12 +157,6 @@ class ReportClientOrganisationTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/clientorganisation/71/2016-04/',
                     'response' => $this->readFixture("GET_clientorganisation_71_042016.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/notificationorganisation/71/2016-04/',
-                    'parameters' => ['groupby' => 'month'],
-                    'response' => $this->readFixture("GET_notificationorganisation_71_042016.json")
                 ]
             ]
         );

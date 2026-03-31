@@ -383,11 +383,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{% if item.clients|first.telephone and department.preferences.notifications.enabled %}
-											<a data-process="{{ item.id }}" class="process-custom-notification-send" href="#">{{ item.clients|first.telephone }}</a>
-										{% else %}
-											{{ item.clients|first.telephone }}
-										{% endif %}
+										{{ item.clients|first.telephone }}
 									</td>
 									<td class="center nowrap">
 										{% if item.clients|first.email and workstation.scope.preferences.client.emailFrom %}

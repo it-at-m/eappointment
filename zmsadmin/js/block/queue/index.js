@@ -29,8 +29,6 @@ class View extends BaseView {
         this.onNextProcess = options.onNextProcess;
         this.onResetProcess = options.onResetProcess;
         this.onSendCustomMail = options.onSendCustomMail;
-        this.onSendCustomNotification = options.onSendCustomNotification;
-        this.onSendNotificationReminder = options.onSendNotificationReminder;
         this.onChangeTableView = options.onChangeTableView;
         this.onChangeScope = options.onChangeScope;
         this.onConfirm = options.onConfirm;
@@ -88,12 +86,8 @@ class View extends BaseView {
             this.onDatePick($(ev.currentTarget).attr('data-date'));
         }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
             this.onDateToday($(ev.currentTarget).attr('data-date'))
-        }).on('click', '.queue-table .process-notification-send', (ev) => {
-            this.onConfirm(ev, "confirm_notification_reminder", () => { this.onSendNotificationReminder(this.$main, ev) });
         }).on('click', '.process-custom-mail-send', (ev) => {
             this.onSendCustomMail(this.$main, ev);
-        }).on('click', '.process-custom-notification-send', (ev) => {
-            this.onSendCustomNotification(this.$main, ev);
         })
     }
 }
