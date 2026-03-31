@@ -147,7 +147,6 @@ class AppointmentUpdateServiceTest extends TestCase
                         'familyName' => 'Doe',
                         'email' => 'john@example.com',
                         'emailSendCount' => '0',
-                        'notificationsSendCount' => '0',
                         'surveyAccepted' => 1,
                         'telephone' => '1234567890'
                     ]
