@@ -25,9 +25,10 @@ class UserRole extends Base implements MappingInterface
 
     public function addConditionUserIds(array $userIds): self
     {
-        if (!empty($userIds)) {
-            $this->query->whereIn('user_role.user_id', $userIds);
+        if ($userIds === []) {
+            throw new \InvalidArgumentException('Argument $userIds must not be empty.');
         }
+        $this->query->whereIn('user_role.user_id', $userIds);
         return $this;
     }
 }

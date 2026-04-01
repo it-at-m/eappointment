@@ -42,9 +42,10 @@ class Role extends Base implements MappingInterface
 
     public function addConditionNames(array $names): self
     {
-        if (!empty($names)) {
-            $this->query->whereIn('role.name', $names);
+        if ($names === []) {
+            throw new \InvalidArgumentException('Argument $names must not be empty.');
         }
+        $this->query->whereIn('role.name', $names);
         return $this;
     }
 }
