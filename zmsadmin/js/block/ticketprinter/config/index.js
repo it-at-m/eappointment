@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
+import accordion from 'bo-layout-admin-js/behavior/accordion'
 const { Description, FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {
@@ -39,8 +40,6 @@ class TicketPrinterConfigView extends Component {
     constructor(props) {
         super(props)
 
-        console.log('TicketPrinterConfigView::constructor', props)
-
         this.state = {
             selectedItems: [],
             departments: props.departments.map(department => {
@@ -52,10 +51,187 @@ class TicketPrinterConfigView extends Component {
                     scopes: scopes.map(readPropsScope)
                 }
             }),
-            generatedUrl: "",
             homeUrl: "",
             template: "default",
-            ticketPrinterName: ""
+            ticketPrinterName: "",
+            enableAdvancedConfig: false,
+            defaultLanguage: "de",
+            languages: ["de"],
+            serviceConfig: {},
+            expandedLanguages: { de: true }
+        }
+    }
+
+    componentDidMount() {
+        accordion()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!prevState.enableAdvancedConfig && this.state.enableAdvancedConfig) {
+            accordion()
+        }
+    }
+
+    toggleAdvancedConfig(value) {
+        this.setState({
+            enableAdvancedConfig: value
+        })
+    }
+
+    toggleLanguageExpanded(language) {
+        this.setState(prevState => ({
+            expandedLanguages: {
+                ...prevState.expandedLanguages,
+                [language]: !prevState.expandedLanguages[language]
+            }
+        }))
+    }
+
+    addLanguage() {
+        let nextIndex = this.state.languages.length + 1
+        let newCode = `lang${nextIndex}`
+
+        while (this.state.languages.includes(newCode)) {
+            nextIndex++
+            newCode = `lang${nextIndex}`
+        }
+
+        this.setState(prevState => ({
+            languages: [...prevState.languages, newCode],
+            expandedLanguages: {
+                ...prevState.expandedLanguages,
+                [newCode]: true
+            },
+            serviceConfig: {
+                ...prevState.serviceConfig,
+                [newCode]: prevState.serviceConfig[newCode] || {}
+            }
+        }))
+    }
+
+    updateLanguage(index, value) {
+        const normalizedValue = (value || '').trim().toLowerCase()
+        const languages = [...this.state.languages]
+        const previousValue = languages[index]
+
+        const isDuplicate = languages.some((lang, i) => i !== index && lang === normalizedValue)
+        if (isDuplicate) {
+            return // still abbrechen, keine State-Änderung
+        }
+
+        languages[index] = normalizedValue
+
+        this.setState(prevState => {
+            const serviceConfig = { ...prevState.serviceConfig }
+            const expandedLanguages = { ...prevState.expandedLanguages }
+
+            if (previousValue !== normalizedValue) {
+                if (serviceConfig[previousValue]) {
+                    serviceConfig[normalizedValue] = serviceConfig[previousValue]
+                    delete serviceConfig[previousValue]
+                }
+                if (expandedLanguages[previousValue] !== undefined) {
+                    expandedLanguages[normalizedValue] = expandedLanguages[previousValue]
+                    delete expandedLanguages[previousValue]
+                }
+            }
+
+            return {
+                languages,
+                serviceConfig,
+                expandedLanguages,
+                defaultLanguage: prevState.defaultLanguage === previousValue ? normalizedValue : prevState.defaultLanguage
+            }
+        })
+    }
+
+    removeLanguage(index) {
+        const languageToRemove = this.state.languages[index]
+        const languages = this.state.languages.filter((_, i) => i !== index)
+
+        if (!languages.length) {
+            return
+        }
+
+        this.setState(prevState => {
+            const serviceConfig = { ...prevState.serviceConfig }
+            delete serviceConfig[languageToRemove]
+
+            const expandedLanguages = { ...prevState.expandedLanguages }
+            delete expandedLanguages[languageToRemove]
+
+            return {
+                languages,
+                serviceConfig,
+                expandedLanguages,
+                defaultLanguage: prevState.defaultLanguage === languageToRemove ? languages[0] : prevState.defaultLanguage
+            }
+        })
+    }
+
+    getSelectedServices() {
+        return this.state.selectedItems.filter(item => item.type === 'r')
+    }
+
+    getServiceId(item) {
+        const parts = String(item.id || '').split('-')
+        return parts.length > 1 ? parts[1] : item.id
+    }
+
+    getServiceConfigValue(language, serviceId, field) {
+        return (
+            (((this.state.serviceConfig || {})[language] || {})[serviceId] || {})[field] || ''
+        )
+    }
+
+    updateServiceConfig(language, serviceId, field, value) {
+        this.setState(prevState => {
+            const serviceConfig = { ...prevState.serviceConfig }
+            const languageConfig = { ...(serviceConfig[language] || {}) }
+            const serviceEntry = {
+                ...(languageConfig[serviceId] || {
+                    label: '',
+                    customText1: '',
+                    customText2: ''
+                })
+            }
+
+            serviceEntry[field] = value
+            languageConfig[serviceId] = serviceEntry
+            serviceConfig[language] = languageConfig
+
+            return { serviceConfig }
+        })
+    }
+
+    buildAdvancedConfig() {
+        if (!this.state.enableAdvancedConfig) {
+            return null
+        }
+
+        const selectedServiceIds = this.getSelectedServices().map(item => this.getServiceId(item))
+
+        const languages = this.state.languages
+            .filter(language => language.trim() !== '')
+            .map(language => {
+                const langConfig = (this.state.serviceConfig[language] || {})
+
+                const services = {}
+                selectedServiceIds.forEach(serviceId => {
+                    const entry = langConfig[serviceId] || {}
+                    const { label = '', customText1 = '', customText2 = '' } = entry
+
+                    if (label || customText1 || customText2) {
+                        services[serviceId] = { label, customText1, customText2 }
+                    }
+                })
+
+                return { language, services }
+            })
+            
+        return {
+            defaultLanguage: this.state.defaultLanguage,
+            languages
         }
     }
 
@@ -79,6 +255,12 @@ class TicketPrinterConfigView extends Component {
 
         if (this.state.template !== 'default') {
             parameters.push(`template=${this.state.template}`)
+        }
+
+        const config = this.buildAdvancedConfig()
+        if (config) {
+            const encoded = btoa(encodeURIComponent(JSON.stringify(config)).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))))
+            parameters.push(`config=${encoded}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -200,6 +382,144 @@ class TicketPrinterConfigView extends Component {
         )
     }
 
+    renderLanguageConfig() {
+        const onDefaultLanguageChange = (_, value) => {
+            this.setState({ defaultLanguage: value })
+        }
+
+        return (
+            <div className="ticketprinter-config__languages">
+                <FormGroup key="ticketprinter-default-language">
+                    <Label attributes={{ "htmlFor": "ticketprinterDefaultLanguage" }} value="Standardsprache" />
+                    <Controls>
+                        <Select
+                            attributes={{ "id": "ticketprinterDefaultLanguage" }}
+                            options={this.state.languages.map(language => ({
+                                name: language || '(leer)',
+                                value: language
+                            }))}
+                            value={this.state.defaultLanguage}
+                            onChange={onDefaultLanguageChange}
+                        />
+                    </Controls>
+                </FormGroup>
+
+                <fieldset>
+                    <legend className="label">Sprachen</legend>
+
+                    {this.state.languages.map((language, index) => {
+                        const isExpanded = !!this.state.expandedLanguages[language]
+                        return (
+                            <div key={`language-${index}`} className="accordion">
+                                <div className="accordion__heading ticketprinter-config__language-header" role="heading" aria-level="3">
+                                    <button
+                                        type="button"
+                                        className="language-accordion__trigger"
+                                        aria-expanded={isExpanded ? "true" : "false"}
+                                        onClick={() => this.toggleLanguageExpanded(language)}
+                                    >
+                                        {language || `Sprache ${index + 1}`}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="ticketprinter-config__remove-language"
+                                        onClick={() => this.removeLanguage(index)}
+                                        disabled={this.state.languages.length === 1}
+                                        title="Sprache entfernen"
+                                    >
+                                        <i className="fas fa-times" />
+                                    </button>
+                                </div>
+
+                                {isExpanded && (
+                                    <div className="accordion__panel opened">
+                                        <div className="ticketprinter-config__language-input">
+                                            <Inputs.Text
+                                                value={language}
+                                                attributes={{ "id": `ticketprinterLanguage-${index}` }}
+                                                onChange={(name, value) => this.updateLanguage(index, value)}
+                                            />
+                                        </div>
+                                        {this.getSelectedServices().length === 0 ? (
+                                            <p>Bitte oben mindestens eine Dienstleistung auswählen.</p>
+                                        ) : (
+                                            this.getSelectedServices().map(item =>
+                                                this.renderServiceTextFields(language, item)
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+
+                    <div className="form-actions">
+                        <button
+                            type="button"
+                            className="button button--default"
+                            onClick={() => this.addLanguage()}
+                        >
+                            Sprache hinzufügen
+                        </button>
+                    </div>
+                </fieldset>
+            </div>
+        )
+    }
+
+    renderServiceTextFields(language, item) {
+        const serviceId = this.getServiceId(item)
+        const serviceName = item.name || serviceId
+
+        return (
+            <fieldset key={`${language}-${serviceId}`} className="ticketprinter-config__service-fields">
+                <legend className="label">{serviceName}</legend>
+
+                <FormGroup key={`${language}-${serviceId}-label`}>
+                    <Label
+                        attributes={{ "htmlFor": `service-label-${language}-${serviceId}` }}
+                        value="Bezeichnung"
+                    />
+                    <Controls>
+                        <Inputs.Text
+                            value={this.getServiceConfigValue(language, serviceId, 'label')}
+                            attributes={{ "id": `service-label-${language}-${serviceId}` }}
+                            onChange={(name, value) => this.updateServiceConfig(language, serviceId, 'label', value)}
+                        />
+                    </Controls>
+                </FormGroup>
+
+                <FormGroup key={`${language}-${serviceId}-customText1`}>
+                    <Label
+                        attributes={{ "htmlFor": `service-customText1-${language}-${serviceId}` }}
+                        value="Custom Text 1"
+                    />
+                    <Controls>
+                        <Inputs.Text
+                            value={this.getServiceConfigValue(language, serviceId, 'customText1')}
+                            attributes={{ "id": `service-customText1-${language}-${serviceId}` }}
+                            onChange={(name, value) => this.updateServiceConfig(language, serviceId, 'customText1', value)}
+                        />
+                    </Controls>
+                </FormGroup>
+
+                <FormGroup key={`${language}-${serviceId}-customText2`}>
+                    <Label
+                        attributes={{ "htmlFor": `service-customText2-${language}-${serviceId}` }}
+                        value="Custom Text 2"
+                    />
+                    <Controls>
+                        <Inputs.Text
+                            value={this.getServiceConfigValue(language, serviceId, 'customText2')}
+                            attributes={{ "id": `service-customText2-${language}-${serviceId}` }}
+                            onChange={(name, value) => this.updateServiceConfig(language, serviceId, 'customText2', value)}
+                        />
+                    </Controls>
+                </FormGroup>
+            </fieldset>
+        )
+    }
+
     render() {
         const onNameChange = (name, value) => {
             this.setState({ ticketPrinterName: value })
@@ -254,6 +574,43 @@ class TicketPrinterConfigView extends Component {
                                 value={this.state.template}
                                 onChange={onTemplateStatusChange} />
                         </Controls>
+                    </FormGroup>
+                    <FormGroup key="advanced-config-group" className="ticketprinter-config__advanced-group">
+                        <div className="label">Erweiterte Konfiguration</div>
+
+                        <div className="ticketprinter-config__advanced-content">
+                            <label className="label">
+                                <input
+                                    type="checkbox"
+                                    className="ticketprinter-config__advanced-checkbox"
+                                    checked={this.state.enableAdvancedConfig}
+                                    onChange={(ev) => this.toggleAdvancedConfig(ev.target.checked)}
+                                />
+                                Erweiterte Sprach- und Textkonfiguration verwenden
+                            </label>
+
+                            {this.state.enableAdvancedConfig && (
+                                <dl
+                                    id="ticketprinter-config-accordion"
+                                    className="accordion js-accordion"
+                                    data-allow-multiple="false"
+                                    data-allow-toggle="true"
+                                >
+                                    <dt className="accordion__heading">
+                                        <button
+                                            type="button"
+                                            className="accordion__trigger"
+                                            aria-expanded="false"
+                                        >
+                                            Sprach- und Textkonfiguration
+                                        </button>
+                                    </dt>
+                                    <dd className="accordion__panel">
+                                        {this.renderLanguageConfig()}
+                                    </dd>
+                                </dl>
+                            )}
+                        </div>
                     </FormGroup>
                     <FormGroup key="ticketprinter-url">
                         <Label attributes={{ "htmlFor": "ticketprinterUrl" }} value="URL"></Label>
