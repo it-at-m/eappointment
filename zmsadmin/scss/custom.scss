@@ -75,6 +75,7 @@
 
 #{$namespace}.language-accordion__trigger {
     @extend #{$namespace}.accordion__trigger;
+    
     flex: 1;
 }
 

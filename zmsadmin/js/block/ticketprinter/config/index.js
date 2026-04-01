@@ -89,22 +89,22 @@ class TicketPrinterConfigView extends Component {
 
     addLanguage() {
         let nextIndex = this.state.languages.length + 1
-        let newCode = `lang${nextIndex}`
+        let newLanguage = `lang${nextIndex}`
 
-        while (this.state.languages.includes(newCode)) {
+        while (this.state.languages.includes(newLanguage)) {
             nextIndex++
-            newCode = `lang${nextIndex}`
+            newLanguage = `lang${nextIndex}`
         }
 
         this.setState(prevState => ({
-            languages: [...prevState.languages, newCode],
+            languages: [...prevState.languages, newLanguage],
             expandedLanguages: {
                 ...prevState.expandedLanguages,
-                [newCode]: true
+                [newLanguage]: true
             },
             serviceConfig: {
                 ...prevState.serviceConfig,
-                [newCode]: prevState.serviceConfig[newCode] || {}
+                [newLanguage]: {}
             }
         }))
     }
@@ -116,7 +116,7 @@ class TicketPrinterConfigView extends Component {
 
         const isDuplicate = languages.some((lang, i) => i !== index && lang === normalizedValue)
         if (isDuplicate) {
-            return // still abbrechen, keine State-Änderung
+            return
         }
 
         languages[index] = normalizedValue
