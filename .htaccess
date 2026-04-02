@@ -2,9 +2,9 @@ RewriteEngine On
 
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
-# webroot
+# webroot: route to index.php for a path-relative Location redirect
 RewriteCond %{QUERY_STRING} ^$
-RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
+RewriteRule ^$ /index.php [L]
 
 
 # zmsapi
