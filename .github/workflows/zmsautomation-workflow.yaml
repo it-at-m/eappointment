@@ -128,14 +128,6 @@ jobs:
             echo "citizenview_tag_used=$primary" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build zms-web base image (Apache+SSL)
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Use the same apache/ssl setup as the local devcontainer base,
-          # then overwrite module directories from the prebuilt GHCR module images.
-          docker build -t zms-web-base:ci -f .devcontainer/Containerfile .devcontainer
-
       - name: Start required containers (stack once)
         shell: bash
         run: |
@@ -154,7 +146,7 @@ jobs:
           version: "3.8"
           services:
             web:
-              image: zms-web-base:ci
+              image: ghcr.io/it-at-m/eappointment-php-base:8.3-local
               container_name: zms-web
               user: "root"
               volumes:
