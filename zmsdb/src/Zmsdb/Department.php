@@ -52,12 +52,12 @@ class Department extends Base
     ) {
         $entity['links'] = (new Link())->readByDepartmentId($entity->id, $disableCache);
         $entity['scopes'] = (new Scope())
-            ->readByDepartmentId($entity->id, max(1, $resolveReferences - 1), $disableCache)
+            ->readByDepartmentId($entity->id, $resolveReferences - 1, $disableCache)
             ->sortByContactName();
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId(
                 $entity->id,
-                max(1, $resolveReferences - 1),
+                $resolveReferences - 1,
                 $disableCache
             );
             $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id, $disableCache);

@@ -42,9 +42,7 @@ class Workstation extends Base
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
-                // resolveReferences=1 keeps cluster scope names available without deep recursion
-                $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id, 1);
-                $department = (new Department())->readByScopeId($workstation->scope['id']);
+                $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
             $workstation->process = (new Process())->readByWorkstation($workstation, $resolveReferences - 1);
