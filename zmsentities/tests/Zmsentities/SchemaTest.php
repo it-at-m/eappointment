@@ -74,11 +74,7 @@ class SchemaTest extends Base
             'contact__name' => 'Flughafen Schönefeld, Landebahn',
             'email' => 'terminvereinbarung@mitte.berlin.de',
             'id' => '1234',
-            'name' => 'Flughafen Schönefeld, Landebahn',
-            'preferences__notifications__enabled' => true,
-            'preferences__notifications__identification' => 'terminvereinbarung@mitte.berlin.de',
-            'preferences__notifications__sendConfirmationEnabled' => true,
-            'preferences__notifications__sendReminderEnabled' => true
+            'name' => 'Flughafen Schönefeld, Landebahn'
         ];
     }
 }

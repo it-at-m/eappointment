@@ -203,21 +203,6 @@
             }
           ]
         },
-        "sms": {
-          "description": "Allow sending SMS",
-          "oneOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01]$"
-            }
-          ]
-        },
         "superuser": {
           "description": "Special rights for administrators, especially for maintenance",
           "oneOf": [

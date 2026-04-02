@@ -11,14 +11,10 @@ class ExchangeClientdepartment extends Base
 
     const BATABLE = 'buergeranliegen';
 
-    const NOTIFICATIONSTABLE = 'abrechnung';
-
     const QUERY_READ_REPORT = '
     SELECT
         MIN(subjectid) as subjectid,
         date,
-        notificationscount,
-        0 as notificationscost,
         SUM(clientscount) as clientscount,
         SUM(missed) as missed,
         SUM(withappointment) as withappointment,
@@ -27,27 +23,8 @@ class ExchangeClientdepartment extends Base
 
     FROM (
           SELECT
-            d.behoerdenid as subjectid,
-            DATE_FORMAT(n.`Datum`, :groupby) as date,
-            IFNULL(SUM(n.gesendet), 0) as notificationscount,
-            0 as notificationscost,
-            0 as clientscount,
-            0 as missed,                                    
-            0 as withappointment,
-            0 as missedwithappointment,
-            0 as requestcount
-          FROM ' . Department::TABLE . ' d
-              LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-              LEFT JOIN abrechnung n ON n.`StandortID` = scope.`StandortID`
-          WHERE d.`BehoerdenID` = :departmentid AND n.`Datum` BETWEEN :datestart AND :dateend
-          GROUP BY date
-
-    UNION ALL  
-          SELECT
               d.behoerdenid as subjectid,
               DATE_FORMAT(a.`Datum`, :groupby) as date,
-              0 as notificationscount,
-              0 as notificationscost,
               SUM(IF(a.`nicht_erschienen`=0,a.AnzahlPersonen,0)) as clientscount,
               SUM(IF(a.`nicht_erschienen`=1,a.AnzahlPersonen,0)) as missed,
               SUM(IF(a.`nicht_erschienen`=0 AND a.mitTermin=1,a.AnzahlPersonen,0)) as withappointment,
@@ -62,8 +39,6 @@ class ExchangeClientdepartment extends Base
           SELECT
               d.behoerdenid as subjectid,
               DATE_FORMAT(a.`Datum`, :groupby) as date,
-              0 as notificationscount,
-              0 as notificationscost,
               0 as clientscount,
               0 as missed,                                    
               0 as withappointment,
