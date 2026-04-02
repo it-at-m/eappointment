@@ -50,7 +50,7 @@ class Cluster extends Base
         $resolveReferences,
         $disableCache = false
     ) {
-        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences, $disableCache);
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, max(2, $resolveReferences), $disableCache);
 
         return $entity;
     }
