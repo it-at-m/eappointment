@@ -19,7 +19,6 @@ class UseraccountUpdateTest extends Base
                 "department": 0,
                 "organisation": 0,
                 "scope": 0,
-                "sms": 0,
                 "superuser": 0,
                 "ticketprinter": 0,
                 "useraccount": 1
@@ -50,7 +49,6 @@ class UseraccountUpdateTest extends Base
                 "department": 0,
                 "organisation": 0,
                 "scope": 0,
-                "sms": 0,
                 "superuser": 0,
                 "ticketprinter": 0,
                 "useraccount": 1
@@ -130,7 +128,6 @@ class UseraccountUpdateTest extends Base
                 "department": 1,
                 "organisation": 1,
                 "scope": 1,
-                "sms": 1,
                 "superuser": 1,
                 "ticketprinter": 1,
                 "useraccount": 1
@@ -157,7 +154,6 @@ class UseraccountUpdateTest extends Base
                 "department": "0",
                 "organisation": "0",
                 "scope": "0",
-                "sms": "0",
                 "superuser": "0",
                 "ticketprinter": "0",
                 "useraccount": "2"
@@ -186,7 +182,6 @@ class UseraccountUpdateTest extends Base
                 "department": 0,
                 "organisation": 1,
                 "scope": 0,
-                "sms": 0,
                 "superuser": 0,
                 "ticketprinter": 0,
                 "useraccount": 1

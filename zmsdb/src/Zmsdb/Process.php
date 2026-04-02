@@ -806,22 +806,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readNotificationReminderProcessList(\DateTimeInterface $dateTime, $limit = 500, $offset = null, $resolveReferences = 0)
-    {
-        $selectQuery = new Query\Process(Query\Base::SELECT);
-        $selectQuery
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessReminderInterval($dateTime)
-            ->addConditionHasTelephone()
-            ->addConditionAssigned()
-            ->addConditionIgnoreSlots()
-            ->addConditionStatus('confirmed')
-            ->addLimit($limit, $offset);
-        $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences)->withDepartmentNotificationEnabled();
-    }
-
     public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, $resolveReferences = 0)
     {
         $selectQuery = new Query\Process(Query\Base::SELECT);
