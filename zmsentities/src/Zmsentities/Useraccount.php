@@ -25,7 +25,6 @@ class Useraccount extends Schema\Entity
                 "department" => false,
                 "organisation" => false,
                 "scope" => false,
-                "sms" => false,
                 "superuser" => false,
                 "ticketprinter" => false,
                 "useraccount" => false,

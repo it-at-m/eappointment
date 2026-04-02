@@ -154,21 +154,21 @@ class ProcessChange extends BaseController
                 ]
             )->getEntity();
         }
-        static::writeDeletedMailAndNotification($oldProcess);
-        static::writeConfirmedMailAndNotification($input, $newProcess);
+        static::writeDeletedMail($oldProcess);
+        static::writeConfirmedMail($input, $newProcess);
         return $newProcess;
     }
 
-    protected static function writeDeletedMailAndNotification($oldProcess)
+    protected static function writeDeletedMail($oldProcess)
     {
             $oldProcess->status = 'deleted';
             ProcessDelete::writeDeleteMailNotifications($oldProcess);
     }
 
-    protected static function writeConfirmedMailAndNotification($input, $newProcess)
+    protected static function writeConfirmedMail($input, $newProcess)
     {
         if ('confirmed' == $newProcess->getStatus()) {
-            Helper\AppointmentFormHelper::updateMailAndNotification($input, $newProcess);
+            Helper\AppointmentFormHelper::updateMail($input, $newProcess);
         }
     }
 }

@@ -274,7 +274,6 @@ class Process extends Base implements MappingInterface
             'clients__0__email' => 'process.EMail',
             'clients__0__emailSendCount' => 'process.EMailverschickt',
             'clients__0__familyName' => 'process.Name',
-            'clients__0__notificationsSendCount' => 'process.SMSverschickt',
             'clients__0__surveyAccepted' => 'process.zustimmung_kundenbefragung',
             'clients__0__telephone' => self::expression(
                 'IF(`process`.`telefonnummer_fuer_rueckfragen`!="",
@@ -871,9 +870,6 @@ class Process extends Base implements MappingInterface
         }
         if ($client && $client->offsetExists('emailSendCount')) {
             $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
-        }
-        if ($client && $client->offsetExists('notificationsSendCount')) {
-            $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
         $data['Anmerkung'] = $process->getAmendment();
         $data['custom_text_field'] = $process->getCustomTextfield();
