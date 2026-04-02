@@ -132,6 +132,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
+    // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
     public function hasRights(array $requiredRights): bool
     {
         if ($this->isSuperUser()) {
