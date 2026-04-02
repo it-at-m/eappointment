@@ -153,13 +153,6 @@
                         "number"
                     ]
                 },
-                "sms": {
-                    "description": "Allow sending SMS",
-                    "type": [
-                        "boolean",
-                        "number"
-                    ]
-                },
                 "superuser": {
                     "description": "Special rights for administrators, especially for maintenance",
                     "type": [
@@ -341,14 +334,6 @@
                             "target": true
                         }
                     ],
-                    "preferences": {
-                        "notifications": {
-                            "enabled": true,
-                            "identification": "terminvereinbarung@mitte.berlin.de",
-                            "sendConfirmationEnabled": true,
-                            "sendReminderEnabled": true
-                        }
-                    },
                     "scopes": [
                         {
                             "id": 123
@@ -401,45 +386,6 @@
                     },
                     "name": {
                         "type": "string"
-                    },
-                    "preferences": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "notifications": {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "enabled": {
-                                        "type": [
-                                            "boolean",
-                                            "number"
-                                        ],
-                                        "description": "true if sms are allowed"
-                                    },
-                                    "identification": {
-                                        "type": [
-                                            "string"
-                                        ],
-                                        "description": "usually an email address"
-                                    },
-                                    "sendConfirmationEnabled": {
-                                        "type": [
-                                            "boolean",
-                                            "number"
-                                        ],
-                                        "description": "true if confirmation sms are enabled"
-                                    },
-                                    "sendReminderEnabled": {
-                                        "type": [
-                                            "boolean",
-                                            "number"
-                                        ],
-                                        "description": "true if reminder sms are enabled"
-                                    }
-                                }
-                            }
-                        }
                     },
                     "scopes": {
                         "type": "array",

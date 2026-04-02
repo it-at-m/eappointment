@@ -55,14 +55,6 @@ class Messaging
     }
 
     protected static $templates = array(
-        'notification' => array(
-            'appointment' => 'notification_appointment.twig',
-            'confirmed' => 'notification_confirmation.twig',
-            'queued' => 'notification_confirmation.twig',
-            'called' => 'notification_headsup.twig',
-            'reminder' => 'notification_reminder.twig',
-            'deleted' => 'notification_deleted.twig'
-        ),
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
@@ -222,27 +214,6 @@ class Messaging
         return $message;
     }
 
-    public static function getNotificationContent(Process $process, Config $config, $status = 'appointment')
-    {
-        $appointment = $process->getFirstAppointment();
-        $template = self::getTemplate('notification', $status);
-        if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
-            $exception->data = $process;
-            throw $exception;
-        }
-        $message = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => $config
-            )
-        );
-        return $message;
-    }
-
     protected static function getTemplate($type, $status)
     {
         $template = null;
@@ -352,13 +323,6 @@ class Messaging
         $icsString = html_entity_decode($icsString);
         return self::getTextWithFoldedLines($icsString);
     }
-
-
-
-
-
-
-
 
     public static function getPlainText($content, $lineBreak = "\n")
     {

@@ -31,7 +31,6 @@
             "familyName": "P53425416",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -99,11 +98,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -120,11 +114,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -176,7 +166,6 @@
             "familyName": "C536",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -244,11 +233,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -265,11 +249,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -321,7 +301,6 @@
             "familyName": "P45653",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -389,11 +368,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -410,11 +384,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -466,7 +436,6 @@
             "familyName": "G316524",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -534,11 +503,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -555,11 +519,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -611,7 +571,6 @@
             "familyName": "B61232",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -679,11 +638,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -700,11 +654,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -756,7 +706,6 @@
             "familyName": "W432453",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -824,11 +773,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -845,11 +789,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -901,7 +841,6 @@
             "familyName": "A321453",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -969,11 +908,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -990,11 +924,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1046,7 +976,6 @@
             "familyName": "S5141616",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -1121,11 +1050,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1142,11 +1066,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1198,7 +1118,6 @@
             "familyName": "B235256",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -1266,11 +1185,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1287,11 +1201,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1343,7 +1253,6 @@
             "familyName": "H5265",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -1411,11 +1320,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1432,11 +1336,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1488,7 +1388,6 @@
             "familyName": "S500",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": ""
           }
@@ -1556,11 +1455,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1577,11 +1471,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1633,7 +1523,6 @@
             "familyName": "H250",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": ""
           }
@@ -1701,11 +1590,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1722,11 +1606,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -1778,7 +1658,6 @@
             "familyName": "W536245",
             "email": "test@example.com",
             "emailSendCount": "0",
-            "notificationsSendCount": "0",
             "surveyAccepted": "0",
             "telephone": "0049123456789"
           }
@@ -1846,11 +1725,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1867,11 +1741,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",

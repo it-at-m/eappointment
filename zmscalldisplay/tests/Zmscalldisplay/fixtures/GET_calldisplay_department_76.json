@@ -36,11 +36,6 @@
 					"telephoneActivated": "0",
 					"telephoneRequired": "0"
 				},
-				"notifications": {
-					"confirmationContent": "",
-					"headsUpContent": "",
-					"headsUpTime": "0"
-				},
 				"queue": {
 					"callCountMax": "0",
 					"callDisplayText": "Herzlich Willkommen in Tempelhof-Sch\u00f6neberg.\r\n====================\r\nHinweis: In diesem B\u00fcrgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie \u00fcber das Beh\u00f6rdentelefon 115, zur Selbstbuchung \u00fcber die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information.",
@@ -56,11 +51,7 @@
 				},
 				"ticketprinter": {
 					"buttonName": "B\u00fcrgeramt Sch\u00f6neberg",
-					"confirmationEnabled": "0",
-					"deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzuf\u00fcgen\" auf der ZMS-Oberfl\u00e4che.",
-					"notificationsAmendmentEnabled": "0",
-					"notificationsEnabled": "0",
-					"notificationsDelay": "0"
+					"deactivatedText": "Bitte benutzen Sie die Funktion \"Kunden hinzuf\u00fcgen\" auf der ZMS-Oberfl\u00e4che."
 				},
 				"workstation": {
 					"emergencyEnabled": "1"

@@ -29,14 +29,6 @@
                 "target": true
             }
         ],
-        "preferences": {
-            "notifications": {
-                "enabled": true,
-                "identification": "terminvereinbarung@mitte.berlin.de",
-                "sendConfirmationEnabled": true,
-                "sendReminderEnabled": true
-            }
-        },
         "scopes": [
             {
                 "id": 123,
@@ -156,54 +148,6 @@
         },
         "name": {
             "type": "string"
-        },
-        "preferences": {
-            "oneOf": [
-                {"type": "null"},
-                {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "notifications": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-         "enabled": {
-             "oneOf": [
-                 {"type": "null"},
-                 {"type": "number", "enum": [0, 1]},
-                 {"type": "boolean"},
-                 {"type": "string", "pattern": "^[01]$"}
-             ],
-                                    "description": "true if sms are allowed"
-                                },
-                                "identification": {
-                                    "type": ["null", "string"],
-                                    "description": "usually an email address"
-                                },
-                                "sendConfirmationEnabled": {
-                                    "oneOf": [
-                                        {"type": "null"},
-                                        {"type": "number"},
-                                        {"type": "boolean"},
-                                        {"type": "string", "pattern": "^[01]$"}
-                                    ],
-                                    "description": "true if confirmation sms are enabled"
-                                },
-                                "sendReminderEnabled": {
-                                    "oneOf": [
-                                        {"type": "null"},
-                                        {"type": "number"},
-                                        {"type": "boolean"},
-                                        {"type": "string", "pattern": "^[01]$"}
-                                    ],
-                                    "description": "true if reminder sms are enabled"
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
         },
         "scopes": {
             "type": ["array", "null"],
