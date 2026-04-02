@@ -43,6 +43,7 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
                 $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id);
+                $department = (new Department())->readByScopeId($workstation->scope['id']);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
             $workstation->process = (new Process())->readByWorkstation($workstation, $resolveReferences - 1);
