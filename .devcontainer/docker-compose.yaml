@@ -95,6 +95,7 @@ services:
 
   init-keycloak:
     image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    container_name: zms-init-keycloak
     depends_on:
       keycloak:
         condition: service_started

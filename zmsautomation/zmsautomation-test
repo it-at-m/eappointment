@@ -45,17 +45,29 @@ section() {
 # Paths and variables
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-# Validate required environment variables
-: "${MYSQL_PORT:?MYSQL_PORT must be set}"
-: "${MYSQL_DATABASE:?MYSQL_DATABASE must be set}"
-: "${MYSQL_USER:?MYSQL_USER must be set}"
-: "${MYSQL_PASSWORD:?MYSQL_PASSWORD must be set}"
-: "${CACHE_DIR:?CACHE_DIR must be set}"
+# Default environment (devcontainer / City laptop). Override any value by exporting before running this script.
+export MYSQL_HOST="${MYSQL_HOST:-db}"
+export MYSQL_PORT="${MYSQL_PORT:-tcp://db:3306}"
+export MYSQL_DATABASE="${MYSQL_DATABASE:-db}"
+export MYSQL_USER="${MYSQL_USER:-db}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-db}"
+export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-root}"
+export CACHE_DIR="${CACHE_DIR:-/var/www/html/cache}"
+
+export BASE_URI="${BASE_URI:-http://web/terminvereinbarung/api/2}"
+export CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://web/terminvereinbarung/api/citizen}"
+export ADMIN_BASE_URI="${ADMIN_BASE_URI:-http://localhost/terminvereinbarung/admin/}"
+export STATISTIC_BASE_URI="${STATISTIC_BASE_URI:-http://localhost/terminvereinbarung/statistic/}"
+
+export CITIZENVIEW_PORT="${CITIZENVIEW_PORT:-8082}"
+CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_PORT}}"
+CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI%/}/"
+export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
 
 DB_NAME="${MYSQL_DATABASE}"
 DB_USER="${MYSQL_USER}"
 DB_PASSWORD="${MYSQL_PASSWORD}"
-DB_HOST="${MYSQL_HOST:-db}"  # Defaults to 'db' (docker-compose service name)
+DB_HOST="${MYSQL_HOST}"
 DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
 # Mock Date/Time (ONE value for the whole run, inside opening-hours)
@@ -87,15 +99,10 @@ SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
 
-# API endpoints (for health checks from inside container)
-BASE_URI="${BASE_URI:-http://localhost/terminvereinbarung/api/2}"
-CITIZEN_API_BASE_URI="${CITIZEN_API_BASE_URI:-http://localhost/terminvereinbarung/api/citizen}"
-CITIZENVIEW_PORT="${CITIZENVIEW_PORT:-8082}"
-# Inside the devcontainer network, citizenview is reachable via its service name.
-CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_PORT}}"
-CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI%/}/"
-# Make the base URI also available for ATAF's Environment as ZMS-Citizen-View.
-export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
+info "Test URLs: BASE_URI=$BASE_URI"
+info "Test URLs: CITIZEN_API_BASE_URI=$CITIZEN_API_BASE_URI"
+info "Test URLs: ADMIN_BASE_URI=$ADMIN_BASE_URI STATISTIC_BASE_URI=$STATISTIC_BASE_URI"
+info "Test URLs: CITIZEN_VIEW_BASE_URI=$CITIZEN_VIEW_BASE_URI"
 
 # Keycloak config files
 KEYCLOAK_STATISTIC_JSON="$PROJECT_ROOT/zmsstatistic/keycloak.json"
@@ -236,8 +243,8 @@ backup_and_rewrite_keycloak() {
   local file="$1"
   if [[ -f "$file" ]]; then
     cp "$file" "$file.bak"
-    sed -i 's/localhost:8091/localhost:443/g' "$file"
-    info "Keycloak config rewritten (8091→443): $file"
+    sed -i 's/localhost:8090/localhost/g' "$file"
+    info "Keycloak config rewritten (8090→80): $file"
   else
     warn "Keycloak config not found: $file"
   fi
@@ -385,15 +392,13 @@ info "Forcing slot calculation fallback (mocked time) ..."
   && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
 ) || true
 
-# 9. Health Checks (5 min total; 15s per try; bypass proxy for localhost; keep BASE_URI / CITIZEN_API_BASE_URI)
+# 9. Health Checks (5 min total; 15s per try; curl uses explicit --noproxy)
 #
 # citizenapi / citizenapi-available-days use CITIZEN_API_BASE_URI → http://localhost/.../api/citizen/...
 # That hits zms-web (PHP) directly — refarch-gateway is NOT on that path, so gateway logs stay empty.
 # Browser + Vite use http://refarch-gateway:8080/buergeransicht/api/citizen/... — we ping that too so
 # gateway sees traffic and DEBUG logs prove the route. Skip with SKIP_REFARCH_GATEWAY_HEALTH=1 if no gateway.
 section "9. Health Checks"
-export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1,refarch-gateway,citizenview}"
-export no_proxy="${NO_PROXY}"
 
 join_url(){ local b="${1%/}"; local p="${2#/}"; printf '%s/%s\n' "$b" "$p"; }
 
@@ -448,8 +453,7 @@ wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=tr
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
 wait_http "citizenapi-available-days"  "$CITIZEN_API_AVAIL_DAYS_URL"  || fail=true
-# zmscitizenview: must use wait_http_direct — wait_http only noproxy's localhost, so
-# HTTP_PROXY still sends http://citizenview:8082 to the corporate gateway → 502.
+# zmscitizenview / refarch-gateway: curl --noproxy '*' so Docker service hostnames are never proxied.
 wait_http_direct "zmscitizenview"      "$ZMSCITIZENVIEW_HEALTH_URL"   || fail=true
 if [[ "${SKIP_REFARCH_GATEWAY_HEALTH:-}" == "1" ]]; then
   info "SKIP_REFARCH_GATEWAY_HEALTH=1 — not pinging refarch-gateway"
@@ -522,7 +526,7 @@ info "Running Cucumber/ATAF tests with default ataf profile..."
 info "Note: You can filter tests by tags using: -Dcucumber.filter.tags=@tagName"
 info "Example: bash zmsautomation-test -Dcucumber.filter.tags=@smoke"
 
-# Keycloak swap for UI tests: rewrite redirect URLs 8091→443 so login works from inside container.
+# Keycloak swap for UI tests: rewrite redirect URLs 8090→80 so login works from inside container.
 # Trigger only when UI tests run (not when only API tests: -Pataf-api without -Pataf-ui).
 # Swap only the app(s) whose UI tests run (infer from -Dcucumber.filter.tags); if unclear, swap both.
 # When we move to GitHub cloud we can add a host here instead of localhost port swap.
@@ -624,8 +628,8 @@ while (( attempt <= MAX_UI_RETRIES )); do
   set +e
   mvn -B -DtrimStackTrace=false \
     "${PLATFORM_ARGS[@]}" \
-    -Dbase.uri="$BASE_URI" \
-    -Dcitizen.api.base.uri="$CITIZEN_API_BASE_URI" \
+    -DBASE_URI="$BASE_URI" \
+    -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
     -Dbrowser="${ZMS_BROWSER:-chrome}" \
     -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
     -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
@@ -680,7 +684,7 @@ clear_caches
 section "14. Database Restore and Keycloak Restore"
 info "Restoring original database..."
 restore_db
-info "Restoring Keycloak config (8091)..."
+info "Restoring Keycloak config (revert test-time rewrites)..."
 restore_keycloak
 
 # Clear test data migrations from flyway_schema_history after restore (skip when SKIP_DB_RESTORE=1)
