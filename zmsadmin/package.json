@@ -63,9 +63,9 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
-    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#muc-main",
-    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14",
+    "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js/-/archive/2.24.14/layout-admin-js-2.24.14.tar.gz",
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss/-/archive/muc-main/layout-admin-scss-muc-main.tar.gz",
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
   }
