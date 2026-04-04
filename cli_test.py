@@ -21,101 +21,15 @@ from cli_base import EappointmentCli, print_info
 class TestCli(EappointmentCli):
   """CLI extension: local ATAF runs, WebDrivers, gateway TLS truststore."""
 
-  RUN_MAC_LOCAL_BASE_URI = "https://localhost:8091/terminvereinbarung/api/2"
-  RUN_MAC_LOCAL_CITIZEN_API_URI = "https://localhost:8091/terminvereinbarung/api/citizen"
-  RUN_MAC_LOCAL_ADMIN_URI = "https://localhost:8091/terminvereinbarung/admin/"
-  RUN_MAC_LOCAL_STATISTIC_URI = "https://localhost:8091/terminvereinbarung/statistic/"
+  RUN_MAC_LOCAL_BASE_URI = "http://localhost:8090/terminvereinbarung/api/2"
+  RUN_MAC_LOCAL_CITIZEN_API_URI = "http://localhost:8090/terminvereinbarung/api/citizen"
+  RUN_MAC_LOCAL_ADMIN_URI = "http://localhost:8090/terminvereinbarung/admin/"
+  RUN_MAC_LOCAL_STATISTIC_URI = "http://localhost:8090/terminvereinbarung/statistic/"
   RUN_MAC_LOCAL_ADMIN_URI_HTTP = "http://localhost:8080/terminvereinbarung/admin/"
   RUN_MAC_LOCAL_STATISTIC_URI_HTTP = "http://localhost:8080/terminvereinbarung/statistic/"
   RUN_MAC_LOCAL_CITIZEN_VIEW_URI = "http://localhost:8082/"
 
-  LOCAL_GATEWAY_TRUSTSTORE_FILENAME = "cacerts-with-local-gateway-8091.jks"
-  LOCAL_GATEWAY_CERT_ALIAS = "zms-localhost-8091-gateway"
-  CACERTS_DEFAULT_PASSWORD = "changeit"
-
   DEFAULT_MSEDGE_DRIVER_VERSION = "146.0.3856.72"
-
-  @staticmethod
-  def needs_local_gateway_truststore(env, api_http):
-    if api_http:
-      return False
-    for key in ("BASE_URI", "CITIZEN_API_BASE_URI"):
-      v = env.get(key, "")
-      if "https://localhost:8091" in v or "https://127.0.0.1:8091" in v:
-        return True
-    return False
-
-  def prepare_local_gateway_truststore(self, java_home: str) -> str:
-    openssl = shutil.which("openssl")
-    keytool = os.path.join(java_home, "bin", "keytool")
-    if not openssl:
-      raise click.ClickException("openssl not found (needed to read the gateway cert). Install Xcode CLT or openssl.")
-    if not os.path.isfile(keytool):
-      raise click.ClickException(f"keytool not found: {keytool}")
-
-    src_cacerts = Path(java_home) / "lib" / "security" / "cacerts"
-    if not src_cacerts.is_file():
-      raise click.ClickException(f"JDK cacerts not found: {src_cacerts}")
-
-    cfg = Path.home() / ".config" / "eappointment"
-    cfg.mkdir(parents=True, exist_ok=True)
-    truststore = cfg / self.LOCAL_GATEWAY_TRUSTSTORE_FILENAME
-    cert_pem = cfg / "localhost-8091-gateway.pem"
-
-    pipe = (
-      "echo | openssl s_client -connect localhost:8091 -servername localhost 2>/dev/null "
-      "| openssl x509 -outform PEM"
-    )
-    r = subprocess.run(pipe, shell=True, capture_output=True, text=True, timeout=25)
-    pem = (r.stdout or "").strip()
-    if not pem or "BEGIN CERTIFICATE" not in pem:
-      raise click.ClickException(
-        "Could not read a TLS certificate from https://localhost:8091.\n"
-        "Start your stack (refarch-gateway on 8091) and retry."
-      )
-    cert_pem.write_text(pem + "\n", encoding="utf-8")
-
-    if not truststore.is_file():
-      shutil.copy2(src_cacerts, truststore)
-
-    subprocess.run(
-      [
-        keytool,
-        "-delete",
-        "-alias",
-        self.LOCAL_GATEWAY_CERT_ALIAS,
-        "-keystore",
-        str(truststore),
-        "-storepass",
-        self.CACERTS_DEFAULT_PASSWORD,
-      ],
-      capture_output=True,
-      check=False,
-    )
-    ir = subprocess.run(
-      [
-        keytool,
-        "-importcert",
-        "-noprompt",
-        "-trustcacerts",
-        "-alias",
-        self.LOCAL_GATEWAY_CERT_ALIAS,
-        "-file",
-        str(cert_pem),
-        "-keystore",
-        str(truststore),
-        "-storepass",
-        self.CACERTS_DEFAULT_PASSWORD,
-      ],
-      capture_output=True,
-      text=True,
-      check=False,
-    )
-    if ir.returncode != 0:
-      raise click.ClickException(
-        "keytool -importcert failed:\n" + (ir.stderr or ir.stdout or "unknown error")
-      )
-    return str(truststore)
 
   @staticmethod
   def mac_require_darwin():
@@ -319,18 +233,6 @@ class TestCli(EappointmentCli):
       )
       print_info("Then: source ~/.zshrc  (or open a new terminal)")
 
-    @cli_tests.command("trust-local-gateway")
-    def cli_tests_trust_local_gateway():
-      """Import TLS cert from https://localhost:8091 into ~/.config/eappointment/ (for JVM / mvn)."""
-      app.mac_require_darwin()
-      java_home = app.resolve_mac_java_home()
-      print_info(
-        "Building truststore (JDK cacerts copy + gateway cert). "
-        f"Password is standard cacerts password: {app.CACERTS_DEFAULT_PASSWORD}"
-      )
-      p = app.prepare_local_gateway_truststore(java_home)
-      print_info(f"Truststore: {p}")
-
     @cli_tests.command("run-mac-local")
     @click.option(
       "--base-uri",
@@ -368,12 +270,6 @@ class TestCli(EappointmentCli):
       is_flag=True,
       default=False,
       help="Use http://localhost:8080/... for BASE_URI and CITIZEN_API_BASE_URI instead of https://8091.",
-    )
-    @click.option(
-      "--skip-gateway-trust",
-      is_flag=True,
-      default=False,
-      help="Do not build ~/.config/eappointment/cacerts-with-local-gateway-8091.jks (skip JVM trust import for 8091).",
     )
     @click.option(
       "--browser",
@@ -529,19 +425,6 @@ class TestCli(EappointmentCli):
           [
             "-Dtestautomation.platformName=mac",
             "-DplatformName=mac",
-          ]
-        )
-
-      if app.needs_local_gateway_truststore(env, api_http) and not skip_gateway_trust:
-        print_info(
-          "JVM trust for https://localhost:8091: importing gateway cert into "
-          f"~/.config/eappointment/{app.LOCAL_GATEWAY_TRUSTSTORE_FILENAME} …"
-        )
-        ts = app.prepare_local_gateway_truststore(java_home)
-        mvn_args.extend(
-          [
-            f"-Djavax.net.ssl.trustStore={ts}",
-            f"-Djavax.net.ssl.trustStorePassword={app.CACERTS_DEFAULT_PASSWORD}",
           ]
         )
 
