@@ -19,7 +19,6 @@ class RightsLevelManager
         'departmentStats' => 25,
         'availability' => 20,
         'ticketprinter' => 15,
-        'sms' => 10,
         'audit' => 5,
         'basic' => 0
     );

@@ -66,7 +66,6 @@
                 "familyName": "TEST_USER",
                 "email": "test@muenchen.de",
                 "emailSendCount": "0",
-                "notificationsSendCount": "0",
                 "surveyAccepted": "0",
                 "telephone": "123456789"
             }

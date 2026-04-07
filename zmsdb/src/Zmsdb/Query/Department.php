@@ -19,21 +19,6 @@ class Department extends Base implements MappingInterface
             send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
-    const QUERY_NOTIFICATIONS_UPDATE = '
-
-    SET @tempSMSId = (SELECT smsID from sms WHERE BehoerdenID=:departmentId);
-    REPLACE INTO
-        sms
-    SET
-        smsID=@tempSMSId,
-        BehoerdenID=:departmentId,
-        enabled=:enabled,
-        Absender=:identification,
-        internetbestaetigung=:sendConfirmationEnabled,
-        interneterinnerung=:sendReminderEnabled
-
-    ';
-
     const QUERY_MAIL_INSERT = '
         REPLACE INTO
             email
@@ -45,23 +30,8 @@ class Department extends Base implements MappingInterface
             send_reminder_minutes_before=?
     ';
 
-    const QUERY_NOTIFICATIONS_INSERT = '
-        REPLACE INTO
-            sms
-        SET
-            BehoerdenID=?,
-            enabled=?,
-            Absender=?,
-            internetbestaetigung=?,
-            interneterinnerung=?
-    ';
-
     const QUERY_MAIL_DELETE = '
         DELETE FROM email WHERE BehoerdenID=?
-    ';
-
-    const QUERY_NOTIFICATIONS_DELETE = '
-        DELETE FROM sms WHERE BehoerdenID=?
     ';
 
     public function getEntityMapping()
@@ -86,11 +56,7 @@ class Department extends Base implements MappingInterface
             'sendEmailReminderEnabled' => 'department_email.send_reminder',
             'sendEmailReminderMinutesBefore' => 'department_email.send_reminder_minutes_before',
             'id' => 'department.BehoerdenID',
-            'name' => 'department.Name',
-            'preferences__notifications__enabled' => 'department_sms.enabled',
-            'preferences__notifications__identification' => 'department_sms.Absender',
-            'preferences__notifications__sendConfirmationEnabled' => 'department_sms.internetbestaetigung',
-            'preferences__notifications__sendReminderEnabled' => 'department_sms.interneterinnerung'
+            'name' => 'department.Name'
         ];
     }
 
@@ -101,12 +67,6 @@ class Department extends Base implements MappingInterface
             'department.BehoerdenID',
             '=',
             'department_email.BehoerdenID'
-        );
-        $this->leftJoin(
-            new Alias('sms', 'department_sms'),
-            'department.BehoerdenID',
-            '=',
-            'department_sms.BehoerdenID'
         );
     }
 

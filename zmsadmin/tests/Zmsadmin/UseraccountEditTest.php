@@ -96,7 +96,6 @@ class UseraccountEditTest extends Base
                 ['id' => 57],
             ),
             'rights' => array(
-                'sms' => '1',
                 'ticketprinter' => '1',
                 'availability' => '1',
                 'scope' => '1'
@@ -159,7 +158,6 @@ class UseraccountEditTest extends Base
                 ['id' => 57],
             ),
             'rights' => array(
-                'sms' => '1',
                 'ticketprinter' => '1',
                 'availability' => '1',
                 'scope' => '1'
@@ -221,7 +219,6 @@ class UseraccountEditTest extends Base
                 '',
             ),
             'rights' => array(
-                'sms' => '1',
                 'ticketprinter' => '1',
                 'availability' => '1',
                 'scope' => '1'
@@ -275,7 +272,6 @@ class UseraccountEditTest extends Base
                 '',
             ),
             'rights' => array(
-                'sms' => '1',
                 'ticketprinter' => '1',
                 'availability' => '1',
                 'scope' => '1'

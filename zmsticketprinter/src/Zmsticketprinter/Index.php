@@ -83,12 +83,6 @@ class Index extends BaseController
         );
     }
 
-    // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
-    /*private function getConfig()
-    {
-        return \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
-    }*/
-
     private function getDefaultTemplate($validator)
     {
         return $validator->getParameter("template")
