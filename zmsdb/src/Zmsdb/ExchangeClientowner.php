@@ -18,17 +18,12 @@ class ExchangeClientowner extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config())->readEntity();
-        $costs = $config->getNotificationPreferences()['costs'];
-
         $owner = (new Owner())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Kundenstatistik $owner->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a owner', 'owner.id');
         $entity->addDictionaryEntry('date');
-        $entity->addDictionaryEntry('notificationscount');
-        $entity->addDictionaryEntry('notificationscost');
         $entity->addDictionaryEntry('clientscount');
         $entity->addDictionaryEntry('missed');
         $entity->addDictionaryEntry('withappointment');
@@ -49,7 +44,6 @@ class ExchangeClientowner extends Base
                     ]
                 );
             foreach ($raw as $entry) {
-                $entry['notificationscost'] = $entry['notificationscount'] * $costs;
                 $entity->addDataSet(array_values($entry));
             }
         }

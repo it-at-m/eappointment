@@ -63,21 +63,6 @@
         "organisation"
       ],
       [
-        "notificationscope",
-        "SMS-Statistik Standort",
-        "scope"
-      ],
-      [
-        "notificationdepartment",
-        "SMS-Statistik Behörde",
-        "department"
-      ],
-      [
-        "notificationorganisation",
-        "SMS-Statistik Organisation",
-        "organisation"
-      ],
-      [
         "requestscope",
         "Dienstleistungsstatistik Standort",
         "useraccount.rights.scope"

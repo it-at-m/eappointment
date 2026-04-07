@@ -12,11 +12,6 @@ class Mailtemplate extends Schema\Entity
         ];
     }
 
-    public function getNotificationPreferences()
-    {
-        return $this->toProperty()->notifications->get();
-    }
-
     public function hasType($type)
     {
         return (isset($this[$type])) ? true : false;

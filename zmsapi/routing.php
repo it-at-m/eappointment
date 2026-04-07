@@ -2068,106 +2068,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/notification/":
- *      get:
- *          summary: get a list of notifications in the send queue
- *          tags:
- *              - notification
- *          parameters:
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: returns a list, might be empty
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/notification.json"
- */
-\App::$slim->get(
-    '/notification/',
-    '\BO\Zmsapi\NotificationList'
-)
-    ->setName("NotificationList");
-
-
-
-/**
- *  @swagger
- *  "/notification/":
- *      post:
- *          summary: Add a notification to the send queue
- *          tags:
- *              - notification
- *          parameters:
- *              -   name: notification
- *                  description: notification data to send
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/notification.json"
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: notification accepted
- *              400:
- *                  description: "Missing required properties in the notification"
- */
-\App::$slim->post(
-    '/notification/',
-    '\BO\Zmsapi\NotificationAdd'
-)
-    ->setName("NotificationAdd");
-
-/**
- *  @swagger
- *  "/notification/{id}/":
- *      delete:
- *          summary: delete a notification in the send queue
- *          tags:
- *              - notification
- *          parameters:
- *              -   name: id
- *                  description: notification number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: succesfully deleted
- *              404:
- *                  description: "could not find notification or notification already sent"
- */
-\App::$slim->delete(
-    '/notification/{id:\d{1,11}}/',
-    '\BO\Zmsapi\NotificationDelete'
-)
-    ->setName("NotificationDelete");
-
-
-/**
- *  @swagger
  *  "/owner/":
  *      get:
  *          summary: Get a list of owners
@@ -2829,7 +2729,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/":
  *      post:
- *          summary: Update a process but does not send any mails or notifications on status changes
+ *          summary: Update a process but does not send any mails on status changes
  *          description: Attention - An empty list in "requests" does not delete the associated requests as expected. To delete the requests, create a dummy request with an ID of "-1" and create a one item list with this request into the process. This is required to delete the associated requests.
  *          tags:
  *              - process
@@ -3025,106 +2925,9 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/process/{id}/{authKey}/confirmation/notification/":
- *      post:
- *          summary: send notification on confirmed process
- *          tags:
- *              - process
- *              - notification
- *          parameters:
- *              -   name: id
- *                  description: process number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: authKey
- *                  description: authentication key
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: process
- *                  description: process data for building notification
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/process.json"
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/process.json"
- *              400:
- *                  description: "Invalid input"
- *              403:
- *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
- *              404:
- *                  description: "process id does not exists"
- */
-\App::$slim->post(
-    '/process/{id:\d{1,11}}/{authKey}/confirmation/notification/',
-    '\BO\Zmsapi\ProcessConfirmationNotification'
-)
-    ->setName("ProcessConfirmationNotification");
-
-/**
- *  @swagger
- *  "/process/{id}/{authKey}/delete/notification/":
- *      post:
- *          summary: send notification on delete process. Depending on config, if no mail is send, an empty mail is returned.
- *          x-since: 2.11
- *          tags:
- *              - process
- *              - notification
- *          parameters:
- *              -   name: id
- *                  description: process number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: authKey
- *                  description: authentication key
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: process
- *                  description: process data for building mail
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/process.json"
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/notification.json"
- *              400:
- *                  description: "Invalid input"
- *              403:
- *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
- *              404:
- *                  description: "process id does not exists"
- */
-\App::$slim->post(
-    '/process/{id:\d{1,11}}/{authKey}/delete/notification/',
-    '\BO\Zmsapi\ProcessDeleteNotification'
-)
-    ->setName("ProcessDeleteNotification");
-
-/**
- *  @swagger
  *  "/process/{id}/{authKey}/":
  *      delete:
- *          summary: Deletes a process but does not send any mails or notifications
+ *          summary: Deletes a process but does not send any mails
  *          tags:
  *              - process
  *          parameters:
@@ -3480,7 +3283,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                      $ref: "schema/process.json"
  *          responses:
  *              200:
- *                  description: process is preconfirmed, notifications and mails sent according to preferences
+ *                  description: process is preconfirmed, mails sent according to preferences
  *                  schema:
  *                      type: object
  *                      properties:
@@ -3521,7 +3324,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                      $ref: "schema/process.json"
  *          responses:
  *              200:
- *                  description: process is confirmed, notifications and mails sent according to preferences
+ *                  description: process is confirmed, mails sent according to preferences
  *                  schema:
  *                      type: object
  *                      properties:

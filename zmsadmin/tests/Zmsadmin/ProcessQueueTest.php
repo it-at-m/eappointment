@@ -72,11 +72,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/mail/',
                     'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
                 ]
             ]
         );
@@ -127,11 +122,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/mail/',
                     'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -191,11 +181,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/mail/',
                     'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
                 ]
             ]
         );
@@ -247,11 +232,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/mail/',
                     'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
                 ]
             ]
         );
