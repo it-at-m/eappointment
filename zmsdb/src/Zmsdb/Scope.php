@@ -147,6 +147,8 @@ class Scope extends Base
                 $entity = new Entity(
                     array(
                         'id' => $entity['id'],
+                        'contact' => ['name' => $entity['contact__name']],
+                        'shortName' => $entity['shortName'] ?? '',
                         '$ref' => '/scope/' . $entity['id'] . '/'
                     )
                 );
@@ -266,6 +268,7 @@ class Scope extends Base
                         array(
                             'id' => $entity['id'],
                             'contact' => ['name' => $entity['contact__name']],
+                            'shortName' => $entity['shortName'] ?? '',
                             '$ref' => '/scope/' . $entity['id'] . '/'
                         )
                     );
