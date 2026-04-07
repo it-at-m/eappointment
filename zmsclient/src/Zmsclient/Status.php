@@ -33,10 +33,6 @@ class Status
                 $result[] = "WARN - Oldest mail with age in seconds: "
                     . $status['mail']['oldestSeconds'] . 's';
             }
-            if ($status['notification']['oldestSeconds'] > 300) {
-                $result[] = "WARN - Oldest sms with age in seconds: "
-                    . $status['notification']['oldestSeconds'] . 's';
-            }
             if ($status['database']['logbin'] != 'ON') {
                 $result[] = "WARN - DB connection without replication log detected";
             }

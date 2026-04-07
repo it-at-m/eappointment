@@ -62,7 +62,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -154,7 +153,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -246,7 +244,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -338,7 +335,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -430,7 +426,6 @@
                 "familyName": "Jeremy Sullivan",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -522,7 +517,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -614,7 +608,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount":  0 ,
                 "surveyAccepted": 0,
                 "telephone": ""
             }

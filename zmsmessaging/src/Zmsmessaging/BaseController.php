@@ -9,7 +9,6 @@
 namespace BO\Zmsmessaging;
 
 use BO\Zmsentities\Mail;
-use BO\Zmsentities\Notification;
 use BO\Zmsentities\Mimepart;
 use BO\Mellon\Validator;
 
@@ -73,13 +72,18 @@ class BaseController
 
     public function deleteEntityFromQueue($entity)
     {
-        $type = ($entity instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';
+        if (!($entity instanceof \BO\Zmsentities\Mail)) {
+            return false;
+        }
         try {
-            $entity = \App::$http->readDeleteResult('/' . $type . '/' . $entity->id . '/')->getEntity();
+            $entity = \App::$http
+                ->readDeleteResult('/mails/' . $entity->id . '/')
+                ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             throw $exception;
         }
-        return ($entity) ? true : false;
+
+        return (bool) $entity;
     }
 
     public function testEntity($entity)

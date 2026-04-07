@@ -16,7 +16,6 @@ class DepartmentTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = $this->getExample();
-        $this->assertTrue(4 == count($entity->getNotificationPreferences()), 'preferences not accessible');
         $this->assertStringContainsString('Flughafen Schönefeld', $entity->getContactPerson(), 'getting contact person failed');
         $this->assertTrue(15831 == $entity->getContact()->postalCode, 'contact not accessible');
     }
@@ -188,22 +187,5 @@ class DepartmentTest extends EntityCommonTests
 
         $entity->email = '';
         $this->assertFalse($entity->hasMail());
-    }
-
-    public function testHasNotificationEnabled()
-    {
-        $entity = $this->getExample();
-        $this->assertTrue($entity->hasNotificationEnabled());
-        $this->assertTrue($entity->hasNotificationReminderEnabled());
-        $this->assertTrue($entity->hasNotificationConfirmationEnabled());
-
-        $entity->preferences['notifications']['enabled'] = false;
-        $this->assertFalse($entity->hasNotificationEnabled());
-
-        $entity->preferences['notifications']['sendReminderEnabled'] = false;
-        $this->assertFalse($entity->hasNotificationReminderEnabled());
-
-        $entity->preferences['notifications']['sendConfirmationEnabled'] = false;
-        $this->assertFalse($entity->hasNotificationConfirmationEnabled());
     }
 }

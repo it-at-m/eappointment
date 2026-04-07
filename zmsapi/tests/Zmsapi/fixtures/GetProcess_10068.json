@@ -61,7 +61,6 @@
             "familyName": "Dayoff",
             "email": "test@example.com",
             "emailSendCount": 0,
-            "notificationsSendCount": 0,
             "surveyAccepted": true,
             "telephone": ""
         }

@@ -49,26 +49,6 @@ class Warehouse extends Base
             'right' => 'superuser'
         ],
         [
-            'subject' => 'notificationscope',
-            'description' => 'SMS-Statistik Standort',
-            'right' => 'scope'
-        ],
-        [
-            'subject' => 'notificationdepartment',
-            'description' => 'SMS-Statistik Behörde',
-            'right' => 'department'
-        ],
-        [
-            'subject' => 'notificationorganisation',
-            'description' => 'SMS-Statistik Organisation',
-            'right' => 'organisation'
-        ],
-        [
-            'subject' => 'notificationowner',
-            'description' => 'SMS-Statistik München',
-            'right' => 'superuser'
-        ],
-        [
             'subject' => 'requestscope',
             'description' => 'Dienstleistungsstatistik Standort',
             'right' => 'scope'

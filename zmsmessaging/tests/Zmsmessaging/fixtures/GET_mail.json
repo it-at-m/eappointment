@@ -13,14 +13,6 @@
       "createTimestamp": 1447931596000,
       "department": {
         "id": 123,
-        "preferences": {
-          "notifications": {
-            "enabled": true,
-            "identification": "test@example.com",
-            "sendConfirmationEnabled": true,
-            "sendReminderEnabled": true
-          }
-        },
         "email": "test@example.com",
         "name": "Bürgeramt"
       },
@@ -74,12 +66,6 @@
               "telephoneActivated": "1",
               "telephoneRequired": "1"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "enabled": "1",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -94,10 +80,7 @@
               "label": ""
             },
             "ticketprinter": {
-              "confirmationEnabled": "0",
-              "deactivatedText": "",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": ""
             },
             "workstation": {
               "emergencyEnabled": "0"

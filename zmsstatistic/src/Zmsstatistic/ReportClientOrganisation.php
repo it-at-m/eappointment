@@ -14,8 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 class ReportClientOrganisation extends BaseController
 {
     protected $totals = [
-        'notificationscount',
-        'notificationscost',
         'clientscount',
         'missed',
         'withappointment',
@@ -38,27 +36,17 @@ class ReportClientOrganisation extends BaseController
           ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/')
           ->getEntity();
         $exchangeClient = null;
-        $exchangeNotification = null;
         if (isset($args['period'])) {
             $exchangeClient = \App::$http
             ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/' . $args['period'] . '/')
             ->getEntity()
             ->withCalculatedTotals($this->totals, 'date')
             ->toHashed();
-
-            $exchangeNotification = \App::$http
-            ->readGetResult(
-                '/warehouse/notificationorganisation/' . $organisationId . '/' . $args['period'] . '/',
-                ['groupby' => 'month']
-            )
-            ->getEntity()
-            ->toHashed();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'clientorganisation';
-            $args['reports'][] = $exchangeNotification;
             $args['reports'][] = $exchangeClient;
             $args['organisation'] = $this->organisation;
             return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
@@ -77,7 +65,6 @@ class ReportClientOrganisation extends BaseController
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
                 'exchangeClient' => $exchangeClient,
-                'exchangeNotification' => $exchangeNotification,
                 'source' => ['entity' => 'ClientOrganisation'],
                 'workstation' => $this->workstation->getArrayCopy()
             )

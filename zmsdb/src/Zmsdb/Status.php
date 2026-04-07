@@ -38,7 +38,6 @@ class Status extends Base
         }
 
         $entity['mail'] = $this->readMailStats();
-        $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
         $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
@@ -192,21 +191,6 @@ class Status extends Base
             'SELECT COUNT(id) as queueCount, UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds, 
                 UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
              FROM mailqueue'
-        );
-        return $stats;
-    }
-
-    /**
-     * Get notification stats
-     *
-     * @return array
-     */
-    protected function readNotificationStats()
-    {
-        $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(id) as queueCount, UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds, 
-                UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
-             FROM notificationqueue'
         );
         return $stats;
     }
