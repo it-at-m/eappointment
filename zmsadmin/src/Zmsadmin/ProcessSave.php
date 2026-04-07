@@ -106,7 +106,7 @@ class ProcessSave extends BaseController
         )->getEntity();
 
         if ($notify) {
-            AppointmentFormHelper::updateMailAndNotification($input, $process);
+            AppointmentFormHelper::updateMail($input, $process);
         }
 
         return $process;

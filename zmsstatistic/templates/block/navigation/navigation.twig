@@ -18,7 +18,7 @@
                 <li class="nav__link">
                     <ul class="nav__list">
                         <li class="nav__link{{ menuActive == 'client'? ' active' }}">
-                            <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum), inkl. SMS-Auswertung{% endtrans %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
+                            <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum){% endtrans %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
                         </li>
                         <li class="nav__link{{ menuActive == 'request'? ' active' }}">
                             <a title="{% trans %}Ausgabe der Dienstleistungsstatistik (wieviele und welche Dienstleistungen in welchem Zeitraum){% endtrans %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>

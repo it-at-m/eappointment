@@ -55,8 +55,6 @@ class View extends BaseView {
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
-            'onSendCustomNotification',
-            'onSendNotificationReminder',
             'onReloadQueueTable',
             'onChangeTableView',
             'onChangeSlotCount',
@@ -483,41 +481,6 @@ class View extends BaseView {
         });
     }
 
-    onSendCustomNotification($container, event) {
-        stopEvent(event);
-        const processId = $(event.currentTarget).data('process');
-        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&dialog=1`).then((response) => {
-            this.loadDialog(response, (() => {
-                showSpinner($container);
-                const sendData = $('.dialog form').serializeArray();
-                sendData.push(
-                    { 'name': 'submit', 'value': 'form' },
-                    { 'name': 'dialog', 'value': 1 }
-                );
-                this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-                    (response) => {
-                        hideSpinner($container);
-                        this.loadMessage(response, () => {
-                    }, null, event.currentTarget)
-                });
-            }), null, event.currentTarget)
-        });
-    }
-
-    onSendNotificationReminder($container, event) {
-        stopEvent(event);
-        showSpinner($container);
-        const processId = $(event.currentTarget).data('process');
-        const sendData = {
-            'selectedprocess': processId,
-            'submit': 'reminder'
-        }
-        this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-            (response) => this.loadMessage(response, () => {
-            }, null, event.currentTarget)
-        );
-    }
-
     onGhostWorkstationChange($container, event) {
         let selectedDate = this.selectedDate
         let ghostWorkstationCount = "-1";
@@ -634,8 +597,6 @@ class View extends BaseView {
             onResetProcess: this.onResetProcess,
             onAbortMessage: this.onAbortMessage,
             onSendCustomMail: this.onSendCustomMail,
-            onSendCustomNotification: this.onSendCustomNotification,
-            onSendNotificationReminder: this.onSendNotificationReminder,
             onChangeScope: this.onChangeScope,
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,

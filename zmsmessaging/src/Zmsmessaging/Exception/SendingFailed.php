@@ -6,5 +6,5 @@ class SendingFailed extends \Exception
 {
     protected $code = 404;
 
-    protected $message = 'Sending Mail or Notification failed - Unknow Error';
+    protected $message = 'Sending Mail failed - Unknow Error';
 }

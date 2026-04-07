@@ -18,17 +18,12 @@ class ExchangeClientscope extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config())->readEntity();
-        $costs = $config->getNotificationPreferences()['costs'];
-
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Kundenstatistik " . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown') . " " . ($scope ? $scope->shortName : 'Unknown');
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('scopeids', 'array', 'Array of scope IDs that contributed data');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
-        $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications sent');
-        $entity->addDictionaryEntry('notificationscost', 'string', 'Costs of notifications');
         $entity->addDictionaryEntry('clientscount', 'number', 'Amount of clients');
         $entity->addDictionaryEntry('missed', 'number', 'Amount of missed clients');
         $entity->addDictionaryEntry('withappointment', 'number', 'Amount of clients with an appointment');
@@ -57,8 +52,6 @@ class ExchangeClientscope extends Base
                 $aggregatedData[$date] = [
                     'scopeids' => [],
                     'date' => $date,
-                    'notificationscount' => 0,
-                    'notificationscost' => 0,
                     'clientscount' => 0,
                     'missed' => 0,
                     'withappointment' => 0,
@@ -69,7 +62,6 @@ class ExchangeClientscope extends Base
                 ];
             }
 
-            $aggregatedData[$date]['notificationscount'] += $entry['notificationscount'];
             $aggregatedData[$date]['clientscount'] += $entry['clientscount'];
             $aggregatedData[$date]['missed'] += $entry['missed'];
             $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
@@ -85,7 +77,6 @@ class ExchangeClientscope extends Base
 
         ksort($aggregatedData);
         foreach ($aggregatedData as $entry) {
-            $entry['notificationscost'] = $entry['notificationscount'] * $costs;
             $entity->addDataSet(array_values($entry));
         }
         return $entity;
