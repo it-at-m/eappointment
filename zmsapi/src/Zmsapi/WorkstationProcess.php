@@ -26,48 +26,67 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::setTransaction(true);
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $workstation = (new Helper\User($request, 1))->checkRights();
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
-        if ($workstation->process && $workstation->process->hasId() && $workstation->process->getId() != $input['id']) {
-            $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
-            $exception->data = ['process' => $workstation->process];
-            throw $exception;
+
+        try {
+            $workstation = (new Helper\User($request, 1))->checkRights();
+            $input = Validator::input()->isJson()->assertValid()->getValue();
+            $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
+            if ($workstation->process && $workstation->process->hasId() && $workstation->process->getId() != $input['id']) {
+                $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
+                $exception->data = ['process' => $workstation->process];
+                throw $exception;
+            }
+
+            $entity = new \BO\Zmsentities\Process($input);
+            $entity->testValid();
+            $this->testProcessData($entity);
+            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+
+            $this->validateProcessCurrentDate($process);
+
+            $previousStatus = $process->status;
+            $process->status = 'called';
+            $process = (new Query())->updateEntity(
+                $process,
+                \App::$now,
+                0,
+                $previousStatus,
+                $workstation->getUseraccount()
+            );
+
+            $process = new \BO\Zmsentities\Process($input);
+            $this->testProcess($process, $workstation, $allowClusterWideCall);
+            $process->setCallTime(\App::$now);
+            $process->queue['callCount']++;
+
+            $process->status = 'called';
+
+            $workstation->process = (new Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
+            \BO\Zmsdb\Connection\Select::writeCommit();
+            $message = Response\Message::create($request);
+            $message->data = $workstation;
+
+            $response = Render::withLastModified($response, time(), '0');
+            $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+            return $response;
+        } catch (\DomainException $e) {
+            \BO\Zmsdb\Connection\Select::writeRollback();
+
+            if ($e->getMessage() === 'PROCESS_ALREADY_ASSIGNED') {
+                $exception = new Exception\Process\ProcessAlreadyCalled();
+                $exception->data = [
+                    'processId' => $input['id'] ?? null
+                ];
+                throw $exception;
+            }
+
+            throw $e;
+        } catch (\Throwable $e) {
+            \BO\Zmsdb\Connection\Select::writeRollback();
+            throw $e;
         }
-
-        $entity = new \BO\Zmsentities\Process($input);
-        $entity->testValid();
-        $this->testProcessData($entity);
-        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
-
-        $this->validateProcessCurrentDate($process);
-
-        $previousStatus = $process->status;
-        $process->status = 'called';
-        $process = (new Query())->updateEntity(
-            $process,
-            \App::$now,
-            0,
-            $previousStatus,
-            $workstation->getUseraccount()
-        );
-
-        $process = new \BO\Zmsentities\Process($input);
-        $this->testProcess($process, $workstation, $allowClusterWideCall);
-        $process->setCallTime(\App::$now);
-        $process->queue['callCount']++;
-
-        $process->status = 'called';
-
-        $workstation->process = (new Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
-
-        $message = Response\Message::create($request);
-        $message->data = $workstation;
-
-        $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
     }
 
     protected function validateProcessCurrentDate($process)
