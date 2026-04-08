@@ -89,7 +89,7 @@
                 },
                 {
                     "type": "string",
-                    "pattern": "^[0-9]+$"
+                    "format": "time"
                 }
             ],
             "description": "minutes since arrival of client"
