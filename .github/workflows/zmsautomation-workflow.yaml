@@ -62,7 +62,10 @@ jobs:
           ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
 
       - name: Create runtime env file
-        run: cp .devcontainer/.env.template .devcontainer/.env
+        run: |
+          cp .devcontainer/.env.template .devcontainer/.env
+          cp zmsadmin/.env.template zmsadmin/.env
+          cp zmsstatistic/.env.template zmsstatistic/.env
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
