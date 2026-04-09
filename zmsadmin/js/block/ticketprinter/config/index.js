@@ -52,7 +52,6 @@ class TicketPrinterConfigView extends Component {
                     scopes: scopes.map(readPropsScope)
                 }
             }),
-            generatedUrl: "",
             homeUrl: "",
             template: "default",
             ticketPrinterName: ""
