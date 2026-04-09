@@ -6,7 +6,7 @@ SET @fix_date := '2026-03-02';
 
 DROP TEMPORARY TABLE IF EXISTS tmp_statistik_rebuild;
 
-CREATE TEMPORARY TABLE tmp_statistik_rebuild ENGINE=Aria AS
+CREATE TEMPORARY TABLE tmp_statistik_rebuild AS
 SELECT
     beh.KundenID                                AS kundenid,
     beh.OrganisationsID                         AS organisationsid,
