@@ -29,7 +29,7 @@ import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import printWaitingNumber from './page/waitingnumber/print'
 //import bindReact from './lib/bindReact.js'
-import { getDataAttributes, forceHttps } from './lib/utils'
+import { getDataAttributes } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
@@ -68,14 +68,6 @@ function loadResources() {
 window.$ = $;
 
 moment.locale('de')
-
-// ZMS_ADMIN_FORCE_HTTPS in .env: 'false' keeps HTTP (local dev); unset or any other value enforces HTTPS
-switch (process.env.ZMS_ADMIN_FORCE_HTTPS) {
-    case 'false':
-        break;
-    default:
-        forceHttps();
-}
 
 // Init Views
 //new AccessKeyView(document);

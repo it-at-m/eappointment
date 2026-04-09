@@ -62,10 +62,7 @@ jobs:
           ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
 
       - name: Create runtime env file
-        run: |
-          cp .devcontainer/.env.template .devcontainer/.env
-          cp zmsadmin/.env.template zmsadmin/.env
-          cp zmsstatistic/.env.template zmsstatistic/.env
+        run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -288,8 +285,6 @@ jobs:
               set -euo pipefail
               set -a
               source /var/www/html/.devcontainer/.env
-              source /var/www/html/zmsadmin/.env
-              source /var/www/html/zmsstatistic/.env
               tags="$1"
               SCREENSHOT_EVERY_STEP="$2"
               ZMS_BROWSER="$3"
