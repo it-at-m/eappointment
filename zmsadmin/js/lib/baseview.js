@@ -152,21 +152,34 @@ class BaseView extends ErrorHandler {
             $loader = parent.loadCall;
         }
 
+        const runUserAbortCallback = () => {
+            if (abortCallback) {
+                abortCallback();
+            }
+        };
+        const focusReturnTarget = () => {
+            returnTarget && returnTarget.focus();
+        };
+
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
-            destroyLightbox();
-            (callbackAsBackgroundAction) ? callback() : (abortCallback) ? abortCallback() : () => { }
+            if (callbackAsBackgroundAction) {
+                callback();
+            } else {
+                runUserAbortCallback();
+                focusReturnTarget();
+            }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,
             callback: () => {
                 callback();
                 destroyLightbox();
-                returnTarget && returnTarget.focus();
+                focusReturnTarget();
             },
             abortCallback: () => {
-                (abortCallback) ? abortCallback() : () => { }
+                runUserAbortCallback();
                 destroyLightbox();
-                returnTarget && returnTarget.focus();
+                focusReturnTarget();
             },
             parent: parent,
             returnTarget: returnTarget,
