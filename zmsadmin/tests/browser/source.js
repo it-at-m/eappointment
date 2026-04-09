@@ -2,7 +2,6 @@
 import { Selector } from 'testcafe';
 import Config from './lib/config';
 import { userSuper } from './lib/roles';
-import { getPageUrl } from './lib/client';
 
 fixture `Mandanten Workflow komplett`
     .page `${Config.baseUrl}/`

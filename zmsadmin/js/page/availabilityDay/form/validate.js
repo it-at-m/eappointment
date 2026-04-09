@@ -232,11 +232,6 @@ function isValidTimestamp(timestamp) {
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
-    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
-    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
-    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
-    //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
 
