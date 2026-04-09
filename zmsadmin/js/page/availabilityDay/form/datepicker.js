@@ -17,12 +17,11 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
-            kind: this.props.attributes.kind,            
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
             minTime: setHours(setMinutes(new Date(), 1), 0),
             maxTime: setHours(setMinutes(new Date(), 59), 23),
+            excludeTimeList: [],
             datePickerIsOpen: false,
             timePickerIsOpen: false,
             timePickerInitialized: this.props.attributes.availability.kind !== "new"
@@ -77,7 +76,6 @@ class AvailabilityDatePicker extends Component
         }
         this.setState({
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
             selectedDate: selectedDate,
             timePickerInitialized: this.props.attributes.availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
         })
