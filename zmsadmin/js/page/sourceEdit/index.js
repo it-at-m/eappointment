@@ -22,13 +22,13 @@ class SourceView extends Component {
         } else {
             newstate = deepMerge(newstate, makeNestedObj(fieldList, value))
         }
-        this.setState({ source: newstate });
+        if (this.props.onSourceChange) this.props.onSourceChange(newstate)
     }
 
     addNewHandler(field, props) {
         let newstate = this.props.source
         newstate[field] = this.props.source[field].concat(props)
-        this.setState({ source: newstate })
+        if (this.props.onSourceChange) this.props.onSourceChange(newstate)
     }
 
     deleteHandler(field, deleteIndex) {
@@ -36,7 +36,7 @@ class SourceView extends Component {
         newstate[field] = this.props.source[field].filter((item, index) => {
             return index !== deleteIndex
         })
-        this.setState({ source: newstate })
+        if (this.props.onSourceChange) this.props.onSourceChange(newstate)
     }
 
     componentDidMount() {
@@ -95,6 +95,7 @@ class SourceView extends Component {
 
 SourceView.propTypes = {
     source: PropTypes.object,
+    onSourceChange: PropTypes.func,
     parentProviders: PropTypes.array.isRequired,
     parentrequests: PropTypes.array.isRequired,
 }
