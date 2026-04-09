@@ -501,7 +501,7 @@ function setBreadcrumbAndTitle(appointmentId: string) {
     '[data-fragment-placeholder="breadcrumb-label"]'
   );
   if (element) {
-    element.innerHTML = appointmentId;
+    element.textContent = appointmentId;
   }
   const titleSeperator = "–";
   const splittedTitle = document.title.split(titleSeperator);
