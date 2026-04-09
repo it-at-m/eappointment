@@ -98,7 +98,7 @@ describe("ServiceFinder", () => {
 
   afterAll(() => {
     vi.unstubAllGlobals();
-  })
+  });
 
   const mockProvider = {
     id: "1",
