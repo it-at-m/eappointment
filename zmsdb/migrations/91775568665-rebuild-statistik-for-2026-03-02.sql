@@ -28,6 +28,8 @@ WHERE ba.Datum = @fix_date
   AND COALESCE(ba.nicht_erschienen, 0) = 0;
 
 -- Remove existing (messed up) stats for this date, then rebuild from scratch.
+START TRANSACTION;
+
 DELETE FROM statistik
 WHERE datum = @fix_date;
 
@@ -57,6 +59,8 @@ SELECT
     info_dl_id,
     bearbeitungszeit
 FROM tmp_statistik_rebuild;
+
+COMMIT;
 
 DROP TEMPORARY TABLE IF EXISTS tmp_statistik_rebuild;
 
