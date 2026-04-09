@@ -29,6 +29,36 @@ class Useraccount extends Schema\Entity
                 "ticketprinter" => false,
                 "useraccount" => false,
             ],
+            'permissions' => [
+                "appointment" => false,
+                "availability" => false,
+                "calldisplay" => false,
+                "cherrypick" => false,
+                "cluster" => false,
+                "config" => false,
+                "counter" => false,
+                "customersearch" => false,
+                "dayoff" => false,
+                "department" => false,
+                "emergency" => false,
+                "finishedqueue" => false,
+                "finishedqueuepast" => false,
+                "logs" => false,
+                "mailtemplates" => false,
+                "missedqueue" => false,
+                "openqueue" => false,
+                "organisation" => false,
+                "overviewcalendar" => false,
+                "parkedqueue" => false,
+                "restrictedscope" => false,
+                "scope" => false,
+                "source" => false,
+                "statistic" => false,
+                "ticketprinter" => false,
+                "useraccount" => false,
+                "waitingqueue" => false,
+                "superuser" => false
+            ],
             'departments' => new Collection\DepartmentList(),
         ];
     }
@@ -102,17 +132,28 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function hasRights(array $requiredRights)
+    // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
+    public function hasRights(array $requiredRights): bool
     {
         if ($this->isSuperUser()) {
             return true;
         }
+
+        $permissions = $this->toProperty()->permissions ?? null;
+        $rights = $this->toProperty()->rights ?? null;
+
         foreach ($requiredRights as $required) {
             if ($required instanceof Useraccount\RightsInterface) {
                 if (!$required->validateUseraccount($this)) {
                     return false;
                 }
-            } elseif (! $this->toProperty()->rights->$required->get()) {
+                continue;
+            }
+
+            $hasPermission = $permissions?->$required?->get() ?? false;
+            $hasRight = $rights?->$required?->get() ?? false;
+
+            if (!$hasPermission && !$hasRight) {
                 return false;
             }
         }
@@ -142,9 +183,11 @@ class Useraccount extends Schema\Entity
         return false;
     }
 
-    public function isSuperUser()
+    public function isSuperUser(): bool
     {
-        return $this->toProperty()->rights->superuser->get();
+        return $this->toProperty()->rights?->superuser?->get()
+            || $this->toProperty()->permissions?->superuser?->get()
+            ?? false;
     }
 
     public function getDepartmentById($departmentId)
