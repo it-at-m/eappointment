@@ -29,7 +29,7 @@ describe("AppointmentDetailView", () => {
 
   afterAll(() => {
     vi.unstubAllGlobals();
-  })
+  });
 
   const mockAppointmentOverviewUrl = "https://www.muenchen.de/appointment-overview";
   const mockRescheduleAppointmentUrl = "https://www.muenchen.de/reschedule-appointment";

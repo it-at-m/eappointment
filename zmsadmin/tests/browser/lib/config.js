@@ -1,8 +1,6 @@
 
 import process from "process";
 
-const baseUrlEnv = process.env.TEST_BASE;
-
 export default {
     credentials: {
         username: process.env.TEST_USER || '',

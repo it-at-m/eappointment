@@ -21,7 +21,7 @@ describe("AppointmentOverviewView", () => {
 
   afterAll(() => {
     vi.unstubAllGlobals();
-  })
+  });
 
   const mockBaseUrl = "https://www.muenchen.de";
   const mockAppointmentDetailUrl = "https://www.muenchen.de/appointment-detail";
