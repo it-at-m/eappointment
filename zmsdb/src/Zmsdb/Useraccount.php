@@ -17,6 +17,13 @@ class Useraccount extends Base
     private const CACHE_VERSION_KEY = 'useraccountCacheVersion';
     private const CACHE_INDEX_PREFIX = 'useraccountCacheIndex-';
     private const CACHE_INDEX_GLOBAL = 'all';
+    private const TEMP_ROLE_MAP_BY_BERECHTIGUNG = [
+        90 => 'system_admin',
+        40 => 'user_admin',
+        30 => 'appointment_admin',
+        5  => 'audit_viewer',
+        0  => 'agent_queue',
+    ];
 
     /**
      * Read or initialize the cache version for all useraccount-related cache entries.
@@ -641,11 +648,59 @@ class Useraccount extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
+        $this->assignTemporaryRoleForNewUser($entity);
         $this->updateAssignedDepartments($entity);
 
         $this->removeCache($entity);
 
         return $this->readEntity($entity->getId(), $resolveReferences, true);
+    }
+
+    /**
+     * Temporary bridge while roles/permissions UI is missing.
+     * Mirrors the logic from migration 91771576480-migrate-users-to-new-roles.sql
+     * so newly created users get a role entry in user_role.
+     *
+     * @todo Remove legacy Berechtigung->role mapping after full roles/permissions rollout.
+     */
+    protected function assignTemporaryRoleForNewUser(\BO\Zmsentities\Useraccount $entity): void
+    {
+        $berechtigung = (int) $entity->getRightsLevel();
+        $roleName = self::TEMP_ROLE_MAP_BY_BERECHTIGUNG[$berechtigung] ?? null;
+        if (!$roleName) {
+            return;
+        }
+
+        try {
+            $userId = (int) $this->readEntityIdByLoginName($entity->id);
+            $roleId = $this->readRoleIdByName($roleName);
+            $this->perform(
+                'INSERT IGNORE INTO user_role (user_id, role_id) VALUES (?, ?)',
+                [$userId, $roleId]
+            );
+        } catch (\Throwable $e) {
+            if (App::$log) {
+                App::$log->warning('Temporary user_role assignment failed', [
+                    'useraccount' => $entity->id ?? null,
+                    'berechtigung' => $berechtigung,
+                    'role_name' => $roleName,
+                    'exception' => get_class($e),
+                    'message' => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    protected function readRoleIdByName(string $roleName): int
+    {
+        $row = $this->getReader()->fetchOne(
+            'SELECT id FROM role WHERE name = ?',
+            [$roleName]
+        );
+        if (!$row || !isset($row['id'])) {
+            throw new \RuntimeException('Role not found: ' . $roleName);
+        }
+        return (int) $row['id'];
     }
 
     public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
