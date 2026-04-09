@@ -6,7 +6,36 @@ SET @fix_date := '2026-03-02';
 
 DROP TEMPORARY TABLE IF EXISTS tmp_statistik_rebuild;
 
-CREATE TEMPORARY TABLE tmp_statistik_rebuild AS
+-- Temporary table needs a primary key
+CREATE TEMPORARY TABLE tmp_statistik_rebuild (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    kundenid int(5) unsigned NOT NULL,
+    organisationsid int(5) unsigned NOT NULL,
+    behoerdenid int(5) unsigned NOT NULL,
+    clusterid int(5) unsigned NOT NULL,
+    standortid int(5) unsigned NOT NULL,
+    anliegenid int(11) NOT NULL,
+    datum date NOT NULL,
+    lastbuergerarchivid int(5) unsigned NOT NULL,
+    termin tinyint(1) NOT NULL DEFAULT 0,
+    info_dl_id int(5) unsigned NOT NULL,
+    bearbeitungszeit double DEFAULT 0,
+    PRIMARY KEY (id)
+);
+
+INSERT INTO tmp_statistik_rebuild (
+    kundenid,
+    organisationsid,
+    behoerdenid,
+    clusterid,
+    standortid,
+    anliegenid,
+    datum,
+    lastbuergerarchivid,
+    termin,
+    info_dl_id,
+    bearbeitungszeit
+)
 SELECT
     beh.KundenID                                AS kundenid,
     beh.OrganisationsID                         AS organisationsid,
