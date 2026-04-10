@@ -37,7 +37,6 @@ $cli->description("Downloads JSON files from the official site, validates them, 
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
-$backupPath = $destinationPath . '/backups';
 $helpers = new DldbHelpers($destinationPath, $cli);
 
 // Ensure the destination directory exists
@@ -106,14 +105,23 @@ if ($rollbackDay !== "none") {
         }
     
         $newContent = $request->raw_body;
-        print("Download {$baseDomain}{$download['url']} to $destFile\n\n");
-        file_put_contents($destFile, $newContent);
-        $downloadedFiles[$download['file']] = $destFile;
+        $tempFile = tempnam(sys_get_temp_dir(), 'dldbget_');
+        if ($tempFile === false) {
+            print($cli->red("Error: Failed to create temporary file for {$download['file']}\n\n"));
+            continue;
+        }
+
+        print("Download {$baseDomain}{$download['url']} to temporary file for $destFile\n\n");
+        file_put_contents($tempFile, $newContent);
+        $downloadedFiles[$download['file']] = $tempFile;
     }
     
     // Check if backup is needed and perform backup
-    $backupRequired = $helpers->checkAndCreateBackup($downloadedFiles);
-    
+    $helpers->checkAndCreateBackup($downloadedFiles);
+
+    // Copy downloaded temp files to the destination folder and remove the temp files
+    $helpers->copyDownloadedTempFilesToDestinationAndUnlink($downloadedFiles);
+
     // Cleanup old backups
     $helpers->cleanupOldBackups();
 

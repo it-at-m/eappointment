@@ -112,7 +112,10 @@ class DldbHelpers
                 return $hadError ? false : true;
             }
 
-    public function checkAndCreateBackup($newFiles)
+        return $hadError ? false : true;
+    }
+
+    public function checkAndCreateBackup($newFiles): void
     {
         echo "Checking if backup is required.\n\n";
         $backupRequired = false;
@@ -127,12 +130,6 @@ class DldbHelpers
                 if (md5_file($destFile) !== md5_file($filePath)) {
                     $backupRequired = true;
                     $filesToBackup[] = basename($destFile);
-                }
-            } else {
-                // New file, check if any data exists
-                $content = file_get_contents($filePath);
-                if (!empty($content)) {
-                    $backupRequired = true;
                 }
             }
         }
@@ -154,8 +151,17 @@ class DldbHelpers
             }
             echo "Backup created at: $backupDir\n\n";
         }
+    }
 
-        return $backupRequired;
+    public function copyDownloadedTempFilesToDestinationAndUnlink(array $filenameToTempPath): void
+    {
+        foreach ($filenameToTempPath as $filename => $tempFile) {
+            $destFile = $this->destinationPath . '/' . $filename;
+            if (!@copy($tempFile, $destFile)) {
+                echo $this->cli->red("Error: Failed to write {$filename} to destination\n\n");
+            }
+            @unlink($tempFile);
+        }
     }
 
     public function cleanupOldBackups()
