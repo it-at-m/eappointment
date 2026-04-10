@@ -268,32 +268,10 @@
                             "source": "dldb"
                         }
                     ],
-                    "showUpTime": {
-                        "type": "string",
-                        "description": "unix timestamp of showing up after call"
-                    },
-                    "processingTime": {
-                        "oneOf": [
-                            {
-                                "type": "null"
-                            },
-                            {
-                                "type": "number"
-                            },
-                            {
-                                "type": "string"
-                            }
-                        ],
-                        "description": "Cumulative time spent being served at the workstation (from show-up until finish or timeout), summed across interrupted sessions. MySQL TIME string (H+:MM:SS) from persistence, or fractional minutes as number; null if unset—not a Unix timestamp"
-                    },
-                    "timeoutTime": {
-                        "type": "string",
-                        "description": "unix timestamp of after a call is entered or re-entered into the queue"
-                    },  
-                    "finishTime": {
-                        "type": "string",
-                        "description": "unix timestamp og time when process has been finished"
-                    },
+                    "showUpTime": "2016-04-01 11:55:00",
+                    "processingTime": "00:15:00",
+                    "timeoutTime": null,
+                    "finishTime": null,
                     "scope": {
                         "id": 123,
                         "hint": "Standort aus Beispiel-Termin",
@@ -377,6 +355,32 @@
                     "lastChange": {
                         "type": "number",
                         "description": "unix timestamp of the last change on this process"
+                    },
+                    "showUpTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp of showing up after call"
+                    },
+                    "processingTime": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ],
+                        "description": "Cumulative time spent being served at the workstation (from show-up until finish or timeout), summed across interrupted sessions. MySQL TIME string (H+:MM:SS) from persistence, or fractional minutes as number; null if unset—not a Unix timestamp"
+                    },
+                    "timeoutTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp of after a call is entered or re-entered into the queue"
+                    },
+                    "finishTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp og time when process has been finished"
                     },
                     "queue": {
                         "$ref": "queue.json"
