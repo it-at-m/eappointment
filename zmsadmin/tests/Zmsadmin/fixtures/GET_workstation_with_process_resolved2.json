@@ -1,0 +1,2729 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-07-03T15:05:54+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+        "useraccount": {
+            "rights": {
+                "availability": "1",
+                "basic": "1",
+                "cluster": "1",
+                "department": "1",
+                "organisation": "1",
+                "scope": "1",
+                "sms": "1",
+                "superuser": "1",
+                "ticketprinter": "1",
+                "useraccount": "1"
+            },
+            "departments": [
+                {
+                    "id": "74",
+                    "scopes": [
+                        {
+                            "id": "380",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Halemweg (Außenstelle)"
+                            },
+                            "provider": {
+                                "id": "122210",
+                                "name": "Bürgeramt Halemweg (Außenstelle)",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/380/"
+                        },
+                        {
+                            "id": "1",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Häschenschule"
+                            },
+                            "provider": {
+                                "id": "122217",
+                                "name": "Bürgeramt Heerstraße",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/1/"
+                        }
+                    ],
+                    "links": [
+                        {
+                            "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                            "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                            "target": "1",
+                            "id": "72"
+                        }
+                    ],
+                    "dayoff": [
+                        {
+                            "date": 1478041200,
+                            "name": "Personalversammlung"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Charlottenburg-Wilmersdorf -> Bürgeramt",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "140",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Hohenzollerndamm"
+                                    },
+                                    "provider": {
+                                        "id": "122219",
+                                        "name": "Bürgeramt Hohenzollerndamm",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/140/"
+                                }
+                            ],
+                            "id": "110",
+                            "name": "Bürgeramt Hohenzollerndamm",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "141",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Heerstraße"
+                                    },
+                                    "provider": {
+                                        "id": "122217",
+                                        "name": "Bürgeramt Heerstraße",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/141/"
+                                }
+                            ],
+                            "id": "109",
+                            "name": "Bürgeramt Heerstraße",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "142",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Wilmersdorfer Straße"
+                                    },
+                                    "provider": {
+                                        "id": "122227",
+                                        "name": "Bürgeramt Wilmersdorfer Straße",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "Etage 4",
+                                    "$ref": "/scope/142/"
+                                }
+                            ],
+                            "id": "192",
+                            "name": "Bürgeramt Wilmersdorfer Str.",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "127",
+                    "name": "Charlottenburg-Wilmersdorf -> Ordnungsamt",
+                    "contact": {
+                        "city": "174/177",
+                        "street": "Hohenzollerndamm 174/177",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "615",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)"
+                                    },
+                                    "provider": {
+                                        "id": "122058",
+                                        "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/615/"
+                                }
+                            ],
+                            "id": "290",
+                            "name": "Ordnungsamt -ZAB-",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "57",
+                    "links": [
+                        {
+                            "name": "Termine für andere Bürgerämter",
+                            "url": "http://www.berlin.de/verwaltungsfuehrer/elektronische-terminvereinbarung/",
+                            "target": "1",
+                            "id": "46"
+                        },
+                        {
+                            "name": "Berliner Bürgerämter",
+                            "url": "http://www.berlin.de/verwaltungsfuehrer/buergerberatung/",
+                            "target": "1",
+                            "id": "71"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Friedrichshain-Kreuzberg -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "106",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 1 (Kreuzberg), Yorckstr. "
+                                    },
+                                    "provider": {
+                                        "id": "122231",
+                                        "name": "Bürgeramt 1 (Kreuzberg), Yorckstr.",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/106/"
+                                }
+                            ],
+                            "id": "427",
+                            "name": "Bürgeramt 1",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": "Herzlich Willkommen im Bürgeramt 1 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nwww.service.berlin.de\r\n\r\n                 Ihr Bürgeramt"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "108",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee"
+                                    },
+                                    "provider": {
+                                        "id": "122243",
+                                        "name": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/108/"
+                                }
+                            ],
+                            "id": "421",
+                            "name": "Bürgeramt 3",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": "Herzlich Willkommen im Bürgeramt 3 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nwww.service.berlin.de\r\n\r\n                 Ihr Bürgeramt\r\n\r\n"
+                        }
+                    ]
+                },
+                {
+                    "id": "72",
+                    "links": [
+                        {
+                            "name": "Startseite Lichtenberger Bürgerämter",
+                            "url": "http://www.berlin.de/ba-lichtenberg/verwaltung/behoerdenwegweiser/buergeramt.html",
+                            "target": "1",
+                            "id": "48"
+                        },
+                        {
+                            "name": "Öffnungszeiten mit Wegweiser im BA Lichtenberg",
+                            "url": "http://webbalibg.ba-libg.verwalt-berlin.de/zeiten/oeffnungszeiten.htm",
+                            "target": "0",
+                            "id": "49"
+                        },
+                        {
+                            "name": "Formulare der Bürgerämter",
+                            "url": "http://www.berlin.de/buergeramt/formulare/index.php",
+                            "target": "1",
+                            "id": "50"
+                        },
+                        {
+                            "name": "Wechseln der Bürgerämter",
+                            "url": "http://www.berlin.de/ba-lichtenberg/verwaltung/behoerdenwegweiser/infosystem.php?s&keinedienstleistung",
+                            "target": "1",
+                            "id": "60"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Lichtenberg -> Bürgeramt",
+                    "contact": {
+                        "city": "Egon-Erwin-Kisch-Str.",
+                        "street": "Egon-Erwin-Kisch-Str.",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "133",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 4 (Alt- Hohenschönhausen) Große-Leege-Straße"
+                                    },
+                                    "provider": {
+                                        "id": "122254",
+                                        "name": "Bürgeramt 4 (Alt- Hohenschönhausen) Große-Leege-Straße",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/133/"
+                                }
+                            ],
+                            "id": "30",
+                            "name": "Bürgeramt 4",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "134",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße "
+                                    },
+                                    "provider": {
+                                        "id": "122252",
+                                        "name": "Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/134/"
+                                }
+                            ],
+                            "id": "60",
+                            "name": "Bürgeramt 1",
+                            "hint": "Bürgeramt 1",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "135",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 2 (Lichtenberg) Normannenstr."
+                                    },
+                                    "provider": {
+                                        "id": "122260",
+                                        "name": "Bürgeramt 2 (Lichtenberg) Normannenstr.",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/135/"
+                                }
+                            ],
+                            "id": "28",
+                            "name": "Bürgeramt 2",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Berlintelefon:\r\n115"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "136",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt 3 (Friedrichsfelde) Tierparkcenter"
+                                    },
+                                    "provider": {
+                                        "id": "122262",
+                                        "name": "Bürgeramt 3 (Friedrichsfelde) Tierparkcenter",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/136/"
+                                }
+                            ],
+                            "id": "29",
+                            "name": "Bürgeramt 3",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+                        }
+                    ]
+                },
+                {
+                    "id": "128",
+                    "email": "test@example.com",
+                    "name": "Lichtenberg -> Ordnungsamt",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Große-Leege-Str. 103, 13055 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "637",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Ordnungsamt Lichtenberg"
+                                    },
+                                    "provider": {
+                                        "id": "122207",
+                                        "name": "Ordnungsamt Lichtenberg",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "_A-Z",
+                                    "$ref": "/scope/637/"
+                                }
+                            ],
+                            "id": "283",
+                            "name": "Ordnungsamt Lichtenberg",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen im Ordnungsamt Lichtenberg\r\n\r\nUnsere Sprechzeiten:\r\n\r\nMontag, Dienstag\r\n09:00-13:00 Uhr\r\nDonnerstag\r\n14:00-18:00 Uhr\r\nFreitag\r\n09:00-12:00 Uhr"
+                        }
+                    ]
+                },
+                {
+                    "id": "58",
+                    "email": "test@example.com",
+                    "name": "Marzahn-Hellersdorf -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "109",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Helle Mitte"
+                                    },
+                                    "provider": {
+                                        "id": "122273",
+                                        "name": "Bürgeramt Helle Mitte",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/109/"
+                                }
+                            ],
+                            "id": "16",
+                            "name": "Bürgeramt Helle-Mitte",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "111",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Marzahner Promenade"
+                                    },
+                                    "provider": {
+                                        "id": "122277",
+                                        "name": "Bürgeramt Marzahner Promenade",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/111/"
+                                }
+                            ],
+                            "id": "25",
+                            "name": "Bürgeramt Marzahner Promenade",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nDAS BÜRGERAMT IST VOM 29.09. BIS ZUM 06.10.2014 GESCHLOSSEN !!!!"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "112",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Biesdorf - Center"
+                                    },
+                                    "provider": {
+                                        "id": "122271",
+                                        "name": "Bürgeramt Biesdorf - Center",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/112/"
+                                }
+                            ],
+                            "id": "24",
+                            "name": "Bürgeramt Biesdorf-Center",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nwww.marzahn-hellersdorf.de/buergerdienste\r\n=====================\r\nMöchten Sie Wahlhelfer werden?\r\nNähere Informationen hier im Bürgeramt!"
+                        }
+                    ]
+                },
+                {
+                    "id": "75",
+                    "scopes": [
+                        {
+                            "id": "143",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Rathaus Mitte"
+                            },
+                            "provider": {
+                                "id": "122280",
+                                "name": "Bürgeramt Rathaus Mitte",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/143/"
+                        },
+                        {
+                            "id": "145",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Wedding "
+                            },
+                            "provider": {
+                                "id": "122284",
+                                "name": "Bürgeramt Wedding ",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/145/"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Mitte -> Bürgeramt",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Mathilde-Jacob-Platz 1, 10551 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "144",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Rathaus Tiergarten"
+                                    },
+                                    "provider": {
+                                        "id": "122282",
+                                        "name": "Bürgeramt Rathaus Tiergarten",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/144/"
+                                }
+                            ],
+                            "id": "171",
+                            "name": "Bürgeramt Tiergarten",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "81",
+                    "email": "test@example.com",
+                    "name": "Neukölln -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "167",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Rathaus Neukölln"
+                                    },
+                                    "provider": {
+                                        "id": "122285",
+                                        "name": "Bürgeramt Rathaus Neukölln",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/167/"
+                                }
+                            ],
+                            "id": "118",
+                            "name": "Bürgeramt Rathaus Neukölln",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "168",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Sonnenallee"
+                                    },
+                                    "provider": {
+                                        "id": "122286",
+                                        "name": "Bürgeramt Sonnenallee",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/168/"
+                                }
+                            ],
+                            "id": "115",
+                            "name": "Bürgeramt Sonnenallee",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "169",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Blaschkoallee"
+                                    },
+                                    "provider": {
+                                        "id": "122291",
+                                        "name": "Bürgeramt Blaschkoallee",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/169/"
+                                },
+                                {
+                                    "id": "441",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Blaschkoallee"
+                                    },
+                                    "provider": {
+                                        "id": "122291",
+                                        "name": "Bürgeramt Blaschkoallee",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "Raum",
+                                    "$ref": "/scope/441/"
+                                }
+                            ],
+                            "id": "117",
+                            "name": "Bürgeramt Blaschkoallee",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "170",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Zwickauer Damm"
+                                    },
+                                    "provider": {
+                                        "id": "122296",
+                                        "name": "Bürgeramt Zwickauer Damm",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/170/"
+                                }
+                            ],
+                            "id": "114",
+                            "name": "Bürgeramt Zwickauer Damm",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "55",
+                    "scopes": [
+                        {
+                            "id": "381",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Karow / Buch"
+                            },
+                            "provider": {
+                                "id": "150230",
+                                "name": "Bürgeramt Karow / Buch",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/381/"
+                        },
+                        {
+                            "id": "101",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Pankow"
+                            },
+                            "provider": {
+                                "id": "122301",
+                                "name": "Bürgeramt Pankow",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/101/"
+                        }
+                    ],
+                    "dayoff": [
+                        {
+                            "date": 1477000800,
+                            "name": "Personalversammlung"
+                        },
+                        {
+                            "date": 1475186400,
+                            "name": "Teamtag"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Pankow -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "102",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Prenzlauer Berg"
+                                    },
+                                    "provider": {
+                                        "id": "122297",
+                                        "name": "Bürgeramt Prenzlauer Berg",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/102/"
+                                }
+                            ],
+                            "id": "130",
+                            "name": "BüA Prenzlauer Berg",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "103",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Weißensee"
+                                    },
+                                    "provider": {
+                                        "id": "122294",
+                                        "name": "Bürgeramt Weißensee",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/103/"
+                                }
+                            ],
+                            "id": "169",
+                            "name": "BüA Weißensee",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "77",
+                    "scopes": [
+                        {
+                            "id": "147",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Heiligensee"
+                            },
+                            "provider": {
+                                "id": "122312",
+                                "name": "Bürgeramt Heiligensee",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/147/"
+                        },
+                        {
+                            "id": "151",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Märkisches Viertel"
+                            },
+                            "provider": {
+                                "id": "122314",
+                                "name": "Bürgeramt Märkisches Viertel",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/151/"
+                        },
+                        {
+                            "id": "148",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Rathaus Reinickendorf"
+                            },
+                            "provider": {
+                                "id": "122304",
+                                "name": "Bürgeramt Rathaus Reinickendorf",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/148/"
+                        },
+                        {
+                            "id": "149",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Reinickendorf-Ost"
+                            },
+                            "provider": {
+                                "id": "122311",
+                                "name": "Bürgeramt Reinickendorf-Ost",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/149/"
+                        },
+                        {
+                            "id": "150",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Tegel"
+                            },
+                            "provider": {
+                                "id": "122309",
+                                "name": "Bürgeramt Tegel",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/150/"
+                        },
+                        {
+                            "id": "189",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Mobiles Bürgeramt Hermsdorf"
+                            },
+                            "provider": {
+                                "id": "317869",
+                                "name": "Mobiles Bürgeramt Hermsdorf",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/189/"
+                        },
+                        {
+                            "id": "425",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Mobiles Bürgeramt MV"
+                            },
+                            "provider": {
+                                "id": "324433",
+                                "name": "Mobiles Bürgeramt MV",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/425/"
+                        },
+                        {
+                            "id": "451",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Mobiles Bürgeramt Reinickendorf"
+                            },
+                            "provider": {
+                                "id": "325341",
+                                "name": "Mobiles Bürgeramt Reinickendorf",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/451/"
+                        },
+                        {
+                            "id": "426",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Mobiles Bürgeramt Reinickendorf Ost"
+                            },
+                            "provider": {
+                                "id": "324434",
+                                "name": "Mobiles Bürgeramt Reinickendorf Ost",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/426/"
+                        }
+                    ],
+                    "dayoff": [
+                        {
+                            "date": 1482534000,
+                            "name": "Heiligabend"
+                        },
+                        {
+                            "date": 1483138800,
+                            "name": "Silvester"
+                        },
+                        {
+                            "date": 1479250800,
+                            "name": "Personalversammlung"
+                        },
+                        {
+                            "date": 1462572000,
+                            "name": "Feiertag"
+                        },
+                        {
+                            "date": 1463176800,
+                            "name": "Feiertag"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Reinickendorf -> Bürgeramt",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Teichstr. 65 (Haus 1), 13407 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    }
+                },
+                {
+                    "id": "78",
+                    "scopes": [
+                        {
+                            "id": "429",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld"
+                            },
+                            "provider": {
+                                "id": "324414",
+                                "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/429/"
+                        },
+                        {
+                            "id": "325",
+                            "source": "dldb",
+                            "contact": {
+                                "name": "Bürgeramt Spandau - Bürgerbüro Kladow"
+                            },
+                            "provider": {
+                                "id": "122283",
+                                "name": "Bürgeramt Spandau - Bürgerbüro Kladow",
+                                "source": "dldb"
+                            },
+                            "shortName": "",
+                            "$ref": "/scope/325/"
+                        }
+                    ],
+                    "dayoff": [
+                        {
+                            "date": 1464127200,
+                            "name": "Betriebsausflug?!"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Spandau -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "153",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Spandau - Bürgeramt Rathaus Spandau"
+                                    },
+                                    "provider": {
+                                        "id": "122281",
+                                        "name": "Bürgeramt Spandau - Bürgeramt Rathaus Spandau",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/153/"
+                                }
+                            ],
+                            "id": "66",
+                            "name": "Bürgeramt Rathaus Spandau",
+                            "hint": "",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": ""
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "154",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Spandau - Bürgerbüro Wasserstadt"
+                                    },
+                                    "provider": {
+                                        "id": "122279",
+                                        "name": "Bürgeramt Spandau - Bürgerbüro Wasserstadt",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/154/"
+                                }
+                            ],
+                            "id": "418",
+                            "name": "Bürgerbüro Wasserstadt",
+                            "hint": "Hugo-Cassirer-Str. 48",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Willkommen im Bürgerbüro Wasserstadt"
+                        }
+                    ]
+                },
+                {
+                    "id": "76",
+                    "links": [
+                        {
+                            "name": "ZW-WEB",
+                            "url": "http://molto.srz.lit.verwalt-berlin.de/zwweb/",
+                            "target": "1",
+                            "id": "52"
+                        },
+                        {
+                            "name": "Auswärtiges Amt - Reise- und Sicherheitshinw.",
+                            "url": "http://www.auswaertiges-amt.de/sid_D6DA6D4129CEC309EA7534812F04B0EA/DE/Laenderinformationen/Uebersicht_Navi.html",
+                            "target": "1",
+                            "id": "53"
+                        },
+                        {
+                            "name": "alles von A - Z in Tempelhof-Schönebg.",
+                            "url": "http://www.berlin.de/ba-tempelhof-schoeneberg/info/wegweiser/index.html#",
+                            "target": "1",
+                            "id": "54"
+                        },
+                        {
+                            "name": "Dienstleistungen A-Z",
+                            "url": "http://service.berlin.de/dienstleistungen/",
+                            "target": "1",
+                            "id": "57"
+                        },
+                        {
+                            "name": "Int. Telefonverzeichnis Berliner Behörden",
+                            "url": "http://www.verwalt-berlin.de/itvb/suche.php",
+                            "target": "1",
+                            "id": "58"
+                        },
+                        {
+                            "name": "Rechtsvorschriften Berlin (SenJus)",
+                            "url": "http://www.berlin.de/sen/justiz/service/veroeffentlichungen.html",
+                            "target": "1",
+                            "id": "64"
+                        },
+                        {
+                            "name": "Polizei Berlin (Dir 1-6)",
+                            "url": "http://www.berlin.de/polizei/dienststellen/polizei-in-den-bezirken/",
+                            "target": "1",
+                            "id": "69"
+                        },
+                        {
+                            "name": "Telefonbuch (öffentlich)",
+                            "url": "http://www.google.de/search?q=telefonbuch&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:de:official&client=firefox-a",
+                            "target": "1",
+                            "id": "75"
+                        },
+                        {
+                            "name": "PRADO - Online-Register Identitätsdokumente",
+                            "url": "http://prado.consilium.europa.eu/de/searchbyissuingcountry.html",
+                            "target": "1",
+                            "id": "76"
+                        },
+                        {
+                            "name": "Service-Center-BZR",
+                            "url": "https://www.bundesjustizamt.de/DE/Themen/Buergerdienste/BZR/Ausland/Verwendung/FAQ_node.html",
+                            "target": "1",
+                            "id": "78"
+                        },
+                        {
+                            "name": "amtl. Länderverzeichnis",
+                            "url": "http://www.auswaertiges-amt.de/cae/servlet/contentblob/373538/publicationFile/171554/Laenderverzeichnis.pdf",
+                            "target": "1",
+                            "id": "80"
+                        },
+                        {
+                            "name": "Fotomustertafel BDr",
+                            "url": "http://www.personalausweisportal.de/SharedDocs/Downloads/DE/Weitere-Informationen/Fotomustertafel.pdf?__blob=publicationFile",
+                            "target": "1",
+                            "id": "91"
+                        },
+                        {
+                            "name": "Portal der Berliner Verwaltung",
+                            "url": "http://b-intern.de/",
+                            "target": "1",
+                            "id": "93"
+                        },
+                        {
+                            "name": "Bundesmeldegesetz - Spezial",
+                            "url": "http://b-intern.de/wb/labo/aufgabenbereiche/personenstands-und-einwohnerwesen/service-desk/artikel.389754.php",
+                            "target": "1",
+                            "id": "96"
+                        },
+                        {
+                            "name": "Anlage 11 (zu § 31 FeV)",
+                            "url": "http://www.gesetze-im-internet.de/fev_2010/anlage_11.html",
+                            "target": "1",
+                            "id": "103"
+                        },
+                        {
+                            "name": "VOIS News",
+                            "url": "http://www.verwalt-berlin.de/labo/einwohnerwesen/voiseinfuehrung.php",
+                            "target": "1",
+                            "id": "106"
+                        },
+                        {
+                            "name": "VOIS Hilfe (F1-Taste)",
+                            "url": "http://eweb.lea.verwalt-berlin.de/mesodoku/default.htm",
+                            "target": "1",
+                            "id": "109"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Tempelhof-Schöneberg -> Bürgeramt",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "John-F.-Kennedy-Platz, 10825 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "146",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Schöneberg"
+                                    },
+                                    "provider": {
+                                        "id": "122251",
+                                        "name": "Bürgeramt Schöneberg",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/146/"
+                                },
+                                {
+                                    "id": "456",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Schöneberg"
+                                    },
+                                    "provider": {
+                                        "id": "122251",
+                                        "name": "Bürgeramt Schöneberg",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "AZUBI",
+                                    "$ref": "/scope/456/"
+                                }
+                            ],
+                            "id": "4",
+                            "name": "Rathaus Schöneberg",
+                            "hint": "John-F.-Kennedy-Platz",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "172",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Tempelhof"
+                                    },
+                                    "provider": {
+                                        "id": "122257",
+                                        "name": "Bürgeramt Tempelhof",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/172/"
+                                }
+                            ],
+                            "id": "108",
+                            "name": "Rathaus Tempelhof",
+                            "hint": "Tempelhofer Damm 165",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "231",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt Lichtenrade"
+                                    },
+                                    "provider": {
+                                        "id": "122246",
+                                        "name": "Bürgeramt Lichtenrade",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/231/"
+                                }
+                            ],
+                            "id": "70",
+                            "name": "Bürgerzentrum Lichtenrade",
+                            "hint": "Briesingstr. 6",
+                            "shortNameEnabled": "0",
+                            "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+                        }
+                    ]
+                },
+                {
+                    "id": "96",
+                    "links": [
+                        {
+                            "name": "Treptow-Köpenick",
+                            "url": "http://www.treptow-koepenick.de",
+                            "target": "1",
+                            "id": "70"
+                        },
+                        {
+                            "name": "Bürgerdienste WIKI",
+                            "url": "http://budwiki/doku.php?id=wikist",
+                            "target": "1",
+                            "id": "73"
+                        }
+                    ],
+                    "dayoff": [
+                        {
+                            "date": 1458946800,
+                            "name": "Ostern"
+                        },
+                        {
+                            "date": 1463176800,
+                            "name": "Pfingsten"
+                        }
+                    ],
+                    "email": "test@example.com",
+                    "name": "Treptow-Köpenick -> Bürgeramt",
+                    "contact": {
+                        "city": "",
+                        "street": "",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "clusters": [
+                        {
+                            "scopes": [
+                                {
+                                    "id": "312",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt I in Köpenick"
+                                    },
+                                    "provider": {
+                                        "id": "122208",
+                                        "name": "Bürgeramt I in Köpenick",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/312/"
+                                }
+                            ],
+                            "id": "78",
+                            "name": "Bürgeramt Köpenick",
+                            "hint": "Gute Tag",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen im Bürgeramt Köpenick\r\n\r\n"
+                        },
+                        {
+                            "scopes": [
+                                {
+                                    "id": "313",
+                                    "source": "dldb",
+                                    "contact": {
+                                        "name": "Bürgeramt II in Schöneweide"
+                                    },
+                                    "provider": {
+                                        "id": "122226",
+                                        "name": "Bürgeramt II in Schöneweide",
+                                        "source": "dldb"
+                                    },
+                                    "shortName": "",
+                                    "$ref": "/scope/313/"
+                                }
+                            ],
+                            "id": "76",
+                            "name": "Bürgeramt Schöneweide",
+                            "hint": "",
+                            "shortNameEnabled": "1",
+                            "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nneben der Information\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage"
+                        }
+                    ]
+                }
+            ],
+            "id": "berlinonline",
+            "lastLogin": 1459461600
+        },
+        "process": {
+            "amendment": "",
+            "appointments": [
+                {
+                    "date": 1459490400,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "id": "68997",
+                        "weekday": {
+                            "sunday": "0",
+                            "monday": "0",
+                            "tuesday": "0",
+                            "wednesday": "0",
+                            "thursday": "0",
+                            "friday": "32",
+                            "saturday": "0"
+                        },
+                        "repeat": {
+                            "afterWeeks": "1",
+                            "weekOfMonth": "0"
+                        },
+                        "bookable": {
+                            "startInDays": "0",
+                            "endInDays": "60"
+                        },
+                        "workstationCount": {
+                            "public": "3",
+                            "intern": "3"
+                        },
+                        "multipleSlotsAllowed": "0",
+                        "slotTimeInMinutes": "10",
+                        "startDate": 1454108400,
+                        "endDate": 1463868000,
+                        "startTime": "08:00:00",
+                        "endTime": "13:50:00",
+                        "type": "appointment",
+                        "scope": {
+                            "id": "141"
+                        },
+                        "description": ""
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "12a2",
+            "clients": [
+                {
+                    "familyName": "M252",
+                    "email": "test@example.com",
+                    "emailSendCount": "0",
+                    "surveyAccepted": "0",
+                    "telephone": ""
+                }
+            ],
+            "createIP": "127.0.0.1",
+            "createTimestamp": "1454311479",
+            "id": "82252",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459490400,
+                "callCount": "1",
+                "callTime": 1459515930,
+                "number": "157017",
+                "waitingTime": null,
+                "status": "called",
+                "lastCallTime": 0,
+                "destination": "12",
+                "destinationHint": "12",
+                "withAppointment": "1"
+            },
+            "reminderTimestamp": "0",
+            "requests": [
+                {
+                    "id": "120686",
+                    "link": "https://service.berlin.de/dienstleistung/120686/",
+                    "name": "Anmeldung einer Wohnung",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb",
+                    "data": {
+                        "authorities": [
+                            {
+                                "id": "12667",
+                                "name": "Bezirksamt Charlottenburg - Wilmersdorf",
+                                "webinfo": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/"
+                            },
+                            {
+                                "id": "12668",
+                                "name": "Bezirksamt Friedrichshain - Kreuzberg",
+                                "webinfo": "http://www.berlin.de/ba-friedrichshain-kreuzberg/"
+                            },
+                            {
+                                "id": "12669",
+                                "name": "Bezirksamt Lichtenberg",
+                                "webinfo": "http://www.berlin.de/ba-lichtenberg/"
+                            },
+                            {
+                                "id": "12670",
+                                "name": "Bezirksamt Marzahn - Hellersdorf",
+                                "webinfo": "http://www.berlin.de/ba-marzahn-hellersdorf/"
+                            },
+                            {
+                                "id": "12671",
+                                "name": "Bezirksamt Mitte",
+                                "webinfo": "http://www.berlin.de/ba-mitte/"
+                            },
+                            {
+                                "id": "12672",
+                                "name": "Bezirksamt Neukölln",
+                                "webinfo": "http://www.berlin.de/ba-neukoelln/"
+                            },
+                            {
+                                "id": "12673",
+                                "name": "Bezirksamt Pankow",
+                                "webinfo": "http://www.berlin.de/ba-pankow/"
+                            },
+                            {
+                                "id": "12674",
+                                "name": "Bezirksamt Reinickendorf",
+                                "webinfo": "http://www.berlin.de/ba-reinickendorf/"
+                            },
+                            {
+                                "id": "12675",
+                                "name": "Bezirksamt Spandau",
+                                "webinfo": "http://www.berlin.de/ba-spandau/"
+                            },
+                            {
+                                "id": "12676",
+                                "name": "Bezirksamt Steglitz-Zehlendorf",
+                                "webinfo": "http://www.berlin.de/ba-steglitz-zehlendorf/"
+                            },
+                            {
+                                "id": "12677",
+                                "name": "Bezirksamt Tempelhof-Schöneberg",
+                                "webinfo": "http://www.berlin.de/ba-tempelhof-schoeneberg/"
+                            },
+                            {
+                                "id": "12678",
+                                "name": "Bezirksamt Treptow-Köpenick",
+                                "webinfo": "http://www.berlin.de/ba-treptow-koepenick/"
+                            }
+                        ],
+                        "locations": [
+                            {
+                                "location": "327346",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327346&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122252",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122252&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327338",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327338&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122260",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122260&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327340",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327340&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122238",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122238&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122262",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122262&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327348",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327348&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327342",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122254",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122254&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327344",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122271",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327278",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327278&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122291",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122291&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327270",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327270&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327316",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327316&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122312",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122312&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122273",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327274",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327274&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327312",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327312&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122208",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122208&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327298",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327298&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122226",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122226&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327300",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327300&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "150230",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=150230&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122276",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122276&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327324",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327324&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327318",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327318&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122314",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122314&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122277",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327276",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327276&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327282",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327282&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327286",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327286&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327294",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327294&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122285",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122285&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327266",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327266&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122304",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122304&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327330",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327330&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327290",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327290&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122311",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122311&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327334",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327334&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327320",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327320&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122286",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122286&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327264",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327264&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122281",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327352",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327352&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324414",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324414&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122283",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122283&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122279",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327354",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327354&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122274",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122274&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327326",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327326&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122309",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122309&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327332",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327332&anliegen[]=120686",
+                                    "slots": "3",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327322",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327322&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327292",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327292&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327284",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327284&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327314",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327314&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122267",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122267&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327328",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327328&anliegen[]=120686",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122296",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122296&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327268",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=327268&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327262",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "317869",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=317869&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324433",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324433&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "325341",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=325341&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324434",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324434&anliegen[]=120686",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "325657",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            }
+                        ],
+                        "meta": {
+                            "lastupdate": "2016-02-18T09:55:13+01:00",
+                            "locale": "de",
+                            "keywords": "Zuzug, Anmeldung, anmelden, meldung, ummeldung, ummelden, melden, wohnsitz, Wohnung, Umzug, Wohnungswechsel, Wohnungsummeldung, Wohnungsanmeldung, Wohnungsgeberbescheinigung, Vermieterbescheinigung, Wohnungsgeberbestätigung, Einzugsbestätigung, Adressänderung"
+                        },
+                        "process_time": "Anmeldungen können in aller Regel sofort abschließend bearbeitet werden.",
+                        "requirements": [
+                            {
+                                "description": "Personalausweis, Reisepass, Kinderreisepass für deutsche Staatsangehörige oder Nationalpass oder Passersatzpapiere für ausländische Staatsangehörige.<br />\nBitte bringen Sie alle genannten und Ihnen vorliegenden Dokumente für alle umziehenden Personen mit.",
+                                "name": "Identitätsnachweis",
+                                "link": ""
+                            },
+                            {
+                                "description": "Nur wenn Sie Ihre bisherige Wohnung in Deutschland nicht aufgeben und die neue Wohnung zusätzlich anmelden wollen, muss für Sie und Ihre ggf. mitziehenden Familienmitglieder eine Wohnung als Hauptwohnung bestimmt werden. Bitte lesen Sie sich in diesem Falle die Hinweise auf dem Formular durch.",
+                                "name": "Beiblatt zur Anmeldung (bei mehreren Wohnungen)",
+                                "link": ""
+                            },
+                            {
+                                "description": "Personen einer Familie, die aus der bisherigen Wohnung zusammen in die neue Wohnung ziehen, können gemeinsam ein Anmeldeformular benutzen.<br />\nBei mehr als 2 anzumeldenden Personen bitte weiteren Meldeschein benutzen.<br />\nBitte beachten Sie im Bereich &quot;Weiterführende Informationen&quot; die &quot;Weiterführenden Hinweise zu Anmeldungen&quot; .",
+                                "name": "Anmeldeformular",
+                                "link": ""
+                            },
+                            {
+                                "description": "Nur für Ihre erste Anmeldung in Berlin ist es zweckdienlich, wenn Sie eine Personenstandsurkunde zur Anmeldung mitbringen und vorlegen (z.B. Heiratsurkunde, Geburtsurkunde).",
+                                "name": "Personenstandsurkunde",
+                                "link": ""
+                            },
+                            {
+                                "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Einzug innerhalb von zwei Wochen nach dem Einzug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Einzugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen. Die Vorlage eines Mietvertrages ersetzt nicht die Einzugsbestätigung.<br />\nEin Muster für die Einzugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+                                "name": "Einzugsbestätigung des Wohnungsgebers (Vermieter)",
+                                "link": ""
+                            }
+                        ],
+                        "responsibility": "Die Dienstleistung können Sie <strong>bei allen Berliner Bürgerämtern</strong> in Anspruch nehmen.",
+                        "forms": [
+                            {
+                                "description": false,
+                                "name": "Anmeldung bei der Meldebehörde",
+                                "link": "http://www.berlin.de/formularserver/formular.php?402608"
+                            },
+                            {
+                                "description": false,
+                                "name": "Beiblatt zur Anmeldung/Hauptwohnungserklärung",
+                                "link": "http://www.berlin.de/formularserver/formular.php?402610"
+                            },
+                            {
+                                "description": false,
+                                "name": "Muster: Einzugsbestätigung des Wohnungsgebers (Vermieter) ",
+                                "link": "http://www.berlin.de/formularserver/formular.php?402544"
+                            }
+                        ],
+                        "fees": "gebührenfrei; das gilt auch für die Meldebestätigung.",
+                        "prerequisites": [
+                            {
+                                "description": "Ihre persönliche Vorsprache ist erforderlich oder sie werden durch eine andere Person vertreten.<br />\nBei der Abgabe des Anmeldeformulars und der übrigen erforderlichen Unterlagen können Sie sich durch eine geeignete Person vertreten lassen. Die von Ihnen beauftragte Person muss in der Lage sein, die zur ordnungsgemäßen Führung des Melderegisters erforderlichen Auskünfte zu erteilen. Das Anmeldeformular müssen Sie eigenhändig unterschreiben.",
+                                "name": "persönliche Vorsprache oder Vertretung durch eine andere Person",
+                                "link": ""
+                            }
+                        ],
+                        "id": "120686",
+                        "description": "<ul class=\"list\"><li>Sie sind innerhalb der Stadt in eine neue Wohnung umgezogen</li></ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie sind aus einer anderen Gemeinde in Deutschland neu nach Berlin gezogen</li></ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie sind aus dem Ausland nach Berlin gezogen.</li><br />\n</ul>Innerhalb von <strong>14 Tagen nach Ihrem Einzug</strong> müssen Sie sich nun bei der Meldebehörde anmelden.<br />\n<br />\nEine Ausnahme von dieser Meldefrist besteht nur dann, wenn Sie sich besuchsweise vorübergehend bis zu zwei Monate in Berlin aufhalten <strong>oder</strong> wenn Sie mit einer Wohnung in Deutschland angemeldet sind und Ihr Aufenthalt übersteigt sechs Monate nicht.<br />\n<br />\nDiese Anmeldung können Sie bei einem der über 40 Berliner Bürgerämter erledigen; Sie erhalten eine Meldebestätigung.<br />\n<br />\nHinweise:<br />\n<br />\n<ul class=\"list\"><li>Eine <strong>schriftliche Anmeldung</strong> ist <strong>nicht möglich</strong>.</li></ul>",
+                        "leika": "99115005104000",
+                        "links": [
+                            {
+                                "description": false,
+                                "name": "Informationen zum Bundesmeldegesetz",
+                                "link": "http://www.bmi.bund.de/DE/Themen/Moderne-Verwaltung/Verwaltungsrecht/Meldewesen/Bundesmeldegesetz/bundesmeldegesetz_node.html"
+                            },
+                            {
+                                "description": false,
+                                "name": "Weiterführende Hinweise zu Anmeldungen (Widerspruchsrechte)",
+                                "link": "http://www.berlin.de/labo/_assets/buergerdienste/hinweispflichten_bei_der_anmeldung.pdf"
+                            }
+                        ],
+                        "responsibility_all": true,
+                        "name": "Anmeldung einer Wohnung",
+                        "onlineprocessing": {
+                            "description": false,
+                            "link": ""
+                        },
+                        "legal": [
+                            {
+                                "description": false,
+                                "name": "Ab 01.11.2015: Bundesmeldegesetz",
+                                "link": "http://www.gesetze-im-internet.de/bmg/"
+                            }
+                        ],
+                        "relation": {
+                            "root_topic": "324835"
+                        },
+                        "appointment": {
+                            "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&anliegen[]=120686&dienstleisterlist=327316,327312,327314,327346,122238,327348,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,122208,327298,122226,327300&herkunft="
+                        }
+                    }
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "contact": {
+                        "city": "Berlin",
+                        "country": "Germany",
+                        "name": "Bürgeramt Heerstraße",
+                        "postalCode": "14052",
+                        "region": "Berlin",
+                        "street": "Heerstr.",
+                        "streetNumber": "12"
+                    },
+                    "source": "dldb",
+                    "id": "122217",
+                    "link": "https://service.berlin.de/standort/122217/",
+                    "name": "Bürgeramt Heerstraße"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "infoForAppointment": "",
+                        "infoForAllAppointments": "",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0"
+                    },
+                    "client": {
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "deactivatedText": ""
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "46",
+                        "lastGivenNumber": "47",
+                        "lastGivenNumberTimestamp": 1458774000
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "called"
+        },
+        "name": "12",
+        "id": "138",
+        "hint": "12",
+        "queue": {
+            "appointmentsOnly": "0",
+            "clusterEnabled": "0"
+        },
+        "scope": {
+            "id": "141",
+            "provider": {
+                "contact": {
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Bürgeramt Heerstraße",
+                    "postalCode": "14052",
+                    "region": "Berlin",
+                    "street": "Heerstr.",
+                    "streetNumber": "12"
+                },
+                "source": "dldb",
+                "id": "122217",
+                "link": "https://service.berlin.de/standort/122217/",
+                "name": "Bürgeramt Heerstraße"
+            },
+            "hint": "Nr. wird zum Termin aufgerufen",
+            "contact": {
+                "name": "Bürgeramt Heerstraße",
+                "street": "Heerstr. 12, 14052 Berlin",
+                "email": "",
+                "country": "Germany"
+            },
+            "preferences": {
+                "appointment": {
+                    "deallocationDuration": "10",
+                    "infoForAppointment": "",
+                    "infoForAllAppointments": "",
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "0",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0"
+                },
+                "client": {
+                    "amendmentActivated": "0",
+                    "amendmentLabel": "",
+                    "emailRequired": "0",
+                    "telephoneActivated": "0",
+                    "telephoneRequired": "0"
+                },
+                "queue": {
+                    "callCountMax": "0",
+                    "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                    "firstNumber": "1",
+                    "lastNumber": "499",
+                    "maxNumberContingent": "0",
+                    "processingTimeAverage": "15",
+                    "statisticsEnabled": "1"
+                },
+                "survey": {
+                    "emailContent": "",
+                    "enabled": "0",
+                    "label": ""
+                },
+                "ticketprinter": {
+                    "buttonName": "Bürgeramt",
+                    "deactivatedText": ""
+                },
+                "workstation": {
+                    "emergencyEnabled": "1",
+                    "emergencyRefreshInterval": "5"
+                }
+            },
+            "shortName": "",
+            "status": {
+                "emergency": {
+                    "acceptedByWorkstation": "-1",
+                    "activated": "0",
+                    "calledByWorkstation": "-1"
+                },
+                "queue": {
+                    "ghostWorkstationCount": "-1",
+                    "givenNumberCount": "46",
+                    "lastGivenNumber": "47",
+                    "lastGivenNumberTimestamp": 1458774000
+                },
+                "ticketprinter": {
+                    "deactivated": "0"
+                }
+            },
+            "dayoff": [
+                {
+                    "date": 1458860400,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1459116000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1462053600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1462399200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1463349600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1475445600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1482620400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1482706800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1483225200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1492120800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1492380000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1493589600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1495663200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1496613600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1506981600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1514156400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1514242800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1514761200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1522360800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1522620000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1525125600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1525903200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1526853600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1538517600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1545692400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1545778800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1546297200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1555624800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1555884000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1556661600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1559167200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1560117600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1570053600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1577228400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1577314800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1577833200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1586469600,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1586728800,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1588284000,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1590012000,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1590962400,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1601676000,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1608850800,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1608937200,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1609455600,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1617314400,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1617573600,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1619820000,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1620856800,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1621807200,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1633212000,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1640386800,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1640473200,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1478041200,
+                    "name": "Personalversammlung"
+                }
+            ]
+        },
+        "linkList": [
+            {
+                "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                "target": "1",
+                "id": "72"
+            }
+        ],
+        "support": {
+            "eMail": "",
+            "telephone": ""
+        }
+    }
+}
