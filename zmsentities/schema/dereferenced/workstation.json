@@ -22,6 +22,10 @@
                 "scope": true,
                 "ticketprinter": true
             },
+            "permissions": {
+                "appointment": true,
+                "availability": true
+            },
             "departments": [
                 {
                     "id": 123
@@ -881,6 +885,10 @@
                     "scope": true,
                     "ticketprinter": true
                 },
+                "permissions": {
+                    "appointment": true,
+                    "availability": true
+                },
                 "departments": [
                     {
                         "id": 72
@@ -889,7 +897,8 @@
             },
             "required": [
                 "id",
-                "rights"
+                "rights",
+                "permissions"
             ],
             "additionalProperties": false,
             "properties": {
@@ -1038,6 +1047,130 @@
                             ]
                         }
                     }
+                },
+                "permissions": {
+                  "type": "object",
+                  "properties": {
+                    "appointment": {
+                      "description": "Access clerk view and manage appointments (create, edit, reschedule, cancel, including sending notification emails)",
+                      "type": "boolean"
+                    },
+                    "availability": {
+                      "description": "Create, update, and delete opening hours, including blocking times and exceptions",
+                      "type": "boolean"
+                    },
+                    "calldisplay": {
+                      "description": "Configure and customize call display layouts",
+                      "type": "boolean"
+                    },
+                    "cherrypick": {
+                      "description": "Directly call appointments from the queue (requires queue access)",
+                      "type": "boolean"
+                    },
+                    "cluster": {
+                      "description": "Create, update, and delete clusters",
+                      "type": "boolean"
+                    },
+                    "config": {
+                      "description": "Modify system configuration settings",
+                      "type": "boolean"
+                    },
+                    "counter": {
+                      "description": "Access counter view including weekly and monthly calendar",
+                      "type": "boolean"
+                    },
+                    "customersearch": {
+                      "description": "Search for customers and view upcoming appointments (excluding past appointments)",
+                      "type": "boolean"
+                    },
+                    "dayoff": {
+                      "description": "Define and manage days off",
+                      "type": "boolean"
+                    },
+                    "department": {
+                      "description": "Create, update, and delete departments",
+                      "type": "boolean"
+                    },
+                    "emergency": {
+                      "description": "Trigger and receive emergency calls",
+                      "type": "boolean"
+                    },
+                    "finishedqueue": {
+                      "description": "View completed appointments",
+                      "type": "boolean"
+                    },
+                    "finishedqueuepast": {
+                      "description": "View completed appointments from the past",
+                      "type": "boolean"
+                    },
+                    "logs": {
+                      "description": "View system logs",
+                      "type": "boolean"
+                    },
+                    "mailtemplates": {
+                      "description": "Edit and manage email templates",
+                      "type": "boolean"
+                    },
+                    "missedqueue": {
+                      "description": "View missed appointments",
+                      "type": "boolean"
+                    },
+                    "openqueue": {
+                      "description": "View open calls in the queue",
+                      "type": "boolean"
+                    },
+                    "organisation": {
+                      "description": "Create, update, and delete organizational units",
+                      "type": "boolean"
+                    },
+                    "overviewcalendar": {
+                      "description": "Access the overall calendar overview",
+                      "type": "boolean"
+                    },
+                    "parkedqueue": {
+                      "description": "View parked appointments",
+                      "type": "boolean"
+                    },
+                    "restrictedscope": {
+                      "description": "Read location configuration and modify restricted sections",
+                      "type": "boolean"
+                    },
+                    "scope": {
+                      "description": "Create, update, and delete locations",
+                      "type": "boolean"
+                    },
+                    "source": {
+                      "description": "Manage tenants including service providers and services",
+                      "type": "boolean"
+                    },
+                    "statistic": {
+                      "description": "Retrieve and export statistics",
+                      "type": "boolean"
+                    },
+                    "ticketprinter": {
+                      "description": "Configure e-kiosk ticket printers",
+                      "type": "boolean"
+                    },
+                    "useraccount": {
+                      "description": "Create, update, delete, and search user accounts",
+                      "type": "boolean"
+                    },
+                    "waitingqueue": {
+                      "description": "View the waiting queue",
+                      "type": "boolean"
+                    },
+                    "superuser": {
+                      "description": "Full access to all system features",
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "roles": {
+                  "type": "array",
+                  "description": "List of role names assigned to the useraccount (e.g. agent_queue, appointment_admin, system_admin).",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "departments": {
                     "type": "array",

@@ -5,7 +5,7 @@ import moment from 'moment'
 import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
-import {weekDayList, repeat} from '../helpers'
+import { weekDayList } from '../helpers'
 import * as Inputs from '../../../lib/inputs'
 const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
@@ -17,16 +17,15 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
-            kind: this.props.attributes.kind,            
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
             minTime: setHours(setMinutes(new Date(), 1), 0),
             maxTime: setHours(setMinutes(new Date(), 59), 23),
+            excludeTimeList: [],
             datePickerIsOpen: false,
             timePickerIsOpen: false,
             timePickerInitialized: this.props.attributes.availability.kind !== "new"
-        }
+        };
         this.escHandler = this.escHandler.bind(this);
         //datepicker
         this.openDatePicker = this.openDatePicker.bind(this);
@@ -73,13 +72,10 @@ class AvailabilityDatePicker extends Component
         let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
 
         if (name && date) {
-            startDate = ("startDate" == name) ? date.startOf('day') : startDate;
-            endDate = ("endDate" == name) ? date.startOf('day') : endDate;
-            selectedDate = date
+            selectedDate = date;
         }
         this.setState({
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
             selectedDate: selectedDate,
             timePickerInitialized: this.props.attributes.availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
         })
