@@ -54,17 +54,20 @@ class Scope extends Base implements MappingInterface
     public function getQuerySimpleClusterMatch()
     {
         return '
-            SELECT standortID AS id
-            FROM `clusterzuordnung`
+            SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
+            FROM `clusterzuordnung` AS cz
+            INNER JOIN `standort` AS s ON s.StandortID = cz.standortID
+            LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
+                AND p.source = s.source
             WHERE
-                clusterID = ?
+                cz.clusterID = ?
         ';
     }
 
     public function getQuerySimpleDepartmentMatch()
     {
         return '
-            SELECT s.StandortID AS id, p.name AS contact__name
+            SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
             FROM `standort` AS s
             LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
                 AND p.source = s.source
