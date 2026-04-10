@@ -1,12 +1,15 @@
--- Convert buerger.way_time from integer minutes to TIME for consistency with waiting_time/processing_time.
+-- Convert buerger.way_time from integer minutes to TIME (same temp-column swap as 91714158137 wartezeit).
 -- Convert archive/statistic way_time fields to DOUBLE (91714158137 style).
 
+ALTER TABLE `buerger`
+ADD COLUMN `temp_way_time` TIME DEFAULT NULL;
+
 UPDATE `buerger`
-SET `way_time` = SEC_TO_TIME(CAST(`way_time` AS UNSIGNED) * 60)
-WHERE `way_time` IS NOT NULL;
+SET `temp_way_time` = SEC_TO_TIME(`way_time` * 60);
 
 ALTER TABLE `buerger`
-  MODIFY COLUMN `way_time` TIME DEFAULT NULL;
+DROP COLUMN `way_time`,
+CHANGE COLUMN `temp_way_time` `way_time` TIME DEFAULT NULL;
 
 ALTER TABLE `buergerarchiv`
   MODIFY COLUMN `way_time` DOUBLE DEFAULT NULL;
