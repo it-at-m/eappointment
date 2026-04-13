@@ -187,7 +187,9 @@ export const getUrlParameters = () => {
 
 export const forceHttps = () => {
     var forceCallback = () => {
-        document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
+        const secureUrl = new URL(document.location.href);
+        secureUrl.protocol = 'https:';
+        document.location.assign(secureUrl.toString());
     }
     if (document.location.protocol !== "https:") {
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
