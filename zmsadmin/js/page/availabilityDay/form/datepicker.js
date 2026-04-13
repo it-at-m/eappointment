@@ -57,14 +57,15 @@ class AvailabilityDatePicker extends Component
     }
 
     updateState(name, date) {
-        let startTime = this.props.attributes.availability.startTime ? 
-            moment(this.props.attributes.availability.startTime, 'HH:mm') : null;
-        let startDate = moment.unix(this.props.attributes.availability.startDate)
+        const availability = this.props.attributes.availability
+        let startTime = availability.startTime ?
+            moment(availability.startTime, 'HH:mm') : null
+        let startDate = moment.unix(availability.startDate)
             .set({"h": startTime ? startTime.hours() : 0, "m": startTime ? startTime.minutes() : 0})
             .toDate()
-        let endTime = this.props.attributes.availability.endTime ? 
-            moment(this.props.attributes.availability.endTime, 'HH:mm') : null;
-        let endDate = moment.unix(this.props.attributes.availability.endDate)
+        let endTime = availability.endTime ?
+            moment(availability.endTime, 'HH:mm') : null
+        let endDate = moment.unix(availability.endDate)
             .set({"h": endTime ? endTime.hours() : 0, "m": endTime ? endTime.minutes() : 0})
             .toDate()
 
@@ -74,11 +75,11 @@ class AvailabilityDatePicker extends Component
         if (name && date) {
             selectedDate = date;
         }
-        this.setState({
-            availability: this.props.attributes.availability,
+        this.setState(() => ({
+            availability: availability,
             selectedDate: selectedDate,
-            timePickerInitialized: this.props.attributes.availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
-        })
+            timePickerInitialized: availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
+        }))
     }
 
     setClassNameForSelectedWeekDay(className, date) {
