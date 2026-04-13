@@ -20,11 +20,7 @@ on:
   push:
     branches: [main]
 
-# CodeQL needs security-events:write to upload SARIF; contents:read for checkout/analysis.
-# See https://github.com/github/codeql-action#usage
 permissions:
-  actions: read
-  contents: read
   pull-requests: read
   security-events: write
 
