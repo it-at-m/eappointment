@@ -13,6 +13,9 @@
   ],
   "author": "it@m - opensource@muenchen.de",
   "license": "SEE LICENSE IN LICENSE FILE",
+  "overrides": {
+    "handlebars": "^4.7.9"
+  },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
     "@redocly/cli": "^2.25.1",
