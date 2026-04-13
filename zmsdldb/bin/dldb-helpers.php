@@ -153,7 +153,7 @@ class DldbHelpers
     public function copyDownloadedTempFilesToDestinationAndUnlink(array $filenameToTempPath): void
     {
         foreach ($filenameToTempPath as $filename => $tempFile) {
-            $destFile = $this->destinationPath . '/' . $filename;
+            $destFile = $this->destinationPath . '/' . basename($filename);
             if (!@copy($tempFile, $destFile)) {
                 echo $this->cli->red("Error: Failed to write {$filename} to destination\n\n");
                 continue;
