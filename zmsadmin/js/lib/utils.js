@@ -67,7 +67,7 @@ export const getFieldList = (field) => {
     let match;
     let reg = RegExp('([^[]+)', 'g');
     while ((match = reg.exec(field))) {
-        fieldList.push(match.pop().replace(']', ''))
+        fieldList.push(match.pop().replace(/\]/g, ''))
     }
     return fieldList;
 }
@@ -167,17 +167,20 @@ export const stopEvent = (ev) => {
     }
 }
 
+const unsafeQueryParamKey = (key) =>
+    key === '__proto__' || key === 'constructor' || key === 'prototype'
+
 export const getUrlParameters = () => {
-    return document.location.search.replace(/^\?/, "")
+    const pairs = []
+    document.location.search.replace(/^\?/, "")
         .split("&")
-        .reduce((carry, current) => {
+        .forEach((current) => {
             const [key, value] = current.split('=')
-            if (key) {
-                return Object.assign({}, carry, { [key]: value })
-            } else {
-                return carry
+            if (key && !unsafeQueryParamKey(key)) {
+                pairs.push([key, value])
             }
-        }, {})
+        })
+    return Object.fromEntries(pairs)
 }
 
 export const showSpinner = ($container = null) => {
