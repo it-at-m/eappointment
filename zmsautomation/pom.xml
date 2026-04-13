@@ -19,7 +19,7 @@
     <surefire.version>3.5.4</surefire.version>
     <cucumber.version>7.18.0</cucumber.version>
     <testng.version>7.8.0</testng.version>
-    <flyway.version>10.0.1</flyway.version>
+    <flyway.version>12.3.0</flyway.version>
     <log4j.version>2.25.4</log4j.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
     <ataf.version>0.3.3</ataf.version>
