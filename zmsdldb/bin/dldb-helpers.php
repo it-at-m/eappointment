@@ -156,8 +156,9 @@ class DldbHelpers
             $destFile = $this->destinationPath . '/' . $filename;
             if (!@copy($tempFile, $destFile)) {
                 echo $this->cli->red("Error: Failed to write {$filename} to destination\n\n");
+                continue;
             }
-            @unlink($tempFile);
+            `@unlink`($tempFile);
         }
     }
 
