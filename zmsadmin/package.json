@@ -72,5 +72,9 @@
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
+  },
+  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.3.2 (patched) until Monaco ships a newer dompurify.",
+  "overrides": {
+    "dompurify": "^3.3.2"
   }
 }
