@@ -69,7 +69,7 @@ export const getFieldList = (field) => {
     let match;
     let reg = RegExp('([^[]+)', 'g');
     while ((match = reg.exec(field))) {
-        fieldList.push(match.pop().replace(']', ''))
+        fieldList.push(match.pop().replace(/\]/g, ''))
     }
     return fieldList;
 }
