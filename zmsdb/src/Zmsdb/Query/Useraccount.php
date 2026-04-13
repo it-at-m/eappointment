@@ -6,6 +6,37 @@ use BO\Slim\Application as App;
 
 class Useraccount extends Base implements MappingInterface
 {
+    private const VALID_PERMISSION_NAMES = [
+        'appointment',
+        'availability',
+        'calldisplay',
+        'cherrypick',
+        'cluster',
+        'config',
+        'counter',
+        'customersearch',
+        'dayoff',
+        'department',
+        'emergency',
+        'finishedqueue',
+        'finishedqueuepast',
+        'logs',
+        'mailtemplates',
+        'missedqueue',
+        'openqueue',
+        'organisation',
+        'overviewcalendar',
+        'parkedqueue',
+        'restrictedscope',
+        'scope',
+        'source',
+        'statistic',
+        'ticketprinter',
+        'useraccount',
+        'waitingqueue',
+        'superuser',
+    ];
+
     /**
      * @var String TABLE mysql table reference
      */
@@ -60,12 +91,40 @@ class Useraccount extends Base implements MappingInterface
         ORDER BY useraccount.Name, userAssignment.`behoerdenid`
     ';
 
+    /**
+     * Build an SQL expression that checks whether the current useraccount has
+     * a permission via user_role -> role_permission -> permission.
+     */
+    protected function permissionExists(string $permissionName)
+    {
+        if (!in_array($permissionName, self::VALID_PERMISSION_NAMES, true)) {
+            throw new \InvalidArgumentException("Invalid permission name: $permissionName");
+        }
+        $quoted = "'" . $permissionName . "'";
+        return self::expression(
+            'EXISTS('
+            . 'SELECT 1 '
+            . 'FROM user_role ur '
+            . 'JOIN role_permission rp ON rp.role_id = ur.role_id '
+            . 'JOIN permission p ON p.id = rp.permission_id '
+            . 'WHERE ur.user_id = useraccount.NutzerID '
+            . 'AND p.name = ' . $quoted
+            . ')'
+        );
+    }
+
     public function getEntityMapping()
     {
         return [
             'id' => 'useraccount.Name',
             'password' => 'useraccount.Passworthash',
             'lastLogin' => 'useraccount.lastUpdate',
+            'roles' => self::expression(
+                '(SELECT GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR \',\') '
+                . 'FROM user_role ur '
+                . 'JOIN role r ON r.id = ur.role_id '
+                . 'WHERE ur.user_id = useraccount.NutzerID)'
+            ),
             'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
             'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
@@ -77,6 +136,34 @@ class Useraccount extends Base implements MappingInterface
             'rights__ticketprinter' => self::expression('`useraccount`.`Berechtigung` >= 15'),
             'rights__audit' => self::expression('`useraccount`.`Berechtigung` = 5 OR `useraccount`.`Berechtigung` = 90'),
             'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
+            'permissions__appointment' => $this->permissionExists('appointment'),
+            'permissions__availability' => $this->permissionExists('availability'),
+            'permissions__calldisplay' => $this->permissionExists('calldisplay'),
+            'permissions__cherrypick' => $this->permissionExists('cherrypick'),
+            'permissions__cluster' => $this->permissionExists('cluster'),
+            'permissions__config' => $this->permissionExists('config'),
+            'permissions__counter' => $this->permissionExists('counter'),
+            'permissions__customersearch' => $this->permissionExists('customersearch'),
+            'permissions__dayoff' => $this->permissionExists('dayoff'),
+            'permissions__department' => $this->permissionExists('department'),
+            'permissions__emergency' => $this->permissionExists('emergency'),
+            'permissions__finishedqueue' => $this->permissionExists('finishedqueue'),
+            'permissions__finishedqueuepast' => $this->permissionExists('finishedqueuepast'),
+            'permissions__logs' => $this->permissionExists('logs'),
+            'permissions__mailtemplates' => $this->permissionExists('mailtemplates'),
+            'permissions__missedqueue' => $this->permissionExists('missedqueue'),
+            'permissions__openqueue' => $this->permissionExists('openqueue'),
+            'permissions__organisation' => $this->permissionExists('organisation'),
+            'permissions__overviewcalendar' => $this->permissionExists('overviewcalendar'),
+            'permissions__parkedqueue' => $this->permissionExists('parkedqueue'),
+            'permissions__restrictedscope' => $this->permissionExists('restrictedscope'),
+            'permissions__scope' => $this->permissionExists('scope'),
+            'permissions__source' => $this->permissionExists('source'),
+            'permissions__statistic' => $this->permissionExists('statistic'),
+            'permissions__ticketprinter' => $this->permissionExists('ticketprinter'),
+            'permissions__useraccount' => $this->permissionExists('useraccount'),
+            'permissions__waitingqueue' => $this->permissionExists('waitingqueue'),
+            'permissions__superuser' => $this->permissionExists('superuser'),
         ];
     }
 
@@ -151,6 +238,24 @@ class Useraccount extends Base implements MappingInterface
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
             strtotime($data[$this->getPrefixed("lastLogin")]) :
             null;
+
+        $rolesKey = $this->getPrefixed('roles');
+        $rawRoles = $data[$rolesKey] ?? null;
+        if ($rawRoles === null || $rawRoles === '') {
+            $data[$rolesKey] = [];
+        } elseif (is_string($rawRoles)) {
+            $data[$rolesKey] = array_values(array_filter(array_map('trim', explode(',', $rawRoles)), function ($v) {
+                return $v !== '';
+            }));
+        }
+
+        $permissionsPrefix = $this->getPrefixed('permissions__');
+        foreach ($data as $key => $value) {
+            if (0 === strpos($key, $permissionsPrefix)) {
+                $data[$key] = (bool) $value;
+            }
+        }
+
         return $data;
     }
 

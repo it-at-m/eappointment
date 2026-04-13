@@ -83,14 +83,15 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
                 (availability.tempId && availability.__modified)
             ); 
 
-            const isSelected = (data && (
+            const isSelected = Boolean(data && (
                 (data.id && availability.id == data.id) || 
-                (data.tempId && availability.tempId == data.tempId))
-            );
+                (data.tempId && availability.tempId == data.tempId)
+            ));
 
             return (
     <tr 
         key={key} 
+        aria-selected={isSelected}
         style={(() => {
             const hasDescriptionText = (text) => 
                 availability?.description?.includes(text);

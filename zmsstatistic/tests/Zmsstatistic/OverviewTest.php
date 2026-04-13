@@ -17,7 +17,7 @@ class OverviewTest extends Base
               [
                   'function' => 'readGetResult',
                   'url' => '/workstation/',
-                  'parameters' => ['resolveReferences' => 3],
+                  'parameters' => ['resolveReferences' => 2],
                   'response' => $this->readFixture("GET_Workstation_Resolved2.json")
               ],
               [

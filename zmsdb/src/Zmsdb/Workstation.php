@@ -204,6 +204,17 @@ class Workstation extends Base
         \DateTimeInterface $dateTime
     ) {
         $processEntity = $process;
+        $processDb = new Process();
+
+        $assignedWorkstationId = $processDb->readAssignedWorkstationIdForUpdate((int) $process->getId());
+
+        if (
+            $assignedWorkstationId !== null
+            && $assignedWorkstationId !== 0
+            && $assignedWorkstationId !== (int) $workstation->getId()
+        ) {
+            throw new \DomainException('PROCESS_ALREADY_ASSIGNED');
+        }
         $process = (new Process())->updateEntity(
             $process,
             $dateTime,

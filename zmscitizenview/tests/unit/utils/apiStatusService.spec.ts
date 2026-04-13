@@ -165,14 +165,6 @@ describe("apiStatusService", () => {
     });
 
     it("handles non-JSON response body and preserves status code", () => {
-      const response = {
-        status: 404,
-        json: () => Promise.reject(new Error("Unexpected token < in JSON")),
-      };
-      
-      (mockedApi.fetchServicesAndProviders as any).mockResolvedValueOnce({
-      });
-      
       const changed = handleApiResponseForDownTime({});
       expect(changed).toBe(false);
       

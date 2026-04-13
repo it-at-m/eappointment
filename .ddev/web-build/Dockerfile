@@ -41,15 +41,13 @@ RUN wget -q -O /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/fl
  && rm /tmp/flyway.tar.gz /tmp/flyway.tar.gz.sha1 \
  && ln -s /opt/flyway/flyway /usr/local/bin/flyway
 
-# Install Firefox, Chromium/Chrome, and geckodriver/chromedriver for UI tests
-RUN apt-get update && apt-get install -y \
-    firefox-esr \
-    xvfb \
-    x11-utils \
-    x11-xserver-utils \
-    chromium \
-    chromium-driver \
-    unzip \
+# Chromium + chromedriver for UI tests (firefox-esr, xvfb, x11-* come from webimage_extra_packages).
+# Clean PATH avoids Debian postinst failures under Docker/BuildKit: "Insecure directory in $ENV{PATH}
+# while running with -T switch" in adduser-based maintainer scripts.
+# --no-install-recommends avoids avahi/cups-printer stack that often breaks in container builds.
+RUN PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    DEBIAN_FRONTEND=noninteractive apt-get update \
+    && apt-get install -y --no-install-recommends chromium chromium-driver unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create Firefox symlink
