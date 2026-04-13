@@ -42,9 +42,11 @@
     "vitest": "^4.0.0",
     "vue-tsc": "^3.2.6"
   },
+  "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
-    }
+    },
+    "@tootallnate/once": "^3.0.1"
   }
 }
