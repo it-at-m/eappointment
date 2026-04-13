@@ -9,34 +9,39 @@ import RequestRelationView from '../../block/source/requestrelations'
 class SourceView extends Component {
     constructor(props) {
         super(props)
+        this.state = { source: props.source }
         this.changeHandler = this.changeHandler.bind(this)
         this.addNewHandler = this.addNewHandler.bind(this)
         this.deleteHandler = this.deleteHandler.bind(this)
     }
 
     changeHandler(field, value) {
-        let newstate = this.props.source
-        const fieldList = getFieldList(field)
-        if (fieldList.length === 1) {
-            newstate[fieldList.pop()] = value
-        } else {
-            newstate = deepMerge(newstate, makeNestedObj(fieldList, value))
-        }
-        this.setState({ source: newstate });
+        this.setState((prevState) => {
+            let newstate = prevState.source
+            const fieldList = getFieldList(field)
+            if (fieldList.length === 1) {
+                newstate[fieldList.pop()] = value
+            } else {
+                newstate = deepMerge(newstate, makeNestedObj(fieldList, value))
+            }
+            return { source: newstate }
+        })
     }
 
     addNewHandler(field, props) {
-        let newstate = this.props.source
-        newstate[field] = this.props.source[field].concat(props)
-        this.setState({ source: newstate })
+        this.setState((prevState) => {
+            const newstate = prevState.source
+            newstate[field] = prevState.source[field].concat(props)
+            return { source: newstate }
+        })
     }
 
     deleteHandler(field, deleteIndex) {
-        let newstate = this.props.source
-        newstate[field] = this.props.source[field].filter((item, index) => {
-            return index !== deleteIndex
+        this.setState((prevState) => {
+            const newstate = prevState.source
+            newstate[field] = prevState.source[field].filter((item, index) => index !== deleteIndex)
+            return { source: newstate }
         })
-        this.setState({ source: newstate })
     }
 
     componentDidMount() {
@@ -52,7 +57,7 @@ class SourceView extends Component {
             <div>
                 <MandantView
                     {...this.props}
-                    source={this.props.source}
+                    source={this.state.source}
                     changeHandler={this.changeHandler}
                 />
                 <fieldset>
@@ -60,7 +65,7 @@ class SourceView extends Component {
                     <ProvidersView
                         {...this.props}
                         parentproviders={this.props.parentproviders}
-                        source={this.props.source}
+                        source={this.state.source}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
@@ -70,7 +75,7 @@ class SourceView extends Component {
                     <legend>Dienstleistungen</legend>
                     <RequestsView
                         {...this.props}
-                        source={this.props.source}
+                        source={this.state.source}
                         parentrequests={this.props.parentrequests}
                         requestvariants={this.props.requestvariants}
                         changeHandler={this.changeHandler}
@@ -82,7 +87,7 @@ class SourceView extends Component {
                     <legend>Kombinationen</legend>
                     <RequestRelationView
                         {...this.props}
-                        source={this.props.source}
+                        source={this.state.source}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
