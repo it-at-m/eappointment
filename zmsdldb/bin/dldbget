@@ -112,15 +112,21 @@ if ($rollbackDay !== "none") {
         }
 
         print("Download {$baseDomain}{$download['url']} to temporary file for $destFile\n\n");
-        file_put_contents($tempFile, $newContent);
+        if (file_put_contents($tempFile, $newContent) === false) {
+            print($cli->red("Error: Failed to write temporary file for {$download['file']}\n\n"));
+            @unlink($tempFile);
+            continue;
+        }
         $downloadedFiles[$download['file']] = $tempFile;
     }
 
-    // Check if backup is needed and perform backup
-    $helpers->checkAndCreateBackup($downloadedFiles);
-
-    // Copy downloaded temp files to the destination folder and remove the temp files
-    $helpers->copyDownloadedTempFilesToDestinationAndUnlink($downloadedFiles);
+    try {
+        // Check if backup is needed and perform backup
+        $helpers->checkAndCreateBackup($downloadedFiles);
+    } finally {
+        // Copy downloaded temp files to the destination folder and remove the temp files
+        $helpers->copyDownloadedTempFilesToDestinationAndUnlink($downloadedFiles);
+    }
 
     // Cleanup old backups
     $helpers->cleanupOldBackups();
