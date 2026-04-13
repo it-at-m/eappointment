@@ -37,7 +37,7 @@
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
     "sass": "^1.98.0",
-    "typescript": "^5.4.2",
+    "typescript": "^6.0.2",
     "vite": "^7.3.2",
     "vitest": "^4.1.4",
     "vue-tsc": "^3.2.6"
