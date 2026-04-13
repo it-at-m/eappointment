@@ -17,8 +17,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -69,8 +69,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -116,8 +116,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -161,8 +161,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -213,8 +213,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -270,8 +270,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -337,8 +337,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -388,8 +388,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -433,8 +433,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -484,8 +484,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -538,8 +538,8 @@ class ReportWaitingScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',

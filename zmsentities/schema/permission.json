@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "description": "An atomic permission that can be granted directly to a user or via roles.",
+  "example": {
+    "id": 1,
+    "name": "appointment",
+    "description": "Access clerk view and manage appointments (create, edit, reschedule, cancel, including sending notification emails)"
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Numeric identifier of the permission (primary key in the permission table)."
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique name of the permission (e.g. appointment, scope, statistic, superuser)."
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional human-readable description of the permission."
+    }
+  }
+}

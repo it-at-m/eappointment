@@ -66,3 +66,62 @@
         display: none;
     }
 }
+
+// Styling für Ticketprinter (Erweiterte Konfiguration) 
+
+.ticketprinter-config__advanced-content {
+    margin-left: 20px;
+}
+
+#{$namespace}.language-accordion__trigger {
+    @extend #{$namespace}.accordion__trigger;
+    
+    flex: 1;
+}
+
+.ticketprinter-config__service-fields {
+    margin-top: 16px;
+    padding-top: 0;
+
+    &:first-of-type {
+        margin-top: 0;
+    }
+
+    legend {
+        border-top: 1px solid $color-border;
+        width: 100%;
+        padding-top: 8px;
+    }
+
+    &:first-of-type legend {
+        border-top: none;
+        padding-top: 0;
+    }
+}
+
+.ticketprinter-config__language-header {
+    display: flex;
+    align-items: center;
+}
+
+.ticketprinter-config__remove-language {
+    margin: 0 8px;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    color: #cc0000;
+    cursor: pointer;
+
+    &:disabled {
+        color: #ccc;
+        cursor: not-allowed;
+    }
+}
+
+.ticketprinter-config__language-input {
+    margin-bottom: 8px;
+}
+
+.ticketprinter-config__advanced-checkbox {
+    margin-right: 8px;
+}

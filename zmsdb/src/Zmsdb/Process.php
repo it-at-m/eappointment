@@ -986,4 +986,16 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
+
+    public function readAssignedWorkstationIdForUpdate(int $processId): ?int
+    {
+        $query = (new Query\Process(Query\Base::SELECT))->getLockAssignedWorkstationId();
+        $value = $this->fetchValue($query, ['processId' => $processId]);
+
+        if ($value === false || $value === null) {
+            return null;
+        }
+
+        return (int) $value;
+    }
 }

@@ -28,7 +28,7 @@ if ($('.digitaluhr').length > 0) {
 
 $('form').each(function() {
     preventFormResubmit(this);
-})
+});
 
 console.log("Welcome to the ZMS Ticketprinter interface...");
 

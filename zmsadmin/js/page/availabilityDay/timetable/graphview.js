@@ -8,7 +8,6 @@ import Board from '../layouts/board'
 import GraphBodyLayout from '../layouts/graphBody'
 import calendarNavigation from '../widgets/calendarNavigation'
 import * as constants from './index.js'
-import { Workload } from '../widgets/workload.js';
 
 const GraphView = (props) => {
     const { onSelect, timestamp } = props;

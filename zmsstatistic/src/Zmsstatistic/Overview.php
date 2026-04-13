@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Overview extends BaseController
 {
-    protected $resolveLevel = 3;
+    protected $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)

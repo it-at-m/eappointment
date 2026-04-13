@@ -22,6 +22,8 @@ public/_js/reactcomponents.js.map
 public/_libs/
 public/_css/admin.css
 public/_css/admin.css.map
+public/_css/admin.js
+public/_css/admin.js.map
 .cache
 .phpunit.*
 coverage
