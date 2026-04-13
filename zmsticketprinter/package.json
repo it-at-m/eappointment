@@ -39,6 +39,7 @@
     "core-js": "^3.49.0",
     "eslint": "^9.0.0",
     "flatted": "^3.4.2",
+    "immutable": "^5.1.5",
     "jquery": "^4.0.0",
     "parcel": "^2.16.4",
     "js-cookie": "^3.0.0",
