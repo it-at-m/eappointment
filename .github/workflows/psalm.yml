@@ -19,7 +19,20 @@ jobs:
 
     strategy:
       matrix:
-        project: [zmscitizenapi]
+        project:
+          - mellon
+          - zmsadmin
+          - zmsapi
+          - zmscalldisplay
+          - zmscitizenapi
+          - zmsclient
+          - zmsdb
+          - zmsdldb
+          - zmsentities
+          - zmsmessaging
+          - zmsslim
+          - zmsstatistic
+          - zmsticketprinter
 
     steps:
       - name: Checkout repository (with submodules)
@@ -61,11 +74,14 @@ jobs:
             --report=../results-${{ matrix.project }}.sarif
 
       - name: Normalize SARIF paths to repository root
+        env:
+          PROJECT: ${{ matrix.project }}
         run: |
           python - <<'PY'
+          import os
           import json
 
-          project = "zmscitizenapi"
+          project = os.environ["PROJECT"]
           sarif_path = f"results-{project}.sarif"
 
           with open(sarif_path, "r", encoding="utf-8") as file:
