@@ -236,34 +236,45 @@ class TicketPrinterConfigView extends Component {
     }
 
     buildUrl() {
+        const rawBase = this.props.config?.ticketprinter?.baseUrl
+        if (typeof rawBase !== 'string' || !rawBase.trim()) {
+            return ''
+        }
+        const resolveBase =
+            typeof window !== 'undefined' && window.location && window.location.href
+                ? window.location.href
+                : 'http://zms.invalid/'
+        let url
+        try {
+            url = new URL(rawBase.trim(), resolveBase)
+        } catch {
+            return ''
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return ''
+        }
+
         const itemList = this.state.selectedItems.map(item => `${item.type}${item.id}`).join(',')
-        const baseUrl = this.props.config.ticketprinter.baseUrl
-
-        let parameters = []
-
         if (itemList) {
-            parameters.push(`ticketprinter[buttonlist]=${itemList}`)
+            url.searchParams.set('ticketprinter[buttonlist]', itemList)
         }
-
         if (this.state.ticketPrinterName) {
-            parameters.push(`ticketprinter[name]=${this.state.ticketPrinterName}`)
+            url.searchParams.set('ticketprinter[name]', this.state.ticketPrinterName)
         }
-
         if (this.state.homeUrl) {
-            parameters.push(`ticketprinter[home]=${this.state.homeUrl}`)
+            url.searchParams.set('ticketprinter[home]', this.state.homeUrl)
         }
-
         if (this.state.template !== 'default') {
-            parameters.push(`template=${this.state.template}`)
+            url.searchParams.set('template', this.state.template)
         }
 
         const config = this.buildAdvancedConfig()
         if (config) {
             const encoded = btoa(encodeURIComponent(JSON.stringify(config)).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))))
-            parameters.push(`config=${encoded}`)
+            url.searchParams.set('config', encoded)
         }
 
-        return `${baseUrl}?${parameters.join('&')}`
+        return url.toString()
     }
 
     renderNumberSelect(value, onNumberChange) {
@@ -536,6 +547,7 @@ class TicketPrinterConfigView extends Component {
         }
 
         const generatedUrl = this.buildUrl()
+        const openHref = generatedUrl || undefined
 
         return (
             <form className="form--base ticketprinter-config">
@@ -620,7 +632,20 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <div className="form-actions">
-                        <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                        <a
+                            href={openHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="button button-submit"
+                            aria-disabled={!generatedUrl}
+                            onClick={ev => {
+                                if (!generatedUrl) {
+                                    ev.preventDefault()
+                                }
+                            }}
+                        >
+                            <i className="fas fa-external-link-alt"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen
+                        </a>
                     </div>
                 </fieldset>
             </form >
@@ -633,7 +658,7 @@ TicketPrinterConfigView.propTypes = {
     organisation: PropTypes.object,
     config: PropTypes.shape({
         ticketprinter: PropTypes.shape({
-            baseUrl: PropTypes.object
+            baseUrl: PropTypes.string
         })
     })
 }

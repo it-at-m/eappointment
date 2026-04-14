@@ -9,9 +9,9 @@ const SelectOption = ({ name, value, title }) => {
     )
 }
 
-const SelectOptGroup = ({ label, options = [], selectedValue }) => {
+const SelectOptGroup = ({ label, options = [] }) => {
     return (
-        <optgroup {...{ label }}>{renderOptions(options, selectedValue)}</optgroup>
+        <optgroup {...{ label }}>{renderOptions(options)}</optgroup>
     )
 }
 

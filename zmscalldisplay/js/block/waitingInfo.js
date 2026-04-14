@@ -49,13 +49,13 @@ class View extends BaseView {
     setWaitingClients(data) {
         var waitingClients = $(data).filter("div#waitingClients").text();
         if (0 <= waitingClients) {
-            $("#wartende").html(waitingClients);
+            $("#wartende").text(waitingClients);
         }
     }
 
     setWaitingTime(data) {
         var waitingTime = $(data).filter("div#waitingTime").text();
-        $("#wartezeit").html(waitingTime);
+        $("#wartezeit").text(waitingTime);
     }
 
     hideMessages(delay = 5000) {

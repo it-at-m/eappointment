@@ -33,6 +33,10 @@
     "@parcel/transformer-sass": "^2.16.4",
     "buffer": "^6.0.3",
     "eslint": "^9.0.0",
+    "flatted": "^3.4.2",
+    "immutable": "^5.1.5",
+    "minimatch": "^3.1.3",
+    "picomatch": "^2.3.2",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-react": "^7.31.8",
     "events": "^3.3.0",
@@ -40,6 +44,7 @@
     "https-browserify": "^1.0.0",
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.0",
+    "js-yaml": "^4.1.1",
     "json-schema-defaults": "^0.4.0",
     "json-schema-ref-parser": "^9.0.9",
     "moment": "^2.29.1",
@@ -50,12 +55,12 @@
     "punycode": "^2.0.0",
     "qrcode-generator": "^2.0.0",
     "querystring-es3": "^0.2.1",
+    "qs": "^6.14.2",
     "react": "^18.0.2",
     "react-datepicker": "^9.1.0",
     "react-dom": "^18.0.2",
     "react-icons": "^5.6.0",
     "react-to-print": "^3.0.0",
-    "redux-json-schema": "^1.0.0",
     "requirejs": "^2.3.7",
     "stream-http": "^3.2.0",
     "svgo": "^4.0.1",
@@ -68,5 +73,9 @@
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "chart.js": "^4.4.2",
     "react-chartjs-2": "^5.3.1"
+  },
+  "// overrides.dompurify": "monaco-editor depends on dompurify@3.2.7; override to ^3.3.2 (patched) until Monaco ships a newer dompurify.",
+  "overrides": {
+    "dompurify": "^3.3.2"
   }
 }

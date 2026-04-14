@@ -6,7 +6,7 @@ import { lightbox } from './utils';
 class BaseView extends ErrorHandler {
 
     constructor(element) {
-        super(element);
+        super();
         this.$main = $(element);
     }
 
