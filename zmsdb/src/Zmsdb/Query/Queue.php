@@ -72,8 +72,8 @@ class Queue extends Process implements MappingInterface
             ),
             'destination' => 'processuser.Arbeitsplatznr',
             'destinationHint' => 'processuser.aufrufzusatz',
-            'waitingTime' => 'process.wartezeit',
-            'wayTime' => 'process.wegezeit',
+            'waitingTime' => 'process.waiting_time',
+            'wayTime' => 'process.way_time',
             'withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
                     "0",

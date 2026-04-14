@@ -47,14 +47,14 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
                         $subjectid,
                         $entry['datum'],
                         $hour,
-                        $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('wegezeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('wartende_ab_%02s_termin', $hour)],
-                        $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
-                        $entry[sprintf('wegezeit_ab_%02s_termin', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_count_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_way_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_count_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_waiting_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_way_time_appointment', $hour)],
                     ]);
                 }
             }

@@ -25,7 +25,7 @@ class ExchangeRequestscope extends Base
                 END
             ) as name,
         COUNT(s.anliegenid) as requestscount,
-        AVG(s.bearbeitungszeit) as processingtime
+        AVG(s.processing_time) as processingtime
     FROM ' . self::TABLE . ' AS s
         LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
     WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend
