@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        project: [zmscitizenapi]
+        project: [zmscitizenapi,zmsapi]
 
     steps:
       - name: Checkout repository (with submodules)
