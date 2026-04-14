@@ -2,7 +2,7 @@
 
 namespace BO\Slim\Helper;
 
-class Sanitizer
+final class Sanitizer
 {
     public static function sanitizeStackTrace($trace)
     {
