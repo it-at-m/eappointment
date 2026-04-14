@@ -8,16 +8,21 @@ on:
         required: false
         default: false
         type: boolean
-  push:
-    branches: [ "main", "next" ]
+  # Align with CodeQL Advanced: PRs and pushes to main (keeps regular security scanning in sync)
   pull_request:
-    branches: [ "main" ]
+  push:
+    branches: [main]
   schedule:
     - cron: '0 5 * * *'
 
 permissions:
   contents: read
+  pull-requests: read
   security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   psalm:
