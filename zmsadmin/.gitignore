@@ -29,3 +29,4 @@ public/_css/admin.js.map
 coverage
 changelog_build.md
 .phpunit.cache
+keycloak.json
