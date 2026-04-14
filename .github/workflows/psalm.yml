@@ -60,6 +60,32 @@ jobs:
             --no-progress \
             --report=../results-${{ matrix.project }}.sarif
 
+      - name: Normalize SARIF paths to repository root
+        run: |
+          python - <<'PY'
+          import json
+
+          project = "zmscitizenapi"
+          sarif_path = f"results-{project}.sarif"
+
+          with open(sarif_path, "r", encoding="utf-8") as file:
+              sarif = json.load(file)
+
+          for run in sarif.get("runs", []):
+              for result in run.get("results", []):
+                  for location in result.get("locations", []):
+                      artifact = (
+                          location.get("physicalLocation", {})
+                          .get("artifactLocation", {})
+                      )
+                      uri = artifact.get("uri")
+                      if isinstance(uri, str) and not uri.startswith(f"{project}/"):
+                          artifact["uri"] = f"{project}/{uri}"
+
+          with open(sarif_path, "w", encoding="utf-8") as file:
+              json.dump(sarif, file)
+          PY
+
       - name: Upload SARIF results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
