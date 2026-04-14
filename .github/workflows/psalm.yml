@@ -134,7 +134,6 @@ jobs:
           exit 1
 
   psalm-dead-code:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_dead_code)
     runs-on: ubuntu-latest
 
     steps:
