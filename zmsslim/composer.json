@@ -26,6 +26,7 @@
         "roave/security-advisories": "dev-latest"
     },
     "require-dev": {
+        "vimeo/psalm": "^6.16.1",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^11",

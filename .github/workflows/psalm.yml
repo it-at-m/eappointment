@@ -1,0 +1,199 @@
+name: 🛡️ 🐘 Psalm PHP Security Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_dead_code:
+        description: "Run monorepo dead-code scan"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [ "main", "next" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 5 * * *'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  psalm:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - mellon
+          - zmsadmin
+          - zmsapi
+          - zmscalldisplay
+          - zmscitizenapi
+          - zmsclient
+          - zmsdb
+          - zmsdldb
+          - zmsentities
+          - zmsmessaging
+          - zmsslim
+          - zmsstatistic
+          - zmsticketprinter
+
+    steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: composer
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        working-directory: ${{ matrix.project }}
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.project }}-${{ hashFiles(format('{0}/composer.lock', matrix.project)) }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.project }}-
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: composer install --no-progress --prefer-dist --no-interaction
+
+      - name: Run Psalm Security Scan
+        id: psalm
+        continue-on-error: true
+        working-directory: ${{ matrix.project }}
+        run: |
+          vendor/bin/psalm \
+            --no-progress \
+            --report=../results-${{ matrix.project }}.sarif
+
+      - name: Normalize SARIF paths to repository root
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          python - <<'PY'
+          import os
+          import json
+
+          project = os.environ["PROJECT"]
+          sarif_path = f"results-{project}.sarif"
+
+          with open(sarif_path, "r", encoding="utf-8") as file:
+              sarif = json.load(file)
+
+          for run in sarif.get("runs", []):
+              for result in run.get("results", []):
+                  for location in result.get("locations", []):
+                      artifact = (
+                          location.get("physicalLocation", {})
+                          .get("artifactLocation", {})
+                      )
+                      uri = artifact.get("uri")
+                      if isinstance(uri, str) and not uri.startswith(f"{project}/"):
+                          artifact["uri"] = f"{project}/{uri}"
+
+          with open(sarif_path, "w", encoding="utf-8") as file:
+              json.dump(sarif, file)
+          PY
+
+      - name: Check SARIF file exists
+        id: sarif
+        run: |
+          if [ -f "results-${{ matrix.project }}.sarif" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload SARIF results
+        if: always() && steps.sarif.outputs.exists == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results-${{ matrix.project }}.sarif
+          checkout_path: ${{ matrix.project }}
+
+      - name: Fail job if Psalm run or SARIF generation failed
+        if: steps.psalm.outcome == 'failure' || steps.sarif.outputs.exists != 'true'
+        run: |
+          if [ "${{ steps.sarif.outputs.exists }}" != "true" ]; then
+            echo "Missing SARIF output for ${{ matrix.project }} (results-${{ matrix.project }}.sarif)."
+          fi
+          exit 1
+
+  psalm-dead-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: composer
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache-monorepo
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        working-directory: zmsapi
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache-monorepo.outputs.dir }}
+          key: ${{ runner.os }}-composer-psalm-monorepo-${{ hashFiles('zmsapi/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-psalm-monorepo-
+
+      - name: Install dependencies
+        working-directory: zmsapi
+        run: composer install --no-progress --prefer-dist --no-interaction
+
+      - name: Run Psalm dead-code scan (monorepo)
+        id: psalm_dead_code
+        continue-on-error: true
+        run: |
+          zmsapi/vendor/bin/psalm \
+            -c psalm.monorepo.xml \
+            --no-progress \
+            --report=results-monorepo.sarif
+
+      - name: Check monorepo SARIF file exists
+        id: sarif_monorepo
+        run: |
+          if [ -f "results-monorepo.sarif" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload monorepo SARIF results
+        if: always() && steps.sarif_monorepo.outputs.exists == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results-monorepo.sarif
+
+      - name: Fail job if dead-code scan or SARIF generation failed
+        if: steps.psalm_dead_code.outcome == 'failure' || steps.sarif_monorepo.outputs.exists != 'true'
+        run: |
+          if [ "${{ steps.sarif_monorepo.outputs.exists }}" != "true" ]; then
+            echo "Missing monorepo SARIF output (results-monorepo.sarif)."
+          fi
+          exit 1

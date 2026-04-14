@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="7"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config zmsapi/vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
+>
+    <projectFiles>
+        <directory name="mellon/src" />
+        <directory name="zmsadmin/src" />
+        <file name="zmsadmin/config.example.php" />
+        <file name="zmsadmin/bootstrap.php" />
+        <file name="zmsadmin/routing.php" />
+        <directory name="zmsapi/src" />
+        <file name="zmsapi/config.example.php" />
+        <file name="zmsapi/bootstrap.php" />
+        <file name="zmsapi/routing.php" />
+        <directory name="zmscalldisplay/src" />
+        <file name="zmscalldisplay/config.example.php" />
+        <file name="zmscalldisplay/bootstrap.php" />
+        <file name="zmscalldisplay/routing.php" />
+        <directory name="zmscitizenapi/src" />
+        <file name="zmscitizenapi/config.example.php" />
+        <file name="zmscitizenapi/bootstrap.php" />
+        <file name="zmscitizenapi/routing.php" />
+        <directory name="zmsclient/src" />
+        <directory name="zmsdb/src" />
+        <file name="zmsdb/config.example.php" />
+        <directory name="zmsdldb/src" />
+        <file name="zmsdldb/config.example.php" />
+        <file name="zmsdldb/bootstrap.php" />
+        <directory name="zmsentities/src" />
+        <directory name="zmsmessaging/src" />
+        <file name="zmsmessaging/config.example.php" />
+        <file name="zmsmessaging/bootstrap.php" />
+        <directory name="zmsslim/src" />
+        <directory name="zmsstatistic/src" />
+        <file name="zmsstatistic/config.example.php" />
+        <file name="zmsstatistic/bootstrap.php" />
+        <file name="zmsstatistic/routing.php" />
+        <directory name="zmsticketprinter/src" />
+        <file name="zmsticketprinter/config.example.php" />
+        <file name="zmsticketprinter/bootstrap.php" />
+        <file name="zmsticketprinter/routing.php" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
