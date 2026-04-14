@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f259e61117c702e4ced669b2d0fe91c1",
+    "content-hash": "7c6262567e4dacfca0892aa67d032a66",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "89dede132dd9919308a3c1b1261b95868db4f548"
+                "reference": "b3c9efddad9f17b9b5b819755d97ed0dafbf97f2"
             },
             "require": {
                 "ext-json": ">=0",
@@ -138,7 +138,8 @@
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "*",
+                "vimeo/psalm": "^6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -175,7 +176,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "19e96b8d1df258e4de1784f78c5b5b3fb32e730c"
+                "reference": "c20fa423abd81456de6c6d54ab92325445439fb9"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -199,7 +200,8 @@
                 "phpspec/prophecy-phpunit": "^2.4",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "*",
+                "vimeo/psalm": "^6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -234,7 +236,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "89dede132dd9919308a3c1b1261b95868db4f548"
+                "reference": "b3c9efddad9f17b9b5b819755d97ed0dafbf97f2"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -256,7 +258,8 @@
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "*",
+                "vimeo/psalm": "^6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -291,7 +294,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "89dede132dd9919308a3c1b1261b95868db4f548"
+                "reference": "b3c9efddad9f17b9b5b819755d97ed0dafbf97f2"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -317,7 +320,8 @@
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^11",
                 "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "*",
+                "vimeo/psalm": "^6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -4101,7 +4105,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -4160,7 +4164,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -4184,7 +4188,7 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -4245,7 +4249,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -4269,7 +4273,7 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
@@ -4329,7 +4333,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -4353,7 +4357,7 @@
         },
         {
             "name": "symfony/polyfill-php81",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php81.git",
@@ -4409,7 +4413,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php81/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-php81/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -9597,7 +9601,7 @@
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-grapheme.git",
@@ -9655,7 +9659,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -9679,7 +9683,7 @@
         },
         {
             "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
@@ -9740,7 +9744,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.35.0"
             },
             "funding": [
                 {
@@ -9764,7 +9768,7 @@
         },
         {
             "name": "symfony/polyfill-php84",
-            "version": "v1.34.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php84.git",
@@ -9820,7 +9824,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php84/tree/v1.34.0"
+                "source": "https://github.com/symfony/polyfill-php84/tree/v1.35.0"
             },
             "funding": [
                 {
