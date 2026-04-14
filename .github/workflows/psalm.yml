@@ -102,13 +102,26 @@ jobs:
               json.dump(sarif, file)
           PY
 
+      - name: Check SARIF file exists
+        id: sarif
+        run: |
+          if [ -f "results-${{ matrix.project }}.sarif" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload SARIF results
-        if: always()
+        if: always() && steps.sarif.outputs.exists == 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
 
-      - name: Fail job if Psalm found issues
-        if: steps.psalm.outcome == 'failure'
-        run: exit 1
+      - name: Fail job if Psalm run or SARIF generation failed
+        if: steps.psalm.outcome == 'failure' || steps.sarif.outputs.exists != 'true'
+        run: |
+          if [ "${{ steps.sarif.outputs.exists }}" != "true" ]; then
+            echo "Missing SARIF output for ${{ matrix.project }} (results-${{ matrix.project }}.sarif)."
+          fi
+          exit 1
