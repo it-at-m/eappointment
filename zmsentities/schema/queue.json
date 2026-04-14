@@ -73,11 +73,10 @@
                     "type": "number"
                 },
                 {
-                    "type": "string",
-                    "format": "time"
+                    "type": "string"
                 }
             ],
-            "description": "minutes since arrival of client"
+            "description": "Time spent waiting until the client is called: from the booked appointment start (e.g. appointment 12:00, called 12:03 → 3 minutes) or from joining the walk-in queue. A duration—fractional minutes (number) or MySQL TIME string (H+:MM:SS)—not a clock time"
         },
         "wayTime": {
             "oneOf": [
@@ -88,11 +87,10 @@
                     "type": "number"
                 },
                 {
-                    "type": "string",
-                    "pattern": "^[0-9]+$"
+                    "type": "string"
                 }
             ],
-            "description": "minutes since arrival of client"
+            "description": "Time from call to arrival at desk: fractional minutes (number) or MySQL TIME string (H+:MM:SS)"
         },        
         "waitingTimeEstimate": {
             "type": "number",

@@ -30,7 +30,7 @@ class ExchangeRequestorganisation extends Base
                 s.anliegenid,
                 s.organisationsid,
                 COUNT(s.anliegenid) as requestscount,
-                AVG(s.bearbeitungszeit) as processingtime,
+                AVG(s.processing_time) as processingtime,
                 s.`datum`
             FROM ' . self::TABLE . ' s
             WHERE s.organisationsid = :organisationid AND s.`datum` BETWEEN :datestart AND :dateend

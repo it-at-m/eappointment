@@ -32,7 +32,7 @@ class ExchangeRequestdepartment extends Base
                 s.behoerdenid,
                 s.organisationsid,
                 COUNT(s.anliegenid) as requestscount,
-                AVG(s.bearbeitungszeit) as processingtime,
+                AVG(s.processing_time) as processingtime,
                 s.`datum`
             FROM ' . self::TABLE . ' s
             WHERE s.behoerdenid = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend

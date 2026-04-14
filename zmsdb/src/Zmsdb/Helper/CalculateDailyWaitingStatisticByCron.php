@@ -35,8 +35,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
               Datum,
               Uhrzeit,
               wsm_aufnahmezeit,
-              wartezeit,
-              wegezeit,
+              waiting_time,
+              way_time,
               Name,
               Anmerkung,
               custom_text_field,
@@ -56,8 +56,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
         $statsByScopeDate = [];
 
         foreach ($buergerRows as $br) {
-            // Wenn wartezeit NULL oder leer ist => storniert oder hatte keine echte Wartezeit => überspringen
-            if (empty($br['wartezeit'])) {
+            // Wenn waiting_time NULL oder leer ist => storniert oder hatte keine echte Wartezeit => überspringen
+            if (empty($br['waiting_time'])) {
                 continue;
             }
 
@@ -68,8 +68,10 @@ class CalculateDailyWaitingStatisticByCron extends Base
 
             [$hour, $type] = $this->determineHourAndType($br);
 
-            $waitMins = $this->timeToMinutes($br['wartezeit']);
-            $wayMins = is_numeric($br['wegezeit']) ? $br['wegezeit'] : 0.0;
+            $waitMins = $this->timeToMinutes($br['waiting_time']);
+            $wayMins = is_numeric($br['way_time'])
+                ? (float) $br['way_time']
+                : $this->timeToMinutes($br['way_time']);
 
             $dateStr = $br['Datum'];
             $this->initializeStatsIfNeeded($statsByScopeDate, $scopeId, $dateStr);
@@ -201,14 +203,16 @@ class CalculateDailyWaitingStatisticByCron extends Base
         array $hoursData,
         string $type
     ): void {
-        $colWaitCount = sprintf('wartende_ab_%02d_%s', $hour, $type);
-        $colWaitTime = sprintf('echte_zeit_ab_%02d_%s', $hour, $type);
-        $colWayTime = sprintf('wegezeit_ab_%02d_%s', $hour, $type);
+        $hourSuffix = $this->hourSuffixForStatistic($type);
+        $colWaitCount = sprintf('hour_%02d_waiting_count_%s', $hour, $hourSuffix);
+        $colWaitTime = sprintf('hour_%02d_waiting_time_%s', $hour, $hourSuffix);
+        $colWayTime = sprintf('hour_%02d_way_time_%s', $hour, $hourSuffix);
 
         $count = $hoursData[$hour][$type]['count'];
         $avgWait = ($count > 0)
             ? round($hoursData[$hour][$type]['sumWait'] / $count, 2)
             : 0.0;
+        // sumWay is total fractional minutes from buerger.way_time (same unit as waiting_time); hourly column is average minutes
         $avgWay = ($count > 0)
             ? round($hoursData[$hour][$type]['sumWay'] / $count, 2)
             : 0.0;
@@ -251,5 +255,10 @@ class CalculateDailyWaitingStatisticByCron extends Base
         $s = (int)$parts[2];
         $totalSeconds = $h * 3600 + $m * 60 + $s;
         return round($totalSeconds / 60, 2);
+    }
+
+    private function hourSuffixForStatistic(string $type): string
+    {
+        return $type === 'termin' ? 'appointment' : 'spontaneous';
     }
 }
