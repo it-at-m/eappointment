@@ -1,38 +1,64 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Psalm Security Scan
 
 on:
   push:
     branches: [ "main", "next" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
     - cron: '24 5 * * 3'
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
-  php-security:
+  psalm:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+
+    strategy:
+      matrix:
+        project: [zmscitizenapi]
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
-      - name: Psalm Security Scan
-        uses: psalm/psalm-github-security-scan@f3e6fd9432bc3e44aec078572677ce9d2ef9c287
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: composer
+          coverage: none
 
-      - name: Upload Security Analysis results to GitHub
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        working-directory: ${{ matrix.project }}
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.project }}-${{ hashFiles(format('{0}/composer.lock', matrix.project)) }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.project }}-
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: composer install --no-progress --prefer-dist --no-interaction
+
+      - name: Run Psalm Security Scan
+        working-directory: ${{ matrix.project }}
+        run: |
+          vendor/bin/psalm \
+            --no-progress \
+            --output-format=sarif \
+            --output-file=../results-${{ matrix.project }}.sarif
+
+      - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: results-${{ matrix.project }}.sarif
