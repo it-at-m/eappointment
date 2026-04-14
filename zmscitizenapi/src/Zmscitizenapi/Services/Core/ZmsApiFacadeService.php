@@ -706,7 +706,16 @@ class ZmsApiFacadeService
                 sort($arr);
             }
             unset($arr);
-            // Optionally validate grouped timestamps here if needed
+
+            $totalSlotCount = 0;
+            foreach ($grouped as $timestamps) {
+                $totalSlotCount += count($timestamps);
+            }
+            $errors = ValidationService::validateHasAvailableAppointmentSlotsForDay($totalSlotCount);
+            if (is_array($errors) && !empty($errors['errors'])) {
+                return $errors;
+            }
+
             return $grouped;
         } else {
             $timestamps = [];

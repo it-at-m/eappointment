@@ -88,10 +88,10 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('appointmentNotAvailable')
+                ErrorMessages::get('noAppointmentForThisDay')
             ]
         ];
-        $this->assertEquals(ErrorMessages::get('appointmentNotAvailable')['statusCode'], $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('noAppointmentForThisDay')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
     }
 

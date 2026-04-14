@@ -325,8 +325,18 @@ class ValidationService
 
     public static function validateGetProcessByIdTimestamps(?array $appointmentTimestamps): array
     {
-        return empty($appointmentTimestamps)
-            ? ['errors' => [self::getError('appointmentNotAvailable')]]
+        $count = is_array($appointmentTimestamps) ? count($appointmentTimestamps) : 0;
+
+        return self::validateHasAvailableAppointmentSlotsForDay($count);
+    }
+
+    /**
+     * When a concrete date was requested but no bookable slots remain for the selected offices/services.
+     */
+    public static function validateHasAvailableAppointmentSlotsForDay(int $slotCount): array
+    {
+        return $slotCount === 0
+            ? ['errors' => [self::getError('noAppointmentForThisDay')]]
             : [];
     }
 

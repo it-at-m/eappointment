@@ -346,14 +346,14 @@ class ValidationServiceTest extends TestCase
         // Test empty timestamps
         $result = ValidationService::validateGetProcessByIdTimestamps([]);
         $this->assertEquals(
-            ['errors' => [ErrorMessages::get('appointmentNotAvailable')]],
+            ['errors' => [ErrorMessages::get('noAppointmentForThisDay')]],
             $result
         );
 
         // Test null timestamps
         $result = ValidationService::validateGetProcessByIdTimestamps(null);
         $this->assertEquals(
-            ['errors' => [ErrorMessages::get('appointmentNotAvailable')]],
+            ['errors' => [ErrorMessages::get('noAppointmentForThisDay')]],
             $result
         );
     }
