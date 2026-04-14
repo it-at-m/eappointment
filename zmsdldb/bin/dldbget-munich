@@ -21,13 +21,13 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     }
 }
 
-require_once(__DIR__."/script_bootstrap.php");
+require_once(__DIR__ . "/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use Httpful\Request;
 use BO\Zmsdldb\Transformers\Munich;
 
-require_once(__DIR__."/dldb-helpers.php");
+require_once(__DIR__ . "/dldb-helpers.php");
 
 // Initialize Httpful
 Request::ini(Request::init());
@@ -35,14 +35,19 @@ Request::ini(Request::init());
 $cli = new Cli();
 $cli->description("Downloads Munich SADB export and transforms it to Berlin-compatible format")
     ->opt('output:o', 'Path to save files', true)
-    ->opt('base:b', 'Munich SADB index URL', true); 
+    ->opt('base:b', 'Munich SADB index URL', true);
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
 $indexUrl = $args->getOpt('base');
 
 $helpers = new DldbHelpers($destinationPath, $cli);
-$helpers->ensureDestinationDirectory();
+
+// Ensure destination directory exists (aligned with default script)
+if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
+    print($cli->red("Failed to create the destination directory at $destinationPath\n\n"));
+    exit(1);
+}
 
 // Check for rollback
 $rollbackDay = $helpers->getRollbackDay();
@@ -65,53 +70,66 @@ try {
 $data = $transformer->applySadbOverwrite($data);
 print("Applied bundled munich_sadb_overwrite.json (dldb-mapper parity).\n\n");
 
-// Helper to safely write JSON files (defined before first use)
-function writeJsonFile($path, $data) {
+// Helper: write JSON to temp file (aligned with dldbget pattern)
+function writeJsonTempFile($data)
+{
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     if ($json === false) {
         echo "Error: JSON encoding failed: " . json_last_error_msg() . "\n\n";
         exit(1);
     }
-    if (file_put_contents($path, $json) === false) {
-        echo "Error: Failed to write " . basename($path) . "\n\n";
+
+    $tempFile = tempnam(sys_get_temp_dir(), 'dldbget_');
+    if ($tempFile === false) {
+        echo "Error: Failed to create temporary file\n\n";
         exit(1);
     }
+
+    if (file_put_contents($tempFile, $json) === false) {
+        echo "Error: Failed to write temporary file\n\n";
+        @unlink($tempFile);
+        exit(1);
+    }
+
+    return $tempFile;
 }
 
+$downloadedFiles = [];
+
+// Transform services
 print("Transforming services...\n\n");
 $servicesData = $transformer->transformServices($data);
-writeJsonFile($destinationPath . '/services_de.json', $servicesData);
+$downloadedFiles['services_de.json'] = writeJsonTempFile($servicesData);
 
+// Transform locations
 print("Transforming locations...\n\n");
 $locationsData = $transformer->transformLocations($data, $servicesData);
-writeJsonFile($destinationPath . '/locations_de.json', $locationsData);
+$downloadedFiles['locations_de.json'] = writeJsonTempFile($locationsData);
 
-// Create empty files for English versions (not currently supported by Munich)
-$emptyData = ['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]];
-writeJsonFile($destinationPath . '/services_en.json', $emptyData);
-writeJsonFile($destinationPath . '/locations_en.json', $emptyData);
-
-// Create empty topic and authority files
-writeJsonFile($destinationPath . '/topic_de.json', $emptyData);
-writeJsonFile($destinationPath . '/authority_de.json', $emptyData);
-writeJsonFile($destinationPath . '/settings.json', $emptyData);
-
-// Track downloaded files for backup
-$downloadedFiles = [
-    'services_de.json' => $destinationPath . '/services_de.json',
-    'locations_de.json' => $destinationPath . '/locations_de.json',
-    'services_en.json' => $destinationPath . '/services_en.json',
-    'locations_en.json' => $destinationPath . '/locations_en.json',
-    'topic_de.json' => $destinationPath . '/topic_de.json',
-    'authority_de.json' => $destinationPath . '/authority_de.json',
-    'settings.json' => $destinationPath . '/settings.json',
+// Empty placeholder data (Munich has no EN / topics / authority yet)
+$emptyData = [
+    'data' => [],
+    'meta' => [
+        'generated' => date('Y-m-d\TH:i:s'),
+        'datacount' => 0,
+    ],
 ];
 
-// Check if backup is needed and perform backup
-$helpers->checkAndCreateBackup($downloadedFiles);
+$downloadedFiles['services_en.json'] = writeJsonTempFile($emptyData);
+$downloadedFiles['locations_en.json'] = writeJsonTempFile($emptyData);
+$downloadedFiles['topic_de.json'] = writeJsonTempFile($emptyData);
+$downloadedFiles['authority_de.json'] = writeJsonTempFile($emptyData);
+$downloadedFiles['settings.json'] = writeJsonTempFile($emptyData);
+
+try {
+    // Check if backup is needed and perform backup
+    $helpers->checkAndCreateBackup($downloadedFiles);
+} finally {
+    // Copy downloaded temp files to the destination folder and remove the temp files
+    $helpers->copyDownloadedTempFilesToDestinationAndUnlink($downloadedFiles);
+}
 
 // Cleanup old backups
 $helpers->cleanupOldBackups();
 
 print("Munich transformation completed!\n\n");
-
