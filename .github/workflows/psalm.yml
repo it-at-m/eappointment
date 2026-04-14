@@ -1,6 +1,7 @@
 name: Psalm Security Scan
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "next" ]
   pull_request:
