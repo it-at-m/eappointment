@@ -128,6 +128,12 @@ class DldbHelpers
                     $backupRequired = true;
                     $filesToBackup[] = basename($destFile);
                 }
+            } else {
+                // New file, check if any data exists
+                $content = file_get_contents($filePath);
+                if (!empty($content)) {
+                    $backupRequired = true;
+                }
             }
         }
 
