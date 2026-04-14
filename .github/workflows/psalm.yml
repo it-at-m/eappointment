@@ -51,14 +51,20 @@ jobs:
         run: composer install --no-progress --prefer-dist --no-interaction
 
       - name: Run Psalm Security Scan
+        id: psalm
+        continue-on-error: true
         working-directory: ${{ matrix.project }}
         run: |
           vendor/bin/psalm \
             --no-progress \
-            --output-format=sarif \
-            > ../results-${{ matrix.project }}.sarif
+            --report=../results-${{ matrix.project }}.sarif
 
       - name: Upload SARIF results
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results-${{ matrix.project }}.sarif
+
+      - name: Fail job if Psalm found issues
+        if: steps.psalm.outcome == 'failure'
+        run: exit 1
