@@ -5,5 +5,5 @@
   "baseBranches": ["next", "/^release\\/.*/"],
 
   "timezone": "Europe/Berlin",
-  "schedule": ["on saturday between 4am and 6am"]
+  "schedule": ["0 4 * * 6"]
 }
