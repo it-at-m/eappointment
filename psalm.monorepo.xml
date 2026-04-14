@@ -45,8 +45,5 @@
         <file name="zmsticketprinter/config.example.php" />
         <file name="zmsticketprinter/bootstrap.php" />
         <file name="zmsticketprinter/routing.php" />
-        <ignoreFiles>
-            <directory name="vendor" />
-        </ignoreFiles>
     </projectFiles>
 </psalm>
