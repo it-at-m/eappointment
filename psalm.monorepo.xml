@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="7"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config zmsapi/vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
+>
+    <projectFiles>
+        <directory name="mellon/src" />
+        <directory name="zmsadmin/src" />
+        <directory name="zmsapi/src" />
+        <directory name="zmscalldisplay/src" />
+        <directory name="zmscitizenapi/src" />
+        <directory name="zmsclient/src" />
+        <directory name="zmsdb/src" />
+        <directory name="zmsdldb/src" />
+        <directory name="zmsentities/src" />
+        <directory name="zmsmessaging/src" />
+        <directory name="zmsslim/src" />
+        <directory name="zmsstatistic/src" />
+        <directory name="zmsticketprinter/src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
