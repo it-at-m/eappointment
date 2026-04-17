@@ -108,7 +108,7 @@ class ReportRequestIndex extends BaseController
             $response,
             'page/reportRequestIndex.twig',
             array(
-                'title' => 'Dienstleistungsstatistk Standort',
+                'title' => 'Dienstleistungsstatistik Standort',
                 'activeScope' => 'active',
                 'menuActive' => 'request',
                 'department' => $this->department,
