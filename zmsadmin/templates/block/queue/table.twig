@@ -597,8 +597,9 @@
 								<th>Name</th>
 								<th>Dienstleistung</th>
 								<th>Art</th>
-								<th>Wartezeit (Std.:Min.:Sek.)</th> 
-								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th> 
+								<th>Wartezeit (Std.:Min.:Sek.)</th>
+								<th>Wegezeit (Std.:Min.:Sek.)</th>
+								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th>
 							</tr>
 						</thead>
 						{% set lfdnr = 0 %}
@@ -625,6 +626,11 @@
 									{% endif %}
 								</td>
 							{% set totalSeconds = (item.waitingTime * 60)|round(0, 'floor') %}
+							{% set hours = (totalSeconds // 3600) %}
+							{% set minutes = ((totalSeconds % 3600) // 60) %}
+							{% set seconds = (totalSeconds % 60) %}
+							<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+							{% set totalSeconds = (item.wayTime|default(item.queue.wayTime|default(0)) * 60)|round(0, 'floor') %}
 							{% set hours = (totalSeconds // 3600) %}
 							{% set minutes = ((totalSeconds % 3600) // 60) %}
 							{% set seconds = (totalSeconds % 60) %}
