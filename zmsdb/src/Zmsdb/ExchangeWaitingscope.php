@@ -52,8 +52,8 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                     $entry[sprintf('hour_%02d_estimated_waiting_time_spontaneous', $hour)],
                     $entry[sprintf('hour_%02d_waiting_count_appointment', $hour)],
                     $entry[sprintf('hour_%02d_waiting_time_appointment', $hour)],
-                    $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
                     $entry[sprintf('hour_%02d_way_time_appointment', $hour)],
+                    $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
                 ]);
             }
         }
