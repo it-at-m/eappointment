@@ -50,12 +50,12 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
                         $hour,
                         $entry[sprintf('hour_%02d_waiting_count_spontaneous', $hour)],
                         $entry[sprintf('hour_%02d_waiting_time_spontaneous', $hour)],
-                        $entry[sprintf('hour_%02d_estimated_waiting_time_spontaneous', $hour)],
                         $entry[sprintf('hour_%02d_way_time_spontaneous', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_spontaneous', $hour)],
                         $entry[sprintf('hour_%02d_waiting_count_appointment', $hour)],
                         $entry[sprintf('hour_%02d_waiting_time_appointment', $hour)],
-                        $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
                         $entry[sprintf('hour_%02d_way_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
                     ]);
                 }
                 $entry = array_shift($raw);
