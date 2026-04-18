@@ -32,7 +32,7 @@
   "devDependencies": {
     "@parcel/transformer-sass": "^2.16.4",
     "buffer": "^6.0.3",
-    "eslint": "^9.0.0",
+    "eslint": "^10.2.1",
     "flatted": "^3.4.2",
     "immutable": "^5.1.5",
     "minimatch": "^3.1.3",
