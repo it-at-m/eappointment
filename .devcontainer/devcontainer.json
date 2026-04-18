@@ -34,12 +34,14 @@
       ]
     }
   },
-  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
-  "postCreateCommand": "bash -c './cli dev setup-local'",
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ \"$CODESPACES\" = \"true\" ]; then sed -i \"s/XDEBUG_CLIENT_HOST=.*/XDEBUG_CLIENT_HOST=127.0.0.1/\" .devcontainer/.env; fi'",
+  "postCreateCommand": [
+    "bash -c './cli dev setup-local'",
+    "bash", "-c", "git config --global --add safe.directory '*' && chmod 777 /var/www/html/cache"
+  ],
   "postStartCommand": [
     "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
     "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
-    "bash", "-c", "git config --global --add safe.directory '*' && chmod 777 /var/www/html/cache",
     "bash", "-c", "ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true",
     "bash", "-c", "if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi"
   ],
