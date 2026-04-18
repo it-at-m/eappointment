@@ -9,7 +9,7 @@ additional_fqdns:
   - keycloak
 database:
   type: mariadb
-  version: "10.4"
+  version: "10.11"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment:
