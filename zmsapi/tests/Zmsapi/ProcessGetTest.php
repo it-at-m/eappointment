@@ -82,4 +82,11 @@ class ProcessGetTest extends Base
         $this->expectExceptionCode(403);
         $this->render(['id' => 10030, 'authKey' => null], [], []);
     }
+
+    public function testFamilyNameIsNotAcceptedAsAuthKey()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 10030, 'authKey' => 'Dayoff'], [], []);
+    }
 }

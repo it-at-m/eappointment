@@ -548,12 +548,7 @@ class Process extends Base implements MappingInterface
     public function addConditionAuthKey($authKey)
     {
         $authKey = urldecode($authKey);
-        $this->query
-            ->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($authKey) {
-                $condition
-                    ->andWith('process.absagecode', '=', $authKey)
-                    ->orWith('process.Name', '=', $authKey);
-            });
+        $this->query->where('process.absagecode', '=', $authKey);
         return $this;
     }
 
