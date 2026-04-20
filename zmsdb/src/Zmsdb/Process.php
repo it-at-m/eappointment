@@ -291,12 +291,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
-     * Read authKey by processId
+     * Read auth data by processId (for request-side auth checks).
      *
-     * @param
-     * processId
-     *
-     * @return String authKey
+     * @return array{authKey: string}|null
      */
     public function readAuthKeyByProcessId($processId)
     {
@@ -307,7 +304,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
         return ($process->hasId()) ? array(
-            'authName' => $process->getFirstClient()['familyName'],
             'authKey' => $process->authKey
         ) : null;
     }
