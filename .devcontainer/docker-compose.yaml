@@ -1,15 +1,12 @@
 services:
   web:
     container_name: zms-web
-    build:
-      context: .
-      dockerfile: Containerfile
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-local
     volumes:
-      - ..:/var/www/html:cached
-      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro
+      - ..:/var/www/html:cached,z
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
     ports:
       - "8090:80"
-      - "8091:443"
     env_file:
       - .env
     depends_on:
@@ -23,7 +20,7 @@ services:
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspace:cached,z
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 8082"
     ports:
       - "8082:8082"
@@ -41,6 +38,7 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/mysql
+      - ../.resources/zms.sql:/docker-entrypoint-initdb.d/01-zms.sql:ro,z
     ports:
       - "3306:3306"
 
@@ -68,7 +66,7 @@ services:
       - SPRING_PROFILES_ACTIVE=no-security
       - WEBCOMPONENT_URI=http://localhost:8080
     volumes:
-      - ./local-gateway-application.yml:/deployments/application.yml:ro
+      - ./local-gateway-application.yml:/deployments/application.yml:ro,z
     restart: unless-stopped
 
   keycloak:
@@ -87,7 +85,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak/plugins:/opt/keycloak/providers/
+      - ./keycloak/plugins:/opt/keycloak/providers/:z
     networks:
       default:
         aliases:
@@ -96,6 +94,7 @@ services:
 
   init-keycloak:
     image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    container_name: zms-init-keycloak
     depends_on:
       keycloak:
         condition: service_started
@@ -107,7 +106,7 @@ services:
       - FAIL_ON_UNDEFINED_VARIABLES=true
       - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
     volumes:
-      - ../.resources/keycloak/migration:/migration
+      - ../.resources/keycloak/migration:/migration:z
     networks:
       - default
     restart: "no"

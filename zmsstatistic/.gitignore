@@ -39,3 +39,4 @@ coverage
 *.log
 
 changelog_build.md
+keycloak.json

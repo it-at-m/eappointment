@@ -18,13 +18,13 @@ public class TestData {
 
         // Local development (devcontainer/DDEV)
         String baseUri =
-                System.getenv().getOrDefault("BASE_URI", "http://localhost:8080/terminvereinbarung/api/2");
+                System.getenv().getOrDefault("BASE_URI", "http://web/terminvereinbarung/api/2");
         String citizenUri =
-                System.getenv().getOrDefault("CITIZEN_API_BASE_URI", "http://localhost:8080/terminvereinbarung/api/citizen");
+                System.getenv().getOrDefault("CITIZEN_API_BASE_URI", "http://web/terminvereinbarung/api/citizen");
         String adminUri =
-                System.getenv().getOrDefault("ADMIN_BASE_URI", "https://localhost:443/terminvereinbarung/admin/");
+                System.getenv().getOrDefault("ADMIN_BASE_URI", "http://localhost/terminvereinbarung/admin/");
         String statisticUri =
-                System.getenv().getOrDefault("STATISTIC_BASE_URI", "https://localhost:443/terminvereinbarung/statistic/");
+                System.getenv().getOrDefault("STATISTIC_BASE_URI", "http://localhost/terminvereinbarung/statistic/");
         String citizenViewUri =
                 System.getenv().getOrDefault("CITIZEN_VIEW_BASE_URI", "http://localhost:8082/");
 
