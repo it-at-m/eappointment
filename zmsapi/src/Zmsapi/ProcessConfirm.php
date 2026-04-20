@@ -107,7 +107,7 @@ class ProcessConfirm extends BaseController
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
+        } elseif ($authCheck['authKey'] !== $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
