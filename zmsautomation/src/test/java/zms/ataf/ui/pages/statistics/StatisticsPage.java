@@ -83,9 +83,9 @@ public class StatisticsPage extends BasePage {
             if ("chrome".equals(
                     TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-                DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("http://",
-                        "http://" + URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":" + URLEncoder.encode(clearPassword.toString(),
-                                StandardCharsets.UTF_8) + "@"));
+                String credentials = URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":"
+                        + URLEncoder.encode(clearPassword.toString(), StandardCharsets.UTF_8) + "@";
+                DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
             }
 
             ScenarioLogManager.getLogger().info("Trying to enter user name...");
