@@ -1,8 +1,6 @@
 
 import $ from 'jquery'
 import moment from 'moment'
-import Baseview from './baseview';
-import settings from '../settings';
 
 export const timeToFloat = (time) => {
     const momentTime = moment(time, 'HH:mm:ss')
@@ -183,25 +181,6 @@ export const getUrlParameters = () => {
             }
         })
     return Object.fromEntries(pairs)
-}
-
-export const forceHttps = () => {
-    var forceCallback = () => {
-        const secureUrl = new URL(document.location.href);
-        secureUrl.protocol = 'https:';
-        document.location.assign(secureUrl.toString());
-    }
-    if (document.location.protocol !== "https:") {
-        Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
-            Baseview.loadDialogStatic(response,
-                forceCallback,
-                forceCallback,
-                Baseview,
-                true
-            );
-        });
-    }
-
 }
 
 export const showSpinner = ($container = null) => {

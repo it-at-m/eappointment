@@ -8,7 +8,7 @@ import $ from "jquery";
 import moment from 'moment'
 import 'moment/locale/de';
 //import bindReact from './lib/bindReact.js'
-import { getDataAttributes, forceHttps } from './lib/utils'
+import { getDataAttributes } from './lib/utils'
 import PeriodListView from './block/periodlist'
 import WarehouseReportView from './block/warehousereport'
 import ReportFilterView from './block/reportfilter'
@@ -17,9 +17,6 @@ import ReportFilterView from './block/reportfilter'
 window.$ = $;
 
 moment.locale('de')
-
-// Force https protocol
-forceHttps();
 
 // Say hello
 console.log("Welcome to the ZMS statistics interface...");

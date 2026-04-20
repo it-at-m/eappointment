@@ -17,8 +17,8 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, Bürgeransicht, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
-  - `api/zmsapi/` - ZMS REST API features  
-  - `api/zmscitizenapi/` - Citizen REST API features  
+  - `rest/zmsapi/` - ZMS REST API features  
+  - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
   - `ui/buergeransicht/` - Legacy eappointment citizen view UI features  
   - `ui/zmsstatistic/` - Statistik UI features  
@@ -32,26 +32,16 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 The `zmsautomation-test` script handles database setup, migrations, and test execution:
 
 ```bash
-# Set required environment variables
-export MYSQL_HOST="db"
-export MYSQL_PORT="3306"
-export MYSQL_DATABASE="zmsbo"
-export MYSQL_USER="zmsbo"
-export MYSQL_PASSWORD="zmsbo"
-export CACHE_DIR="/path/to/cache"
-export BASE_URI="http://localhost/terminvereinbarung/api/2"
-export CITIZEN_API_BASE_URI="http://localhost/terminvereinbarung/api/citizen"
-
 # Run all ATAF tests (API + UI)
-./zmsautomation/zmsautomation-test
+./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
 
 # Run specific tags (scenarios tagged @ignore are excluded unless you add @ignore to the expression)
 ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@smoke"
 # Run including ignored scenarios, e.g.:
 # ./zmsautomation/zmsautomation-test -Dcucumber.filter.tags="@ignore and @web"
 
-# Run specific API feature
-./zmsautomation/zmsautomation-test -Dcucumber.features="src/test/resources/features/api/zmsapi/status.feature"
+# Run specific API feature (path is relative to the zmsautomation module; use -Pataf-api for API-only runner)
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
 
 # Run only API tests (no Selenium)
 ./zmsautomation/zmsautomation-test -Pataf-api
@@ -64,15 +54,18 @@ The script will:
 1. Backup the database
 2. Clear caches
 3. Reset database (drop tables)
-4. Import base database
-5. Run Flyway migrations
-6. Run PHP migrations
-7. Run hourly cronjob
-8. Perform health checks
-9. Run ATAF tests with `-Pataf` profile
-10. Display test results
-11. Restore database
-12. Cleanup
+4. Import base database (`.resources/zms.sql`)
+5. Run Flyway migrations (Maven plugin)
+6. Run PHP migrations (`zmsapi` migrate)
+7. Run hourly cronjob (with retries)
+8. Run minutely cronjob and slot calculation (`calculateSlots`)
+9. Perform HTTP health checks (zmsapi, citizen API, CitizenView, optional refarch-gateway)
+10. Set up display / browser tooling (Xvfb, driver checks)
+11. Run `mvn test` with your arguments (default tag filter adds `not @ignore` unless you include `@ignore` in the expression)
+12. Print test reports
+13. Clear caches again
+14. Restore database and Keycloak JSON backups (unless `SKIP_DB_RESTORE=1`)
+15. Final cleanup (data dir, Flyway test rows, etc.; also registered on `EXIT`)
 
 ### Standalone Profile (Legacy REST-assured tests)
 
@@ -105,7 +98,7 @@ mvn test -Pataf-api
 # optionally filter:
 # mvn test -Pataf-api -Dcucumber.filter.tags="@rest"
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmsapi"
-# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi "
+# mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi"
 ```
 
 - **UI-only tests (Selenium/ATAF web, no REST Assured)**:
@@ -126,7 +119,7 @@ From the repo root: `./cli tests install-mac-deps` (drivers + `sudo safaridriver
 
 ```bash
 ./cli tests run-mac-local --db-full-setup   # optional; needs MYSQL_* for your DB
-./cli tests run-mac-local                   # HTTPS :8091 + gateway truststore on first run; use --api-http / --skip-gateway-trust if needed
+./cli tests run-mac-local                   # HTTP :8090; use --api-http if needed
 ./cli tests trust-local-gateway             # re-import gateway cert only
 ```
 
@@ -137,37 +130,40 @@ Use `--browser safari` (or `chrome` / `firefox` / `edge` / `safari`) as needed.
 Required environment variables for ATAF tests:
 
 ### API Endpoints
-- `BASE_URI` - Base URI for ZMS API (default: `http://localhost/terminvereinbarung/api/2`)
-- `CITIZEN_API_BASE_URI` - Base URI for Citizen API (default: `http://localhost/terminvereinbarung/api/citizen`) — **direct** to zms-web (`/terminvereinbarung/api/citizen/...`). REST steps use this; **refarch-gateway is not used** for those pings.
+- `BASE_URI` - ZMS API base (default in `zmsautomation-test`: `http://web/terminvereinbarung/api/2` for Docker Compose / devcontainer). Use `http://localhost/...` when the test process runs **inside** the `web` container and should hit local Apache only.
+- `CITIZEN_API_BASE_URI` - Citizen API base (default: `http://web/terminvereinbarung/api/citizen`) — **direct** to zms-web. REST steps use this; **refarch-gateway is not used** for those pings.
+- `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
+- `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
-- **zmscitizenview ping (502)** - If `zmsautomation-test` reports 502 for `http://citizenview:8082` while `curl` from a container works, `HTTP_PROXY` was routing that URL to the corporate gateway. The script pings zmscitizenview with `--noproxy '*'` so the request stays on Docker DNS.
+- **Proxies** - Health-check `curl` calls use explicit `--noproxy` so localhost and Docker service hostnames are not sent through an HTTP proxy. For Maven/browser traffic behind a corporate proxy, configure the environment as needed for your network.
 - **SCREENSHOT_EVERY_STEP** - Per-step PNGs skip `about:newtab` / Firefox start page so REST Background steps do not flood artifacts. After the app URL loads, screenshots include calendar/reserve steps as usual.
 - **Pass jump-in + 10489** - Valid link: `allowDisabledServicesMix` links 10489 and 10502. Pass-only still books on **10502** (see UI + REST `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links*` JumpIn 10489 scenario).
 - **10502 vs 10489** - Passkalender **10502** only exposes the three Pass services. Hauptkalender **10489** exposes non-Pass (e.g. Wohnsitzanmeldung 1063475) and Pass when combined. Jump-in non-Pass + **10502** is correctly rejected in UI.
 
 ### Database Configuration
 - `MYSQL_HOST` - Database host (default: `db`)
-- `MYSQL_PORT` - Database port (default: `3306`)
-- `MYSQL_DATABASE` - Database name (default: `zmsbo`)
-- `MYSQL_USER` - Database user (default: `zmsbo`)
-- `MYSQL_PASSWORD` - Database password (default: `zmsbo`)
+- `MYSQL_PORT` - Database port (default: `tcp://db:3306` in `zmsautomation-test`, matching `.devcontainer/.env.template`; a plain `3306` also works)
+- `MYSQL_DATABASE` - Database name (default: `db`)
+- `MYSQL_USER` - Database user (default: `db`)
+- `MYSQL_PASSWORD` - Database password (default: `db`)
+- `MYSQL_ROOT_PASSWORD` - Root password for admin operations (default: `root`)
 
 ### UI tests (SSO)
-For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `07_add-ataf-user.yml` and ZMS Flyway migration `V10__add_ataf_keycloak_user.sql`. Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
+For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
 ### Example
 
 ```bash
-export BASE_URI="http://localhost:8080/terminvereinbarung/api/2"
-export CITIZEN_API_BASE_URI="http://localhost:8080/terminvereinbarung/api/citizen"
+export BASE_URI="http://web/terminvereinbarung/api/2"
+export CITIZEN_API_BASE_URI="http://web/terminvereinbarung/api/citizen"
 export MYSQL_HOST="db"
-export MYSQL_PORT="3306"
-export MYSQL_DATABASE="zmsbo"
-export MYSQL_USER="zmsbo"
-export MYSQL_PASSWORD="zmsbo"
+export MYSQL_PORT="tcp://db:3306"
+export MYSQL_DATABASE="db"
+export MYSQL_USER="db"
+export MYSQL_PASSWORD="db"
 
-mvn test
+cd zmsautomation && mvn test
 ```
 
 ## Database Setup
@@ -178,8 +174,8 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 - **API tags**
   - `@rest` - All REST API tests
-  - `@zmsapi` - ZMS API tests (`features/api/zmsapi/**`)
-  - `@zmscitizenapi ` - Citizen API tests (`features/api/zmscitizenapi/**`)
+  - `@zmsapi` - ZMS API tests (`features/rest/zmsapi/**`)
+  - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
@@ -200,20 +196,15 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 ## Feature Files
 
-### API Features (`src/test/resources/features/api/`)
+### API Features (`src/test/resources/features/rest/`)
 
-#### ZMS API (`api/zmsapi/`)
-- `status.feature` - Status endpoint tests (converted from StatusEndpointTest)
-- `availability.feature` - Appointment availability tests
-- `appointments.feature` - Appointment management tests
-- `scopes.feature` - Scope information tests (Phase 6 example)
-- `error-handling.feature` - Error handling scenarios (Phase 6 example)
-- `data-driven-example.feature` - Data-driven testing examples (Phase 6 example)
+#### ZMS API (`rest/zmsapi/`)
+- `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
 
-#### Citizen API (`api/zmscitizenapi/`)
-- `offices-and-services.feature` - Offices and services endpoint (converted from OfficesAndServicesEndpointTest)
+#### Citizen API (`rest/zmscitizenapi/`)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
-- `cancellation.feature` - Appointment cancellation flow (Phase 6 example)
+
+Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
 
 ### UI Features (`src/test/resources/features/ui/`)
 
@@ -224,18 +215,14 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - Features that automate the legacy eappointment Bürgeransicht frontend.
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
-- `ServiceFinder.feature` - Start page / Service Finder visible (English)
 - `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
 
-### Migration Guide
-- `MIGRATION_GUIDE.md` - Guide for converting JUnit tests to Cucumber features (Phase 6)
-
 ## CI/CD
 
-See `.github/workflows/` for automation that runs `zmsautomation` with the expected stack and env vars.
+GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsapi`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`; no phpMyAdmin), installs Java/Maven/browsers into `zms-web`, injects module trees from those images, then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
 
 ## Migration Notes
 
@@ -243,10 +230,4 @@ See `.github/workflows/` for automation that runs `zmsautomation` with the expec
 
 ## Phase 6: Migration Examples
 
-Phase 6 includes example feature files demonstrating:
-- **Data-driven testing** with Scenario Outlines (`data-driven-example.feature`)
-- **Error handling** scenarios (`error-handling.feature`)
-- **Additional API endpoints** (`scopes.feature`, `cancellation.feature`)
-- **Migration guide** (`MIGRATION_GUIDE.md`) with conversion patterns and best practices
-
-These examples serve as templates for converting additional JUnit tests to Cucumber features. See `src/test/resources/features/MIGRATION_GUIDE.md` for detailed conversion examples and patterns.
+Older planning docs described extra template features (data-driven outlines, error-handling, cancellation, etc.). **This branch currently ships the REST files listed above** plus the UI suites under `features/ui/`; use those as living examples when porting JUnit tests to Cucumber.
