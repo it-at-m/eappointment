@@ -22,9 +22,6 @@ public/_css/statistic.js.map
 .idea
 .parcel-cache
 coverage
-.env
-.env.local
-.env.*.local
 
 # Composer
 /vendor/
