@@ -83,7 +83,7 @@ class ProcessDelete extends BaseController
         if (!$process) {
             throw new Exception\Process\ProcessNotFound();
         }
-        if ($process['authKey'] != $authKey) {
+        if ($process['authKey'] !== $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }

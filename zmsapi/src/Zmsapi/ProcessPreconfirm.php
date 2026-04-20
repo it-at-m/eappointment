@@ -66,7 +66,7 @@ class ProcessPreconfirm extends BaseController
 
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $entity->authKey) {
+        } elseif ($authCheck['authKey'] !== $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }

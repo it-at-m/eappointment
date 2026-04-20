@@ -68,7 +68,7 @@ class ProcessPreconfirmationMail extends BaseController
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $process->authKey) {
+        } elseif ($authCheck['authKey'] !== $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } elseif (
             $process->toProperty()->scope->preferences->client->emailRequired->get() &&

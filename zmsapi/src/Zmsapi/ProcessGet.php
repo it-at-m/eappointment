@@ -38,7 +38,7 @@ class ProcessGet extends BaseController
         $authCheck = (new Process())->readAuthKeyByProcessId($processId);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $authKey) {
+        } elseif ($authCheck['authKey'] !== $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
