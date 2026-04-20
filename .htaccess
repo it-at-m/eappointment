@@ -2,9 +2,15 @@ RewriteEngine On
 
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
-# webroot: route to index.php for a path-relative Location redirect
+# Codespaces: use path-relative redirect
+RewriteCond %{ENV:CODESPACES} =true
 RewriteCond %{QUERY_STRING} ^$
-RewriteRule ^$ /index.php [L]
+RewriteRule ^$ /terminvereinbarung/admin/ [R=302,L]
+
+# Default (local/dev): normal redirect
+RewriteCond %{ENV:CODESPACES} !=true
+RewriteCond %{QUERY_STRING} ^$
+RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
 
 
 # zmsapi
