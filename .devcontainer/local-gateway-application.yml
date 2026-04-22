@@ -37,6 +37,8 @@ spring:
           predicates:
             - Path=/buergeransicht/api/citizen/**
           filters:
+            # So zmscitizenapi sees Host like localhost:8084 (ACCESS_UNPUBLISHED_ON_DOMAIN=localhost), not zms-web.
+            - PreserveHostHeader
             - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
             - RemoveResponseHeader=WWW-Authenticate
         - id: "webcomponent"
