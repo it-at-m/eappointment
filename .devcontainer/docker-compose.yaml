@@ -2,6 +2,8 @@ services:
   web:
     container_name: zms-web
     image: ghcr.io/it-at-m/eappointment-php-base:8.3-local
+    environment:
+      TZ: Europe/Berlin
     volumes:
       - ..:/var/www/html:cached,z
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
