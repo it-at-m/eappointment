@@ -59,7 +59,7 @@ class ProcessListByClusterAndDate extends BaseController
                 $cluster->id,
                 $date,
                 2,
-                ['availability']
+                ['availability', 'scope', 'scopeprovider']
             );
 
             if (! $dateQueueList) {
