@@ -14,7 +14,7 @@ class DateTime extends \DateTimeImmutable
             $locale,
             \IntlDateFormatter::MEDIUM,
             \IntlDateFormatter::MEDIUM,
-            $timezone,
+            new \DateTimeZone($timezone),
             \IntlDateFormatter::GREGORIAN,
             $pattern
         );

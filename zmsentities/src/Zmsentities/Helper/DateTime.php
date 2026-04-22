@@ -69,7 +69,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
             $locale,
             \IntlDateFormatter::MEDIUM,
             \IntlDateFormatter::MEDIUM,
-            $timezone,
+            new \DateTimeZone($timezone),
             \IntlDateFormatter::GREGORIAN,
             $pattern
         );

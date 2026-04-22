@@ -24,7 +24,7 @@ class Helper
             $locale,
             \IntlDateFormatter::MEDIUM,
             \IntlDateFormatter::MEDIUM,
-            $timezone,
+            new \DateTimeZone($timezone),
             \IntlDateFormatter::GREGORIAN,
             $pattern
         );

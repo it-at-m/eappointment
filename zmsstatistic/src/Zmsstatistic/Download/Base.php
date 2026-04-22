@@ -124,7 +124,7 @@ class Base extends \BO\Zmsstatistic\BaseController
             'de-DE',
             \IntlDateFormatter::MEDIUM,
             \IntlDateFormatter::MEDIUM,
-            \App::TIMEZONE,
+            new \DateTimeZone(\App::TIMEZONE),
             \IntlDateFormatter::GREGORIAN,
             $pattern
         );

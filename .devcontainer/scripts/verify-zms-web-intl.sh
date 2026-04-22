@@ -3,7 +3,7 @@
 set -euo pipefail
 CTR="${1:-zms-web}"
 echo "=== /etc/eappointment-php-base-image-marker (missing = old image) ==="
-podman exec "$CTR" cat /etc/eappointment-php-base-image-marker 2>/dev/null || echo "MISSING — pull ghcr.io/it-at-m/eappointment-php-base:8.3-local again"
+podman exec "$CTR" cat /etc/eappointment-php-base-image-marker 2>/dev/null || echo "MISSING — pull ghcr.io/it-at-m/eappointment-php-base:8.3-local again (expect 2026-04-23v3 or newer)"
 echo "=== PHP auto_prepend (setlocale bootstrap) ==="
 podman exec "$CTR" test -f /usr/local/etc/php/conf.d/zzz-eappointment-intl-locale.ini && podman exec "$CTR" cat /usr/local/etc/php/conf.d/zzz-eappointment-intl-locale.ini || echo "MISSING"
 podman exec "$CTR" test -f /usr/local/lib/php/eappointment-intl-locale.php && echo "bootstrap.php OK" || echo "MISSING bootstrap.php"
