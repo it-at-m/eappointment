@@ -11,6 +11,8 @@ use Psr\Log\LoggerInterface;
 class Munich
 {
     const EXCLUSIVE_LOCATIONS = [
+        //SZE
+        54285,
         // Standesamt München - registry office locations (exclusive, don't show alternatives)
         10470, 10351880, 10351882, 1064292, 10351883, 54260, 1061927,
         10295168, 10469, 102365,
@@ -613,9 +615,11 @@ class Munich
     }
 
     /**
-     * Get service combinations (services that can be booked together)
+     * Get service combinations (services that can be booked together).
+     * Aligned with dldb-mapper map.php: if no SERVICE_COMBINATIONS row starts with this id,
+     * return a singleton list so combinable is always present in mapped services JSON.
      */
-    protected function getServiceCombinations(int $serviceId): ?array
+    protected function getServiceCombinations(int $serviceId): array
     {
         foreach (self::SERVICE_COMBINATIONS as $combo) {
             if (empty($combo)) {
@@ -629,7 +633,7 @@ class Munich
             }
         }
 
-        return null;
+        return [(int) $serviceId];
     }
 
     /**
