@@ -238,7 +238,9 @@ class Scope extends Base implements MappingInterface
             'provider__source' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
                 'IF(`scopeprovider`.`source`!="", `scopeprovider`.`source`, `scope`.`source`)'
             ) : '',
-            'provider__data' => $this->shouldLoadEntity('scopeprovider') ? 'scopeprovider.data' : '',
+            'provider__data' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
+                'IFNULL(`scopeprovider`.`data`, "{}")'
+            ) : '',
             'source' => 'scope.source'
         ], 'strlen');
     }
