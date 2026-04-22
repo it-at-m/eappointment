@@ -396,7 +396,11 @@ class Munich
     }
 
     /**
-     * Transform Munich SADB format to Berlin-compatible locations format
+     * Transform Munich SADB format to Berlin-compatible locations format.
+     * When $servicesData is provided, also returns services with each service's
+     * `locations` filled (same shape as dldb-mapper mapImport services output).
+     *
+     * @return array{locations: array, services: ?array{data: array, meta: array}}
      */
     public function transformLocations(array $data, ?array $servicesData = null): array
     {
@@ -410,7 +414,30 @@ class Munich
             }
         }
 
-        return $this->buildLocationResponse($mappedLocations);
+        $mergedServicesPayload = null;
+        if ($servicesData !== null) {
+            $servicesList = [];
+            foreach ($servicesData['data'] ?? [] as $service) {
+                $id = $service['id'];
+                if (isset($mappedServices[$id])) {
+                    $servicesList[] = $mappedServices[$id];
+                }
+            }
+            $timestamp = date('Y-m-d\TH:i:s');
+            $mergedServicesPayload = [
+                'data' => $servicesList,
+                'meta' => [
+                    'generated' => $timestamp,
+                    'datacount' => count($servicesList),
+                    'hash' => md5(json_encode($servicesList)),
+                ],
+            ];
+        }
+
+        return [
+            'locations' => $this->buildLocationResponse($mappedLocations),
+            'services' => $mergedServicesPayload,
+        ];
     }
 
     protected function indexServicesByIds(?array $servicesData): array
