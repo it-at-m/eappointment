@@ -155,4 +155,66 @@ class QueueTableTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Alle Clusterstandorte anzeigen', (string)$response->getBody());
     }
+
+    public function testUsesProviderSlotTimeWhenAvailabilityIsMissing()
+    {
+        $processFixture = json_decode($this->readFixture("GET_processList_141_20160401.json"), true);
+        $firstProcess = &$processFixture['data']['0'];
+        $firstProcess['appointments'][0]['availability']['id'] = "0";
+        $firstProcess['appointments'][0]['availability']['slotTimeInMinutes'] = "10";
+        $firstProcess['appointments'][0]['slotCount'] = "2";
+        $firstProcess['scope'] = [
+            'id' => '141',
+            'provider' => [
+                'data' => [
+                    'slotTimeInMinutes' => 12
+                ]
+            ]
+        ];
+        $processFixtureJson = json_encode($processFixture);
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $processFixtureJson
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/queue/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'status' => 'called,processing',
+                    ],
+                    'response' => $this->readFixture("GET_queuelist_141.json")
+                ]
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString('24&nbsp;Min.', (string)$response->getBody());
+    }
 }
