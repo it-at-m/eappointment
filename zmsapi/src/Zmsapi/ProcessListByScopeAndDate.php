@@ -53,7 +53,7 @@ class ProcessListByScopeAndDate extends BaseController
                 $scope,
                 $date,
                 2,
-                ['availability']
+                ['availability', 'scope', 'scopeprovider']
             ));
         }
 
