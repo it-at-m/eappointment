@@ -8,16 +8,20 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Availability\AvailableDaysListService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
+use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AvailableDaysListByOfficeController extends BaseController
 {
+    use UnpublishedAccessTrait;
+
     private AvailableDaysListService $service;
 
     public function __construct()
     {
         $this->service = new AvailableDaysListService();
+        $this->initializeUnpublishedAccess();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -27,7 +31,7 @@ class AvailableDaysListByOfficeController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
-        $result = $this->service->getAvailableDaysListByOffice($request->getQueryParams());
+        $result = $this->service->getAvailableDaysListByOffice($request->getQueryParams(), $this->showUnpublished);
 
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))

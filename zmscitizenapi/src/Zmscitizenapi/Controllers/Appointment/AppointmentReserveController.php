@@ -8,16 +8,20 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentReserveService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
+use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AppointmentReserveController extends BaseController
 {
+    use UnpublishedAccessTrait;
+
     private AppointmentReserveService $service;
 
     public function __construct()
     {
         $this->service = new AppointmentReserveService();
+        $this->initializeUnpublishedAccess();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -27,7 +31,7 @@ class AppointmentReserveController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
-        $result = $this->service->processReservation($request->getParsedBody());
+        $result = $this->service->processReservation($request->getParsedBody(), $this->showUnpublished);
         if (is_array($result) && isset($result['errors'])) {
             foreach ($result['errors'] as &$error) {
                 if (isset($error['errorCode'])) {
