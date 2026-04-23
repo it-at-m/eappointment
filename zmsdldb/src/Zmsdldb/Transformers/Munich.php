@@ -71,6 +71,7 @@ class Munich
         10314100,
         10416410,
         10323113,
+        1080716
     ];
 
     const SERVICE_COMBINATIONS = [
