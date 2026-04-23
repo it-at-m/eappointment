@@ -20,15 +20,7 @@ class Helper
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
     ) {
-        $dateFormatter = new \IntlDateFormatter(
-            $locale,
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM,
-            $timezone,
-            \IntlDateFormatter::GREGORIAN,
-            $pattern
-        );
-        return $dateFormatter->format($timestamp);
+        return \BO\Mellon\IntlDateFormat::format((int) $timestamp, $pattern, $locale, $timezone);
     }
 
 

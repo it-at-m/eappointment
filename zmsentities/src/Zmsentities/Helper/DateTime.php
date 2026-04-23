@@ -65,15 +65,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
     ) {
-        $dateFormatter = new \IntlDateFormatter(
-            $locale,
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM,
-            $timezone,
-            \IntlDateFormatter::GREGORIAN,
-            $pattern
-        );
-        return $dateFormatter->format($date->getTimestamp());
+        return \BO\Mellon\IntlDateFormat::format((int) $date->getTimestamp(), $pattern, $locale, $timezone);
     }
 
     public static function getSummerTimeStartDateTime($year = null)
