@@ -120,15 +120,11 @@ class Base extends \BO\Zmsstatistic\BaseController
 
     protected function getFormatedDates($date, $pattern = 'MMMM')
     {
-        $dateFormatter = new \IntlDateFormatter(
+        return \BO\Mellon\IntlDateFormat::format(
+            (int) $date->getTimestamp(),
+            $pattern,
             'de-DE',
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM,
-            new \DateTimeZone(\App::TIMEZONE),
-            \IntlDateFormatter::GREGORIAN,
-            $pattern
+            \App::TIMEZONE
         );
-
-        return $dateFormatter->format($date->getTimestamp());
     }
 }

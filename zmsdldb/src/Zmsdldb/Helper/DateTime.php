@@ -10,15 +10,7 @@ class DateTime extends \DateTimeImmutable
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
     ) {
-        $dateFormatter = new \IntlDateFormatter(
-            $locale,
-            \IntlDateFormatter::MEDIUM,
-            \IntlDateFormatter::MEDIUM,
-            new \DateTimeZone($timezone),
-            \IntlDateFormatter::GREGORIAN,
-            $pattern
-        );
-        return $dateFormatter->format($timestamp);
+        return \BO\Mellon\IntlDateFormat::format((int) $timestamp, $pattern, $locale, $timezone);
     }
 
     public function __toString()
