@@ -34,7 +34,7 @@
       ]
     }
   },
-  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ \"$CODESPACES\" = \"true\" ]; then sed -i \"s/XDEBUG_CLIENT_HOST=.*/XDEBUG_CLIENT_HOST=127.0.0.1/\" .devcontainer/.env; fi'",
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ \"$CODESPACES\" = \"true\" ]; then sed -i \"s/XDEBUG_CLIENT_HOST=.*/XDEBUG_CLIENT_HOST=127.0.0.1/\" .devcontainer/.env; fi' && bash .devcontainer/scripts/sync-php-base-tag.sh .devcontainer/.env",
   "postCreateCommand": "bash -c './cli dev setup-local && git config --global --add safe.directory \"*\" && chmod 777 /var/www/html/cache'",
   "postStartCommand": "bash -c 'curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md; curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md; ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true; if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi'",
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway", "keycloak", "init-keycloak", "citizenview"]
