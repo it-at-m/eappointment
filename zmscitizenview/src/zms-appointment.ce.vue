@@ -123,17 +123,11 @@ const syncRouteFromLocation = () => {
   appointmentHash.value = undefined;
   exclusiveLocation.value = undefined;
   const urlElements = parseUrlHash();
-  console.debug(
-    "[ZMS] syncRouteFromLocation:",
-    window.location.hash,
-    urlElements
-  );
   extractRouteParams(urlElements);
-  console.debug(
-    "[ZMS] After sync:",
-    appointmentHash.value,
-    confirmAppointmentHash.value
-  );
+  console.debug("[ZMS] syncRouteFromLocation: segments=", urlElements.length, {
+    hasAppointmentHash: !!appointmentHash.value,
+    hasConfirmAppointmentHash: !!confirmAppointmentHash.value,
+  });
 };
 
 // Parse hash immediately (works most of the time)
