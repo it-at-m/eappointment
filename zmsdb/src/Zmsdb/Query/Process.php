@@ -999,7 +999,14 @@ class Process extends Base implements MappingInterface
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
-                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
+                && (
+                    $process->queue['callCount'] <= 0
+                    || !empty($process['wasMissed'])
+                    || (
+                        in_array($previousStatus, ['queued', 'confirmed'], true)
+                        && (int) $process->queue['callTime'] === 0
+                    )
+                )
             )
             ||
             (
