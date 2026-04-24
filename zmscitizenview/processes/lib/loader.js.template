@@ -1,2 +1,16 @@
 import(document.currentScript ? new URL('./{{path}}', document.currentScript.src).href : './{{path}}');
-import(document.currentScript ? new URL('./../wrapper.js', document.currentScript.src).href : './../wrapper.js');
+/**
+ * wrapper.js lives next to the hashed entry under dist/, but loader.js may be deployed in two ways:
+ * - dist/zms-appointment-webcomponent/loader.js → wrapper is one level up (../wrapper.js)
+ * - dist/loader.js or /terminvereinbarung/loader.js → wrapper is in the same directory (./wrapper.js)
+ * Using ../ from a path like /terminvereinbarung/loader.js incorrectly resolves to /wrapper.js on the host.
+ */
+void (function () {
+  var u = document.currentScript && new URL(document.currentScript.src);
+  var base = u || new URL(import.meta.url);
+  var href =
+    base.pathname.indexOf("/zms-appointment-webcomponent/") !== -1
+      ? new URL("../wrapper.js", base).href
+      : new URL("./wrapper.js", base).href;
+  return import(href);
+})();
