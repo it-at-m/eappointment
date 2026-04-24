@@ -312,7 +312,7 @@ class AppointmentUpdateServiceTest extends TestCase
 
     public function testUpdateProcessWithClientData(): void
     {
-        $process = $this->createMock(ThinnedProcess::class);
+        $process = new ThinnedProcess();
         $process->familyName = 'Old Name';
         $process->email = 'old@example.com';
         
