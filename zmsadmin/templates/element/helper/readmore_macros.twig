@@ -18,17 +18,16 @@
 
 {# “gebucht am …” line for queue amendment column (same text in cell + lightbox meta). #}
 {% macro queue_amendment_timestamp_message(item) %}
-	{% if item.queue.status == "reserved" %}
+	{%- if item.queue.status == "reserved" -%}
 		{% trans %}reserviert am{% endtrans %}
-	{% elseif item.queue.status == "preconfirmed" %}
+	{%- elseif item.queue.status == "preconfirmed" -%}
 		{% trans %}Aktivierung ausstehend ab{% endtrans %}
-	{% elseif item.queue.status == "deleted" %}
+	{%- elseif item.queue.status == "deleted" -%}
 		{% trans %}wird freigegeben ab{% endtrans %}
-	{% else %}
+	{%- else -%}
 		{% trans %}gebucht am{% endtrans %}
-	{% endif %}
-	{{ item.createTimestamp|date("d.m.Y, H:i") }} Uhr
-{% endmacro %}
+	{%- endif %} {{ item.createTimestamp|date("d.m.Y, H:i") }} Uhr
+{%- endmacro %}
 
 {# Clamped preview only (no button). #}
 {% macro readmore_preview_clamped(text, maxLines) %}

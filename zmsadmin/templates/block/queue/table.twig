@@ -398,7 +398,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{% set amendmentTs %}{% apply spaceless %}{{ readmoreUi.queue_amendment_timestamp_message(item) }}{% endapply %}{% endset %}
+										{% set amendmentTs %}{{ readmoreUi.queue_amendment_timestamp_message(item) }}{% endset %}
 										<div class="queue-table-text-cell queue-table-amendment-preview">{{ readmoreUi.readmore_preview_clamped(item.amendment, readmoreQueueMaxLines) }}</div>
 										<p class="queue-table-amendment-time">{{ amendmentTs }}</p>
 										<div class="queue-table-amendment-readmore">{{ readmoreUi.readmore_expand_button(item.amendment, readmoreQueueMaxLines, 'Anmerkung'|trans, item.displayNumber, item.clients|first.familyName|default(''), amendmentTs) }}</div>
