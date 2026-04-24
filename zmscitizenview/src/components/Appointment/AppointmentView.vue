@@ -1103,9 +1103,22 @@ const downloadIcsAppointment = () => {
   }
 };
 
-function nextConfirmAppointment(appointmentData: AppointmentHash) {
+/** Ignore stale async results when hash props change mid-flight (same-tab navigation). */
+let latestAppointmentHash: string | undefined;
+let latestConfirmAppointmentHash: string | undefined;
+
+function nextConfirmAppointment(
+  appointmentData: AppointmentHash,
+  requestHash?: string
+) {
   confirmAppointment(props.globalState, appointmentData)
     .then((data) => {
+      if (
+        requestHash !== undefined &&
+        latestConfirmAppointmentHash !== requestHash
+      ) {
+        return;
+      }
       currentView.value = 5;
 
       if ((data as AppointmentDTO).processId != undefined) {
@@ -1152,6 +1165,9 @@ function runAppointmentInitializationFromHash(hash: string): void {
     props.locationId ?? undefined,
     props.globalState?.baseUrl ?? undefined
   ).then((data) => {
+    if (latestAppointmentHash !== hash) {
+      return;
+    }
     // Handle normal errors (like rate limit) first
     handleErrorApiResponse(
       data,
@@ -1179,6 +1195,9 @@ function runAppointmentInitializationFromHash(hash: string): void {
     }
 
     fetchAppointment(props.globalState, appointmentData).then((data) => {
+      if (latestAppointmentHash !== hash) {
+        return;
+      }
       if ((data as AppointmentDTO).processId != undefined) {
         if ("captchaToken" in data && data.captchaToken) {
           captchaToken.value = data.captchaToken as string;
@@ -1260,8 +1279,10 @@ watch(
   () => props.appointmentHash,
   (hash) => {
     if (!hash) {
+      latestAppointmentHash = undefined;
       return;
     }
+    latestAppointmentHash = hash;
     runAppointmentInitializationFromHash(hash);
   },
   { immediate: true }
@@ -1272,8 +1293,10 @@ watch(
   () => props.confirmAppointmentHash,
   (hash) => {
     if (!hash) {
+      latestConfirmAppointmentHash = undefined;
       return;
     }
+    latestConfirmAppointmentHash = hash;
     clearContextErrors(errorStateMap.value);
     const appointmentData = parseAppointmentHash(hash);
     if (!appointmentData) {
@@ -1284,7 +1307,7 @@ watch(
       );
       return;
     }
-    nextConfirmAppointment(appointmentData);
+    nextConfirmAppointment(appointmentData, hash);
   },
   { immediate: true }
 );
