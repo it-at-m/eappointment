@@ -52,7 +52,7 @@
 	{% set dialogTitle %}{{ _self.readmore_lightbox_title(displayNumber, familyName, fieldLabel) }}{% endset %}
 	{% set meta = metaLine|default('')|trim %}
 	{% if needsReadmore %}
-		<button type="button" class="readmore-link js-readmore-open" data-readmore-title="{{ dialogTitle|e('html_attr') }}" data-readmore-json="{{ { text: t, meta: meta }|json_encode|e('html_attr') }}">{% trans %}Mehr lesen{% endtrans %}</button>
+		<button type="button" class="readmore-link js-readmore-open" data-readmore-title="{{ dialogTitle|e('html_attr') }}" data-readmore-close-label="{{ 'Schließen'|trans|e('html_attr') }}" data-readmore-json="{{ { text: t, meta: meta }|json_encode|e('html_attr') }}">{% trans %}Mehr lesen{% endtrans %}</button>
 	{% endif %}
 {% endmacro %}
 

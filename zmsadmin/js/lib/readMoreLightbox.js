@@ -42,6 +42,11 @@ export default function initReadMoreLightbox() {
         const meta = metaRaw.trim();
         const rawTitle = btn.getAttribute('data-readmore-title');
         const title = rawTitle != null ? String(rawTitle).trim() : '';
+        const rawCloseLabel = btn.getAttribute('data-readmore-close-label');
+        const closeLabel =
+            rawCloseLabel != null && String(rawCloseLabel).trim() !== ''
+                ? String(rawCloseLabel).trim()
+                : 'Schließen';
         const { lightboxContentElement, destroyLightbox } = lightbox($('body'), noOp);
         lightboxContentElement.closest('.lightbox').addClass('lightbox--readmore');
         const safeTitle = escapeHtml(title);
@@ -59,7 +64,9 @@ export default function initReadMoreLightbox() {
             '<pre class="readmore-lightbox__pre">' + safeBody + '</pre>' +
             safeMeta +
             '<footer class="readmore-lightbox__footer">' +
-            '<button type="button" class="button button--default readmore-lightbox__close">Schließen</button>' +
+            '<button type="button" class="button button--default readmore-lightbox__close">' +
+                escapeHtml(closeLabel) +
+            '</button>' +
             '</footer></div></section>'
         );
         lightboxContentElement.find('.readmore-lightbox__close').on('click', (e) => {
