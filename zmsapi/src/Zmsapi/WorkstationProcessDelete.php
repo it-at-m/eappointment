@@ -29,18 +29,43 @@ class WorkstationProcessDelete extends BaseController
         if (! $workstation->process['id']) {
             throw new Exception\Process\ProcessNotFound();
         }
+        $requeue = Validator::param('requeue')->isNumber()->setDefault(0)->getValue();
+        $skipnext = Validator::param('skipnext')->isNumber()->setDefault(0)->getValue();
+
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        if ('called' == $workstation->process->status && $workstation->process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
+        $previousStatus = $process->status;
+
+        if (1 === $requeue) {
+            $nowTs = \App::$now->getTimestamp();
+            $process->status = Process::STATUS_QUEUED;
+            $process->queue['callCount'] = 0;
+            $process->queue['lastCallTime'] = 0;
+            $process->queue['callTime'] = 0;
+            $process->queue['arrivalTime'] = $nowTs;
+            $process->queue['waitingTime'] = '00:00:00';
+            $process->queue['wayTime'] = '00:00:00';
+            $process['showUpTime'] = null;
+            $process['timeoutTime'] = null;
+        } elseif (1 === $skipnext) {
             $process->setWasMissed(true);
+        } elseif (
+            'called' == $process->status
+            && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')
+        ) {
+            $process->setWasMissed(true);
+        } else {
+            $process->setStatusBySettings();
         }
+
         $process = (new Query())->updateEntity(
             $process,
             \App::$now,
             0,
-            $process->status,
+            $previousStatus,
             $workstation->getUseraccount()
         );
-        $workstation->process->setStatusBySettings();
+
+        $workstation->process = $process;
         (new Workstation())->writeRemovedProcess($workstation);
         unset($workstation->process);
 
