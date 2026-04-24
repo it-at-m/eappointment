@@ -13,9 +13,7 @@ export function normalizePlainText(
   }
   let workingText = String(rawInput);
   workingText = decodeHtmlEntities(workingText);
-  workingText = workingText
-    .replaceAll("\r\n", "\n")
-    .replaceAll("\r", "\n");
+  workingText = workingText.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
   workingText = workingText.replaceAll(/<\s*br\s*\/?>/gi, "\n");
   workingText = stripHtmlTags(workingText);
   return workingText;
