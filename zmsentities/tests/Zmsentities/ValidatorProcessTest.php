@@ -77,6 +77,63 @@ class ValidatorProcessTest extends Base
         $this->assertTrue($collectionStatus['authKey']['failed']);
     }
 
+    public function testProcessCredentialsWithLongAuthKey()
+    {
+        $parameters = [
+            'id' => '123456',
+            'authKey' => str_repeat('a', 64)
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $processValidator->validateAuthKey(
+            $validator->getParameter('authKey'),
+            $delegatedProcess->setter('authKey')
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertFalse($collectionStatus['id']['failed']);
+        $this->assertFalse($collectionStatus['authKey']['failed']);
+        $this->assertEquals($parameters['authKey'], $process->getAuthKey());
+    }
+
+    public function testProcessCredentialsFailedWithInvalidAuthKeyLength()
+    {
+        $parameters = [
+            'id' => '123456',
+            'authKey' => 'abcdef12345'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $processValidator->validateAuthKey(
+            $validator->getParameter('authKey'),
+            $delegatedProcess->setter('authKey')
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertFalse($collectionStatus['id']['failed']);
+        $this->assertTrue($collectionStatus['authKey']['failed']);
+        $this->assertEquals(
+            'Der Absagecode ist nicht korrekt',
+            $collectionStatus['authKey']['messages'][0]
+        );
+    }
+
     public function testProcessIdDigitsOnly()
     {
         $parameters = [
