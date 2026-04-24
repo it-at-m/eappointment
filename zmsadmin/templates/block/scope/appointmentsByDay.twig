@@ -2,6 +2,8 @@
     {% from 'element/helper/form.twig' import formgroup, formbutton %}
     {% block board_title %} {{title}}{% endblock %}
     {% block board_body %}
+        {% from 'element/helper/readmore_macros.twig' import readmore_content %}
+        {% set readmoreQueueMaxLines = 4 %}
         <script>
             let cssDef2 = '.board__body {padding:0px; margin:0px}';
                 cssDef2 += 'table {width: 100%;}';
@@ -45,7 +47,7 @@
                         <td>{{ item.clients.0.telephone }}</td>
                         <td>{{ item.clients.0.email }}</td>
                         <td class="wrap">{{ item.requests.0.name }}</td>
-                        <td>{{ item.amendment }}</td>
+                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ readmore_content(item.amendment, readmoreQueueMaxLines, 'Anmerkungen'|trans, item.displayNumber, item.clients|first.familyName|default('')) }}</div></td>
                     </tr>
                 {% endfor %}
             </tbody>

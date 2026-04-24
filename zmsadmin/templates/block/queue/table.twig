@@ -1,4 +1,3 @@
-{% set textfieldDisplayLength = 50 %}
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless queue-table'} %}
 	{% use "block/calendar/navigation.twig" %}
 	{% use "block/workstation/scopeSwitch.twig" %}
@@ -66,6 +65,8 @@
 	{% endblock %}
 
 	{% block board_body %}
+		{% import 'element/helper/readmore_macros.twig' as readmoreUi %}
+		{% set readmoreQueueMaxLines = 4 %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -159,16 +160,10 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
-										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
-										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-									</td>
+									{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td title="{{ item.customTextfield2|decodeEntities }}" class="limited-width">
-										{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
-										{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-									</td>
+									{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 								{% endif %}
 								<td>
 									<p>
@@ -403,31 +398,16 @@
 										{% endif %}
 									</td>
 									<td>
-										{{ item.amendment|decodeEntities }}
-										<p class="queue-table-amendment-time">
-											{% if item.queue.status == "reserved" %}
-												{% trans %}reserviert am{% endtrans %}
-											{% elseif item.queue.status == "preconfirmed" %}
-												{% trans %}Aktivierung ausstehend ab{% endtrans %}
-											{% elseif item.queue.status == "deleted" %}
-												{% trans %}wird freigegeben ab{% endtrans %}
-											{% else %}
-												{% trans %}gebucht am{% endtrans %}
-											{% endif %}
-											{{ item.createTimestamp|date("d.m.Y, H:i") }}&nbsp;Uhr
-										</p>
+										{% set amendmentTs %}{% apply spaceless %}{{ readmoreUi.queue_amendment_timestamp_message(item) }}{% endapply %}{% endset %}
+										<div class="queue-table-text-cell queue-table-amendment-preview">{{ readmoreUi.readmore_preview_clamped(item.amendment, readmoreQueueMaxLines) }}</div>
+										<p class="queue-table-amendment-time">{{ amendmentTs }}</p>
+										<div class="queue-table-amendment-readmore">{{ readmoreUi.readmore_expand_button(item.amendment, readmoreQueueMaxLines, 'Anmerkung'|trans, item.displayNumber, item.clients|first.familyName|default(''), amendmentTs) }}</div>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
-											{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
-											{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-										</td>
+										{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td title="{{ item.customTextfield2|decodeEntities }}" class ="limited-width">
-											{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
-											{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-										</td>
+										{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 									{% endif %}
 							<td class="nowrap">
 								{% if item.queue.withAppointment %}
@@ -549,16 +529,10 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td title="{{ item.customTextfield|decodeEntities }}" class="limited-width">
-										{{ item.customTextfield|decodeEntities|slice(0, textfieldDisplayLength) }}
-										{% if item.customTextfield|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-									</td>
+									{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td title="{{ item.customTextfield2|decodeEntities }}" class="limited-width">
-									{{ item.customTextfield2|decodeEntities|slice(0, textfieldDisplayLength) }}
-									{% if item.customTextfield2|decodeEntities|length > textfieldDisplayLength %}...{% endif %}
-										</td>
+									{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
 								{% endif %}
 								<td>
 									<p>

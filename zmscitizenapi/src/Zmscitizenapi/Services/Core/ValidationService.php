@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedScope;
+use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
@@ -287,10 +288,12 @@ class ValidationService
             return;
         }
 
-        if (
-            ($fieldRequired && ($fieldValue === "" || !self::isValidCustomTextfield($fieldValue))) ||
-            ($fieldValue !== null && $fieldValue !== "" && !self::isValidCustomTextfield($fieldValue))
-        ) {
+        $normalized = ProcessPlainText::normalize($fieldValue);
+        if ($fieldRequired && trim($normalized) === '') {
+            $errors[] = self::getError($errorKey);
+            return;
+        }
+        if ($fieldValue !== null && $fieldValue !== '' && mb_strlen($normalized, 'UTF-8') > ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS) {
             $errors[] = self::getError($errorKey);
         }
     }
@@ -478,10 +481,6 @@ class ValidationService
         return !empty($familyName) && is_string($familyName) && strlen(trim($familyName)) > 0;
     }
 
-    private static function isValidCustomTextfield(?string $customTextfield): bool
-    {
-        return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
-    }
 
     private static function isValidOfficeId(?int $officeId): bool
     {

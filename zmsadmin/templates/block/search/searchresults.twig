@@ -1,6 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
 
     {% block board_body %}
+        {% from 'element/helper/readmore_macros.twig' import readmore_content %}
+        {% set readmoreQueueMaxLines = 4 %}
         <script>
             document.getElementById("search-result-title").focus();
         </script>
@@ -73,7 +75,7 @@
                         <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
                         <td>{{process.clients.0.telephone}}</td>
                         <td>{{process.clients.0.email}}</td>
-                        <td>{{process.amendment}}</td>
+                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ readmore_content(process.amendment, readmoreQueueMaxLines, 'Anmerkung'|trans, process.displayNumber, process.clients|first.familyName|default('')) }}</div></td>
                     </tr>
                 {% endfor %}
                 {% for process in processListOther %}

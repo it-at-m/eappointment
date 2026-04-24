@@ -5,6 +5,8 @@
  Kundeninformationen{% endtrans %}
         {% endblock %}
         {% block board_body %}
+            {% from 'element/helper/readmore_macros.twig' import readmore_content %}
+            {% set readmoreKundeninfoMaxLines = 4 %}
             <dl>
                 <dt>
                     Name
@@ -24,8 +26,8 @@
                 <dt>
                     Anmerkung
                 </dt>
-                <dd>
-                    {{ workstation.process.amendment }}
+                <dd class="process-free-text">
+                    {{ readmore_content(workstation.process.amendment, readmoreKundeninfoMaxLines, 'Anmerkung'|trans, workstation.process.displayNumber, workstation.process.clients|first.familyName|default('')) }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.clients|first.telephone %}
@@ -48,16 +50,16 @@
                 <dt>
                     {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
-                <dd>
-                    {{ workstation.process.customTextfield }}
+                <dd class="process-free-text">
+                    {{ readmore_content(workstation.process.customTextfield, readmoreKundeninfoMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), workstation.process.displayNumber, workstation.process.clients|first.familyName|default('')) }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.customTextfield2 %}
                 <dt>
                     {{workstation.scope.preferences.client.customTextfield2Label}}
                 </dt>
-                <dd>
-                    {{ workstation.process.customTextfield2 }}
+                <dd class="process-free-text">
+                    {{ readmore_content(workstation.process.customTextfield2, readmoreKundeninfoMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), workstation.process.displayNumber, workstation.process.clients|first.familyName|default('')) }}
                 </dd>
                 {% endif %}
                 <dt>

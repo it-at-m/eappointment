@@ -114,7 +114,7 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="250"
+      :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows1"
       @input="handleInput1"
     />
@@ -129,7 +129,7 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="250"
+      :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows2"
       @input="handleInput2"
     />
@@ -173,6 +173,9 @@ import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+
+/** Aligned with DB varchar(255) and ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS */
+const MAX_CUSTOM_TEXT_CHARS = 255;
 
 const inputLines1 = ref<number>(3);
 const inputLines2 = ref<number>(3);
@@ -319,8 +322,8 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length >= 250
-    ? props.t("errorMessageMaxLength", { max: 250 })
+  (customerData.value.customTextfield ?? "").length > MAX_CUSTOM_TEXT_CHARS
+    ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
 
@@ -342,8 +345,8 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length >= 250
-    ? props.t("errorMessageMaxLength", { max: 250 })
+  (customerData.value.customTextfield2 ?? "").length > MAX_CUSTOM_TEXT_CHARS
+    ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
 
@@ -364,7 +367,9 @@ const validForm = computed(
     !errorMessageMailAddress.value &&
     !errorMessageTelephoneNumber.value &&
     !errorMessageCustomTextfield.value &&
-    !errorMessageCustomTextfield2.value
+    !errorMessageCustomTextfield2.value &&
+    !maxLengthMessageCustomTextfield.value &&
+    !maxLengthMessageCustomTextfield2.value
 );
 
 const login = () => {

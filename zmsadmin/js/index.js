@@ -36,6 +36,7 @@ import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
 import DialogHandler from './lib/dialogHandler'
+import initReadMoreLightbox from './lib/readMoreLightbox'
 
 // Import JS from patternlab
 import accordion from 'bo-layout-admin-js/behavior/accordion';
@@ -134,6 +135,10 @@ $('input.charcounter').each(function () {
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
+
+$(() => {
+    initReadMoreLightbox();
+});
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

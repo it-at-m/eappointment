@@ -270,7 +270,7 @@ describe("CustomerInfo", () => {
   });
 
   const MAX_LENGTH_STANDARD = 50;
-  const MAX_LENGTH_CUSTOM = 250;
+  const MAX_LENGTH_CUSTOM = 255;
   const setupValidCustomerData = () => {
     mockCustomerData.value.firstName = "Max";
     mockCustomerData.value.lastName = "Mustermann";
