@@ -1677,7 +1677,9 @@ public class CitizenViewPage extends BasePage {
                 driver.navigate().to(target);
             }
         } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("navigateCitizenViewUrl", e);
+            ScenarioLogManager.getLogger()
+                    .error("navigateCitizenViewUrl failed (target URL: " + target + ")", e);
+            throw new RuntimeException("navigateCitizenViewUrl failed for " + target, e);
         }
     }
 
