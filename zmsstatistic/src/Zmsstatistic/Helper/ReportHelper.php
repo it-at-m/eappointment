@@ -191,8 +191,10 @@ class ReportHelper
      */
     public static function requestStatisticRowDisplayName(string $name): string
     {
-        if ($name !== Exchange::REQUEST_STAT_NAME_UNCATEGORIZED
-            && $name !== Exchange::REQUEST_STAT_NAME_NOT_PROVIDED) {
+        if (
+            $name !== Exchange::REQUEST_STAT_NAME_UNCATEGORIZED
+            && $name !== Exchange::REQUEST_STAT_NAME_NOT_PROVIDED
+        ) {
             return $name;
         }
 
