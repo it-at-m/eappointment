@@ -1142,10 +1142,140 @@ function nextConfirmAppointment(appointmentData: AppointmentHash) {
     });
 }
 
-onMounted(() => {
-  if (props.confirmAppointmentHash) {
+/** Appointment view / cancel / reschedule deep links (#/appointment/&lt;payload&gt;): same-tab hash updates after mount. */
+function runAppointmentInitializationFromHash(hash: string): void {
+  confirmAppointmentSuccess.value = false;
+  clearContextErrors(errorStateMap.value);
+  rebookOrCancelDialog.value = true;
+  fetchServicesAndProviders(
+    props.serviceId ?? undefined,
+    props.locationId ?? undefined,
+    props.globalState?.baseUrl ?? undefined
+  ).then((data) => {
+    // Handle normal errors (like rate limit) first
+    handleErrorApiResponse(
+      data,
+      errorStates.errorStateMap,
+      currentErrorData.value
+    );
+
+    // Check if any error state should be activated (maintenance/system failure)
+    if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
+      return;
+    }
+
+    services.value = (data as any).services;
+    relations.value = (data as any).relations;
+    offices.value = (data as any).offices;
+
+    const appointmentData = parseAppointmentHash(hash);
+    if (!appointmentData) {
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
+      return;
+    }
+
+    fetchAppointment(props.globalState, appointmentData).then((data) => {
+      if ((data as AppointmentDTO).processId != undefined) {
+        if ("captchaToken" in data && data.captchaToken) {
+          captchaToken.value = data.captchaToken as string;
+        }
+        appointment.value = data as AppointmentDTO;
+        selectedService.value = services.value.find(
+          (service) => service.id == appointment.value?.serviceId
+        );
+        if (selectedService.value) {
+          selectedService.value.count = appointment.value.serviceCount;
+          selectedService.value.providers = getProviders(
+            selectedService.value.id,
+            null
+          );
+
+          preselectedLocationId.value = appointment.value.officeId;
+          const foundOffice = offices.value.find(
+            (office) => office.id == appointment.value?.officeId
+          );
+          if (foundOffice) {
+            selectedProvider.value = new OfficeImpl(
+              foundOffice.id,
+              foundOffice.name,
+              foundOffice.address,
+              foundOffice.showAlternativeLocations,
+              foundOffice.displayNameAlternatives,
+              foundOffice.organization,
+              foundOffice.organizationUnit,
+              foundOffice.slotTimeInMinutes,
+              undefined, // disabledByServices
+              foundOffice.allowDisabledServicesMix,
+              foundOffice.scope,
+              foundOffice.slotsPerAppointment,
+              undefined, // slots
+              foundOffice.priority || 1
+            );
+          }
+
+          if (appointment.value.subRequestCounts.length > 0) {
+            appointment.value.subRequestCounts.forEach((subRequestCount) => {
+              const subRequest = services.value.find(
+                (service) => service.id == subRequestCount.id
+              ) as Service;
+              const subService = new SubService(
+                subRequest.id,
+                subRequest.name,
+                subRequest.maxQuantity,
+                getProviders(subRequest.id, null),
+                subRequestCount.count
+              );
+              if (selectedService.value && !selectedService.value.subServices) {
+                selectedService.value.subServices = [];
+              }
+              selectedService.value?.subServices?.push(subService);
+            });
+          }
+          if (!appointmentData.action || isAppointmentInPast.value) {
+            currentView.value = 3;
+          } else if (
+            appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+          ) {
+            nextRescheduleAppointment();
+          } else {
+            nextCancelAppointment();
+          }
+        }
+      } else {
+        handleApiError(
+          "appointmentNotFound",
+          errorStateMap.value,
+          currentErrorData.value
+        );
+      }
+    });
+  });
+}
+
+watch(
+  () => props.appointmentHash,
+  (hash) => {
+    if (!hash) {
+      return;
+    }
+    runAppointmentInitializationFromHash(hash);
+  },
+  { immediate: true }
+);
+
+// Confirm deep links: same-tab hash navigation updates the prop after mount, so onMounted alone is not enough.
+watch(
+  () => props.confirmAppointmentHash,
+  (hash) => {
+    if (!hash) {
+      return;
+    }
     clearContextErrors(errorStateMap.value);
-    const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
+    const appointmentData = parseAppointmentHash(hash);
     if (!appointmentData) {
       handleApiError(
         "appointmentNotFound",
@@ -1155,122 +1285,12 @@ onMounted(() => {
       return;
     }
     nextConfirmAppointment(appointmentData);
-  }
+  },
+  { immediate: true }
+);
 
-  if (props.appointmentHash) {
-    clearContextErrors(errorStateMap.value);
-    rebookOrCancelDialog.value = true;
-    fetchServicesAndProviders(
-      props.serviceId ?? undefined,
-      props.locationId ?? undefined,
-      props.globalState?.baseUrl ?? undefined
-    ).then((data) => {
-      // Handle normal errors (like rate limit) first
-      handleErrorApiResponse(
-        data,
-        errorStates.errorStateMap,
-        currentErrorData.value
-      );
-
-      // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForDownTime(data, props.globalState?.baseUrl)) {
-        return;
-      }
-
-      services.value = (data as any).services;
-      relations.value = (data as any).relations;
-      offices.value = (data as any).offices;
-
-      const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
-      if (!appointmentData) {
-        handleApiError(
-          "appointmentNotFound",
-          errorStateMap.value,
-          currentErrorData.value
-        );
-        return;
-      }
-
-      fetchAppointment(props.globalState, appointmentData).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          if ("captchaToken" in data && data.captchaToken) {
-            captchaToken.value = data.captchaToken as string;
-          }
-          appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
-
-            preselectedLocationId.value = appointment.value.officeId;
-            const foundOffice = offices.value.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-            if (foundOffice) {
-              selectedProvider.value = new OfficeImpl(
-                foundOffice.id,
-                foundOffice.name,
-                foundOffice.address,
-                foundOffice.showAlternativeLocations,
-                foundOffice.displayNameAlternatives,
-                foundOffice.organization,
-                foundOffice.organizationUnit,
-                foundOffice.slotTimeInMinutes,
-                undefined, // disabledByServices
-                foundOffice.allowDisabledServicesMix,
-                foundOffice.scope,
-                foundOffice.slotsPerAppointment,
-                undefined, // slots
-                foundOffice.priority || 1
-              );
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = services.value.find(
-                  (service) => service.id == subRequestCount.id
-                ) as Service;
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (
-                  selectedService.value &&
-                  !selectedService.value.subServices
-                ) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value?.subServices?.push(subService);
-              });
-            }
-            if (!appointmentData.action || isAppointmentInPast.value) {
-              currentView.value = 3;
-            } else if (
-              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
-            ) {
-              nextRescheduleAppointment();
-            } else {
-              nextCancelAppointment();
-            }
-          }
-        } else {
-          handleApiError(
-            "appointmentNotFound",
-            errorStateMap.value,
-            currentErrorData.value
-          );
-        }
-      });
-    });
-  } else {
+onMounted(() => {
+  if (!props.appointmentHash) {
     const localStorageAppointment = localStorage.getItem(
       LOCALSTORAGE_PARAM_APPOINTMENT_DATA
     );

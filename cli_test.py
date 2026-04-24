@@ -325,7 +325,6 @@ class TestCli(EappointmentCli):
       admin_base_uri,
       statistic_base_uri,
       api_http,
-      skip_gateway_trust,
       browser,
       cucumber_tags,
       screenshots_every_step,
