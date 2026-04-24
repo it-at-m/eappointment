@@ -54,7 +54,7 @@ export default defineConfig({
         // overwrites Host to refarch-gateway, so forward the browser host for gateway → zms-web.
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq, req) => {
-            const raw = req.headers['x-forwarded-host'] ?? req.headers.host
+            const raw = req.headers.host
             const host = Array.isArray(raw) ? raw[0] : raw
             if (host) {
               proxyReq.setHeader('X-Forwarded-Host', host)
