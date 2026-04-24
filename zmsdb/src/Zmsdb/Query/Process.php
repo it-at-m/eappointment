@@ -909,6 +909,13 @@ class Process extends Base implements MappingInterface
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
+        } elseif (
+            $process->status == 'queued'
+            && isset($previousStatus)
+            && in_array($previousStatus, ['called', 'processing'], true)
+        ) {
+            $data['showUpTime'] = null;
+            $data['timeoutTime'] = null;
         }
 
 
