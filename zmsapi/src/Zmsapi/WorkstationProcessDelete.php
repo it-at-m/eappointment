@@ -40,10 +40,12 @@ class WorkstationProcessDelete extends BaseController
             $process->status = Process::STATUS_QUEUED;
             $process->queue['callCount'] = 0;
             $process->queue['lastCallTime'] = 0;
-            $process->queue['callTime'] = 0;
+            // Align with arrival so getWaitedSeconds() is 0 (callTime 0 would make getCallTime() use "now" and invent a few seconds)
+            $process->queue['callTime'] = $nowTs;
             $process->queue['arrivalTime'] = $nowTs;
-            $process->queue['waitingTime'] = '00:00:00';
-            $process->queue['wayTime'] = '00:00:00';
+            // Numeric 0: queue table twig treats non-empty strings like "00:00:00" as truthy and prints "+… Min." incorrectly
+            $process->queue['waitingTime'] = 0;
+            $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
         } elseif (1 === $skipnext) {
