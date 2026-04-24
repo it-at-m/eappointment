@@ -45,6 +45,12 @@ spring:
           predicates:
             - Path=/buergeransicht/**
           filters:
-            - PreserveHostHeader
+         - id: "webcomponent"
+           uri: "${WEBCOMPONENT_URI}"
+           predicates:
+             - Path=/buergeransicht/**
+           filters:
+             - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
+             - RemoveResponseHeader=WWW-Authenticate
             - RewritePath=/buergeransicht/(?<segment>.*), /${segment}
             - RemoveResponseHeader=WWW-Authenticate
