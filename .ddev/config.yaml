@@ -18,7 +18,7 @@ web_environment:
 nodejs_version: "18"
 hooks:
   pre-start:
-    - exec-host: "bash -c 'if [ ! -f .ddev/.env ]; then cp .ddev/.env.template .ddev/.env; fi'"
+    - exec-host: "bash -c 'if [ ! -f .ddev/.env ]; then cp .ddev/.env.template .ddev/.env; fi && bash .devcontainer/scripts/sync-php-base-tag.sh .ddev/.env'"
   post-start:
     - exec: "sed -i 's/^pm\\.max_children.*/pm.max_children = 30/' /etc/php/*/fpm/pool.d/www.conf && supervisorctl restart php-fpm"
     - exec: "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md"
