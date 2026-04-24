@@ -435,7 +435,12 @@ class ValidationService
 
     private static function isValidAuthKey(?string $authKey): bool
     {
-        return !empty($authKey) && is_string($authKey) && strlen(trim($authKey)) > 0;
+        if ($authKey === null || !is_string($authKey)) {
+            return false;
+        }
+        $authKey = trim($authKey);
+        $len = strlen($authKey);
+        return ($len === 4 || $len === 64) && ctype_xdigit($authKey);
     }
 
     private static function isValidServiceIds(?array $serviceIds): bool

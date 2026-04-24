@@ -61,11 +61,13 @@ class ProcessValidator
     public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen((string)$valid->getValue());
+        $length = strlen(trim((string)$valid->getValue()));
         if ($length || ($isRequiredCallback && $isRequiredCallback())) {
             $valid
-                ->isBiggerThan(4, "Es müssen mindestens 4 Zeichen eingegeben werden.")
-                ;
+                ->isMatchOf(
+                    '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
+                    "Der Absagecode ist nicht korrekt"
+                );
         }
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
