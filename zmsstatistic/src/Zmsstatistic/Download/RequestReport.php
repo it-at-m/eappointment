@@ -94,7 +94,7 @@ class RequestReport extends Base
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
-                $rowData[] = $name;
+                $rowData[] = ReportHelper::requestStatisticRowDisplayName($name);
                 $rowData[] = isset($report->data['average_processingtime'][$name])
                     && is_numeric($report->data['average_processingtime'][$name])
                     ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])

@@ -12,10 +12,11 @@ class Exchange extends Schema\Entity
     public const PRIMARY = 'firstDay';
 
     /**
-     * Must match the label produced in warehouse SQL when request id is -1
-     * (see ExchangeRequestscope and related query classes).
+     * Statistik CASE labels (must match warehouse SQL in ExchangeRequest* queries).
      */
-    public const UNCATEGORIZED_REQUEST_NAME = 'Dienstleistung wurde nicht erfasst';
+    public const REQUEST_STAT_NAME_UNCATEGORIZED = '__UNCATEGORIZED_REQUEST__';
+
+    public const REQUEST_STAT_NAME_NOT_PROVIDED = '__SERVICE_NOT_PROVIDED__';
 
     public static $schema = "exchange.json";
 
@@ -189,7 +190,7 @@ class Exchange extends Schema\Entity
     }
 
     /**
-     * Sort service rows alphabetically and place the uncategorized bucket last
+     * Sort service rows alphabetically; place synthetic stat rows last
      * (before aggregated keys sum / average_*).
      */
     public function withUncapturedRequestRowSortedLast(string $collatorLocale = 'de_DE'): self
@@ -200,10 +201,13 @@ class Exchange extends Schema\Entity
         }
 
         $reserved = ['sum', 'average_processingtime'];
-        $uncaptured = self::UNCATEGORIZED_REQUEST_NAME;
+        $tailStatNames = [
+            self::REQUEST_STAT_NAME_UNCATEGORIZED,
+            self::REQUEST_STAT_NAME_NOT_PROVIDED,
+        ];
         $serviceRows = [];
         foreach ($entity->data as $key => $value) {
-            if (in_array($key, $reserved, true) || $key === $uncaptured) {
+            if (in_array($key, $reserved, true) || in_array($key, $tailStatNames, true)) {
                 continue;
             }
             $serviceRows[$key] = $value;
@@ -215,8 +219,10 @@ class Exchange extends Schema\Entity
         });
 
         $ordered = $serviceRows;
-        if (array_key_exists($uncaptured, $entity->data)) {
-            $ordered[$uncaptured] = $entity->data[$uncaptured];
+        foreach ($tailStatNames as $tailKey) {
+            if (array_key_exists($tailKey, $entity->data)) {
+                $ordered[$tailKey] = $entity->data[$tailKey];
+            }
         }
         foreach ($reserved as $key) {
             if (array_key_exists($key, $entity->data)) {
