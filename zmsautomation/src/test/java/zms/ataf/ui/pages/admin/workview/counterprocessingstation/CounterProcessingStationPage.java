@@ -688,8 +688,39 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
+    /**
+     * Fills {@code customTextfield} / {@code customTextfield2} when the location enables them
+     * (e.g. required "Zusätzliche Bemerkungen" on Ruppertstraße). No-op if those text areas are absent.
+     */
+    public void fillCustomTextfieldsForSpontaneousCustomerIfNeeded() {
+        ScenarioLogManager.getLogger().info("Filling scope custom text fields on spontaneous customer form if present...");
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        for (String fieldName : new String[] { "customTextfield", "customTextfield2" }) {
+            List<WebElement> found = DRIVER.findElements(By.xpath("//textarea[@name='" + fieldName + "']"));
+            if (found.isEmpty()) {
+                continue;
+            }
+            WebElement textarea = found.get(0);
+            if (!textarea.isDisplayed()) {
+                continue;
+            }
+            String current = textarea.getAttribute("value");
+            if (current == null || current.isBlank()) {
+                current = textarea.getText();
+            }
+            if (current != null && !current.isBlank()) {
+                continue;
+            }
+            String text = "ATAF UI-Test " + fieldName;
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, text, textarea);
+            TestDataHelper.setTestData("spontaneous_" + fieldName, text);
+        }
+    }
+
     public String clickOnAddSpontaneousCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
+        fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Wartenummer wurde hinzugefügt']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");

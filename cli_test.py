@@ -76,6 +76,123 @@ class TestCli(EappointmentCli):
       return p
     return None
 
+  @staticmethod
+  def mac_chrome_bin():
+    return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+  @staticmethod
+  def _first_major_version(text: str) -> int | None:
+    m = re.search(r"(?:^|\D)(\d{2,3})\.", text)
+    if m:
+      return int(m.group(1))
+    return None
+
+  @classmethod
+  def mac_chrome_major_version(cls) -> int | None:
+    """Major version of the installed Google Chrome, or None if not found."""
+    p = cls.mac_chrome_bin()
+    if not os.path.isfile(p):
+      return None
+    try:
+      r = subprocess.run(
+        [p, "--version"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+      )
+    except (OSError, subprocess.SubprocessError):
+      return None
+    return cls._first_major_version((r.stdout or "") + (r.stderr or ""))
+
+  @staticmethod
+  def mac_chromedriver_major_support(chromedriver_path: str) -> int | None:
+    """Major Chrome version the given chromedriver supports (per --version), or None."""
+    if not chromedriver_path or not os.path.isfile(chromedriver_path):
+      return None
+    try:
+      r = subprocess.run(
+        [chromedriver_path, "--version"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+      )
+    except (OSError, subprocess.SubprocessError):
+      return None
+    text = (r.stdout or "") + (r.stderr or "")
+    m = re.search(
+      r"supports Chrome version (\d+)",
+      text,
+      re.IGNORECASE,
+    ) or re.search(
+      r"ChromeDriver\s+(\d+)",
+      text,
+    )
+    if m:
+      return int(m.group(1))
+    return TestCli._first_major_version(text)
+
+  @classmethod
+  def mac_chrome_and_chromedriver_mismatch(cls, chromedriver_path: str) -> bool:
+    """True when installed Chrome major version != PATH chromedriver (typical after brew upgrade chromedriver)."""
+    cmaj = cls.mac_chrome_major_version()
+    dmaj = cls.mac_chromedriver_major_support(chromedriver_path)
+    if cmaj is None or dmaj is None:
+      return False
+    return cmaj != dmaj
+
+  @staticmethod
+  def path_without_directories_containing_chromedriver(path_str: str) -> str:
+    """Remove PATH entries where an executable `chromedriver` exists (so Selenium Manager is not bound to it)."""
+    kept: list[str] = []
+    for p in path_str.split(os.path.pathsep):
+      if not p:
+        continue
+      c = os.path.join(p, "chromedriver")
+      if os.path.isfile(c) and os.access(c, os.X_OK):
+        continue
+      kept.append(p)
+    return os.path.pathsep.join(kept)
+
+  @staticmethod
+  def brew_maven_mvn() -> str | None:
+    """`brew --prefix maven` + /bin/mvn, if that layout exists (usually no `chromedriver` next to mvn)."""
+    brew = shutil.which("brew")
+    if not brew or sys.platform != "darwin":
+      return None
+    try:
+      pfx = subprocess.run(
+        [brew, "--prefix", "maven"],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=20,
+      ).stdout.strip()
+    except (subprocess.CalledProcessError, OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
+      return None
+    m = os.path.join(pfx, "bin", "mvn")
+    if os.path.isfile(m) and os.access(m, os.X_OK):
+      return m
+    return None
+
+  @staticmethod
+  def mac_default_browser_path(browser: str) -> str | None:
+    """Path to the browser binary if the typical macOS .app install exists, else None."""
+    b = browser.lower()
+    paths = {
+      "chrome": TestCli.mac_chrome_bin(),
+      "edge": "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+      "safari": "/Applications/Safari.app/Contents/MacOS/Safari",
+      "firefox": "/Applications/Firefox.app/Contents/MacOS/firefox",
+    }
+    p = paths.get(b)
+    if p and os.path.isfile(p):
+      return p
+    if b == "firefox" and shutil.which("firefox"):
+      return shutil.which("firefox")
+    return None
+
   def resolve_webdriver_paths(self):
     candidates = {
       "chrome": ("chromedriver", ["chromedriver"]),
@@ -318,6 +435,22 @@ class TestCli(EappointmentCli):
       default=False,
       help="Do not fail if WebDrivers for other browsers are missing (only the selected browser is required).",
     )
+    @click.option(
+      "--use-selenium-manager",
+      is_flag=True,
+      default=False,
+      help=(
+        "Force Selenium Manager (omit -Dwebdriver.*.driver, SELENIUM_MANAGER_DISABLE=false). "
+        "By default, this is also enabled automatically when Google Chrome and PATH chromedriver "
+        "major versions differ (e.g. after brew upgrade chromedriver)."
+      ),
+    )
+    @click.option(
+      "--no-selenium-manager",
+      is_flag=True,
+      default=False,
+      help="Always use WebDrivers from PATH; do not auto-switch to Selenium Manager on version skew.",
+    )
     def cli_tests_run_mac_local(
       base_uri,
       citizen_api_uri,
@@ -325,7 +458,6 @@ class TestCli(EappointmentCli):
       admin_base_uri,
       statistic_base_uri,
       api_http,
-      skip_gateway_trust,
       browser,
       cucumber_tags,
       screenshots_every_step,
@@ -334,19 +466,48 @@ class TestCli(EappointmentCli):
       db_full_setup,
       citizenview_base_url,
       skip_driver_check,
+      use_selenium_manager,
+      no_selenium_manager,
     ):
       """Run mvn test -Pataf-ui from zmsautomation/ with JAVA_HOME and WebDrivers."""
       app.mac_require_darwin()
+      if use_selenium_manager and no_selenium_manager:
+        raise click.ClickException("Choose at most one of --use-selenium-manager and --no-selenium-manager.")
       java_home = app.resolve_mac_java_home()
       wd = app.resolve_webdriver_paths()
       browser = browser.lower()
 
-      required = wd.get(browser)
-      if not required:
-        raise click.ClickException(
-          f"No driver in PATH for browser={browser!r}. "
-          f"Run: ./cli tests install-mac-deps"
+      auto_selenium_manager = (
+        not no_selenium_manager
+        and not use_selenium_manager
+        and browser == "chrome"
+        and bool(wd.get("chrome"))
+        and app.mac_chrome_and_chromedriver_mismatch(wd["chrome"])
+      )
+      if auto_selenium_manager:
+        print_info(
+          "Chrome and chromedriver report different major versions; using Selenium Manager. "
+          "Tip: `brew upgrade --cask google-chrome` to align with Homebrew chromedriver, or pass "
+          "--no-selenium-manager to keep using PATH chromedriver."
         )
+        use_selenium_manager = True
+
+      if use_selenium_manager:
+        browser_path = app.mac_default_browser_path(browser)
+        if not browser_path:
+          raise click.ClickException(
+            f"Browser {browser!r} not found in the usual install location. "
+            "Install it or run without --use-selenium-manager and put the matching WebDriver in PATH."
+          )
+        required = f"selenium-manager ({browser_path})"
+      else:
+        required = wd.get(browser)
+        if not required:
+          raise click.ClickException(
+            f"No driver in PATH for browser={browser!r}. "
+            f"Run: ./cli tests install-mac-deps, "
+            f"or re-run with --use-selenium-manager if Chrome and Homebrew chromedriver versions differ."
+          )
       if not skip_driver_check:
         missing = [b for b, p in wd.items() if not p]
         if missing:
@@ -374,7 +535,37 @@ class TestCli(EappointmentCli):
 
       env = os.environ.copy()
       env["JAVA_HOME"] = java_home
-      env["PATH"] = os.path.join(java_home, "bin") + os.pathsep + env.get("PATH", "")
+      jbin = os.path.join(java_home, "bin")
+      mvn_executable = "mvn"
+      if use_selenium_manager:
+        env["SELENIUM_MANAGER_DISABLE"] = "false"
+      if use_selenium_manager and browser == "chrome":
+        p_clean = app.path_without_directories_containing_chromedriver(
+          os.environ.get("PATH", "")
+        )
+        brew_mvn = app.brew_maven_mvn()
+        if brew_mvn:
+          m_dir = os.path.dirname(brew_mvn)
+          env["PATH"] = f"{jbin}{os.path.pathsep}{m_dir}{os.path.pathsep}{p_clean}"
+          mvn_executable = brew_mvn
+        else:
+          env["PATH"] = f"{jbin}{os.path.pathsep}{p_clean}"
+          w = shutil.which("mvn", path=env["PATH"])
+          if w:
+            mvn_executable = w
+          else:
+            raise click.ClickException(
+              "Selenium Manager must not see a wrong `chromedriver` in PATH (e.g. /opt/homebrew/bin), "
+              "so it can download one that matches your Chrome. After cleaning PATH, `mvn` was not found. "
+              "Fix: `brew install maven` (maven’s prefix has no chromedriver), or remove/rename "
+              "`/opt/homebrew/bin/chromedriver`, or `brew upgrade --cask google-chrome` to match Homebrew’s driver."
+            )
+        print_info(
+          "Selenium: PATH entries that contain a `chromedriver` binary were removed for the test JVM "
+          f"(maven={mvn_executable!r}) so Selenium Manager can resolve the correct driver for installed Chrome."
+        )
+      else:
+        env["PATH"] = f"{jbin}{os.path.pathsep}{env.get('PATH', '')}"
 
       if api_http:
         env["BASE_URI"] = "http://localhost:8080/terminvereinbarung/api/2"
@@ -399,7 +590,7 @@ class TestCli(EappointmentCli):
         env["STATISTIC_BASE_URI"] = statistic_base_uri.rstrip("/") + "/"
 
       mvn_args = [
-        "mvn",
+        mvn_executable,
         "-B",
         "-DtrimStackTrace=false",
         "test",
@@ -411,14 +602,17 @@ class TestCli(EappointmentCli):
         f"-Dsso.password={sso_password}",
         f"-DSCREENSHOT_EVERY_STEP={'true' if screenshots_every_step else 'false'}",
       ]
-      if wd.get("chrome"):
-        mvn_args.append(f"-Dwebdriver.chrome.driver={wd['chrome']}")
-      if wd.get("firefox"):
-        mvn_args.append(f"-Dwebdriver.gecko.driver={wd['firefox']}")
-      if wd.get("edge"):
-        mvn_args.append(f"-Dwebdriver.edge.driver={wd['edge']}")
-      if wd.get("safari"):
-        mvn_args.append(f"-Dwebdriver.safari.driver={wd['safari']}")
+      if not use_selenium_manager:
+        if wd.get("chrome"):
+          mvn_args.append(f"-Dwebdriver.chrome.driver={wd['chrome']}")
+        if wd.get("firefox"):
+          mvn_args.append(f"-Dwebdriver.gecko.driver={wd['firefox']}")
+        if wd.get("edge"):
+          mvn_args.append(f"-Dwebdriver.edge.driver={wd['edge']}")
+        if wd.get("safari"):
+          mvn_args.append(f"-Dwebdriver.safari.driver={wd['safari']}")
+      else:
+        print_info("WebDrivers: Selenium Manager (no -Dwebdriver.*.driver); SELENIUM_MANAGER_DISABLE=false")
 
       if browser in ("edge", "safari"):
         mvn_args.extend(
