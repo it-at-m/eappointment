@@ -42,7 +42,7 @@ class WorkstationProcessCancelNextTest extends Base
                 [
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/process/',
-                    'parameters' => ['skipnext' => 1],
+                    'parameters' => ['skipNext' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
@@ -65,7 +65,7 @@ class WorkstationProcessCancelNextTest extends Base
                 [
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/process/',
-                    'parameters' => ['skipnext' => 1],
+                    'parameters' => ['skipNext' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
