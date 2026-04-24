@@ -17,36 +17,20 @@ class WorkstationProcessNext extends BaseController
      */
 
     /**
-     * @param string|null $timeString DB/API value: full datetime "Y-m-d H:i:s" or legacy "H:i:s" only
-     * @return int|null Unix timestamp in default TZ, or null if empty / unparseable
+     * @param string|null $timeString DB/API value: e.g. "Y-m-d H:i:s" / "Y-m-d H:i" or time-only "H:i" / "H:i:s"
+     * @return int|null Unix timestamp in default timezone, or null if empty / unparseable
      */
     public function timeToUnix($timeString)
     {
-        if ($timeString === null || $timeString === '') {
+        if ($timeString === null) {
             return null;
         }
         $timeString = trim((string) $timeString);
         if ($timeString === '') {
             return null;
         }
-        // Full datetime from process.timeoutTime (see zmsdb Query/Process)
-        if (preg_match('/^\d{4}-\d{2}-\d{2}[ T]\d{1,2}:\d{2}:\d{2}/', $timeString)) {
-            $ts = strtotime($timeString);
-            return $ts !== false ? $ts : null;
-        }
-        // Legacy time-of-day only
-        $parts = explode(':', $timeString);
-        if (count($parts) >= 2) {
-            return mktime(
-                (int) $parts[0],
-                (int) $parts[1],
-                (int) ($parts[2] ?? 0),
-                (int) date('n'),
-                (int) date('j'),
-                (int) date('Y')
-            );
-        }
         $ts = strtotime($timeString);
+
         return $ts !== false ? $ts : null;
     }
 
