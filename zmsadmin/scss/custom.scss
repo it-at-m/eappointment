@@ -129,7 +129,7 @@
 /* Built via `npm run css` (scss/admin.scss → this file). Not custom_scss/admin.scss. */
 .queue-table-free-text,
 .process-free-text {
-    word-break: break-word;
+    overflow-wrap: break-word;
     line-height: 1.4;
 }
 
@@ -166,7 +166,7 @@
 }
 
 .readmore-preview {
-    word-break: break-word;
+    overflow-wrap: break-word;
     line-height: 1.4;
 }
 
@@ -239,7 +239,7 @@ button.readmore-link {
     margin: 0;
     overflow-y: auto;
     white-space: pre-wrap;
-    word-break: break-word;
+    overflow-wrap: break-word;
     font: inherit;
     line-height: 1.45;
 }
