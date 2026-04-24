@@ -30,7 +30,7 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $requeue = Validator::param('requeue')->isNumber()->setDefault(0)->getValue();
-        $skipnext = Validator::param('skipnext')->isNumber()->setDefault(0)->getValue();
+        $skipNext = Validator::param('skipnext')->isNumber()->setDefault(0)->getValue();
 
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
@@ -40,15 +40,13 @@ class WorkstationProcessDelete extends BaseController
             $process->status = Process::STATUS_QUEUED;
             $process->queue['callCount'] = 0;
             $process->queue['lastCallTime'] = 0;
-            // Align with arrival so getWaitedSeconds() is 0 (callTime 0 would make getCallTime() use "now" and invent a few seconds)
             $process->queue['callTime'] = $nowTs;
             $process->queue['arrivalTime'] = $nowTs;
-            // Numeric 0: queue table twig treats non-empty strings like "00:00:00" as truthy and prints "+… Min." incorrectly
             $process->queue['waitingTime'] = 0;
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif (1 === $skipnext) {
+        } elseif (1 === $skipNext) {
             $process->setWasMissed(true);
         } elseif (
             'called' == $process->status
