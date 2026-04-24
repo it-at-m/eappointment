@@ -171,6 +171,10 @@ import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import {
+  normalizePlainText,
+  plainTextCharCount,
+} from "@/utils/processPlainText";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
@@ -313,8 +317,8 @@ const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    !customerData.value.customTextfield &&
-    selectedProvider.value?.scope?.customTextfieldRequired
+    selectedProvider.value?.scope?.customTextfieldRequired &&
+    !normalizePlainText(customerData.value.customTextfield).trim()
   ) {
     return props.t("errorMessageCustomTextfield");
   }
@@ -322,7 +326,7 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length > MAX_CUSTOM_TEXT_CHARS
+  plainTextCharCount(customerData.value.customTextfield) > MAX_CUSTOM_TEXT_CHARS
     ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
@@ -336,8 +340,8 @@ const errorMessageCustomTextfield2 = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    !customerData.value.customTextfield2 &&
-    selectedProvider.value?.scope?.customTextfield2Required
+    selectedProvider.value?.scope?.customTextfield2Required &&
+    !normalizePlainText(customerData.value.customTextfield2).trim()
   ) {
     return props.t("errorMessageCustomTextfield2");
   }
@@ -345,7 +349,8 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length > MAX_CUSTOM_TEXT_CHARS
+  plainTextCharCount(customerData.value.customTextfield2) >
+  MAX_CUSTOM_TEXT_CHARS
     ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
