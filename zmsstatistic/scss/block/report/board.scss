@@ -45,6 +45,16 @@
 
             tr {
 
+                &.report-board--uncaptured-service {
+                    th,
+                    td {
+                        font-style: italic;
+                    }
+                    th {
+                        color: $greyMiddle;
+                    }
+                }
+
                 th {
                     width: 15%;
                     color: $greyBlack;

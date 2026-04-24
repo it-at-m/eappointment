@@ -11,6 +11,12 @@ class Exchange extends Schema\Entity
 {
     public const PRIMARY = 'firstDay';
 
+    /**
+     * Must match the label produced in warehouse SQL when request id is -1
+     * (see ExchangeRequestscope and related query classes).
+     */
+    public const UNCATEGORIZED_REQUEST_NAME = 'Dienstleistung wurde nicht erfasst';
+
     public static $schema = "exchange.json";
 
     public function getDefaults()
@@ -182,6 +188,44 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    /**
+     * Sort service rows alphabetically and place the uncategorized bucket last
+     * (before aggregated keys sum / average_*).
+     */
+    public function withUncapturedRequestRowSortedLast(string $collatorLocale = 'de_DE'): self
+    {
+        $entity = clone $this;
+        if (!is_array($entity->data)) {
+            return $entity;
+        }
+
+        $reserved = ['sum', 'average_processingtime'];
+        $uncaptured = self::UNCATEGORIZED_REQUEST_NAME;
+        $serviceRows = [];
+        foreach ($entity->data as $key => $value) {
+            if (in_array($key, $reserved, true) || $key === $uncaptured) {
+                continue;
+            }
+            $serviceRows[$key] = $value;
+        }
+
+        $collator = new \Collator($collatorLocale);
+        uksort($serviceRows, static function ($a, $b) use ($collator) {
+            return $collator->compare($a, $b);
+        });
+
+        $ordered = $serviceRows;
+        if (array_key_exists($uncaptured, $entity->data)) {
+            $ordered[$uncaptured] = $entity->data[$uncaptured];
+        }
+        foreach ($reserved as $key) {
+            if (array_key_exists($key, $entity->data)) {
+                $ordered[$key] = $entity->data[$key];
+            }
+        }
+        $entity->data = $ordered;
+        return $entity;
+    }
 
     public function withMaxAndAverageFromWaitingTime()
     {

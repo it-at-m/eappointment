@@ -76,12 +76,15 @@ class ReportRequestService
     public function getExchangeRequestForPeriod(string $scopeId, string $period): mixed
     {
         try {
+            $locale = \App::$supportedLanguages[\App::$locale]['locale'] ?? 'de_DE';
+
             return \App::$http
                 ->readGetResult('/warehouse/requestscope/' . $scopeId . '/' . $period . '/')
                 ->getEntity()
                 ->toGrouped($this->groupfields, $this->hashset)
                 ->withRequestsSum()
-                ->withAverage('processingtime');
+                ->withAverage('processingtime')
+                ->withUncapturedRequestRowSortedLast($locale);
         } catch (Exception $exception) {
             return null;
         }
@@ -169,10 +172,7 @@ class ReportRequestService
 
             if (is_array($exchangeRequest->data)) {
                 $locale = \App::$supportedLanguages[\App::$locale]['locale'] ?? 'de_DE';
-                $collator = new \Collator($locale);
-                uksort($exchangeRequest->data, static function ($itemA, $itemB) use ($collator) {
-                    return $collator->compare($itemA, $itemB);
-                });
+                $exchangeRequest = $exchangeRequest->withUncapturedRequestRowSortedLast($locale);
             }
 
             return $exchangeRequest;
