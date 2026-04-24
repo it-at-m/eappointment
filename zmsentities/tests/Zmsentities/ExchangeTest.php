@@ -220,4 +220,43 @@ class ExchangeTest extends EntityCommonTests
         $entity->period = true;
         $entity->testValid();
     }
+
+    public function testWithUncapturedRequestRowSortedLast()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+        $exchange->data = [
+            'Zebra' => ['x' => 1],
+            \BO\Zmsentities\Exchange::UNCATEGORIZED_REQUEST_NAME => ['x' => 2],
+            'Alpha' => ['x' => 3],
+            'sum' => ['Alpha' => 10, 'Zebra' => 20],
+            'average_processingtime' => ['Alpha' => 1, 'Zebra' => 2],
+        ];
+        $sorted = $exchange->withUncapturedRequestRowSortedLast('de_DE');
+        $this->assertSame(
+            [
+                'Alpha',
+                'Zebra',
+                \BO\Zmsentities\Exchange::UNCATEGORIZED_REQUEST_NAME,
+                'sum',
+                'average_processingtime',
+            ],
+            array_keys($sorted->data)
+        );
+    }
+
+    public function testWithUncapturedRequestRowSortedLastWithoutUncapturedBucket()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+        $exchange->data = [
+            'Zebra' => ['x' => 1],
+            'Alpha' => ['x' => 2],
+            'sum' => [],
+            'average_processingtime' => [],
+        ];
+        $sorted = $exchange->withUncapturedRequestRowSortedLast('de_DE');
+        $this->assertSame(
+            ['Alpha', 'Zebra', 'sum', 'average_processingtime'],
+            array_keys($sorted->data)
+        );
+    }
 }
