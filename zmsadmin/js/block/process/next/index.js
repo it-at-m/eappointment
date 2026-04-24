@@ -55,9 +55,12 @@ class View extends BaseView {
         return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
-    loadCancel() {
+    loadCancel(requeue) {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/cancel/`
+        let url = `${this.includeUrl}/workstation/process/cancel/`
+        if (requeue) {
+            url += '?requeue=1'
+        }
         return this.loadInto(url).then(() => {
             this.onNextProcess();
             this.updateURL();
@@ -122,11 +125,21 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadProcessing();
-        }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
+        }).on('click', '.client-called_button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = '';
-            this.loadCancel();
+            this.loadCancel(false);
+        }).on('click', '.client-precall_button-abort', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exclude = '';
+            this.loadCancel(true);
+        }).on('click', '.client-info .button-cancel', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exclude = '';
+            this.loadCancel(false);
         }).on('click', '.client-called_button-parked, .client-precall_button-parked, .button-parked', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
