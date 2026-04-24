@@ -19,8 +19,6 @@
 
         {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
         {% import "element/helper/snippets.twig" as timeutils %}
-        {# Must match \\BO\\Zmsentities\\Exchange::UNCATEGORIZED_REQUEST_NAME and warehouse SQL label #}
-        {% set uncaptured_request_name = 'Dienstleistung wurde nicht erfasst' %}
         {% block board_body %}
         {% if selected or dateRange %}
             {% if exchangeRequest.period == "day" %}
@@ -67,8 +65,16 @@
                     {% for name, entry in exchangeRequest.data %}
 
                         {% if name != "average_processingtime" and name != "sum" %}
-                        <tr{% if name == uncaptured_request_name %} class="report-board--uncaptured-service"{% endif %}>
-                            <th class="report-board--long-text">{{ name|trans }}</th>
+                        <tr{% if name == '__UNCATEGORIZED_REQUEST__' or name == '__SERVICE_NOT_PROVIDED__' %} class="report-board--request-stat-special"{% endif %}>
+                            <th class="report-board--long-text">
+                                {% if name == '__UNCATEGORIZED_REQUEST__' %}
+                                    {{ 'request_statistic.uncategorized'|trans }}
+                                {% elseif name == '__SERVICE_NOT_PROVIDED__' %}
+                                    {{ 'request_statistic.not_provided'|trans }}
+                                {% else %}
+                                    {{ name|trans }}
+                                {% endif %}
+                            </th>
 
                             {% if exchangeRequest.period == "day" %}
                                 <td class="report-board--summary">

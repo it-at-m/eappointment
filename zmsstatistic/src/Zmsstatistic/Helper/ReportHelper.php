@@ -2,6 +2,7 @@
 
 namespace BO\Zmsstatistic\Helper;
 
+use BO\Zmsentities\Exchange;
 use DateTime;
 
 class ReportHelper
@@ -183,5 +184,41 @@ class ReportHelper
         }
 
         return $years;
+    }
+
+    /**
+     * Human-readable row title for XLSX (matches Twig / lang JSON for HTML).
+     */
+    public static function requestStatisticRowDisplayName(string $name): string
+    {
+        if ($name !== Exchange::REQUEST_STAT_NAME_UNCATEGORIZED
+            && $name !== Exchange::REQUEST_STAT_NAME_NOT_PROVIDED) {
+            return $name;
+        }
+
+        $locale = 'de_DE';
+        if (isset(\App::$locale, \App::$supportedLanguages[\App::$locale]['locale'])) {
+            $locale = \App::$supportedLanguages[\App::$locale]['locale'];
+        } elseif (isset(\App::$supportedLanguages) && is_array(\App::$supportedLanguages)) {
+            foreach (\App::$supportedLanguages as $entry) {
+                if (!empty($entry['default']) && !empty($entry['locale'])) {
+                    $locale = $entry['locale'];
+                    break;
+                }
+            }
+        }
+
+        static $labelsByLocale = [];
+        if (!isset($labelsByLocale[$locale])) {
+            $path = \App::APP_PATH . '/lang/' . $locale . '.json';
+            $labelsByLocale[$locale] = is_readable($path)
+                ? (json_decode((string) file_get_contents($path), true) ?: [])
+                : [];
+        }
+
+        $subKey = $name === Exchange::REQUEST_STAT_NAME_UNCATEGORIZED ? 'uncategorized' : 'not_provided';
+        $nested = $labelsByLocale[$locale]['request_statistic'] ?? [];
+
+        return $nested[$subKey] ?? $name;
     }
 }
