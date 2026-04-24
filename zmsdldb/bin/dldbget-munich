@@ -83,11 +83,11 @@ $servicesData = $transformer->transformServices($data);
 
 print("Transforming locations (and merging location refs into services)...\n\n");
 $locationTransform = $transformer->transformLocations($data, $servicesData);
-$mergedServicesData = $locationTransform['services'] ?? null;
-writeJsonFile(
-    $destinationPath . '/services_de.json',
-    $mergedServicesData !== null ? $mergedServicesData : $servicesData
-);
+if (empty($locationTransform['services'])) {
+    echo "Error: transformLocations did not return enriched services payload\n\n";
+    exit(1);
+}
+writeJsonFile($destinationPath . '/services_de.json', $locationTransform['services']);
 writeJsonFile($destinationPath . '/locations_de.json', $locationTransform['locations']);
 
 // Create empty files for English versions (not currently supported by Munich)
