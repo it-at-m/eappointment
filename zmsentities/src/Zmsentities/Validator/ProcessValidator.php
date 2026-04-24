@@ -144,8 +144,8 @@ class ProcessValidator
                 ' Zeichen'
             );
         }
-        $this->getCollection()->validatedAction($valid, function ($_v) use ($setter, $normalized) {
-            $setter($normalized);
+        $this->getCollection()->validatedAction($valid, function ($raw) use ($setter) {
+            $setter(ProcessPlainText::normalize($raw));
         });
         return $this;
     }
@@ -207,8 +207,8 @@ class ProcessValidator
         if ($length > ProcessPlainText::MAX_AMENDMENT_CHARS) {
             $valid->setFailure('Die Anmerkung sollte 500 Zeichen nicht überschreiten');
         }
-        $this->getCollection()->validatedAction($valid, function ($_v) use ($setter, $normalized) {
-            $setter($normalized);
+        $this->getCollection()->validatedAction($valid, function ($raw) use ($setter) {
+            $setter(ProcessPlainText::normalize($raw));
         });
         return $this;
     }
