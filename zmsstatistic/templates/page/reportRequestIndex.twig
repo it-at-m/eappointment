@@ -19,6 +19,8 @@
 
         {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
         {% import "element/helper/snippets.twig" as timeutils %}
+        {# Must match \\BO\\Zmsentities\\Exchange::UNCATEGORIZED_REQUEST_NAME and warehouse SQL label #}
+        {% set uncaptured_request_name = 'Dienstleistung wurde nicht erfasst' %}
         {% block board_body %}
         {% if selected or dateRange %}
             {% if exchangeRequest.period == "day" %}
@@ -65,7 +67,7 @@
                     {% for name, entry in exchangeRequest.data %}
 
                         {% if name != "average_processingtime" and name != "sum" %}
-                        <tr>
+                        <tr{% if name == uncaptured_request_name %} class="report-board--uncaptured-service"{% endif %}>
                             <th class="report-board--long-text">{{ name|trans }}</th>
 
                             {% if exchangeRequest.period == "day" %}
@@ -104,7 +106,7 @@
                         <th class="report-board--long-text">Summe</th>
 
                         {% if exchangeRequest.period == "day" %}
-                            <td class="report-board--summary">-</td>
+                            <td class="report-board--summary">{{ timeutils.formatMinutesToTime(0) }}</td>
                         {% endif %}
 
                         <td class="report-board--summary">
