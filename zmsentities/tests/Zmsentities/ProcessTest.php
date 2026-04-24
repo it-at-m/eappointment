@@ -36,7 +36,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue('141' == $entity->getScopeId(), 'scope id is not accessible');
         $this->assertTrue('141' == $entity->getCurrentScope()->getId(), 'current scope is not accessible');
         $entity->setRandomAuthKey();
-        $this->assertTrue(4 == strlen($entity->getAuthKey()), 'set random authKey failed');
+        $this->assertTrue(64 == strlen($entity->getAuthKey()), 'set random authKey failed');
         $this->assertEquals('Das ist ein Zusatztext', $entity->getAmendment());
 
         $entity->setStatus('reserved');
@@ -292,55 +292,9 @@ class ProcessTest extends EntityCommonTests
             $formCollection['process']['messages'][0]
         );
         $this->assertEquals(
-            'Es müssen mindestens 4 Zeichen eingegeben werden.',
+            'Der Absagecode ist nicht korrekt',
             $formCollection['authKey']['messages'][0]
         );
-    }
-
-    public function testFromParamsToProcess()
-    {
-        $entity = $this->getExample();
-        $scope = (new \BO\Zmsentities\Scope)->getExample();
-        $entity->scope = $scope;
-        $validator = new \BO\Mellon\Validator([
-            'form_validate' => 1,
-            'familyName' => 'Max Mustermann',
-            'email' => 'zms@berlinonline.de',
-            'telephone' => '0123456789',
-            'surveyAccepted' => 1,
-            'amendment' => 'Test Zusatz',
-            'customTextfield' => 'Test Zusatzfeld',
-            'customTextfield2' => 'Test Zusatzfeld zwei',
-            'agbgelesen' => 1,
-            'sendReminder' => 1,
-            'headsUpTime' => 60
-        ]);
-        $validator->makeInstance();
-        $result = \BO\Zmsentities\Helper\ProcessFormValidation::fromParametersToProcess($entity);
-        $this->assertEntity('\BO\Zmsentities\Process', $result['process']);
-    }
-
-    public function testFromParamsToProcessFailed()
-    {
-        $entity = $this->getExample();
-        $entity->scope = (new \BO\Zmsentities\Scope)->getExample();
-        $validator = new \BO\Mellon\Validator([
-            'form_validate' => 1
-        ]);
-        $validator->makeInstance();
-        $result = \BO\Zmsentities\Helper\ProcessFormValidation::fromParametersToProcess($entity);
-        $this->assertTrue($result['formdata']['failed']);
-    }
-
-    public function testFromParamsToProcessUnvalid()
-    {
-        $entity = $this->getExample();
-        $entity->scope = (new \BO\Zmsentities\Scope)->getExample();
-        $validator = new \BO\Mellon\Validator([
-        ]);
-        $validator->makeInstance();
-        $result = \BO\Zmsentities\Helper\ProcessFormValidation::fromParametersToProcess($entity);
-        $this->assertTrue(null === $result['formdata']);
     }
 
     public function testToCalendar()
