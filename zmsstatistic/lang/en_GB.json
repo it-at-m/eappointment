@@ -1,4 +1,8 @@
 {
+  "request_statistic": {
+    "uncategorized": "Service was not recorded",
+    "not_provided": "Service could not be provided"
+  },
   "header": {
     "placenumber": "Place",
     "counter": "Counter",
