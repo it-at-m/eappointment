@@ -2,6 +2,15 @@ export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
   base: "/eappointment/",
+  head: [
+    [
+      "link",
+      {
+        rel: "icon",
+        href: "https://assets.muenchen.de/logos/lhm/icon-lhm-muenchen-32.png"
+      }
+    ]
+  ],
   themeConfig: {
     nav: [
       { text: "Overview", link: "/" },
