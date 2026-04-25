@@ -1,20 +1,18 @@
 # eAppointment Documentation
 
-This documentation is versioned with the code in `main` and published in two places:
+This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`main`).
 
-- GitHub Pages handbook: [https://it-at-m.github.io/eappointment/guide/](https://it-at-m.github.io/eappointment/guide/)
-- GitHub Wiki (synced): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
+- **Wiki** (markdown mirror): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
 
-Technical reports (coverage, API docs, security, diagrams) remain published at:
-
-- [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
+**Coverage and API HTML** from CI are published on the same host; see [Testing](./testing.md) and [API reference](./api-reference.md).
 
 ## Quick Links
 
 - [Project Overview](./overview.md)
 - [Getting Started](./getting-started.md)
 - [Development](./development.md)
-- [Testing](./testing.md)
+- [Testing](./testing.md) — coverage report links
+- [API reference](./api-reference.md) — ReDoc and diagrams
 - [Operations](./operations.md)
 - [Module READMEs](./module-readmes.md)
 - [Wiki Sync Policy](./wiki-sync.md)
