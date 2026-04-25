@@ -28,6 +28,9 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
+    /** Legacy short token or new 256-bit hex (see zmsentities Process::setRandomAuthKey) */
+    private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
+    private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
     public static function setLanguageContext(?string $language): void
     {
@@ -435,7 +438,16 @@ class ValidationService
 
     private static function isValidAuthKey(?string $authKey): bool
     {
-        return !empty($authKey) && is_string($authKey) && strlen(trim($authKey)) > 0;
+        if ($authKey === null) {
+            return false;
+        }
+        $authKey = trim($authKey);
+        $len = strlen($authKey);
+        if ($len !== self::AUTH_KEY_LEGACY_HEX_LENGTH && $len !== self::AUTH_KEY_NEW_HEX_LENGTH) {
+            return false;
+        }
+
+        return ctype_xdigit($authKey);
     }
 
     private static function isValidServiceIds(?array $serviceIds): bool
