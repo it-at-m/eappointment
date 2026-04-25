@@ -1,4 +1,4 @@
-// Hand-authored SCSS partial; imported into `custom_scss/admin.scss` and compiled via `npm run css`.
+// Hand-authored SCSS partial; imported into `scss/admin.scss` and compiled via `npm run css`.
 .availability-timetable .availability-timetable_container .inner .bars.opening-level {
     top: 4rem;
 }
@@ -127,7 +127,7 @@
     margin-right: 8px;
 }
 
-/* Built via `npm run css` (scss/admin.scss → this file). Not custom_scss/admin.scss. */
+/* Hand-authored SCSS partial; imported into scss/admin.scss and compiled via `npm run css`. */
 .queue-table-free-text,
 .process-free-text {
     overflow-wrap: break-word;
