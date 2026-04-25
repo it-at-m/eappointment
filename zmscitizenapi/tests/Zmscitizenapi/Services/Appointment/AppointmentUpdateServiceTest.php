@@ -6,33 +6,18 @@ namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
 use PHPUnit\Framework\TestCase;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentUpdateService;
 
 class AppointmentUpdateServiceTest extends TestCase
 {
     private AppointmentUpdateService $service;
     private \ReflectionClass $reflector;
-    private static $originalFacade;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->service = new AppointmentUpdateService();
         $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
-        
-        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
-        $staticProperties = $facadeReflection->getStaticProperties();
-        self::$originalFacade = reset($staticProperties);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
-        $staticProperty = $facadeReflection->getProperties(\ReflectionProperty::IS_STATIC)[0];
-        $staticProperty->setAccessible(true);
-        $staticProperty->setValue(null, self::$originalFacade);
     }
 
     private function invokePrivateMethod(string $methodName, array $params = []): mixed
