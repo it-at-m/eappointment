@@ -144,6 +144,14 @@ jobs:
               
               <div class="grid">
                 <div class="card">
+                  <h2>Handbook</h2>
+                  <ul>
+                    <li><a href="guide/">Documentation Handbook (VitePress)</a></li>
+                    <li><a href="https://github.com/it-at-m/eappointment/wiki">GitHub Wiki (synced from main)</a></li>
+                  </ul>
+                </div>
+
+                <div class="card">
                   <h2>API Documentation</h2>
                   <ul>
                     <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
@@ -200,23 +208,12 @@ jobs:
           </html>
           EOL
 
-      - name: Download coverage reports
-        uses: actions/download-artifact@v7
-        with:
-          name: ${{ inputs.coverage_artifact }}
-          path: public
-
-      - name: Download API docs
-        uses: actions/download-artifact@v7
-        with:
-          name: ${{ inputs.api_docs_artifact }}
-          path: public
-
-      - name: Download security reports
-        uses: actions/download-artifact@v7
-        with:
-          name: ${{ inputs.security_artifact }}
-          path: public
+      - name: Build documentation handbook
+        run: |
+          npm install --prefix docs
+          npm run docs:build --prefix docs
+          mkdir -p public/guide
+          cp -R docs/.vitepress/dist/. public/guide/
 
       - name: Debug - List directory structure
         run: |
