@@ -10,7 +10,7 @@ Documentation source of truth is this repository (`docs/`) on the `main` branch.
   - push to `main` when `docs/**` changes
   - manual `workflow_dispatch`
 - It does not run on pull requests or feature branches.
-- `docs/index.md` is mapped to wiki `Home.md`.
+- After copying `docs/*.md` into the wiki repo, `wiki/index.md` is **moved** to `wiki/Home.md` so the GitHub Wiki has a single landing page (no duplicate `index` page).
 - Concurrent runs use the same concurrency group and **queue** (`cancel-in-progress: false`) so an in-flight push is not aborted mid-sync.
 
 ## Required secret: `WIKI_PUSH_TOKEN`

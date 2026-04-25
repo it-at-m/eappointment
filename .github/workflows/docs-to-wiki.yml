@@ -43,7 +43,7 @@ jobs:
           mkdir -p wiki
           rm -f wiki/*.md
           cp docs/*.md wiki/
-          cp docs/index.md wiki/Home.md
+          mv wiki/index.md wiki/Home.md
 
       - name: Commit and push wiki changes
         run: |
