@@ -2,10 +2,7 @@
 
 namespace BO\Zmsentities\Validator;
 
-use BO\Mellon\Valid;
 use BO\Mellon\Unvalidated;
-use BO\Mellon\Validator;
-use BO\Mellon\Parameter;
 use BO\Mellon\Collection;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Helper\Delegate;
