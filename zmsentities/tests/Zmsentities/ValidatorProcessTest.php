@@ -104,6 +104,33 @@ class ValidatorProcessTest extends Base
         $this->assertEquals($parameters['authKey'], $process->getAuthKey());
     }
 
+    public function testProcessCredentialsWithWhitespacePaddedAuthKey()
+    {
+        $parameters = [
+            'id' => '123456',
+            'authKey' => '  ab12  '
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $processValidator->validateAuthKey(
+            $validator->getParameter('authKey'),
+            $delegatedProcess->setter('authKey')
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertFalse($collectionStatus['id']['failed']);
+        $this->assertFalse($collectionStatus['authKey']['failed']);
+        $this->assertEquals('ab12', $process->getAuthKey());
+    }
+
     public function testProcessCredentialsFailedWithInvalidAuthKeyLength()
     {
         $parameters = [

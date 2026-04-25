@@ -140,11 +140,10 @@ class RateLimitingMiddleware implements MiddlewareInterface
     private function createRateLimitResponse($request): ResponseInterface
     {
         $response = \App::$slim->getResponseFactory()->createResponse();
-        $language = $request->getAttribute('language');
-        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT, $language)['statusCode'])
+        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT)['statusCode'])
             ->withHeader('Content-Type', 'application/json');
         $response->getBody()->write(json_encode([
-            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT, $language)]
+            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT)]
         ]));
         return $response;
     }

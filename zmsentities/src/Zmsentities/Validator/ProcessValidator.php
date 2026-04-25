@@ -60,8 +60,9 @@ class ProcessValidator
 
     public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
-        $valid = $unvalid->isString();
-        $length = strlen(trim((string)$valid->getValue()));
+        $trimmed = trim((string) $unvalid->getValue());
+        $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
+        $length = strlen($trimmed);
         if ($length || ($isRequiredCallback && $isRequiredCallback())) {
             $valid
                 ->isMatchOf(

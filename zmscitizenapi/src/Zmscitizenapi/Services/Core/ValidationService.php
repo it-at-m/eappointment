@@ -20,7 +20,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
-    private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
@@ -31,14 +30,9 @@ class ValidationService
     private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
     private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
-
     private static function getError(string $key): array
     {
-        return ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key);
     }
 
     public static function validateServerGetRequest(?ServerRequestInterface $request): array
