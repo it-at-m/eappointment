@@ -11,6 +11,14 @@ Documentation source of truth is this repository (`docs/`) on the `main` branch.
   - manual `workflow_dispatch`
 - It does not run on pull requests or feature branches.
 - `docs/index.md` is mapped to wiki `Home.md`.
+- Concurrent runs use the same concurrency group and **queue** (`cancel-in-progress: false`) so an in-flight push is not aborted mid-sync.
+
+## Required secret: `WIKI_PUSH_TOKEN`
+
+Pushing to `https://github.com/<org>/<repo>.wiki.git` is **not** supported by the default `GITHUB_TOKEN` for wiki remotes in typical setups.
+
+- Configure a repository secret named **`WIKI_PUSH_TOKEN`** with a PAT that can push to the wiki (classic PAT with `repo` scope, or a fine-grained token with wiki write as allowed by your org policy).
+- The workflow **fails fast** if `WIKI_PUSH_TOKEN` is missing, so misconfiguration is visible in the Actions log instead of failing only at `git push`.
 
 ## Manual Wiki Reset (one-time baseline)
 
