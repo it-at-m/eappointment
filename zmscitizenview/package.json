@@ -27,7 +27,7 @@
     "@muenchen/prettier-codeformat": "^1.0.2",
     "@types/node": "^25.6.0",
     "@types/webfontloader": "^1.6.35",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue": "^6.0.6",
     "@vitest/coverage-v8": "^4.0.0",
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.7.0",
