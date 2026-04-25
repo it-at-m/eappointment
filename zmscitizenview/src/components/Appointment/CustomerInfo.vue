@@ -178,7 +178,10 @@ import {
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
-/** Aligned with DB varchar(255) and ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS */
+/**
+ * UX pre-check limit aligned with DB varchar(255) / ProcessPlainText max.
+ * Backend entities validation is authoritative if client normalization differs.
+ */
 const MAX_CUSTOM_TEXT_CHARS = 255;
 
 const inputLines1 = ref<number>(3);

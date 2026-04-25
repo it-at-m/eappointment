@@ -1,6 +1,10 @@
 /**
- * Mirrors {@link BO\Zmsentities\Helper\ProcessPlainText::normalize} (PHP) for
- * client-side length/required checks aligned with the API/entities layer.
+ * Client-side plain-text normalization used for UX checks (required + rough
+ * length guardrails) before submit.
+ *
+ * Backend normalization/validation in
+ * {@link BO\Zmsentities\Helper\ProcessPlainText::normalize} and entities
+ * validators remains authoritative.
  *
  * Implemented without assigning user-controlled strings to innerHTML, to
  * avoid DOM XSS sinks and satisfy static analysis (CodeQL).
@@ -19,7 +23,13 @@ export function normalizePlainText(
   return workingText;
 }
 
-/** Like PHP mb_strlen(normalize($input), 'UTF-8'). */
+/**
+ * Client-side character count after local normalization.
+ *
+ * Note: This is a UX pre-check and can differ from backend length in edge
+ * cases (e.g. unsupported entities or decoding semantics). API/entity layer is
+ * authoritative.
+ */
 export function plainTextCharCount(
   rawInput: string | null | undefined
 ): number {
@@ -27,8 +37,11 @@ export function plainTextCharCount(
 }
 
 /**
- * Decode a subset of HTML entities in a loop until stable, with "&amp;"
- * applied last each round (avoids turning "&amp;lt;" into "<" in one step).
+ * Decode a conservative subset of HTML entities for client-side checks.
+ *
+ * This intentionally does not implement full HTML5 entity decoding. Backend
+ * `html_entity_decode(..., ENT_QUOTES | ENT_HTML5)` remains the source of
+ * truth for persisted validation.
  */
 function decodeHtmlEntities(encodedText: string): string {
   let decodedText = encodedText;
