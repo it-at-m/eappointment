@@ -1,0 +1,35 @@
+:root {
+  --muc-logo-filter: invert(0);
+}
+
+.dark {
+  --muc-logo-filter: invert(1);
+}
+
+footer.VPFooter {
+  display: block !important;
+  z-index: 100 !important;
+}
+
+.VPNavBarExtra .logo {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.VPNavBarExtra .logo img {
+  filter: var(--muc-logo-filter);
+  height: 28px;
+}
+
+@media all and (max-width: 450px) {
+  .VPNavBarExtra .logo {
+    overflow: hidden;
+    width: 23px;
+  }
+
+  .VPNavBarExtra .logo img {
+    object-fit: cover;
+    object-position: left;
+  }
+}
