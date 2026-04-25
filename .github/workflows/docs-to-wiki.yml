@@ -1,0 +1,50 @@
+name: Sync docs to Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs-to-wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-to-wiki
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout wiki repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          token: ${{ secrets.WIKI_PUSH_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Sync markdown docs to wiki
+        run: |
+          mkdir -p wiki
+          rm -f wiki/*.md
+          cp docs/*.md wiki/
+          cp docs/index.md wiki/Home.md
+
+      - name: Commit and push wiki changes
+        run: |
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No wiki changes"
+            exit 0
+          fi
+          git commit -m "docs: sync from ${{ github.repository }}@${{ github.sha }}"
+          git push
