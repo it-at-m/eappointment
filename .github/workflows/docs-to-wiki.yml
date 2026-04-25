@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: docs-to-wiki
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -22,12 +22,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Require WIKI_PUSH_TOKEN for wiki push
+        run: |
+          if [ -z "$WIKI_PUSH_TOKEN" ]; then
+            echo "::error::Repository secret WIKI_PUSH_TOKEN is not set. The default GITHUB_TOKEN cannot push to the wiki git remote (<repo>.wiki). Add a PAT with wiki write access as WIKI_PUSH_TOKEN. See docs/wiki-sync.md."
+            exit 1
+          fi
+        env:
+          WIKI_PUSH_TOKEN: ${{ secrets.WIKI_PUSH_TOKEN }}
+
       - name: Checkout wiki repository
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki
-          token: ${{ secrets.WIKI_PUSH_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WIKI_PUSH_TOKEN }}
 
       - name: Sync markdown docs to wiki
         run: |
