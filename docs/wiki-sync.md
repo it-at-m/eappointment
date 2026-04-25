@@ -1,37 +1,25 @@
-# Wiki Sync Policy
+# GitHub Wiki
 
-## Source of Truth
+## Current status
 
-Documentation source of truth is this repository (`docs/`) on the `main` branch.
+**Automated wiki sync is disabled.** Keeping the wiki in sync with `docs/` would require a repository secret with push access to [https://github.com/it-at-m/eappointment.wiki.git](https://github.com/it-at-m/eappointment.wiki.git) (typically a PAT). That was deferred to avoid org PAT requests.
 
-## Automation Rules
+The wiki remains available for **manual** edits and links:
 
-- Wiki sync workflow runs on:
-  - push to `main` when `docs/**` changes
-  - manual `workflow_dispatch`
-- It does not run on pull requests or feature branches.
-- After copying `docs/*.md` into the wiki repo, `wiki/index.md` is **moved** to `wiki/Home.md` so the GitHub Wiki has a single landing page (no duplicate `index` page).
-- Concurrent runs use the same concurrency group and **queue** (`cancel-in-progress: false`) so an in-flight push is not aborted mid-sync.
+- [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
 
-## Required secret: `WIKI_PUSH_TOKEN`
+## Source of truth
 
-Pushing to `https://github.com/<org>/<repo>.wiki.git` is **not** supported by the default `GITHUB_TOKEN` for wiki remotes in typical setups.
+Authoritative documentation for developers lives in this repository under [`docs/`](./index.md) and on [GitHub Pages](https://it-at-m.github.io/eappointment/).
 
-- Configure a repository secret named **`WIKI_PUSH_TOKEN`** with a PAT that can push to the wiki (classic PAT with `repo` scope, or a fine-grained token with wiki write as allowed by your org policy).
-- The workflow **fails fast** if `WIKI_PUSH_TOKEN` is missing, so misconfiguration is visible in the Actions log instead of failing only at `git push`.
+## Optional manual sync
 
-## Manual Wiki Reset (one-time baseline)
+To refresh the wiki from `docs/` without automation:
 
-Use these steps once to align existing wiki history with repository docs:
+1. Clone `https://github.com/it-at-m/eappointment.wiki.git`
+2. Copy the desired `docs/*.md` files into the wiki repo (rename `docs/index.md` to `Home.md` for the wiki home page if you want that layout).
+3. Commit and push.
 
-1. Clone wiki repository:
-   - `https://github.com/it-at-m/eappointment.wiki.git`
-2. Replace wiki markdown with the baseline generated from `docs/`.
-3. Commit and push baseline.
-4. After this baseline, use only repository-driven updates.
+## Re-enabling automation (later)
 
-## Editing Guidance
-
-- Do not manually maintain long-term content directly in the wiki.
-- Create documentation changes in repository PRs and merge to `main`.
-- Use manual dispatch only for controlled backfills or re-sync.
+If the org approves a credential, a workflow can be added again that uses a secret (for example `WIKI_PUSH_TOKEN`) with `actions/checkout` of the `.wiki` repository and the same copy or `rsync` steps as before.
