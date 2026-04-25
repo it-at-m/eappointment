@@ -4371,16 +4371,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.11.3",
+            "version": "v2.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "a41a2774c24abbcb0ba31f00a822eb372cf2ac96"
+                "reference": "bbd4fa3a972c460cbeda11d6bbc350d0b5a39717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/a41a2774c24abbcb0ba31f00a822eb372cf2ac96",
-                "reference": "a41a2774c24abbcb0ba31f00a822eb372cf2ac96",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/bbd4fa3a972c460cbeda11d6bbc350d0b5a39717",
+                "reference": "bbd4fa3a972c460cbeda11d6bbc350d0b5a39717",
                 "shasum": ""
             },
             "require": {
@@ -4445,9 +4445,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.11.3"
+                "source": "https://github.com/nette/tracy/tree/v2.11.4"
             },
-            "time": "2026-02-25T18:34:26+00:00"
+            "time": "2026-04-22T06:08:41+00:00"
         },
         {
             "name": "twig/intl-extra",
