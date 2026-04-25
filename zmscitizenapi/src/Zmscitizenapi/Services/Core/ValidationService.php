@@ -28,7 +28,6 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
-    /** Legacy short token or new 256-bit hex (see zmsentities Process::setRandomAuthKey) */
     private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
     private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
