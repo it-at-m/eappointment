@@ -200,15 +200,11 @@ class ProcessValidator
         }
         $normalized = ProcessPlainText::normalize($valid->getValue());
         $length = mb_strlen($normalized, 'UTF-8');
-        if ($length === 0) {
-            $this->getCollection()->addValid($valid);
-            return $this;
-        }
         if ($length > ProcessPlainText::MAX_AMENDMENT_CHARS) {
             $valid->setFailure('Die Anmerkung sollte 500 Zeichen nicht überschreiten');
         }
-        $this->getCollection()->validatedAction($valid, function ($raw) use ($setter) {
-            $setter(ProcessPlainText::normalize($raw));
+        $this->getCollection()->validatedAction($valid, function () use ($setter, $normalized) {
+            $setter($normalized);
         });
         return $this;
     }
