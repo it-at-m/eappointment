@@ -2,7 +2,7 @@
 
 This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.io/eappointment/). It is versioned with the repository (`main`).
 
-- **GitHub Wiki** (not auto-synced; see [Wiki policy](./wiki-sync.md)): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
+- **GitHub Wiki** (manual): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
 
 **Coverage and API HTML** from CI are published on the same host; see [Testing](./testing.md) and [API reference](./api-reference.md).
 
@@ -15,7 +15,6 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [API reference](./api-reference.md) — ReDoc and diagrams
 - [Operations](./operations.md)
 - [Module READMEs](./module-readmes.md)
-- [Wiki policy](./wiki-sync.md)
 
 ## Repository Scope
 
