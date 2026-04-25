@@ -13,7 +13,7 @@ export default {
       { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project Overview", link: "/overview" }] },
       { text: "Setup and Development", items: [{ text: "Getting Started", link: "/getting-started" }, { text: "Development", link: "/development" }] },
       { text: "Operations", items: [{ text: "Testing", link: "/testing" }, { text: "API reference", link: "/api-reference" }, { text: "Operations", link: "/operations" }] },
-      { text: "Reference", items: [{ text: "Module READMEs", link: "/module-readmes" }, { text: "Wiki Sync", link: "/wiki-sync" }] }
+      { text: "Reference", items: [{ text: "Module READMEs", link: "/module-readmes" }, { text: "Wiki", link: "/wiki-sync" }] }
     ]
   }
 };
