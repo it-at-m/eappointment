@@ -4,22 +4,24 @@ This repository does not use git submodules for these components; module documen
 
 ## Module READMEs
 
-- [mellon/README.md](../mellon/README.md)
-- [zmsadmin/README.md](../zmsadmin/README.md)
-- [zmsapi/README.md](../zmsapi/README.md)
-- [zmsapi/public/doc/README.md](../zmsapi/public/doc/README.md)
-- [zmsautomation/README.md](../zmsautomation/README.md)
-- [zmscalldisplay/README.md](../zmscalldisplay/README.md)
-- [zmscitizenapi/README.md](../zmscitizenapi/README.md)
-- [zmscitizenapi/public/doc/README.md](../zmscitizenapi/public/doc/README.md)
-- [zmsclient/README.md](../zmsclient/README.md)
-- [zmsdb/README.md](../zmsdb/README.md)
-- [zmsdldb/README.md](../zmsdldb/README.md)
-- [zmsentities/README.md](../zmsentities/README.md)
-- [zmsmessaging/README.md](../zmsmessaging/README.md)
-- [zmsslim/README.md](../zmsslim/README.md)
-- [zmsstatistic/README.md](../zmsstatistic/README.md)
-- [zmsticketprinter/README.md](../zmsticketprinter/README.md)
+Links open the README on GitHub (`main` branch).
+
+- [mellon/README.md](https://github.com/it-at-m/eappointment/blob/main/mellon/README.md)
+- [zmsadmin/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsadmin/README.md)
+- [zmsapi/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsapi/README.md)
+- [zmsapi/public/doc/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsapi/public/doc/README.md)
+- [zmsautomation/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)
+- [zmscalldisplay/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscalldisplay/README.md)
+- [zmscitizenapi/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenapi/README.md)
+- [zmscitizenapi/public/doc/README.md](https://github.com/it-at-m/eappointment/blob/main/zmscitizenapi/public/doc/README.md)
+- [zmsclient/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsclient/README.md)
+- [zmsdb/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsdb/README.md)
+- [zmsdldb/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsdldb/README.md)
+- [zmsentities/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsentities/README.md)
+- [zmsmessaging/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsmessaging/README.md)
+- [zmsslim/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsslim/README.md)
+- [zmsstatistic/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsstatistic/README.md)
+- [zmsticketprinter/README.md](https://github.com/it-at-m/eappointment/blob/main/zmsticketprinter/README.md)
 
 ## Policy
 

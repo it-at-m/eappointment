@@ -43,6 +43,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create public directory
         run: mkdir -p public
 
@@ -208,9 +211,16 @@ jobs:
           </html>
           EOL
 
+      - name: Setup Node for docs build
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
       - name: Build documentation handbook
         run: |
-          npm install --prefix docs
+          npm ci --prefix docs
           npm run docs:build --prefix docs
           mkdir -p public/guide
           cp -R docs/.vitepress/dist/. public/guide/
