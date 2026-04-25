@@ -25,30 +25,23 @@ jobs:
   call-zmscitizenview-coverage:
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
+  # OWASP/dependency reports are no longer published to GitHub Pages; this job still runs for CI visibility.
   call-trivy-security-checks:
     uses: ./.github/workflows/trivy.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-trivy-security-checks]
+    needs: [call-php-unit-tests, call-zmscitizenview-coverage]
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
         run: |
           mkdir -p public/coverage
-          mkdir -p public/security
 
       - name: Download coverage reports
         uses: actions/download-artifact@v7
         with:
           pattern: 'coverage-*'
           path: public/coverage-temp
-          merge-multiple: false
-
-      - name: Download security reports
-        uses: actions/download-artifact@v7
-        with:
-          pattern: 'security-report-*'
-          path: public/security-temp
           merge-multiple: false
 
       - name: Fix directory structure
@@ -63,21 +56,10 @@ jobs:
           done
           rm -rf public/coverage-temp
 
-          # Fix security reports
-          for module in $MODULES; do
-            if [ -f "public/security-temp/security-report-$module/dependency-check-report.html" ]; then
-              mkdir -p "public/security/security-report-$module"
-              mv "public/security-temp/security-report-$module/dependency-check-report.html" "public/security/security-report-$module/"
-            fi
-          done
-          rm -rf public/security-temp
-
       - name: Debug - List final structure
         run: |
           echo "=== Final Coverage Structure ==="
           ls -R public/coverage/
-          echo "=== Final Security Structure ==="
-          ls -R public/security/
 
       - name: Upload aggregated reports
         uses: actions/upload-artifact@v6
@@ -106,7 +88,6 @@ jobs:
     with:
       coverage_artifact: aggregated-reports
       api_docs_artifact: api-docs
-      security_artifact: aggregated-reports
       git_commit: ${{ github.sha }}
       git_branch: ${{ github.ref_name }}
 

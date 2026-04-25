@@ -6,14 +6,10 @@ This monorepo contains Munich-specific adjustments to the original Berlin eAppoi
 ## Documentation
 
 - Repository docs (source of truth): [docs/index.md](docs/index.md)
-- Published handbook: [https://it-at-m.github.io/eappointment/guide/](https://it-at-m.github.io/eappointment/guide/)
+- Published handbook (GitHub Pages root): [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
 - GitHub Wiki (auto-synced from `main`): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
 
-## Technical Reports
-
-Coverage, API docs, security reports, and diagrams are published at:
-
-- [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
+**Coverage** and **API HTML** from CI are on the same Pages site; see [docs/testing.md](docs/testing.md) and [docs/api-reference.md](docs/api-reference.md).
 
 ## Contacts
 
