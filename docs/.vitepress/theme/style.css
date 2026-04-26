@@ -1,0 +1,24 @@
+:root {
+  --muc-logo-filter: invert(0);
+}
+
+.dark {
+  --muc-logo-filter: invert(1);
+}
+
+footer.VPFooter {
+  display: block !important;
+  z-index: 100 !important;
+}
+
+@media all and (max-width: 450px) {
+  .VPNav div.logo a {
+    overflow: hidden;
+    width: 23px;
+  }
+
+  .VPNav div.logo a img {
+    object-fit: cover;
+    object-position: left;
+  }
+}
