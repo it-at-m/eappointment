@@ -9,7 +9,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -18,7 +18,7 @@ updates:
     directory: "/zmscitizenview"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -27,7 +27,7 @@ updates:
     directory: "/zmscitizenapi"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -36,7 +36,7 @@ updates:
     directory: "/zmsapi"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -45,7 +45,7 @@ updates:
     directory: "/zmsadmin"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -54,7 +54,7 @@ updates:
     directory: "/zmsstatistic"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -63,7 +63,7 @@ updates:
     directory: "/zmsticketprinter"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -72,7 +72,7 @@ updates:
     directory: "/zmscalldisplay"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -85,7 +85,7 @@ updates:
     directory: "/mellon"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -94,7 +94,7 @@ updates:
     directory: "/zmsadmin"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -103,7 +103,7 @@ updates:
     directory: "/zmsapi"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -112,7 +112,7 @@ updates:
     directory: "/zmscalldisplay"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -121,7 +121,7 @@ updates:
     directory: "/zmscitizenapi"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -130,7 +130,7 @@ updates:
     directory: "/zmsclient"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -139,7 +139,7 @@ updates:
     directory: "/zmsdb"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -148,7 +148,7 @@ updates:
     directory: "/zmsdldb"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -157,7 +157,7 @@ updates:
     directory: "/zmsentities"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -166,7 +166,7 @@ updates:
     directory: "/zmsmessaging"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -175,7 +175,7 @@ updates:
     directory: "/zmsslim"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -184,7 +184,7 @@ updates:
     directory: "/zmsstatistic"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -193,7 +193,7 @@ updates:
     directory: "/zmsticketprinter"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -206,7 +206,7 @@ updates:
     directory: "/zmsautomation"
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "sunday"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
