@@ -36,7 +36,7 @@
     "eslint-plugin-vue": "10.9.0",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
-    "sass": "^1.98.0",
+    "sass": "^1.99.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.8",
     "vitest": "^4.1.4",
