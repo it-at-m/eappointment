@@ -27,7 +27,7 @@ class CaptchaVerifyController extends BaseController
             return $this->createJsonResponse(
                 $response,
                 $requestErrors,
-                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
+                ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
 
