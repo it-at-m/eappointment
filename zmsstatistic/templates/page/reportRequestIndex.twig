@@ -62,15 +62,17 @@
                 <tbody>
                     {% set totalSum = 0 %}
 
+                    {% set uncategorizedRequestKey = '__UNCATEGORIZED_REQUEST__' %}
+                    {% set serviceNotProvidedKey = '__SERVICE_NOT_PROVIDED__' %}
                     {% for name, entry in exchangeRequest.data %}
 
                         {% if name != "average_processingtime" and name != "sum" %}
-                        <tr{% if name == '__UNCATEGORIZED_REQUEST__' or name == '__SERVICE_NOT_PROVIDED__' %} class="report-board--request-stat-special"{% endif %}>
+                        <tr{% if name == uncategorizedRequestKey or name == serviceNotProvidedKey %} class="report-board--request-stat-special"{% endif %}>
                             <th class="report-board--long-text">
-                                {% if name == '__UNCATEGORIZED_REQUEST__' %}
-                                    {{ 'request_statistic.uncategorized'|trans }}
-                                {% elseif name == '__SERVICE_NOT_PROVIDED__' %}
-                                    {{ 'request_statistic.not_provided'|trans }}
+                                {% if name == uncategorizedRequestKey %}
+                                    Dienstleistung wurde nicht erfasst
+                                {% elseif name == serviceNotProvidedKey %}
+                                    Dienstleistung konnte nicht erbracht werden
                                 {% else %}
                                     {{ name|trans }}
                                 {% endif %}
