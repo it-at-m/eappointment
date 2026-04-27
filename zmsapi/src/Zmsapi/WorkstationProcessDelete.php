@@ -29,8 +29,7 @@ class WorkstationProcessDelete extends BaseController
         if (! $workstation->process['id']) {
             throw new Exception\Process\ProcessNotFound();
         }
-        $action = Validator::param('action')->isString()->setDefault('')->getValue();
-        $action = trim((string) $action);
+        $action = (string) Validator::param('action')->isString()->setDefault('')->getValue();
         if ($action !== '') {
             $action = strtolower($action);
             if (!in_array($action, ['requeue', 'skip'], true)) {
