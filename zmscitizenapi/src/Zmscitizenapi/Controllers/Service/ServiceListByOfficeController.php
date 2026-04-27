@@ -29,7 +29,7 @@ class ServiceListByOfficeController extends BaseController
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
-            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
+            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
         }
 
         $result = $this->service->getServiceList($request->getQueryParams(), $this->showUnpublished);
