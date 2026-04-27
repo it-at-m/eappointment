@@ -36,26 +36,26 @@ class AppointmentCancelServiceTest extends MiddlewareTestCase
     {
         $body = [
             'processId' => '12345',
-            'authKey' => 'abc123'
+            'authKey' => 'fb43'
         ];
 
         $result = $this->invokePrivateMethod('extractClientData', [$body]);
 
         $this->assertEquals(12345, $result->processId);
-        $this->assertEquals('abc123', $result->authKey);
+        $this->assertEquals('fb43', $result->authKey);
     }
 
     public function testExtractClientDataWithInvalidProcessId(): void
     {
         $body = [
             'processId' => 'invalid',
-            'authKey' => 'abc123'
+            'authKey' => 'fb43'
         ];
 
         $result = $this->invokePrivateMethod('extractClientData', [$body]);
 
         $this->assertNull($result->processId);
-        $this->assertEquals('abc123', $result->authKey);
+        $this->assertEquals('fb43', $result->authKey);
     }
 
     public function testExtractClientDataWithEmptyAuthKey(): void
@@ -75,7 +75,7 @@ class AppointmentCancelServiceTest extends MiddlewareTestCase
     {
         $data = (object)[
             'processId' => 12345,
-            'authKey' => 'abc123'
+            'authKey' => 'fb43'
         ];
     
         $result = $this->invokePrivateMethod('validateClientData', [$data]);

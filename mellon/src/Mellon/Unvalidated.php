@@ -20,6 +20,26 @@ class Unvalidated extends \BO\Mellon\Parameter
     protected $setValid;
 
     /**
+     * Raw value before any validation; safe to use for pre-processing (e.g. trim) before is* methods.
+     *
+     * @return mixed
+     */
+    public function getUnvalidated()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @throws \BO\Mellon\Exception
+     *
+     * @return mixed
+     */
+    public function getValue()
+    {
+        throw new Exception("parameters should validate first");
+    }
+
+    /**
      * Return a valid parameter
      * this function changes class to verify validation
      *
