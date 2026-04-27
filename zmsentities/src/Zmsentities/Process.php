@@ -439,7 +439,7 @@ class Process extends Schema\Entity
 
     public function setRandomAuthKey()
     {
-        $this->authKey = substr(md5(rand()), 0, 4);
+        $this->authKey = bin2hex(random_bytes(32));
     }
 
     public function setCallTime($dateTime = null)

@@ -21,7 +21,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
-    private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
@@ -29,15 +28,12 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
-
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
+    private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
+    private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
     private static function getError(string $key): array
     {
-        return ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key);
     }
 
     public static function validateServerGetRequest(?ServerRequestInterface $request): array
@@ -438,7 +434,16 @@ class ValidationService
 
     private static function isValidAuthKey(?string $authKey): bool
     {
-        return !empty($authKey) && is_string($authKey) && strlen(trim($authKey)) > 0;
+        if ($authKey === null) {
+            return false;
+        }
+        $authKey = trim($authKey);
+        $len = strlen($authKey);
+        if ($len !== self::AUTH_KEY_LEGACY_HEX_LENGTH && $len !== self::AUTH_KEY_NEW_HEX_LENGTH) {
+            return false;
+        }
+
+        return ctype_xdigit($authKey);
     }
 
     private static function isValidServiceIds(?array $serviceIds): bool

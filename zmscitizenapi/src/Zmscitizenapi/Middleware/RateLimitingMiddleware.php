@@ -73,7 +73,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
 
             if ($limited) {
                 $this->logger->logInfo(sprintf('Rate limit exceeded for IP %s. URI: %s', $ip, $request->getUri()));
-                return $this->createRateLimitResponse($request);
+                return $this->createRateLimitResponse();
             }
 
             $response = $handler->handle($request);
@@ -137,14 +137,13 @@ class RateLimitingMiddleware implements MiddlewareInterface
         return (int)($requestData['timestamp'] ?? time()) + $this->cacheExpiry;
     }
 
-    private function createRateLimitResponse($request): ResponseInterface
+    private function createRateLimitResponse(): ResponseInterface
     {
         $response = \App::$slim->getResponseFactory()->createResponse();
-        $language = $request->getAttribute('language');
-        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT, $language)['statusCode'])
+        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT)['statusCode'])
             ->withHeader('Content-Type', 'application/json');
         $response->getBody()->write(json_encode([
-            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT, $language)]
+            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT)]
         ]));
         return $response;
     }
