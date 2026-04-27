@@ -29,13 +29,21 @@ class WorkstationProcessDelete extends BaseController
         if (! $workstation->process['id']) {
             throw new Exception\Process\ProcessNotFound();
         }
-        $requeue = Validator::param('requeue')->isNumber()->setDefault(0)->getValue();
-        $skipToNext = Validator::param('skipToNext')->isNumber()->setDefault(0)->getValue();
+        $action = Validator::param('action')->isString()->setDefault('')->getValue();
+        $action = trim((string) $action);
+        if ($action !== '') {
+            $action = strtolower($action);
+            if (!in_array($action, ['requeue', 'skip'], true)) {
+                throw new Exception\Process\ProcessInvalid();
+            }
+        }
+        $isRequeue = $action === 'requeue';
+        $isSkipToNext = $action === 'skip';
 
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
 
-        if (1 === $requeue) {
+        if ($isRequeue) {
             $nowTs = \App::$now->getTimestamp();
             $process->status = Process::STATUS_QUEUED;
             $process->queue['callCount'] = 0;
@@ -46,7 +54,7 @@ class WorkstationProcessDelete extends BaseController
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif (1 === $skipToNext) {
+        } elseif ($isSkipToNext) {
             $process->setWasMissed(true);
         } elseif (
             'called' == $process->status

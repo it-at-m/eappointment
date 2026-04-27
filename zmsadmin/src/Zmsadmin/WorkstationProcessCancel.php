@@ -30,7 +30,7 @@ class WorkstationProcessCancel extends BaseController
         if ($workstation->process['id']) {
             $deleteParameters = [];
             if (1 === (int) $requeue) {
-                $deleteParameters['requeue'] = 1;
+                $deleteParameters['action'] = 'requeue';
             }
             \App::$http->readDeleteResult('/workstation/process/', $deleteParameters)->getEntity();
         }

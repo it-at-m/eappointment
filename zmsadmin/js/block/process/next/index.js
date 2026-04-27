@@ -59,7 +59,7 @@ class View extends BaseView {
         this.cleanInstance();
         let url = `${this.includeUrl}/workstation/process/cancel/`
         if (requeue) {
-            url += '?requeue=1'
+            url += '?action=requeue'
         }
         return this.loadInto(url).then(() => {
             this.onNextProcess();
