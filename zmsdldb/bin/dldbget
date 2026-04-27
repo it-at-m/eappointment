@@ -21,23 +21,22 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     }
 }
 
-require_once(__DIR__."/script_bootstrap.php");
+require_once(__DIR__ . "/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use Httpful\Request;
 
-require_once(__DIR__."/dldb-helpers.php");
+require_once(__DIR__ . "/dldb-helpers.php");
 
 $cli = new Cli();
 $cli->description("Downloads JSON files from the official site, validates them, replaces the old files, and handles backups if changes are detected.")
     ->opt('output:o', 'Path to save files', true)
     ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
     ->opt('base:b', 'Base download url', true)
-    ->opt('query:q', 'Query or environment setting to use', false); 
+    ->opt('query:q', 'Query or environment setting to use', false);
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
-$backupPath = $destinationPath . '/backups';
 $helpers = new DldbHelpers($destinationPath, $cli);
 
 // Ensure the destination directory exists
@@ -94,26 +93,41 @@ if ($rollbackDay !== "none") {
             'file' => 'settings.json',
         ],
     ];
-    
+
     $downloadedFiles = [];
     foreach ($downloads as $download) {
         $destFile = $destinationPath . '/' . $download['file'];
         $request = Request::get($baseDomain . $download['url'])->send();
-        
+
         if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
             print($cli->red("Error: Failed to download or validate {$download['file']}\n\n"));
             continue;
         }
-    
+
         $newContent = $request->raw_body;
-        print("Download {$baseDomain}{$download['url']} to $destFile\n\n");
-        file_put_contents($destFile, $newContent);
-        $downloadedFiles[$download['file']] = $destFile;
+        $tempFile = tempnam(sys_get_temp_dir(), 'dldbget_');
+        if ($tempFile === false) {
+            print($cli->red("Error: Failed to create temporary file for {$download['file']}\n\n"));
+            continue;
+        }
+
+        print("Download {$baseDomain}{$download['url']} to temporary file for $destFile\n\n");
+        if (file_put_contents($tempFile, $newContent) === false) {
+            print($cli->red("Error: Failed to write temporary file for {$download['file']}\n\n"));
+            @unlink($tempFile);
+            continue;
+        }
+        $downloadedFiles[$download['file']] = $tempFile;
     }
-    
-    // Check if backup is needed and perform backup
-    $backupRequired = $helpers->checkAndCreateBackup($downloadedFiles);
-    
+
+    try {
+        // Check if backup is needed and perform backup
+        $helpers->checkAndCreateBackup($downloadedFiles);
+    } finally {
+        // Copy downloaded temp files to the destination folder and remove the temp files
+        $helpers->copyDownloadedTempFilesToDestinationAndUnlink($downloadedFiles);
+    }
+
     // Cleanup old backups
     $helpers->cleanupOldBackups();
 
