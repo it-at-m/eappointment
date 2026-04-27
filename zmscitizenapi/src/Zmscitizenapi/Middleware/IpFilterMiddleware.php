@@ -44,8 +44,7 @@ class IpFilterMiddleware implements MiddlewareInterface
                     'ip' => $ip,
                     'uri' => $uri
                 ]);
-                $language = $request->getAttribute('language');
-                $error = ErrorMessages::get(self::ERROR_BLACKLISTED, $language);
+                $error = ErrorMessages::get(self::ERROR_BLACKLISTED);
                 $response = \App::$slim->getResponseFactory()->createResponse();
                 $response = $response->withStatus($error['statusCode'])
                                 ->withHeader('Content-Type', 'application/json');
