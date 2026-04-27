@@ -20,7 +20,7 @@ class ExchangeRequestowner extends Base
         (
             CASE
               WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NOT_PROVIDED . '\'
+              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
