@@ -290,7 +290,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
-                'url' => '/process/101002/wrongkey/',
+                'url' => '/process/101002/cafe/',
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
@@ -300,7 +300,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
 
         $parameters = [
             'processId' => '101002',
-            'authKey' => 'wrongkey'
+            'authKey' => 'cafe'
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);

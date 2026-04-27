@@ -55,7 +55,7 @@ class Process extends Base implements MappingInterface
                 process.NutzerID = 0,
                 process.vorlaeufigeBuchung = 1,
                 process.status = 'deleted',
-                process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
+                process.absagecode = :newAuthKey
             WHERE
                 (process.BuergerID = :processId AND process.absagecode = :authKey)
                 OR process.istFolgeterminvon = :processId
