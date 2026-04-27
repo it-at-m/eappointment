@@ -149,7 +149,7 @@ CREATE TABLE `buerger` (
   `istFolgeterminvon` int(5) UNSIGNED DEFAULT NULL,
   `zustimmung_kundenbefragung` int(1) DEFAULT NULL,
   `telefonnummer_fuer_rueckfragen` varchar(50) DEFAULT NULL,
-  `absagecode` varchar(64) DEFAULT NULL,
+  `absagecode` varchar(10) DEFAULT NULL,
   `AnzahlPersonen` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `apiClientID` int(5) UNSIGNED DEFAULT 1,
