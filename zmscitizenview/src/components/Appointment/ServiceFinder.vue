@@ -819,7 +819,9 @@ const variantServices = computed<Service[]>(() => {
   const addImplicitPresenceVariant =
     !!base &&
     !hasPresenceVariant &&
-    shouldAddImplicitPresenceVariant(variants.map((variant) => variant.variantId));
+    shouldAddImplicitPresenceVariant(
+      variants.map((variant) => variant.variantId)
+    );
 
   if (addImplicitPresenceVariant) {
     variants.unshift({
