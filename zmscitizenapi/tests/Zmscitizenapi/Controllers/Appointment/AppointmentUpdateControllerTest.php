@@ -981,7 +981,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/101003/wrongKey/',
+                    'url' => '/process/101003/cafe/',
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
@@ -992,7 +992,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
         $parameters = [
             'processId' => '101003',
-            'authKey' => 'wrongKey',
+            'authKey' => 'cafe',
             'familyName' => 'TEST_USER',
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
