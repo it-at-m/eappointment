@@ -16,7 +16,7 @@ class Exchange extends Schema\Entity
      */
     public const REQUEST_STAT_NAME_UNCATEGORIZED = 'uncategorized';
 
-    public const REQUEST_STAT_NAME_NOT_PROVIDED = 'nonexistent';
+    public const REQUEST_STAT_NAME_NONEXISTENT = 'nonexistent';
 
     public static $schema = "exchange.json";
 
@@ -203,7 +203,7 @@ class Exchange extends Schema\Entity
         $reserved = ['sum', 'average_processingtime'];
         $tailStatNames = [
             self::REQUEST_STAT_NAME_UNCATEGORIZED,
-            self::REQUEST_STAT_NAME_NOT_PROVIDED,
+            self::REQUEST_STAT_NAME_NONEXISTENT,
         ];
         $serviceRows = [];
         foreach ($entity->data as $key => $value) {
