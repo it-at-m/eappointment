@@ -25,7 +25,7 @@ const renderTabs = (tabs, onSelect, selected) => {
             }
 
             return (
-                <button key={key} type="button" className="tabs__tab " role="tab" id="" onClick={onClick} aria-selected={tab.component === selected}>{tab.name}</button>
+                <button key={key} type="button" className="tabs__tab " role="tab" id={`availability-day-tab-${key}`} onClick={onClick} aria-selected={tab.component === selected}>{tab.name}</button>
             )
         })
     }

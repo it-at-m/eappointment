@@ -492,20 +492,20 @@ SET FOREIGN_KEY_CHECKS = 1;"""
       skip_db,
       db_args,
     ):
-      """db full-setup first (import + migrations), then composer install, npm install, npm build."""
+      """composer install first, then npm install, npm build, db full-setup (import + migrations)"""
       cli_exe = os.path.join(app.repo_dir, "cli")
-      if not skip_db:
-        full_setup = [cli_exe, "db", "full-setup"]
-        extra = (db_args or "").strip()
-        if extra:
-          full_setup.extend(shlex.split(extra))
-        app.run_cmd(full_setup, cwd=app.repo_dir)
       if not skip_composer:
         app.run_cmd([cli_exe, "modules", "loop", "composer", "install"], cwd=app.repo_dir)
       if not skip_npm_install:
         app.run_cmd([cli_exe, "modules", "loop", "npm", "install"], cwd=app.repo_dir)
       if not skip_npm_build:
         app.run_cmd([cli_exe, "modules", "loop", "npm", "build"], cwd=app.repo_dir)
+      if not skip_db:
+        full_setup = [cli_exe, "db", "full-setup"]
+        extra = (db_args or "").strip()
+        if extra:
+          full_setup.extend(shlex.split(extra))
+        app.run_cmd(full_setup, cwd=app.repo_dir)
       if skip_composer and skip_npm_install and skip_npm_build and skip_db:
         raise click.ClickException("Nothing to run; remove some --skip-* flags.")
       print_info("Local dev setup finished.")

@@ -29,7 +29,7 @@ import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import printWaitingNumber from './page/waitingnumber/print'
 //import bindReact from './lib/bindReact.js'
-import { getDataAttributes, forceHttps } from './lib/utils'
+import { getDataAttributes } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
@@ -68,9 +68,6 @@ function loadResources() {
 window.$ = $;
 
 moment.locale('de')
-
-// Force https protocol
-forceHttps();
 
 // Init Views
 //new AccessKeyView(document);

@@ -582,14 +582,14 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
 
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
-            ->with('/process/1/test/', $this->isInstanceOf(Process::class))
+            ->with('/process/1/cafe/', $this->isInstanceOf(Process::class))
             ->willReturn($result);
 
         $result = ZmsApiClientService::submitClientData($process);
@@ -601,7 +601,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -619,7 +619,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -718,14 +718,14 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
 
         $this->httpMock->expects($this->once())
             ->method('readDeleteResult')
-            ->with('/process/1/test/', [])
+            ->with('/process/1/cafe/', [])
             ->willReturn($result);
 
         $result = ZmsApiClientService::cancelAppointment($process);
@@ -736,7 +736,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -754,7 +754,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $this->httpMock->method('readDeleteResult')
             ->willThrowException(new \Exception('Test error'));
@@ -767,14 +767,14 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
 
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
-            ->with('/process/1/test/confirmation/mail/', $this->isInstanceOf(Process::class))
+            ->with('/process/1/cafe/confirmation/mail/', $this->isInstanceOf(Process::class))
             ->willReturn($result);
 
         $result = ZmsApiClientService::sendConfirmationEmail($process);
@@ -785,7 +785,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -803,7 +803,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -816,14 +816,14 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
 
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
-            ->with('/process/1/test/preconfirmation/mail/', $this->isInstanceOf(Process::class))
+            ->with('/process/1/cafe/preconfirmation/mail/', $this->isInstanceOf(Process::class))
             ->willReturn($result);
 
         $result = ZmsApiClientService::sendPreconfirmationEmail($process);
@@ -834,7 +834,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -852,7 +852,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -865,14 +865,14 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($process);
 
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
-            ->with('/process/1/test/delete/mail/', $this->isInstanceOf(Process::class))
+            ->with('/process/1/cafe/delete/mail/', $this->isInstanceOf(Process::class))
             ->willReturn($result);
 
         $result = ZmsApiClientService::sendCancellationEmail($process);
@@ -883,7 +883,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn(null);
@@ -901,7 +901,7 @@ class ZmsApiClientServiceTest extends TestCase
     {
         $process = new Process();
         $process->id = 1;
-        $process->authKey = 'test';
+        $process->authKey = 'cafe';
 
         $this->httpMock->method('readPostResult')
             ->willThrowException(new \Exception('Test error'));
@@ -920,10 +920,10 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->httpMock->expects($this->once())
             ->method('readGetResult')
-            ->with('/process/1/test/', ['resolveReferences' => 2])
+            ->with('/process/1/cafe/', ['resolveReferences' => 2])
             ->willReturn($result);
 
-        $result = ZmsApiClientService::getProcessById(1, 'test');
+        $result = ZmsApiClientService::getProcessById(1, 'cafe');
         $this->assertInstanceOf(Process::class, $result);
         $this->assertEquals(1, $result->id);
     }
@@ -937,7 +937,7 @@ class ZmsApiClientServiceTest extends TestCase
             ->method('readGetResult')
             ->willReturn($result);
 
-        $result = ZmsApiClientService::getProcessById(1, 'test');
+        $result = ZmsApiClientService::getProcessById(1, 'cafe');
         $this->assertInstanceOf(Process::class, $result);
         $this->assertEquals(0, $result->id);
     }
@@ -948,6 +948,6 @@ class ZmsApiClientServiceTest extends TestCase
             ->willThrowException(new \Exception('Test error'));
 
         $this->expectException(\RuntimeException::class);
-        ZmsApiClientService::getProcessById(1, 'test');
+        ZmsApiClientService::getProcessById(1, 'cafe');
     }
 }

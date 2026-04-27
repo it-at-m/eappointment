@@ -18,9 +18,9 @@ class AvailabilityForm extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.data && this.props.data !== prevProps.data) {
-            this.setState({
-                data: getFormValuesFromData(this.props.data)
-            })
+            this.setState((prevState, props) => ({
+                data: getFormValuesFromData(props.data)
+            }))
         }
     }
 

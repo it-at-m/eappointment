@@ -1,3 +1,23 @@
+# E-Appointment
+
+This monorepo contains Munich-specific adjustments to the original Berlin eAppointment project:
+[https://gitlab.com/eappointment/eappointment](https://gitlab.com/eappointment/eappointment)
+
+## Documentation
+
+- Repository docs (source of truth): [docs/index.md](docs/index.md)
+- Published handbook (GitHub Pages root): [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
+- GitHub Wiki (manual): [https://github.com/it-at-m/eappointment/wiki](https://github.com/it-at-m/eappointment/wiki)
+
+**Coverage** and **API HTML** from CI are on the same Pages site; see [docs/testing.md](docs/testing.md) and [docs/api-reference.md](docs/api-reference.md).
+
+## Contacts
+
+- Munich: `opensource@muenchen.de`
+- Overview: [https://opensource.muenchen.de/software/zeitmanagementsystem.html](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
+
+---
+
 <div id="top"></div>
 
 <!-- PROJECT SHIELDS -->
@@ -200,13 +220,6 @@ Using `localhost` doesn't work because inside the container, `localhost` refers 
 
 You need to add `keycloak` to your system's hosts file so it resolves to `127.0.0.1`:
 
-**macOS:**
-```bash
-echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
-```
-Enter your Mac password when prompted.
-
-**Ubuntu/Linux:**
 ```bash
 echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 ```
@@ -222,10 +235,6 @@ echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 
 **Verify it worked:**
 ```bash
-# macOS/Linux
-ping -c 1 keycloak
-
-# Windows
 ping keycloak
 ```
 You should see it resolve to `127.0.0.1`.
@@ -237,6 +246,15 @@ podman restart zms-keycloak
 
 # DDEV
 ddev restart
+```
+
+### Podman (Linux)
+
+Podman merges the host `/etc/hosts` into containers, so `keycloak` may resolve to `127.0.0.1` inside containers and break Keycloak. Add the following to `~/.config/containers/containers.conf`, then restart containers:
+
+```ini
+[containers]
+base_hosts_file="none"
 ```
 
 ## Import Database

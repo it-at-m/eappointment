@@ -91,13 +91,8 @@ jobs:
             PHP_TAG="$REF_NAME"
           fi
 
-          CITIZENVIEW_TAG_PRIMARY="$PHP_TAG"
-          CITIZENVIEW_TAG_FALLBACK="$PHP_TAG"
-
           echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
-          echo "citizenview_tag_primary=$CITIZENVIEW_TAG_PRIMARY" >> "$GITHUB_OUTPUT"
-          echo "citizenview_tag_fallback=$CITIZENVIEW_TAG_FALLBACK" >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
         shell: bash
@@ -110,145 +105,17 @@ jobs:
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
           done
 
-      - name: Pull prebuilt CitizenView image
-        id: citizenview
-        shell: bash
-        run: |
-          set -euo pipefail
-          primary="${{ steps.tags.outputs.citizenview_tag_primary }}"
-          fallback="${{ steps.tags.outputs.citizenview_tag_fallback }}"
-          image_base="ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview"
-
-          echo "Pulling $image_base:$primary"
-          if ! docker pull "$image_base:$primary"; then
-            echo "Primary tag failed, falling back to $image_base:$fallback"
-            docker pull "$image_base:$fallback"
-            echo "citizenview_tag_used=$fallback" >> "$GITHUB_OUTPUT"
-          else
-            echo "citizenview_tag_used=$primary" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Build zms-web base image (Apache+SSL)
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Use the same apache/ssl setup as the local devcontainer base,
-          # then overwrite module directories from the prebuilt GHCR module images.
-          docker build -t zms-web-base:ci -f .devcontainer/Containerfile .devcontainer
-
       - name: Start required containers (stack once)
         shell: bash
         run: |
           set -euo pipefail
 
-          CITIZENVIEW_TAG="${{ steps.citizenview.outputs.citizenview_tag_used }}"
-          CITIZENVIEW_IMAGE="ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview:${CITIZENVIEW_TAG}"
-
-          # If the primary tag failed but we succeeded with fallback, the CI image is already pulled.
-          # Compose can still reference the primary tag; if it isn't present, pull step would have failed.
-          # This keeps the compose generation deterministic.
-
           cd .devcontainer
 
-          cat > docker-compose.ci.yml <<'YAML'
-          version: "3.8"
-          services:
-            web:
-              image: zms-web-base:ci
-              container_name: zms-web
-              user: "root"
-              volumes:
-                - ..:/var/www/html
-              env_file:
-                - .env
-              networks:
-                - zms-ci-net
-
-            citizenview:
-              image: REPLACE_CITIZENVIEW_IMAGE
-              container_name: zms-citizenview
-              networks:
-                - zms-ci-net
-
-            db:
-              image: mariadb:10.11
-              container_name: zms-db
-              restart: unless-stopped
-              env_file:
-                - .env
-              volumes:
-                - db-data:/var/lib/mysql
-              networks:
-                - zms-ci-net
-
-            refarch-gateway:
-              image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
-              container_name: zms-refarch-gateway
-              ports:
-                - "8084:8080"
-              environment:
-                SPRING_PROFILES_ACTIVE: no-security
-                WEBCOMPONENT_URI: http://localhost:8080
-              volumes:
-                - ./local-gateway-application.yml:/deployments/application.yml:ro
-              restart: unless-stopped
-              networks:
-                - zms-ci-net
-
-            keycloak:
-              image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
-              container_name: zms-keycloak
-              hostname: keycloak
-              command:
-                - start-dev
-              environment:
-                KC_BOOTSTRAP_ADMIN_USERNAME: admin
-                KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-                KC_HEALTH_ENABLED: "true"
-                KC_HTTP_PORT: 8080
-                KC_HTTP_RELATIVE_PATH: /auth
-                KC_DB: dev-file
-              ports:
-                - "8080:8080"
-              volumes:
-                - ./keycloak/plugins:/opt/keycloak/providers/
-              networks:
-                - zms-ci-net
-              restart: unless-stopped
-
-            init-keycloak:
-              image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
-              container_name: zms-init-keycloak
-              depends_on:
-                keycloak:
-                  condition: service_started
-              environment:
-                ADMIN_USER: admin
-                ADMIN_PASSWORD: admin
-                BASEURL: http://keycloak:8080/auth
-                WAIT_FOR_KEYCLOAK: "true"
-                FAIL_ON_UNDEFINED_VARIABLES: "true"
-                KEYCLOAK_CHANGELOG: /migration/keycloak-changelog.yml
-              volumes:
-                - ../.resources/keycloak/migration:/migration
-              networks:
-                - zms-ci-net
-              restart: "no"
-
-          volumes:
-            db-data:
-
-          networks:
-            zms-ci-net:
-              name: zms-ci-net
-          YAML
-
-          # Inject citizenview image
-          sed -i "s|REPLACE_CITIZENVIEW_IMAGE|${CITIZENVIEW_IMAGE}|g" docker-compose.ci.yml
-
-          # Best-effort cleanup from previous attempts on the same runner.
-          docker compose -f docker-compose.ci.yml down -v --remove-orphans || true
-          docker compose -f docker-compose.ci.yml up -d
+          # Omit phpmyadmin to keep CI lean.
+          docker compose -f docker-compose.yaml down -v --remove-orphans || true
+          docker compose -f docker-compose.yaml up -d \
+            web db citizenview refarch-gateway keycloak init-keycloak
 
           # Ensure Keycloak clients have been created before UI tests begin.
           # (init-keycloak is a one-shot container.)
@@ -344,26 +211,6 @@ jobs:
               rm -f /tmp/maven.tar.gz /tmp/maven.tar.gz.sha512
             fi
 
-            # Ensure Apache SSL is available on :443 (required by keycloak redirect URLs).
-            # If HTTPS fails, we configure the same self-signed cert & default-ssl site as the devcontainer.
-            if ! curl -k --max-time 5 -s -o /dev/null "https://localhost/" ; then
-              apt-get install -y --no-install-recommends openssl
-              mkdir -p /etc/ssl/private /etc/ssl/certs
-              openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-                -keyout /etc/ssl/private/apache-selfsigned.key \
-                -out /etc/ssl/certs/apache-selfsigned.crt \
-                -subj "/C=DE/ST=Dev/L=Dev/O=Dev/OU=Dev/CN=localhost"
-              mkdir -p /etc/apache2/sites-available
-              cp /var/www/html/.devcontainer/apache-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-
-              # Enable SSL module/site when available.
-              (a2enmod ssl || true)
-              (a2ensite default-ssl || true)
-
-              # Restart Apache (best effort across image variants).
-              (service apache2 restart || service httpd restart || apache2ctl -k restart || true)
-            fi
-
             echo "Tooling setup complete."
           '
 
@@ -443,10 +290,7 @@ jobs:
               ZMS_BROWSER="$3"
               WEBDRIVER_RETRY_MAX_ATTEMPTS="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
               WEBDRIVER_RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
-              # Use one canonical citizenview base URL in CI for both health checks
-              # and mail links written into the test database.
-              CITIZENVIEW_BASE_URI="http://citizenview:8080/"
-              
+
               # The zmsautomation pom enables Cucumber runners per profile:
               # - `ataf-ui` runs `UiTestRunner`
               # - `ataf-api` runs `ApiTestRunner`
