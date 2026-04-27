@@ -19,8 +19,8 @@ class ExchangeRequestscope extends Base
         DATE_FORMAT(s.`Datum`, :groupby) as date,
         (
             CASE
-              WHEN s.anliegenid = -1 THEN "__UNCATEGORIZED_REQUEST__"
-                      WHEN s.anliegenid = 0 THEN "__SERVICE_NOT_PROVIDED__"
+              WHEN s.anliegenid = -1 THEN "uncategorized"
+                      WHEN s.anliegenid = 0 THEN "nonexistent"
                       ELSE r.name
                 END
             ) as name,
