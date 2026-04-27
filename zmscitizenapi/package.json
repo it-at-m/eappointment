@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
-    "@redocly/cli": "^2.28.1",
-    "fast-xml-parser": "^5.7.1",
+    "@redocly/cli": "^2.30.0",
+    "fast-xml-parser": "^5.7.2",
     "js-yaml": "^4.1.0",
     "openapi-types": "^12.0.0",
     "swagger-jsdoc": "^6.1.0"
