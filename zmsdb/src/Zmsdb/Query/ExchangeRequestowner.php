@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsentities\Exchange;
+
 class ExchangeRequestowner extends Base
 {
     /**
@@ -17,8 +19,8 @@ class ExchangeRequestowner extends Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN "uncategorized"
-              WHEN statistikJoin.anliegenid = 0 THEN "nonexistent"
+              WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NOT_PROVIDED . '\'
               ELSE r.name
             END
         ) as name,

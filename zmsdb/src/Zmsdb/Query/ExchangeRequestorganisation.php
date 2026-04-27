@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsentities\Exchange;
+
 class ExchangeRequestorganisation extends Base
 {
     /**
@@ -17,11 +19,11 @@ class ExchangeRequestorganisation extends Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN "uncategorized"
-                        WHEN statistikJoin.anliegenid = 0 THEN "nonexistent"
-                        ELSE r.name
-                END
-            ) as name,
+              WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NOT_PROVIDED . '\'
+              ELSE r.name
+            END
+        ) as name,
         SUM(statistikJoin.requestscount) as requestscount,
         AVG(statistikJoin.processingtime) as processingtime
     FROM ' . Organisation::TABLE . ' o
