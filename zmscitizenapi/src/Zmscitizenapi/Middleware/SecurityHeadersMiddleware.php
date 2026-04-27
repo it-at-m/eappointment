@@ -46,11 +46,10 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
             $response = \App::$slim->getResponseFactory()->createResponse();
-            $language = $request->getAttribute('language');
-            $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation', $language)['statusCode'])
+            $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation')['statusCode'])
                 ->withHeader('Content-Type', 'application/json');
             $response->getBody()->write(json_encode([
-                'errors' => [ErrorMessages::get('securityHeaderViolation', $language)]
+                'errors' => [ErrorMessages::get('securityHeaderViolation')]
             ]));
             return $response;
         }
