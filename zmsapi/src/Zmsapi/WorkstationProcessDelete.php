@@ -47,7 +47,7 @@ class WorkstationProcessDelete extends BaseController
             $process->status = Process::STATUS_QUEUED;
             $process->queue['callCount'] = 0;
             $process->queue['lastCallTime'] = 0;
-            $process->queue['callTime'] = $nowTs;
+            $process->queue['callTime'] = 0;
             $process->queue['arrivalTime'] = $nowTs;
             $process->queue['waitingTime'] = 0;
             $process->queue['wayTime'] = 0;
