@@ -292,7 +292,7 @@ class ProcessTest extends EntityCommonTests
             $formCollection['process']['messages'][0]
         );
         $this->assertEquals(
-            'Der Absagecode ist nicht korrekt',
+            'Ein Absagecode wird benötigt',
             $formCollection['authKey']['messages'][0]
         );
     }
