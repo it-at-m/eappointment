@@ -1,8 +1,4 @@
 {
-  "request_statistic": {
-    "uncategorized": "Dienstleistung wurde nicht erfasst",
-    "not_provided": "Dienstleistung konnte nicht erbracht werden"
-  },
   "header": {
     "scope": "Standort",
     "logout": "Abmelden"
