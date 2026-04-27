@@ -30,7 +30,7 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $requeue = Validator::param('requeue')->isNumber()->setDefault(0)->getValue();
-        $skipToNext = Validator::param('skipNext')->isNumber()->setDefault(0)->getValue();
+        $skipToNext = Validator::param('skipToNext')->isNumber()->setDefault(0)->getValue();
 
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
