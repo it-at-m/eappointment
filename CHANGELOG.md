@@ -1,3 +1,33 @@
+## Release Muc-40 (17.04.2026) 
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1138'>ZMSKVR-1138</a>] -         Zwei Sachbearbeiter:innen können gleichen Kunden aufrufen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1363'>ZMSKVR-1363</a>] -         Wartemarken werden zweimal gedruckt
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-787'>ZMSKVR-787</a>] -         Wartemarken Layouts verwalten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-798'>ZMSKVR-798</a>] -          Nicht Verwendetes Feature SMS/Notification Löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1088'>ZMSKVR-1088</a>] -         LOGIN Sortierung Leistungen in Termin-Titel korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1171'>ZMSKVR-1171</a>] -         Backend-Vorarbeiten für atomares Berechtigungsmodell
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1187'>ZMSKVR-1187</a>] -         OIDC-Login Performance verbessern durch optimiertes resolveReferences bei workstation select
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1188'>ZMSKVR-1188</a>] -         Entfernung von nicht verwendete /config/ und SMS/Notifications Einstellungen im eKiosk
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1250'>ZMSKVR-1250</a>] -         Wegezeit sekundengenau speichern (buerger, buergerarchiv, buergerarchivtoday)
+</li>
+</ul>
+
 ## Release Muc-39 (27.03.2026) 
                             
 <h2>        Bug

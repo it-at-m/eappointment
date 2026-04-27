@@ -2,10 +2,7 @@
 
 namespace BO\Zmsentities\Validator;
 
-use BO\Mellon\Valid;
 use BO\Mellon\Unvalidated;
-use BO\Mellon\Validator;
-use BO\Mellon\Parameter;
 use BO\Mellon\Collection;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Helper\Delegate;
@@ -60,15 +57,22 @@ class ProcessValidator
 
     public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
-        $valid = $unvalid->isString();
-        $length = strlen((string)$valid->getValue());
+        $trimmed = trim((string) $unvalid->getUnvalidated());
+        $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
+        $length = strlen($trimmed);
         if ($length || ($isRequiredCallback && $isRequiredCallback())) {
-            $valid
-                ->isBiggerThan(4, "Es müssen mindestens 4 Zeichen eingegeben werden.")
-                ;
+            if ($length) {
+                $valid
+                ->isMatchOf(
+                    '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
+                    "Der Absagecode ist nicht korrekt"
+                );
+            } elseif ($isRequiredCallback && $isRequiredCallback()) {
+                $valid->isRequired("Ein Absagecode wird benötigt");
+            }
+            $this->getCollection()->validatedAction($valid, $setter);
+            return $this;
         }
-        $this->getCollection()->validatedAction($valid, $setter);
-        return $this;
     }
 
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self

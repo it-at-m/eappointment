@@ -278,7 +278,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/101002/wrongKey/',
+                    'url' => '/process/101002/cafe/',
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
@@ -289,7 +289,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     
         $parameters = [
             'processId' => '101002',
-            'authKey' => 'wrongKey',
+            'authKey' => 'cafe',
         ];
     
         $response = $this->render([], $parameters, []);

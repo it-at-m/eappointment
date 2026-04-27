@@ -178,8 +178,18 @@
                     "description": "unix timestamp of showing up after call"
                 },
                 "processingTime": {
-                    "type": "string",
-                    "description": "unix timestamp that cumulates time each time a processes is called"
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "Cumulative time spent being served at the workstation (from show-up until finish or timeout), summed across interrupted sessions. MySQL TIME string (H+:MM:SS) from persistence, or fractional minutes as number; null if unset—not a Unix timestamp"
                 },
                 "timeoutTime": {
                     "type": "string",

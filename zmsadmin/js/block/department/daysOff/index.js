@@ -57,34 +57,34 @@ class DaysOffView extends Component {
     componentDidMount() {
         getEntity('dayoff').then((entity) => {
             entity.date = Date.now() / 1000
-            this.setState({
-                days: this.props.days.length > 0 ? this.props.days : [entity]
-            })
+            this.setState((prevState, props) => ({
+                days: props.days.length > 0 ? props.days : [entity]
+            }))
         })
     }
 
     changeItemField(index, field, value) {
         //console.log('change item field', index, field, value)
-        this.setState({
-            days: this.state.days.map((day, dayIndex) => {
+        this.setState((prevState) => ({
+            days: prevState.days.map((day, dayIndex) => {
                 return index === dayIndex ? Object.assign({}, day, { [field]: value }) : day
             })
-        })
+        }))
     }
 
     addNewItem() {
-        const newDate = (new Date()).setFullYear(this.props.year)
-        this.setState({
-            days: this.state.days.concat([{ name: '', date: newDate / 1000 }])
+        this.setState((prevState, props) => {
+            const newDate = (new Date()).setFullYear(props.year)
+            return {
+                days: prevState.days.concat([{ name: '', date: newDate / 1000 }])
+            }
         })
     }
 
     deleteItem(deleteIndex) {
-        this.setState({
-            days: this.state.days.filter((day, index) => {
-                return index !== deleteIndex
-            })
-        })
+        this.setState((prevState) => ({
+            days: prevState.days.filter((day, index) => index !== deleteIndex)
+        }))
     }
 
     render() {

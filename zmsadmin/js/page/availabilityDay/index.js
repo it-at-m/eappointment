@@ -93,7 +93,8 @@ class AvailabilityPage extends Component {
                 maxslots: data.maxSlotsForAvailabilities,
                 slotbuckets: data.slotBuckets,
             }
-            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
+            const mergedProps = Object.assign({}, this.props, newProps)
+            this.setState(() => Object.assign({}, getStateFromProps(mergedProps), {
                 stateChanged: false
             }))
 
@@ -235,8 +236,8 @@ class AvailabilityPage extends Component {
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
-        this.setState(Object.assign({}, getInitialState(this.props), {
-            selectedTab: this.state.selectedTab
+        this.setState((prevState, props) => Object.assign({}, getInitialState(props), {
+            selectedTab: prevState.selectedTab
         }), () => {
             this.refreshData()
             this.getValidationList()
@@ -257,21 +258,23 @@ class AvailabilityPage extends Component {
                 $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                     method: 'DELETE'
                 }).done(() => {
-                    const newState = deleteAvailabilityInState(this.state, availability);
+                    this.setState((prevState) => {
+                        const newState = deleteAvailabilityInState(prevState, availability);
 
-                    if (this.state.fullAvailabilityList) {
-                        newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
-                            item => item.id !== availability.id
-                        );
-                    }
+                        if (prevState.fullAvailabilityList) {
+                            newState.fullAvailabilityList = prevState.fullAvailabilityList.filter(
+                                item => item.id !== availability.id
+                            );
+                        }
 
-                    if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
-                        newState.selectedAvailability = null;
-                    }
+                        if (prevState.selectedAvailability && prevState.selectedAvailability.id === id) {
+                            newState.selectedAvailability = null;
+                        }
 
-                    this.setState(newState, () => {
+                        return newState
+                    }, () => {
                         this.refreshData();
-                        if (newState.availabilitylist.length > 0) {
+                        if (this.state.availabilitylist.length > 0) {
                             this.getConflictList();
                         }
                         this.getValidationList();
@@ -313,9 +316,9 @@ class AvailabilityPage extends Component {
             id: null,
             description: `Kopie von ${copysourcetitle}`
         })
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [copyAvailability]),
+            mergeAvailabilityListIntoState(prevState, [copyAvailability]),
             { selectedAvailability: copyAvailability, stateChanged: true }
         ), () => {
             this.getValidationList()
@@ -323,17 +326,12 @@ class AvailabilityPage extends Component {
     }
 
     onSelectAvailability(availability) {
-        if (availability || !this.state.selectedAvailability) {
-            this.setState({
-                selectedAvailability: availability
-            }, () => {
-            })
-        } else {
-            this.setState({
-                selectedAvailability: null
-            })
-        }
-
+        this.setState((prevState) => {
+            if (availability || !prevState.selectedAvailability) {
+                return { selectedAvailability: availability }
+            }
+            return { selectedAvailability: null }
+        })
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
@@ -446,8 +444,8 @@ class AvailabilityPage extends Component {
             }
         });
 
-        this.setState(Object.assign({},
-            mergeAvailabilityListIntoState(this.state, newAvailabilities),
+        this.setState((prevState) => Object.assign({},
+            mergeAvailabilityListIntoState(prevState, newAvailabilities),
             {
                 selectedAvailability: exclusionAvailability,
                 stateChanged: true
@@ -485,8 +483,8 @@ class AvailabilityPage extends Component {
             )
         }
 
-        this.setState(Object.assign({},
-            mergeAvailabilityListIntoState(this.state, [
+        this.setState((prevState) => Object.assign({},
+            mergeAvailabilityListIntoState(prevState, [
                 originAvailability,
                 futureAvailability
             ]),
@@ -501,16 +499,14 @@ class AvailabilityPage extends Component {
     }
 
     onNewAvailability() {
-        let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
         newAvailability.type = "appointment"
         newAvailability.__modified = true
-        state = Object.assign(
-            state,
-            updateAvailabilityInState(this.state, newAvailability),
+        this.setState((prevState) => Object.assign(
+            {},
+            updateAvailabilityInState(prevState, newAvailability),
             { selectedAvailability: null, stateChanged: true }
-        );
-        this.setState(state);
+        ));
         $('body').scrollTop(0);
     }
 
@@ -557,15 +553,17 @@ class AvailabilityPage extends Component {
             };
 
             try {
-                const list = this.state.availabilitylist
-                    .map(validateData)
-                    .flat();
-
                 this.setState(
-                    {
-                        errorList: list.length ? list : [],
+                    (prevState) => {
+                        const list = prevState.availabilitylist
+                            .map(validateData)
+                            .flat();
+                        return {
+                            errorList: list.length ? list : [],
+                        }
                     },
                     () => {
+                        const list = this.state.errorList
                         if (list.length > 0) {
                             const nonPastTimeErrors = list.filter(error =>
                                 !error.itemList?.flat(2).some(item => item?.type === 'endTimePast' || item?.type === 'timePastToday')
@@ -663,14 +661,16 @@ class AvailabilityPage extends Component {
                 'busySlots': this.state.busyslots
             })
         }).done((responseData) => {
-            let availabilityList = writeSlotCalculationIntoAvailability(
-                this.state.availabilitylist,
-                responseData['maxSlots'],
-                responseData['busySlots']
-            );
-            this.setState({
-                availabilitylistslices: availabilityList,
-                maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
+            this.setState((prevState) => {
+                const availabilityList = writeSlotCalculationIntoAvailability(
+                    prevState.availabilitylist,
+                    responseData['maxSlots'],
+                    responseData['busySlots']
+                );
+                return {
+                    availabilitylistslices: availabilityList,
+                    maxWorkstationCount: parseInt(responseData['maxWorkstationCount'], 10),
+                }
             })
         }).fail((err) => {
             if (err.status === 404) {
@@ -695,7 +695,7 @@ class AvailabilityPage extends Component {
         if (data.__modified) {
             clearTimeout(this.timer)
             this.setState(
-                Object.assign({}, updateAvailabilityInState(this.state, data)),
+                (prevState) => Object.assign({}, updateAvailabilityInState(prevState, data)),
                 () => {
                     this.readCalculatedAvailabilityList();
                     if (data.tempId || data.id) {
@@ -742,9 +742,9 @@ class AvailabilityPage extends Component {
                 futureAvailabilityFromState.endDate :
                 moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix()
         });
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
+            mergeAvailabilityListIntoState(prevState, [exclusionAvailability, futureAvailability, data])
         ));
     }
 
@@ -768,9 +768,9 @@ class AvailabilityPage extends Component {
                 moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()
         });
 
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [
+            mergeAvailabilityListIntoState(prevState, [
                 originAvailability,
                 futureAvailability,
                 exclusionAvailability
@@ -793,9 +793,9 @@ class AvailabilityPage extends Component {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
 
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
+            mergeAvailabilityListIntoState(prevState, [originAvailability, exclusionAvailability, data])
         ));
     }
 

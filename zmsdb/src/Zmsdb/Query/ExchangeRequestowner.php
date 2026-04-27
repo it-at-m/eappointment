@@ -30,7 +30,7 @@ class ExchangeRequestowner extends Base
                 s.anliegenid,
                 s.kundenid,
                 COUNT(s.anliegenid) as requestscount,
-                AVG(s.bearbeitungszeit) as processingtime,
+                AVG(s.processing_time) as processingtime,
                 s.`datum`
             FROM ' . self::TABLE . ' s
             WHERE s.kundenid = :ownerid AND s.`datum` BETWEEN :datestart AND :dateend
