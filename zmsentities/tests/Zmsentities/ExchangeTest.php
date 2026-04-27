@@ -232,7 +232,7 @@ class ExchangeTest extends EntityCommonTests
             'sum' => ['Alpha' => 10, 'Zebra' => 20],
             'average_processingtime' => ['Alpha' => 1, 'Zebra' => 2],
         ];
-        $sorted = $exchange->withUncapturedRequestRowSortedLast('de_DE');
+        $sorted = $exchange->withUncapturedRequestRowSortedLast();
         $this->assertSame(
             [
                 'Alpha',
@@ -255,7 +255,7 @@ class ExchangeTest extends EntityCommonTests
             'sum' => [],
             'average_processingtime' => [],
         ];
-        $sorted = $exchange->withUncapturedRequestRowSortedLast('de_DE');
+        $sorted = $exchange->withUncapturedRequestRowSortedLast();
         $this->assertSame(
             ['Alpha', 'Zebra', 'sum', 'average_processingtime'],
             array_keys($sorted->data)
