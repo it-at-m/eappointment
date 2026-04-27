@@ -14,9 +14,9 @@ class Exchange extends Schema\Entity
     /**
      * Statistik CASE labels (must match warehouse SQL in ExchangeRequest* queries).
      */
-    public const REQUEST_STAT_NAME_UNCATEGORIZED = '__UNCATEGORIZED_REQUEST__';
+    public const REQUEST_STAT_NAME_UNCATEGORIZED = 'uncategorized';
 
-    public const REQUEST_STAT_NAME_NOT_PROVIDED = '__SERVICE_NOT_PROVIDED__';
+    public const REQUEST_STAT_NAME_NOT_PROVIDED = 'nonexistent';
 
     public static $schema = "exchange.json";
 

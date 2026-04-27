@@ -62,8 +62,8 @@
                 <tbody>
                     {% set totalSum = 0 %}
 
-                    {% set uncategorizedRequestKey = '__UNCATEGORIZED_REQUEST__' %}
-                    {% set serviceNotProvidedKey = '__SERVICE_NOT_PROVIDED__' %}
+                    {% set uncategorizedRequestKey = 'uncategorized' %}
+                    {% set serviceNotProvidedKey = 'nonexistent' %}
                     {% for name, entry in exchangeRequest.data %}
 
                         {% if name != "average_processingtime" and name != "sum" %}

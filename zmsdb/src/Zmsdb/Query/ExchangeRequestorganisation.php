@@ -17,8 +17,8 @@ class ExchangeRequestorganisation extends Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN "__UNCATEGORIZED_REQUEST__"
-                        WHEN statistikJoin.anliegenid = 0 THEN "__SERVICE_NOT_PROVIDED__"
+              WHEN statistikJoin.anliegenid = -1 THEN "uncategorized"
+                        WHEN statistikJoin.anliegenid = 0 THEN "nonexistent"
                         ELSE r.name
                 END
             ) as name,

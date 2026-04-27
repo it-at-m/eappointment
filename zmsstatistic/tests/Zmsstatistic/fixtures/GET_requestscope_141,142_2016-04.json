@@ -65,13 +65,13 @@
       [
         "141",
         "2016-04-01",
-        "__UNCATEGORIZED_REQUEST__",
+        "uncategorized",
         "25"
       ],
       [
         "141",
         "2016-04-01",
-        "__SERVICE_NOT_PROVIDED__",
+        "nonexistent",
         "2"
       ],
       [
