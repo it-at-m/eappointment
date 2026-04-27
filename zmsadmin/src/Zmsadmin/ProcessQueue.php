@@ -159,6 +159,7 @@ class ProcessQueue extends BaseController
             ])
                 ->getEntity();
         }
+        $isOpened = false;
         try {
             $isOpened = \App::$http
                 ->readGetResult('/scope/' . $scope->getId() . '/availability/', ['resolveReferences' => 0])
