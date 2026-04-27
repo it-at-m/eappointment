@@ -160,6 +160,35 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
+    public function hasAnyRight(array $requiredRights): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $permissions = $this->toProperty()->permissions ?? null;
+        $rights = $this->toProperty()->rights ?? null;
+
+        foreach ($requiredRights as $required) {
+            if ($required instanceof Useraccount\RightsInterface) {
+                if ($required->validateUseraccount($this)) {
+                    return true;
+                }
+                continue;
+            }
+
+            $hasPermission = $permissions?->$required?->get() ?? false;
+            $hasRight = $rights?->$required?->get() ?? false;
+
+            if ($hasPermission || $hasRight) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {
