@@ -219,6 +219,8 @@ import {
   getServiceBaseURL,
   getVariantHint,
   OFTEN_SEARCHED_SERVICES,
+  shouldAddImplicitPresenceVariant,
+  VARIANT_ID_PRESENCE,
 } from "@/utils/Constants";
 import {
   createErrorStates,
@@ -810,12 +812,20 @@ const variantServices = computed<Service[]>(() => {
 
   const base = services.value.find((s) => String(s.id) === variantBaseId);
 
-  const hasVariant1 = variants.some((v) => v.variantId === 1);
-  if (base && !hasVariant1) {
+  const hasPresenceVariant = variants.some(
+    (variant) => variant.variantId === VARIANT_ID_PRESENCE
+  );
+
+  const addImplicitPresenceVariant =
+    !!base &&
+    !hasPresenceVariant &&
+    shouldAddImplicitPresenceVariant(variants.map((variant) => variant.variantId));
+
+  if (addImplicitPresenceVariant) {
     variants.unshift({
       ...base,
       parentId: base.parentId ?? null,
-      variantId: 1,
+      variantId: VARIANT_ID_PRESENCE,
     });
   }
 
