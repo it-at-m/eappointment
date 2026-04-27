@@ -16,56 +16,59 @@ class ProcessValidator
 
     protected $collection = [];
 
-    public function __construct(Process $process)
-    {
-        $this->process = $process;
-        $this->collection = new Collection([]);
-    }
+public function __construct(Process $process)
+{
+    $this->process = $process;
+    $this->collection = new Collection([]);
+}
 
-    public function getCollection(): Collection
-    {
-        return $this->collection;
-    }
+public function getCollection(): Collection
+{
+    return $this->collection;
+}
 
-    public function getProcess(): Process
-    {
-        return $this->process;
-    }
+public function getProcess(): Process
+{
+    return $this->process;
+}
 
-    public function getDelegatedProcess(): Delegate
-    {
-        $process = $this->getProcess();
-        $delegatedProcess = new Delegate($process);
-        return $delegatedProcess;
-    }
+public function getDelegatedProcess(): Delegate
+{
+    $process = $this->getProcess();
+    $delegatedProcess = new Delegate($process);
+    return $delegatedProcess;
+}
 
-    public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
-    {
-        $valid = $unvalid->isNumber(
-            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'"
-        );
-        $length = strlen((string)$valid->getValue());
+public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+{
+    $valid = $unvalid->isNumber(
+        "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'"
+    );
+    $length = strlen((string)$valid->getValue());
+    if ($length) {
+        $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
+        $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
+    } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
+        $valid->isRequired("Eine Vorgangsnummer wird benötigt.");
+    }
+    $this->getCollection()->validatedAction($valid, $setter);
+    return $this;
+}
+
+public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+{
+    $trimmed = trim((string) $unvalid->getUnvalidated());
+    $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
+    $length = strlen($trimmed);
+    if ($length || ($isRequiredCallback && $isRequiredCallback())) {
         if ($length) {
-            $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
-            $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
-        } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
-            $valid->isRequired("Eine Vorgangsnummer wird benötigt.");
-        }
-        $this->getCollection()->validatedAction($valid, $setter);
-        return $this;
-    }
-
-    public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
-    {
-        $trimmed = trim((string) $unvalid->getUnvalidated());
-        $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
-        $length = strlen($trimmed);
-        if ($length || ($isRequiredCallback && $isRequiredCallback())) {
             $valid
-                ->isMatchOf(
-                    '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
-                    "Der Absagecode ist nicht korrekt"
-                );
+             ->isMatchOf(
+                 '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
+                 "Der Absagecode ist nicht korrekt"
+             );
+        } elseif ($isRequiredCallback && $isRequiredCallback()) {
+            $valid->isRequired("Ein Absagecode wird benötigt");
         }
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
