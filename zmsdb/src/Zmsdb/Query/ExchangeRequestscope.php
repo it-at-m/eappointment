@@ -22,7 +22,7 @@ class ExchangeRequestscope extends Base
         (
             CASE
               WHEN s.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
-              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NOT_PROVIDED . '\'
+              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
