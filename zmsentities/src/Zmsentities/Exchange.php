@@ -193,7 +193,7 @@ class Exchange extends Schema\Entity
      * Sort service rows alphabetically; place synthetic stat rows last
      * (before aggregated keys sum / average_*).
      */
-    public function withUncapturedRequestRowSortedLast(string $collatorLocale = 'de_DE'): self
+    public function withUncapturedRequestRowSortedLast(): self
     {
         $entity = clone $this;
         if (!is_array($entity->data)) {
@@ -213,9 +213,8 @@ class Exchange extends Schema\Entity
             $serviceRows[$key] = $value;
         }
 
-        $collator = new \Collator($collatorLocale);
-        uksort($serviceRows, static function ($a, $b) use ($collator) {
-            return $collator->compare($a, $b);
+        uksort($serviceRows, static function ($a, $b) {
+            return strnatcasecmp((string) $a, (string) $b);
         });
 
         $ordered = $serviceRows;
