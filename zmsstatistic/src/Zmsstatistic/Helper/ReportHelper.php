@@ -184,6 +184,4 @@ class ReportHelper
 
         return $years;
     }
-
 }
-
