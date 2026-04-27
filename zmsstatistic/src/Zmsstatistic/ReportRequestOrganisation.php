@@ -37,14 +37,13 @@ class ReportRequestOrganisation extends BaseController
           ->getEntity();
         $exchangeRequest = null;
         if (isset($args['period'])) {
-            $locale = \App::$supportedLanguages[\App::$locale]['locale'] ?? 'de_DE';
             $exchangeRequest = \App::$http
             ->readGetResult('/warehouse/requestorganisation/' . $this->organisation->id . '/' . $args['period'] . '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()
             ->withAverage('processingtime')
-            ->withUncapturedRequestRowSortedLast($locale);
+            ->withUncapturedRequestRowSortedLast();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
