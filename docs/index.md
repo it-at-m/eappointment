@@ -15,7 +15,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [API reference](./api-reference.md) — ReDoc and diagrams
 - [Operations](./operations.md)
 - [Module READMEs](./module-readmes.md)
-- [zmsdldb](./zmsdldb.md)
+- [DLDB Interface Documentation](./dldb-interface-documentation.md)
 
 ## Repository Scope
 
