@@ -24,6 +24,16 @@ class Useraccount extends Base
         5  => 'audit_viewer',
         0  => 'agent_queue',
     ];
+    private const ALLOWED_ROLE_NAMES = [
+        'agent_basic',
+        'agent_queue',
+        'agent_queue_plus',
+        'appointment_admin',
+        'reporting_viewer',
+        'user_admin',
+        'audit_viewer',
+        'system_admin',
+    ];
 
     /**
      * Read or initialize the cache version for all useraccount-related cache entries.
@@ -639,7 +649,7 @@ class Useraccount extends Base
         return $result;
     }
 
-    public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
+    public function writeEntity(Entity $entity, $resolveReferences = 0)
     {
         if ($this->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\DuplicateEntry();
@@ -663,27 +673,26 @@ class Useraccount extends Base
      *
      * @todo Remove legacy Berechtigung->role mapping after full roles/permissions rollout.
      */
-    protected function assignTemporaryRoleForNewUser(\BO\Zmsentities\Useraccount $entity): void
+    protected function assignTemporaryRoleForNewUser(Entity $entity): void
     {
-        $berechtigung = (int) $entity->getRightsLevel();
-        $roleName = self::TEMP_ROLE_MAP_BY_BERECHTIGUNG[$berechtigung] ?? null;
-        if (!$roleName) {
-            return;
+        $roleNames = $this->extractRequestedRoleNames($entity);
+        if (empty($roleNames)) {
+            $berechtigung = (int) $entity->getRightsLevel();
+            $roleName = self::TEMP_ROLE_MAP_BY_BERECHTIGUNG[$berechtigung] ?? null;
+            if (!$roleName) {
+                return;
+            }
+            $roleNames = [$roleName];
         }
 
         try {
             $userId = (int) $this->readEntityIdByLoginName($entity->id);
-            $roleId = $this->readRoleIdByName($roleName);
-            $this->perform(
-                'INSERT IGNORE INTO user_role (user_id, role_id) VALUES (?, ?)',
-                [$userId, $roleId]
-            );
+            $this->replaceUserRoles($userId, $roleNames);
         } catch (\Throwable $e) {
             if (App::$log) {
                 App::$log->warning('Temporary user_role assignment failed', [
                     'useraccount' => $entity->id ?? null,
-                    'berechtigung' => $berechtigung,
-                    'role_name' => $roleName,
+                    'role_names' => $roleNames,
                     'exception' => get_class($e),
                     'message' => $e->getMessage(),
                 ]);
@@ -691,19 +700,33 @@ class Useraccount extends Base
         }
     }
 
-    protected function readRoleIdByName(string $roleName): int
+    protected function extractRequestedRoleNames(Entity $entity): array
     {
-        $row = $this->getReader()->fetchOne(
-            'SELECT id FROM role WHERE name = ?',
-            [$roleName]
-        );
-        if (!$row || !isset($row['id'])) {
-            throw new \RuntimeException('Role not found: ' . $roleName);
+        if (!isset($entity->roles) || !is_array($entity->roles)) {
+            return [];
         }
-        return (int) $row['id'];
+
+        $roles = array_values(array_unique(array_filter($entity->roles, function ($roleName) {
+            return is_string($roleName)
+                && in_array($roleName, self::ALLOWED_ROLE_NAMES, true);
+        })));
+
+        return $roles;
     }
 
-    public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
+    protected function replaceUserRoles(int $userId, array $roleNames): void
+    {
+        $this->perform(Query\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
+        if (empty($roleNames)) {
+            return;
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($roleNames), '?'));
+        $query = str_replace(':roleNames', $placeholders, Query\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME);
+        $this->perform($query, array_merge([$userId], $roleNames));
+    }
+
+    public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
     {
         $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
         $query = new Query\Useraccount(Query\Base::UPDATE);

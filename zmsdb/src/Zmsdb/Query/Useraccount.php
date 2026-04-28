@@ -91,6 +91,18 @@ class Useraccount extends Base implements MappingInterface
         ORDER BY useraccount.Name, userAssignment.`behoerdenid`
     ';
 
+    const QUERY_DELETE_USER_ROLES = '
+        DELETE FROM user_role
+        WHERE user_id = ?
+    ';
+
+    const QUERY_INSERT_USER_ROLES_BY_NAME = '
+        INSERT IGNORE INTO user_role (user_id, role_id)
+        SELECT ?, r.id
+        FROM role r
+        WHERE r.name IN (:roleNames)
+    ';
+
     /**
      * Build an SQL expression that checks whether the current useraccount has
      * a permission via user_role -> role_permission -> permission.
