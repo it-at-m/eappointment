@@ -56,7 +56,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
     <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
-    <td><img src="https://avatars.githubusercontent.com/u/58515289" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
+    <td><img src="https://assets.muenchen.de/logos/itm/itm-logo-128.png" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
   </tr>
 </table>
 
