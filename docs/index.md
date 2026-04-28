@@ -59,3 +59,9 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
 </table>
+
+## Screenshot
+
+<img alt="Screenshot of zmsadmin zmsstatistic zmscalldisplay and zmsticketprinter" src="./img/screenshot_1.png" />
+
+<img alt="Screenshot of zmscitizenview" src="./img/screenshot_2.jpg" />
