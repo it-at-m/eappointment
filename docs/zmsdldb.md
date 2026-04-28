@@ -22,7 +22,7 @@ flowchart TB
         end
     end
 
-    map{{DLDB Mapper}}
+    map{{internal dldb-mapper map.php or external for development Munich.php}}
     db1 <-- "(1.2)" ---> map
 
     subgraph ZMS
@@ -77,9 +77,11 @@ flowchart TB
     end
 ```
 
+
+
 ## Local Mapping Parity
 
-For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal dldb-mapper pipeline.
+For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal `dldb-mapper` pipeline.
 
 In particular, the transformer applies the same overwrite concept used by the internal mapper, so local imports and test fixtures stay aligned with production-like mapping results.
 
@@ -192,7 +194,7 @@ Representative examples:
 
 Together, these two generated files are the local canonical snapshots consumed by API/UI/tests and used as the source for database synchronization.
 
-## Constants in `Munich.php`
+## Constants in `dldb-mapper/map.php` (internal) and `Munich.php` (external)
 
 `zmsdldb/src/Zmsdldb/Transformers/Munich.php` contains several rule constants that shape how Munich SADB data is normalized:
 
