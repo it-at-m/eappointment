@@ -63,7 +63,7 @@ class RequestReport extends Base
         $this->lastDayDate = $this->setDateTime($lastDay);
 
         $this->writeHeader($report, $sheet, $datePatternCol);
-        $this->writeReportData($report, $sheet, $datePatternCol);
+        $this->writeReportData($report, $sheet);
 
         return $spreadsheet;
     }
