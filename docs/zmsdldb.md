@@ -191,6 +191,22 @@ In `zmsdldb/src/Zmsdldb/Transformers/Munich.php`, these are read by `field['name
   - slot timing effects propagate through provider/request relations (used for booking behavior)
   - `slotTimeInMinutes` is read in `MapperService::mapOfficesWithScope()` -> `Office.slotTimeInMinutes`
 
+#### How `slotTimeInMinutes` is calculated (per office/provider)
+
+In `zmsdldb/src/Zmsdldb/Transformers/Munich.php`, calculation happens per mapped location:
+
+1. Start with all mapped service durations at that location (`serviceRef.duration`, primarily from `ZMS_DAUER`).
+2. Build a common divisor incrementally using `getSlotTime($a, $b)`.
+3. `getSlotTime()` does not use arbitrary GCD; it selects the largest allowed slot size from:
+   - `[1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60]`
+   - that divides both compared durations.
+4. Final common divisor is written as:
+   - `mappedLocation.slotTimeInMinutes`
+5. Each service-at-location receives:
+   - `appointment.slots = serviceDuration / slotTimeInMinutes`
+
+This means `slotTimeInMinutes` is the office-level base slot grid derived from all mapped service durations for that office.
+
 ### `ZMS_INTERN`
 
 - **Source in SADB export:** `service.fields[].name = "ZMS_INTERN"` and `extendedServiceReferences[].fields[].name = "ZMS_INTERN"`
