@@ -975,8 +975,8 @@ class Process extends Base implements MappingInterface
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
 
-        if (isset($process->queue['callCount']) && $process->queue['callCount']) {
-            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+        if (isset($process->queue['callCount'])) {
+            $data['AnzahlAufrufe'] = (int) $process->queue['callCount'];
         }
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTimeImmutable())

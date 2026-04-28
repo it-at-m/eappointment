@@ -42,12 +42,12 @@ class WorkstationProcessCancelTest extends Base
                 [
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/process/',
-                    'parameters' => ['action' => 'requeue'],
+                    'parameters' => ['action' => 'requeue_pre_call'],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, ['noredirect' => 1, 'requeue' => 1], []);
+        $response = $this->render($this->arguments, ['noredirect' => 1, 'action' => 'requeue_pre_call'], []);
         $this->assertEquals('', (string)$response->getBody());
     }
 

@@ -32,19 +32,32 @@ class WorkstationProcessDelete extends BaseController
         $action = (string) Validator::param('action')->isString()->setDefault('')->getValue();
         if ($action !== '') {
             $action = strtolower($action);
-            if (!in_array($action, ['requeue', 'skip'], true)) {
+            if (
+                !in_array($action, [
+                'requeue_and_skip_to_next',
+                'requeue_pre_call',
+                'requeue_after_call_count_keep',
+                'requeue_after_call_count_decrement',
+                ], true)
+            ) {
                 throw new Exception\Process\ProcessInvalid();
             }
         }
-        $isRequeue = $action === 'requeue';
-        $isSkipToNext = $action === 'skip';
+        $isRequeuePreCall = $action === 'requeue_pre_call';
+        $isRequeueCalled = $action === 'requeue_after_call_count_keep';
+        $isRequeueDecrementCalled = $action === 'requeue_after_call_count_decrement';
+        $isRequeueAndSkipToNext = $action === 'requeue_and_skip_to_next';
 
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
 
-        if ($isRequeue) {
+        error_log("********************************************************");
+        if ($isRequeuePreCall) {
             $nowTs = \App::$now->getTimestamp();
             $process->status = Process::STATUS_QUEUED;
+            $process['status'] = Process::STATUS_QUEUED;
+            $process->wasMissed = false;
+            $process['wasMissed'] = false;
             $process->queue['callCount'] = 0;
             $process->queue['lastCallTime'] = 0;
             $process->queue['callTime'] = 0;
@@ -53,15 +66,26 @@ class WorkstationProcessDelete extends BaseController
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif ($isSkipToNext) {
+            error_log('requeue_pre_call');
+        } elseif ($isRequeueCalled && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
             $process->setWasMissed(true);
-        } elseif (
-            'called' == $process->status
-            && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')
-        ) {
+            error_log('requeue_called');
+        } elseif ($isRequeueDecrementCalled) {
+            $process->status = Process::STATUS_QUEUED;
+            $process['status'] = Process::STATUS_QUEUED;
+            $process->wasMissed = false;
+            $process['wasMissed'] = false;
+            $process->queue['callCount'] = max(0, (int) $process->queue['callCount'] - 1);
+            if ((int) $process->queue['callCount'] === 0) {
+                $process->queue['callTime'] = 0;
+                $process->queue['lastCallTime'] = 0;
+            }
+            $process['showUpTime'] = null;
+            $process['timeoutTime'] = null;
+            error_log('requeue_decrement_called');
+        } elseif ($isRequeueAndSkipToNext) {
             $process->setWasMissed(true);
-        } else {
-            $process->setStatusBySettings();
+            error_log('requeue_and_skip_to_next');
         }
 
         $process = (new Query())->updateEntity(
@@ -71,6 +95,8 @@ class WorkstationProcessDelete extends BaseController
             $previousStatus,
             $workstation->getUseraccount()
         );
+
+        $workstation->process->setStatusBySettings();
 
         $workstation->process = $process;
         (new Workstation())->writeRemovedProcess($workstation);
