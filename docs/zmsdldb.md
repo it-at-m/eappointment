@@ -312,6 +312,135 @@ Operational notes from template:
 - use one substring only (no comma-separated list support)
 - be careful with public gateway domains, otherwise unpublished/internal data may be exposed unintentionally
 
+## Field Mapping Matrix (Source -> Transformer -> API)
+
+Quick lookup for where key SADB fields end up:
+
+- `ZMS_MAX_ANZAHL`
+  - source: `services[].fields[].name="ZMS_MAX_ANZAHL"` and `extendedServiceReferences[].fields[]`
+  - transformer: `mappedService.maxQuantity`, `serviceRef.maxQuantity`
+  - db/api path: request additional data -> `MapperService::mapServicesWithCombinations()` -> `Service.maxQuantity`; relation payload -> `OfficeServiceRelation.maxQuantity`
+
+- `ZMS_DAUER`
+  - source: `services[].fields[].name="ZMS_DAUER"` and `extendedServiceReferences[].fields[]`
+  - transformer: `mappedService.duration`, `serviceRef.duration`, office-level `slotTimeInMinutes`
+  - db/api path: provider/request relation timing -> `MapperService::mapOfficesWithScope()` -> `Office.slotTimeInMinutes`
+
+- `ZMS_INTERN`
+  - source: `services[].fields[].name="ZMS_INTERN"` and `extendedServiceReferences[].fields[]`
+  - transformer: visibility inversion (`public = !ZMS_INTERN`) on service and service-ref
+  - db/api path: publication flags -> `MapperService` visibility filtering (`showUnpublished`, `relation->isPublic()`, `additionalData['public']`)
+
+- `FORMULARE_INFORMATIONEN`
+  - source: `services[].fields[].name="FORMULARE_INFORMATIONEN"` (LINK values)
+  - transformer: `mappedService.forms[]`, `mappedService.links[]`
+  - db/api path: retained in normalized service data; not currently exposed in thinned `Service` DTO
+
+- `GEBUEHRENRAHMEN`
+  - source: `services[].fields[].name="GEBUEHRENRAHMEN"`
+  - transformer: `mappedService.fees`
+  - db/api path: retained in normalized service data; not currently exposed in thinned `Service` DTO
+
+- `TERMINVEREINBARUNG` (`sf30`)
+  - source: `services[].fields[].name="TERMINVEREINBARUNG"`
+  - transformer: currently not explicitly mapped
+  - db/api path: no dedicated propagation; booking flags rely on transformer defaults + visibility/relation checks
+
+## Data Lineage
+
+```mermaid
+flowchart LR
+    A[Munich SADB Raw Export] --> B[Munich Transformer<br/>zmsdldb/src/Zmsdldb/Transformers/Munich.php]
+    O[zmsdldb/resources/munich_sadb_overwrite.json] --> B
+    B --> C[zmsapi/data/services_de.json]
+    B --> D[zmsapi/data/locations_de.json]
+    C --> E[zmsdb request]
+    D --> F[zmsdb provider]
+    C --> G[zmsdb request_provider]
+    D --> G
+    E --> H[zmscitizenapi MapperService]
+    F --> H
+    G --> H
+    H --> I[Citizen API DTOs<br/>Office, Service, OfficeServiceRelation]
+```
+
+## Visibility Decision Flow
+
+```mermaid
+flowchart TD
+    A[Raw SADB Service/Relation] --> B{ZMS_INTERN present?}
+    B -- yes --> C[public = !ZMS_INTERN]
+    B -- no --> D[keep source/default public]
+    C --> E[Normalized provider/request/relation flags]
+    D --> E
+    E --> F{showUnpublished=true?}
+    F -- yes --> G[Return unpublished entries]
+    F -- no --> H[Apply MapperService filters]
+    H --> I{Host matches ACCESS_UNPUBLISHED_ON_DOMAIN?}
+    I -- yes --> G
+    I -- no --> J[Return only published offices/services/relations]
+```
+
+## Troubleshooting Playbook (Missing Service/Office)
+
+Use this order to debug a missing item in `zmscitizenapi`:
+
+1. Confirm service/location exists in raw Munich export (`id`, `public`, `fields`).
+2. Check if `ZMS_INTERN` is present on service or `extendedServiceReferences`.
+3. Verify transformer output in `zmsapi/data/services_de.json` and `zmsapi/data/locations_de.json`.
+4. Verify relation exists between service and location (join expectation for `request_provider`).
+5. Validate publication state across provider/service/relation after import.
+6. Check `showUnpublished` behavior and host override via `ACCESS_UNPUBLISHED_ON_DOMAIN`.
+7. If Munich special case, verify `zmsdldb/resources/munich_sadb_overwrite.json` merge result.
+8. Re-run import pipeline and compare before/after JSON hashes or timestamps.
+
+## Known Gaps / Not Yet Exposed
+
+- `TERMINVEREINBARUNG`: present in raw export, currently not explicitly interpreted in `Munich.php`.
+- `GEBUEHRENRAHMEN`: mapped to normalized service `fees`, but not exposed by thinned `Service` DTO in `MapperService`.
+- `FORMULARE_INFORMATIONEN`: mapped to normalized `forms`/`links`, but not exposed by thinned `Service` DTO in `MapperService`.
+
+Implementation point for explicit field behavior remains the service field parsing blocks in `Munich.php`.
+
+## Before/After Example
+
+### Raw SADB snippet (service input)
+
+```json
+{
+  "id": "1063423",
+  "fields": [
+    { "name": "ZMS_DAUER", "value": 20 },
+    { "name": "ZMS_MAX_ANZAHL", "value": 3 },
+    { "name": "TERMINVEREINBARUNG", "value": true }
+  ],
+  "public": true
+}
+```
+
+### Normalized output snippet (`services_de.json`)
+
+```json
+{
+  "id": "1063423",
+  "appointment": { "link": "https://stadt.muenchen.de/.../services/{serviceId}" },
+  "maxQuantity": 3,
+  "duration": 20,
+  "public": true
+}
+```
+
+### API-facing thinned service (`MapperService`)
+
+```json
+{
+  "id": 1063423,
+  "maxQuantity": 3,
+  "showOnStartPage": true,
+  "combinable": {}
+}
+```
+
 ## Basic System Overview
 
 ```mermaid
