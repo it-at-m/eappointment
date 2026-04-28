@@ -11,10 +11,12 @@
       </div>
     </template>
   </Layout>
+  <MermaidRenderer />
 </template>
 
 <script setup>
 import DefaultTheme from "vitepress/theme";
+import MermaidRenderer from "./MermaidRenderer.vue";
 
 const { Layout } = DefaultTheme;
 </script>
