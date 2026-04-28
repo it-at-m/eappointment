@@ -1,6 +1,11 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+import {
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO
+} from "@/utils/Constants";
 
 // @ts-expect-error: Vue SFC import for test
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
@@ -836,9 +841,6 @@ describe("ServiceFinder", () => {
   });
 
   describe("Variants", () => {
-    const VARIANT_ID_PRESENCE = 1;
-    const VARIANT_ID_TELEPHONE = 2;
-    const VARIANT_ID_VIDEO = 3;
     const VARIANT_ID_LARGE_CUSTOMER = 4;
     const VARIANT_ID_SMALL_CUSTOMER = 5;
 
