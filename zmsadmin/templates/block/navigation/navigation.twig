@@ -153,6 +153,7 @@
                         <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
                     </li>
                 {% endif %}
+                {% if workstation.useraccount.permissions.statistic == "1" %}
                     <li class="nav__block">
                         <h3 class="nav__heading">
                             <span class="heading__label">Weiterführende Links</span>
@@ -164,6 +165,7 @@
                             </li>
                         </ul>
                     </li>
+                {% endif %}
                 </ul>
             </nav>
     </li>
