@@ -203,6 +203,21 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
+    public function testAnyRight(array $requiredRights)
+    {
+        if ($this->hasId()) {
+            if (!$this->hasAnyRight($requiredRights)) {
+                throw new Exception\UserAccountMissingRights(
+                    "Missing any of rights " . htmlspecialchars(implode(',', $requiredRights))
+                );
+            }
+        } else {
+            throw new Exception\UserAccountMissingLogin();
+        }
+
+        return $this;
+    }
+
     public function isOveraged(\DateTimeInterface $dateTime)
     {
         if (Property::__keyExists('lastLogin', $this)) {

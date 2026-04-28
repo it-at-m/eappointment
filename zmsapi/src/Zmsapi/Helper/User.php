@@ -124,6 +124,17 @@ class User
         return $workstation;
     }
 
+    public static function checkAnyRight(...$requiredRights)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testAnyRight($requiredRights);
+        }
+
+        return $workstation;
+    }
+
     public static function checkDepartments($departmentIds)
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
