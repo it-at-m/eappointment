@@ -51,7 +51,6 @@ class WorkstationProcessDelete extends BaseController
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
 
-        error_log("********************************************************");
         if ($isRequeuePreCall) {
             $nowTs = \App::$now->getTimestamp();
             $process->status = Process::STATUS_QUEUED;
@@ -66,10 +65,8 @@ class WorkstationProcessDelete extends BaseController
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-            error_log('requeue_pre_call');
         } elseif ($isRequeueCalled && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
             $process->setWasMissed(true);
-            error_log('requeue_called');
         } elseif ($isRequeueDecrementCalled) {
             $process->status = Process::STATUS_QUEUED;
             $process['status'] = Process::STATUS_QUEUED;
@@ -82,10 +79,8 @@ class WorkstationProcessDelete extends BaseController
             }
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-            error_log('requeue_decrement_called');
         } elseif ($isRequeueAndSkipToNext) {
             $process->setWasMissed(true);
-            error_log('requeue_and_skip_to_next');
         }
 
         $process = (new Query())->updateEntity(
