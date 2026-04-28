@@ -11,6 +11,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [Project History](./project-history.md)
 - [Getting Started](./getting-started.md)
 - [Development](./development.md)
+- [PHP Base Images](./php-base-images.md)
 - [Testing](./testing.md) — coverage report links
 - [API reference](./api-reference.md) — ReDoc and diagrams
 - [Operations](./operations.md)
