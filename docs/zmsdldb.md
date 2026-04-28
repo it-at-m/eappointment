@@ -394,7 +394,7 @@ Use this order to debug a missing item in `zmscitizenapi`:
 7. If Munich special case, verify `zmsdldb/resources/munich_sadb_overwrite.json` merge result.
 8. Re-run import pipeline and compare before/after JSON hashes or timestamps.
 
-## Known Gaps / Not Yet Exposed
+## Known Gaps / Not Yet Used
 
 - `TERMINVEREINBARUNG`: present in raw export, currently not explicitly interpreted in `Munich.php`.
 - `GEBUEHRENRAHMEN`: mapped to normalized service `fees`, but not exposed by thinned `Service` DTO in `MapperService`.
