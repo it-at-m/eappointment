@@ -11,6 +11,6 @@ Documentation moved
 
 A detailed documentation is available at:
 
-- `../docs/zmsdldb.md`
-- https://it-at-m.github.io/eappointment/zmsdldb.html
+- `../docs/dldb-interface-documentation.md`
+- https://it-at-m.github.io/eappointment/dldb-interface-documentation.html
 
