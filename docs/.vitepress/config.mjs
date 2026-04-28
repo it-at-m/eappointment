@@ -33,7 +33,8 @@ export default {
       { text: "Overview", link: "/" },
       { text: "API reference", link: "/api-reference" },
       { text: "Testing", link: "/testing" },
-      { text: "GitHub Wiki", link: "https://github.com/it-at-m/eappointment/wiki" }
+      { text: "GitHub Repository", link: "https://github.com/it-at-m/eappointment/" },
+      { text: "Open Source", link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html" }
     ],
     sidebar: [
       { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project Overview", link: "/overview" }] },
