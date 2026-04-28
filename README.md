@@ -720,6 +720,7 @@ gitGraph LR:
   commit type: HIGHLIGHT id: "Abnahme Tests"
   commit tag: "2.25.00-muc2" 
 ```
+
 ## Dependency Graph
 `zmscitizenview` and `refarch-gateway` are built on top of `zmscitizenapi`, but they do not directly pull dependencies from it. Similarly, while `zmscitizenapi` sends requests to `zmsapi`, `zmsapi` is not a direct dependency of `zmscitizenapi`.
 ```mermaid
