@@ -27,6 +27,7 @@
 
 <script setup>
 import DefaultTheme from "vitepress/theme";
+import MermaidRenderer from "./MermaidRenderer.vue";
 
 import LatestReleaseTag from "./LatestReleaseTag.vue";
 import MermaidRenderer from "./MermaidRenderer.vue";
