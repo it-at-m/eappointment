@@ -9,6 +9,74 @@ DLDB = Dienstleistungsdatenbank
 SADB = Servicedatenbank
 ```
 
+## Basic System Overview
+
+```mermaid
+flowchart TB
+    subgraph SADB
+        db1[(SADB)]
+        db1 -.-> SADB-tables
+        subgraph SADB-tables
+            l([services])
+            m([locations])
+        end
+    end
+
+    map{{DLDB Mapper}}
+    db1 <-- "(1.2)" ---> map
+
+    subgraph ZMS
+
+        b <-- "(1.1)" --> map
+
+
+        subgraph eappointment
+
+            subgraph zmsapi
+                a1[[cronjob.hourly]]
+                a2[(/data)]
+            end
+
+            b(zmsdldb)
+            a1 -- "(1) <br> getDldbData" --> b
+            b -- "(1.3)" --> a2
+            a1 -- "(2) <br> updateDldbData" --> c
+            c <-- "(2.1)" --> a2
+
+            subgraph zmsdb
+                c(zmsdb)
+                c <-- "(2.2)" --> db2
+                db2[(zmsdb)]
+
+                subgraph tables
+                    direction TB
+                    i([provider])
+                    j([request])
+                    k([request_provider])
+                    i <-.-> k
+                    j <-.-> k
+                end
+
+                db2 -.-> tables
+
+            end
+
+            c <-.-> d
+            d <-.-> e
+            c <-.-> f
+            d(zmsapi)
+            e(zmsadmin)
+            f(zmscitizenapi)
+            g(zmscitizenview)
+            h(buergeransicht)
+
+            f -.-> g
+            f -.-> h
+
+        end
+    end
+```
+
 ## Local Mapping Parity
 
 For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal dldb-mapper pipeline.
@@ -399,6 +467,7 @@ Use this order to debug a missing item in `zmscitizenapi`:
 6. Check `showUnpublished` behavior and host override via `ACCESS_UNPUBLISHED_ON_DOMAIN`.
 7. If Munich special case, verify `zmsdldb/resources/munich_sadb_overwrite.json` merge result.
 8. Re-run import pipeline and compare before/after JSON hashes or timestamps.
+9. Known issue: if results look stale after a successful import, clear cached artifacts in the repository `cache/` folder and rerun the import/read path.
 
 ## Known Gaps / Not Yet Used
 
@@ -446,76 +515,6 @@ Implementation point for explicit field behavior remains the service field parsi
   "combinable": {}
 }
 ```
-
-## Basic System Overview
-
-```mermaid
-flowchart TB
-    subgraph SADB
-        db1[(SADB)]
-        db1 -.-> SADB-tables
-        subgraph SADB-tables
-            l([services])
-            m([locations])
-        end
-    end
-
-    map{{DLDB Mapper}}
-    db1 <-- "(1.2)" ---> map
-
-    subgraph ZMS
-
-        b <-- "(1.1)" --> map
-        
-        
-        subgraph eappointment
-
-            subgraph zmsapi
-                a1[[cronjob.hourly]]
-                a2[(/data)]
-            end
-
-            b(zmsdldb)
-            a1 -- "(1) <br> getDldbData" --> b
-            b -- "(1.3)" --> a2
-            a1 -- "(2) <br> updateDldbData" --> c
-            c <-- "(2.1)" --> a2
-
-            subgraph zmsdb
-                c(zmsdb)
-                c <-- "(2.2)" --> db2
-                db2[(zmsdb)]
-
-                subgraph tables
-                    direction TB
-                    i([provider])
-                    j([request])
-                    k([request_provider])
-                    i <-.-> k
-                    j <-.-> k
-                end
-
-                db2 -.-> tables
-                
-            end
-
-            c <-.-> d
-            d <-.-> e
-            c <-.-> f
-            d(zmsapi)
-            e(zmsadmin)
-            f(zmscitizenapi)
-            g(zmscitizenview)
-            h(buergeransicht)
-            
-            f -.-> g
-            f -.-> h
-
-        end
-    end
-```
-
-
 
 ## SADB Index Proxy (`/sadb-index/`)
 
