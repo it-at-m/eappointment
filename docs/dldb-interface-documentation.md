@@ -1,4 +1,4 @@
-# zmsdldb Documentation
+# DLDB Interface Documentation
 
 This page contains Munich-specific DLDB/SADB mapping documentation for `zmsdldb`.
 
