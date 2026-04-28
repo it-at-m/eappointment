@@ -1,10 +1,17 @@
-# zmsdldb
+# zmsdldb Documentation
 
 This page contains Munich-specific DLDB/SADB mapping documentation for `zmsdldb`.
 
+The module zmsdldb is a PHP-based service that transforms the SADB exports into structured JSON for use by the ZMS appointment booking platform. It fetches data from the SADB export endpoint, validates and optionally overwrites entries, and exposes REST endpoints for services, locations, and authorities.
+
+```
+DLDB = Dienstleistungsdatenbank
+SADB = Servicedatenbank
+```
+
 ## Local Mapping Parity
 
-For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal DLDB mapper pipeline.
+For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal dldb-mapper pipeline.
 
 In particular, the transformer applies the same overwrite concept used by the internal mapper, so local imports and test fixtures stay aligned with production-like mapping results.
 
@@ -198,12 +205,12 @@ In `zmsdldb/src/Zmsdldb/Transformers/Munich.php`, calculation happens per mapped
 1. Start with all mapped service durations at that location (`serviceRef.duration`, primarily from `ZMS_DAUER`).
 2. Build a common divisor incrementally using `getSlotTime($a, $b)`.
 3. `getSlotTime()` does not use arbitrary GCD; it selects the largest allowed slot size from:
-   - `[1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60]`
-   - that divides both compared durations.
+  - `[1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60]`
+  - that divides both compared durations.
 4. Final common divisor is written as:
-   - `mappedLocation.slotTimeInMinutes`
+  - `mappedLocation.slotTimeInMinutes`
 5. Each service-at-location receives:
-   - `appointment.slots = serviceDuration / slotTimeInMinutes`
+  - `appointment.slots = serviceDuration / slotTimeInMinutes`
 
 This means `slotTimeInMinutes` is the office-level base slot grid derived from all mapped service durations for that office.
 
@@ -320,27 +327,22 @@ Quick lookup for where key SADB fields end up:
   - source: `services[].fields[].name="ZMS_MAX_ANZAHL"` and `extendedServiceReferences[].fields[]`
   - transformer: `mappedService.maxQuantity`, `serviceRef.maxQuantity`
   - db/api path: request additional data -> `MapperService::mapServicesWithCombinations()` -> `Service.maxQuantity`; relation payload -> `OfficeServiceRelation.maxQuantity`
-
 - `ZMS_DAUER`
   - source: `services[].fields[].name="ZMS_DAUER"` and `extendedServiceReferences[].fields[]`
   - transformer: `mappedService.duration`, `serviceRef.duration`, office-level `slotTimeInMinutes`
   - db/api path: provider/request relation timing -> `MapperService::mapOfficesWithScope()` -> `Office.slotTimeInMinutes`
-
 - `ZMS_INTERN`
   - source: `services[].fields[].name="ZMS_INTERN"` and `extendedServiceReferences[].fields[]`
   - transformer: visibility inversion (`public = !ZMS_INTERN`) on service and service-ref
   - db/api path: publication flags -> `MapperService` visibility filtering (`showUnpublished`, `relation->isPublic()`, `additionalData['public']`)
-
 - `FORMULARE_INFORMATIONEN`
   - source: `services[].fields[].name="FORMULARE_INFORMATIONEN"` (LINK values)
   - transformer: `mappedService.forms[]`, `mappedService.links[]`
   - db/api path: retained in normalized service data; not currently exposed in thinned `Service` DTO
-
 - `GEBUEHRENRAHMEN`
   - source: `services[].fields[].name="GEBUEHRENRAHMEN"`
   - transformer: `mappedService.fees`
   - db/api path: retained in normalized service data; not currently exposed in thinned `Service` DTO
-
 - `TERMINVEREINBARUNG` (`sf30`)
   - source: `services[].fields[].name="TERMINVEREINBARUNG"`
   - transformer: currently not explicitly mapped
@@ -364,6 +366,8 @@ flowchart LR
     H --> I[Citizen API DTOs<br/>Office, Service, OfficeServiceRelation]
 ```
 
+
+
 ## Visibility Decision Flow
 
 ```mermaid
@@ -380,6 +384,8 @@ flowchart TD
     I -- yes --> G
     I -- no --> J[Return only published offices/services/relations]
 ```
+
+
 
 ## Troubleshooting Playbook (Missing Service/Office)
 
@@ -509,8 +515,9 @@ flowchart TB
     end
 ```
 
+
+
 ## SADB Index Proxy (`/sadb-index/`)
 
 Browsers may block cross-origin reads of SADB index hosts.
 The mapper exposes `/sadb-index/`, which server-fetches `SADB_INDEX_URL` and returns the same plain text the index page uses.
-
