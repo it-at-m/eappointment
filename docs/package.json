@@ -7,6 +7,7 @@
     "docs:preview": "vitepress preview ."
   },
   "devDependencies": {
+    "mermaid": "^11.14.0",
     "vitepress": "^1.6.3"
   }
 }
