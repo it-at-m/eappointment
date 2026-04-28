@@ -33,11 +33,12 @@ export default {
       { text: "Overview", link: "/" },
       { text: "API reference", link: "/api-reference" },
       { text: "Testing", link: "/testing" },
-      { text: "GitHub Wiki", link: "https://github.com/it-at-m/eappointment/wiki" }
+      { text: "GitHub Repository", link: "https://github.com/it-at-m/eappointment/" },
+      { text: "Open Source", link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html" }
     ],
     sidebar: [
-      { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project Overview", link: "/overview" }] },
-      { text: "Setup and Development", items: [{ text: "Getting Started", link: "/getting-started" }, { text: "Development", link: "/development" }] },
+      { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project History", link: "/project-history" }] },
+      { text: "Setup and Development", items: [{ text: "Dependency Graph", link: "/dependency-graph" }, { text: "Branching Strategy", link: "/branching-strategy-and-convention" }, { text: "Commit Message Convention", link: "/commit-message-convention" }, { text: "Getting Started", link: "/getting-started" }, { text: "Development", link: "/development" }] },
       { text: "Operations", items: [{ text: "Testing", link: "/testing" }, { text: "API reference", link: "/api-reference" }, { text: "Operations", link: "/operations" }] },
       { text: "Reference", items: [{ text: "Module READMEs", link: "/module-readmes" }] }
     ]
