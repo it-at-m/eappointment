@@ -16,7 +16,7 @@
     "sourcelist": sourceList, 
     "source": source, 
     "providerList": providerList,
-    "isSuperuser": rights.superuser|default(false)
+    "isSuperuser": workstation.useraccount.rights.superuser
 } %}
 
 {% set rights = workstation.useraccount.rights %}

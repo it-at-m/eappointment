@@ -18,7 +18,7 @@ class SourceSelectView extends Component {
 
         const sourceList = Object.values(this.props.scopestate.sourcelist)
 
-        const isSuperuser = this.props.scopestate.isSuperuser === true || this.props.scopestate.isSuperuser === 1 || this.props.scopestate.isSuperuser === '1'
+        const isSuperuser = !!this.props.scopestate.isSuperuser
 
 
         const sourceOptions = [{
