@@ -1,3 +1,118 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const FEATURES_ROOT = path.resolve(import.meta.dirname, "../../zmsautomation/src/test/resources/features");
+const CUCUMBER_DOC_PATH = path.resolve(import.meta.dirname, "../zmsautomation-cucumber-current.md");
+const FEATURE_SOURCE_BASE = "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
+
+const toPosix = (p) => p.split(path.sep).join("/");
+
+const listFeatureFiles = (dir) => {
+  const out = [];
+  if (!fs.existsSync(dir)) {
+    return out;
+  }
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...listFeatureFiles(full));
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith(".feature")) {
+      out.push(full);
+    }
+  }
+  return out.sort((a, b) => a.localeCompare(b));
+};
+
+const renderCucumberDoc = () => {
+  const featureFiles = listFeatureFiles(FEATURES_ROOT);
+  const grouped = new Map();
+
+  for (const file of featureFiles) {
+    const rel = toPosix(path.relative(FEATURES_ROOT, file));
+    const parts = rel.split("/");
+    const testType = parts[0] ?? "other";
+    const module = parts[1] ?? "misc";
+    if (!grouped.has(testType)) {
+      grouped.set(testType, new Map());
+    }
+    const moduleMap = grouped.get(testType);
+    if (!moduleMap.has(module)) {
+      moduleMap.set(module, []);
+    }
+    moduleMap.get(module).push({ abs: file, rel });
+  }
+
+  const lines = [
+    "---",
+    "outline:",
+    "  level: [2, 3]",
+    "---",
+    "",
+    "# Current Cucumber Tests in zmsautomation",
+    "",
+    "This page is generated automatically from `zmsautomation/src/test/resources/features`.",
+    "When a `.feature` file is added, changed, or removed, this documentation is updated automatically.",
+    "",
+    "## Recommended Feature Pattern",
+    "",
+    "Use ticket tags consistently. Always include a Jira tag like `@ZMSKVR-123` on new scenarios/features.",
+    "",
+    "```gherkin",
+    "@rest @zmsapi @ZMSKVR-123 @smoke",
+    "Feature: Example feature with required ticket tag",
+    "  Scenario: Example scenario",
+    "    Given the API is available",
+    "    When I call the endpoint",
+    "    Then the response status code should be 200",
+    "```",
+    ""
+  ];
+
+  if (!featureFiles.length) {
+    lines.push("No `.feature` files found.");
+  } else {
+    for (const [testType, modules] of grouped) {
+      lines.push(`## ${testType.toUpperCase()}`);
+      lines.push("");
+      for (const [module, files] of modules) {
+        const moduleTitle = testType === "ui" && module === "buergeransicht" ? `${module} (deprecated)` : module;
+        lines.push(`### ${moduleTitle}`);
+        lines.push("");
+        if (testType === "ui" && module === "buergeransicht") {
+          lines.push(
+            "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`."
+          );
+          lines.push("");
+        }
+        for (const item of files) {
+          const fileName = path.basename(item.rel);
+          const sourceUrl = `${FEATURE_SOURCE_BASE}/${item.rel}`;
+          const raw = fs.readFileSync(item.abs, "utf8").replaceAll("```", "\\`\\`\\`").trimEnd();
+          lines.push(`#### \`${fileName}\``);
+          lines.push("");
+          lines.push(`Source: [${fileName}](${sourceUrl})`);
+          lines.push("");
+          lines.push("```gherkin");
+          lines.push(raw);
+          lines.push("```");
+          lines.push("");
+        }
+      }
+    }
+  }
+
+  const next = `${lines.join("\n").trimEnd()}\n`;
+  const prev = fs.existsSync(CUCUMBER_DOC_PATH) ? fs.readFileSync(CUCUMBER_DOC_PATH, "utf8") : "";
+  if (prev !== next) {
+    fs.writeFileSync(CUCUMBER_DOC_PATH, next, "utf8");
+  }
+};
+
+renderCucumberDoc();
+
 export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
