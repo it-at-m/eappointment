@@ -18,6 +18,9 @@ class SourceSelectView extends Component {
 
         const sourceList = Object.values(this.props.scopestate.sourcelist)
 
+        const isSuperuser = this.props.scopestate.isSuperuser === true || this.props.scopestate.isSuperuser === 1 || this.props.scopestate.isSuperuser === '1'
+
+
         const sourceOptions = [{
             "value": 0,
             "name": this.props.labels.selectPlease
@@ -69,11 +72,15 @@ class SourceSelectView extends Component {
 
         return (
             <fieldset className="panel--heavy">
-                <div>
+                
                     <Inputs.Hidden
                         name="id"
                         value={(this.props.scopestate.scope) ? this.props.scopestate.scope.id : 0}
                     />
+
+                    {isSuperuser && (
+            <div>
+                <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
                             value={this.props.labels.sources}
@@ -108,6 +115,10 @@ class SourceSelectView extends Component {
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                 </div>
+                </div>
+             )}
+
+                    
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
