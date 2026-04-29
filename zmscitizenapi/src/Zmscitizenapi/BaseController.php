@@ -4,24 +4,16 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
 
-use BO\Zmscitizenapi\Services\Core\ExceptionService;
-use BO\Zmscitizenapi\Services\Core\ValidationService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 abstract class BaseController extends \BO\Slim\Controller
 {
-    protected ?string $language = null;
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
             $request = $this->initRequest($request);
-            $this->language = $request->getAttribute('language');
-            ValidationService::setLanguageContext($this->language);
-            ExceptionService::setLanguageContext($this->language);
-            ZmsApiFacadeService::setLanguageContext($this->language);
             $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {

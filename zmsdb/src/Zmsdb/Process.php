@@ -659,11 +659,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
+        $newAuthKey = bin2hex(random_bytes(32));
         $query = Query\Process::QUERY_CANCELED;
         $this->perform($query, [
             'processId' => $processId,
             'authKey' => $authKey,
-            'canceledTimestamp' => $canceledTimestamp
+            'canceledTimestamp' => $canceledTimestamp,
+            'newAuthKey' => $newAuthKey
         ]);
         $process = $this->readEntity($processId, new Helper\NoAuth(), 0);
         Log::writeProcessLog("DELETE (Process::writeCanceledEntity) $processId ", Log::ACTION_CANCELED, $process, $useraccount);
