@@ -23,7 +23,7 @@ This module contains API and UI tests for ZMS using ATAF (Test Automation Framew
   - `rest/zmsapi/` - ZMS REST API features
   - `rest/zmscitizenapi/` - Citizen REST API features
   - `ui/zmsadmin/` - Admin UI features
-  - `ui/buergeransicht/` - legacy eappointment citizen view UI features
+  - `ui/buergeransicht/` - deprecated legacy citizen frontend UI features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
   - `ui/zmsstatistic/` - Statistik UI features
   - `ui/zmscitizenview/` - CitizenView UI (Service Finder + full booking E2E)
 - `src/main/resources/db/migration/` - Flyway database migrations
@@ -184,7 +184,7 @@ ATAF tests automatically run Flyway migrations before executing tests. Migration
 - UI tags:
   - `@web`
   - `@zmsadmin`
-  - `@buergeransicht`
+  - `@buergeransicht` (deprecated legacy frontend; not used for `zmscitizenview`)
   - `@zmsstatistic`
   - `@zmscitizenview`
   - `@jumpin`
@@ -209,7 +209,7 @@ ATAF tests automatically run Flyway migrations before executing tests. Migration
 ### UI Features (`src/test/resources/features/ui/`)
 
 - `ui/zmsadmin/` - Admin UI features
-- `ui/buergeransicht/` - legacy Buergeransicht features
+- `ui/buergeransicht/` - deprecated legacy Buergeransicht features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
 - `ui/zmscitizenview/` - CitizenView booking UI features
 - `ui/zmsstatistic/` - Statistik UI features
 
