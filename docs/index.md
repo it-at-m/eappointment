@@ -4,7 +4,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 
 - **GitHub Repository** (manual): [https://github.com/it-at-m/eappointment/](https://github.com/it-at-m/eappointment/)
 
-**Coverage and API HTML** from CI are published on the same host; see [Testing](./testing.md) and [API reference](./api-reference.md).
+**Coverage and API HTML** from CI are published on the same host; see [Unit Testing in ZMS](./testing-unit.md), [Unit Test Coverage](./testing-coverage.md), and [API reference](./api-reference.md).
 
 ## Quick Links
 
@@ -13,7 +13,8 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [Local Database and Cache Operations](./local-database-and-cache-operations.md)
 - [Dependency Upgrade Check](./dependency-upgrade-check.md)
 - [PHP Base Images](./php-base-images.md)
-- [Testing](./testing.md) — coverage report links
+- [Unit Testing in ZMS](./testing-unit.md)
+- [Unit Test Coverage](./testing-coverage.md)
 - [API reference](./api-reference.md) — ReDoc and diagrams
 - [Operations](./operations.md)
 - [Module READMEs](./module-readmes.md)
