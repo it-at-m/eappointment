@@ -65,8 +65,6 @@
 	{% endblock %}
 
 	{% block board_body %}
-		{% import 'element/helper/readmore_macros.twig' as readmoreUi %}
-		{% set readmoreQueueMaxLines = 4 %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -160,10 +158,18 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+									<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<div class="queue-table-text-cell">
+											<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+										</div>
+									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+									<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<div class="queue-table-text-cell">
+											<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+										</div>
+									</td>
 								{% endif %}
 								<td>
 									<p>
@@ -398,16 +404,33 @@
 										{% endif %}
 									</td>
 									<td>
-										{% set amendmentTs %}{{ readmoreUi.queue_amendment_timestamp_message(item) }}{% endset %}
-										<div class="queue-table-text-cell queue-table-amendment-preview">{{ readmoreUi.readmore_preview_clamped(item.amendment, readmoreQueueMaxLines) }}</div>
+										{% set amendmentTs %}
+											{%- if item.queue.status == "reserved" -%}
+												{% trans %}reserviert am{% endtrans %}
+											{%- elseif item.queue.status == "preconfirmed" -%}
+												{% trans %}Aktivierung ausstehend ab{% endtrans %}
+											{%- elseif item.queue.status == "deleted" -%}
+												{% trans %}wird freigegeben ab{% endtrans %}
+											{%- else -%}
+												{% trans %}gebucht am{% endtrans %}
+											{%- endif %} {{ item.createTimestamp|date("d.m.Y, H:i") }} Uhr
+										{% endset %}
+										<div class="queue-table-text-cell queue-table-amendment-preview"><div class="queue-table-free-text">{{ item.amendment|default('')|e|nl2br }}</div></div>
 										<p class="queue-table-amendment-time">{{ amendmentTs }}</p>
-										<div class="queue-table-amendment-readmore">{{ readmoreUi.readmore_expand_button(item.amendment, readmoreQueueMaxLines, 'Anmerkung'|trans, item.displayNumber, item.clients|first.familyName|default(''), amendmentTs) }}</div>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+										<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+											<div class="queue-table-text-cell">
+												<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+											</div>
+										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+										<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+											<div class="queue-table-text-cell">
+												<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+											</div>
+										</td>
 									{% endif %}
 							<td class="nowrap">
 								{% if item.queue.withAppointment %}
@@ -535,10 +558,18 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									{{ readmoreUi.queue_plain_text_cell(item.customTextfield, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+									<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<div class="queue-table-text-cell">
+											<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+										</div>
+									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									{{ readmoreUi.queue_plain_text_cell(item.customTextfield2, readmoreQueueMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), item.displayNumber, item.clients|first.familyName|default('')) }}
+									<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<div class="queue-table-text-cell">
+											<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+										</div>
+									</td>
 								{% endif %}
 								<td>
 									<p>

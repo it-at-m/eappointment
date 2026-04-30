@@ -5,8 +5,6 @@
  Kundeninformationen
         {% endblock %}
         {% block board_body %}
-            {% from 'element/helper/readmore_macros.twig' import readmore_content %}
-            {% set readmoreKundeninfoMaxLines = 4 %}
             <h4>Der nächste Kunde ist:</h4>
             <dl>
                 <dt>
@@ -28,7 +26,7 @@
                     Anmerkung
                 </dt>
                 <dd class="process-free-text">
-                    {{ readmore_content(process.amendment, readmoreKundeninfoMaxLines, 'Anmerkung'|trans, process.displayNumber, process.clients|first.familyName|default('')) }}
+                    {{ process.amendment|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if process.clients|first.telephone %}
@@ -52,7 +50,7 @@
                     {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
                 <dd class="process-free-text">
-                    {{ readmore_content(process.customTextfield, readmoreKundeninfoMaxLines, workstation.scope.preferences.client.customTextfieldLabel|default(''), process.displayNumber, process.clients|first.familyName|default('')) }}
+                    {{ process.customTextfield|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if process.customTextfield2 %}
@@ -60,7 +58,7 @@
                     {{workstation.scope.preferences.client.customTextfield2Label}}
                 </dt>
                 <dd class="process-free-text">
-                    {{ readmore_content(process.customTextfield2, readmoreKundeninfoMaxLines, workstation.scope.preferences.client.customTextfield2Label|default(''), process.displayNumber, process.clients|first.familyName|default('')) }}
+                    {{ process.customTextfield2|e|nl2br }}
                 </dd>
                 {% endif %}
                 <dt>
