@@ -129,7 +129,7 @@ class ProcessValidator
     }
 
     /**
-     * Validates a scope custom text field (varchar 255), with optional HTML stripped to plain text.
+     * Validates a scope custom text field (max 250 chars), with optional HTML stripped to plain text.
      */
     public function validateCustomTextfield(Unvalidated $unvalid, callable $setter, bool $required): self
     {

@@ -319,7 +319,7 @@ class ValidationServiceTest extends TestCase
         );
         $this->assertEmpty($result['errors']);
 
-        $long = str_repeat('x', 256);
+        $long = str_repeat('x', 251);
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',

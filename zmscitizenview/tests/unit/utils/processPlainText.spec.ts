@@ -27,10 +27,10 @@ describe("processPlainText", () => {
     expect(plainTextCharCount("😀")).toBe(1);
   });
 
-  it("allows raw length over 255 when normalized length is within limit", () => {
-    const raw = `${"a".repeat(252)}&amp;b`;
-    expect(raw.length).toBeGreaterThan(255);
-    expect(plainTextCharCount(raw)).toBe(254);
-    expect(plainTextCharCount(raw) > 255).toBe(false);
+  it("allows raw length over 250 when normalized length is within limit", () => {
+    const raw = `${"a".repeat(248)}&amp;b`;
+    expect(raw.length).toBeGreaterThan(250);
+    expect(plainTextCharCount(raw)).toBe(250);
+    expect(plainTextCharCount(raw) > 250).toBe(false);
   });
 });

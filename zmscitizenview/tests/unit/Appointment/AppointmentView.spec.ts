@@ -708,7 +708,7 @@ describe("AppointmentView", () => {
         lastName: "Doe",
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
-        customTextfield: "a".repeat(256),
+        customTextfield: "a".repeat(251),
         customTextfield2: "More info"
       };
       await nextTick();
@@ -737,7 +737,7 @@ describe("AppointmentView", () => {
         mailAddress: "jane.doe@example.com",
         telephoneNumber: "1234567890",
         customTextfield: "Some info",
-        customTextfield2: "a".repeat(256)
+        customTextfield2: "a".repeat(251)
       };
       await nextTick();
 

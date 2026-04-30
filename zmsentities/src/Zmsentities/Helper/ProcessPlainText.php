@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Helper;
  */
 class ProcessPlainText
 {
-    public const MAX_CUSTOM_TEXTFIELD_CHARS = 255;
+    public const MAX_CUSTOM_TEXTFIELD_CHARS = 250;
 
     public const MAX_AMENDMENT_CHARS = 500;
 
