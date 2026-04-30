@@ -31,7 +31,7 @@ class Scope extends BaseController
         ])->getEntity();
         if (!$workstation->getUseraccount()->hasAnyRight(['scope','restrictedscope'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
-        } 
+        }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http
             ->readGetResult('/scope/' . $entityId . '/', [
