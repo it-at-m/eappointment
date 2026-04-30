@@ -14,7 +14,7 @@ class AvailabilityClosureRead extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
+        (new Helper\User($request))->checkRights('availability');
 
         try {
             $scopeIdCsv = Validator::param('scopeIds')

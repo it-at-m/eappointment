@@ -24,6 +24,7 @@ class OwnerDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkRights('organisation');
         $query = new Query();
         $owner = $query->readEntity($args['id'], 2);
         if (! $owner->hasId()) {
