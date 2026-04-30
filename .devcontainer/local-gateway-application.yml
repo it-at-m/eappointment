@@ -37,6 +37,7 @@ spring:
           predicates:
             - Path=/buergeransicht/api/citizen/**
           filters:
+            - PreserveHostHeader
             - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
             - RemoveResponseHeader=WWW-Authenticate
         - id: "webcomponent"

@@ -411,7 +411,13 @@
 									{% endif %}
 							<td class="nowrap">
 								{% if item.queue.withAppointment %}
-									{% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
+									{% set appointment = item.appointments|first %}
+									{% set providerSlotTimeInMinutes = item.scope.provider.data.slotTimeInMinutes|default(null) %}
+									{% set availabilitySlotTimeInMinutes = appointment.availability.slotTimeInMinutes|default(null) %}
+									{% set slotTimeInMinutes = (appointment.availability.id|default(0) > 0)
+										? availabilitySlotTimeInMinutes
+										: providerSlotTimeInMinutes|default(availabilitySlotTimeInMinutes) %}
+									{% set duration = slotTimeInMinutes * appointment.slotCount %}
 									{{ duration }}&nbsp;Min.
 								{% endif %}
 							</td>
