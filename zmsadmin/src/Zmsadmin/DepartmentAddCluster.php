@@ -21,6 +21,9 @@ class DepartmentAddCluster extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasRights(['cluster'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->getEntity();
@@ -47,7 +50,7 @@ class DepartmentAddCluster extends BaseController
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/cluster.twig', array(
-            'title' => 'Cluster',
+            'title' => 'Cluster einrichten',
             'action' => 'add',
             'menuActive' => 'owner',
             'workstation' => $workstation,

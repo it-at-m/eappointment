@@ -28,8 +28,14 @@ class ScopeUpdate extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $scope->addData($input)->testValid('de_DE', 1);
-        (new Helper\User($request, 2))->checkRights(
-            'scope',
+        $user = new Helper\User($request, 2);
+
+        $user->checkAnyRight(
+            'restrictedscope',
+            'scope'
+        );
+
+        $user->checkRights(
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 

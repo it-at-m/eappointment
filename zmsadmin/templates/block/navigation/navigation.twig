@@ -1,5 +1,7 @@
 {% block navigation %}
     {% set rights = workstation.useraccount.rights %}
+    {% set permissions = workstation.useraccount.permissions %}
+    {# <pre>{{ permissions|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre> #}
     <ul class="nav__list">
     {% if workstation %}
         <li class="nav__block">
@@ -123,7 +125,7 @@
                     </li>
                     {% endif %}
                 {% endif %}
-                {% if rights.scope or rights.department or rights.organisation or rights.availability %}
+                {% if permissions.organisation or permissions.scope or permissions.restrictedscope or permissions.department or permissions.cluster or permissions.availability %}
                     <li class="nav__link{{ menuActive == 'owner'? ' active' }}">
                         <a title="{% trans %}Hier erhalten Sie eine Übersicht über Ihre Administrationsoptionen{% endtrans %}" {{ menuActive == 'menuActive'? ' aria-current="page"' }} href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a>
                     </li>
