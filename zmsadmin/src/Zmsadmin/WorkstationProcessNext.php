@@ -29,9 +29,9 @@ class WorkstationProcessNext extends BaseController
         if ($timeString === '') {
             return null;
         }
-        $ts = strtotime($timeString);
+        $unixTimestamp = strtotime($timeString);
 
-        return $ts !== false ? $ts : null;
+        return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
     public function readResponse(
