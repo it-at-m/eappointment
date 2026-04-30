@@ -16,10 +16,6 @@ class WorkstationProcessNext extends BaseController
      * @return String
      */
 
-    /**
-     * @param string|null $timeString DB/API value: e.g. "Y-m-d H:i:s" / "Y-m-d H:i" or time-only "H:i" / "H:i:s"
-     * @return int|null Unix timestamp in default timezone, or null if empty / unparseable
-     */
     public function timeToUnix($timeString)
     {
         if ($timeString === null) {

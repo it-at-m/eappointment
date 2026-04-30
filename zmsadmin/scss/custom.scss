@@ -133,13 +133,44 @@
     line-height: 1.4;
 }
 
+.queue-table-free-text--clamp-4 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+}
+
 .queue-table-text-cell {
     min-width: 0;
 }
 
+.queue-table-amendment-preview--has-text {
+    margin-bottom: 0.5rem;
+}
+
+.queue-table-text-column {
+    min-width: 0;
+}
+
+table.queue-table-textcols-1 .queue-table-text-column {
+    width: 16%;
+    max-width: 16%;
+}
+
+table.queue-table-textcols-2 .queue-table-text-column {
+    width: 13%;
+    max-width: 13%;
+}
+
+table.queue-table-textcols-3 .queue-table-text-column {
+    width: 10%;
+    max-width: 10%;
+}
+
 /* System-style lines: queue “gebucht am …” */
 .queue-table-amendment-time {
-    color: rgba(0, 0, 0, 0.55);
+    color: #333333;
     font-size: 0.92em;
     line-height: 1.4;
     font-weight: normal;

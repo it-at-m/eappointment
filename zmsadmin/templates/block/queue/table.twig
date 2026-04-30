@@ -65,6 +65,9 @@
 	{% endblock %}
 
 	{% block board_body %}
+		{% set queueTextColumnCount = 1
+			+ (workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 ? 1 : 0)
+			+ (workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 ? 1 : 0) %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -73,7 +76,7 @@
 				Geparkte Termine</h2>
 			{% if processListParked|length %}
 				<div class="table-responsive-wrapper">
-					<table id="table-parked-appointments" class="table--base compact">
+					<table id="table-parked-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
 						<thead>
 							<tr>
 								{#<th class="queue-status"></th>#}
@@ -91,12 +94,12 @@
 								<th>Telefon</th>
 								<th>Mail</th>
 								<th>Dienstleistung</th>
-								<th>Anmerkung</th>
+								<th class="queue-table-text-column">Anmerkung</th>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+									<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
+									<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 								{% endif %}
 								<th>Aktion</th>
 							</tr>
@@ -158,16 +161,16 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
-											<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
-											<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
@@ -269,7 +272,7 @@
 				</span>
 				Warteschlange</h2>
 			{% if processList|length %}
-				<table id="table-queued-appointments" class="table--base compact">
+				<table id="table-queued-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
 					<thead>
 						<tr>
 							{#<th class="queue-status"></th>#}
@@ -286,12 +289,12 @@
 							<th>Telefon</th>
 							<th>Mail</th>
 							<th>Dienstleistung</th>
-							<th>Anmerkung</th>
+							<th class="queue-table-text-column">Anmerkung</th>
 							{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-								<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+								<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 							{% endif %}
 							{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-								<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
+								<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 							{% endif %}
 						<th>Termindauer</th>
 							<th></th>
@@ -317,7 +320,7 @@
 								<tr
 									class="{{ tense }} {{ item.queue.status }} {{ item.queue.status == 'preconfirmed' ? 'reserved' : '' }} " title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
 									{#<td class="queue-status" title="{{ statusTitle }}"></td>#}
-									<td>
+									<td class="queue-table-text-column">
 										{% if clusterEnabled %}
 											{{ item.scope.shortName }}
 										{% else %}
@@ -404,6 +407,7 @@
 										{% endif %}
 									</td>
 									<td>
+										{% set amendmentHasText = item.amendment|default('')|trim != '' %}
 										{% set amendmentTs %}
 											{%- if item.queue.status == "reserved" -%}
 												{% trans %}reserviert am{% endtrans %}
@@ -415,20 +419,20 @@
 												{% trans %}gebucht am{% endtrans %}
 											{%- endif %} {{ item.createTimestamp|date("d.m.Y, H:i") }} Uhr
 										{% endset %}
-										<div class="queue-table-text-cell queue-table-amendment-preview"><div class="queue-table-free-text">{{ item.amendment|default('')|e|nl2br }}</div></div>
+										<div class="queue-table-text-cell queue-table-amendment-preview{{ amendmentHasText ? ' queue-table-amendment-preview--has-text' : '' }}"><div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.amendment|default('')|e|nl2br }}</div></div>
 										<p class="queue-table-amendment-time">{{ amendmentTs }}</p>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 											<div class="queue-table-text-cell">
-												<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+												<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 											</div>
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 											<div class="queue-table-text-cell">
-												<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+												<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 											</div>
 										</td>
 									{% endif %}
@@ -477,7 +481,7 @@
 				Verpasste Termine</h2>
 			{% if processListMissed|length %}
 				<div class="table-responsive-wrapper">
-					<table id="table-missed-appointments" class="table--base compact">
+					<table id="table-missed-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
 						<thead>
 							<tr>
 								{#<th class="queue-status"></th>#}
@@ -494,12 +498,12 @@
 								<th>Telefon</th>
 								<th>Mail</th>
 								<th>Dienstleistung</th>
-								<th>Anmerkung</th>
+								<th class="queue-table-text-column">Anmerkung</th>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+									<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
+									<th class="queue-table-text-column">{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 								{% endif %}
 								<th>Aktion</th>
 							</tr>
@@ -558,16 +562,16 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="limited-width" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
-											<div class="queue-table-free-text">{{ item.customTextfield|default('')|e|nl2br }}</div>
+											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="limited-width" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
-											<div class="queue-table-free-text">{{ item.customTextfield2|default('')|e|nl2br }}</div>
+											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
