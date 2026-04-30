@@ -10,7 +10,9 @@ class ConflictListByScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render(['id' => 141], [
             'startDate' => '2016-05-01',
             'endDate' => '2016-05-06'
@@ -21,7 +23,9 @@ class ConflictListByScopeTest extends Base
 
     public function testScopeNotFound()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->render(['id' => 123], [], []);
     }
