@@ -449,10 +449,12 @@ class MapperService
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
-        $ctf = $thinnedProcess->customTextfield ?? null;
-        $processEntity->customTextfield = $ctf === null ? null : ProcessPlainText::normalize($ctf);
-        $ctf2 = $thinnedProcess->customTextfield2 ?? null;
-        $processEntity->customTextfield2 = $ctf2 === null ? null : ProcessPlainText::normalize($ctf2);
+        $customTextfield = $thinnedProcess->customTextfield ?? null;
+        $processEntity->customTextfield = $customTextfield === null ? null : ProcessPlainText::normalize($customTextfield);
+        $customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $processEntity->customTextfield2 = $customTextfield2 === null
+            ? null
+            : ProcessPlainText::normalize($customTextfield2);
         $processEntity->captchaToken = $thinnedProcess->captchaToken ?? null;
 
         $client = new Client();
