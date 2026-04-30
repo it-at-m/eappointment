@@ -53,6 +53,22 @@ class OwnerOverviewTest extends Base
 
     public function testRenderingOwnerMissingPermissionsFromApi()
     {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/workstation/',
+                'parameters' => ['resolveReferences' => 1],
+                'response' => $this->readFixture("GET_workstation_basic.json")
+            ]
+        ]);
+
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
+    public function testRenderingOwnerMissingRightsFromApi()
+    {
         $this->expectException('\BO\Zmsclient\Exception');
 
         $exception = new \BO\Zmsclient\Exception();
