@@ -161,14 +161,14 @@
 								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
 											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
 											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 										</div>
@@ -337,7 +337,7 @@
 											<p class="queue-table-amendment-time">+{{ item.queue.waitingTime}}&nbsp;Min.</p>
 										{% endif %}
 									</td>
-									<td>
+									<td title="{{ item.amendment|default('')|replace({'\r': ''})|e('html_attr') }}">
 										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
 												{{ item.displayNumber }}
@@ -423,14 +423,14 @@
 										<p class="queue-table-amendment-time">{{ amendmentTs }}</p>
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\r': ''})|e('html_attr') }}">
 											<div class="queue-table-text-cell">
 												<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 											</div>
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+										<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\r': ''})|e('html_attr') }}">
 											<div class="queue-table-text-cell">
 												<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 											</div>
@@ -562,14 +562,14 @@
 								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield|default('')|replace({'\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
 											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield|default('')|e|nl2br }}</div>
 										</div>
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
-									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\n': ' ', '\r': ''})|e('html_attr') }}">
+									<td class="limited-width queue-table-text-column" title="{{ item.customTextfield2|default('')|replace({'\r': ''})|e('html_attr') }}">
 										<div class="queue-table-text-cell">
 											<div class="queue-table-free-text queue-table-free-text--clamp-4">{{ item.customTextfield2|default('')|e|nl2br }}</div>
 										</div>
