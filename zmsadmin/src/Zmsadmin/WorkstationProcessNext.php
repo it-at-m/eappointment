@@ -16,10 +16,22 @@ class WorkstationProcessNext extends BaseController
      * @return String
      */
 
-    public function timeToUnix($timeString)
+    public function timeToUnix($timeValue): ?int
     {
-        list($hours, $minutes, $seconds) = explode(':', $timeString);
-        return mktime($hours, $minutes, $seconds);
+        if ($timeValue instanceof \DateTimeInterface) {
+            return $timeValue->getTimestamp();
+        }
+
+        if ($timeValue === null || $timeValue === '') {
+            return null;
+        }
+
+        if (is_numeric($timeValue)) {
+            return (int) $timeValue;
+        }
+
+        $timestamp = strtotime((string) $timeValue);
+        return $timestamp === false ? null : $timestamp;
     }
 
     public function readResponse(
@@ -49,12 +61,12 @@ class WorkstationProcessNext extends BaseController
 
         foreach ($processList as $process) {
             if ($process->status === "queued" || $process->status === "confirmed") {
-                $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
+                $timeoutTimeUnix = $this->timeToUnix($process->timeoutTime ?? null);
                 $currentTimeUnix = time();
 
                 if (!isset($process->timeoutTime)) {
                     $filteredProcessList->addEntity(clone $process);
-                } elseif (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
+                } elseif ($timeoutTimeUnix !== null && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
                 } else {
                     if (!empty($excludedIds)) {
