@@ -29,7 +29,7 @@ class ScopeList extends BaseController
             throw new Exception\Scope\ScopeNotFound(); // @codeCoverageIgnore
         }
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('restrictedscope');
+            (new Helper\User($request))->checkAnyRight('restrictedscope', 'scope');
         } else {
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;
