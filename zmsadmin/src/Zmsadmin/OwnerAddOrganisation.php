@@ -21,6 +21,9 @@ class OwnerAddOrganisation extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasRights(['organisation'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $input = $request->getParsedBody();
         $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -39,7 +42,7 @@ class OwnerAddOrganisation extends BaseController
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/organisation.twig', array(
-            'title' => 'Kunde',
+            'title' => 'Referat einrichten',
             'action' => 'add',
             'menuActive' => 'organisation',
             'workstation' => $workstation
