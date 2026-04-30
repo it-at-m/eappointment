@@ -132,6 +132,17 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
+    public function setPermissions()
+    {
+        $givenPermissions = func_get_args();
+        foreach ($givenPermissions as $permission) {
+            if (Property::__keyExists($permission, $this->permissions)) {
+                $this->permissions[$permission] = true;
+            }
+        }
+        return $this;
+    }
+
     // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
     public function hasRights(array $requiredRights): bool
     {
