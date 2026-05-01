@@ -442,7 +442,10 @@ jobs:
             local vt="$1"
             echo "Trying Colima with vm-type=$vt ..."
             colima delete -f 2>/dev/null || true
-            colima start --cpu 2 --memory 6 --disk 50 --network-address --vm-type "$vt"
+            # Explicit DNS avoids Colima's default resolver (often 192.168.5.1) timing out on ghcr.io from the VM.
+            colima start --cpu 2 --memory 6 --disk 50 --network-address \
+              --dns 8.8.8.8 --dns 1.1.1.1 \
+              --vm-type "$vt"
           }
 
           if ! start_colima vz; then
