@@ -377,9 +377,10 @@ jobs:
   zms-automation-safari-macos:
     name: zmsautomation (Safari — macOS host)
     # Runs Selenium Safari on the runner and Docker Compose for the stack.
-    # GitHub-hosted macOS cannot run Lima/Colima or QEMU+HVF ("Virtualization is not available"); use browsers on ubuntu-latest or a self-hosted mac with Docker Desktop / OrbStack already running (detected via docker info).
+    # Hosted labels: macos-26-intel (x86_64 / Docker amd64 php-base via sync-php-base-tag.sh). ARM64 hosted macOS cannot nest VMs per GitHub docs.
+    # Self-hosted: docker info succeeds skips Colima; otherwise Colima vz/qemu on Intel hosted may still fail — keep Docker Desktop if needed.
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
-    runs-on: macos-26
+    runs-on: macos-26-intel
     env:
       IMAGE_REGISTRY: ghcr.io
     steps:
@@ -394,6 +395,7 @@ jobs:
           HOMEBREW_NO_AUTO_UPDATE: "1"
           RUNNER_ENVIRONMENT_CONTEXT: ${{ runner.environment }}
           RUNNER_NAME_CONTEXT: ${{ runner.name }}
+          RUNNER_ARCH_CONTEXT: ${{ runner.arch }}
         run: |
           set -euo pipefail
 
@@ -426,8 +428,10 @@ jobs:
             is_github_hosted=true
           fi
 
-          if [ "$is_github_hosted" = true ]; then
-            echo "::error::Safari ATAF needs Docker Compose on macOS. GitHub-hosted runners cannot provide usable virtualization for Lima-Colima or QEMU (+HVF); Lima panics after QEMU exits. Run Safari on a self-hosted macOS runner with Docker installed before this step, or use workflow_dispatch browsers chrome, firefox, or edge on ubuntu-latest."
+          arch_upper="$(echo "${RUNNER_ARCH_CONTEXT:-}" | tr '[:lower:]' '[:upper:]')"
+          # Nested virtualization is documented as unsupported on ARM64 hosted macOS runners only (Apple Virtualization.framework).
+          if [ "$is_github_hosted" = true ] && [ "$arch_upper" = "ARM64" ]; then
+            echo "::error::Safari ATAF needs Docker Compose. GitHub-hosted ARM64 macOS cannot nest VMs for Lima/C QEMU+HVF — use macos-*-intel (this job uses macos-26-intel), self-hosted macOS with Docker, or chrome/firefox/edge on ubuntu-latest."
             exit 1
           fi
 
@@ -457,7 +461,7 @@ jobs:
           docker info
           docker compose version
 
-      - name: Create runtime env file (ARM php-base tag from host uname)
+      - name: Create runtime env file (php-base tag from host arch — amd64 on Intel)
         shell: bash
         run: |
           set -euo pipefail
@@ -617,7 +621,14 @@ jobs:
 
       - name: Select JDK 21 from runner image
         shell: bash
-        run: echo "JAVA_HOME=${JAVA_HOME_21_arm64}" >> "$GITHUB_ENV"
+        run: |
+          set -euo pipefail
+          jh="$(/usr/libexec/java_home -v 21 2>/dev/null || true)"
+          if [ -z "$jh" ]; then
+            echo "::error::JDK 21 not found (/usr/libexec/java_home -v 21)."
+            exit 1
+          fi
+          echo "JAVA_HOME=$jh" >> "$GITHUB_ENV"
 
       - name: Install Python dependencies for ./cli
         shell: bash
