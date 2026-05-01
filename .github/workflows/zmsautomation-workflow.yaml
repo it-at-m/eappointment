@@ -393,12 +393,111 @@ jobs:
           path: artifacts/container-logs/**
           if-no-files-found: warn
 
+  zms-automation-safari-prepare:
+    name: zmsautomation (Safari — prepare web image on Linux)
+    # Pulls zmscitizenview backend modules on ubuntu-latest and pushes one prepared zms-web image so macOS/Colima only pulls web + zmscitizenview (see safari job).
+    if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      web_image: ${{ steps.prepare.outputs.web_image }}
+    env:
+      IMAGE_REGISTRY: ghcr.io
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF_TYPE="${{ github.ref_type }}"
+          REF_NAME="${{ github.ref_name }}"
+          if [ "$REF_TYPE" = "branch" ]; then
+            SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
+            PHP_TAG="branch-${SANITIZED}"
+          else
+            PHP_TAG="$REF_NAME"
+          fi
+          echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Pull zmscitizenview backend modules (for Dockerfile COPY --from)
+        shell: bash
+        run: |
+          set -euo pipefail
+          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          modules=(zmsapi zmscitizenapi zmsmessaging)
+
+          docker_pull_retry() {
+            local ref="$1"
+            local attempt=1
+            local max=8
+            local wait=12
+            while [ "$attempt" -le "$max" ]; do
+              if docker pull "$ref"; then
+                return 0
+              fi
+              echo "::warning::docker pull failed (attempt ${attempt}/${max}): ${ref} — retry in ${wait}s"
+              sleep "$wait"
+              attempt=$((attempt + 1))
+              wait=$((wait + 8))
+            done
+            return 1
+          }
+
+          for m in "${modules[@]}"; do
+            echo "Pulling $m:$PHP_TAG"
+            docker_pull_retry "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            sleep 2
+          done
+
+      - name: Build and push prepared zms-web (Safari — zmscitizenview stack only)
+        id: prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          REPO="${GITHUB_REPOSITORY}"
+          WEB_IMAGE="ghcr.io/${REPO}/zms-web-prepared:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+          {
+            echo "FROM ghcr.io/it-at-m/eappointment-php-base:8.3-local-amd64"
+            echo "WORKDIR /var/www/html"
+            echo "COPY .htaccess /var/www/html/.htaccess"
+            echo "COPY --from=ghcr.io/${REPO}/zmsapi:${PHP_TAG} /var/www/html/. /var/www/html/zmsapi/"
+            echo "COPY --from=ghcr.io/${REPO}/zmscitizenapi:${PHP_TAG} /var/www/html/. /var/www/html/zmscitizenapi/"
+            echo "COPY --from=ghcr.io/${REPO}/zmsmessaging:${PHP_TAG} /var/www/html/. /var/www/html/zmsmessaging/"
+            echo "COPY zmsautomation /var/www/html/zmsautomation"
+            echo "COPY .resources /var/www/html/.resources"
+            echo "RUN mkdir -p /var/www/html/.devcontainer /var/www/html/cache \\"
+            echo " && chown -R www-data:www-data /var/www/html/zmsapi /var/www/html/zmscitizenapi /var/www/html/zmsmessaging /var/www/html/zmsautomation /var/www/html/cache 2>/dev/null || true \\"
+            echo " && chmod -R 755 /var/www/html/zmsapi /var/www/html/zmscitizenapi /var/www/html/zmsmessaging /var/www/html/zmsautomation 2>/dev/null || true"
+          } > Dockerfile.ci-prepared-web
+
+          docker build -t "$WEB_IMAGE" -f Dockerfile.ci-prepared-web .
+          docker push "$WEB_IMAGE"
+          rm -f Dockerfile.ci-prepared-web
+          echo "web_image=$WEB_IMAGE" >> "$GITHUB_OUTPUT"
+
   zms-automation-safari-macos:
     name: zmsautomation (Safari — macOS host)
     # Runs Selenium Safari on the runner and Docker Compose for the stack.
     # Hosted labels: macos-26-intel (x86_64 / Docker amd64 php-base via sync-php-base-tag.sh). ARM64 hosted macOS cannot nest VMs per GitHub docs.
     # Self-hosted: docker info succeeds skips Colima; otherwise Colima vz/qemu on Intel hosted may still fail — keep Docker Desktop if needed.
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
+    needs: zms-automation-safari-prepare
     runs-on: macos-26-intel
     env:
       IMAGE_REGISTRY: ghcr.io
@@ -513,12 +612,15 @@ jobs:
           echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Pull prebuilt PHP module images
+      - name: Pull prepared zms-web + zmscitizenview (minimal GHCR via Colima)
         shell: bash
+        env:
+          WEB_IMAGE_OUT: ${{ needs.zms-automation-safari-prepare.outputs.web_image }}
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          WEB_IMAGE="${WEB_IMAGE_OUT}"
+          CV_IMG="ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview:${PHP_TAG}"
 
           docker_pull_retry() {
             local ref="$1"
@@ -537,20 +639,136 @@ jobs:
             return 1
           }
 
-          for m in "${modules[@]}"; do
-            echo "Pulling $m:$PHP_TAG"
-            docker_pull_retry "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
-            sleep 3
-          done
+          echo "Pulling prepared web image: ${WEB_IMAGE}"
+          docker_pull_retry "${WEB_IMAGE}"
+          sleep 3
+          echo "Pulling zmscitizenview: ${CV_IMG}"
+          docker_pull_retry "${CV_IMG}"
 
-      - name: Start required containers (stack once)
+      - name: Start required containers (Safari CI compose — image-backed web, no repo bind mount)
         shell: bash
+        env:
+          WEB_IMAGE_OUT: ${{ needs.zms-automation-safari-prepare.outputs.web_image }}
         run: |
           set -euo pipefail
+          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          WEB_IMAGE="${WEB_IMAGE_OUT}"
+          CV_IMG="ghcr.io/${GITHUB_REPOSITORY}/zmscitizenview:${PHP_TAG}"
+
           cd .devcontainer
-          docker compose -f docker-compose.yaml down -v --remove-orphans || true
-          docker compose -f docker-compose.yaml up -d \
-            web db citizenview refarch-gateway keycloak init-keycloak
+          mkdir -p keycloak/plugins
+
+          cat > docker-compose.ci.macos.yml <<COMPOSE_EOF
+          version: "3.8"
+          services:
+            web:
+              image: ${WEB_IMAGE}
+              container_name: zms-web
+              user: "root"
+              env_file:
+                - .env
+              depends_on:
+                db:
+                  condition: service_started
+                keycloak:
+                  condition: service_started
+              networks:
+                - zms-ci-net
+              ports:
+                - "8090:80"
+                - "8091:443"
+
+            citizenview:
+              image: ${CV_IMG}
+              container_name: zms-citizenview
+              depends_on:
+                web:
+                  condition: service_started
+              networks:
+                - zms-ci-net
+              ports:
+                - "8080:8080"
+                - "8082:8082"
+
+            db:
+              image: mariadb:10.11
+              container_name: zms-db
+              restart: unless-stopped
+              env_file:
+                - .env
+              volumes:
+                - db-data:/var/lib/mysql
+                - ../.resources/zms.sql:/docker-entrypoint-initdb.d/01-zms.sql:ro
+              networks:
+                - zms-ci-net
+              ports:
+                - "3306:3306"
+
+            refarch-gateway:
+              image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
+              container_name: zms-refarch-gateway
+              ports:
+                - "8084:8080"
+              environment:
+                SPRING_PROFILES_ACTIVE: no-security
+                WEBCOMPONENT_URI: http://zms-web:80
+              volumes:
+                - ./local-gateway-application.yml:/deployments/application.yml:ro
+              restart: unless-stopped
+              networks:
+                - zms-ci-net
+
+            keycloak:
+              image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+              container_name: zms-keycloak
+              hostname: keycloak
+              command:
+                - start-dev
+              environment:
+                KC_BOOTSTRAP_ADMIN_USERNAME: admin
+                KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+                KC_HEALTH_ENABLED: "true"
+                KC_HTTP_PORT: 8080
+                KC_HTTP_RELATIVE_PATH: /auth
+                KC_DB: dev-file
+              ports:
+                - "8081:8080"
+              volumes:
+                - ./keycloak/plugins:/opt/keycloak/providers/
+              networks:
+                - zms-ci-net
+              restart: unless-stopped
+
+            init-keycloak:
+              image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+              container_name: zms-init-keycloak
+              depends_on:
+                keycloak:
+                  condition: service_started
+              environment:
+                ADMIN_USER: admin
+                ADMIN_PASSWORD: admin
+                BASEURL: http://keycloak:8080/auth
+                WAIT_FOR_KEYCLOAK: "true"
+                FAIL_ON_UNDEFINED_VARIABLES: "true"
+                KEYCLOAK_CHANGELOG: /migration/keycloak-changelog.yml
+              volumes:
+                - ../.resources/keycloak/migration:/migration
+              networks:
+                - zms-ci-net
+              restart: "no"
+
+          volumes:
+            db-data:
+
+          networks:
+            zms-ci-net:
+              name: zms-ci-net
+          COMPOSE_EOF
+
+          docker compose -f docker-compose.ci.macos.yml down -v --remove-orphans || true
+          docker compose -f docker-compose.ci.macos.yml up -d
+
           for _ in {1..60}; do
             state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
             if [ "$state" = "exited" ]; then
@@ -560,6 +778,10 @@ jobs:
             fi
             sleep 2
           done
+
+      - name: Copy runtime .env into web container (prepared image has no bind mount)
+        shell: bash
+        run: docker cp .devcontainer/.env zms-web:/var/www/html/.devcontainer/.env
 
       - name: Install DB + Maven tooling inside web container (no Linux browsers)
         shell: bash
@@ -597,27 +819,6 @@ jobs:
             echo "Tooling setup complete."
           '
 
-      - name: Inject prebuilt module directories into zms-web
-        shell: bash
-        run: |
-          set -euo pipefail
-          WEB_CONT="zms-web"
-          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
-          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
-
-          for m in "${modules[@]}"; do
-            echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
-            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
-
-            docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
-          done
-
       - name: Ensure writable cache directories
         shell: bash
         run: |
@@ -628,7 +829,7 @@ jobs:
             mkdir -p /var/www/html/cache
             chown -R www-data:www-data /var/www/html/cache 2>/dev/null || true
             chmod -R 777 /var/www/html/cache 2>/dev/null || true
-            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+            for dir in zmsapi zmscitizenapi zmsmessaging; do
               mkdir -p "/var/www/html/$dir/cache"
               chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
               chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true
