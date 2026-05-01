@@ -377,8 +377,7 @@ jobs:
   zms-automation-safari-macos:
     name: zmsautomation (Safari — macOS host)
     # Runs Selenium Safari on the runner and Docker Compose for the stack.
-    # GitHub-hosted macOS images omit Docker; Colima tries vz then qemu (brew install qemu provides qemu-img).
-    # If both backends fail, use a self-hosted macOS runner with Docker Desktop, OrbStack, or Rancher Desktop.
+    # GitHub-hosted macOS cannot run Lima/Colima or QEMU+HVF ("Virtualization is not available"); use browsers on ubuntu-latest or a self-hosted mac with Docker Desktop / OrbStack already running (detected via docker info).
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     runs-on: macos-26
     env:
@@ -389,24 +388,51 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Install Docker CLI and start Colima
+      - name: Ensure Docker daemon for Compose
         shell: bash
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"
+          RUNNER_ENVIRONMENT_CONTEXT: ${{ runner.environment }}
+          RUNNER_NAME_CONTEXT: ${{ runner.name }}
         run: |
           set -euo pipefail
-          brew install docker colima docker-compose
 
-          # Homebrew Compose is a CLI plugin; register plugin dir for `docker compose`.
-          mkdir -p ~/.docker
-          PLUGIN_DIR="$(brew --prefix)/lib/docker/cli-plugins"
-          if [ -f ~/.docker/config.json ]; then
-            jq --arg d "$PLUGIN_DIR" \
-              '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$d] | unique)' \
-              ~/.docker/config.json > ~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
-          else
-            printf '%s\n' "{\"cliPluginsExtraDirs\": [\"$PLUGIN_DIR\"]}" > ~/.docker/config.json
+          register_compose_cli_plugin() {
+            mkdir -p ~/.docker
+            local PLUGIN_DIR
+            PLUGIN_DIR="$(brew --prefix)/lib/docker/cli-plugins"
+            if [ -f ~/.docker/config.json ]; then
+              jq --arg d "$PLUGIN_DIR" \
+                '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$d] | unique)' \
+                ~/.docker/config.json > ~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
+            else
+              printf '%s\n' "{\"cliPluginsExtraDirs\": [\"$PLUGIN_DIR\"]}" > ~/.docker/config.json
+            fi
+          }
+
+          register_compose_cli_plugin
+
+          if docker info >/dev/null 2>&1; then
+            echo "Docker daemon already available (e.g. Docker Desktop / OrbStack on self-hosted)."
+            docker info
+            docker compose version
+            exit 0
           fi
+
+          is_github_hosted=false
+          if [ "${RUNNER_ENVIRONMENT_CONTEXT:-}" = "github-hosted" ]; then
+            is_github_hosted=true
+          elif [[ "${RUNNER_NAME_CONTEXT:-}" == Hosted* ]] || [[ "${RUNNER_NAME_CONTEXT:-}" == "GitHub Actions"* ]]; then
+            is_github_hosted=true
+          fi
+
+          if [ "$is_github_hosted" = true ]; then
+            echo "::error::Safari ATAF needs Docker Compose on macOS. GitHub-hosted runners cannot provide usable virtualization for Lima-Colima or QEMU (+HVF); Lima panics after QEMU exits. Run Safari on a self-hosted macOS runner with Docker installed before this step, or use workflow_dispatch browsers chrome, firefox, or edge on ubuntu-latest."
+            exit 1
+          fi
+
+          echo "Docker not running on self-hosted runner; installing CLI + Colima …"
+          brew install docker colima docker-compose
 
           start_colima() {
             local vt="$1"
@@ -416,12 +442,12 @@ jobs:
           }
 
           if ! start_colima vz; then
-            echo "::warning::Colima VZ failed (common on GitHub-hosted macOS: no nested virt). Hostagent log:"
+            echo "::warning::Colima vz failed; hostagent log:"
             cat ~/.colima/_lima/colima/ha.stderr.log 2>/dev/null || true
-            echo "Installing QEMU (qemu-img) for Colima's qemu VM backend ..."
+            echo "Installing QEMU for Colima qemu backend …"
             brew install qemu
             if ! start_colima qemu; then
-              echo "::error::Colima could not start with vz or qemu. Safari stack needs Docker on macOS — use a self-hosted runner with Docker Desktop, OrbStack, or Rancher Desktop, and a label such as runs-on: [self-hosted, macOS]."
+              echo "::error::Colima could not start (vz or qemu). Install Docker Desktop or OrbStack on this runner, or fix virtualization."
               cat ~/.colima/_lima/colima/ha.stderr.log 2>/dev/null || true
               exit 1
             fi
