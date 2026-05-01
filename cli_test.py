@@ -32,6 +32,29 @@ class TestCli(EappointmentCli):
   DEFAULT_MSEDGE_DRIVER_VERSION = "146.0.3856.72"
 
   @staticmethod
+  def ataf_maven_profiles_for_tags(tags: str) -> list[str]:
+    """Activate ataf-ui / ataf-api like `.github/workflows/zmsautomation-workflow.yaml`."""
+    t = tags or ""
+    ids: list[str] = []
+    if "@web" in t:
+      ids.append("ataf-ui")
+    if "@rest" in t or "@zmsapi" in t or "@zmscitizenapi" in t:
+      ids.append("ataf-api")
+    if not ids:
+      ids.append("ataf-ui")
+    return ["-P" + ",".join(ids)]
+
+  @staticmethod
+  def cucumber_filter_tags_maven_arg(tags: str) -> str:
+    """Align with zmsautomation/zmsautomation-test Cucumber tag normalization."""
+    value = (tags or "").strip()
+    if not value:
+      return "-Dcucumber.filter.tags=not @ignore"
+    if "@ignore" in value:
+      return f"-Dcucumber.filter.tags={value}"
+    return f"-Dcucumber.filter.tags=({value}) and not @ignore"
+
+  @staticmethod
   def mac_require_darwin():
     if sys.platform != "darwin":
       raise click.ClickException("This command is only supported on macOS.")
@@ -594,10 +617,10 @@ class TestCli(EappointmentCli):
         "-B",
         "-DtrimStackTrace=false",
         "test",
-        "-Pataf-ui",
+        *app.ataf_maven_profiles_for_tags(cucumber_tags),
         f"-Dbrowser={browser}",
         f"-Dtestautomation.browser={browser}",
-        f"-Dcucumber.filter.tags={cucumber_tags}",
+        app.cucumber_filter_tags_maven_arg(cucumber_tags),
         f"-Dsso.username={sso_username}",
         f"-Dsso.password={sso_password}",
         f"-DSCREENSHOT_EVERY_STEP={'true' if screenshots_every_step else 'false'}",

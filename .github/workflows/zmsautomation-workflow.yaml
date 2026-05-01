@@ -1,5 +1,5 @@
 name: ⚙️ zmsautomation
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || (inputs.browser == 'safari' && '🧭 safari' || '🌐 chrome'))) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || (inputs.browser == 'safari' && '🧭 safari' || '🌐 chrome'))))), inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
@@ -23,13 +23,14 @@ on:
         default: |
           (@rest or @web) and not @ignore
       browser:
-        description: Choose browser for UI tests
+        description: Choose browser for UI tests (Safari runs on macOS hosts with Docker — see Safari job comments)
         required: true
         type: choice
         options:
           - chrome
           - firefox
           - edge
+          - safari
         default: chrome
       per_step_screenshots:
         description: Enable/disable per-step screenshots
@@ -45,6 +46,8 @@ permissions:
 
 jobs:
   zms-automation:
+    # Safari UI tests run in zms-automation-safari-macos (host Selenium); Linux containers have no Safari driver.
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.browser != 'safari')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -368,5 +371,271 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
+          path: artifacts/container-logs/**
+          if-no-files-found: warn
+
+  zms-automation-safari-macos:
+    name: zmsautomation (Safari — macOS host)
+    # Runs Selenium Safari on the runner and Docker Compose for the stack. Requires Docker.
+    # GitHub-hosted macOS runners do not include a Docker daemon (nested virtualization); use a self-hosted
+    # macOS runner with Docker Desktop / OrbStack, or run this workflow locally with Act-compatible setups.
+    if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
+    runs-on: macos-26
+    env:
+      IMAGE_REGISTRY: ghcr.io
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Create runtime env file (ARM php-base tag from host uname)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .devcontainer/.env.template .devcontainer/.env
+          bash .devcontainer/scripts/sync-php-base-tag.sh .devcontainer/.env
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF_TYPE="${{ github.ref_type }}"
+          REF_NAME="${{ github.ref_name }}"
+          if [ "$REF_TYPE" = "branch" ]; then
+            SANITIZED="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
+            PHP_TAG="branch-${SANITIZED}"
+          else
+            PHP_TAG="$REF_NAME"
+          fi
+          echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Pull prebuilt PHP module images
+        shell: bash
+        run: |
+          set -euo pipefail
+          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          for m in "${modules[@]}"; do
+            echo "Pulling $m:$PHP_TAG"
+            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+          done
+
+      - name: Start required containers (stack once)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .devcontainer
+          docker compose -f docker-compose.yaml down -v --remove-orphans || true
+          docker compose -f docker-compose.yaml up -d \
+            web db citizenview refarch-gateway keycloak init-keycloak
+          for _ in {1..60}; do
+            state="$(docker inspect -f '{{.State.Status}}' zms-init-keycloak 2>/dev/null || echo missing)"
+            if [ "$state" = "exited" ]; then
+              echo "init-keycloak finished."
+              docker logs zms-init-keycloak || true
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Install DB + Maven tooling inside web container (no Linux browsers)
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+
+          docker exec -u root "$WEB_CONT" bash -lc '
+            set -euo pipefail
+            apt-get update
+            apt-get install -y --no-install-recommends \
+              curl wget unzip ca-certificates gnupg \
+              mariadb-client \
+              ;
+            if ! command -v mvn >/dev/null 2>&1; then
+              rm -f /usr/share/keyrings/adoptium.gpg
+              curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
+                | gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
+              echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+                > /etc/apt/sources.list.d/adoptium.list
+              apt-get update
+              apt-get install -y --no-install-recommends temurin-21-jdk
+              export JAVA_HOME="/usr/lib/jvm/temurin-21-jdk-$(dpkg --print-architecture)"
+              export PATH="$JAVA_HOME/bin:$PATH"
+              MAVEN_VERSION="3.9.12"
+              curl -fsSL -o /tmp/maven.tar.gz \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+              curl -fsSL -o /tmp/maven.tar.gz.sha512 \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512"
+              echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
+                && tar -xzf /tmp/maven.tar.gz -C /opt \
+                && ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn
+              rm -f /tmp/maven.tar.gz /tmp/maven.tar.gz.sha512
+            fi
+            echo "Tooling setup complete."
+          '
+
+      - name: Inject prebuilt module directories into zms-web
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+
+          for m in "${modules[@]}"; do
+            echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
+            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
+            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
+            tmp_dir="$(mktemp -d)"
+            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
+            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
+            rm -rf "$tmp_dir"
+            docker rm "$temp_id" >/dev/null
+
+            docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
+          done
+
+      - name: Ensure writable cache directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+          docker exec -u root "$WEB_CONT" bash -lc '
+            set -euo pipefail
+            mkdir -p /var/www/html/cache
+            chown -R www-data:www-data /var/www/html/cache 2>/dev/null || true
+            chmod -R 777 /var/www/html/cache 2>/dev/null || true
+            for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter zmsmessaging; do
+              mkdir -p "/var/www/html/$dir/cache"
+              chown -R www-data:www-data "/var/www/html/$dir/cache" 2>/dev/null || true
+              chmod -R 777 "/var/www/html/$dir/cache" 2>/dev/null || true
+            done
+          '
+
+      - name: Prepare DB and stack via zmsautomation-test (exit before in-container tests)
+        shell: bash
+        run: |
+          set -euo pipefail
+          WEB_CONT="zms-web"
+          docker exec -u root -e ZMS_AUTOMATION_SETUP_ONLY=1 "$WEB_CONT" bash -lc '
+            set -euo pipefail
+            set -a
+            source /var/www/html/.devcontainer/.env
+            set +a
+            export ZMS_AUTOMATION_SETUP_ONLY=1
+            bash /var/www/html/zmsautomation/zmsautomation-test
+          '
+
+      - name: Map Docker hostnames for SSO and gateway from macOS host
+        shell: bash
+        run: |
+          set -euo pipefail
+          # keycloak.json uses http://keycloak:8080; citizenview / gateway steps may use service names.
+          sudo sh -c "grep -q '[[:space:]]keycloak' /etc/hosts || echo '127.0.0.1 keycloak web citizenview refarch-gateway' >> /etc/hosts"
+
+      - name: Enable Safari remote automation (non-interactive)
+        shell: bash
+        run: sudo safaridriver --enable
+
+      - name: Select JDK 21 from runner image
+        shell: bash
+        run: echo "JAVA_HOME=${JAVA_HOME_21_arm64}" >> "$GITHUB_ENV"
+
+      - name: Install Python dependencies for ./cli
+        shell: bash
+        run: python3 -m pip install --user click colorama
+
+      - name: Run ATAF on macOS host (Safari via cli tests run-mac-local)
+        shell: bash
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: "3306"
+          MYSQL_DATABASE: db
+          MYSQL_USER: db
+          MYSQL_PASSWORD: db
+          MYSQL_ROOT_PASSWORD: root
+          INPUT_TAGS: ${{ inputs.cucumber_tag_expressions }}
+          PER_STEP_SCREENSHOTS: ${{ inputs.per_step_screenshots }}
+        run: |
+          set -euo pipefail
+          chmod +x cli || true
+          fail_any=0
+          ss_flag=""
+          if [ "${PER_STEP_SCREENSHOTS}" = "true" ]; then
+            ss_flag="--screenshots-every-step"
+          fi
+          while IFS= read -r line; do
+            expr="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            if [ -z "$expr" ]; then
+              continue
+            fi
+            echo "Running cli tests run-mac-local for tags: $expr"
+            set +e
+            python3 cli tests run-mac-local --browser safari \
+              --cucumber-tags "$expr" \
+              ${ss_flag:+$ss_flag} \
+              --skip-driver-check
+            rc=$?
+            set -e
+            if [ "$rc" -ne 0 ]; then
+              echo "Tag run failed (exit $rc): $expr"
+              fail_any=1
+            fi
+          done <<< "$INPUT_TAGS"
+
+          if [ "$fail_any" -ne 0 ]; then
+            echo "At least one tag expression run failed."
+            exit 1
+          fi
+
+      - name: Upload test reports (best effort)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-safari
+          path: |
+            zmsautomation/target/cucumber.json
+            zmsautomation/target/site/cucumber-pretty/**
+            zmsautomation/target/surefire-reports/**
+            zmsautomation/target/screenshots/**
+          if-no-files-found: warn
+
+      - name: Collect docker container logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/container-logs
+          docker ps -a > artifacts/container-logs/docker-ps-a.txt 2>&1 || true
+          containers=(
+            zms-web
+            zms-citizenview
+            zms-db
+            zms-keycloak
+            zms-refarch-gateway
+            zms-init-keycloak
+          )
+          for c in "${containers[@]}"; do
+            if docker inspect "$c" >/dev/null 2>&1; then
+              docker logs "$c" > "artifacts/container-logs/${c}.log" 2>&1 || true
+              docker inspect "$c" > "artifacts/container-logs/${c}.inspect.json" 2>/dev/null || true
+            fi
+          done
+
+      - name: Upload container logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-safari
           path: artifacts/container-logs/**
           if-no-files-found: warn

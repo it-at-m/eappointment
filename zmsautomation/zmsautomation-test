@@ -464,6 +464,13 @@ $fail && { warn "One or more health checks failed"; exit 1; }
 
 info "All health checks passed."
 
+if [[ "${ZMS_AUTOMATION_SETUP_ONLY:-}" == "1" ]]; then
+  # Prepare DB/stack (sections 1–9) for ATAF on the Mac host (Safari); skip cleanup so DB stays migrated.
+  info "ZMS_AUTOMATION_SETUP_ONLY=1 — prepared DB/stack; exiting before browser setup and ATAF Maven tests."
+  trap - EXIT INT TERM
+  exit 0
+fi
+
 # 10. Browser Setup (for UI tests)
 section "10. Browser Setup"
 info "Setting up browsers and Xvfb for UI tests..."
