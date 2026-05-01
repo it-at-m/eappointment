@@ -461,9 +461,9 @@ jobs:
             local vt="$1"
             echo "Trying Colima with vm-type=$vt ..."
             colima delete -f 2>/dev/null || true
-            # Prefer host DNS (GitHub runner resolver); Colima's stub at 192.168.5.1 often flakes under burst pulls.
+            # Colima 0.10+ --dns only accepts IPs (not "host"); use public resolvers to reduce ghcr.io flake vs Colima stub.
             colima start --cpu 2 --memory 6 --disk 50 --network-address \
-              --dns host \
+              --dns 1.1.1.1 --dns 8.8.8.8 \
               --vm-type "$vt"
           }
 
