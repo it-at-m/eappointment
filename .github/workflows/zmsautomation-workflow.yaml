@@ -376,9 +376,9 @@ jobs:
 
   zms-automation-safari-macos:
     name: zmsautomation (Safari — macOS host)
-    # Runs Selenium Safari on the runner and Docker Compose for the stack. Requires Docker.
-    # GitHub-hosted macOS runners do not include a Docker daemon (nested virtualization); use a self-hosted
-    # macOS runner with Docker Desktop / OrbStack, or run this workflow locally with Act-compatible setups.
+    # Runs Selenium Safari on the runner and Docker Compose for the stack.
+    # GitHub-hosted macOS images omit Docker; install CLI via Homebrew and start Colima before login/pull/compose.
+    # If Colima fails (nested virtualization limits), use a self-hosted macOS runner with Docker Desktop or OrbStack.
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     runs-on: macos-26
     env:
@@ -388,6 +388,18 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
+
+      - name: Install Docker CLI and start Colima
+        shell: bash
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          set -euo pipefail
+          brew install docker colima docker-compose
+          colima start --cpu 2 --memory 6 --disk 50 --network-address
+          docker context use colima
+          docker info
+          docker compose version
 
       - name: Create runtime env file (ARM php-base tag from host uname)
         shell: bash
