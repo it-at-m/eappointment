@@ -500,7 +500,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     needs: zms-automation-safari-prepare
     runs-on: macos-26-intel
-    # Request headroom above common org/repo 60m caps; if policy caps lower, admin must raise it.
+    # Hard ceiling for this job (GitHub default is 360m if unset). Cancels at ~40m vs ~1h imply infra/DNS/runner issues, not a fixed org timeout.
     timeout-minutes: 180
     env:
       IMAGE_REGISTRY: ghcr.io

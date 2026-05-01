@@ -371,7 +371,7 @@ section "6. PHP Migrations"
 ( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
 
 # 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
-# ZMS_SAFARI_CI_LITE_PREP=1: skip DLDB import + slot rebuild for GitHub Safari prep (often 30–60m+); Flyway+migrations already seed CI DB.
+# ZMS_SAFARI_CI_LITE_PREP=1: skip DLDB import + slot rebuild for GitHub Safari prep (often very long); Flyway+migrations already seed CI DB.
 if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
   warn "ZMS_SAFARI_CI_LITE_PREP=1 — skipping section 7 (hourly DLDB import) for faster CI prep."
   clear_caches
