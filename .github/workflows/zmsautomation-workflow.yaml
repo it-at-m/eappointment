@@ -639,11 +639,24 @@ jobs:
             return 1
           }
 
-          echo "Pulling prepared web image: ${WEB_IMAGE}"
-          docker_pull_retry "${WEB_IMAGE}"
-          sleep 3
-          echo "Pulling zmscitizenview: ${CV_IMG}"
-          docker_pull_retry "${CV_IMG}"
+          # Pull both images concurrently: sequential pulls sum download+extract time (~often 15–25m+ on Colima).
+          rc=0
+          (
+            echo "Pulling prepared web image: ${WEB_IMAGE}"
+            docker_pull_retry "${WEB_IMAGE}"
+          ) &
+          pid_web=$!
+          (
+            echo "Pulling zmscitizenview: ${CV_IMG}"
+            docker_pull_retry "${CV_IMG}"
+          ) &
+          pid_cv=$!
+          wait "$pid_web" || rc=$((rc | 1))
+          wait "$pid_cv" || rc=$((rc | 2))
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::One or more docker pulls failed (exit mask ${rc})."
+            exit 1
+          fi
 
       - name: Start required containers (Safari CI compose — image-backed web, no repo bind mount)
         shell: bash
