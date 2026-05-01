@@ -103,9 +103,28 @@ jobs:
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
           modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+
+          docker_pull_retry() {
+            local ref="$1"
+            local attempt=1
+            local max=8
+            local wait=12
+            while [ "$attempt" -le "$max" ]; do
+              if docker pull "$ref"; then
+                return 0
+              fi
+              echo "::warning::docker pull failed (attempt ${attempt}/${max}): ${ref} — retry in ${wait}s"
+              sleep "$wait"
+              attempt=$((attempt + 1))
+              wait=$((wait + 8))
+            done
+            return 1
+          }
+
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
-            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            docker_pull_retry "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            sleep 3
           done
 
       - name: Start required containers (stack once)
@@ -442,9 +461,9 @@ jobs:
             local vt="$1"
             echo "Trying Colima with vm-type=$vt ..."
             colima delete -f 2>/dev/null || true
-            # Explicit DNS avoids Colima's default resolver (often 192.168.5.1) timing out on ghcr.io from the VM.
+            # Prefer host DNS (GitHub runner resolver); Colima's stub at 192.168.5.1 often flakes under burst pulls.
             colima start --cpu 2 --memory 6 --disk 50 --network-address \
-              --dns 8.8.8.8 --dns 1.1.1.1 \
+              --dns host \
               --vm-type "$vt"
           }
 
@@ -500,9 +519,28 @@ jobs:
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
           modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+
+          docker_pull_retry() {
+            local ref="$1"
+            local attempt=1
+            local max=8
+            local wait=12
+            while [ "$attempt" -le "$max" ]; do
+              if docker pull "$ref"; then
+                return 0
+              fi
+              echo "::warning::docker pull failed (attempt ${attempt}/${max}): ${ref} — retry in ${wait}s"
+              sleep "$wait"
+              attempt=$((attempt + 1))
+              wait=$((wait + 8))
+            done
+            return 1
+          }
+
           for m in "${modules[@]}"; do
             echo "Pulling $m:$PHP_TAG"
-            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            docker_pull_retry "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            sleep 3
           done
 
       - name: Start required containers (stack once)
