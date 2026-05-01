@@ -675,7 +675,6 @@ jobs:
           mkdir -p keycloak/plugins
 
           cat > docker-compose.ci.macos.yml <<COMPOSE_EOF
-          version: "3.8"
           services:
             web:
               image: ${WEB_IMAGE}
@@ -707,7 +706,7 @@ jobs:
                 - "8082:8082"
 
             db:
-              image: mariadb:10.11
+              image: docker.io/library/mariadb:10.11
               container_name: zms-db
               restart: unless-stopped
               env_file:
@@ -781,6 +780,31 @@ jobs:
             zms-ci-net:
               name: zms-ci-net
           COMPOSE_EOF
+
+          # Pre-pull images that hit Docker Hub / Quay (not GHCR) so compose up does not parallel-resolve via Colima's stub DNS (192.168.5.1 flakes).
+          docker_pull_retry() {
+            local ref="$1"
+            local attempt=1
+            local max=8
+            local wait=12
+            while [ "$attempt" -le "$max" ]; do
+              if docker pull "$ref"; then
+                return 0
+              fi
+              echo "::warning::docker pull failed (attempt ${attempt}/${max}): ${ref} — retry in ${wait}s"
+              sleep "$wait"
+              attempt=$((attempt + 1))
+              wait=$((wait + 8))
+            done
+            return 1
+          }
+          docker_pull_retry "docker.io/library/mariadb:10.11"
+          sleep 2
+          docker_pull_retry "ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0"
+          sleep 2
+          docker_pull_retry "quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a"
+          sleep 2
+          docker_pull_retry "klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231"
 
           docker compose -f docker-compose.ci.macos.yml down -v --remove-orphans || true
           docker compose -f docker-compose.ci.macos.yml up -d
