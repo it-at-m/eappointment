@@ -377,7 +377,7 @@ jobs:
   zms-automation-safari-macos:
     name: zmsautomation (Safari — macOS host)
     # Runs Selenium Safari on the runner and Docker Compose for the stack.
-    # GitHub-hosted macOS images omit Docker; Colima (vz, then qemu fallback) may still fail without nested virtualization.
+    # GitHub-hosted macOS images omit Docker; Colima tries vz then qemu (brew install qemu provides qemu-img).
     # If both backends fail, use a self-hosted macOS runner with Docker Desktop, OrbStack, or Rancher Desktop.
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     runs-on: macos-26
@@ -418,6 +418,8 @@ jobs:
           if ! start_colima vz; then
             echo "::warning::Colima VZ failed (common on GitHub-hosted macOS: no nested virt). Hostagent log:"
             cat ~/.colima/_lima/colima/ha.stderr.log 2>/dev/null || true
+            echo "Installing QEMU (qemu-img) for Colima's qemu VM backend ..."
+            brew install qemu
             if ! start_colima qemu; then
               echo "::error::Colima could not start with vz or qemu. Safari stack needs Docker on macOS — use a self-hosted runner with Docker Desktop, OrbStack, or Rancher Desktop, and a label such as runs-on: [self-hosted, macOS]."
               cat ~/.colima/_lima/colima/ha.stderr.log 2>/dev/null || true
