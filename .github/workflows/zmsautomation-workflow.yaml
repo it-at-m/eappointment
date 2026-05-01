@@ -398,6 +398,7 @@ jobs:
     # Pulls zmscitizenview backend modules on ubuntu-latest and pushes one prepared zms-web image so macOS/Colima only pulls web + zmscitizenview (see safari job).
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       contents: read
       packages: write
@@ -499,6 +500,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.browser == 'safari'
     needs: zms-automation-safari-prepare
     runs-on: macos-26-intel
+    # Request headroom above common org/repo 60m caps; if policy caps lower, admin must raise it.
+    timeout-minutes: 180
     env:
       IMAGE_REGISTRY: ghcr.io
     steps:
@@ -854,12 +857,13 @@ jobs:
         run: |
           set -euo pipefail
           WEB_CONT="zms-web"
-          docker exec -u root -e ZMS_AUTOMATION_SETUP_ONLY=1 "$WEB_CONT" bash -lc '
+          docker exec -u root -e ZMS_AUTOMATION_SETUP_ONLY=1 -e ZMS_SAFARI_CI_LITE_PREP=1 "$WEB_CONT" bash -lc '
             set -euo pipefail
             set -a
             source /var/www/html/.devcontainer/.env
             set +a
             export ZMS_AUTOMATION_SETUP_ONLY=1
+            export ZMS_SAFARI_CI_LITE_PREP=1
             bash /var/www/html/zmsautomation/zmsautomation-test
           '
 

@@ -371,11 +371,17 @@ section "6. PHP Migrations"
 ( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
 
 # 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
-section "7. Hourly Cronjob"
-export ZMS_CRONROOT=1
-export ZMS_ENV="${ZMS_ENV:-dev}"
-run_hourly_with_retries || true
-clear_caches
+# ZMS_SAFARI_CI_LITE_PREP=1: skip DLDB import + slot rebuild for GitHub Safari prep (often 30–60m+); Flyway+migrations already seed CI DB.
+if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
+  warn "ZMS_SAFARI_CI_LITE_PREP=1 — skipping section 7 (hourly DLDB import) for faster CI prep."
+  clear_caches
+else
+  section "7. Hourly Cronjob"
+  export ZMS_CRONROOT=1
+  export ZMS_ENV="${ZMS_ENV:-dev}"
+  run_hourly_with_retries || true
+  clear_caches
+fi
 
 section "8. Minutly Cronjob"
 export ZMS_CRONROOT=1
@@ -386,11 +392,15 @@ info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
   && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
 ) || true
 
-info "Forcing slot calculation fallback (mocked time) ..."
-(
-  cd "$PROJECT_ROOT/zmsapi" \
-  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
-) || true
+if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
+  warn "ZMS_SAFARI_CI_LITE_PREP=1 — skipping calculateSlots (see section 7 skip)."
+else
+  info "Forcing slot calculation fallback (mocked time) ..."
+  (
+    cd "$PROJECT_ROOT/zmsapi" \
+    && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+  ) || true
+fi
 
 # 9. Health Checks (5 min total; 15s per try; curl uses explicit --noproxy)
 #
