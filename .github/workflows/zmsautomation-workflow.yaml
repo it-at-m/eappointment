@@ -944,6 +944,7 @@ jobs:
             echo "Running cli tests run-mac-local for tags: $expr"
             set +e
             python3 cli tests run-mac-local --browser safari \
+              --citizen-view-uri "http://localhost:8080/" \
               --cucumber-tags "$expr" \
               ${ss_flag:+$ss_flag} \
               --skip-driver-check
