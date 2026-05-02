@@ -915,7 +915,12 @@ jobs:
 
       - name: Install Python dependencies for ./cli
         shell: bash
-        run: python3 -m pip install --user click colorama
+        run: |
+          set -euo pipefail
+          # Homebrew Python on macOS is PEP 668 "externally managed"; use a venv instead of pip --user.
+          python3 -m venv .github-zms-cli-venv
+          ./.github-zms-cli-venv/bin/pip install -q click colorama
+          echo "${GITHUB_WORKSPACE}/.github-zms-cli-venv/bin" >> "${GITHUB_PATH}"
 
       - name: Run ATAF on macOS host (Safari via cli tests run-mac-local)
         shell: bash
