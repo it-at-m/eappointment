@@ -21,6 +21,7 @@ coverage/
 
 # Python
 __pycache__/
+.github-zms-cli-venv/
 
 # =============== PHP =================
 vendor/
