@@ -35,7 +35,7 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
-                if (!$loginData->getUseraccount()->hasRights(['statistic'])) {
+                if (!$loginData->getUseraccount()->hasPermissions(['statistic'])) {
                     return $response->withRedirect($this->getAdminWorkstationSelectUrl($request));
                 }
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
@@ -56,7 +56,7 @@ class Index extends BaseController
             );
         } else {
             if ($workstation instanceof Workstation && $workstation->hasId()) {
-                if (!$workstation->getUseraccount()->hasRights(['statistic'])) {
+                if (!$workstation->getUseraccount()->hasPermissions(['statistic'])) {
                     return $response->withRedirect($this->getAdminWorkstationSelectUrl($request));
                 }
             }

@@ -21,7 +21,7 @@ class WarehousePeriodGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('statistic');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $subjectId = Validator::value($args['subjectId'])->isString()->getValue();
         $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();

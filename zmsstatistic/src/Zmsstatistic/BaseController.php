@@ -19,7 +19,7 @@ abstract class BaseController extends Helper\Access
     protected function hasStatisticPermission(): bool
     {
         return $this->workstation
-            && $this->workstation->getUseraccount()->hasRights(['statistic']);
+            && $this->workstation->getUseraccount()->hasPermissions(['statistic']);
     }
 
     protected function getAdminWorkstationSelectUrl($request): string
