@@ -4,15 +4,17 @@ This repository’s documentation site lives in the `docs` folder and is built w
 
 ## Branching and GitHub Pages
 
-Documentation changes should follow the same branch flow as a **hotfix**, not feature work on `next`:
+**Doc-only changes** (handbook updates with no product code in the same change) should follow the same branch flow as a **hotfix**, not feature work on `next`:
 
 - **Branch from `main`**, not from `next`. Do not base doc-only work on `next`.
 - Open a pull request and **merge into `main`** when it is ready.
 - Afterwards, **merge `main` into `next`** so `next` picks up the doc updates (the merge-back step used after hotfixes).
 
-Details and diagrams for that workflow are in [Branching Strategy and Convention](/branching-strategy-and-convention).
+If your work is a **feature or bugfix** that also touches `docs/`, follow the **normal process** for that work (for example branch from `next`, open your usual PR into `next`). Edit the docs in the same feature or bugfix branch; you do not need a separate doc-only branch from `main` for those edits.
 
-The handbook on **[GitHub Pages](https://it-at-m.github.io/eappointment/)** is deployed from the **`main`** branch, which is why doc fixes and updates must land on `main` first.
+Details and diagrams for both flows are in [Branching Strategy and Convention](/branching-strategy-and-convention).
+
+The handbook on **[GitHub Pages](https://it-at-m.github.io/eappointment/)** is deployed from the **`main`** branch. Doc-only fixes should land on `main` first so the site updates quickly; documentation that ships with a feature or bugfix reaches `main` when that change is merged through your normal release path.
 
 ## Prerequisites
 
