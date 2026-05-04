@@ -31,4 +31,4 @@ ddev start
 If there is nothing to remove, a step may print a harmless error (for example `docker rm` with no container IDs); you can ignore that and continue.
 
 For the normal startup flow and endpoints, see
-[DDEV and Devcontainer](/getting-started).
+[DDEV and Devcontainer](/setup-and-development/getting-started/ddev-and-devcontainer).

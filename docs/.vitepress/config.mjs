@@ -7,7 +7,7 @@ const FEATURES_ROOT = path.resolve(
 );
 const CUCUMBER_DOC_PATH = path.resolve(
   import.meta.dirname,
-  "../zmsautomation-cucumber-current.md"
+  "../testing-and-automation/zmsautomation-cucumber-current.md"
 );
 const FEATURE_SOURCE_BASE =
   "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
@@ -179,8 +179,11 @@ export default {
         text: "Overview",
         items: [
           { text: "Introduction", link: "/" },
-          { text: "Project History", link: "/project-history" },
-          { text: "Changelog", link: "/changelog" },
+          {
+            text: "Project History",
+            link: "/overview/project-history",
+          },
+          { text: "Changelog", link: "/overview/changelog" },
         ],
       },
       {
@@ -190,14 +193,17 @@ export default {
             text: "Development Rules",
             collapsed: false,
             items: [
-              { text: "Dependency Graph", link: "/dependency-graph" },
+              {
+                text: "Dependency Graph",
+                link: "/setup-and-development/development-rules/dependency-graph",
+              },
               {
                 text: "Branching Strategy",
-                link: "/branching-strategy-and-convention",
+                link: "/setup-and-development/development-rules/branching-strategy-and-convention",
               },
               {
                 text: "Commit Message Convention",
-                link: "/commit-message-convention",
+                link: "/setup-and-development/development-rules/commit-message-convention",
               },
               {
                 text: "Code of Conduct",
@@ -223,23 +229,23 @@ export default {
             items: [
               {
                 text: "DDEV and Devcontainer",
-                link: "/getting-started",
+                link: "/setup-and-development/getting-started/ddev-and-devcontainer",
               },
               {
                 text: "Quick reset of the local environment",
-                link: "/quick-reset-local-environment",
+                link: "/setup-and-development/getting-started/quick-reset-local-environment",
               },
               {
                 text: "Getting Started with GitHub Codespaces",
-                link: "/getting-started-with-github-codespaces",
+                link: "/setup-and-development/getting-started/getting-started-with-github-codespaces",
               },
               {
                 text: "Getting Started with docs",
-                link: "/getting-started-with-docs",
+                link: "/setup-and-development/getting-started/getting-started-with-docs",
               },
               {
                 text: "Running Cronjobs Locally",
-                link: "/running-cronjobs-locally",
+                link: "/setup-and-development/getting-started/running-cronjobs-locally",
               },
               {
                 text: "macOS local configuration",
@@ -247,54 +253,75 @@ export default {
                 items: [
                   {
                     text: "Podman and Dev Containers",
-                    link: "/getting-started-macos-podman-devcontainer",
+                    link: "/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers",
                   },
                   {
                     text: "Local HTTPS SSL (DDEV)",
-                    link: "/getting-started-macos-ddev-https",
+                    link: "/setup-and-development/getting-started/macos-local-configuration/local-https-ddev",
                   },
                 ],
               },
             ],
           },
-          { text: "Local Keycloak Setup", link: "/local-keycloak-setup" },
-          { text: "Code Formatting", link: "/code-formatting" },
+          {
+            text: "Local Keycloak Setup",
+            link: "/setup-and-development/local-keycloak-setup",
+          },
+          {
+            text: "Code Formatting",
+            link: "/setup-and-development/code-formatting",
+          },
           {
             text: "Local Database and Cache Operations",
-            link: "/local-database-and-cache-operations",
+            link: "/setup-and-development/local-database-and-cache-operations",
           },
           {
             text: "Dependency Upgrade Check",
-            link: "/dependency-upgrade-check",
+            link: "/setup-and-development/dependency-upgrade-check",
           },
-          { text: "PHP Base Images", link: "/php-base-images" },
+          {
+            text: "PHP Base Images",
+            link: "/setup-and-development/php-base-images",
+          },
         ],
       },
       {
         text: "Testing and Automation",
         items: [
-          { text: "Unit Testing in ZMS", link: "/testing-unit" },
-          { text: "Unit Test Coverage", link: "/testing-coverage" },
-          { text: "zmsautomation Documentation", link: "/zmsautomation" },
+          {
+            text: "Unit Testing in ZMS",
+            link: "/testing-and-automation/testing-unit",
+          },
+          {
+            text: "Unit Test Coverage",
+            link: "/testing-and-automation/testing-coverage",
+          },
+          {
+            text: "zmsautomation Documentation",
+            link: "/testing-and-automation/zmsautomation",
+          },
           {
             text: "Current Cucumber Tests",
-            link: "/zmsautomation-cucumber-current",
+            link: "/testing-and-automation/zmsautomation-cucumber-current",
           },
         ],
       },
       {
         text: "Operations",
         items: [
-          { text: "API reference", link: "/api-reference" },
+          {
+            text: "API reference",
+            link: "/operations/api-reference",
+          },
           {
             text: "DLDB Interface Documentation",
-            link: "/dldb-interface-documentation",
+            link: "/operations/dldb-interface-documentation",
           },
         ],
       },
       {
         text: "Reference",
-        items: [{ text: "Module READMEs", link: "/module-readmes" }],
+        items: [{ text: "Module READMEs", link: "/reference/module-readmes" }],
       },
       {
         text: "On the Future",
@@ -305,7 +332,7 @@ export default {
             items: [
               {
                 text: "Standardize Database Table and Field Naming",
-                link: "/on-the-future/database-standardize-naming-conventions",
+                link: "/on-the-future/database-refactor/standardize-database-table-and-field-naming",
               },
             ],
           },
