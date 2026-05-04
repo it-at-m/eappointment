@@ -13,9 +13,9 @@ devcontainer up --workspace-folder .
 
 Both commands also auto-detect your host architecture (`amd64` vs `arm64`) and pull the matching local PHP base image tag for `zms-web`.
 
-To wipe Podman or Docker completely on the host and recreate the stack, see [Quick reset of the local environment](/quick-reset-local-environment).
+To wipe Podman or Docker completely on the host and recreate the stack, see [Quick reset of the local environment](/setup-and-development/getting-started/quick-reset-local-environment).
 
-On **macOS**, see [Podman and Dev Containers on macOS](/getting-started-macos-podman-devcontainer) and [Local HTTPS SSL for DDEV (macOS)](/getting-started-macos-ddev-https).
+On **macOS**, see [Podman and Dev Containers on macOS](/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers) and [Local HTTPS SSL for DDEV (macOS)](/setup-and-development/getting-started/macos-local-configuration/local-https-ddev).
 
 ## Containers and local endpoints
 
@@ -72,4 +72,4 @@ ddev exec ./cli db full-setup
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
 
-For Keycloak host mapping and Linux Podman notes, see [Local Keycloak Setup](./local-keycloak-setup.md).
+For Keycloak host mapping and Linux Podman notes, see [Local Keycloak Setup](../local-keycloak-setup.md).
