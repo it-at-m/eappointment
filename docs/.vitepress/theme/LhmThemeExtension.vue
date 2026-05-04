@@ -1,7 +1,12 @@
 <template>
   <Layout>
     <template #nav-bar-title-after>
-      <LatestReleaseTag />
+      <LatestReleaseTag variant="title" />
+    </template>
+    <template #nav-screen-content-after>
+      <div class="latest-release-screen-slot">
+        <LatestReleaseTag variant="menu" />
+      </div>
     </template>
     <template #nav-bar-content-after>
       <div class="logo">
