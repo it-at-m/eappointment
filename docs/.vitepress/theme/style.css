@@ -1,3 +1,20 @@
+/* Allow title row to wrap so latest-release can sit on a second line under the site name */
+.VPNavBarTitle .title {
+  flex-wrap: wrap;
+  row-gap: 2px;
+  align-content: center;
+  height: auto;
+  min-height: var(--vp-nav-height);
+  padding-top: 6px;
+  padding-bottom: 4px;
+  box-sizing: border-box;
+}
+
+.VPNavBar .container {
+  height: auto;
+  min-height: var(--vp-nav-height);
+}
+
 :root {
   --muc-logo-filter: invert(0);
 }
