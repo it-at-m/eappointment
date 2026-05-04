@@ -11,7 +11,7 @@ class WarehouseSubjectListGetTest extends Base
     public function testRendering()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->permissions['statistic'] = true;
+        $workstation->getUseraccount()->setPermissions('statistic') = true;
         $response = $this->render([], [], []);
         $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());

@@ -124,6 +124,28 @@ class User
         return $workstation;
     }
 
+    public static function checkPermissions(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testPermissions($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
+    public static function checkAnyPermission(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testAnyPermission($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
     public static function checkDepartments($departmentIds)
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
