@@ -22,6 +22,9 @@ class Department extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['department'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/department/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
@@ -50,7 +53,7 @@ class Department extends BaseController
             $response,
             'page/department.twig',
             array(
-                'title' => 'Standort',
+                'title' => 'Behörde bearbeiten',
                 'workstation' => $workstation,
                 'organisation' => $organisation,
                 'department' => $departmentData,

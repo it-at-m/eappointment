@@ -10,7 +10,7 @@ class ScopeUpdateTest extends Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 141]);
-        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUserAccount()->setPermissions('scope')->addDepartment($department);
         $response = $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);

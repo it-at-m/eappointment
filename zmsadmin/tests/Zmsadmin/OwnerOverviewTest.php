@@ -35,28 +35,44 @@ class OwnerOverviewTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testRenderingMissingRights()
+    public function testRenderingWithoutRequiredPermissions()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/workstation/',
+                'parameters' => ['resolveReferences' => 1],
+                'response' => $this->readFixture("GET_workstation_basic.json")
+            ]
+        ]);
+
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
+    public function testRenderingOwnerMissingPermissionsFromApi()
     {
         $this->expectException('\BO\Zmsclient\Exception');
 
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = '\BO\Zmsentities\Exception\UserAccountMissingRights';
-        $this->setApiCalls(
+
+        $this->setApiCalls([
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_workstation_basic.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 4],
-                    'exception' => $exception
-                ]
+                'function' => 'readGetResult',
+                'url' => '/workstation/',
+                'parameters' => ['resolveReferences' => 1],
+                'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/owner/',
+                'parameters' => ['resolveReferences' => 4],
+                'exception' => $exception
             ]
-        );
+        ]);
+
         $this->render($this->arguments, $this->parameters, []);
     }
 }

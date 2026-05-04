@@ -59,7 +59,7 @@ class Organisation extends BaseController
             $response,
             'page/organisation.twig',
             array(
-                'title' => 'Bezirk - Einrichtung und Administration',
+                'title' => 'Referat bearbeiten',
                 'workstation' => $workstation,
                 'organisation' => $organisationData,
                 'menuActive' => 'owner',

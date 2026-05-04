@@ -21,7 +21,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation()
             ->getUseraccount()
-            ->setRights('scope');
+            ->setPermissions('overviewcalendar');
     }
 
     public function testCalendarStructure(): void

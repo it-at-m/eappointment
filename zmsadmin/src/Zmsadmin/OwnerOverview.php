@@ -19,6 +19,9 @@ class OwnerOverview extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasAnyPermission(['restrictedscope','scope','organisation','department','cluster'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->setDefault('')->getValue();
         $scopeName = $request->getAttribute('validator')->getParameter('scopeName')->isString()->setDefault('')->getValue();
