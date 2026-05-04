@@ -23,7 +23,7 @@ class ConflictListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('appointment');
+        (new Helper\User($request))->checkPermissions('appointment');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();

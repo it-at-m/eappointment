@@ -16,7 +16,7 @@ class OverallCalendarRead extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('overviewcalendar');
+        (new Helper\User($request))->checkPermissions('overviewcalendar');
 
         $scopeIdCsv = Validator::param('scopeIds')->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
         $scopeIds = array_map('intval', explode(',', $scopeIdCsv));

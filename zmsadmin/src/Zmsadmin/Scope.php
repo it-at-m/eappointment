@@ -29,7 +29,7 @@ class Scope extends BaseController
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-        if (!$workstation->getUseraccount()->hasAnyRight(['scope','restrictedscope'])) {
+        if (!$workstation->getUseraccount()->hasAnyPermission(['scope','restrictedscope'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
@@ -52,7 +52,7 @@ class Scope extends BaseController
         if ($request->getMethod() === 'POST') {
             $result = $this->writeUpdatedEntity($input, $entityId);
             if ($result instanceof Entity) {
-                if ($workstation->getUseraccount()->hasRights(['scope'])) {
+                if ($workstation->getUseraccount()->hasPermissions(['scope'])) {
                     $this->writeUploadedImage($request, $entityId, $input);
                 }
                 return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [

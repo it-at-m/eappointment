@@ -30,7 +30,7 @@ class ScopeUpdate extends BaseController
         $scope->addData($input)->testValid('de_DE', 1);
         $user = new Helper\User($request, 2);
 
-        $user->checkAnyRight(
+        $user->checkAnyPermission(
             'restrictedscope',
             'scope'
         );
