@@ -16,6 +16,7 @@ Both commands also auto-detect your host architecture (`amd64` vs `arm64`) and p
 To wipe Podman or Docker completely on the host and recreate the stack, see [Quick reset of the local environment](/quick-reset-local-environment).
 
 ## Containers and local endpoints
+
 The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
 
 - `zms-web` (pre-built local PHP base image), app endpoint: `http://localhost:8090`

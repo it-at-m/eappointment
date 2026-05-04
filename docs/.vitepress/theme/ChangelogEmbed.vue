@@ -1,14 +1,28 @@
 <template>
   <div class="changelog-embed">
-    <p v-if="loading" class="changelog-embed__status">Loading <code>CHANGELOG.md</code> from GitHub…</p>
-    <p v-else-if="error" class="changelog-embed__status changelog-embed__status--error">{{ error }}</p>
-    <div v-else class="vp-doc changelog-embed__body" v-html="html" />
+    <p
+      v-if="loading"
+      class="changelog-embed__status"
+    >
+      Loading <code>CHANGELOG.md</code> from GitHub…
+    </p>
+    <p
+      v-else-if="error"
+      class="changelog-embed__status changelog-embed__status--error"
+    >
+      {{ error }}
+    </p>
+    <div
+      v-else
+      class="vp-doc changelog-embed__body"
+      v-html="html"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
+import { onMounted, ref } from "vue";
 
 const API =
   "https://api.github.com/repos/it-at-m/eappointment/contents/CHANGELOG.md?ref=main";
@@ -21,7 +35,7 @@ const html = ref("");
 const md = new MarkdownIt({
   html: true,
   linkify: true,
-  typographer: true
+  typographer: true,
 });
 
 function decodeGitHubBase64(b64) {
@@ -37,7 +51,7 @@ function decodeGitHubBase64(b64) {
 onMounted(async () => {
   try {
     const res = await fetch(API, {
-      headers: { Accept: "application/vnd.github+json" }
+      headers: { Accept: "application/vnd.github+json" },
     });
     if (res.status === 403) {
       error.value =

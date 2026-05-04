@@ -2,8 +2,14 @@
   <template v-if="tagName">
     <!-- Desktop: second line under title (inside title link; use span + handlers) -->
     <template v-if="variant === 'title'">
-      <span class="title-after-break" aria-hidden="true" />
-      <span class="latest-release latest-release--title" aria-label="Latest GitHub release">
+      <span
+        class="title-after-break"
+        aria-hidden="true"
+      />
+      <span
+        class="latest-release latest-release--title"
+        aria-label="Latest GitHub release"
+      >
         <span class="latest-release__label">Latest release</span>
         <span
           class="latest-release__link"
@@ -13,27 +19,39 @@
           @click.capture.prevent.stop="openRelease"
           @keydown.enter.capture.prevent.stop="openRelease"
           @keydown.space.capture.prevent.stop="openRelease"
-        >{{ tagName }}</span>
+          >{{ tagName }}</span
+        >
       </span>
     </template>
     <!-- Mobile nav drawer: below Appearance (grid reorder in style.css) -->
-    <div v-else class="latest-release latest-release--menu" aria-label="Latest GitHub release">
+    <div
+      v-else
+      class="latest-release latest-release--menu"
+      aria-label="Latest GitHub release"
+    >
       <span class="latest-release__label">Latest release</span>
-      <a class="latest-release__menu-link" :href="tagUrl" target="_blank" rel="noopener noreferrer">{{ tagName }}</a>
+      <a
+        class="latest-release__menu-link"
+        :href="tagUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ tagName }}</a
+      >
     </div>
   </template>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
+
 import { fetchLatestRelease } from "./latestReleaseFetch.js";
 
 defineProps({
   variant: {
     type: String,
     required: true,
-    validator: (v) => v === "title" || v === "menu"
-  }
+    validator: (v) => v === "title" || v === "menu",
+  },
 });
 
 const tagName = ref("");
