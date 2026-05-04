@@ -304,9 +304,11 @@ This means `slotTimeInMinutes` is the office-level base slot grid derived from a
 
 ### `ZMS_INTERN`
 
-- **Source in SADB export:** `service.fields[].name = "ZMS_INTERN"` and `extendedServiceReferences[].fields[].name = "ZMS_INTERN"`
+- **Where the field appears in data:**
+  - **Service definition:** `services[].fields[].name = "ZMS_INTERN"` — this is what you see in the published service export (for example [20260504-105500-zms-export.json](https://stadt.muenchen.de/service/doc/-/zms/20260504-105500-zms-export.json)): each service has its own `fields[]` and top-level `public`; `ZMS_INTERN` is **not** defined on a separate “location fields” list.
+  - **Office–service relation:** when a location payload includes `extendedServiceReferences[]`, each reference may carry the **same** field name in `extendedServiceReferences[].fields[]` (per service–office pair). That is still the ZMS service field schema, attached to the **relation** object nested under the location, not a third place on the location root. Munich merges such blocks from `zmsdldb/resources/munich_sadb_overwrite.json` when present.
 - **Transformer mapping (`Munich.php`):**
-  - inverted to public flag (`public = !ZMS_INTERN`) on service and service-ref entries
+  - inverted to public flag (`public = !ZMS_INTERN`) on the mapped service and on each mapped `serviceRef` when the field is present on that reference
 - **Flow to `zmscitizenapi`:**
   - unpublished/private filtering is applied in `MapperService` (`showUnpublished` gates, relation visibility checks, and service/provider public checks)
   - result: internal services/offices are excluded from public API payloads unless explicitly requested
@@ -362,21 +364,23 @@ So, for services, `ZMS_INTERN` is the authoritative internal/public switch in tr
 
 ### 2) Location-level visibility
 
-In `Munich.php`, location visibility is taken from export location public flag:
+In `Munich.php`, **office (location) publication** is taken only from the export’s location-level flag:
 
 - `mappedLocation.public = location.public ?? true`
+
+There is **no** `ZMS_INTERN` read from a hypothetical `location.fields[]` in the transformer — locations in typical exports only expose this top-level `public` alongside address and metadata.
 
 This controls provider-level publication downstream.
 
 ### 3) Service-at-location (relation) visibility
 
-For each `extendedServiceReferences` entry:
+For each `extendedServiceReferences` entry (embedded under a location in the **import** shape):
 
 - initial relation/public value comes from reference `public` if set
-- if reference fields include `ZMS_INTERN`, it overrides by setting:
+- if that reference’s `fields[]` include `ZMS_INTERN` (same field name as on the service), it overrides by setting:
   - `serviceRef.public = !ZMS_INTERN`
 
-So relation-level internal flags can hide a service-office combination even when service or location is otherwise public.
+So a **relation-level** internal flag can hide one office–service pair even when the global service row and the office row are each `public: true`. That is not “`ZMS_INTERN` on the location” in the sense of a location-only field; it is the same DLDB field carried on the **per-reference** object under `extendedServiceReferences`.
 
 ### 4) What `zmscitizenapi` actually filters
 
@@ -420,8 +424,8 @@ Quick lookup for where key SADB fields end up:
   - transformer: `mappedService.duration`, `serviceRef.duration`, office-level `slotTimeInMinutes`
   - db/api path: provider/request relation timing -> `MapperService::mapOfficesWithScope()` -> `Office.slotTimeInMinutes`
 - `ZMS_INTERN`
-  - source: `services[].fields[].name="ZMS_INTERN"` and `extendedServiceReferences[].fields[]`
-  - transformer: visibility inversion (`public = !ZMS_INTERN`) on service and service-ref
+  - source: `services[].fields[].name="ZMS_INTERN"` (primary in public service export); optionally the same field on `locations[].extendedServiceReferences[].fields[]` for per-office overrides
+  - transformer: visibility inversion (`public = !ZMS_INTERN`) on mapped service and on each `serviceRef` when the field is present on that reference
   - db/api path: publication flags -> `MapperService` visibility filtering (`showUnpublished`, `relation->isPublic()`, `additionalData['public']`)
 - `FORMULARE_INFORMATIONEN`
   - source: `services[].fields[].name="FORMULARE_INFORMATIONEN"` (LINK values)
@@ -458,7 +462,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Raw SADB Service/Relation] --> B{ZMS_INTERN present?}
+    A[Raw SADB service fields or extendedServiceReferences fields] --> B{ZMS_INTERN present?}
     B -- yes --> C[public = !ZMS_INTERN]
     B -- no --> D[keep source/default public]
     C --> E[Normalized provider/request/relation flags]
@@ -476,7 +480,7 @@ flowchart TD
 Use this order to debug a missing item in `zmscitizenapi`:
 
 1. Confirm service/location exists in raw Munich export (`id`, `public`, `fields`).
-2. Check if `ZMS_INTERN` is present on service or `extendedServiceReferences`.
+2. Check if `ZMS_INTERN` is present on `services[].fields` or on `locations[].extendedServiceReferences[].fields` (after merge with `munich_sadb_overwrite.json` if used).
 3. Verify transformer output in `zmsapi/data/services_de.json` and `zmsapi/data/locations_de.json`.
 4. Verify relation exists between service and location (join expectation for `request_provider`).
 5. Validate publication state across provider/service/relation after import.
@@ -570,13 +574,15 @@ Raw SADB can still show top-level `"public": true` while `ZMS_INTERN: true` mark
 
 With default **`showUnpublished=false`**, `MapperService` drops services whose additional data has `public === false`, so this service **does not appear** in public citizen API payloads. It can still be inspected locally via `services_de.json`, `showUnpublished`, or `ACCESS_UNPUBLISHED_ON_DOMAIN` (see **Local/domain override for unpublished data** above).
 
-### Example: relation-level `ZMS_INTERN` (hide one office–service pair)
+### Example: `ZMS_INTERN` on an office–service reference (hide one pair)
 
-A location can stay **`public: true`** while a single `extendedServiceReferences` entry sets **`ZMS_INTERN: true`**. The transformer sets **`serviceRef.public = !ZMS_INTERN`** for that reference only, so the service may remain bookable elsewhere but **not** at this office (see **Service-at-location (relation) visibility** above).
+In the **published service JSON**, `ZMS_INTERN` normally appears only under **`services[].fields[]`**, not as a custom field on the location root (locations use top-level `public` only for the office).
 
-Assume service `1063423` is still public in `services_de.json` (no `ZMS_INTERN` on the service itself).
+The snippet below is the **location import** shape: `ZMS_INTERN` sits on one **`extendedServiceReferences[]`** entry — the same field name as on the service, scoped to that office–service link. `Munich.php` sets **`serviceRef.public = !ZMS_INTERN`** for that reference only, so the service can stay bookable elsewhere but **not** at this office (see **Service-at-location (relation) visibility** above). This structure appears in merged inputs such as `munich_sadb_overwrite.json`; your raw export may omit `extendedServiceReferences` entirely.
 
-#### Raw SADB snippet (location input, abbreviated)
+Assume service `1063423` is still public in `services_de.json` (no `ZMS_INTERN` on the service row).
+
+#### Raw SADB snippet (location payload with `extendedServiceReferences`, abbreviated)
 
 ```json
 {
