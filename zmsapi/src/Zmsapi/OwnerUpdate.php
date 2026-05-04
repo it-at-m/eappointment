@@ -21,7 +21,7 @@ class OwnerUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('organisation');
+        (new Helper\User($request))->checkPermissions('organisation');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);
         $entity->testValid();

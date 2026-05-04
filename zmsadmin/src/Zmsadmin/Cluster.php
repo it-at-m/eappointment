@@ -22,7 +22,7 @@ class Cluster extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['cluster'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();

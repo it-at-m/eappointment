@@ -19,7 +19,7 @@ class OwnerOverview extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (!$workstation->getUseraccount()->hasAnyRight(['restrictedscope','scope','organisation','department','cluster'])) {
+        if (!$workstation->getUseraccount()->hasAnyPermission(['restrictedscope','scope','organisation','department','cluster'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();

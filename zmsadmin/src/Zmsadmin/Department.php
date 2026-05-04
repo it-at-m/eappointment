@@ -22,7 +22,7 @@ class Department extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['department'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['department'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();

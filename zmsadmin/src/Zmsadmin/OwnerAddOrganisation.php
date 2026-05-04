@@ -21,7 +21,7 @@ class OwnerAddOrganisation extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['organisation'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['organisation'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
         $input = $request->getParsedBody();
