@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -82,9 +82,6 @@ const parseUrlHash = () => {
   return normalized.split("/");
 };
 
-const url = new URL(window.location.href);
-const params = new URLSearchParams(url.search);
-
 // Initialize refs
 const serviceId = ref<string | undefined>(undefined);
 const locationId = ref<string | undefined>(undefined);
@@ -94,6 +91,9 @@ const exclusiveLocation = ref<string | undefined>(undefined);
 
 // Function to extract route parameters from URL elements
 const extractRouteParams = (urlElements: string[]) => {
+  const searchParams = new URLSearchParams(
+    new URL(window.location.href).search
+  );
   if (urlElements.length >= 3 && urlElements[1] === "services") {
     serviceId.value = urlElements[2];
   }
@@ -110,41 +110,38 @@ const extractRouteParams = (urlElements: string[]) => {
   if (urlElements.length === 3 && urlElements[1] === "appointment") {
     appointmentHash.value = urlElements[2];
   }
-  if (params.get("exclusiveLocation")) {
+  if (searchParams.get("exclusiveLocation")) {
     exclusiveLocation.value = "1";
   }
 };
 
-// Parse hash immediately (works most of the time)
-const initialUrlElements = parseUrlHash();
-console.log("[ZMS] Initial parse:", window.location.hash, initialUrlElements);
-extractRouteParams(initialUrlElements);
-console.log(
-  "[ZMS] After initial:",
-  appointmentHash.value,
-  confirmAppointmentHash.value
-);
+/** Apply hash (and query) routing; clears stale refs so same-tab hash changes update the UI. */
+const syncRouteFromLocation = () => {
+  serviceId.value = undefined;
+  locationId.value = undefined;
+  confirmAppointmentHash.value = undefined;
+  appointmentHash.value = undefined;
+  exclusiveLocation.value = undefined;
+  const urlElements = parseUrlHash();
+  extractRouteParams(urlElements);
+  console.debug("[ZMS] syncRouteFromLocation: segments=", urlElements.length, {
+    hasAppointmentHash: !!appointmentHash.value,
+    hasConfirmAppointmentHash: !!confirmAppointmentHash.value,
+  });
+};
 
-// Re-parse in onMounted to handle Safari timing issues
-// This ensures the hash is read after the component is fully connected to the DOM
+// Parse hash immediately (works most of the time)
+syncRouteFromLocation();
+
+// Same-tab hash navigations (e.g. Selenium get(), mailto link flow) do not remount the app — listen for hashchange.
+// onMounted also re-syncs for Safari timing where the hash is not ready on first script parse.
 onMounted(() => {
-  // Only re-parse if we didn't get appointment hash but URL contains "appointment"
-  const hash = window.location.hash;
-  if (
-    !appointmentHash.value &&
-    !confirmAppointmentHash.value &&
-    hash.includes("appointment")
-  ) {
-    console.log("[ZMS] onMounted re-parse triggered");
-    const urlElements = parseUrlHash();
-    console.log("[ZMS] onMounted parse:", hash, urlElements);
-    extractRouteParams(urlElements);
-    console.log(
-      "[ZMS] After onMounted:",
-      appointmentHash.value,
-      confirmAppointmentHash.value
-    );
-  }
+  syncRouteFromLocation();
+  window.addEventListener("hashchange", syncRouteFromLocation);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("hashchange", syncRouteFromLocation);
 });
 // END Routing
 

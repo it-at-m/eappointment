@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -1633,15 +1634,9 @@ public class CitizenViewPage extends BasePage {
         }
         url = ensureAbsoluteCitizenViewUrl(url);
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
+        navigateCitizenViewUrl(url);
         try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Reload so the app gets the confirm hash on initial load (in-app hash change often doesn't update the view).
-            DriverUtil.getDriver().navigate().refresh();
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
-        }
-        try {
-            Thread.sleep(10000L);
+            Thread.sleep(2000L);
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
@@ -1657,17 +1652,70 @@ public class CitizenViewPage extends BasePage {
         Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
         url = ensureAbsoluteCitizenViewUrl(url);
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to appointment view URL (from second email): {}", url);
+        navigateCitizenViewUrl(url);
         try {
-            DriverUtil.getDriver().navigate().to(url);
-            DriverUtil.getDriver().navigate().refresh();
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to appointment view URL", e);
-        }
-        try {
-            Thread.sleep(10000L);
+            Thread.sleep(2000L);
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Safari (and {@code pageLoadStrategy=eager}) often hit WebDriver timeouts on {@code navigate().to()} when only
+     * the URL fragment changes — the document does not reload. Assign {@code location.href} in-page so the hash
+     * updates immediately; use normal navigation when switching origin or path.
+     */
+    private void navigateCitizenViewUrl(String url) {
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        String target = ensureAbsoluteCitizenViewUrl(url);
+        try {
+            String current = driver.getCurrentUrl();
+            if (isSameDocumentCitizenViewNavigation(current, target)) {
+                ((JavascriptExecutor) driver).executeScript(
+                        "window.location.href = arguments[0];", target);
+            } else {
+                driver.navigate().to(target);
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .error("navigateCitizenViewUrl failed (target URL: " + target + ")", e);
+            throw new RuntimeException("navigateCitizenViewUrl failed for " + target, e);
+        }
+    }
+
+    private static boolean isSameDocumentCitizenViewNavigation(String currentUrl, String targetUrl) {
+        try {
+            URI cur = URI.create(currentUrl);
+            URI tgt = URI.create(targetUrl);
+            if (cur.getScheme() == null || tgt.getScheme() == null) {
+                return false;
+            }
+            if (!cur.getScheme().equalsIgnoreCase(tgt.getScheme())) {
+                return false;
+            }
+            if (!Objects.equals(hostKey(cur), hostKey(tgt))) {
+                return false;
+            }
+            if (cur.getPort() != tgt.getPort()) {
+                return false;
+            }
+            return normalizedPath(cur).equals(normalizedPath(tgt));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static String hostKey(URI u) {
+        String h = u.getHost();
+        return h == null ? "" : h.toLowerCase();
+    }
+
+    private static String normalizedPath(URI u) {
+        String p = u.getPath();
+        if (p == null || p.isEmpty()) {
+            return "/";
+        }
+        return p;
     }
 
     private static String mapperQuote(String s) {
