@@ -534,6 +534,92 @@ Implementation point for explicit field behavior remains the service field parsi
 }
 ```
 
+### Example: service-level `ZMS_INTERN` (internal service)
+
+Raw SADB can still show top-level `"public": true` while `ZMS_INTERN: true` marks the service as internal. In `Munich.php`, **`mappedService.public = !ZMS_INTERN`**, so the normalized service is non-public regardless of the raw `public` flag (see **Public vs Internal** above).
+
+#### Raw SADB snippet (service input)
+
+```json
+{
+  "id": "1065001",
+  "fields": [
+    { "name": "ZMS_DAUER", "value": 15 },
+    { "name": "ZMS_MAX_ANZAHL", "value": 1 },
+    { "name": "ZMS_INTERN", "type": "BOOLEAN", "value": true }
+  ],
+  "public": true
+}
+```
+
+#### Normalized output snippet (`services_de.json`)
+
+```json
+{
+  "id": "1065001",
+  "appointment": {
+    "link": "https://stadt.muenchen.de/.../services/{serviceId}"
+  },
+  "maxQuantity": 1,
+  "duration": 15,
+  "public": false
+}
+```
+
+#### API-facing (`MapperService`)
+
+With default **`showUnpublished=false`**, `MapperService` drops services whose additional data has `public === false`, so this service **does not appear** in public citizen API payloads. It can still be inspected locally via `services_de.json`, `showUnpublished`, or `ACCESS_UNPUBLISHED_ON_DOMAIN` (see **Local/domain override for unpublished data** above).
+
+### Example: relation-level `ZMS_INTERN` (hide one office–service pair)
+
+A location can stay **`public: true`** while a single `extendedServiceReferences` entry sets **`ZMS_INTERN: true`**. The transformer sets **`serviceRef.public = !ZMS_INTERN`** for that reference only, so the service may remain bookable elsewhere but **not** at this office (see **Service-at-location (relation) visibility** above).
+
+Assume service `1063423` is still public in `services_de.json` (no `ZMS_INTERN` on the service itself).
+
+#### Raw SADB snippet (location input, abbreviated)
+
+```json
+{
+  "id": "10502",
+  "public": true,
+  "extendedServiceReferences": [
+    {
+      "refId": "1063423",
+      "public": true,
+      "fields": [{ "name": "ZMS_INTERN", "type": "BOOLEAN", "value": true }]
+    }
+  ]
+}
+```
+
+#### Normalized output snippet (`locations_de.json`, abbreviated)
+
+The embedded office–service reference carries `public: false` even though the location and the raw reference default looked public:
+
+```json
+{
+  "id": "10502",
+  "public": true,
+  "services": [
+    {
+      "service": "1063423",
+      "public": false,
+      "duration": 20,
+      "appointment": {
+        "link": "https://stadt.muenchen.de/.../services/1063423/locations/10502",
+        "slots": "1",
+        "external": false,
+        "allowed": true
+      }
+    }
+  ]
+}
+```
+
+#### API-facing (`MapperService`)
+
+`MapperService` filters relation rows with **`relation->isPublic() === false`** when `showUnpublished` is off, so this **location–service combination** is omitted from public responses even if the service and the office are each published in isolation.
+
 ## SADB Index Proxy (`/sadb-index/`)
 
 Browsers may block cross-origin reads of SADB index hosts.
