@@ -199,6 +199,22 @@ export default {
                 text: "Commit Message Convention",
                 link: "/commit-message-convention",
               },
+              {
+                text: "Code of Conduct",
+                link: "https://github.com/it-at-m/eappointment/blob/main/CODE_OF_CONDUCT.md",
+              },
+              {
+                text: "Contributing",
+                link: "https://github.com/it-at-m/eappointment/blob/main/CONTRIBUTING.md",
+              },
+              {
+                text: "Security",
+                link: "https://github.com/it-at-m/eappointment/blob/main/SECURITY.md",
+              },
+              {
+                text: "License (EUPL)",
+                link: "https://github.com/it-at-m/eappointment/blob/main/LICENSE",
+              },
             ],
           },
           {
