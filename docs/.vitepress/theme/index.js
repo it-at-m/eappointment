@@ -1,6 +1,8 @@
 import DefaultTheme from "vitepress/theme";
+
 import ChangelogEmbed from "./ChangelogEmbed.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
+
 import "./style.css";
 
 export default {
@@ -11,5 +13,5 @@ export default {
       DefaultTheme.enhanceApp(ctx);
     }
     ctx.app.component("ChangelogEmbed", ChangelogEmbed);
-  }
+  },
 };

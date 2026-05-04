@@ -17,7 +17,7 @@ export async function fetchLatestRelease() {
   inflight = (async () => {
     try {
       const res = await fetch(LATEST_API, {
-        headers: { Accept: "application/vnd.github+json" }
+        headers: { Accept: "application/vnd.github+json" },
       });
       if (!res.ok) {
         cached = { tagName: "", tagUrl: "" };

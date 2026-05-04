@@ -5,8 +5,8 @@ These commands wipe **all** containers, volumes, and images managed by that engi
 ## Podman (devcontainer workflow)
 
 ```bash
-podman rm -af && \ 
-podman volume rm -af && \ 
+podman rm -af && \
+podman volume rm -af && \
 podman rmi -af
 ```
 
