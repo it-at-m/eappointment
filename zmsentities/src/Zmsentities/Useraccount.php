@@ -233,21 +233,6 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function testAnyRight(array $requiredRights)
-    {
-        if ($this->hasId()) {
-            if (!$this->hasAnyRight($requiredRights)) {
-                throw new Exception\UserAccountMissingRights(
-                    "Missing any of rights " . htmlspecialchars(implode(',', $requiredRights))
-                );
-            }
-        } else {
-            throw new Exception\UserAccountMissingLogin();
-        }
-
-        return $this;
-    }
-
     public function testPermissions(array $requiredPermissions)
     {
         if (! $this->hasId()) {
@@ -262,7 +247,7 @@ class Useraccount extends Schema\Entity
 
         return $this;
     }
-    
+
     public function testAnyPermission(array $requiredPermissions)
     {
         if (! $this->hasId()) {
