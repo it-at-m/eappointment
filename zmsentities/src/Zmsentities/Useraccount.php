@@ -277,7 +277,7 @@ class Useraccount extends Schema\Entity
 
         return $this;
     }
-    
+
     public function testAnyPermission(array $requiredPermissions)
     {
         if (! $this->hasId()) {
