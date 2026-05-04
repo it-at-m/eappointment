@@ -153,7 +153,7 @@ export default {
       { text: "Open Source", link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html" }
     ],
     sidebar: [
-      { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project History", link: "/project-history" }] },
+      { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project History", link: "/project-history" }, { text: "Changelog", link: "/changelog" }] },
       { text: "Setup and Development", items: [{ text: "Dependency Graph", link: "/dependency-graph" }, { text: "Branching Strategy", link: "/branching-strategy-and-convention" }, { text: "Commit Message Convention", link: "/commit-message-convention" }, { text: "Getting Started", link: "/getting-started" },
         { text: "Quick reset of the local environment", link: "/quick-reset-local-environment" },
         { text: "Getting Started with GitHub Codespaces", link: "/getting-started-with-github-codespaces" },
