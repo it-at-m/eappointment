@@ -4,21 +4,20 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 
 - **GitHub Repository** (manual): [https://github.com/it-at-m/eappointment/](https://github.com/it-at-m/eappointment/)
 
-**Coverage and API HTML** from CI are published on the same host; see [Unit Testing in ZMS](./testing-unit.md), [Unit Test Coverage](./testing-coverage.md), and [API reference](./api-reference.md).
+**Coverage and API HTML** from CI are published on the same host; see [Unit Testing in ZMS](./testing-and-automation/testing-unit.md), [Unit Test Coverage](./testing-and-automation/testing-coverage.md), and [API reference](./operations/api-reference.md).
 
 ## Quick Links
 
-- [Project History](./project-history.md)
-- [Getting Started](./getting-started.md)
-- [Local Database and Cache Operations](./local-database-and-cache-operations.md)
-- [Dependency Upgrade Check](./dependency-upgrade-check.md)
-- [PHP Base Images](./php-base-images.md)
-- [Unit Testing in ZMS](./testing-unit.md)
-- [Unit Test Coverage](./testing-coverage.md)
-- [API reference](./api-reference.md) — ReDoc and diagrams
-- [Operations](./operations.md)
-- [Module READMEs](./module-readmes.md)
-- [DLDB Interface Documentation](./dldb-interface-documentation.md)
+- [Project History](./overview/project-history.md)
+- [DDEV and Devcontainer](./setup-and-development/getting-started/ddev-and-devcontainer.md)
+- [Local Database and Cache Operations](./setup-and-development/local-database-and-cache-operations.md)
+- [Dependency Upgrade Check](./setup-and-development/dependency-upgrade-check.md)
+- [PHP Base Images](./setup-and-development/php-base-images.md)
+- [Unit Testing in ZMS](./testing-and-automation/testing-unit.md)
+- [Unit Test Coverage](./testing-and-automation/testing-coverage.md)
+- [API reference](./operations/api-reference.md) — ReDoc and diagrams
+- [Module READMEs](./reference/module-readmes.md)
+- [DLDB Interface Documentation](./operations/dldb-interface-documentation.md)
 
 ## Repository Scope
 
@@ -35,19 +34,19 @@ It is planned to release the software as open source in the course of 2022/2024.
 
 The ZMS system is intended to manage human waiting queues. It has the following features:
 
-* make appointments via a calender and initiate a process to manage an appointment
-* import requests (services) and providers (locations) from external sources
-* manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
-* manage opening hours including closed days
-* city worker login-system with different access levels
-* ticketprinter support for customers without appointments (authenticated, lockable, timeable)
-* calldisplay support
-* collecting statistics like waiting time or served clients per day
-* emergency call for employees
-* citizen booking system with support for citizen login
-
+- make appointments via a calender and initiate a process to manage an appointment
+- import requests (services) and providers (locations) from external sources
+- manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
+- manage opening hours including closed days
+- city worker login-system with different access levels
+- ticketprinter support for customers without appointments (authenticated, lockable, timeable)
+- calldisplay support
+- collecting statistics like waiting time or served clients per day
+- emergency call for employees
+- citizen booking system with support for citizen login
 
 ## Contact
+
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
 
 Munich Contact: it@M - opensource@muenchen.de

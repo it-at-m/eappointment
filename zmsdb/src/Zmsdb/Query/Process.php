@@ -909,6 +909,13 @@ class Process extends Base implements MappingInterface
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
+        } elseif (
+            $process->status == 'queued'
+            && isset($previousStatus)
+            && in_array($previousStatus, ['called', 'processing'], true)
+        ) {
+            $data['showUpTime'] = null;
+            $data['timeoutTime'] = null;
         }
 
 
@@ -968,8 +975,8 @@ class Process extends Base implements MappingInterface
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
 
-        if (isset($process->queue['callCount']) && $process->queue['callCount']) {
-            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+        if (isset($process->queue['callCount'])) {
+            $data['AnzahlAufrufe'] = (int) $process->queue['callCount'];
         }
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTimeImmutable())
@@ -999,7 +1006,17 @@ class Process extends Base implements MappingInterface
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
-                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
+                && (
+                    $process->queue['callCount'] <= 0
+                    || !empty($process['wasMissed'])
+                    || (
+                        ($previousStatus === 'queued' || $previousStatus === 'confirmed')
+                        && (
+                            !isset($process->queue['callTime'])
+                            || (int) $process->queue['callTime'] === 0
+                        )
+                    )
+                )
             )
             ||
             (

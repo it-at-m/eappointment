@@ -3,9 +3,9 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, watch } from "vue";
-import { useRoute } from "vitepress";
 import mermaid from "mermaid";
+import { useRoute } from "vitepress";
+import { nextTick, onMounted, watch } from "vue";
 
 const route = useRoute();
 
@@ -23,7 +23,7 @@ const renderMermaid = async () => {
 onMounted(async () => {
   mermaid.initialize({
     startOnLoad: false,
-    securityLevel: "loose"
+    securityLevel: "loose",
   });
 
   await renderMermaid();
