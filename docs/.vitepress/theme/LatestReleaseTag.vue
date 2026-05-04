@@ -56,9 +56,20 @@ defineProps({
 });
 =======
 import { ref, onMounted } from "vue";
+import { fetchLatestRelease } from "./latestReleaseFetch.js";
 
+<<<<<<< HEAD
 const LATEST_API = "https://api.github.com/repos/it-at-m/eappointment/releases/latest";
 >>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
+=======
+defineProps({
+  variant: {
+    type: String,
+    required: true,
+    validator: (v) => v === "title" || v === "menu"
+  }
+});
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
 
 const tagName = ref("");
 const tagUrl = ref("");
@@ -70,6 +81,7 @@ const openRelease = () => {
 };
 
 onMounted(async () => {
+<<<<<<< HEAD
 <<<<<<< HEAD
   const data = await fetchLatestRelease();
   tagName.value = data.tagName;
@@ -93,6 +105,11 @@ onMounted(async () => {
     /* ignore: rate limit, offline, ad blockers */
   }
 >>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
+=======
+  const data = await fetchLatestRelease();
+  tagName.value = data.tagName;
+  tagUrl.value = data.tagUrl;
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
 });
 </script>
 
@@ -105,14 +122,19 @@ onMounted(async () => {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .latest-release--title {
 =======
 .latest-release {
 >>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
+=======
+.latest-release--title {
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
   margin-top: -2px;
   margin-left: 0;
   padding-left: 0;
   border-left: none;
+<<<<<<< HEAD
 <<<<<<< HEAD
   width: 100%;
   display: flex;
@@ -145,11 +167,39 @@ onMounted(async () => {
   font-size: 11px;
   font-weight: 500;
   line-height: 1.2;
+=======
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.latest-release--title .latest-release__label {
+  flex-shrink: 0;
+}
+
+.latest-release__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+  line-height: 1.3;
+}
+
+.latest-release--menu .latest-release__label {
+  flex-shrink: 0;
 }
 
 .latest-release__link {
+<<<<<<< HEAD
 >>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
+=======
+  font-size: 11px;
+  font-weight: 500;
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
   color: var(--vp-c-brand-1);
   cursor: pointer;
   text-decoration: none;
@@ -166,6 +216,9 @@ onMounted(async () => {
   border-radius: 2px;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
 
 .latest-release--menu {
   margin-top: 0;
@@ -191,6 +244,9 @@ onMounted(async () => {
 .latest-release__menu-link:hover {
   text-decoration: underline;
 }
+<<<<<<< HEAD
 =======
 >>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
+=======
+>>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
 </style>
