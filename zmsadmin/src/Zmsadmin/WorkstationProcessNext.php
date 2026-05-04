@@ -18,10 +18,10 @@ class WorkstationProcessNext extends BaseController
 
     public function timeToUnix($timeValue): ?int
     {
-        if ($timeString === null) {
+        if ($timeValue === null) {
             return null;
         }
-        $timeString = trim((string) $timeString);
+        $timeString = trim((string) $timeValue);
         if ($timeString === '') {
             return null;
         }
