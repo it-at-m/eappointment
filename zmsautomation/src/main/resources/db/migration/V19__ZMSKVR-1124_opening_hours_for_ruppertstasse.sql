@@ -18,9 +18,9 @@
 SET @rounded_start :=
   SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
 
--- desired end = +3 hours
+-- desired end = +6 hours
 SET @desired_end :=
-  ADDTIME(@rounded_start, '03:00:00');
+  ADDTIME(@rounded_start, '06:00:00');
 
 -- latest allowed end so slots still fit
 SET @rounded_end :=

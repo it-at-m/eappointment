@@ -1,42 +1,66 @@
 # Getting Started
 
-## Using DDEV
+## Start local stack
 
 ```bash
+# DDEV
 ddev start
+# Devcontainer (Podman)
+devcontainer up --workspace-folder .
+```
+
+`ddev start` or `devcontainer up --workspace-folder .` creates and starts the local container setup used for development and testing.
+
+Both commands also auto-detect your host architecture (`amd64` vs `arm64`) and pull the matching local PHP base image tag for `zms-web`.
+
+To wipe Podman or Docker completely on the host and recreate the stack, see [Quick reset of the local environment](/quick-reset-local-environment).
+
+## Containers and local endpoints
+
+The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
+
+- `zms-web` (pre-built local PHP base image), app endpoint: `http://localhost:8090`
+- `zms-refarch-gateway` (RefArch API gateway image), endpoint: `http://localhost:8084`
+- `zms-keycloak` (same Keycloak image family as RefArch setup), endpoint: `http://localhost:8080/auth`
+- `zms-db` (MariaDB), DB port: `3306`
+- `zms-phpmyadmin`, endpoint: `http://localhost:8036`
+- `zms-citizenview`, Vite hot reload endpoint: `http://localhost:8082`
+
+## Automatic setup on startup
+
+During local startup, the environment also prepares the main development flow:
+
+- runs `composer install`, `npm install`, and `npm build` in `zms-web`
+- sets up and launches `zmscitizenview` in a local container `zms-citizenview` with `npm install` and `npm run dev` dependencies and starts hot reload on `localhost:8082`
+- installs browser automation tooling in `zms-web` for local `zmsautomation` runs (Firefox/Xvfb plus WebDriver support for Chrome/Chromium, Edge, and Firefox via `chromedriver`, `msedgedriver`, and `geckodriver`)
+
+This means `ddev start` and `devcontainer up --workspace-folder .` already include the install/build/bootstrap flow, including `./cli db full-setup`.
+
+You can still rerun module dependency/build commands at any time:
+
+```bash
+# DDEV
 ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
-```
 
-## Using Podman and Devcontainer
-
-```bash
-devcontainer up --workspace-folder .
+# Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
 podman exec -it zms-web bash -lc "./cli modules loop npm install"
 podman exec -it zms-web bash -lc "./cli modules loop npm build"
 ```
 
-## Keycloak Host Mapping
+## Database initialization (`./cli db full-setup`)
 
-Add `keycloak` to your hosts file:
+The local setup runs `./cli db full-setup`, which:
 
-```bash
-echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
-```
+- imports the base DB from `.resources/zms.sql`
+- imports DLDB offices/services via hourly cronjob flow
+- imports production-like test data from `zmsautomation` Flyway migrations
+- runs database migrations
+- runs the minutly cronjob to generate opening-hours-related test data
 
-Then restart containers:
-
-```bash
-podman restart zms-keycloak
-# or
-ddev restart
-```
-
-## Database Setup
-
-For a complete local setup:
+You can rerun full setup at any time:
 
 ```bash
 # DDEV
@@ -46,4 +70,4 @@ ddev exec ./cli db full-setup
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
 
-Use this together with the install/build commands shown above.
+For Keycloak host mapping and Linux Podman notes, see [Local Keycloak Setup](./local-keycloak-setup.md).
