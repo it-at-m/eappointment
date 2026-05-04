@@ -215,7 +215,6 @@ class UserAccountTest extends Base
         foreach (array_keys($scopeUser->rights) as $rightName) {
             $scopeUser->rights[$rightName] = false;
         }
-        $scopeUser->roles = [];
         $scopeUser->rights['scope'] = true;
         $createdScopeUser = $query->writeEntity($scopeUser);
         $this->assertIsArray($createdScopeUser->roles);
@@ -228,7 +227,6 @@ class UserAccountTest extends Base
         foreach (array_keys($basicUser->rights) as $rightName) {
             $basicUser->rights[$rightName] = false;
         }
-        $basicUser->roles = [];
         $basicUser->rights['basic'] = true;
         $createdBasicUser = $query->writeEntity($basicUser);
         $this->assertIsArray($createdBasicUser->roles);
