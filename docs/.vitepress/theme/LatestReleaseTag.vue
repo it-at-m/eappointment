@@ -42,6 +42,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { onMounted, ref } from "vue";
 
 import { fetchLatestRelease } from "./latestReleaseFetch.js";
@@ -53,6 +54,11 @@ defineProps({
     validator: (v) => v === "title" || v === "menu",
   },
 });
+=======
+import { ref, onMounted } from "vue";
+
+const LATEST_API = "https://api.github.com/repos/it-at-m/eappointment/releases/latest";
+>>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
 
 const tagName = ref("");
 const tagUrl = ref("");
@@ -64,9 +70,29 @@ const openRelease = () => {
 };
 
 onMounted(async () => {
+<<<<<<< HEAD
   const data = await fetchLatestRelease();
   tagName.value = data.tagName;
   tagUrl.value = data.tagUrl;
+=======
+  try {
+    const res = await fetch(LATEST_API, {
+      headers: { Accept: "application/vnd.github+json" }
+    });
+    if (!res.ok) {
+      return;
+    }
+    const data = await res.json();
+    const name = data.tag_name;
+    const url = data.html_url;
+    if (typeof name === "string" && name && typeof url === "string" && url) {
+      tagName.value = name;
+      tagUrl.value = url;
+    }
+  } catch {
+    /* ignore: rate limit, offline, ad blockers */
+  }
+>>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
 });
 </script>
 
@@ -78,11 +104,16 @@ onMounted(async () => {
   overflow: hidden;
 }
 
+<<<<<<< HEAD
 .latest-release--title {
+=======
+.latest-release {
+>>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
   margin-top: -2px;
   margin-left: 0;
   padding-left: 0;
   border-left: none;
+<<<<<<< HEAD
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -110,6 +141,15 @@ onMounted(async () => {
 .latest-release__link {
   font-size: 11px;
   font-weight: 500;
+=======
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  width: 100%;
+}
+
+.latest-release__link {
+>>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
   color: var(--vp-c-brand-1);
   cursor: pointer;
   text-decoration: none;
@@ -125,6 +165,7 @@ onMounted(async () => {
   outline-offset: 2px;
   border-radius: 2px;
 }
+<<<<<<< HEAD
 
 .latest-release--menu {
   margin-top: 0;
@@ -150,4 +191,6 @@ onMounted(async () => {
 .latest-release__menu-link:hover {
   text-decoration: underline;
 }
+=======
+>>>>>>> f1b63ae05 (docs(ZMSKVR): add Releases nav and dynamic latest tag)
 </style>
