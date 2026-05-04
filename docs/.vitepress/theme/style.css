@@ -1,18 +1,60 @@
-/* Allow title row to wrap so latest-release can sit on a second line under the site name */
-.VPNavBarTitle .title {
-  flex-wrap: wrap;
-  row-gap: 2px;
-  align-content: center;
-  height: auto;
-  min-height: var(--vp-nav-height);
-  padding-top: 6px;
-  padding-bottom: 4px;
-  box-sizing: border-box;
+/* Latest release under title: desktop/tablet only so mobile nav height stays single-line for hamburger alignment */
+@media (min-width: 768px) {
+  .VPNavBarTitle .title {
+    flex-wrap: wrap;
+    row-gap: 2px;
+    align-content: center;
+    height: auto;
+    min-height: var(--vp-nav-height);
+    padding-top: 6px;
+    padding-bottom: 4px;
+    box-sizing: border-box;
+  }
+
+  .VPNavBar .container {
+    height: auto;
+    min-height: var(--vp-nav-height);
+  }
 }
 
-.VPNavBar .container {
-  height: auto;
-  min-height: var(--vp-nav-height);
+/* Hide desktop title-row release on small screens (release is shown in VPNavScreen instead) */
+@media (max-width: 767px) {
+  .latest-release--title,
+  .title-after-break {
+    display: none !important;
+  }
+
+  /* Re-order drawer: … Appearance → Latest release → Social (slot is last in DOM) */
+  .VPNavScreen .container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "menu"
+      "translations"
+      "appearance"
+      "latest"
+      "social";
+  }
+
+  .VPNavScreen .container > .menu {
+    grid-area: menu;
+  }
+
+  .VPNavScreen .container > .translations {
+    grid-area: translations;
+  }
+
+  .VPNavScreen .container > .appearance {
+    grid-area: appearance;
+  }
+
+  .VPNavScreen .container > .social-links {
+    grid-area: social;
+  }
+
+  .VPNavScreen .container > .latest-release-screen-slot {
+    grid-area: latest;
+  }
 }
 
 :root {
