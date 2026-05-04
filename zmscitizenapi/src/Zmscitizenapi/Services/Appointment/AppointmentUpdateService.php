@@ -9,6 +9,7 @@ use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
+use BO\Zmsentities\Helper\ProcessPlainText;
 
 class AppointmentUpdateService
 {
@@ -81,8 +82,12 @@ class AppointmentUpdateService
         $process->familyName = $data->familyName ?? $process->familyName ?? null;
         $process->email = $data->email ?? $process->email ?? null;
         $process->telephone = $data->telephone ?? $process->telephone ?? null;
-        $process->customTextfield = $data->customTextfield ?? $process->customTextfield ?? null;
-        $process->customTextfield2 = $data->customTextfield2 ?? $process->customTextfield2 ?? null;
+        if ($data->customTextfield !== null) {
+            $process->customTextfield = ProcessPlainText::normalize($data->customTextfield);
+        }
+        if ($data->customTextfield2 !== null) {
+            $process->customTextfield2 = ProcessPlainText::normalize($data->customTextfield2);
+        }
         return $process;
     }
 
