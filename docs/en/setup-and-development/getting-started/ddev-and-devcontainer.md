@@ -20,6 +20,8 @@ To wipe Podman or Docker completely on the host and recreate the stack, see [Qui
 
 On **macOS**, see [Podman and Dev Containers on macOS](/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers) and [Local HTTPS SSL for DDEV (macOS)](/setup-and-development/getting-started/macos-local-configuration/local-https-ddev).
 
+On **macOS**, see [Podman and Dev Containers on macOS](/getting-started-macos-podman-devcontainer) and [Local HTTPS SSL for DDEV (macOS)](/getting-started-macos-ddev-https).
+
 ## Containers and local endpoints
 
 The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
