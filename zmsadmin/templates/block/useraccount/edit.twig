@@ -4,7 +4,6 @@
 {% set userAccount = userAccount|default({}) %}
 {% set userAccountDepartments = userAccount.departments|default([]) %}
 {% set userAccountRights = userAccount.rights|default({}) %}
-{% set userAccountRoles = userAccount.roles|default([]) %}
     
 {% set readonly = 1 %}
 {% if action == "add" %}
@@ -240,88 +239,6 @@
             ]) %}
         {% endif %}
 
-        {% set roleCheckboxes = [
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Basis)",
-                    "name": "roles[]",
-                    "value": "agent_basic",
-                    "checked": "agent_basic" in userAccountRoles,
-                    "id": "check_role_agent_basic"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Standard)",
-                    "name": "roles[]",
-                    "value": "agent_queue",
-                    "checked": ("agent_queue" in userAccountRoles) or userAccountRights.basic|default(0),
-                    "id": "check_role_agent_queue"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Erweitert)",
-                    "name": "roles[]",
-                    "value": "agent_queue_plus",
-                    "checked": "agent_queue_plus" in userAccountRoles,
-                    "id": "check_role_agent_queue_plus"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Controlling",
-                    "name": "roles[]",
-                    "value": "reporting_viewer",
-                    "checked": ("reporting_viewer" in userAccountRoles) or userAccountRights.audit|default(0),
-                    "id": "check_role_reporting_viewer"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Terminadministration",
-                    "name": "roles[]",
-                    "value": "appointment_admin",
-                    "checked": ("appointment_admin" in userAccountRoles) or userAccountRights.scope|default(0),
-                    "id": "check_role_appointment_admin"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Benutzerverwaltung",
-                    "name": "roles[]",
-                    "value": "user_admin",
-                    "checked": ("user_admin" in userAccountRoles) or userAccountRights.cluster|default(0),
-                    "id": "check_role_user_admin"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Innenrevision",
-                    "name": "roles[]",
-                    "value": "audit_viewer",
-                    "checked": ("audit_viewer" in userAccountRoles) or userAccountRights.audit|default(0),
-                    "id": "check_role_audit_viewer"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Technische Administration",
-                    "name": "roles[]",
-                    "value": "system_admin",
-                    "checked": ("system_admin" in userAccountRoles) or userAccountRights.superuser|default(0),
-                    "id": "check_role_system_admin"
-                }
-            }
-        ] %}
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>
@@ -330,13 +247,6 @@
         {"groupTag": "fieldset", "legend": "Berechtigungen", "controlgroupclass": "panel--heavy"},
         rightsCheckboxes
     ) }}
-
-    {% if workstation.useraccount.rights.superuser %}
-    {{ formgroup(
-        {"groupTag": "fieldset", "legend": "Rollen", "controlgroupclass": "panel--heavy"},
-        roleCheckboxes
-    ) }}
-    {% endif %}
 
     <div class="form-actions">
     {% set label = "Nutzer anlegen" %}
