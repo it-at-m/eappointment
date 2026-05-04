@@ -225,6 +225,20 @@ export default {
                 text: "Running Cronjobs Locally",
                 link: "/running-cronjobs-locally",
               },
+              {
+                text: "macOS local configuration",
+                collapsed: false,
+                items: [
+                  {
+                    text: "Podman and Dev Containers",
+                    link: "/getting-started-macos-podman-devcontainer",
+                  },
+                  {
+                    text: "Local HTTPS SSL (DDEV)",
+                    link: "/getting-started-macos-ddev-https",
+                  },
+                ],
+              },
             ],
           },
           { text: "Local Keycloak Setup", link: "/local-keycloak-setup" },
