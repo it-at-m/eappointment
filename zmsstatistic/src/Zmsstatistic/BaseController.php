@@ -22,11 +22,11 @@ abstract class BaseController extends Helper\Access
             && $this->workstation->getUseraccount()->hasPermissions(['statistic']);
     }
 
-    protected function getAdminWorkstationSelectUrl($request): string
+    protected function getAdminBaseUrl($request): string
     {
         $basePath = method_exists($request, 'getBasePath') ? (string) $request->getBasePath() : '';
         $adminBasePath = preg_replace('#/statistic/?$#', '/admin', $basePath);
-        return rtrim((string) $adminBasePath, '/') . '/workstation/select/';
+        return rtrim((string) $adminBasePath, '/') . '/';
     }
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
@@ -35,7 +35,7 @@ abstract class BaseController extends Helper\Access
         if ($this->withAccess) {
             $this->initAccessRights($request);
             if (!$this->hasStatisticPermission()) {
-                return $response->withRedirect($this->getAdminWorkstationSelectUrl($request));
+                return $response->withRedirect($this->getAdminBaseUrl($request));
             }
         }
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
