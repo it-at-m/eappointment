@@ -148,6 +148,7 @@ export default {
       { text: "Overview", link: "/" },
       { text: "API reference", link: "/api-reference" },
       { text: "Testing", link: "/testing-unit" },
+      { text: "Releases", link: "https://github.com/it-at-m/eappointment/releases" },
       { text: "GitHub Repository", link: "https://github.com/it-at-m/eappointment/" },
       { text: "Open Source", link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html" }
     ],
