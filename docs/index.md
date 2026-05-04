@@ -9,14 +9,13 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 ## Quick Links
 
 - [Project History](./project-history.md)
-- [Getting Started](./getting-started.md)
+- [DDEV and Devcontainer](./getting-started.md)
 - [Local Database and Cache Operations](./local-database-and-cache-operations.md)
 - [Dependency Upgrade Check](./dependency-upgrade-check.md)
 - [PHP Base Images](./php-base-images.md)
 - [Unit Testing in ZMS](./testing-unit.md)
 - [Unit Test Coverage](./testing-coverage.md)
 - [API reference](./api-reference.md) — ReDoc and diagrams
-- [Operations](./operations.md)
 - [Module READMEs](./module-readmes.md)
 - [DLDB Interface Documentation](./dldb-interface-documentation.md)
 
