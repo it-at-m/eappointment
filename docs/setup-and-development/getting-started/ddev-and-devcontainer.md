@@ -5,6 +5,8 @@
 ```bash
 # DDEV
 ddev start
+```
+```bash
 # Devcontainer (Podman)
 devcontainer up --workspace-folder .
 ```
@@ -45,7 +47,8 @@ You can still rerun module dependency/build commands at any time:
 ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
-
+```
+```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
 podman exec -it zms-web bash -lc "./cli modules loop npm install"
@@ -67,7 +70,8 @@ You can rerun full setup at any time:
 ```bash
 # DDEV
 ddev exec ./cli db full-setup
-
+```
+```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
