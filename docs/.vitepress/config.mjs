@@ -154,6 +154,7 @@ export default {
     sidebar: [
       { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project History", link: "/project-history" }] },
       { text: "Setup and Development", items: [{ text: "Dependency Graph", link: "/dependency-graph" }, { text: "Branching Strategy", link: "/branching-strategy-and-convention" }, { text: "Commit Message Convention", link: "/commit-message-convention" }, { text: "Getting Started", link: "/getting-started" },
+        { text: "Quick reset of the local environment", link: "/quick-reset-local-environment" },
         { text: "Getting Started with GitHub Codespaces", link: "/getting-started-with-github-codespaces" },
         { text: "Getting Started with docs", link: "/getting-started-with-docs" },
         { text: "Local Keycloak Setup", link: "/local-keycloak-setup" }, { text: "Running Cronjobs Locally", link: "/running-cronjobs-locally" }, { text: "Code Formatting", link: "/code-formatting" }, { text: "Local Database and Cache Operations", link: "/local-database-and-cache-operations" }, { text: "Dependency Upgrade Check", link: "/dependency-upgrade-check" }, { text: "PHP Base Images", link: "/php-base-images" }] },
