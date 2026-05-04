@@ -41,11 +41,12 @@ devcontainer up --workspace-folder .
 # DDEV
 ddev restart
 ```
+
 Verify:
+
 ```bash
 ping keycloak
 ```
-
 
 ## Podman (Linux) note
 
