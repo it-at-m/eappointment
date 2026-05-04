@@ -1,0 +1,91 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% from 'element/helper/form.twig' import formgroup, formbutton %}
+
+{% block headline %}
+    {% if formAction == 'add' %}
+        {{ headline1("Rolle hinzufügen") }}
+    {% else %}
+        {{ headline1("Rolle bearbeiten (ID " ~ roleId ~ ")") }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{{ parent() }}
+<div class="grid">
+    <div class="grid__item four-sixths">
+        <form action="./" method="post" class="form--base">
+            <div class="fieldset panel--heavy">
+                {% if formAction == 'edit' %}
+                <p class="form-hint"><strong>ID:</strong> {{ roleId }}</p>
+                {% endif %}
+
+                {{ formgroup(
+                    {
+                        "label": "Name (technisch, Englisch)",
+                        "description": "Eindeutiger Speichername, nur Kleinbuchstaben, Ziffern und Unterstrich (z. B. audit_viewer).",
+                        "required": true,
+                        "errors": (exception and exception.data.name.messages is defined) ? exception.data.name.messages : []
+                    },
+                    [{
+                        "type":"input",
+                        "parameter": {
+                            "name": "name",
+                            "value": role.name|default(''),
+                            "maxlength": 100,
+                            "readonly": false
+                        }
+                    }]
+                ) }}
+
+                {{ formgroup(
+                    {
+                        "label": "Anzeigename",
+                        "description": "Bezeichnung für die Administration (wird in der Datenbank als Beschreibung gespeichert).",
+                        "errors": (exception and exception.data.description.messages is defined) ? exception.data.description.messages : []
+                    },
+                    [{
+                        "type":"input",
+                        "parameter": {
+                            "name": "description",
+                            "value": role.description|default(''),
+                            "maxlength": 500
+                        }
+                    }]
+                ) }}
+
+                <fieldset class="fieldset">
+                    <legend>Berechtigungen</legend>
+                    <p class="form-hint">Wählen Sie die zugehörigen Berechtigungen aus.</p>
+                    {% if exception and exception.data.permissions.messages is defined %}
+                        <ul class="list--clean color-red">
+                            {% for message in exception.data.permissions.messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <div class="form-check-list" style="max-height: 28rem; overflow: auto; border: 1px solid #ddd; padding: 0.75rem;">
+                        {% set selected = role.permissions|default([]) %}
+                        {% for permission in permissionList %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ permission.name }}" id="perm_{{ permission.name }}"{% for s in selected %}{% if s == permission.name %} checked="checked"{% endif %}{% endfor %}>
+                                <label class="form-check-label" for="perm_{{ permission.name }}">
+                                    <strong>{{ permission.name }}</strong>
+                                    {% if permission.description %}
+                                        <br><span class="form-hint">{{ permission.description }}</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    {{ formbutton({ "type":"save button--positive", "label": formAction == 'add' ? 'Rolle anlegen' : 'Änderungen speichern' }) }}
+                    <a class="button btn" href="{{ urlGet('roles', {}, {}) }}">Zurück zur Übersicht</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -240,88 +240,22 @@
             ]) %}
         {% endif %}
 
-        {% set roleCheckboxes = [
-            {
-                "type":"checkbox",
+        {# Rollen aus der Datenbank (user_role); unabhängig von den Legacy-Berechtigungen oben #}
+        {% set roleCheckboxes = [] %}
+        {% for role in roleList|default([]) %}
+            {% set checked = role.name in userAccountRoles %}
+            {% set roleLabel = (role.description|default('')|trim) ? role.description : role.name %}
+            {% set roleCheckboxes = roleCheckboxes|merge([{
+                "type": "checkbox",
                 "parameter": {
-                    "label": "Sachbearbeitung (Basis)",
+                    "label": roleLabel,
                     "name": "roles[]",
-                    "value": "agent_basic",
-                    "checked": "agent_basic" in userAccountRoles,
-                    "id": "check_role_agent_basic"
+                    "value": role.name,
+                    "checked": checked ? 1 : 0,
+                    "id": "check_role_" ~ role.id
                 }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Standard)",
-                    "name": "roles[]",
-                    "value": "agent_queue",
-                    "checked": ("agent_queue" in userAccountRoles) or userAccountRights.basic|default(0),
-                    "id": "check_role_agent_queue"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Sachbearbeitung (Erweitert)",
-                    "name": "roles[]",
-                    "value": "agent_queue_plus",
-                    "checked": "agent_queue_plus" in userAccountRoles,
-                    "id": "check_role_agent_queue_plus"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Controlling",
-                    "name": "roles[]",
-                    "value": "reporting_viewer",
-                    "checked": ("reporting_viewer" in userAccountRoles) or userAccountRights.audit|default(0),
-                    "id": "check_role_reporting_viewer"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Terminadministration",
-                    "name": "roles[]",
-                    "value": "appointment_admin",
-                    "checked": ("appointment_admin" in userAccountRoles) or userAccountRights.scope|default(0),
-                    "id": "check_role_appointment_admin"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Benutzerverwaltung",
-                    "name": "roles[]",
-                    "value": "user_admin",
-                    "checked": ("user_admin" in userAccountRoles) or userAccountRights.cluster|default(0),
-                    "id": "check_role_user_admin"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Innenrevision",
-                    "name": "roles[]",
-                    "value": "audit_viewer",
-                    "checked": ("audit_viewer" in userAccountRoles) or userAccountRights.audit|default(0),
-                    "id": "check_role_audit_viewer"
-                }
-            },
-            {
-                "type":"checkbox",
-                "parameter": {
-                    "label": "Technische Administration",
-                    "name": "roles[]",
-                    "value": "system_admin",
-                    "checked": ("system_admin" in userAccountRoles) or userAccountRights.superuser|default(0),
-                    "id": "check_role_system_admin"
-                }
-            }
-        ] %}
+            }]) %}
+        {% endfor %}
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>

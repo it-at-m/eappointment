@@ -1,11 +1,9 @@
 <?php
+
 // @codingStandardsIgnoreFile
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
 
 /* ---------------------------------------------------------------------------
  * html, basic routes
@@ -1114,44 +1112,44 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\MailTemplatesGet'
 )
     ->setName("MailTemplatesGet");
-    
+
 
 \App::$slim->post(
     '/mailtemplates/',
     '\BO\Zmsapi\MailTemplatesUpdate'
 )
     ->setName("MailTemplatesUpdate");
-        
+
 \App::$slim->post(
-        '/mailtemplates-create-customization/',
-        '\BO\Zmsapi\MailTemplatesCreateCustomization'
-    )
+    '/mailtemplates-create-customization/',
+    '\BO\Zmsapi\MailTemplatesCreateCustomization'
+)
         ->setName("MailTemplatesCreateCustomization");
 
 \App::$slim->get(
-        '/custom-mailtemplates/{providerId}/',
-        '\BO\Zmsapi\MailCustomTemplatesGet'
-    )
+    '/custom-mailtemplates/{providerId}/',
+    '\BO\Zmsapi\MailCustomTemplatesGet'
+)
         ->setName("MailCustomTemplatesGet");
 
 \App::$slim->get(
-        '/merged-mailtemplates/{providerId}/',
-        '\BO\Zmsapi\MailMergedTemplatesGet'
-    )
+    '/merged-mailtemplates/{providerId}/',
+    '\BO\Zmsapi\MailMergedTemplatesGet'
+)
         ->setName("MailMergedTemplatesGet");
-            
+
 
 \App::$slim->delete(
-        '/mailtemplates/{templateId}/',
-        '\BO\Zmsapi\MailTemplatesDelete'
-    )
+    '/mailtemplates/{templateId}/',
+    '\BO\Zmsapi\MailTemplatesDelete'
+)
         ->setName("MailTemplatesDelete");
-        
+
 
 \App::$slim->get(
-        '/preview-mailtemplates/{mailStatus}/{providerId}/',
-        '\BO\Zmsapi\MailTemplatesPreview'
-    )
+    '/preview-mailtemplates/{mailStatus}/{providerId}/',
+    '\BO\Zmsapi\MailTemplatesPreview'
+)
         ->setName("MailTemplatesPreview");
 
 
@@ -1642,6 +1640,23 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
     ->setName("UseraccountListByRoleAndDepartments");
+
+\App::$slim->get('/useraccount/{loginname}/roles/', '\BO\Zmsapi\UseraccountRolesGet');
+
+\App::$slim->get('/permissions/', '\BO\Zmsapi\PermissionListGet');
+
+\App::$slim->post('/roles/', '\BO\Zmsapi\RoleAdd');
+
+// WORKS
+\App::$slim->get('/roles/', '\BO\Zmsapi\RoleListGet');
+
+// WORKS
+\App::$slim->get('/roles/{id:\d{1,11}}/', '\BO\Zmsapi\RoleGet');
+
+// WORKS
+\App::$slim->delete('/roles/{id:\d{1,11}}/', '\BO\Zmsapi\RoleDelete');
+
+\App::$slim->put('/roles/{id:\d{1,11}}/', '\BO\Zmsapi\RoleUpdate');
 
 /**
  *  @swagger
@@ -2382,7 +2397,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("OrganisationGet");
 
-    /**
+/**
  *  @swagger
  *  "/organisation/{id}/owner/":
  *      get:
@@ -2778,7 +2793,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessUpdate");
 
-    /**
+/**
  *  @swagger
  *  "/process/{id}/{authKey}/preconfirmation/mail/":
  *      post:
@@ -3267,7 +3282,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessReserve");
 
-    /**
+/**
  *  @swagger
  *  "/process/status/preconfirmed/":
  *      post:
@@ -3615,7 +3630,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ScopeListByProvider");
 
-    /**
+/**
  *  @swagger
  *  "/request/{source}/{id}/scopes/":
  *      get:
@@ -4530,7 +4545,7 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ProcessListSummaryMail'
 )
     ->setName("ProcessListSummaryMail");
-    
+
 /**
  *  @swagger
  *  "/scope/{id}/emergency/":

@@ -53,7 +53,7 @@ class SourceEdit extends BaseController
             $result = $this->writeUpdatedEntity($input);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect('sourceEdit', ['name' => $result->getSource()], [
-                    'success' => 'source_saved'
+                    'success' => 'source_saved',
                 ]);
             }
         }
@@ -61,7 +61,7 @@ class SourceEdit extends BaseController
         return \BO\Slim\Render::withHtml(
             $response,
             'page/sourceedit.twig',
-            array(
+            [
                 'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
                 'workstation' => $workstation,
@@ -70,8 +70,8 @@ class SourceEdit extends BaseController
                 'parentRequests' => $parentRequests,
                 'requestVariants' => $requestVariants,
                 'success' => $success,
-                'exception' => (isset($result)) ? $result : null
-            )
+                'exception' => (isset($result)) ? $result : null,
+            ]
         );
     }
 

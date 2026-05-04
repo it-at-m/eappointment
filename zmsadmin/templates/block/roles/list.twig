@@ -1,0 +1,82 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'roles-list board--spaceless', 'messages': 'hide'} %}
+    {% from 'element/helper/form.twig' import custombutton %}
+
+    {% block board_title %}
+        Rollen und Berechtigungen
+    {% endblock %}
+
+    {% block board_body %}
+        {% set roleRows = roleList|default([]) %}
+        <div class="table-responsive-wrapper">
+            <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    {{ custombutton({ "type":"new", "target": urlGet("roleAdd", {}, {}), "label":'<i class="fa fa-plus color-positive" aria-hidden="true"></i> neue Rolle' }) }}
+                </div>
+                <div>
+                    {% if roleRows|length == 1 %}({{ roleRows|length }} Rolle){% else %}({{ roleRows|length }} Rollen){% endif %}
+                </div>
+            </div>
+            {% if roleRows|length == 0 %}
+                <div class="message message--info" role="alert">
+                    <p>Es sind noch keine Rollen vorhanden.</p>
+                </div>
+            {% else %}
+                <table class="table--base">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name (technisch)</th>
+                            <th>Anzeigename</th>
+                            <th>Berechtigungen</th>
+                            <th>Nutzer*innen</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for role in roleRows %}
+                        <tr>
+                            <td>{{ role.id }}</td>
+                            <td><a href="{{ urlGet('roleEdit', {'id': role.id}, {}) }}">{{ role.name }}</a></td>
+                            <td>{% if role.description %}{{ role.description }}{% else %}—{% endif %}</td>
+                            <td>{{ role.permissions|default([])|join(', ') }}</td>
+                            <td>{{ role.assignedUserCount|default(0) }}</td>
+                            <td>
+                                {{ custombutton({ 
+                                    "type": "edit", 
+                                    "class": "link", 
+                                    "target": urlGet('roleEdit', {'id': role.id}, {}), 
+                                    "label": '<i class="fas fa-edit" aria-hidden="true"></i>' 
+                                }) }}
+                                {{ custombutton({ 
+                                    "type": "delete", 
+                                    "class": "link", 
+                                    "target": urlGet('roleDelete', {'id': role.id}, {}), 
+                                    "label": '<i class="fas fa-trash" aria-hidden="true"></i>', 
+                                    "attributes": {
+                                        "data-assigned-users": role.assignedUserCount|default(0),
+                                        "onclick": "return window.zmsConfirmRoleDelete(this);"
+                                    }
+                                }) }}
+                           
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+        <script type="text/javascript">
+        window.zmsConfirmRoleDelete = function (el) {
+            var n = parseInt(el.getAttribute('data-assigned-users') || '0', 10);
+            if (n > 0) {
+                if (!window.confirm('Achtung: Diese Rolle ist derzeit ' + n + ' Nutzer*in zugeordnet. Wenn Sie die Rolle löschen, verlieren diese Nutzer*innen diese Rolle. Fortfahren?')) {
+                    return false;
+                }
+            }
+            return window.confirm('Soll diese Rolle wirklich endgültig gelöscht werden?');
+        };
+        </script>
+    {% endblock %}
+
+    {% block board_footer %}{% endblock %}
+{% endembed %}

@@ -706,12 +706,33 @@ class Useraccount extends Base
             return [];
         }
 
-        $roles = array_values(array_unique(array_filter($entity->roles, function ($roleName) {
-            return is_string($roleName)
-                && in_array($roleName, self::ALLOWED_ROLE_NAMES, true);
+        $validNames = $this->readValidRoleNameLookup();
+        $roles = array_values(array_unique(array_filter($entity->roles, function ($roleName) use ($validNames) {
+            return is_string($roleName) && isset($validNames[$roleName]);
         })));
 
         return $roles;
+    }
+
+    /**
+     * @return array<string, true> role.name => true for every row in role table (fallback: legacy static list)
+     */
+    protected function readValidRoleNameLookup(): array
+    {
+        try {
+            $lookup = [];
+            foreach ((new Role())->readAllRoles('ASC', 0) as $roleEntity) {
+                if (isset($roleEntity['name']) && is_string($roleEntity['name']) && $roleEntity['name'] !== '') {
+                    $lookup[$roleEntity['name']] = true;
+                }
+            }
+            if ($lookup !== []) {
+                return $lookup;
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return array_fill_keys(self::ALLOWED_ROLE_NAMES, true);
     }
 
     protected function replaceUserRoles(int $userId, array $roleNames): void
@@ -735,6 +756,21 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
+
+        if ($entity->offsetExists('roles')) {
+            try {
+                $userId = (int) $this->readEntityIdByLoginName($loginName);
+                $roleNames = $this->extractRequestedRoleNames($entity);
+                $this->replaceUserRoles($userId, $roleNames);
+            } catch (\Throwable $e) {
+                if (App::$log) {
+                    App::$log->warning('user_role update on useraccount save failed', [
+                        'login' => $loginName,
+                        'message' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
 
         $this->removeCache($entity, $previousDepartmentIds, $loginName);
 

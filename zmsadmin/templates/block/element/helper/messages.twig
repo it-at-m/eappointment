@@ -207,6 +207,24 @@
 	        {{ block('success_end') }}
     	{% endblock %}
 
+		{% block role_deleted %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich entfernt.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
+		{% block role_updated %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich aktualisiert.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
+		{% block role_added %}
+	    	{{ block('success_start') }}
+	        	Die Rolle wurde {{ timeString }} erfolgreich angelegt.
+	        {{ block('success_end') }}
+    	{% endblock %}
+
 		{% block dayoff_saved %}
 	    	{{ block('success_start') }}
 	        	Feiertage wurden {{ timeString }} erfolgreich aktualisiert.

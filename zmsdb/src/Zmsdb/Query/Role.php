@@ -7,7 +7,7 @@ class Role extends Base implements MappingInterface
     /**
      * @var string TABLE mysql table reference
      */
-    const TABLE = 'role';
+    public const TABLE = 'role';
 
     public function getEntityMapping()
     {
@@ -21,6 +21,9 @@ class Role extends Base implements MappingInterface
                 . 'JOIN permission p ON p.id = rp.permission_id '
                 . 'WHERE rp.role_id = role.id)'
             ),
+            'assignedUserCount' => self::expression(
+                '(SELECT COUNT(DISTINCT ur.user_id) FROM user_role ur WHERE ur.role_id = role.id)'
+            ),
         ];
     }
 
@@ -31,6 +34,10 @@ class Role extends Base implements MappingInterface
         $data[$permissionsKey] = ($rawPermissions === null || $rawPermissions === '')
             ? []
             : explode(',', (string) $rawPermissions);
+        $countKey = $this->getPrefixed('assignedUserCount');
+        if (array_key_exists($countKey, $data)) {
+            $data[$countKey] = (int) ($data[$countKey] ?? 0);
+        }
         return $data;
     }
 
@@ -46,6 +53,18 @@ class Role extends Base implements MappingInterface
             throw new \InvalidArgumentException('Argument $names must not be empty.');
         }
         $this->query->whereIn('role.name', $names);
+        return $this;
+    }
+
+    public function addConditionRoleId(int $roleId): self
+    {
+        $this->query->where('role.id', '=', $roleId);
+        return $this;
+    }
+
+    public function addOrderBy(string $parameter, string $order = 'ASC'): self
+    {
+        $this->query->orderBy('role.' . $parameter, $order);
         return $this;
     }
 }
