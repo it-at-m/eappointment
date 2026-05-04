@@ -1,5 +1,8 @@
 <template>
   <Layout>
+    <template #nav-bar-title-after>
+      <LatestReleaseTag />
+    </template>
     <template #nav-bar-content-after>
       <div class="logo">
         <a href="https://www.muenchen.de/" target="_blank">
@@ -16,6 +19,7 @@
 
 <script setup>
 import DefaultTheme from "vitepress/theme";
+import LatestReleaseTag from "./LatestReleaseTag.vue";
 import MermaidRenderer from "./MermaidRenderer.vue";
 
 const { Layout } = DefaultTheme;
