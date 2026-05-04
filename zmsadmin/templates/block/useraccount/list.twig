@@ -37,7 +37,7 @@
                     <thead>
                         <tr>
                             <th>Loginname</th>
-                            <th>Rolle(n)</th>
+                            <th>Berechtigung</th>
                             <th>Letzter Login</th>
                             <th>Aktion</th>
                         </tr>
@@ -46,35 +46,22 @@
                     {% for useraccount in useraccountList %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
-                            {% set roleLabelMap = {
-                                'agent_basic': 'Sachbearbeitung (Basis)',
-                                'agent_queue': 'Sachbearbeitung (Standard)',
-                                'agent_queue_plus': 'Sachbearbeitung (Erweitert)',
-                                'appointment_admin': 'Terminadministration',
-                                'reporting_viewer': 'Controlling',
-                                'user_admin': 'Benutzerverwaltung',
-                                'audit_viewer': 'Innenrevision',
-                                'system_admin': 'Technische Administration'
-                            } %}
-                            {% set roles = [] %}
-                            {% for roleName in useraccount.roles|default([]) %}
-                                {% set roles = roles|merge([roleLabelMap[roleName]|default(roleName)]) %}
-                            {% endfor %}
-                            {% if roles|length == 0 %}
-                                {% set rights = useraccount.rights|default({}) %}
-                                {% set roles = ['Sachbearbeitung'] %}
-                                {% if rights.audit|default(false) %}
-                                    {% set roles = roles|merge(['Innenrevision']) %}
-                                {% endif %}
-                                {% if rights.scope|default(false) %}
-                                    {% set roles = roles|merge(['Terminadministration']) %}
-                                {% endif %}
-                                {% if rights.cluster|default(false) %}
-                                    {% set roles = roles|merge(['Fachliche Administration']) %}
-                                {% endif %}
-                                {% if rights.superuser|default(false) %}
-                                    {% set roles = roles|merge(['Technische Administration']) %}
-                                {% endif %}
+                            {% set rights = useraccount.rights|default({}) %} 
+                            {% set roles = ['Sachbearbeitung'] %} 
+                            {% if rights.audit|default(false) %}
+                                {% set roles = roles|merge(['Innenrevision']) %}
+                            {% endif %}
+
+                            {% if rights.scope|default(false) %}
+                                {% set roles = roles|merge(['Terminadministration']) %}  
+                            {% endif %}
+
+                            {% if rights.cluster|default(false) %}
+                                {% set roles = roles|merge(['Fachliche Administration']) %}
+                            {% endif %}
+
+                            {% if rights.superuser|default(false) %}
+                                {% set roles = roles|merge(['Technische Administration']) %}
                             {% endif %}
                             <td>{{ roles|join('<br>')|raw  }} </td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
