@@ -67,7 +67,7 @@ class OwnerOverviewTest extends Base
         $this->render($this->arguments, $this->parameters, []);
     }
 
-    public function testRenderingOwnerMissingRightsFromApi()
+    public function testRenderingOwnerMissingPermissionsFromApi()
     {
         $this->expectException('\BO\Zmsclient\Exception');
 
