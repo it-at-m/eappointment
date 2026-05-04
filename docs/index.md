@@ -35,19 +35,19 @@ It is planned to release the software as open source in the course of 2022/2024.
 
 The ZMS system is intended to manage human waiting queues. It has the following features:
 
-* make appointments via a calender and initiate a process to manage an appointment
-* import requests (services) and providers (locations) from external sources
-* manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
-* manage opening hours including closed days
-* city worker login-system with different access levels
-* ticketprinter support for customers without appointments (authenticated, lockable, timeable)
-* calldisplay support
-* collecting statistics like waiting time or served clients per day
-* emergency call for employees
-* citizen booking system with support for citizen login
-
+- make appointments via a calender and initiate a process to manage an appointment
+- import requests (services) and providers (locations) from external sources
+- manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
+- manage opening hours including closed days
+- city worker login-system with different access levels
+- ticketprinter support for customers without appointments (authenticated, lockable, timeable)
+- calldisplay support
+- collecting statistics like waiting time or served clients per day
+- emergency call for employees
+- citizen booking system with support for citizen login
 
 ## Contact
+
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
 
 Munich Contact: it@M - opensource@muenchen.de

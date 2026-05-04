@@ -1,9 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const FEATURES_ROOT = path.resolve(import.meta.dirname, "../../zmsautomation/src/test/resources/features");
-const CUCUMBER_DOC_PATH = path.resolve(import.meta.dirname, "../zmsautomation-cucumber-current.md");
-const FEATURE_SOURCE_BASE = "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
+const FEATURES_ROOT = path.resolve(
+  import.meta.dirname,
+  "../../zmsautomation/src/test/resources/features"
+);
+const CUCUMBER_DOC_PATH = path.resolve(
+  import.meta.dirname,
+  "../zmsautomation-cucumber-current.md"
+);
+const FEATURE_SOURCE_BASE =
+  "https://github.com/it-at-m/eappointment/blob/main/zmsautomation/src/test/resources/features";
 
 const toPosix = (p) => p.split(path.sep).join("/");
 
@@ -68,7 +75,7 @@ const renderCucumberDoc = () => {
     "    When I call the endpoint",
     "    Then the response status code should be 200",
     "```",
-    ""
+    "",
   ];
 
   if (!featureFiles.length) {
@@ -78,7 +85,10 @@ const renderCucumberDoc = () => {
       lines.push(`## ${testType.toUpperCase()}`);
       lines.push("");
       for (const [module, files] of modules) {
-        const moduleTitle = testType === "ui" && module === "buergeransicht" ? `${module} (deprecated)` : module;
+        const moduleTitle =
+          testType === "ui" && module === "buergeransicht"
+            ? `${module} (deprecated)`
+            : module;
         lines.push(`### ${moduleTitle}`);
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
@@ -90,7 +100,10 @@ const renderCucumberDoc = () => {
         for (const item of files) {
           const fileName = path.basename(item.rel);
           const sourceUrl = `${FEATURE_SOURCE_BASE}/${item.rel}`;
-          const raw = fs.readFileSync(item.abs, "utf8").replaceAll("```", "\\`\\`\\`").trimEnd();
+          const raw = fs
+            .readFileSync(item.abs, "utf8")
+            .replaceAll("```", "\\`\\`\\`")
+            .trimEnd();
           lines.push(`#### \`${fileName}\``);
           lines.push("");
           lines.push(`Source: [${fileName}](${sourceUrl})`);
@@ -105,7 +118,9 @@ const renderCucumberDoc = () => {
   }
 
   const next = `${lines.join("\n").trimEnd()}\n`;
-  const prev = fs.existsSync(CUCUMBER_DOC_PATH) ? fs.readFileSync(CUCUMBER_DOC_PATH, "utf8") : "";
+  const prev = fs.existsSync(CUCUMBER_DOC_PATH)
+    ? fs.readFileSync(CUCUMBER_DOC_PATH, "utf8")
+    : "";
   if (prev !== next) {
     fs.writeFileSync(CUCUMBER_DOC_PATH, next, "utf8");
   }
@@ -132,35 +147,111 @@ export default {
         }
         return `<pre><code>${md.utils.escapeHtml(token.content)}</code></pre>`;
       };
-    }
+    },
   },
   head: [
     [
       "link",
       {
         rel: "icon",
-        href: "https://assets.muenchen.de/logos/lhm/icon-lhm-muenchen-32.png"
-      }
-    ]
+        href: "https://assets.muenchen.de/logos/lhm/icon-lhm-muenchen-32.png",
+      },
+    ],
   ],
   themeConfig: {
     nav: [
       { text: "Overview", link: "/" },
-      { text: "API reference", link: "/api-reference" },
-      { text: "Testing", link: "/testing-unit" },
-      { text: "GitHub Repository", link: "https://github.com/it-at-m/eappointment/" },
-      { text: "Open Source", link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html" }
+      {
+        text: "Releases",
+        link: "https://github.com/it-at-m/eappointment/releases",
+      },
+      {
+        text: "GitHub Repository",
+        link: "https://github.com/it-at-m/eappointment/",
+      },
+      {
+        text: "Open Source",
+        link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
+      },
     ],
     sidebar: [
-      { text: "Overview", items: [{ text: "Introduction", link: "/" }, { text: "Project History", link: "/project-history" }] },
-      { text: "Setup and Development", items: [{ text: "Dependency Graph", link: "/dependency-graph" }, { text: "Branching Strategy", link: "/branching-strategy-and-convention" }, { text: "Commit Message Convention", link: "/commit-message-convention" }, { text: "Getting Started", link: "/getting-started" },
-        { text: "Quick reset of the local environment", link: "/quick-reset-local-environment" },
-        { text: "Getting Started with GitHub Codespaces", link: "/getting-started-with-github-codespaces" },
-        { text: "Getting Started with docs", link: "/getting-started-with-docs" },
-        { text: "Local Keycloak Setup", link: "/local-keycloak-setup" }, { text: "Running Cronjobs Locally", link: "/running-cronjobs-locally" }, { text: "Code Formatting", link: "/code-formatting" }, { text: "Local Database and Cache Operations", link: "/local-database-and-cache-operations" }, { text: "Dependency Upgrade Check", link: "/dependency-upgrade-check" }, { text: "PHP Base Images", link: "/php-base-images" }] },
-      { text: "Testing and Automation", items: [{ text: "Unit Testing in ZMS", link: "/testing-unit" }, { text: "Unit Test Coverage", link: "/testing-coverage" }, { text: "zmsautomation Documentation", link: "/zmsautomation" }, { text: "Current Cucumber Tests", link: "/zmsautomation-cucumber-current" }] },
-      { text: "Operations", items: [{ text: "API reference", link: "/api-reference" }, { text: "Operations", link: "/operations" }, { text: "DLDB Interface Documentation", link: "/dldb-interface-documentation" }] },
-      { text: "Reference", items: [{ text: "Module READMEs", link: "/module-readmes" }] }
-    ]
-  }
+      {
+        text: "Overview",
+        items: [
+          { text: "Introduction", link: "/" },
+          { text: "Project History", link: "/project-history" },
+          { text: "Changelog", link: "/changelog" },
+        ],
+      },
+      {
+        text: "Setup and Development",
+        items: [
+          { text: "Dependency Graph", link: "/dependency-graph" },
+          {
+            text: "Branching Strategy",
+            link: "/branching-strategy-and-convention",
+          },
+          {
+            text: "Commit Message Convention",
+            link: "/commit-message-convention",
+          },
+          { text: "Getting Started", link: "/getting-started" },
+          {
+            text: "Quick reset of the local environment",
+            link: "/quick-reset-local-environment",
+          },
+          {
+            text: "Getting Started with GitHub Codespaces",
+            link: "/getting-started-with-github-codespaces",
+          },
+          {
+            text: "Getting Started with docs",
+            link: "/getting-started-with-docs",
+          },
+          { text: "Local Keycloak Setup", link: "/local-keycloak-setup" },
+          {
+            text: "Running Cronjobs Locally",
+            link: "/running-cronjobs-locally",
+          },
+          { text: "Code Formatting", link: "/code-formatting" },
+          {
+            text: "Local Database and Cache Operations",
+            link: "/local-database-and-cache-operations",
+          },
+          {
+            text: "Dependency Upgrade Check",
+            link: "/dependency-upgrade-check",
+          },
+          { text: "PHP Base Images", link: "/php-base-images" },
+        ],
+      },
+      {
+        text: "Testing and Automation",
+        items: [
+          { text: "Unit Testing in ZMS", link: "/testing-unit" },
+          { text: "Unit Test Coverage", link: "/testing-coverage" },
+          { text: "zmsautomation Documentation", link: "/zmsautomation" },
+          {
+            text: "Current Cucumber Tests",
+            link: "/zmsautomation-cucumber-current",
+          },
+        ],
+      },
+      {
+        text: "Operations",
+        items: [
+          { text: "API reference", link: "/api-reference" },
+          { text: "Operations", link: "/operations" },
+          {
+            text: "DLDB Interface Documentation",
+            link: "/dldb-interface-documentation",
+          },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [{ text: "Module READMEs", link: "/module-readmes" }],
+      },
+    ],
+  },
 };

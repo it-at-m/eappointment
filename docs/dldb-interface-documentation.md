@@ -77,8 +77,6 @@ flowchart TB
     end
 ```
 
-
-
 ## Local Mapping Parity
 
 For local development and automated testing with `zmsautomation`, `zmsdldb/src/Zmsdldb/Transformers/Munich.php` provides the same Munich SADB mapping behavior as the internal `dldb-mapper` pipeline.
@@ -118,8 +116,17 @@ This section replaces the old Berlin-centric format examples with Munich-oriente
 {
   "name": "Gewerbe-Anmeldung",
   "fields": [
-    { "name": "GEBUEHRENRAHMEN", "type": "TEXT", "value": "<p>50 bis 60 Euro ...</p>" },
-    { "name": "TERMINVEREINBARUNG", "id": "sf30", "type": "BOOLEAN", "value": true },
+    {
+      "name": "GEBUEHRENRAHMEN",
+      "type": "TEXT",
+      "value": "<p>50 bis 60 Euro ...</p>"
+    },
+    {
+      "name": "TERMINVEREINBARUNG",
+      "id": "sf30",
+      "type": "BOOLEAN",
+      "value": true
+    },
     { "name": "ZMS_DAUER", "id": "sf31", "type": "INTEGER", "value": 20 },
     { "name": "ZMS_MAX_ANZAHL", "id": "sf32", "type": "INTEGER", "value": 3 }
   ],
@@ -139,8 +146,14 @@ This section replaces the old Berlin-centric format examples with Munich-oriente
       "name": "FORMULARE_INFORMATIONEN",
       "type": "LINK",
       "values": [
-        { "label": "Vollmacht", "uri": "https://stadt.muenchen.de/.../Zulassungsvollmacht" },
-        { "label": "Datenschutzgrundverordnung", "uri": "https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html" }
+        {
+          "label": "Vollmacht",
+          "uri": "https://stadt.muenchen.de/.../Zulassungsvollmacht"
+        },
+        {
+          "label": "Datenschutzgrundverordnung",
+          "uri": "https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html"
+        }
       ],
       "multiValue": true
     }
@@ -275,12 +288,17 @@ In `zmsdldb/src/Zmsdldb/Transformers/Munich.php`, calculation happens per mapped
 1. Start with all mapped service durations at that location (`serviceRef.duration`, primarily from `ZMS_DAUER`).
 2. Build a common divisor incrementally using `getSlotTime($a, $b)`.
 3. `getSlotTime()` does not use arbitrary GCD; it selects the largest allowed slot size from:
-  - `[1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60]`
-  - that divides both compared durations.
+
+- `[1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 25, 30, 60]`
+- that divides both compared durations.
+
 4. Final common divisor is written as:
-  - `mappedLocation.slotTimeInMinutes`
+
+- `mappedLocation.slotTimeInMinutes`
+
 5. Each service-at-location receives:
-  - `appointment.slots = serviceDuration / slotTimeInMinutes`
+
+- `appointment.slots = serviceDuration / slotTimeInMinutes`
 
 This means `slotTimeInMinutes` is the office-level base slot grid derived from all mapped service durations for that office.
 
@@ -436,8 +454,6 @@ flowchart LR
     H --> I[Citizen API DTOs<br/>Office, Service, OfficeServiceRelation]
 ```
 
-
-
 ## Visibility Decision Flow
 
 ```mermaid
@@ -454,8 +470,6 @@ flowchart TD
     I -- yes --> G
     I -- no --> J[Return only published offices/services/relations]
 ```
-
-
 
 ## Troubleshooting Playbook (Missing Service/Office)
 
@@ -500,7 +514,9 @@ Implementation point for explicit field behavior remains the service field parsi
 ```json
 {
   "id": "1063423",
-  "appointment": { "link": "https://stadt.muenchen.de/.../services/{serviceId}" },
+  "appointment": {
+    "link": "https://stadt.muenchen.de/.../services/{serviceId}"
+  },
   "maxQuantity": 3,
   "duration": 20,
   "public": true
