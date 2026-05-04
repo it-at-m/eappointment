@@ -33,6 +33,8 @@ VitePress prints a local URL (typically `http://localhost:5173`). Open it in a b
 
 ## Other commands
 
+- **`npm run format`** — format Markdown, Vue, JS, and CSS under `docs/` with Prettier (same `@muenchen/prettier-codeformat` preset as `zmscitizenview`)
+- **`npm run format:check`** — verify formatting without writing files (useful in CI)
 - **`npm run docs:build`** — production build; output is written to `docs/.vitepress/dist`
 - **`npm run docs:preview`** — serve the built site locally to verify the build
 

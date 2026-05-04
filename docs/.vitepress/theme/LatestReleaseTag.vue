@@ -43,6 +43,7 @@
 
 <script setup>
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { onMounted, ref } from "vue";
 
 import { fetchLatestRelease } from "./latestReleaseFetch.js";
@@ -56,6 +57,10 @@ defineProps({
 });
 =======
 import { ref, onMounted } from "vue";
+=======
+import { onMounted, ref } from "vue";
+
+>>>>>>> 9ad782f99 (docs(ZMSKVR): add Prettier and format docs tree)
 import { fetchLatestRelease } from "./latestReleaseFetch.js";
 
 <<<<<<< HEAD
@@ -66,8 +71,8 @@ defineProps({
   variant: {
     type: String,
     required: true,
-    validator: (v) => v === "title" || v === "menu"
-  }
+    validator: (v) => v === "title" || v === "menu",
+  },
 });
 >>>>>>> 621d5a5ea (docs(ZMSKVR): refine latest release UI and top nav)
 

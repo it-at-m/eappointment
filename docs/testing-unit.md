@@ -1,4 +1,5 @@
 # Unit Testing
+
 To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 
 ## Unit Testing the PHP Modules
@@ -42,12 +43,11 @@ Useful flags for `./vendor/bin/phpunit`:
 --debug
 ```
 
-
 ### Special Cases (zmsapi zmsdb & zmsclient)
 
 **zmsclient:**
 
-For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
+For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`).
 
 **Using Docker:**
 
@@ -67,11 +67,13 @@ cd zmsclient
 The `zmsclient-test` script automatically detects and uses Docker or Podman, restarts containers for clean state, and runs PHPUnit tests.
 
 #### Traditional Method (overwrites local DB)
+
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
 **zmsapi:**
 
 Using DDEV:
+
 ```bash
 cd zmsapi
 rm -rf data
@@ -83,6 +85,7 @@ vendor/bin/importTestData --commit
 ```
 
 Using Podman:
+
 ```bash
 cd zmsapi
 rm -rf data
@@ -96,6 +99,7 @@ vendor/bin/importTestData --commit
 **zmsdb:**
 
 Using DDEV:
+
 ```bash
 ddev ssh
 cd zmsdb
@@ -104,6 +108,7 @@ bin/importTestData --commit
 ```
 
 Using Podman:
+
 ```bash
 podman exec -it zms-web bash
 cd zmsdb
