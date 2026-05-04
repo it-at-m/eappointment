@@ -186,33 +186,48 @@ export default {
       {
         text: "Setup and Development",
         items: [
-          { text: "Dependency Graph", link: "/dependency-graph" },
           {
-            text: "Branching Strategy",
-            link: "/branching-strategy-and-convention",
+            text: "Development Rules",
+            collapsed: false,
+            items: [
+              { text: "Dependency Graph", link: "/dependency-graph" },
+              {
+                text: "Branching Strategy",
+                link: "/branching-strategy-and-convention",
+              },
+              {
+                text: "Commit Message Convention",
+                link: "/commit-message-convention",
+              },
+            ],
           },
           {
-            text: "Commit Message Convention",
-            link: "/commit-message-convention",
-          },
-          { text: "Getting Started", link: "/getting-started" },
-          {
-            text: "Quick reset of the local environment",
-            link: "/quick-reset-local-environment",
-          },
-          {
-            text: "Getting Started with GitHub Codespaces",
-            link: "/getting-started-with-github-codespaces",
-          },
-          {
-            text: "Getting Started with docs",
-            link: "/getting-started-with-docs",
+            text: "Getting Started",
+            collapsed: false,
+            items: [
+              {
+                text: "DDEV and Devcontainer",
+                link: "/getting-started",
+              },
+              {
+                text: "Quick reset of the local environment",
+                link: "/quick-reset-local-environment",
+              },
+              {
+                text: "Getting Started with GitHub Codespaces",
+                link: "/getting-started-with-github-codespaces",
+              },
+              {
+                text: "Getting Started with docs",
+                link: "/getting-started-with-docs",
+              },
+              {
+                text: "Running Cronjobs Locally",
+                link: "/running-cronjobs-locally",
+              },
+            ],
           },
           { text: "Local Keycloak Setup", link: "/local-keycloak-setup" },
-          {
-            text: "Running Cronjobs Locally",
-            link: "/running-cronjobs-locally",
-          },
           { text: "Code Formatting", link: "/code-formatting" },
           {
             text: "Local Database and Cache Operations",
@@ -241,7 +256,6 @@ export default {
         text: "Operations",
         items: [
           { text: "API reference", link: "/api-reference" },
-          { text: "Operations", link: "/operations" },
           {
             text: "DLDB Interface Documentation",
             link: "/dldb-interface-documentation",
