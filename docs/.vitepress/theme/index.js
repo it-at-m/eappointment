@@ -1,5 +1,6 @@
 import DefaultTheme from "vitepress/theme";
 
+import BerlinChangelogEmbed from "./BerlinChangelogEmbed.vue";
 import ChangelogEmbed from "./ChangelogEmbed.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
 
@@ -12,6 +13,7 @@ export default {
     if (typeof DefaultTheme.enhanceApp === "function") {
       DefaultTheme.enhanceApp(ctx);
     }
+    ctx.app.component("BerlinChangelogEmbed", BerlinChangelogEmbed);
     ctx.app.component("ChangelogEmbed", ChangelogEmbed);
   },
 };
