@@ -296,6 +296,25 @@ export default {
         text: "Reference",
         items: [{ text: "Module READMEs", link: "/module-readmes" }],
       },
+      {
+        text: "On the Future",
+        items: [
+          {
+            text: "Database Refactor",
+            collapsed: false,
+            items: [
+              {
+                text: "Standardize Database Table and Field Naming",
+                link: "/on-the-future/database-standardize-naming-conventions",
+              },
+            ],
+          },
+          {
+            text: "Modernize ZMS Architecture (3-5 Year Plan)",
+            link: "/on-the-future/product-oriented-refarch-roadmap",
+          },
+        ],
+      },
     ],
   },
 };
