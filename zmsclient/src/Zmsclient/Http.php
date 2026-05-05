@@ -211,6 +211,29 @@ class Http
     }
 
     /**
+     * Creates a PUT-Http-Request and fetches the response
+     *
+     * @param string $relativeUrl
+     * @param \BO\Zmsentities\Schema\Entity|object $entity
+     * @param array|null $getParameters (optional)
+     *
+     * @return Result
+     */
+    public function readPutResult($relativeUrl, $entity, array $getParameters = null)
+    {
+        $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
+        if (null !== $getParameters) {
+            $uri = $uri->withQuery(http_build_query($getParameters));
+        }
+        $request = self::createRequest('PUT', $uri);
+        $body = new Psr7\Stream();
+        $body->write(json_encode($entity));
+        $request = $request->withBody($body);
+
+        return $this->readResult($request);
+    }
+
+    /**
      * Creates a DELETE-Http-Request and fetches the response
      *
      * @param string $relativeUrl
