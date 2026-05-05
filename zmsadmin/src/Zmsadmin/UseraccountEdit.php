@@ -50,9 +50,12 @@ class UseraccountEdit extends BaseController
         $roleList = new RoleList();
         if ($workstation->getUseraccount()->isSuperUser()) {
             try {
-                $loaded = \App::$http->readGetResult('/roles/', [])->getCollection();
-                if ($loaded !== null) {
-                    $roleList = $loaded;
+                $roleResult = \App::$http->readGetResult('/roles/', []);
+                if ($roleResult) {
+                    $loaded = $roleResult->getCollection();
+                    if ($loaded !== null) {
+                        $roleList = $loaded;
+                    }
                 }
             } catch (\BO\Zmsclient\Exception $e) {
                 // keep empty list; form still usable without role assignment
