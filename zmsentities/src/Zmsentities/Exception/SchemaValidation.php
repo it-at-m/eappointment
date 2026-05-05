@@ -15,6 +15,8 @@ class SchemaValidation extends \Exception
 
     public $template;
 
+    public mixed $templatedata = null;
+
     public function setValidationError(array $validationErrorList)
     {
         $this->setMessages($validationErrorList);
