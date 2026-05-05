@@ -1000,6 +1000,18 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
+        $callCount = (int) ($process->queue['callCount'] ?? 0);
+
+        // For repeated recalls after "not appeared", keep the original waiting time.
+        if (
+            $previousStatus === 'missed'
+            && $process['status'] == 'called'
+            && !empty($process['wasMissed'])
+            && $callCount > 0
+        ) {
+            $this->addValues($data);
+            return;
+        }
 
         if (
             (
@@ -1007,7 +1019,7 @@ class Process extends Base implements MappingInterface
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
                 && (
-                    $process->queue['callCount'] <= 0
+                    $callCount <= 0
                     || !empty($process['wasMissed'])
                     || (
                         ($previousStatus === 'queued' || $previousStatus === 'confirmed')
