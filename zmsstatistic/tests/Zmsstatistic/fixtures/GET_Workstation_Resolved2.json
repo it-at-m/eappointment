@@ -23,6 +23,10 @@
                 "ticketprinter": "1",
                 "useraccount": "1"
             },
+            "permissions": {
+                "statistic": "1",
+                "superuser": "1"
+            },
             "departments": [
                 {
                     "id": "74",
