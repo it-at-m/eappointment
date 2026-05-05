@@ -1937,11 +1937,7 @@
  *                  description: "role does not exist"
  */
 \App::$slim->post(
-    '/roles/{id:\d{1,11}}/',
     '\BO\Zmsapi\RoleUpdate'
-)
-    ->setName("RoleUpdate");
-
 /**
  *  @swagger
  *  "/useraccount/":

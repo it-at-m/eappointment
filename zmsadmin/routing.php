@@ -346,6 +346,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET', 'POST'], '/users/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
+// In here we edit the useraccount including its roles
 \App::$slim->map(['GET','POST'], '/users/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
