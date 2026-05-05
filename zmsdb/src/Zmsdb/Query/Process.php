@@ -1000,15 +1000,21 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
+        $hasWaitingTimeAlready = (
+            isset($process->queue['waitingTime'])
+            && $process->queue['waitingTime']
+            && $process->queue['waitingTime'] !== '00:00:00'
+        );
 
         if (
+            !$hasWaitingTimeAlready
+            && (
             (
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
                 && (
                     $process->queue['callCount'] <= 0
-                    || !empty($process['wasMissed'])
                     || (
                         ($previousStatus === 'queued' || $previousStatus === 'confirmed')
                         && (
@@ -1027,6 +1033,7 @@ class Process extends Base implements MappingInterface
                 && !empty($process['wasMissed'])
                 && isset($process->queue)
                 && isset($process->queue->waitingTime)
+            )
             )
         ) {
             $wartezeitInSeconds = $process->getWaitedSeconds();
