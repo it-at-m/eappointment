@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use BO\Zmsdb\Application as App;
+use BO\Zmsdb\Role;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 
@@ -747,13 +748,6 @@ class Useraccount extends Base
         $this->perform($query, array_merge([$userId], $roleNames));
     }
 
-    public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
-    {
-        $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
-        $query = new Query\Useraccount(Query\Base::UPDATE);
-        $query->addConditionLoginName($loginName);
-        $values = $query->reverseEntityMapping($entity);
-        $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
 
