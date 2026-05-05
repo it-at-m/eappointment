@@ -318,6 +318,33 @@ class ValidationServiceTest extends TestCase
             $optionalScope
         );
         $this->assertEmpty($result['errors']);
+
+        $long = str_repeat('x', 251);
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            $long,
+            'ok',
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidCustomTextfield'),
+            $result['errors']
+        );
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            'ok',
+            $long,
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidCustomTextfield2'),
+            $result['errors']
+        );
     }
 
     public function testValidateGetScopeById(): void
