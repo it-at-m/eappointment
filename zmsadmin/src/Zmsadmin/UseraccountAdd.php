@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\RoleList;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 
@@ -50,6 +51,17 @@ class UseraccountAdd extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
+        $roleList = new RoleList();
+        if ($workstation->getUseraccount()->isSuperUser()) {
+            try {
+                $loaded = \App::$http->readGetResult('/roles/', [])->getCollection();
+                if ($loaded !== null) {
+                    $roleList = $loaded;
+                }
+            } catch (\BO\Zmsclient\Exception $e) {
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -64,7 +76,8 @@ class UseraccountAdd extends BaseController
                 'userAccount' => $submittedUserAccount, // Use submitted data to preserve form values on error
                 'selectedDepartment' => $selectedDepartment,
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'roleList' => $roleList,
             ]
         );
     }
