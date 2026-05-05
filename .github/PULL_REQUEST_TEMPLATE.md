@@ -4,3 +4,4 @@
 - [ ] Relevante Tests wurden mit [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml) ausgeführt.
 - [ ] Das Code-Review wurde abgeschlossen.
 - [ ] Fachliche Tests wurden durchgeführt und sind abgeschlossen.
+- [ ] Ich habe erforderliche Dokumentation im Ordner `docs` hinzugefügt.
