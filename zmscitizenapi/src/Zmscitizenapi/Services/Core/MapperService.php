@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
+use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
@@ -448,8 +449,12 @@ class MapperService
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
-        $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
-        $processEntity->customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $customTextfield = $thinnedProcess->customTextfield ?? null;
+        $processEntity->customTextfield = $customTextfield === null ? null : ProcessPlainText::normalize($customTextfield);
+        $customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $processEntity->customTextfield2 = $customTextfield2 === null
+            ? null
+            : ProcessPlainText::normalize($customTextfield2);
         $processEntity->captchaToken = $thinnedProcess->captchaToken ?? null;
 
         $client = new Client();
