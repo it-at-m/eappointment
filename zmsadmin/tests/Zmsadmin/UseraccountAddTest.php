@@ -49,6 +49,12 @@ class UseraccountAddTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -119,6 +125,12 @@ class UseraccountAddTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
