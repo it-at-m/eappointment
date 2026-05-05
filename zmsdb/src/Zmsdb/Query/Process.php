@@ -1014,7 +1014,10 @@ class Process extends Base implements MappingInterface
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
                 && (
-                    $process->queue['callCount'] <= 0
+                    (
+                        isset($process->queue['callCount'])
+                        && $process->queue['callCount'] <= 0
+                    )
                     || (
                         ($previousStatus === 'queued' || $previousStatus === 'confirmed')
                         && (
