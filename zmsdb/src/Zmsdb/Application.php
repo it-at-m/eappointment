@@ -78,8 +78,10 @@ class Application extends \BO\Slim\Application
 
     private static function validateCacheDirectory(): void
     {
-        if (!is_dir(self::$CACHE_DIR) && !mkdir(self::$CACHE_DIR, 0750, true)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
+        if (!is_dir(self::$CACHE_DIR)) {
+            if (!@mkdir(self::$CACHE_DIR, 0750, true) && !is_dir(self::$CACHE_DIR)) {
+                throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
+            }
         }
 
         if (!is_writable(self::$CACHE_DIR)) {

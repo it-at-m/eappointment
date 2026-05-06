@@ -11,6 +11,13 @@ class Exchange extends Schema\Entity
 {
     public const PRIMARY = 'firstDay';
 
+    /**
+     * Statistik CASE labels (must match warehouse SQL in ExchangeRequest* queries).
+     */
+    public const REQUEST_STAT_NAME_UNCATEGORIZED = 'uncategorized';
+
+    public const REQUEST_STAT_NAME_NONEXISTENT = 'nonexistent';
+
     public static $schema = "exchange.json";
 
     public function getDefaults()
@@ -182,6 +189,48 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    /**
+     * Sort service rows alphabetically; place synthetic stat rows last
+     * (before aggregated keys sum / average_*).
+     */
+    public function withUncapturedRequestRowSortedLast(): self
+    {
+        $entity = clone $this;
+        if (!is_array($entity->data)) {
+            return $entity;
+        }
+
+        $reserved = ['sum', 'average_processingtime'];
+        $tailStatNames = [
+            self::REQUEST_STAT_NAME_UNCATEGORIZED,
+            self::REQUEST_STAT_NAME_NONEXISTENT,
+        ];
+        $serviceRows = [];
+        foreach ($entity->data as $key => $value) {
+            if (in_array($key, $reserved, true) || in_array($key, $tailStatNames, true)) {
+                continue;
+            }
+            $serviceRows[$key] = $value;
+        }
+
+        uksort($serviceRows, static function ($a, $b) {
+            return strnatcasecmp((string) $a, (string) $b);
+        });
+
+        $ordered = $serviceRows;
+        foreach ($tailStatNames as $tailKey) {
+            if (array_key_exists($tailKey, $entity->data)) {
+                $ordered[$tailKey] = $entity->data[$tailKey];
+            }
+        }
+        foreach ($reserved as $key) {
+            if (array_key_exists($key, $entity->data)) {
+                $ordered[$key] = $entity->data[$key];
+            }
+        }
+        $entity->data = $ordered;
+        return $entity;
+    }
 
     public function withMaxAndAverageFromWaitingTime()
     {
