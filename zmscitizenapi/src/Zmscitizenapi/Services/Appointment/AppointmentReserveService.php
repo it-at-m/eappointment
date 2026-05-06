@@ -22,7 +22,7 @@ class AppointmentReserveService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function processReservation(array $body): ThinnedProcess|array
+    public function processReservation(array $body, bool $showUnpublished = false): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
 
@@ -44,7 +44,8 @@ class AppointmentReserveService
 
         $errors = ValidationService::validateServiceLocationCombination(
             $clientData->officeId,
-            $clientData->serviceIds
+            $clientData->serviceIds,
+            $showUnpublished
         );
         if (!empty($errors['errors'])) {
             return $errors;

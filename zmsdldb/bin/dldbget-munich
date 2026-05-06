@@ -80,11 +80,15 @@ function writeJsonFile($path, $data) {
 
 print("Transforming services...\n\n");
 $servicesData = $transformer->transformServices($data);
-writeJsonFile($destinationPath . '/services_de.json', $servicesData);
 
-print("Transforming locations...\n\n");
-$locationsData = $transformer->transformLocations($data, $servicesData);
-writeJsonFile($destinationPath . '/locations_de.json', $locationsData);
+print("Transforming locations (and merging location refs into services)...\n\n");
+$locationTransform = $transformer->transformLocations($data, $servicesData);
+if (empty($locationTransform['services'])) {
+    echo "Error: transformLocations did not return enriched services payload\n\n";
+    exit(1);
+}
+writeJsonFile($destinationPath . '/services_de.json', $locationTransform['services']);
+writeJsonFile($destinationPath . '/locations_de.json', $locationTransform['locations']);
 
 // Create empty files for English versions (not currently supported by Munich)
 $emptyData = ['data' => [], 'meta' => ['generated' => date('Y-m-d\TH:i:s'), 'datacount' => 0]];
@@ -114,4 +118,3 @@ $helpers->checkAndCreateBackup($downloadedFiles);
 $helpers->cleanupOldBackups();
 
 print("Munich transformation completed!\n\n");
-

@@ -94,7 +94,11 @@ class Provider extends Schema\Entity
 
     public function getSlotTimeInMinutes()
     {
-        return $this->getAdditionalData()['slotTimeInMinutes'];
+        $data = $this->getAdditionalData();
+        if (! is_array($data)) {
+            return null;
+        }
+        return $data['slotTimeInMinutes'] ?? null;
     }
 
     public function getParentId()

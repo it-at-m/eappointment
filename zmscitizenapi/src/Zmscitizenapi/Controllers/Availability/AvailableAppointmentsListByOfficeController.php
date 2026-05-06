@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers\Availability;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Availability\AvailableAppointmentsListService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
@@ -13,9 +14,12 @@ use Psr\Http\Message\ResponseInterface;
 
 class AvailableAppointmentsListByOfficeController extends BaseController
 {
+    use UnpublishedAccessTrait;
+
     private AvailableAppointmentsListService $service;
     public function __construct()
     {
+        $this->initializeUnpublishedAccess();
         $this->service = new AvailableAppointmentsListService();
     }
 
@@ -26,7 +30,7 @@ class AvailableAppointmentsListByOfficeController extends BaseController
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest')['statusCode']);
         }
 
-        $result = $this->service->getAvailableAppointmentsListByOffice($request->getQueryParams());
+        $result = $this->service->getAvailableAppointmentsListByOffice($request->getQueryParams(), $this->showUnpublished);
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);

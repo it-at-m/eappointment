@@ -23,7 +23,7 @@ class AvailableDaysListService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableDaysList(array $queryParams): AvailableDays|array
+    public function getAvailableDaysList(array $queryParams, bool $showUnpublished = false): AvailableDays|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -31,7 +31,7 @@ class AvailableDaysListService
             return $errors;
         }
 
-        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
         if ($errors !== null) {
             return $errors;
         }
@@ -97,11 +97,16 @@ class AvailableDaysListService
         );
     }
 
-    public function getAvailableDaysListByOffice($queryParams)
+    public function getAvailableDaysListByOffice($queryParams, bool $showUnpublished = false)
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
+        if ($errors !== null) {
             return $errors;
         }
 

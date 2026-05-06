@@ -1,10 +1,12 @@
-# Getting Started
+# DDEV and Devcontainer
 
 ## Start local stack
 
 ```bash
 # DDEV
 ddev start
+```
+```bash
 # Devcontainer (Podman)
 devcontainer up --workspace-folder .
 ```
@@ -13,7 +15,12 @@ devcontainer up --workspace-folder .
 
 Both commands also auto-detect your host architecture (`amd64` vs `arm64`) and pull the matching local PHP base image tag for `zms-web`.
 
+To wipe Podman or Docker completely on the host and recreate the stack, see [Quick reset of the local environment](/setup-and-development/getting-started/quick-reset-local-environment).
+
+On **macOS**, see [Podman and Dev Containers on macOS](/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers) and [Local HTTPS SSL for DDEV (macOS)](/setup-and-development/getting-started/macos-local-configuration/local-https-ddev).
+
 ## Containers and local endpoints
+
 The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
 
 - `zms-web` (pre-built local PHP base image), app endpoint: `http://localhost:8090`
@@ -40,7 +47,8 @@ You can still rerun module dependency/build commands at any time:
 ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
-
+```
+```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
 podman exec -it zms-web bash -lc "./cli modules loop npm install"
@@ -62,9 +70,10 @@ You can rerun full setup at any time:
 ```bash
 # DDEV
 ddev exec ./cli db full-setup
-
+```
+```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
 
-For Keycloak host mapping and Linux Podman notes, see [Local Keycloak Setup](./local-keycloak-setup.md).
+For Keycloak host mapping and Linux Podman notes, see [Local Keycloak Setup](../local-keycloak-setup.md).
