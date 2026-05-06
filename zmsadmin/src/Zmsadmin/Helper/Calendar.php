@@ -214,7 +214,7 @@ class Calendar
             ksort($list['hours'][$hour]);
         }
 
-        if (is_array($list['hours'])) {
+        if (isset($list['hours']) && is_array($list['hours'])) {
             ksort($list['hours']);
         }
 

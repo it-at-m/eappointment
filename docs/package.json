@@ -4,9 +4,15 @@
   "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
-    "docs:preview": "vitepress preview ."
+    "docs:preview": "vitepress preview .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@muenchen/prettier-codeformat": "^1.0.2",
+    "markdown-it": "^14.1.0",
+    "prettier": "^3.5.3",
+    "mermaid": "^11.14.0",
     "vitepress": "^1.6.3"
   }
 }
