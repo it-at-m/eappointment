@@ -45,7 +45,7 @@
                         <td>{{ item.clients.0.telephone }}</td>
                         <td>{{ item.clients.0.email }}</td>
                         <td class="wrap">{{ item.requests.0.name }}</td>
-                        <td>{{ item.amendment }}</td>
+                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ item.amendment|default('')|e|nl2br }}</div></td>
                     </tr>
                 {% endfor %}
             </tbody>

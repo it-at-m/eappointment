@@ -158,7 +158,13 @@ class ErrorMessages
             'errorCode' => 'invalidCustomTextfield',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorType' => 'warning',
-            'errorMessage' => 'customTextfield should be a string.'
+            'errorMessage' => 'customTextfield must be non-empty when required and at most 250 characters after normalization.'
+        ],
+        'invalidCustomTextfield2' => [
+            'errorCode' => 'invalidCustomTextfield2',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'customTextfield2 must be non-empty when required and at most 250 characters after normalization.'
         ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',

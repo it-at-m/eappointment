@@ -73,7 +73,7 @@
                         <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
                         <td>{{process.clients.0.telephone}}</td>
                         <td>{{process.clients.0.email}}</td>
-                        <td>{{process.amendment}}</td>
+                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ process.amendment|default('')|e|nl2br }}</div></td>
                     </tr>
                 {% endfor %}
                 {% for process in processListOther %}

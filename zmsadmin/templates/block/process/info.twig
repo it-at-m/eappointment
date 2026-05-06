@@ -22,8 +22,8 @@
                 <dt>
                     Anmerkung
                 </dt>
-                <dd>
-                    {{ workstation.process.amendment }}
+                <dd class="process-free-text">
+                    {{ workstation.process.amendment|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.clients|first.telephone %}
@@ -46,16 +46,16 @@
                 <dt>
                     {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
-                <dd>
-                    {{ workstation.process.customTextfield }}
+                <dd class="process-free-text">
+                    {{ workstation.process.customTextfield|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.customTextfield2 %}
                 <dt>
                     {{workstation.scope.preferences.client.customTextfield2Label}}
                 </dt>
-                <dd>
-                    {{ workstation.process.customTextfield2 }}
+                <dd class="process-free-text">
+                    {{ workstation.process.customTextfield2|e|nl2br }}
                 </dd>
                 {% endif %}
                 <dt>
