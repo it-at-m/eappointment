@@ -1,11 +1,9 @@
 <?php
+
 // @codingStandardsIgnoreFile
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
 
 /* ---------------------------------------------------------------------------
  * html, basic routes
@@ -1114,44 +1112,44 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\MailTemplatesGet'
 )
     ->setName("MailTemplatesGet");
-    
+
 
 \App::$slim->post(
     '/mailtemplates/',
     '\BO\Zmsapi\MailTemplatesUpdate'
 )
     ->setName("MailTemplatesUpdate");
-        
+
 \App::$slim->post(
-        '/mailtemplates-create-customization/',
-        '\BO\Zmsapi\MailTemplatesCreateCustomization'
-    )
+    '/mailtemplates-create-customization/',
+    '\BO\Zmsapi\MailTemplatesCreateCustomization'
+)
         ->setName("MailTemplatesCreateCustomization");
 
 \App::$slim->get(
-        '/custom-mailtemplates/{providerId}/',
-        '\BO\Zmsapi\MailCustomTemplatesGet'
-    )
+    '/custom-mailtemplates/{providerId}/',
+    '\BO\Zmsapi\MailCustomTemplatesGet'
+)
         ->setName("MailCustomTemplatesGet");
 
 \App::$slim->get(
-        '/merged-mailtemplates/{providerId}/',
-        '\BO\Zmsapi\MailMergedTemplatesGet'
-    )
+    '/merged-mailtemplates/{providerId}/',
+    '\BO\Zmsapi\MailMergedTemplatesGet'
+)
         ->setName("MailMergedTemplatesGet");
-            
+
 
 \App::$slim->delete(
-        '/mailtemplates/{templateId}/',
-        '\BO\Zmsapi\MailTemplatesDelete'
-    )
+    '/mailtemplates/{templateId}/',
+    '\BO\Zmsapi\MailTemplatesDelete'
+)
         ->setName("MailTemplatesDelete");
-        
+
 
 \App::$slim->get(
-        '/preview-mailtemplates/{mailStatus}/{providerId}/',
-        '\BO\Zmsapi\MailTemplatesPreview'
-    )
+    '/preview-mailtemplates/{mailStatus}/{providerId}/',
+    '\BO\Zmsapi\MailTemplatesPreview'
+)
         ->setName("MailTemplatesPreview");
 
 
@@ -1642,6 +1640,307 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\UseraccountListByRoleAndDepartments'
 )
     ->setName("UseraccountListByRoleAndDepartments");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/roles/":
+ *      get:
+ *          summary: Get roles assigned to a useraccount
+ *          x-since: 2.26
+ *          tags:
+ *              - useraccount
+ *              - role
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount login name
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "useraccount does not exist"
+ */
+\App::$slim->get(
+    '/useraccount/{loginname}/roles/',
+    '\BO\Zmsapi\UseraccountRolesGet'
+)
+    ->setName("UseraccountRolesGet");
+
+/**
+ *  @swagger
+ *  "/permissions/":
+ *      get:
+ *          summary: List all permission definitions
+ *          x-since: 2.26
+ *          tags:
+ *              - permission
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/permission.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->get(
+    '/permissions/',
+    '\BO\Zmsapi\PermissionListGet'
+)
+    ->setName("PermissionListGet");
+
+/**
+ *  @swagger
+ *  "/roles/":
+ *      post:
+ *          summary: Create a new role with permission names
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: role
+ *                  description: role payload (id and assignedUserCount are ignored)
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/role.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              400:
+ *                  description: "validation error or duplicate role name"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->post(
+    '/roles/',
+    '\BO\Zmsapi\RoleAdd'
+)
+    ->setName("RoleAdd");
+
+/**
+ *  @swagger
+ *  "/roles/":
+ *      get:
+ *          summary: List all roles
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ */
+\App::$slim->get(
+    '/roles/',
+    '\BO\Zmsapi\RoleListGet'
+)
+    ->setName("RoleListGet");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      get:
+ *          summary: Get a single role by id
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RoleGet'
+)
+    ->setName("RoleGet");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      delete:
+ *          summary: Delete a role by id
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success; data contains the deleted role"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->delete(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RoleDelete'
+)
+    ->setName("RoleDelete");
+
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      put:
+ *          summary: Update an existing role (name, description, permissions)
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: role
+ *                  description: role fields to update (id and assignedUserCount are ignored)
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/role.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              400:
+ *                  description: "validation error or invalid permission names"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->put(
+    '/roles/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RoleUpdate'
+)
+    ->setName("RoleUpdate");
 
 /**
  *  @swagger
@@ -2382,7 +2681,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("OrganisationGet");
 
-    /**
+/**
  *  @swagger
  *  "/organisation/{id}/owner/":
  *      get:
@@ -2778,7 +3077,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessUpdate");
 
-    /**
+/**
  *  @swagger
  *  "/process/{id}/{authKey}/preconfirmation/mail/":
  *      post:
@@ -3267,7 +3566,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessReserve");
 
-    /**
+/**
  *  @swagger
  *  "/process/status/preconfirmed/":
  *      post:
@@ -3615,7 +3914,7 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ScopeListByProvider");
 
-    /**
+/**
  *  @swagger
  *  "/request/{source}/{id}/scopes/":
  *      get:
@@ -4530,7 +4829,7 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ProcessListSummaryMail'
 )
     ->setName("ProcessListSummaryMail");
-    
+
 /**
  *  @swagger
  *  "/scope/{id}/emergency/":

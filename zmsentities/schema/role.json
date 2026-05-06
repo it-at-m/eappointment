@@ -4,30 +4,35 @@
     "example": {
         "id": 8,
         "name": "system_admin",
-        "description": "Full access to all system features",
+        "description": "Technische Administration",
         "permissions": [
             "superuser"
-        ]
+        ],
+        "assignedUserCount": 0
     },
     "required": [
-        "id",
         "name"
     ],
     "properties": {
         "id": {
             "type": "integer",
-            "description": "Numeric identifier of the role (primary key in the role table)."
+            "description": "Numeric identifier of the role (primary key in the role table). Omitted on create; set automatically by the database."
         },
         "name": {
             "type": "string",
-            "description": "Unique name of the role (e.g. agent_queue, appointment_admin, system_admin)."
+            "description": "Unique technical name stored in the database (ASCII, e.g. agent_queue, appointment_admin).",
+            "pattern": "^[a-z][a-z0-9_]{0,99}$"
         },
         "description": {
             "type": [
                 "string",
                 "null"
             ],
-            "description": "Optional human-readable description of the role."
+            "description": "German display label for administrators (stored in role.description)."
+        },
+        "assignedUserCount": {
+            "type": "integer",
+            "description": "Number of user accounts that have this role assigned (read-only, from API)."
         },
         "permissions": {
             "type": "array",

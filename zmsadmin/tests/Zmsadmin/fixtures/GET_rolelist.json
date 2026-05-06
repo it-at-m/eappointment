@@ -1,0 +1,21 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2026-05-05T08:00:00+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/role.json",
+            "id": 1,
+            "name": "system_admin",
+            "description": "Technische Administration",
+            "permissions": [
+                "superuser"
+            ],
+            "assignedUserCount": 0
+        }
+    }
+}
