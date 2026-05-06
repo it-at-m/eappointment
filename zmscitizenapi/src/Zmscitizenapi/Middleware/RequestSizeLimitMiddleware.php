@@ -34,11 +34,10 @@ class RequestSizeLimitMiddleware implements MiddlewareInterface
             if ($contentLength > $this->maxSize) {
                 $this->logger->logInfo(sprintf('Request too large: %d bytes. URI: %s', $contentLength, $request->getUri()));
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $language = $request->getAttribute('language');
-                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOO_LARGE, $language)['statusCode'])
+                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOO_LARGE)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_TOO_LARGE, $language)]
+                    'errors' => [ErrorMessages::get(self::ERROR_TOO_LARGE)]
                 ]));
                 return $response;
             }

@@ -67,19 +67,35 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateGetProcessById(): void
     {
-        // Test valid input
-        $result = ValidationService::validateGetProcessById(1, 'valid-key');
+        // Test valid 4-hex (legacy) auth key
+        $result = ValidationService::validateGetProcessById(1, 'fb43');
+        $this->assertEmpty($result['errors']);
+
+        $longHex = str_repeat('a', 64);
+        $result = ValidationService::validateGetProcessById(1, $longHex);
         $this->assertEmpty($result['errors']);
 
         // Test invalid process ID
-        $result = ValidationService::validateGetProcessById(0, 'valid-key');
+        $result = ValidationService::validateGetProcessById(0, 'fb43');
         $this->assertContains(
             ErrorMessages::get('invalidProcessId'),
             $result['errors']
         );
 
-        // Test invalid auth key
+        // Test invalid auth key (empty)
         $result = ValidationService::validateGetProcessById(1, '');
+        $this->assertContains(
+            ErrorMessages::get('invalidAuthKey'),
+            $result['errors']
+        );
+
+        // Not hex / wrong length
+        $result = ValidationService::validateGetProcessById(1, 'valid-key');
+        $this->assertContains(
+            ErrorMessages::get('invalidAuthKey'),
+            $result['errors']
+        );
+        $result = ValidationService::validateGetProcessById(1, 'abcdef');
         $this->assertContains(
             ErrorMessages::get('invalidAuthKey'),
             $result['errors']
@@ -302,6 +318,33 @@ class ValidationServiceTest extends TestCase
             $optionalScope
         );
         $this->assertEmpty($result['errors']);
+
+        $long = str_repeat('x', 251);
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            $long,
+            'ok',
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidCustomTextfield'),
+            $result['errors']
+        );
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            'ok',
+            $long,
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidCustomTextfield2'),
+            $result['errors']
+        );
     }
 
     public function testValidateGetScopeById(): void

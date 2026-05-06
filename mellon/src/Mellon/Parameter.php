@@ -61,4 +61,12 @@ abstract class Parameter
     {
         return $this->name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 }

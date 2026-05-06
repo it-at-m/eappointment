@@ -2,13 +2,11 @@
 
 namespace BO\Zmsentities\Validator;
 
-use BO\Mellon\Valid;
 use BO\Mellon\Unvalidated;
-use BO\Mellon\Validator;
-use BO\Mellon\Parameter;
 use BO\Mellon\Collection;
-use BO\Zmsentities\Process;
 use BO\Zmsentities\Helper\Delegate;
+use BO\Zmsentities\Helper\ProcessPlainText;
+use BO\Zmsentities\Process;
 
 /**
  *
@@ -60,15 +58,22 @@ class ProcessValidator
 
     public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
-        $valid = $unvalid->isString();
-        $length = strlen((string)$valid->getValue());
+        $trimmed = trim((string) $unvalid->getUnvalidated());
+        $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
+        $length = strlen($trimmed);
         if ($length || ($isRequiredCallback && $isRequiredCallback())) {
-            $valid
-                ->isBiggerThan(4, "Es müssen mindestens 4 Zeichen eingegeben werden.")
-                ;
+            if ($length) {
+                $valid
+                ->isMatchOf(
+                    '/^(?:[a-f0-9]{4}|[a-f0-9]{64})$/i',
+                    "Der Absagecode ist nicht korrekt"
+                );
+            } elseif ($isRequiredCallback && $isRequiredCallback()) {
+                $valid->isRequired("Ein Absagecode wird benötigt");
+            }
+            $this->getCollection()->validatedAction($valid, $setter);
+            return $this;
         }
-        $this->getCollection()->validatedAction($valid, $setter);
-        return $this;
     }
 
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
@@ -123,11 +128,29 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateCustomField(Unvalidated $unvalid, callable $setter): self
+    /**
+     * Validates a scope custom text field (max 250 chars), with optional HTML stripped to plain text.
+     */
+    public function validateCustomTextfield(Unvalidated $unvalid, callable $setter, bool $required): self
     {
-        $valid = $unvalid->isString();
-        $valid->isBiggerThan(1, "Dieses Feld darf nicht leer sein");
-        $this->getCollection()->validatedAction($valid, $setter);
+        $valid = $unvalid->isString('Ungültige Zeichenkette', false);
+        if ($valid->hasFailed()) {
+            $this->getCollection()->validatedAction($valid, $setter);
+            return $this;
+        }
+        $normalized = ProcessPlainText::normalize($valid->getValue());
+        if ($required && trim($normalized) === '') {
+            $valid->setFailure('Dieses Feld darf nicht leer sein');
+        } elseif (mb_strlen($normalized, 'UTF-8') > ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS) {
+            $valid->setFailure(
+                'Der Eintrag überschreitet die maximal erlaubte Länge von ' .
+                ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS .
+                ' Zeichen'
+            );
+        }
+        $this->getCollection()->validatedAction($valid, function ($raw) use ($setter) {
+            $setter(ProcessPlainText::normalize($raw));
+        });
         return $this;
     }
 
@@ -174,14 +197,19 @@ class ProcessValidator
 
     public function validateText(Unvalidated $unvalid, callable $setter): self
     {
-        $valid = $unvalid->isString();
-        $length = strlen((string)$valid->getUnvalidated());
-        if ($length) {
-            $valid->isSmallerThan(500, "Die Anmerkung sollte 500 Zeichen nicht überschreiten");
+        $valid = $unvalid->isString('Ungültige Zeichenkette', false);
+        if ($valid->hasFailed()) {
             $this->getCollection()->validatedAction($valid, $setter);
-        } else {
-            $this->getCollection()->addValid($valid);
+            return $this;
         }
+        $normalized = ProcessPlainText::normalize($valid->getValue());
+        $length = mb_strlen($normalized, 'UTF-8');
+        if ($length > ProcessPlainText::MAX_AMENDMENT_CHARS) {
+            $valid->setFailure('Die Anmerkung sollte 500 Zeichen nicht überschreiten');
+        }
+        $this->getCollection()->validatedAction($valid, function () use ($setter, $normalized) {
+            $setter($normalized);
+        });
         return $this;
     }
 

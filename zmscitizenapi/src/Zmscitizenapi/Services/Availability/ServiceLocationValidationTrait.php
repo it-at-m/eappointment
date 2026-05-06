@@ -8,12 +8,13 @@ use BO\Zmscitizenapi\Services\Core\ValidationService;
 
 trait ServiceLocationValidationTrait
 {
-    private function validateServiceLocations(array $officeIds, array $serviceIds): ?array
+    private function validateServiceLocations(array $officeIds, array $serviceIds, bool $showUnpublished = false): ?array
     {
         foreach ($officeIds as $officeId) {
             $errors = ValidationService::validateServiceLocationCombination(
                 (int) $officeId,
-                array_map('intval', $serviceIds)
+                array_map('intval', $serviceIds),
+                $showUnpublished
             );
             if (!empty($errors['errors'])) {
                 return $errors;

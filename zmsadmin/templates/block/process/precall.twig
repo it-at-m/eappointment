@@ -25,8 +25,8 @@
                 <dt>
                     Anmerkung
                 </dt>
-                <dd>
-                    {{ process.amendment }}
+                <dd class="process-free-text">
+                    {{ process.amendment|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if process.clients|first.telephone %}
@@ -49,16 +49,16 @@
                 <dt>
                     {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
-                <dd>
-                    {{ process.customTextfield }}
+                <dd class="process-free-text">
+                    {{ process.customTextfield|e|nl2br }}
                 </dd>
                 {% endif %}
                 {% if process.customTextfield2 %}
                 <dt>
                     {{workstation.scope.preferences.client.customTextfield2Label}}
                 </dt>
-                <dd>
-                    {{ process.customTextfield2 }}
+                <dd class="process-free-text">
+                    {{ process.customTextfield2|e|nl2br }}
                 </dd>
                 {% endif %}
                 <dt>
@@ -72,7 +72,7 @@
             <h4>Möchten Sie den Kunden aufrufen?</h4>
             <button type="button" class="button button--default button--fullwidth client-precall_button-success" data-processid="{{ process.id }}" data-exclude="{{ exclude }}">Ja, Kunden jetzt aufrufen</button>   
             <button type="button" class="button button--diamond button--fullwidth client-precall_button-skip right" data-exclude="{{ exclude }}">Nein, nächster Kunde bitte</button> 
-            <button type="button" class="button button--destructive button--fullwidth client-precall_button-abort left">Abbrechen</button>
+            <button type="button" class="button button--destructive button--fullwidth client-precall_button-cancel left">Abbrechen</button>
         {% endblock %}
 
         {% block board_footer %}

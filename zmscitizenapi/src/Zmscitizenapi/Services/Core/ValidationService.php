@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedScope;
+use BO\Zmsentities\Helper\ProcessPlainText;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
@@ -20,7 +21,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ValidationService
 {
-    private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
@@ -28,15 +28,12 @@ class ValidationService
     private const EMAIL_PATTERN = '/^(?!.*\.\.)(?!\.)(?!.*\.$)[^\s@+]+(?<!\.)@(?!\.)[^\s@+]+\.[^\s@]{2,}$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
-
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
+    private const AUTH_KEY_LEGACY_HEX_LENGTH = 4;
+    private const AUTH_KEY_NEW_HEX_LENGTH = 64;
 
     private static function getError(string $key): array
     {
-        return ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key);
     }
 
     public static function validateServerGetRequest(?ServerRequestInterface $request): array
@@ -69,7 +66,7 @@ class ValidationService
         return [];
     }
 
-    public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
+    public static function validateServiceLocationCombination(int $officeId, array $serviceIds, bool $showUnpublished = false): array
     {
         static $officeServicesCache = [];
 
@@ -81,19 +78,20 @@ class ValidationService
             return ['errors' => [self::getError('invalidServiceId')]];
         }
 
-        if (!isset($officeServicesCache[$officeId])) {
-            $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId);
+        $cacheKey = $officeId . '|' . ($showUnpublished ? '1' : '0');
+        if (!isset($officeServicesCache[$cacheKey])) {
+            $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId, $showUnpublished);
             $ids = [];
             if (is_array($serviceList) && isset($serviceList['errors'])) {
-                $officeServicesCache[$officeId] = [];
+                $officeServicesCache[$cacheKey] = [];
             } else {
                 foreach ($serviceList->services as $service) {
                     $ids[] = (string)$service->id;
                 }
-                $officeServicesCache[$officeId] = $ids;
+                $officeServicesCache[$cacheKey] = $ids;
             }
         }
-        $availableServiceIds = $officeServicesCache[$officeId];
+        $availableServiceIds = $officeServicesCache[$cacheKey];
 
         $serviceIdsStr = array_map('strval', $serviceIds);
         $invalidServiceIds = array_diff($serviceIdsStr, $availableServiceIds);
@@ -287,10 +285,12 @@ class ValidationService
             return;
         }
 
-        if (
-            ($fieldRequired && ($fieldValue === "" || !self::isValidCustomTextfield($fieldValue))) ||
-            ($fieldValue !== null && $fieldValue !== "" && !self::isValidCustomTextfield($fieldValue))
-        ) {
+        $normalized = ProcessPlainText::normalize($fieldValue);
+        if ($fieldRequired && trim($normalized) === '') {
+            $errors[] = self::getError($errorKey);
+            return;
+        }
+        if ($fieldValue !== null && $fieldValue !== '' && mb_strlen($normalized, 'UTF-8') > ProcessPlainText::MAX_CUSTOM_TEXTFIELD_CHARS) {
             $errors[] = self::getError($errorKey);
         }
     }
@@ -435,7 +435,16 @@ class ValidationService
 
     private static function isValidAuthKey(?string $authKey): bool
     {
-        return !empty($authKey) && is_string($authKey) && strlen(trim($authKey)) > 0;
+        if ($authKey === null) {
+            return false;
+        }
+        $authKey = trim($authKey);
+        $len = strlen($authKey);
+        if ($len !== self::AUTH_KEY_LEGACY_HEX_LENGTH && $len !== self::AUTH_KEY_NEW_HEX_LENGTH) {
+            return false;
+        }
+
+        return ctype_xdigit($authKey);
     }
 
     private static function isValidServiceIds(?array $serviceIds): bool
@@ -478,10 +487,6 @@ class ValidationService
         return !empty($familyName) && is_string($familyName) && strlen(trim($familyName)) > 0;
     }
 
-    private static function isValidCustomTextfield(?string $customTextfield): bool
-    {
-        return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
-    }
 
     private static function isValidOfficeId(?int $officeId): bool
     {

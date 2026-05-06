@@ -122,23 +122,20 @@ class ProcessReserve extends BaseController
             )
         ;
 
-        if (
-            isset($process->scope->preferences['client']['customTextfieldRequired'])
-            && $process->scope->preferences['client']['customTextfieldRequired']
-        ) {
-            $processValidator->validateCustomField(
+        $scope = $process->getCurrentScope();
+        if ((int) $scope->getCustomTextfieldActivated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
+                $delegatedProcess->setter('customTextfield'),
+                (bool) (int) $scope->getCustomTextfieldRequired()
             );
         }
 
-        if (
-            isset($process->scope->preferences['client']['customTextfield2Required'])
-            && $process->scope->preferences['client']['customTextfield2Required']
-        ) {
-            $processValidator->validateCustomField(
+        if ((int) $scope->getCustomTextfield2Activated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield2'),
-                $delegatedProcess->setter('customTextfield2')
+                $delegatedProcess->setter('customTextfield2'),
+                (bool) (int) $scope->getCustomTextfield2Required()
             );
         }
 
