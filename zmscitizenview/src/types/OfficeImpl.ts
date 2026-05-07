@@ -49,7 +49,7 @@ export class OfficeImpl implements Office {
     slotsPerAppointment: string | undefined,
     slots: number | undefined,
     priority: number = 1,
-    parentId: number | undefined,
+    parentId: number | undefined
   ) {
     this.id = id;
     this.name = name;
