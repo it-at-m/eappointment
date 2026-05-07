@@ -6,6 +6,7 @@
 # DDEV
 ddev start
 ```
+
 ```bash
 # Devcontainer (Podman)
 devcontainer up --workspace-folder .
@@ -51,9 +52,13 @@ ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
 ```
 <<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
+<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
 
 =======
 >>>>>>> 45ce4a780 (docs(ZMSKVR): split code in docs):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
+=======
+
+>>>>>>> 66ed8b077 (clean(ZMSKVR): docs format code):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
 ```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
@@ -78,9 +83,13 @@ You can rerun full setup at any time:
 ddev exec ./cli db full-setup
 ```
 <<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
+<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
 
 =======
 >>>>>>> 45ce4a780 (docs(ZMSKVR): split code in docs):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
+=======
+
+>>>>>>> 66ed8b077 (clean(ZMSKVR): docs format code):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
 ```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"
