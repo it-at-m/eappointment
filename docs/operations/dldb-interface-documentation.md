@@ -490,12 +490,13 @@ Use this order to debug a missing item in `zmscitizenapi`:
 9. Known issue: if results look stale after a successful import, clear cached artifacts in the repository `cache/` folder and rerun the import/read path.
 
 ## Known Gaps / Not Yet Used
-
-- `TERMINVEREINBARUNG`: present in raw export, currently not explicitly interpreted in `Munich.php`.
 - `GEBUEHRENRAHMEN`: mapped to normalized service `fees`, but not exposed by thinned `Service` DTO in `MapperService`.
 - `FORMULARE_INFORMATIONEN`: mapped to normalized `forms`/`links`, but not exposed by thinned `Service` DTO in `MapperService`.
 
 Implementation point for explicit field behavior remains the service field parsing blocks in `Munich.php`.
+
+## What Shows Up in the Raw ZMS Export?
+- `TERMINVEREINBARUNG`: always present in the [zms raw export](https://stadt.muenchen.de/service/info/zms/index/), currently not explicitly interpreted in `Munich.php` or `map.php`. However every service that shows up in the raw zms export has `TERMINVEREINBARUNG` set to true.
 
 ## Before/After Example
 
