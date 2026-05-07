@@ -1153,6 +1153,7 @@ onMounted(() => {
     const preselectedMatches = (office: OfficeImpl) =>
       props.preselectedOfficeId &&
       (Number(office.id) === Number(props.preselectedOfficeId) ||
+        Number(office.parentId) === Number(props.preselectedOfficeId) ||
         (Array.isArray(office.allowDisabledServicesMix) &&
           office.allowDisabledServicesMix.includes(
             Number(props.preselectedOfficeId)
