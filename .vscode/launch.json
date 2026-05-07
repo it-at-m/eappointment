@@ -10,5 +10,13 @@
                 "/var/www/html": "${workspaceFolder}"
             }
         },
+        {
+        "name": "Debug Vue in Chrome",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:8082/buergeransicht/#/services/10441370/locations/101135",
+        "webRoot": "${workspaceFolder}/zmscitizenview/src",
+        "sourceMaps": true
+        }
     ]
 }
