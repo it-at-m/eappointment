@@ -501,7 +501,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         office.slotsPerAppointment,
         office.slots,
         office.priority || 1,
-        office.parentId,
+        office.parentId
       );
 
       if (
