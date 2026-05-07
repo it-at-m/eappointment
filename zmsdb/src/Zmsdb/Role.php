@@ -10,16 +10,17 @@ class Role extends Base
 {
     public function readRoleById(int $roleId, int $resolveReferences = 1): ?Entity
     {
-        if (null === $roleId) {
-            return null;
-        }
-
         $query = new Query\Role(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionRoleId($roleId);
+        $role = $this->fetchOne($query, new Entity());
 
-        return $this->fetchOne($query, new Entity());
+        if (! $role->hasId()) {
+            return null;
+        }
+
+        return $role;
     }
 
     public function readAllRoles(string $order = 'ASC', int $resolveReferences = 1): Collection
