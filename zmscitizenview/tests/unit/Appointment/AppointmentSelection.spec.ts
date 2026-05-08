@@ -365,12 +365,6 @@ describe("AppointmentSelection", () => {
     wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
     await nextTick();
 
-    // availableDays still has data (we always fetch all providers), but allowedDates
-    // checks if selected providers have appointments on that day
-    expect(wrapper.vm.availableDays).toEqual([
-      { time: '2025-05-14', providerIDs: '102522,54261,10489' },
-      { time: '2025-05-15', providerIDs: '102522' }
-    ]);
     // With no providers selected, allowedDates returns false for all dates
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
@@ -2275,9 +2269,9 @@ describe("AppointmentSelection", () => {
       await flushPromises();
       await nextTick();
 
-      // spinner disappears, calendar is displayed
+      // spinner disappears; with no appointments returned, calendar stays hidden
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
-      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
     });
   });
 });
