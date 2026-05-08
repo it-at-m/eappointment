@@ -3,6 +3,7 @@
 This page describes how branches are created and maintained in eAppointment development.
 
 ## Branch Naming Convention
+
 To keep our branch names organized and easily understandable, we follow a specific naming convention for all branches created in this repository. Please adhere to this convention when creating new branches:
 
 1. **type**: The type of work the branch represents. This should be one of the following:
@@ -56,7 +57,7 @@ gitGraph LR:
   commit tag: "2.25.00-muc1"
   branch next order: 30
   commit
-  
+
   checkout main
   branch hotfix-1 order: 5
   commit
@@ -82,6 +83,5 @@ gitGraph LR:
   checkout main
   merge next
   commit type: HIGHLIGHT id: "Abnahme Tests"
-  commit tag: "2.25.00-muc2" 
+  commit tag: "2.25.00-muc2"
 ```
-
