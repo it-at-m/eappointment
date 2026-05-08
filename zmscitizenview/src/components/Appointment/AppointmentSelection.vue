@@ -48,7 +48,7 @@
   </div>
   <div
     v-else-if="
-      !error &&
+      (!error || isNoAppointmentForThisDayError) &&
       (hasSelectedProviderWithAppointments ||
         !availableDaysFetched ||
         isSwitchingProvider)
@@ -245,6 +245,7 @@ import { toCalloutType } from "@/utils/callout";
 import {
   createErrorStates,
   getApiErrorTranslation,
+  handleApiError,
   handleApiResponse,
 } from "@/utils/errorHandler";
 import {
@@ -273,7 +274,7 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back") => void>();
+const emit = defineEmits<(e: "next" | "back" | "clearBookingError") => void>();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -311,6 +312,9 @@ const currentErrorData = computed(() => errorStates.currentErrorData);
 
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
+const isNoAppointmentForThisDayError = computed(
+  () => errorStateMap.value.apiErrorNoAppointmentForThisDay?.value ?? false
+);
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
@@ -377,7 +381,9 @@ const removeDayFromAvailableDays = (date: string) => {
   availableDays.value = availableDays.value.filter(
     (day) => toDayKey(day.time) !== dayKey
   );
-  updateDateRangeForSelectedProviders();
+  // Do not auto-jump to another day in this edge case; keep the selected day
+  // so users can read the "no appointment for this day" callout.
+  updateDateRangeForSelectedProviders(true);
   calendarKey.value++;
 };
 
@@ -646,6 +652,9 @@ const handleDaySelection = async (day: any) => {
     return;
   }
 
+  // Clear stale booking error callout when user chooses another date.
+  emit("clearBookingError");
+
   selectedDay.value = day;
   selectedTimeslot.value = 0;
   selectedHour.value = null;
@@ -815,6 +824,20 @@ const handleError = (data: any): void => {
   handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
+const clearApiErrors = (): void => {
+  Object.values(errorStateMap.value).forEach((es) => (es.value = false));
+  currentErrorData.value = null;
+};
+
+const setNoAppointmentForThisDayError = (): void => {
+  error.value = true;
+  handleApiError(
+    "noAppointmentForThisDay",
+    errorStateMap.value,
+    currentErrorData.value
+  );
+};
+
 // API calls
 const fetchAvailableDaysForSelection = async (): Promise<void> => {
   // Always fetch available days for ALL providers to maintain the full list
@@ -927,8 +950,11 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
       if (appointmentsCount.value === 0) {
         addDateWithoutAppointments(date);
         removeDayFromAvailableDays(date);
+        setNoAppointmentForThisDayError();
       } else {
         removeDateWithoutAppointments(date);
+        error.value = false;
+        clearApiErrors();
       }
 
       // Only show error if there are no appointments on any day
@@ -936,22 +962,20 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
         appointmentsCount.value === 0 &&
         !hasAppointmentsForSelectedProviders()
       ) {
-        error.value = true;
-      } else {
-        error.value = false;
-
+        setNoAppointmentForThisDayError();
+      } else if (appointmentsCount.value !== 0) {
         // Keep selectedDay; provider-change pipeline decides nearest available date
       }
     } else {
       // Track dates without appointments
       addDateWithoutAppointments(date);
       removeDayFromAvailableDays(date);
+      setNoAppointmentForThisDayError();
 
       // Only show error if there are no appointments on any day
       if (!hasAppointmentsForSelectedProviders()) {
-        error.value = true;
+        setNoAppointmentForThisDayError();
       } else {
-        error.value = false;
         // Keep selectedDay; provider-change pipeline decides nearest available date
       }
     }
@@ -1045,7 +1069,7 @@ function getAvailableProviders(
   });
 }
 
-function updateDateRangeForSelectedProviders() {
+function updateDateRangeForSelectedProviders(skipDateValidation = false) {
   if (!availableDays.value) return [];
   const selectedProviderIds = Object.entries(selectedProviders.value)
     .filter(([_, isSelected]) => isSelected)
@@ -1076,7 +1100,9 @@ function updateDateRangeForSelectedProviders() {
     calendarKey.value++;
 
     // Validate that the currently selected date is still available for selected providers
-    validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    if (!skipDateValidation) {
+      validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+    }
   }
   return availableDaysForSelectedProviders;
 }
