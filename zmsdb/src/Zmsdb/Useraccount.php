@@ -717,6 +717,13 @@ class Useraccount extends Base
                 return $lookup;
             }
         } catch (\Throwable $e) {
+            App::$log->warning(
+                'readValidRoleNameLookup failed, falling back to TEMP_ROLE_MAP_BY_BERECHTIGUNG',
+                [
+                    'exception' => get_class($e),
+                    'message' => $e->getMessage(),
+                ]
+            );
         }
 
         return array_fill_keys(array_values(array_unique(self::TEMP_ROLE_MAP_BY_BERECHTIGUNG)), true);
@@ -769,6 +776,7 @@ class Useraccount extends Base
                         'message' => $e->getMessage(),
                     ]);
                 }
+                throw $e;
             }
         }
 
