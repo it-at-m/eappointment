@@ -11,9 +11,9 @@ class RoleListGet extends BaseController
     {
         (new Helper\User($request, 1))->checkRights('useraccount');
 
-        $rolesLst = (new Role())->readAllRoles();
+        $roleList = (new Role())->readAllRoles();
         $message = Response\Message::create($request);
-        $message->data = $rolesLst;
+        $message->data = $roleList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
