@@ -47,14 +47,13 @@
                                     "target": urlGet('roleEdit', {'id': role.id}, {}), 
                                     "label": '<i class="fas fa-edit" aria-hidden="true"></i>' 
                                 }) }}
-                                {{ custombutton({ 
-                                    "type": "delete", 
-                                    "class": "link", 
-                                    "target": urlGet('roleDelete', {'id': role.id}, {}), 
-                                    "label": '<i class="fas fa-trash" aria-hidden="true"></i>', 
-                                    "attributes": {
-                                        "data-assigned-users": role.assignedUserCount|default(0),
-                                        "onclick": "return window.zmsConfirmRoleDelete(this);"
+                                {{ custombutton({
+                                    "type": "delete",
+                                    "class": "link js-role-delete",
+                                    "target": urlGet('roleDelete', {'id': role.id}, {}),
+                                    "label": '<i class="fas fa-trash" aria-hidden="true"></i>',
+                                    "data": {
+                                        "assigned-users": role.assignedUserCount|default(0)
                                     }
                                 }) }}
                            
@@ -75,6 +74,25 @@
             }
             return window.confirm('Soll diese Rolle wirklich endgültig gelöscht werden?');
         };
+
+        document.addEventListener('click', function (e) {
+            var el = e.target && e.target.closest ? e.target.closest('.js-role-delete') : null;
+            if (!el) {
+                return;
+            }
+            e.preventDefault();
+            if (!window.zmsConfirmRoleDelete(el)) {
+                return;
+            }
+            fetch(el.getAttribute('href'), {
+                method: 'DELETE',
+                credentials: 'same-origin'
+            }).then(function (r) {
+                window.location.href = r.url || '{{ urlGet('roles', {}, {}) }}';
+            }).catch(function () {
+                window.location.href = '{{ urlGet('roles', {}, {}) }}';
+            });
+        }, false);
         </script>
     {% endblock %}
 
