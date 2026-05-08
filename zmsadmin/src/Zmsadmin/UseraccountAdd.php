@@ -62,6 +62,7 @@ class UseraccountAdd extends BaseController
                     }
                 }
             } catch (\BO\Zmsclient\Exception $e) {
+                \App::$log->warning('Failed to load roles for superuser', ['error' => $e->getMessage()]);
             }
         }
 
