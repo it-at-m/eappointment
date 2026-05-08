@@ -1,0 +1,39 @@
+<?php
+
+namespace BO\Zmsadmin\Tests;
+
+class RoleDeleteTest extends Base
+{
+    protected $arguments = [
+        'id' => 1
+    ];
+
+    protected $parameters = [];
+
+    protected $classname = "RoleDelete";
+
+    public function testRendering()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/roles/1/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_role_1.json")
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertRedirect($response, '/roles/?success=role_deleted');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+}
+
