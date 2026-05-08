@@ -32,6 +32,7 @@
         },
         "assignedUserCount": {
             "type": "integer",
+            "readOnly": true,
             "description": "Number of user accounts that have this role assigned (read-only, from API)."
         },
         "permissions": {
