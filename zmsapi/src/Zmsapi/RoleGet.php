@@ -14,7 +14,7 @@ class RoleGet extends BaseController
         $roleId = (int) $args['id'];
         $role = (new Role())->readRoleById($roleId);
 
-        if (! $role->hasId()) {
+        if (!$role || ! $role->hasId()) {
             throw new Exception\Role\RoleNotFound();
         }
 

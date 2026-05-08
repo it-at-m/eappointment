@@ -20,7 +20,7 @@ class RoleDelete extends BaseController
         $roleModel = new Role();
         $roleEntity = $roleModel->readRoleById($roleId);
 
-        if (! $roleEntity->hasId()) {
+        if (!$roleEntity || ! $roleEntity->hasId()) {
             throw new Exception\Role\RoleNotFound();
         }
 
