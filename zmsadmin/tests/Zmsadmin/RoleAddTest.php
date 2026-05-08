@@ -20,9 +20,6 @@ class RoleAddTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
                     'function' => 'readGetResult',
                     'url' => '/permissions/',
                     'parameters' => [],
