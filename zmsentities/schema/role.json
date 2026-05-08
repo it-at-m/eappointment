@@ -16,7 +16,7 @@
     "properties": {
         "id": {
             "type": "integer",
-            "description": "Numeric identifier of the role (primary key in the role table). Omitted on create; set automatically by the database."
+            "description": "Numeric identifier of the role (primary key in the role table)."
         },
         "name": {
             "type": "string",
@@ -28,7 +28,7 @@
                 "string",
                 "null"
             ],
-            "description": "German display label for administrators (stored in role.description)."
+            "description": "Display label for administrators (stored in role.description)."
         },
         "assignedUserCount": {
             "type": "integer",
