@@ -906,6 +906,13 @@ const getAppointmentsOfDay = async (date: string): Promise<void> => {
       props.captchaToken ?? undefined
     );
 
+    // API errors (e.g. captchaMissing, rateLimitExceeded) must surface as callouts
+    // and must not be interpreted as "this day has no appointments".
+    if (data && typeof data === "object" && "errors" in data) {
+      handleError(data);
+      return;
+    }
+
     if (data && "offices" in data && Array.isArray((data as any).offices)) {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
