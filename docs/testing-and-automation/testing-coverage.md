@@ -18,4 +18,4 @@ Coverage HTML from CI is published under [https://it-at-m.github.io/eappointment
 - [zmsclient](https://it-at-m.github.io/eappointment/coverage/coverage-zmsclient/html/)
 - [zmscitizenview](https://it-at-m.github.io/eappointment/coverage/coverage-zmscitizenview/)
 
-For API docs and diagrams, see [API reference](./api-reference.md).
+For API docs and diagrams, see [API reference](../operations/api-reference.md).
