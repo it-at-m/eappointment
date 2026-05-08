@@ -1936,7 +1936,50 @@
  *              404:
  *                  description: "role does not exist"
  */
-\App::$slim->put(
+/**
+ *  @swagger
+ *  "/roles/{id}/":
+ *      post:
+ *          summary: Update an existing role (same request body and responses as PUT; used by zmsadmin like OwnerUpdate)
+ *          x-since: 2.26
+ *          tags:
+ *              - role
+ *          parameters:
+ *              -   name: id
+ *                  description: role id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: role
+ *                  description: role fields to update (id and assignedUserCount are ignored)
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/role.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/role.json"
+ *              400:
+ *                  description: "validation error or invalid permission names"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "missing or wrong access rights"
+ *              404:
+ *                  description: "role does not exist"
+ */
+\App::$slim->post(
     '/roles/{id:\d{1,11}}/',
     '\BO\Zmsapi\RoleUpdate'
 )
