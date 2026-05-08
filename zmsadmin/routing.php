@@ -340,13 +340,12 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET', 'POST'], '/roles/{id:\d+}/edit/', \BO\Zmsadmin\RoleEdit::class)
     ->setName("roleEdit");
 
-\App::$slim->get('/roles/delete/{id:\d+}/', \BO\Zmsadmin\RoleDelete::class)
+\App::$slim->delete('/roles/delete/{id:\d+}/', \BO\Zmsadmin\RoleDelete::class)
     ->setName("roleDelete");
 
 \App::$slim->map(['GET', 'POST'], '/users/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
-// In here we edit the useraccount including its roles
 \App::$slim->map(['GET','POST'], '/users/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
