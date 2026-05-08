@@ -599,6 +599,9 @@ const handleDaySelection = async (day: any) => {
     return;
   }
 
+  // Refresh available days before loading appointments for a newly selected date.
+  await fetchAvailableDaysForSelection();
+
   selectedDay.value = day;
   selectedTimeslot.value = 0;
   selectedHour.value = null;
