@@ -51,7 +51,6 @@ class UseraccountEdit extends BaseController
 
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
-
         $roleList = new RoleList();
         $userAccountRoles = [];
 
