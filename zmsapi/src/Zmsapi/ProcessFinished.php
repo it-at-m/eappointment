@@ -82,7 +82,7 @@ class ProcessFinished extends BaseController
         $processCheck = (new Process())->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth());
         if (null === $processCheck || false === $processCheck->hasId()) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($processCheck->authKey != $process->authKey) {
+        } elseif ($processCheck->authKey !== $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }

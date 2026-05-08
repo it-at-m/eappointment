@@ -29,7 +29,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             behoerdenid = :departmentId,
             organisationsid = :organisationId,
             kundenid = :ownerId,
-            bearbeitungszeit = :processingTime
+            processing_time = :processingTime
     ';
 
     public function getEntityMapping()
@@ -42,16 +42,16 @@ class ProcessStatusArchived extends Base implements MappingInterface
             ),
             'scope__id' => 'process.StandortID',
             '__clientsCount' => 'process.AnzahlPersonen',
-            'waitingTime' => 'process.wartezeit',
-            'wayTime' => 'process.wegezeit',
-            'processingTime' => 'process.bearbeitungszeit',
+            'waitingTime' => 'process.waiting_time',
+            'wayTime' => 'process.way_time',
+            'processingTime' => 'process.processing_time',
             'name' => 'process.name',
             'services' => 'process.dienstleistungen',
             'queue__arrivalTime' => self::expression(
                 'CONCAT(`process`.`Datum`, " 00:00:00")'
             ),
             'queue__callTime' => self::expression(
-                'CONCAT(`process`.`Datum`, " ", SEC_TO_TIME(`wartezeit`))'
+                'CONCAT(`process`.`Datum`, " ", SEC_TO_TIME(`waiting_time` * 60))'
             ),
             'queue__withAppointment' => 'process.mitTermin',
             'withAppointment' => 'process.mitTermin',
@@ -170,10 +170,9 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $process->getArrivalTime()->format('H:i:s'),
-            'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
-            'wegezeit' => ($process->getWaySeconds() > 0) ? $process->getWayMinutes() : 0,
-            'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
-            'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
+            'waiting_time' => ($warteZeit > 0) ? $warteZeit : 0,
+            'way_time' => ($process->getWayMinutes() > 0) ? $process->getWayMinutes() : 0,
+            'processing_time' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
             'AnzahlPersonen' => $process->getClients()->count(),
             'is_ticketprinter' => $isTicketprinter
         ]);

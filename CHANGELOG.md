@@ -1,3 +1,63 @@
+
+## Release Muc-41 (08.05.2026) 
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1018'>ZMSKVR-1018</a>] -         MSE Warteschlange: Tags statt Zeilenumbruch (Anmerkung, Freitextfeld)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1102'>ZMSKVR-1102</a>] -         Termine bleiben in Bearbeitung+ beim zweitem Aufruf verschwinden nach dem man auf Abbrechen klickt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1186'>ZMSKVR-1186</a>] -         PHP Warnings mit null checks beheben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1344'>ZMSKVR-1344</a>] -         Tab der Dienstleistungsstatistik falsch benannt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1352'>ZMSKVR-1352</a>] -         Termindauer falsch, wenn zugehörige Öffnungszeit gelöscht wurde
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1355'>ZMSKVR-1355</a>] -         Demo Bürgeransicht: Verfügbare Tage werden nach Auswahl grau und „Weiter“-Button bleibt deaktiviert
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1386'>ZMSKVR-1386</a>] -         Anzeige nach Auswahl einer Dienstleistung im eKiosk bleibt zu lange sichtbar
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1314'>ZMSKVR-1314</a>] -         Verbesserung der Darstellung der Dienstleistungsstatistik
+</li>
+</ul>
+                
+
+## Release Muc-40 (17.04.2026) 
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1138'>ZMSKVR-1138</a>] -         Zwei Sachbearbeiter:innen können gleichen Kunden aufrufen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1363'>ZMSKVR-1363</a>] -         Wartemarken werden zweimal gedruckt
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-787'>ZMSKVR-787</a>] -         Wartemarken Layouts verwalten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-798'>ZMSKVR-798</a>] -          Nicht Verwendetes Feature SMS/Notification Löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1088'>ZMSKVR-1088</a>] -         LOGIN Sortierung Leistungen in Termin-Titel korrigieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1171'>ZMSKVR-1171</a>] -         Backend-Vorarbeiten für atomares Berechtigungsmodell
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1187'>ZMSKVR-1187</a>] -         OIDC-Login Performance verbessern durch optimiertes resolveReferences bei workstation select
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1188'>ZMSKVR-1188</a>] -         Entfernung von nicht verwendete /config/ und SMS/Notifications Einstellungen im eKiosk
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1250'>ZMSKVR-1250</a>] -         Wegezeit sekundengenau speichern (buerger, buergerarchiv, buergerarchivtoday)
+</li>
+</ul>
+
 ## Release Muc-39 (27.03.2026) 
                             
 <h2>        Bug

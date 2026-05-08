@@ -26,8 +26,6 @@ class Index extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Helper\HomeUrl::create($request);
-        // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
-        //$config = $this->getConfig();
 
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $this->getDefaultTemplate($validator);
@@ -74,7 +72,6 @@ class Index extends BaseController
                 'organisation' => $organisation,
                 'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                //'config' => $config,
                 'defaultLanguage' => $defaultLanguage,
                 'languages' => $languages,
                 'translations' => $translations,

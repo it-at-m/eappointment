@@ -89,7 +89,8 @@ class ProcessSave extends BaseController
                 ->setConflictAmendment()
                 ->toConflictListByDay() :
             null;
-        return (isset($conflictList)) ? $conflictList[$appointment->getStartTime()->format('Y-m-d')] : null;
+        $dayKey = $appointment->getStartTime()->format('Y-m-d');
+        return ($conflictList && isset($conflictList[$dayKey])) ? $conflictList[$dayKey] : null;
     }
 
     protected function writeUpdatedProcess($input, Entity $process, $validator, $notify = true)

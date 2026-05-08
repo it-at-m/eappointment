@@ -6,33 +6,18 @@ namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
 use PHPUnit\Framework\TestCase;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentUpdateService;
 
 class AppointmentUpdateServiceTest extends TestCase
 {
     private AppointmentUpdateService $service;
     private \ReflectionClass $reflector;
-    private static $originalFacade;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->service = new AppointmentUpdateService();
         $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
-        
-        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
-        $staticProperties = $facadeReflection->getStaticProperties();
-        self::$originalFacade = reset($staticProperties);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
-        $staticProperty = $facadeReflection->getProperties(\ReflectionProperty::IS_STATIC)[0];
-        $staticProperty->setAccessible(true);
-        $staticProperty->setValue(null, self::$originalFacade);
     }
 
     private function invokePrivateMethod(string $methodName, array $params = []): mixed
@@ -46,7 +31,7 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $body = [
             'processId' => '12345',
-            'authKey' => 'abc123',
+            'authKey' => 'fb43',
             'familyName' => 'Doe',
             'email' => 'john@example.com',
             'telephone' => '1234567890',
@@ -57,7 +42,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $result = $this->invokePrivateMethod('extractClientData', [$body]);
 
         $this->assertEquals(12345, $result->processId);
-        $this->assertEquals('abc123', $result->authKey);
+        $this->assertEquals('fb43', $result->authKey);
         $this->assertEquals('Doe', $result->familyName);
         $this->assertEquals('john@example.com', $result->email);
         $this->assertEquals('1234567890', $result->telephone);
@@ -69,13 +54,13 @@ class AppointmentUpdateServiceTest extends TestCase
     {
         $body = [
             'processId' => 'invalid',
-            'authKey' => 'abc123'
+            'authKey' => 'fb43'
         ];
 
         $result = $this->invokePrivateMethod('extractClientData', [$body]);
 
         $this->assertNull($result->processId);
-        $this->assertEquals('abc123', $result->authKey);
+        $this->assertEquals('fb43', $result->authKey);
         $this->assertNull($result->familyName);
         $this->assertNull($result->email);
         $this->assertNull($result->telephone);
@@ -312,7 +297,7 @@ class AppointmentUpdateServiceTest extends TestCase
 
     public function testUpdateProcessWithClientData(): void
     {
-        $process = $this->createMock(ThinnedProcess::class);
+        $process = new ThinnedProcess();
         $process->familyName = 'Old Name';
         $process->email = 'old@example.com';
         

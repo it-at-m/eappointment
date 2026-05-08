@@ -291,12 +291,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
-     * Read authKey by processId
+     * Read auth data by processId (for request-side auth checks).
      *
-     * @param
-     * processId
-     *
-     * @return String authKey
+     * @return array{authKey: string}|null
      */
     public function readAuthKeyByProcessId($processId)
     {
@@ -307,7 +304,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
         return ($process->hasId()) ? array(
-            'authName' => $process->getFirstClient()['familyName'],
             'authKey' => $process->authKey
         ) : null;
     }
@@ -663,11 +659,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
+        $newAuthKey = bin2hex(random_bytes(32));
         $query = Query\Process::QUERY_CANCELED;
         $this->perform($query, [
             'processId' => $processId,
             'authKey' => $authKey,
-            'canceledTimestamp' => $canceledTimestamp
+            'canceledTimestamp' => $canceledTimestamp,
+            'newAuthKey' => $newAuthKey
         ]);
         $process = $this->readEntity($processId, new Helper\NoAuth(), 0);
         Log::writeProcessLog("DELETE (Process::writeCanceledEntity) $processId ", Log::ACTION_CANCELED, $process, $useraccount);

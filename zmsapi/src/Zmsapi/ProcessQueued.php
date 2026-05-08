@@ -65,7 +65,7 @@ class ProcessQueued extends BaseController
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
+        } elseif ($authCheck['authKey'] !== $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
         Helper\Matching::testCurrentScopeHasRequest($entity);

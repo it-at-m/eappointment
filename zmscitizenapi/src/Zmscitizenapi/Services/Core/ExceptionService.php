@@ -9,17 +9,6 @@ use BO\Zmsclient\Psr7\RequestException;
 
 class ExceptionService
 {
-    private static ?string $currentLanguage = null;
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
-
-    public static function getLanguageContext(): ?string
-    {
-        return self::$currentLanguage;
-    }
-
     private static function getError(string $key): array
     {
         return ErrorMessages::get($key);

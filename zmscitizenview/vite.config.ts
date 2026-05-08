@@ -46,6 +46,23 @@ export default defineConfig({
     // Allow dev server access via the Docker service name "citizenview"
     // from the zms-web container (used by ATAF UI tests).
     allowedHosts: ['citizenview'],
+    proxy: {
+      '/buergeransicht/api': {
+        target: 'http://refarch-gateway:8080',
+        changeOrigin: true,
+        // zmscitizenapi prefers HTTP_X_FORWARDED_HOST for ACCESS_UNPUBLISHED_ON_DOMAIN; changeOrigin
+        // overwrites Host to refarch-gateway, so forward the browser host for gateway → zms-web.
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            const raw = req.headers.host
+            const host = Array.isArray(raw) ? raw[0] : raw
+            if (host) {
+              proxyReq.setHeader('X-Forwarded-Host', host)
+            }
+          })
+        },
+      },
+    },
   },
   build: {
     ssrManifest: true,

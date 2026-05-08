@@ -43,15 +43,9 @@ class ZmsApiFacadeService
     private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
     private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
-    private static ?string $currentLanguage = null;
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
-
     private static function getError(string $key): array
     {
-        return ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key);
     }
 
     private static function setMappedCache(string $cacheKey, mixed $data): void

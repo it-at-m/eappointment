@@ -1,27 +1,41 @@
 {
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.base.schema.json",
   "name": "zms-devcontainer",
   "dockerComposeFile": "docker-compose.yaml",
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8090, 8091, 8036, 8084, 8080, 8443, 9003],
+  "forwardPorts": [8036, 8080, 8082, 8084, 8090, 9003],
+  "portsAttributes": {
+    "8036": {
+      "label": "phpMyAdmin"
+    },
+    "8080": {
+      "label": "keycloak"
+    },
+    "8082": {
+      "label": "citizenview"
+    },
+    "8084": {
+      "label": "refarch-gateway"
+    },
+    "8090": {
+      "label": "zms"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-        "xdebug.php-debug",
-        "bmewburn.vscode-intelephense-client"
+        "bmewburn.vscode-intelephense-client",
+        "eamodio.gitlens",
+        "mblode.twig-language-2",
+        "vue.volar",
+        "xdebug.php-debug"
       ]
     }
   },
-  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi'",
-  // Note: To make keycloak work from your browser, add this to your Mac's /etc/hosts:
-  // 127.0.0.1 keycloak
-  "postStartCommand": [
-  // "bash", "-c", "curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
-  // "bash", "-c", "curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md",
-    "bash", "-c", "git config --global --add safe.directory '*' && for dir in zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsstatistic zmsticketprinter; do mkdir -p /var/www/html/$dir/cache && chmod 777 /var/www/html/$dir/cache; done",
-    "bash", "-c", "ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true",
-    "bash", "-c", "if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi"
-  ],
+  "initializeCommand": "bash -c 'if [ ! -f .devcontainer/.env ]; then cp .devcontainer/.env.template .devcontainer/.env; fi; if [ \"$CODESPACES\" = \"true\" ]; then sed -i \"s/XDEBUG_CLIENT_HOST=.*/XDEBUG_CLIENT_HOST=127.0.0.1/\" .devcontainer/.env; fi' && bash .devcontainer/scripts/sync-php-base-tag.sh .devcontainer/.env",
+  "postCreateCommand": "bash -c './cli dev setup-local && git config --global --add safe.directory \"*\" && chmod 777 /var/www/html/cache'",
+  "postStartCommand": "bash -c 'curl -sSL -o zmsadmin/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md; curl -sSL -o zmsstatistic/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md; ln -sf /usr/bin/firefox-esr /usr/bin/firefox || true; if ! pgrep -x Xvfb > /dev/null; then Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & fi'",
   "runServices": ["web", "db", "phpmyadmin", "refarch-gateway", "keycloak", "init-keycloak", "citizenview"]
 }
