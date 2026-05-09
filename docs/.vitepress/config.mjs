@@ -177,6 +177,9 @@ export default {
         ariaLabel: "GitHub Repository",
       },
     ],
+    search: {
+      provider: "local",
+    },
     sidebar: [
       {
         text: "Overview",
