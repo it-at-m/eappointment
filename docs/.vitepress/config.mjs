@@ -705,12 +705,15 @@ export default {
         link: "https://github.com/it-at-m/eappointment/releases",
       },
       {
-        text: "GitHub Repository",
-        link: "https://github.com/it-at-m/eappointment/",
-      },
-      {
         text: "Open Source",
         link: "https://opensource.muenchen.de/software/zeitmanagementsystem.html",
+      },
+    ],
+    socialLinks: [
+      {
+        icon: "github",
+        link: "https://github.com/it-at-m/eappointment/",
+        ariaLabel: "GitHub Repository",
       },
     ],
     sidebar: [
