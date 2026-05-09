@@ -713,7 +713,12 @@ export default {
       {
         icon: "github",
         link: "https://github.com/it-at-m/eappointment/",
-        ariaLabel: "GitHub Repository",
+        ariaLabel: "Munich GitHub Repository",
+      },
+      {
+        icon: "gitlab",
+        link: "https://gitlab.com/eappointment/eappointment",
+        ariaLabel: "Berlin GitLab Repository",
       },
     ],
     search: {
