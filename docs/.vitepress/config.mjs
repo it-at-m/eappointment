@@ -583,24 +583,34 @@ export default {
       siteConfig?.site?.description ||
       "Technical documentation for it-at-m/eappointment";
     const pageTitle = fm.title || pageData.title || siteTitle;
-    const pageDescription = fm.description || pageData.description || siteDescription;
+    const pageDescription =
+      fm.description || pageData.description || siteDescription;
     const ogImage = `${SITE_HOSTNAME}${SITE_BASE}img/logo.png`;
 
     tags.push(["link", { rel: "canonical", href: fullUrl }]);
     tags.push(["link", { rel: "alternate", hreflang: "en", href: enUrl }]);
     tags.push(["link", { rel: "alternate", hreflang: "de", href: deUrl }]);
-    tags.push(["link", { rel: "alternate", hreflang: "x-default", href: enUrl }]);
+    tags.push([
+      "link",
+      { rel: "alternate", hreflang: "x-default", href: enUrl },
+    ]);
 
     tags.push(["meta", { property: "og:type", content: "article" }]);
     tags.push(["meta", { property: "og:site_name", content: siteTitle }]);
     tags.push(["meta", { property: "og:title", content: pageTitle }]);
-    tags.push(["meta", { property: "og:description", content: pageDescription }]);
+    tags.push([
+      "meta",
+      { property: "og:description", content: pageDescription },
+    ]);
     tags.push(["meta", { property: "og:url", content: fullUrl }]);
     tags.push(["meta", { property: "og:image", content: ogImage }]);
     tags.push(["meta", { property: "og:locale", content: ogLocale }]);
     tags.push(["meta", { name: "twitter:card", content: "summary" }]);
     tags.push(["meta", { name: "twitter:title", content: pageTitle }]);
-    tags.push(["meta", { name: "twitter:description", content: pageDescription }]);
+    tags.push([
+      "meta",
+      { name: "twitter:description", content: pageDescription },
+    ]);
     tags.push(["meta", { name: "twitter:image", content: ogImage }]);
 
     return tags;
