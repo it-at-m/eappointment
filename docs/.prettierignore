@@ -6,12 +6,3 @@ package-lock.json
 # Auto-generated cucumber docs (see .vitepress/config.mjs)
 en/testing-and-automation/zmsautomation-cucumber-current.md
 de/testing-and-automation/zmsautomation-cucumber-current.md
-
-# Auto-generated mirror of docs/en/ at root paths (see .vitepress/config.mjs)
-/index.md
-/on-the-future
-/operations
-/overview
-/reference
-/setup-and-development
-/testing-and-automation
