@@ -21,7 +21,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 
 ## Repository Scope
 
-<img width="200" align="right" alt="Project logo" src="./img/logo.png" />
+<img width="200" align="right" alt="Project logo" src="../img/logo.png" />
 
 This monorepo contains Munich-specific adaptations of the original Berlin eAppointment software:
 [https://gitlab.com/eappointment/eappointment](https://gitlab.com/eappointment/eappointment)
@@ -64,6 +64,6 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
 
 ## Screenshot
 
-<img alt="Screenshot of zmsadmin zmsstatistic zmscalldisplay and zmsticketprinter" src="./img/screenshot_1.png" />
+<img alt="Screenshot of zmsadmin zmsstatistic zmscalldisplay and zmsticketprinter" src="../img/screenshot_1.png" />
 
-<img alt="Screenshot of zmscitizenview" src="./img/screenshot_2.jpg" />
+<img alt="Screenshot of zmscitizenview" src="../img/screenshot_2.jpg" />
