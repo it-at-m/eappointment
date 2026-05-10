@@ -167,10 +167,12 @@ const renderCucumberDoc = () => {
   }
 };
 
-// docs/en/ is the single source of truth for English content.
-// We mirror every docs/en/**/*.md to the corresponding root path so that
-// both /foo and /en/foo URLs resolve to the same content. The mirrored
-// files at the root are gitignored — never edit them by hand.
+renderCucumberDoc();
+
+// docs/en/ is the single on-disk source for English content. We use VitePress
+// `rewrites` so every docs/en/<path>.md is rendered at URL /<path>.html (the
+// root locale), avoiding any duplicate files at the root. The /en/<path>.html
+// URL family does not exist on this site.
 const DOCS_DIR = path.resolve(import.meta.dirname, "..");
 const EN_DIR = path.join(DOCS_DIR, "en");
 
@@ -188,52 +190,14 @@ const listEnMarkdownFiles = (dir) => {
   return out;
 };
 
-// Image paths in docs/en/index.md use ../img/... (one level up to docs/img/).
-// At the mirrored root path the same image is reachable via ./img/...
-const rewriteForRoot = (content) =>
-  content.replaceAll('"../img/', '"./img/').replaceAll("'../img/", "'./img/");
-
-const mirrorEnToRoot = () => {
-  for (const absSrc of listEnMarkdownFiles(EN_DIR)) {
-    const rel = path.relative(EN_DIR, absSrc);
-    const absDst = path.join(DOCS_DIR, rel);
-    const next = rewriteForRoot(fs.readFileSync(absSrc, "utf8"));
-    fs.mkdirSync(path.dirname(absDst), { recursive: true });
-    const prev = fs.existsSync(absDst) ? fs.readFileSync(absDst, "utf8") : "";
-    if (prev !== next) {
-      fs.writeFileSync(absDst, next, "utf8");
-    }
+const buildEnRewrites = () => {
+  const rewrites = {};
+  for (const abs of listEnMarkdownFiles(EN_DIR)) {
+    const rel = toPosix(path.relative(EN_DIR, abs));
+    rewrites[`en/${rel}`] = rel;
   }
+  return rewrites;
 };
-
-renderCucumberDoc();
-mirrorEnToRoot();
-
-// Vite plugin: keep the root mirror in sync during `vitepress dev` whenever
-// a file under docs/en/ changes. Without this, edits to docs/en/foo.md would
-// only be reflected at /en/foo.html until the dev server restarts.
-const mirrorEnVitePlugin = () => ({
-  name: "eappointment-mirror-en-to-root",
-  configureServer(server) {
-    server.watcher.add(path.join(EN_DIR, "**/*.md"));
-    const onChange = (file) => {
-      if (!file.startsWith(EN_DIR + path.sep)) return;
-      if (!file.endsWith(".md")) return;
-      mirrorEnToRoot();
-    };
-    server.watcher.on("add", onChange);
-    server.watcher.on("change", onChange);
-    server.watcher.on("unlink", (file) => {
-      if (!file.startsWith(EN_DIR + path.sep)) return;
-      if (!file.endsWith(".md")) return;
-      const rel = path.relative(EN_DIR, file);
-      const absDst = path.join(DOCS_DIR, rel);
-      if (fs.existsSync(absDst)) {
-        fs.unlinkSync(absDst);
-      }
-    });
-  },
-});
 
 const GH_REPO = "https://github.com/it-at-m/eappointment";
 
@@ -574,57 +538,43 @@ const sharedThemeConfig = {
 const SITE_HOSTNAME = "https://it-at-m.github.io";
 const SITE_BASE = "/eappointment/";
 
+// Convert a source `relativePath` (e.g. "en/overview/foo.md", "de/index.md",
+// "testing-and-automation/zmsautomation-cucumber-current.md") into the public
+// URL path under SITE_BASE (e.g. "overview/foo.html", "de/", "testing-and-...html").
+// The `en/` prefix is stripped because docs/en/* is rewritten to the root URL.
 const toUrlPath = (relativePath) => {
   let p = (relativePath || "").replace(/\\/g, "/");
+  p = p.replace(/^en\//, "");
   p = p.replace(/\.md$/, ".html");
   p = p.replace(/(^|\/)index\.html$/, "$1");
   return p;
 };
 
-const stripLocalePrefix = (urlPath) =>
-  urlPath.replace(/^en\//, "").replace(/^de\//, "");
+const stripDeLocalePrefix = (urlPath) => urlPath.replace(/^de\//, "");
 
 const buildAbsoluteUrl = (urlPath) => `${SITE_HOSTNAME}${SITE_BASE}${urlPath}`;
 
-const canonicalUrlFor = (urlPath) => {
-  if (urlPath.startsWith("en/")) {
-    return buildAbsoluteUrl(urlPath.slice(3));
-  }
-  return buildAbsoluteUrl(urlPath);
-};
-
-const localeOf = (urlPath) => {
-  if (urlPath.startsWith("de/")) return "de";
-  return "en";
-};
+const localeOfUrl = (urlPath) => (urlPath.startsWith("de/") ? "de" : "en");
 
 export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
-  vite: {
-    plugins: [mirrorEnVitePlugin()],
-  },
+  rewrites: buildEnRewrites(),
   sitemap: {
     // hostname must include the base path so emitted <loc> URLs are absolute
     // and resolve to the actual GitHub Pages location.
     hostname: `${SITE_HOSTNAME}${SITE_BASE}`,
-    transformItems(items) {
-      // Skip the /en/* URL family — it's a duplicate of the root locale and
-      // is canonicalized to /. We only want / and /de/* in the sitemap.
-      return items.filter((item) => !item.url.startsWith("en/"));
-    },
   },
   transformHead({ pageData, siteConfig }) {
     const tags = [];
     const urlPath = toUrlPath(pageData.relativePath);
     const fullUrl = buildAbsoluteUrl(urlPath);
-    const canonical = canonicalUrlFor(urlPath);
-    const stripped = stripLocalePrefix(urlPath);
-    const rootEnUrl = buildAbsoluteUrl(stripped);
+    const stripped = stripDeLocalePrefix(urlPath);
+    const enUrl = buildAbsoluteUrl(stripped);
     const deUrl = buildAbsoluteUrl(`de/${stripped}`);
-    const locale = localeOf(urlPath);
+    const locale = localeOfUrl(urlPath);
     const ogLocale = locale === "de" ? "de_DE" : "en_US";
 
     const fm = pageData.frontmatter || {};
@@ -636,14 +586,10 @@ export default {
     const pageDescription = fm.description || pageData.description || siteDescription;
     const ogImage = `${SITE_HOSTNAME}${SITE_BASE}img/logo.png`;
 
-    tags.push(["link", { rel: "canonical", href: canonical }]);
-    tags.push(["link", { rel: "alternate", hreflang: "en", href: rootEnUrl }]);
+    tags.push(["link", { rel: "canonical", href: fullUrl }]);
+    tags.push(["link", { rel: "alternate", hreflang: "en", href: enUrl }]);
     tags.push(["link", { rel: "alternate", hreflang: "de", href: deUrl }]);
-    tags.push(["link", { rel: "alternate", hreflang: "x-default", href: rootEnUrl }]);
-
-    if (urlPath.startsWith("en/")) {
-      tags.push(["meta", { name: "robots", content: "noindex,follow" }]);
-    }
+    tags.push(["link", { rel: "alternate", hreflang: "x-default", href: enUrl }]);
 
     tags.push(["meta", { property: "og:type", content: "article" }]);
     tags.push(["meta", { property: "og:site_name", content: siteTitle }]);
