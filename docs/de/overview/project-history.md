@@ -21,7 +21,7 @@ Ergänzt weiter benötigte Funktionen und Anforderungen der städtischen Behörd
 
 ### MUXDBS
 
-Baut auf MPDZBS gemäß dem Reifegradmodell auf, das als Umsetzungsrahmen für die Konformität mit dem Onlinezugangsgesetz (OZG) dient ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)), und ergänzt zmscitizenview um zusätzliche Komponenten, die etwa die Anmeldung mit BundID, BayernID und Elster für reibungslose Online-Bürgertermine ermöglichen. Dieses Projekt steht für die nächste Reifestufe digitaler Verwaltungsdienstleistungen entlang der föderalen Umsetzungsleitlinien.
+Baut auf MPDZBS gemäß dem Reifegradmodell auf, das als Umsetzungsrahmen für die Konformität mit dem Onlinezugangsgesetz (OZG) dient ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)), und ergänzt zmscitizenview um zusätzliche Komponenten, die etwa die Anmeldung mit BundID, BayernID und Elster für reibungslose Online-Bürgertermine ermöglichen. Die Bürger-Authentifizierung übernimmt der Münchner Open-Source [Digitale Bürgerservice (DBS)](https://it-at-m.github.io/dbs/), der die Identitäts-Flows über BundID, BayernID und Elster vermittelt. Dieses Projekt steht für die nächste Reifestufe digitaler Verwaltungsdienstleistungen entlang der föderalen Umsetzungsleitlinien.
 
 ## Kontakte
 
