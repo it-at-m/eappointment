@@ -9,7 +9,8 @@ const CUCUMBER_DOC_BASENAME =
   "testing-and-automation/zmsautomation-cucumber-current.md";
 const CUCUMBER_DOC_TARGETS = [
   // [absolute path, locale code "en" | "de"]
-  [path.resolve(import.meta.dirname, `../${CUCUMBER_DOC_BASENAME}`), "en"],
+  // The root copy (docs/testing-and-automation/zmsautomation-cucumber-current.md)
+  // is mirrored from docs/en/ by mirrorEnToRoot() — no separate target here.
   [path.resolve(import.meta.dirname, `../en/${CUCUMBER_DOC_BASENAME}`), "en"],
   [path.resolve(import.meta.dirname, `../de/${CUCUMBER_DOC_BASENAME}`), "de"],
 ];
@@ -166,7 +167,73 @@ const renderCucumberDoc = () => {
   }
 };
 
+// docs/en/ is the single source of truth for English content.
+// We mirror every docs/en/**/*.md to the corresponding root path so that
+// both /foo and /en/foo URLs resolve to the same content. The mirrored
+// files at the root are gitignored — never edit them by hand.
+const DOCS_DIR = path.resolve(import.meta.dirname, "..");
+const EN_DIR = path.join(DOCS_DIR, "en");
+
+const listEnMarkdownFiles = (dir) => {
+  const out = [];
+  if (!fs.existsSync(dir)) return out;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...listEnMarkdownFiles(full));
+    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+      out.push(full);
+    }
+  }
+  return out;
+};
+
+// Image paths in docs/en/index.md use ../img/... (one level up to docs/img/).
+// At the mirrored root path the same image is reachable via ./img/...
+const rewriteForRoot = (content) =>
+  content.replaceAll('"../img/', '"./img/').replaceAll("'../img/", "'./img/");
+
+const mirrorEnToRoot = () => {
+  for (const absSrc of listEnMarkdownFiles(EN_DIR)) {
+    const rel = path.relative(EN_DIR, absSrc);
+    const absDst = path.join(DOCS_DIR, rel);
+    const next = rewriteForRoot(fs.readFileSync(absSrc, "utf8"));
+    fs.mkdirSync(path.dirname(absDst), { recursive: true });
+    const prev = fs.existsSync(absDst) ? fs.readFileSync(absDst, "utf8") : "";
+    if (prev !== next) {
+      fs.writeFileSync(absDst, next, "utf8");
+    }
+  }
+};
+
 renderCucumberDoc();
+mirrorEnToRoot();
+
+// Vite plugin: keep the root mirror in sync during `vitepress dev` whenever
+// a file under docs/en/ changes. Without this, edits to docs/en/foo.md would
+// only be reflected at /en/foo.html until the dev server restarts.
+const mirrorEnVitePlugin = () => ({
+  name: "eappointment-mirror-en-to-root",
+  configureServer(server) {
+    server.watcher.add(path.join(EN_DIR, "**/*.md"));
+    const onChange = (file) => {
+      if (!file.startsWith(EN_DIR + path.sep)) return;
+      if (!file.endsWith(".md")) return;
+      mirrorEnToRoot();
+    };
+    server.watcher.on("add", onChange);
+    server.watcher.on("change", onChange);
+    server.watcher.on("unlink", (file) => {
+      if (!file.startsWith(EN_DIR + path.sep)) return;
+      if (!file.endsWith(".md")) return;
+      const rel = path.relative(EN_DIR, file);
+      const absDst = path.join(DOCS_DIR, rel);
+      if (fs.existsSync(absDst)) {
+        fs.unlinkSync(absDst);
+      }
+    });
+  },
+});
 
 const GH_REPO = "https://github.com/it-at-m/eappointment";
 
@@ -536,10 +603,17 @@ export default {
   description: "Technical documentation for it-at-m/eappointment",
   base: SITE_BASE,
   lang: "en-US",
+  vite: {
+    plugins: [mirrorEnVitePlugin()],
+  },
   sitemap: {
-    hostname: SITE_HOSTNAME,
+    // hostname must include the base path so emitted <loc> URLs are absolute
+    // and resolve to the actual GitHub Pages location.
+    hostname: `${SITE_HOSTNAME}${SITE_BASE}`,
     transformItems(items) {
-      return items.filter((item) => !item.url.startsWith(`${SITE_BASE.slice(1)}en/`));
+      // Skip the /en/* URL family — it's a duplicate of the root locale and
+      // is canonicalized to /. We only want / and /de/* in the sitemap.
+      return items.filter((item) => !item.url.startsWith("en/"));
     },
   },
   transformHead({ pageData, siteConfig }) {
