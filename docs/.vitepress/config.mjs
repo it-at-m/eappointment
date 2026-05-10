@@ -638,7 +638,7 @@ export default {
       label: "Deutsch",
       lang: "de",
       link: "/de/",
-      title: "eAppointment-Dokumentation",
+      title: "eAppointment-Doku",
       description: "Technische Dokumentation für it-at-m/eappointment",
       themeConfig: {
         ...sharedThemeConfig,
