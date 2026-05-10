@@ -1,14 +1,3 @@
 node_modules/
 .vitepress/cache/
 .vitepress/dist/
-
-# Auto-generated mirror of docs/en/ (see .vitepress/config.mjs).
-# docs/en/ is the single source of truth for English content; these
-# root paths are recreated on every vitepress dev/build run.
-/index.md
-/on-the-future/
-/operations/
-/overview/
-/reference/
-/setup-and-development/
-/testing-and-automation/
