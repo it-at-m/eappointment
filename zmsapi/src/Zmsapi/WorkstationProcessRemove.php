@@ -13,7 +13,8 @@ use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process as Query;
 use BO\Zmsentities\Process;
 
-class WorkstationProcessDelete extends BaseController
+/** DELETE /workstation/process/ — update process (requeue / missed / etc.) then unassign from workstation. */
+class WorkstationProcessRemove extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

@@ -4,9 +4,9 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 
-class WorkstationProcessDeleteTest extends Base
+class WorkstationProcessRemoveTest extends Base
 {
-    protected $classname = "WorkstationProcessDelete";
+    protected $classname = "WorkstationProcessRemove";
 
     const PROCESS_ID = 10030;
 
