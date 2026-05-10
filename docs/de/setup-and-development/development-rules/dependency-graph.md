@@ -6,12 +6,15 @@ Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deploymen
 
 - `eappointment-php-base` – vorgefertigte PHP-Laufzeit-Images für alle PHP-Module (siehe [PHP-Basis-Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` – Münchens Open-Source-Identitätsbroker für Bürger:innen für BundID, BayernID und Elster, eingebunden auf der `refarch-gateway`-Ebene (siehe [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
+- `zmsautomation` – Maven-basierte Akzeptanztests auf **ATAF** (Agile Test Automation Framework; Artefakte `de.muenchen.ataf`): Cucumber-Szenarien mit **REST Assured** für API-Tests und **Selenium** (über ATAF Web) für UI-Tests. Keine Composer-Abhängigkeit der PHP-Module; die Tests spielen HTTP-/Browser-Flows gegen laufende Instanzen ein (siehe [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
 
 **Lesart der Kanten**
 
 - Durchgezogener Pfeil (`A --> B`): A hat B als Code-Abhängigkeit (Composer).
 - Gestrichelter Pfeil (`A -.-> B`): Build-/Integrationsabhängigkeit. A wird auf B aufgebaut und gegen B deployt, zieht es aber nicht als Code-Abhängigkeit.
 - Dicker Pfeil (`A ==> B`): Laufzeit-/Infrastruktur-Abhängigkeit. A spricht zur Laufzeit mit B, oder B stellt die Laufzeitumgebung von A bereit.
+
+Nur im Subgraph **Testautomatisierung**: Der gestrichelte Pfeil **`ataf -.-> zmsautomation`** bedeutet _Framework → Nutzer_ (ATAF liefert Cucumber sowie REST Assured für API und Selenium für UI an `zmsautomation`), nicht die Composer-Lesart „A auf B aufgebaut“ von oben.
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
@@ -39,6 +42,9 @@ graph TD;
     %% Laufzeit-/externe Dienste (dick)
     refarch-gateway ==>|Bürger-Identität| dbs;
     phpbase ==>|PHP-Laufzeit-Image| zms_modules;
+
+    %% Testautomatisierung: ATAF stellt den Stack bereit; zmsautomation nutzt ihn (Ziele: Abschnitt unten)
+    ataf -.-> zmsautomation;
 
     %% Subgraphen
     subgraph refarch [refarch]
@@ -74,18 +80,27 @@ graph TD;
         phpbase["eappointment-php-base<br>PHP-Laufzeit-Images"]
     end
 
+    subgraph testing [Testautomatisierung]
+        style testing stroke-dasharray: 5
+        ataf["ATAF<br>Maven · Cucumber<br>API: REST Assured<br>UI: Selenium"]
+        zmsautomation
+    end
+
     %% Stilisierung
     classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
     classDef citizenview fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
     classDef runtimeSvc fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef infra fill:#e3f2fd,stroke:#0277bd,stroke-width:3px;
+    classDef automation fill:#fce4ec,stroke:#880e4f,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
     class dbs runtimeSvc;
     class phpbase infra;
+    class zmsautomation automation;
+    class ataf automation;
 ```
 
 ## Frontend- vs. Backend-Module
@@ -117,6 +132,10 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 ### Geteilt zwischen frontendnahen und Backend-PHP-Modulen
 
 - `zmsentities`: Gemeinsames Domänen-/Entitätsmodell, das sowohl frontendnahe als auch Backend-PHP-Module nutzen.
+
+### Testautomatisierung
+
+- `zmsautomation`: Maven-Modul; **REST Assured** für API-Tests und **Selenium** (ATAF Web) für UI-Tests, angebunden über Cucumber unter **ATAF** (`de.muenchen.ataf`). Kein Teil des Composer-Graphen — es prüft laufende Deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), lokal [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typische Ziele sind `zmsapi`, `zmscitizenapi` sowie Browser-Flows gegen `zmsadmin`, `zmscitizenview`, `zmsstatistic` und `refarch-gateway`.
 
 ### Laufzeitdienste und Infrastruktur
 
