@@ -504,10 +504,87 @@ const sharedThemeConfig = {
   },
 };
 
+const SITE_HOSTNAME = "https://it-at-m.github.io";
+const SITE_BASE = "/eappointment/";
+
+const toUrlPath = (relativePath) => {
+  let p = (relativePath || "").replace(/\\/g, "/");
+  p = p.replace(/\.md$/, ".html");
+  p = p.replace(/(^|\/)index\.html$/, "$1");
+  return p;
+};
+
+const stripLocalePrefix = (urlPath) =>
+  urlPath.replace(/^en\//, "").replace(/^de\//, "");
+
+const buildAbsoluteUrl = (urlPath) => `${SITE_HOSTNAME}${SITE_BASE}${urlPath}`;
+
+const canonicalUrlFor = (urlPath) => {
+  if (urlPath.startsWith("en/")) {
+    return buildAbsoluteUrl(urlPath.slice(3));
+  }
+  return buildAbsoluteUrl(urlPath);
+};
+
+const localeOf = (urlPath) => {
+  if (urlPath.startsWith("de/")) return "de";
+  return "en";
+};
+
 export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
-  base: "/eappointment/",
+  base: SITE_BASE,
+  lang: "en-US",
+  sitemap: {
+    hostname: SITE_HOSTNAME,
+    transformItems(items) {
+      return items.filter((item) => !item.url.startsWith(`${SITE_BASE.slice(1)}en/`));
+    },
+  },
+  transformHead({ pageData, siteConfig }) {
+    const tags = [];
+    const urlPath = toUrlPath(pageData.relativePath);
+    const fullUrl = buildAbsoluteUrl(urlPath);
+    const canonical = canonicalUrlFor(urlPath);
+    const stripped = stripLocalePrefix(urlPath);
+    const rootEnUrl = buildAbsoluteUrl(stripped);
+    const deUrl = buildAbsoluteUrl(`de/${stripped}`);
+    const locale = localeOf(urlPath);
+    const ogLocale = locale === "de" ? "de_DE" : "en_US";
+
+    const fm = pageData.frontmatter || {};
+    const siteTitle = siteConfig?.site?.title || "eAppointment Docs";
+    const siteDescription =
+      siteConfig?.site?.description ||
+      "Technical documentation for it-at-m/eappointment";
+    const pageTitle = fm.title || pageData.title || siteTitle;
+    const pageDescription = fm.description || pageData.description || siteDescription;
+    const ogImage = `${SITE_HOSTNAME}${SITE_BASE}img/logo.png`;
+
+    tags.push(["link", { rel: "canonical", href: canonical }]);
+    tags.push(["link", { rel: "alternate", hreflang: "en", href: rootEnUrl }]);
+    tags.push(["link", { rel: "alternate", hreflang: "de", href: deUrl }]);
+    tags.push(["link", { rel: "alternate", hreflang: "x-default", href: rootEnUrl }]);
+
+    if (urlPath.startsWith("en/")) {
+      tags.push(["meta", { name: "robots", content: "noindex,follow" }]);
+    }
+
+    tags.push(["meta", { property: "og:type", content: "article" }]);
+    tags.push(["meta", { property: "og:site_name", content: siteTitle }]);
+    tags.push(["meta", { property: "og:title", content: pageTitle }]);
+    tags.push(["meta", { property: "og:description", content: pageDescription }]);
+    tags.push(["meta", { property: "og:url", content: fullUrl }]);
+    tags.push(["meta", { property: "og:image", content: ogImage }]);
+    tags.push(["meta", { property: "og:locale", content: ogLocale }]);
+    tags.push(["meta", { name: "twitter:card", content: "summary" }]);
+    tags.push(["meta", { name: "twitter:title", content: pageTitle }]);
+    tags.push(["meta", { name: "twitter:description", content: pageDescription }]);
+    tags.push(["meta", { name: "twitter:image", content: ogImage }]);
+
+    return tags;
+  },
   markdown: {
     config(md) {
       const defaultFence = md.renderer.rules.fence;
@@ -531,6 +608,16 @@ export default {
       {
         rel: "icon",
         href: "https://assets.muenchen.de/logos/lhm/icon-lhm-muenchen-32.png",
+      },
+    ],
+    ["meta", { name: "robots", content: "index,follow" }],
+    ["meta", { name: "author", content: "it@M / Landeshauptstadt München" }],
+    [
+      "meta",
+      {
+        name: "keywords",
+        content:
+          "eAppointment, ZMS, Zeitmanagementsystem, Termin, Munich, München, it-at-m, open source, government, docker, php, vuejs, twig, keycloak, sso, city, municipalities, appointment scheduling, sso authentication, sso login, appointment booking, ddev, government app, appointments manager, eappointments, appointment management system, municipal software, county level",
       },
     ],
   ],
