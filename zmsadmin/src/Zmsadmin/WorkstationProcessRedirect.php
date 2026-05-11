@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Helper\ProcessPlainText;
 use Psr\Http\Message\RequestInterface;
 
 class WorkstationProcessRedirect extends BaseController
@@ -54,7 +55,7 @@ class WorkstationProcessRedirect extends BaseController
             $newProcess = clone $process;
             $newProcess->scope = $scope;
             $newProcess->appointments[0]->scope = $scope;
-            $newProcess->amendment = $input['amendment'];
+            $newProcess->amendment = ProcessPlainText::normalize($input['amendment'] ?? '');
 
             $process = \App::$http->readPostResult('/process/status/redirect/', $newProcess)->getEntity();
 

@@ -18,20 +18,16 @@ class WorkstationProcessNext extends BaseController
 
     public function timeToUnix($timeValue): ?int
     {
-        if ($timeValue instanceof \DateTimeInterface) {
-            return $timeValue->getTimestamp();
-        }
-
-        if ($timeValue === null || $timeValue === '') {
+        if ($timeValue === null) {
             return null;
         }
-
-        if (is_numeric($timeValue)) {
-            return (int) $timeValue;
+        $timeString = trim((string) $timeValue);
+        if ($timeString === '') {
+            return null;
         }
+        $unixTimestamp = strtotime($timeString);
 
-        $timestamp = strtotime((string) $timeValue);
-        return $timestamp === false ? null : $timestamp;
+        return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
     public function readResponse(

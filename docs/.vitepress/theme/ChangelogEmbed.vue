@@ -1,5 +1,7 @@
 <template>
-  <div class="changelog-embed">
+  <section class="changelog-embed">
+    <hr />
+    <h2 id="zms-muenchen-release-changelog">ZMS München — Release-Changelog</h2>
     <p
       v-if="loading"
       class="changelog-embed__status"
@@ -17,7 +19,7 @@
       class="vp-doc changelog-embed__body"
       v-html="html"
     />
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -80,6 +82,14 @@ onMounted(async () => {
 <style scoped>
 .changelog-embed {
   margin-top: 1rem;
+}
+
+.changelog-embed h2 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  border: none;
 }
 
 .changelog-embed__status {
