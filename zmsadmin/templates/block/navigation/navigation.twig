@@ -35,7 +35,7 @@
                             </li>
                         {% endif %}
                     {% endif %}
-                    {% if workstation.useraccount.rights.scope %}
+                    {% if permissions.overviewcalendar %}
                     <li class="nav__link{{ menuActive == 'overallcalendar'? ' active' }}">
                         <a title="{% trans %}Gesamtübersicht mit allen Terminen{% endtrans %}"
                            href="{{ urlGet('overallcalendar', {}, {}) }}"
