@@ -4243,51 +4243,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/prefered/cluster/{id}/":
- *      get:
- *          summary: Get the prefered scope with shortest Waitingtime by cluster ID
- *          x-since: 2.13
- *          tags:
- *              - scope
- *              - cluster
- *          parameters:
- *              -   name: id
- *                  description: cluster number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/scope.json"
- *              404:
- *                  description: "cluster id does not exists"
- */
-\App::$slim->get(
-    '/scope/prefered/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopePreferedByCluster'
-)
-    ->setName("ScopePreferedByCluster");
-
-/**
- *  @swagger
  *  "/scope/{id}/availability/":
  *      get:
  *          summary: Get a list of availability entries
