@@ -178,7 +178,9 @@
             >
               <strong>{{ appointment.scope.customTextfieldLabel }}</strong
               ><br />
-              <p>{{ appointment.customTextfield }}</p>
+              <p class="m-plain-text-multiline">
+                {{ appointment.customTextfield }}
+              </p>
               <br />
             </div>
             <div
@@ -189,7 +191,9 @@
             >
               <strong>{{ appointment.scope.customTextfield2Label }}</strong
               ><br />
-              <p>{{ appointment.customTextfield2 }}</p>
+              <p class="m-plain-text-multiline">
+                {{ appointment.customTextfield2 }}
+              </p>
               <br />
             </div>
           </div>
@@ -471,5 +475,11 @@ const infoForAppointmentContainsPTag = computed(() =>
 }
 .smaller-front-size {
   font-size: 16px;
+}
+
+/* Preserve user line breaks in plain-text custom fields (same idea as nl2br / pre-wrap on server). */
+.m-plain-text-multiline {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>

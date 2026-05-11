@@ -114,7 +114,7 @@
       :error-msg="errorDisplayCustomTextfield"
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
-      :maxlength="250"
+      :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows1"
       @input="handleInput1"
     />
@@ -129,7 +129,7 @@
       :error-msg="errorDisplayCustomTextfield2"
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
-      :maxlength="250"
+      :maxlength="MAX_CUSTOM_TEXT_CHARS"
       :rows="textfieldRows2"
       @input="handleInput2"
     />
@@ -171,8 +171,18 @@ import { computed, inject, onMounted, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import {
+  normalizePlainText,
+  plainTextCharCount,
+} from "@/utils/processPlainText";
 import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+
+/**
+ * UX pre-check limit aligned with backend ProcessPlainText max (250).
+ * Backend entities validation is authoritative if client normalization differs.
+ */
+const MAX_CUSTOM_TEXT_CHARS = 250;
 
 const inputLines1 = ref<number>(3);
 const inputLines2 = ref<number>(3);
@@ -310,8 +320,8 @@ const errorMessageCustomTextfield = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    !customerData.value.customTextfield &&
-    selectedProvider.value?.scope?.customTextfieldRequired
+    selectedProvider.value?.scope?.customTextfieldRequired &&
+    !normalizePlainText(customerData.value.customTextfield).trim()
   ) {
     return props.t("errorMessageCustomTextfield");
   }
@@ -319,8 +329,8 @@ const errorMessageCustomTextfield = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield = computed(() =>
-  (customerData.value.customTextfield ?? "").length >= 250
-    ? props.t("errorMessageMaxLength", { max: 250 })
+  plainTextCharCount(customerData.value.customTextfield) > MAX_CUSTOM_TEXT_CHARS
+    ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
 
@@ -333,8 +343,8 @@ const errorMessageCustomTextfield2 = computed(() => {
   if (!showErrorMessage.value) return undefined;
 
   if (
-    !customerData.value.customTextfield2 &&
-    selectedProvider.value?.scope?.customTextfield2Required
+    selectedProvider.value?.scope?.customTextfield2Required &&
+    !normalizePlainText(customerData.value.customTextfield2).trim()
   ) {
     return props.t("errorMessageCustomTextfield2");
   }
@@ -342,8 +352,9 @@ const errorMessageCustomTextfield2 = computed(() => {
 });
 
 const maxLengthMessageCustomTextfield2 = computed(() =>
-  (customerData.value.customTextfield2 ?? "").length >= 250
-    ? props.t("errorMessageMaxLength", { max: 250 })
+  plainTextCharCount(customerData.value.customTextfield2) >
+  MAX_CUSTOM_TEXT_CHARS
+    ? props.t("errorMessageMaxLength", { max: MAX_CUSTOM_TEXT_CHARS })
     : undefined
 );
 
@@ -364,7 +375,9 @@ const validForm = computed(
     !errorMessageMailAddress.value &&
     !errorMessageTelephoneNumber.value &&
     !errorMessageCustomTextfield.value &&
-    !errorMessageCustomTextfield2.value
+    !errorMessageCustomTextfield2.value &&
+    !maxLengthMessageCustomTextfield.value &&
+    !maxLengthMessageCustomTextfield2.value
 );
 
 const login = () => {
