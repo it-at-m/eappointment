@@ -25,6 +25,9 @@ class DepartmentAddScope extends Scope
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['scope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 0])->getEntity();

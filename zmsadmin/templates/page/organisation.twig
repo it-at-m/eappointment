@@ -6,11 +6,11 @@
 {% block breadcrumb_items %}
     {{ parent() }}
     <li><a href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a></li>
-    <li>Referat einrichten</li>
+    <li>{{ title|default('Referat einrichten') }}</li>
 {% endblock %}
 
 {% block headline %}
-    {{ headline1("Referat einrichten") }}
+    {{ headline1(title|default('Referat einrichten')) }}
 {% endblock %}
 
 {% block content %}
