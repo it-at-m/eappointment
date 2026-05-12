@@ -25,7 +25,7 @@ class RoleUpdate extends BaseController
 
         $updated = (new Role())->updateRole($roleId, $entity);
         if (!$updated || !$updated->hasId()) {
-            throw new Exception\Role\RoleNotFound();
+            throw new Exception\Role\RoleDoesNotExist();
         }
 
         $message = Response\Message::create($request);

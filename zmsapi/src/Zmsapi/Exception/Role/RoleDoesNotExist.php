@@ -2,7 +2,7 @@
 
 namespace BO\Zmsapi\Exception\Role;
 
-class RoleNotFound extends \Exception
+class RoleDoesNotExist extends \Exception
 {
     protected $code = 404;
 
