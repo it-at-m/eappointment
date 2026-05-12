@@ -24,7 +24,7 @@ class ConfigGet extends BaseController
         array $args
     ) {
         try {
-            (new Helper\User($request))->checkPermissions('appointment');
+            (new Helper\User($request))->checkPermissions();
         } catch (\Exception $exception) {
             $token = $request->getHeader('X-Token');
             if (\App::SECURE_TOKEN != current($token)) {
