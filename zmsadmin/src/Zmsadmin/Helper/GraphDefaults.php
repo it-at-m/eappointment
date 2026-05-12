@@ -41,6 +41,7 @@ class GraphDefaults
     }
     useraccount {
         rights
+        permissions
     }
 }
 EOS;
