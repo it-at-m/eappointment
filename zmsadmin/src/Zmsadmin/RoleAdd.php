@@ -65,6 +65,11 @@ class RoleAdd extends BaseController
             return $validated;
         }
 
+        $duplicateNameError = RoleInputHelper::validateUniqueRoleName($validated->name);
+        if ($duplicateNameError !== null) {
+            return $duplicateNameError;
+        }
+
         return $this->handleEntityWrite(function () use ($validated) {
             return \App::$http->readPostResult('/roles/', $validated)->getEntity();
         });
