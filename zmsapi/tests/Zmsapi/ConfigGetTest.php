@@ -21,7 +21,9 @@ class ConfigGetTest extends Base
 
     public function testConfigByXAuthKey()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render([], [], []);
         $this->assertStringContainsString('config.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
