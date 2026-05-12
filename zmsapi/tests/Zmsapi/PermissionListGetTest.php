@@ -12,7 +12,7 @@ class PermissionListGetTest extends Base
 
         $response = $this->render([], [], []);
         $this->assertStringContainsString('permission.json', (string) $response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
     }
 }
 
