@@ -49,16 +49,12 @@ class UseraccountEdit extends BaseController
         $roleList = new RoleList();
 
         if ($workstation->getUseraccount()->isSuperUser()) {
-            try {
-                $roleResult = \App::$http->readGetResult('/roles/', []);
-                if ($roleResult) {
-                    $loaded = $roleResult->getCollection();
-                    if ($loaded !== null) {
-                        $roleList = $loaded;
-                    }
+            $roleResult = \App::$http->readGetResult('/roles/', []);
+            if ($roleResult) {
+                $loaded = $roleResult->getCollection();
+                if ($loaded !== null) {
+                    $roleList = $loaded;
                 }
-            } catch (\BO\Zmsclient\Exception $e) {
-                \App::$log->warning('Failed to load roles for superuser', ['error' => $e->getMessage()]);
             }
         }
 
