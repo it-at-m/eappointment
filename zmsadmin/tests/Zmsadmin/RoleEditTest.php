@@ -66,12 +66,6 @@ class RoleEditTest extends Base
                     'response' => $this->readFixture("GET_role_1.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/roles/',
-                    'parameters' => [],
-                    'response' => $this->readFixture("GET_rolelist.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/roles/1/',
                     'response' => $this->readFixture("GET_role_1.json")
