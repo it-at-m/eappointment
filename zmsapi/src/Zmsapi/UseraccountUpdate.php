@@ -26,7 +26,7 @@ class UseraccountUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 2))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();

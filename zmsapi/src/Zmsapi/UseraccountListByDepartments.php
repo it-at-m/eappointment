@@ -24,7 +24,7 @@ class UseraccountListByDepartments extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
+        $workstation = (new Helper\User($request, 1))->checkPermissions('useraccount');
         $parameters = $request->getParams();
 
         $rawIds = array_map('trim', explode(',', $args['ids']));
