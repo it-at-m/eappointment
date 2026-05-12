@@ -111,8 +111,7 @@
                         </li>
                     {% endif %}
                 {% endif %}
-                {% if workstation.scope.id and rights.ticketprinter %}
-                    {% if workstation.useraccount.rights.superuser %}
+                {% if workstation.scope.id and permissions.ticketprinter %}
                     <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
                         <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
                             Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
@@ -122,7 +121,6 @@
                         {% endif %})
                         </a>
                     </li>
-                    {% endif %}
                 {% endif %}
                 {% if permissions.organisation or permissions.scope or permissions.restrictedscope or permissions.department or permissions.cluster or permissions.availability %}
                     <li class="nav__link{{ menuActive == 'owner'? ' active' }}">
@@ -134,22 +132,22 @@
                         <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccountList', {}, {}) }}">Nutzer*innen</a>
                     </li>
                 {% endif %}
-                {% if workstation.useraccount.rights.superuser == "1" %}
+                {% if permissions.dayoff %}
                     <li class="nav__link{{ menuActive == 'dayoff'? ' active' }}">
                         <a title="{% trans %}Hier können Sie die freien Tage (z.B. Feiertage) Spalte einfügen, ändern und löschen{% endtrans %}" {{ menuActive == 'dayoff'? ' aria-current="page"' }} href="{{ urlGet('dayoff', {}, {}) }}">Freie Tage</a>
                     </li>
                 {% endif %}
-                {% if workstation.useraccount.rights.superuser == "1" %}
+                {% if permissions.source %}
                     <li class="nav__link{{ menuActive == 'source'? ' active' }}">
                         <a title="{% trans %}Hier können neue Mandanten hinzugefügt und bestehende geändert oder gelöscht werden{% endtrans %}" {{ menuActive == 'source'? ' aria-current="page"' }} href="{{ urlGet('sourceindex', {}, {}) }}">Mandanten</a>
                     </li>
                 {% endif %}
-                {% if workstation.useraccount.rights.superuser == "1" %}
+                {% if permissions.mailtemplates %}
                     <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
                         <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mail Templates</a>
                     </li>
                 {% endif %}
-                {% if workstation.useraccount.rights.superuser == "1" %}
+                {% if permissions.config %}
                     <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
                         <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
                     </li>
