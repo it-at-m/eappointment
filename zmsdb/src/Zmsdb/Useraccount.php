@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use BO\Zmsdb\Application as App;
-use BO\Zmsdb\Role;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 
