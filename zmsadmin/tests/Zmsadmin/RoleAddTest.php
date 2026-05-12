@@ -135,5 +135,45 @@ class RoleAddTest extends Base
         $this->expectException(UserAccountMissingRights::class);
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testRenderingSaveDuplicateName()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/permissions/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_permissionlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
+                ],
+            ]
+        );
+
+        $response = $this->render(
+            $this->arguments,
+            [
+                'name' => 'system_admin',
+                'description' => 'Technische Administration',
+                'permissions' => ['superuser'],
+            ],
+            [],
+            'POST'
+        );
+
+        $this->assertStringContainsString('Eine Rolle mit diesem Namen existiert bereits.', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
 
