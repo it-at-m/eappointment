@@ -51,6 +51,10 @@ class UseraccountAdd extends BaseController
             throw $exception;
         }
 
+        if ($entity->offsetExists('roles') && is_array($entity->roles)) {
+            Helper\User::validateRoleNames($entity->roles);
+        }
+
         if ((new Useraccount())->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }

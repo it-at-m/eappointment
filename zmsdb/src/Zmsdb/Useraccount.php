@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use BO\Zmsdb\Application as App;
-use BO\Zmsdb\Role;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Zmsentities\Collection\UseraccountList as Collection;
 
@@ -704,42 +703,28 @@ class Useraccount extends Base
         return (int) $row['id'];
     }
 
-    protected function readValidRoleNameLookup(): array
-    {
-        try {
-            $lookup = [];
-            foreach ((new Role())->readAllRoles('ASC', 0) as $roleEntity) {
-                if (isset($roleEntity['name']) && is_string($roleEntity['name']) && $roleEntity['name'] !== '') {
-                    $lookup[$roleEntity['name']] = true;
-                }
-            }
-            if ($lookup !== []) {
-                return $lookup;
-            }
-        } catch (\Throwable $e) {
-            App::$log->warning(
-                'readValidRoleNameLookup failed, falling back to TEMP_ROLE_MAP_BY_BERECHTIGUNG',
-                [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage(),
-                ]
-            );
-        }
-
-        return array_fill_keys(array_values(array_unique(self::TEMP_ROLE_MAP_BY_BERECHTIGUNG)), true);
-    }
-
     protected function extractRequestedRoleNames(Entity $entity): array
     {
         $roles = $entity->offsetExists('roles') ? $entity['roles'] : [];
         if (!is_array($roles)) {
             return [];
         }
-        $validNames = $this->readValidRoleNameLookup();
 
-        return array_values(array_unique(array_filter($roles, function ($roleName) use ($validNames) {
-            return is_string($roleName) && isset($validNames[$roleName]);
-        })));
+        $requestedRoles = [];
+        foreach ($roles as $roleName) {
+            if (!is_string($roleName)) {
+                continue;
+            }
+
+            $roleName = trim($roleName);
+            if ($roleName === '' || isset($requestedRoles[$roleName])) {
+                continue;
+            }
+
+            $requestedRoles[$roleName] = true;
+        }
+
+        return array_keys($requestedRoles);
     }
 
     protected function replaceUserRoles(int $userId, array $roleNames): void
