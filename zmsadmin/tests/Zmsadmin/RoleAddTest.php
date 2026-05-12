@@ -68,8 +68,8 @@ class RoleAddTest extends Base
         $response = $this->render(
             $this->arguments,
             [
-                'name' => 'system_admin',
-                'description' => 'Technische Administration',
+                'name' => 'test_role_add',
+                'description' => 'Test Role Add',
                 'permissions' => ['superuser'],
             ],
             [],

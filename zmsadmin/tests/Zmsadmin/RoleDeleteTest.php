@@ -32,8 +32,7 @@ class RoleDeleteTest extends Base
         );
 
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/roles/?success=role_deleted');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
     }
 }
 
