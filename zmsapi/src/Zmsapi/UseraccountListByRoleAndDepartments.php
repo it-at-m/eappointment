@@ -25,7 +25,7 @@ class UseraccountListByRoleAndDepartments extends BaseController
         array $args
     ) {
         $roleLevel = $args['level'];
-        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $rawIds = array_map('trim', explode(',', $args['ids']));
         $rawIds = array_filter($rawIds, 'strlen');
