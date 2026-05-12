@@ -12,7 +12,7 @@ class RoleListGetTest extends Base
 
         $response = $this->render([], [], []);
         $this->assertStringContainsString('role.json', (string) $response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
     }
 }
 

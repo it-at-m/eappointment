@@ -21,7 +21,7 @@ class RoleAddTest extends Base
         ], []);
 
         $this->assertStringContainsString('role.json', (string) $response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testInputInvalid()
