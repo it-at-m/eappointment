@@ -22,7 +22,7 @@ class View extends BaseView {
         BaseView.loadDialogStatic(
             dialogHtml,
             () => {
-                $.ajax(trigger.href, {
+                $.ajax(trigger.getAttribute('href'), {
                     method: 'DELETE'
                 }).done((response, textStatus, xhr) => {
                     window.location.assign(xhr.responseURL || window.location.href);
