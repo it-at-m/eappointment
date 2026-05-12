@@ -170,13 +170,23 @@ watch(lightboxOpen, (open) => {
 const renderMermaid = async () => {
   await nextTick();
   wrapMermaidBlocks();
-  const nodes = Array.from(document.querySelectorAll(".vp-doc pre.mermaid"));
+  // Only render un-processed nodes. After mermaid.run() each <pre> has its
+  // innerHTML replaced with the rendered <svg> and gets data-processed="true".
+  // Re-running on already-processed nodes (e.g. on every route-path change)
+  // would parse the SVG as mermaid source, fail mid-flight, and crash with
+  // "Cannot read properties of null (reading 'firstChild')" inside mermaid's
+  // render() when the temp container can't be located in the DOM.
+  const nodes = Array.from(
+    document.querySelectorAll(".vp-doc pre.mermaid:not([data-processed])")
+  );
   if (!nodes.length) {
     return;
   }
-
-  nodes.forEach((node) => node.removeAttribute("data-processed"));
-  await mermaid.run({ nodes });
+  try {
+    await mermaid.run({ nodes });
+  } catch (err) {
+    console.warn("[MermaidRenderer] mermaid.run failed:", err);
+  }
 };
 
 onMounted(async () => {
