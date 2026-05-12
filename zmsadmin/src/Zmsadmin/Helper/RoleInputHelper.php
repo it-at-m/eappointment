@@ -19,16 +19,16 @@ class RoleInputHelper
         }
         $name = isset($body['name']) ? trim((string) $body['name']) : '';
         $description = isset($body['description']) ? trim((string) $body['description']) : '';
-        $perms = $body['permissions'] ?? [];
-        if (!is_array($perms)) {
-            $perms = $perms !== null && $perms !== '' ? [$perms] : [];
+        $permissions = $body['permissions'] ?? [];
+        if (!is_array($permissions)) {
+            $permissions = $permissions !== null && $permissions !== '' ? [$permissions] : [];
         }
-        $perms = array_values(array_filter(array_map('strval', $perms)));
+        $permissions = array_values(array_filter(array_map('strval', $permissions)));
 
         return [
             'name' => $name,
             'description' => $description === '' ? null : $description,
-            'permissions' => $perms,
+            'permissions' => $permissions,
         ];
     }
 
