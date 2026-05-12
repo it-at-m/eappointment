@@ -9,7 +9,7 @@ class PermissionListGet extends BaseController
 {
     public function readResponse($request, $response, array $args)
     {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        (new Helper\User($request, 1))->checkPermissions('useraccount');
 
         $list = (new PermissionRepository())->readAllPermissions();
         $message = Response\Message::create($request);

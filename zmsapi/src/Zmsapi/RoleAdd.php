@@ -16,7 +16,7 @@ class RoleAdd extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        (new Helper\User($request, 1))->checkPermissions('useraccount');
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         unset($input['id'], $input['assignedUserCount']);

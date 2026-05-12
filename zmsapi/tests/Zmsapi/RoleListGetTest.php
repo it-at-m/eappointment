@@ -8,7 +8,7 @@ class RoleListGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
 
         $response = $this->render([], [], []);
         $this->assertStringContainsString('role.json', (string) $response->getBody());

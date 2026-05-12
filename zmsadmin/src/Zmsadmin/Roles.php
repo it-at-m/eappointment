@@ -17,7 +17,7 @@ class Roles extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['useraccount'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['useraccount'])) {
             throw new UserAccountMissingRights();
         }
 

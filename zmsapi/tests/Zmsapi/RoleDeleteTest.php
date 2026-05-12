@@ -11,7 +11,7 @@ class RoleDeleteTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
 
         $created = (new RoleRepository())->addRole(new RoleEntity([
             'name' => 'test_role_api_delete',
@@ -26,7 +26,7 @@ class RoleDeleteTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
 
         $this->expectException('\BO\Zmsapi\Exception\Role\RoleDoesNotExist');
         $this->expectExceptionCode(404);
