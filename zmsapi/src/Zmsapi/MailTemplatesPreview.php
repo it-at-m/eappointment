@@ -25,7 +25,7 @@ class MailTemplatesPreview extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('mailtemplates');
 
         $mailStatus = $args['mailStatus'];
         $providerId = $args['providerId'];
