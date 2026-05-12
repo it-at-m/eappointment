@@ -39,10 +39,25 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void confirmCustomerCall() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Ja, Kunden jetzt aufrufen\" button...");
-        final String PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH = "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]";
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, true),
-                "Button 'Ja, Kunden jetzt aufrufen' is not visible!");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, false);
+        final String PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH =
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]";
+        // zmsadmin's WorkstationProcessNext controller only renders the precall confirmation
+        // (workstationProcessPreCall) when the next process has an Anmerkung; otherwise it
+        // redirects straight to workstationProcessCalled, so the precall step is legitimately
+        // skipped and the called view's "Ja, Kunde erschienen" button is shown instead.
+        final String CALLED_VIEW_BUTTON_LOCATOR_XPATH = "//button[contains(@class,'client-called_button-success')]";
+        final int settleSeconds = 15;
+        if (isWebElementVisible(settleSeconds, PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, true)) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, PRECALL_CUSTOMER_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, false);
+            return;
+        }
+        if (isWebElementVisible(settleSeconds, CALLED_VIEW_BUTTON_LOCATOR_XPATH, LocatorType.XPATH, false)) {
+            ScenarioLogManager.getLogger().info(
+                    "Precall confirmation skipped by server (next process has no Anmerkung); already on called view.");
+            return;
+        }
+        Assert.fail("Neither precall confirmation 'Ja, Kunden jetzt aufrufen' nor called view "
+                + "'Ja, Kunde erschienen' became visible after clicking 'Aufruf nächster Kunde'.");
     }
 
     public void callCustomerWithSpecificNote(String note) {
