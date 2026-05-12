@@ -9,7 +9,7 @@ class RoleListGet extends BaseController
 {
     public function readResponse($request, $response, array $args)
     {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        (new Helper\User($request, 1))->checkPermissions('useraccount');
 
         $roleList = (new Role())->readAllRoles();
         $message = Response\Message::create($request);
