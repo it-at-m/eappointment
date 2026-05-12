@@ -21,6 +21,12 @@
           "ticketprinter": "1",
           "useraccount": "1"
         },
+        "permissions": {
+          "useraccount": "1"
+        },
+        "roles": [
+          "user_admin"
+        ],
         "id": "testadmin",
         "email": "test@example.com",
         "lastLogin": 1459461600
