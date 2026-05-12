@@ -21,7 +21,7 @@ To add still needed features and requirements for the city's agencies/department
 
 ### MUXDBS
 
-Builds on MPDZBS following the Reifegradmodell (Maturity Level Model) as an implementation framework for Onlinezugangsgesetz (OZG - Online Access Act) compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) and adds additional components to zmscitizenview which will allow things such as login with BundID, BayernID and Elster for seamless online citizen appointments. This project represents the next maturity level of digital government services following federal implementation guidelines.
+Builds on MPDZBS following the Reifegradmodell (Maturity Level Model) as an implementation framework for Onlinezugangsgesetz (OZG - Online Access Act) compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) and adds additional components to zmscitizenview which will allow things such as login with BundID, BayernID and Elster for seamless online citizen appointments. Citizen authentication is provided by Munich's open-source [Digital Citizen Service (DBS)](https://it-at-m.github.io/dbs/), which brokers BundID, BayernID, and Elster identity flows. This project represents the next maturity level of digital government services following federal implementation guidelines.
 
 ## Contacts
 

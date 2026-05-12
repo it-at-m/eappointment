@@ -132,6 +132,17 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
+    public function setPermissions()
+    {
+        $givenPermissions = func_get_args();
+        foreach ($givenPermissions as $permission) {
+            if (Property::__keyExists($permission, $this->permissions)) {
+                $this->permissions[$permission] = true;
+            }
+        }
+        return $this;
+    }
+
     // @todo Legacy cleanup — remove rights path once migration to permissions is complete.
     public function hasRights(array $requiredRights): bool
     {
@@ -160,6 +171,54 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    public function hasPermissions(array $requiredPermissions): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $permissions = $this->toProperty()->permissions ?? null;
+
+        foreach ($requiredPermissions as $required) {
+            if ($required instanceof Useraccount\RightsInterface) {
+                if (! $required->validateUseraccount($this)) {
+                    return false;
+                }
+                continue;
+            }
+
+            if (! ($permissions?->$required?->get() ?? false)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function hasAnyPermission(array $requiredPermissions): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $permissions = $this->toProperty()->permissions ?? null;
+
+        foreach ($requiredPermissions as $required) {
+            if ($required instanceof Useraccount\RightsInterface) {
+                if ($required->validateUseraccount($this)) {
+                    return true;
+                }
+                continue;
+            }
+
+            if ($permissions?->$required?->get() ?? false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {
@@ -171,6 +230,36 @@ class Useraccount extends Schema\Entity
         } else {
             throw new Exception\UserAccountMissingLogin();
         }
+        return $this;
+    }
+
+    public function testPermissions(array $requiredPermissions)
+    {
+        if (! $this->hasId()) {
+            throw new Exception\UserAccountMissingLogin();
+        }
+
+        if (! $this->hasPermissions($requiredPermissions)) {
+            throw new Exception\UserAccountMissingRights(
+                "Missing permissions " . htmlspecialchars(implode(',', $requiredPermissions))
+            );
+        }
+
+        return $this;
+    }
+
+    public function testAnyPermission(array $requiredPermissions)
+    {
+        if (! $this->hasId()) {
+            throw new Exception\UserAccountMissingLogin();
+        }
+
+        if (! $this->hasAnyPermission($requiredPermissions)) {
+            throw new Exception\UserAccountMissingRights(
+                "Missing any of permissions " . htmlspecialchars(implode(',', $requiredPermissions))
+            );
+        }
+
         return $this;
     }
 
