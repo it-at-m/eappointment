@@ -35,5 +35,21 @@ class RoleAddTest extends Base
             '__body' => '{"extraField":0}',
         ], []);
     }
+
+    public function testDescriptionRequired()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'name' => 'test_role_api_add_missing_description',
+                'description' => '',
+                'permissions' => ['superuser'],
+            ]),
+        ], []);
+    }
 }
 
