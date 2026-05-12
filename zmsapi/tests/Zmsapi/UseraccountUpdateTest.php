@@ -8,7 +8,7 @@ class UseraccountUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
@@ -38,7 +38,7 @@ class UseraccountUpdateTest extends Base
 
     public function testChangePassword()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
@@ -87,14 +87,14 @@ class UseraccountUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render(['loginname' => 'testadmin'], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'unittest'], [
@@ -104,7 +104,7 @@ class UseraccountUpdateTest extends Base
 
     public function testInvalidInput()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
         $this->expectException('BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
         $this->expectExceptionCode(404);
@@ -115,7 +115,7 @@ class UseraccountUpdateTest extends Base
 
     public function testAlreadyExists()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
         $this->expectExceptionCode(404);
@@ -144,7 +144,7 @@ class UseraccountUpdateTest extends Base
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
                 "rights": {
@@ -171,7 +171,7 @@ class UseraccountUpdateTest extends Base
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
@@ -197,7 +197,7 @@ class UseraccountUpdateTest extends Base
 
     public function testInvalidRoleName()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $this->setDepartment(74);
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
         $this->expectExceptionCode(404);
