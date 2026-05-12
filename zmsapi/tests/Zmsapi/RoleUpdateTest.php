@@ -48,5 +48,27 @@ class RoleUpdateTest extends Base
             ]),
         ], []);
     }
+
+    public function testDescriptionRequired()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+
+        $created = (new RoleRepository())->addRole(new RoleEntity([
+            'name' => 'test_role_api_update_description_before',
+            'description' => 'Before',
+            'permissions' => ['superuser'],
+        ]));
+
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+
+        $this->render(['id' => $created->id], [
+            '__body' => json_encode([
+                'name' => 'test_role_api_update_description_after',
+                'description' => '',
+                'permissions' => ['superuser'],
+            ]),
+        ], []);
+    }
 }
 
