@@ -27,9 +27,13 @@ class View extends BaseView {
                 }).done(() => {
                     const url = new URL(window.location.href);
                     url.searchParams.set('success', 'role_deleted');
+                    url.searchParams.delete('error');
                     window.location.assign(url.toString());
                 }).fail(() => {
-                    window.location.assign(window.location.href);
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('error', 'role_deletion_failed');
+                    url.searchParams.delete('success');
+                    window.location.assign(url.toString());
                 });
             },
             () => {},

@@ -44,6 +44,12 @@
 				Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
 			{{ block('error_end') }}
 		{% endblock %}
+		{% block role_deletion_failed %}
+			{% set errorTitle = "Rolle konnte nicht gelöscht werden" %}
+			{{ block('error_start') }}
+				Die Rolle konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.
+			{{ block('error_end') }}
+		{% endblock %}
     {% endif %}
 {% endblock %}
 

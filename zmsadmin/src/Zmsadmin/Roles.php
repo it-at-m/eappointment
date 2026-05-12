@@ -23,6 +23,7 @@ class Roles extends BaseController
 
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
+        $error = $validator->getParameter('error')->isString()->getValue();
 
         $roleList = \App::$http->readGetResult('/roles/', [])->getCollection();
 
@@ -35,6 +36,7 @@ class Roles extends BaseController
                 'workstation' => $workstation,
                 'roleList' => $roleList,
                 'success' => $success,
+                'error' => $error,
             ]
         );
     }
