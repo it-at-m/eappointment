@@ -66,6 +66,12 @@ class RoleEditTest extends Base
                     'response' => $this->readFixture("GET_role_1.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/roles/1/',
                     'response' => $this->readFixture("GET_role_1.json")
@@ -86,6 +92,90 @@ class RoleEditTest extends Base
 
         $this->assertRedirect($response, '/roles/1/edit/?success=role_updated');
         $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testRenderingSaveDuplicateName()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/permissions/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_permissionlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/2/',
+                    'parameters' => [],
+                    'response' => '{
+                        "$schema": "https://localhost/terminvereinbarung/api/2/",
+                        "meta": {
+                            "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+                            "error": false
+                        },
+                        "data": {
+                            "$schema": "https://schema.berlin.de/queuemanagement/role.json",
+                            "id": 2,
+                            "name": "audit_viewer",
+                            "description": "Innenrevision",
+                            "permissions": ["logs"],
+                            "assignedUserCount": 0
+                        }
+                    }'
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => '{
+                        "$schema": "https://localhost/terminvereinbarung/api/2/",
+                        "meta": {
+                            "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+                            "error": false
+                        },
+                        "data": {
+                            "0": {
+                                "$schema": "https://schema.berlin.de/queuemanagement/role.json",
+                                "id": 1,
+                                "name": "system_admin",
+                                "description": "Technische Administration",
+                                "permissions": ["superuser"],
+                                "assignedUserCount": 0
+                            },
+                            "1": {
+                                "$schema": "https://schema.berlin.de/queuemanagement/role.json",
+                                "id": 2,
+                                "name": "audit_viewer",
+                                "description": "Innenrevision",
+                                "permissions": ["logs"],
+                                "assignedUserCount": 0
+                            }
+                        }
+                    }'
+                ],
+            ]
+        );
+
+        $response = $this->render(
+            ['id' => 2],
+            [
+                'name' => 'system_admin',
+                'description' => 'Innenrevision',
+                'permissions' => ['logs'],
+            ],
+            [],
+            'POST'
+        );
+
+        $this->assertStringContainsString('Eine Rolle mit diesem Namen existiert bereits.', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
 
