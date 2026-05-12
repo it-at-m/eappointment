@@ -133,6 +133,9 @@ class Role extends Base
     public function deleteRole(int $roleId): ?Entity
     {
         $entity = $this->readRoleById($roleId);
+        $deleteAssignments = new Query\UserRole(Query\Base::DELETE);
+        $deleteAssignments->addConditionRoleId($roleId);
+        $this->deleteItem($deleteAssignments);
         $query = new Query\Role(Query\Base::DELETE);
         $query->addConditionRoleId($roleId);
         return ($this->deleteItem($query)) ? $entity : null;
