@@ -46,7 +46,9 @@ class UseraccountEdit extends BaseController
 
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
+
         $roleList = new RoleList();
+        $userAccountRoles = [];
 
         if ($workstation->getUseraccount()->isSuperUser()) {
             $roleResult = \App::$http->readGetResult('/roles/', []);
@@ -56,6 +58,7 @@ class UseraccountEdit extends BaseController
                     $roleList = $loaded;
                 }
             }
+            $userAccountRoles = $userAccount->roles ?? [];
         }
 
         return \BO\Slim\Render::withHtml(
@@ -73,6 +76,7 @@ class UseraccountEdit extends BaseController
                 'oidcProviderList' => array_filter($allowedProviderList),
                 'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList),
                 'roleList' => $roleList,
+                'userAccountRoles' => $userAccountRoles,
             ]
         );
     }
