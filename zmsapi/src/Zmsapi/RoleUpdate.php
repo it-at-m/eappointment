@@ -14,7 +14,7 @@ class RoleUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        (new Helper\User($request, 1))->checkPermissions('useraccount');
 
         $roleId = (int) $args['id'];
         $input = Validator::input()->isJson()->assertValid()->getValue();
