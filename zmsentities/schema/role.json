@@ -11,7 +11,8 @@
         "assignedUserCount": 0
     },
     "required": [
-        "name"
+        "name",
+        "description"
     ],
     "properties": {
         "id": {
@@ -24,10 +25,8 @@
             "pattern": "^[a-z][a-z0-9_]{0,99}$"
         },
         "description": {
-            "type": [
-                "string",
-                "null"
-            ],
+            "type": "string",
+            "minLength": 1,
             "description": "Display label for administrators (stored in role.description)."
         },
         "assignedUserCount": {

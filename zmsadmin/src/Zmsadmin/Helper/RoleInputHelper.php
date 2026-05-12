@@ -27,7 +27,7 @@ class RoleInputHelper
 
         return [
             'name' => $name,
-            'description' => $description === '' ? null : $description,
+            'description' => $description,
             'permissions' => $permissions,
         ];
     }
