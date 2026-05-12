@@ -50,6 +50,8 @@ class UseraccountEdit extends BaseController
         $roleList = new RoleList();
         $userAccountRoles = [];
 
+        // Until all controllers have been updated, only superusers should be allowed to assign the new roles
+        // @todo: remove isSuperUser() and replace with hasPermissions(['useraccount']) with ZMSKVR-1173
         if ($workstation->getUseraccount()->isSuperUser()) {
             $roleResult = \App::$http->readGetResult('/roles/', []);
             if ($roleResult) {
