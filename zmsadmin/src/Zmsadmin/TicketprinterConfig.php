@@ -25,6 +25,9 @@ class TicketprinterConfig extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['ticketprinter'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $scopeId = Validator::value($workstation['scope']['id'])->isNumber()->getValue();
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $organisation = \App::$http->readGetResult(
