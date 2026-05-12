@@ -20,12 +20,6 @@ class RoleDelete extends BaseController
         $roleId = (int) Validator::value($args['id'] ?? null)->isNumber()->getValue();
         \App::$http->readDeleteResult('/roles/' . $roleId . '/', [])->getEntity();
 
-        return \BO\Slim\Render::redirect(
-            'roles',
-            [],
-            [
-                'success' => 'role_deleted',
-            ]
-        );
+        return $response->withStatus(204);
     }
 }

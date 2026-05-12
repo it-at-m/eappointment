@@ -24,8 +24,10 @@ class View extends BaseView {
             () => {
                 $.ajax(trigger.getAttribute('href'), {
                     method: 'DELETE'
-                }).done((response, textStatus, xhr) => {
-                    window.location.assign(xhr.responseURL || window.location.href);
+                }).done(() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('success', 'role_deleted');
+                    window.location.assign(url.toString());
                 }).fail(() => {
                     window.location.assign(window.location.href);
                 });
