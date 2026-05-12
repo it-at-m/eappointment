@@ -37,7 +37,7 @@ class RoleUpdateTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
 
-        $this->expectException('\BO\Zmsapi\Exception\Role\RoleNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Role\RoleDoesNotExist');
         $this->expectExceptionCode(404);
 
         $this->render(['id' => 0], [
