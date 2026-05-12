@@ -13,7 +13,7 @@ Das ursprüngliche Projekt zur Ablösung kommerziell-proprietärer Software durc
 
 ### MPDZBS
 
-Die Entwicklung der PHP-Anwendung zmscitizenapi sowie die Ablösung des ersten Open-Source-Vue2-Frontends ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) durch das Vue3-Frontend zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) für Bürger:innen, dazu der Aufbau des Vue-Patternlabs der Stadt ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). Dieses Projekt hat die bürgerseitigen Komponenten modernisiert und Standards für das Designsystem etabliert.
+Die Entwicklung der PHP-Anwendung zmscitizenapi sowie die Ablösung des ersten Open-Source-Vue2-Frontends ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) durch das Vue3-Frontend zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) für Bürger:innen, dazu der Aufbau des Vue-Patternlabs der Stadt ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). Dieses Projekt hat die bürgerseitigen Komponenten modernisiert und Standards für das Designsystem etabliert. Der öffentliche Buchungsfluss wird durch Münchens quelloffenen [CaptchaService](https://it-at-m.github.io/captchaservice/) vor Bot-Scraping geschützt — ein [ALTCHA](https://altcha.org/)-Proof-of-Work-CAPTCHA, der jahrelange Versuche mit eigenen und proprietären CAPTCHAs ablöst und DSGVO-konform by design ist.
 
 ### ZMSKVR
 
