@@ -49,7 +49,7 @@
                                 }) }}
                                 {{ custombutton({
                                     "type": "delete",
-                                    "class": "link js-role-delete",
+                                    "class": "link role-delete",
                                     "target": urlGet('roleDelete', {'id': role.id}, {}),
                                     "label": '<i class="fas fa-trash" aria-hidden="true"></i>',
                                     "data": {
@@ -64,36 +64,6 @@
                 </table>
             {% endif %}
         </div>
-        <script type="text/javascript">
-        window.zmsConfirmRoleDelete = function (el) {
-            var n = parseInt(el.getAttribute('data-assigned-users') || '0', 10);
-            if (n > 0) {
-                if (!window.confirm('Achtung: Diese Rolle ist derzeit ' + n + ' Nutzer*in zugeordnet. Wenn Sie die Rolle löschen, verlieren diese Nutzer*innen diese Rolle. Fortfahren?')) {
-                    return false;
-                }
-            }
-            return window.confirm('Soll diese Rolle wirklich endgültig gelöscht werden?');
-        };
-
-        document.addEventListener('click', function (e) {
-            var el = e.target && e.target.closest ? e.target.closest('.js-role-delete') : null;
-            if (!el) {
-                return;
-            }
-            e.preventDefault();
-            if (!window.zmsConfirmRoleDelete(el)) {
-                return;
-            }
-            fetch(el.getAttribute('href'), {
-                method: 'DELETE',
-                credentials: 'same-origin'
-            }).then(function (r) {
-                window.location.href = r.url || '{{ urlGet('roles', {}, {}) }}';
-            }).catch(function () {
-                window.location.href = '{{ urlGet('roles', {}, {}) }}';
-            });
-        }, false);
-        </script>
     {% endblock %}
 
     {% block board_footer %}{% endblock %}
