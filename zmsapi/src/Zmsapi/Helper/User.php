@@ -239,27 +239,6 @@ class User
         return $userAccount->hasId();
     }
 
-    public static function validateRoleNames(array $roleNames): void
-    {
-        if ($roleNames === []) {
-            return;
-        }
-
-        $validNames = [];
-        foreach ((new Role())->readAllRoles('ASC', 0) as $roleEntity) {
-            $validNames[] = $roleEntity->name;
-        }
-
-        $missing = array_values(array_unique(array_diff($roleNames, $validNames)));
-
-        if ($missing !== []) {
-            throw new UseraccountInvalidInput(
-                'Unknown role name(s): ' . implode(', ', $missing),
-                404
-            );
-        }
-    }
-
     /**
      * Get X-Api-Key from header
      *
