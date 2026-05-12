@@ -34,7 +34,7 @@ class RoleEdit extends BaseController
         if ($request->getMethod() === 'POST') {
             $input = RoleInputHelper::readFormInput($request);
             $submitted = $input;
-            $result = $this->writeUpdatedRole($roleId, $input);
+            $result = $this->writeUpdatedRole($roleId, $role->name, $input);
             if ($result instanceof RoleEntity) {
                 return \BO\Slim\Render::redirect(
                     'roleEdit',
@@ -61,7 +61,7 @@ class RoleEdit extends BaseController
         );
     }
 
-    protected function writeUpdatedRole(int $roleId, array $input): RoleEntity|array|null
+    protected function writeUpdatedRole(int $roleId, string $currentRoleName, array $input): RoleEntity|array|null
     {
         $validated = RoleInputHelper::validateAndCreateEntity(
             $input,
@@ -71,6 +71,13 @@ class RoleEdit extends BaseController
         );
         if (!($validated instanceof RoleEntity)) {
             return $validated;
+        }
+
+        if ($validated->name !== $currentRoleName) {
+            $duplicateNameError = RoleInputHelper::validateUniqueRoleName($validated->name);
+            if ($duplicateNameError !== null) {
+                return $duplicateNameError;
+            }
         }
 
         return $this->handleEntityWrite(function () use ($roleId, $validated) {

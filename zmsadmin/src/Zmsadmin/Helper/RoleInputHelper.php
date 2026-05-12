@@ -50,4 +50,26 @@ class RoleInputHelper
 
         return $entity;
     }
+
+    public static function validateUniqueRoleName(string $roleName): ?array
+    {
+        $existingRoles = \App::$http->readGetResult('/roles/', [])->getCollection();
+        foreach ($existingRoles as $role) {
+            if ($role->name !== $roleName) {
+                continue;
+            }
+
+            return [
+                'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                'include' => true,
+                'data' => [
+                    'name' => [
+                        'messages' => ['Eine Rolle mit diesem Namen existiert bereits.'],
+                    ],
+                ],
+            ];
+        }
+
+        return null;
+    }
 }
