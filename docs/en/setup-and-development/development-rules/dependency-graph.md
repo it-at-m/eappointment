@@ -6,6 +6,7 @@ The graph also shows the runtime services every deployment depends on:
 
 - `eappointment-php-base` — pre-built PHP runtime images for every PHP module (see [PHP Base Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` — Munich's open-source citizen identity broker for BundID, BayernID and Elster, reached at the `refarch-gateway` layer (see [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
+- `CaptchaService` — Munich's open-source ALTCHA-based proof-of-work CAPTCHA service that gates the citizen booking flow against bot scraping. Fetched by `zmscitizenview` to render the challenge and called by `zmscitizenapi` to verify the solution (see [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
 - `zmsautomation` — Maven-based acceptance tests on **ATAF** (Agile Test Automation Framework; artifacts `de.muenchen.ataf`): Cucumber scenarios with **REST Assured** for API tests and **Selenium** (via ATAF web) for UI tests. Not a Composer dependency of the PHP modules; it drives HTTP/browser flows against deployed instances (see [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
 
 **Reading the edges**
@@ -41,6 +42,8 @@ graph TD;
 
     %% Runtime / external services (thick)
     refarch-gateway ==>|citizen identity| dbs;
+    zmscitizenview ==>|fetch challenge| captchaservice;
+    zmscitizenapi ==>|verify solution| captchaservice;
     phpbase ==>|PHP runtime image| zms_modules;
 
     %% Test automation: ATAF supplies the stack; zmsautomation consumes it (targets: see section below)
@@ -73,6 +76,7 @@ graph TD;
     subgraph runtime [Runtime / external services]
         style runtime stroke-dasharray: 2, 4
         dbs["Digital Citizen Service (DBS)<br>BundID · BayernID · Elster broker"]
+        captchaservice["CaptchaService<br>ALTCHA proof-of-work CAPTCHA"]
     end
 
     subgraph foundation [Infrastructure foundation]
@@ -98,6 +102,7 @@ graph TD;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
     class dbs runtimeSvc;
+    class captchaservice runtimeSvc;
     class phpbase infra;
     class zmsautomation automation;
     class ataf automation;
@@ -143,3 +148,4 @@ These are not pulled as code dependencies but are required at deploy/runtime.
 
 - `eappointment-php-base`: pre-built PHP runtime images that every PHP module runs on. Detailed dependency view: [PHP Base Images](../php-base-images).
 - `Digital Citizen Service (DBS)`: Munich's open-source citizen identity broker for BundID, BayernID and Elster, integrated at the `refarch-gateway` layer ahead of `zmscitizenapi` for the citizen booking flow. See [it-at-m/dbs](https://it-at-m.github.io/dbs/).
+- `CaptchaService`: Munich's open-source ALTCHA-based proof-of-work CAPTCHA service. Protects the citizen booking flow against bot scraping — `zmscitizenview` fetches the challenge, `zmscitizenapi` verifies the solution before processing a booking. GDPR-compliant by design (no cookies, no tracking, no third-party calls). See [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/).
