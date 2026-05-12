@@ -13,7 +13,7 @@ The original project to replace commercial proprietary software with the open so
 
 ### MPDZBS
 
-The creation of the PHP zmscitizenapi and the replacement of the first open source Vue2 frontend ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) with the Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) citizen frontend, plus the creation of the city's Vue patternlab ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). This project modernized the citizen-facing components and established design system standards.
+The creation of the PHP zmscitizenapi and the replacement of the first open source Vue2 frontend ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) with the Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) citizen frontend, plus the creation of the city's Vue patternlab ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). This project modernized the citizen-facing components and established design system standards. The public booking flow is protected against bot scraping by Munich's open-source [CaptchaService](https://it-at-m.github.io/captchaservice/) — an [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA that replaces years of in-house and proprietary attempts and is GDPR-compliant by design.
 
 ### ZMSKVR
 

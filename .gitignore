@@ -5,6 +5,7 @@ test-automation-framework
 zms-test-automation
 eappointment-buergeransicht
 zmsautomation/lib
+captchaservice
 
 dldb-mapper
 eappointment-php-base
