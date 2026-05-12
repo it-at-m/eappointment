@@ -3,8 +3,6 @@
 namespace BO\Zmsapi\Helper;
 
 use BO\Slim\Render;
-use BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput;
-use BO\Zmsdb\Role;
 use BO\Zmsdb\Workstation;
 use BO\Zmsapi\Helper\UserAuth;
 use BO\Zmsentities\Collection\DepartmentList;
@@ -239,27 +237,6 @@ class User
     {
         $userAccount = static::readWorkstation()->getUseraccount();
         return $userAccount->hasId();
-    }
-
-    public static function validateRoleNames(array $roleNames): void
-    {
-        if ($roleNames === []) {
-            return;
-        }
-
-        $validNames = [];
-        foreach ((new Role())->readAllRoles('ASC', 0) as $roleEntity) {
-            $validNames[] = $roleEntity->name;
-        }
-
-        $missing = array_values(array_unique(array_diff($roleNames, $validNames)));
-
-        if ($missing !== []) {
-            throw new UseraccountInvalidInput(
-                'Unknown role name(s): ' . implode(', ', $missing),
-                404
-            );
-        }
     }
 
     /**

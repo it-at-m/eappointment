@@ -194,33 +194,4 @@ class UseraccountUpdateTest extends Base
             }'
         ], []);
     }
-
-    public function testInvalidRoleName()
-    {
-        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
-        $this->setDepartment(74);
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
-        $this->expectExceptionCode(404);
-        $this->render(['loginname' => 'testadmin'], [
-            '__body' => '{
-                "rights": {
-                "availability": 0,
-                "basic": 0,
-                "cluster": 0,
-                "department": 0,
-                "organisation": 0,
-                "scope": 0,
-                "superuser": 0,
-                "ticketprinter": 0,
-                "useraccount": 1
-              },
-              "roles": ["__does_not_exist__"],
-              "departments": [
-                  {"id": 74}
-              ],
-              "email": "unittest@berlinonline.de",
-              "id": "unittest"
-            }'
-        ], []);
-    }
 }
