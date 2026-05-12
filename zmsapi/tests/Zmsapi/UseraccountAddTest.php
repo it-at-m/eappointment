@@ -213,7 +213,7 @@ class UseraccountAddTest extends Base
 
     public function testInvalidRoleName()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
         $this->setDepartment(74);
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
         $this->expectExceptionCode(404);
