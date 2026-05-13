@@ -4,15 +4,13 @@ namespace BO\Zmsadmin\Tests;
 
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 
-class UseraccountDeleteTest extends Base
+class RolesTest extends Base
 {
-    protected $arguments = [
-        'loginname' => 'testuser'
-    ];
+    protected $arguments = [];
 
     protected $parameters = [];
 
-    protected $classname = "UseraccountDelete";
+    protected $classname = 'Roles';
 
     public function testRendering()
     {
@@ -22,21 +20,23 @@ class UseraccountDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json'),
                 ],
                 [
-                    'function' => 'readDeleteResult',
-                    'url' => '/useraccount/testuser/',
-                    'response' => $this->readFixture("GET_useraccount_testuser.json")
-                ]
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture('GET_rolelist.json'),
+                ],
             ]
         );
+
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/users/?success=useraccount_deleted');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringContainsString('Rollen', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testMissingUseraccountRights()
+    public function testMissingSuperuserRights()
     {
         $this->setApiCalls(
             [
@@ -44,7 +44,7 @@ class UseraccountDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                    'response' => $this->readFixture('GET_Workstation_Resolved1.json'),
                 ],
             ]
         );
