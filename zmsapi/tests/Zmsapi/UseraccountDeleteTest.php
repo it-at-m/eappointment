@@ -25,4 +25,12 @@ class UseraccountDeleteTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'test'], [], []);
     }
+
+    public function testMissingRights()
+    {
+        $this->setWorkstation();
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['loginname' => 'testadmin'], [], []);
+    }
 }

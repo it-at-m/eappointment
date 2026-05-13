@@ -34,4 +34,12 @@ class UseraccountByDepartmentListTest extends Base
         // Should return empty list for non-existent department
         $this->assertStringNotContainsString('testuser', (string)$response->getBody());
     }
+
+    public function testMissingRights()
+    {
+        $this->setWorkstation();
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(['ids' => 74], [], []);
+    }
 }

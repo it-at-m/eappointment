@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class RoleEditTest extends Base
 {
     protected $arguments = [
@@ -170,6 +172,23 @@ class RoleEditTest extends Base
 
         $this->assertStringContainsString('Eine Rolle mit diesem Namen existiert bereits.', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testMissingSuperuserRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
     }
 }
 
