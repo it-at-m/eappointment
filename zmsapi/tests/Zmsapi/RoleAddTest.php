@@ -8,7 +8,7 @@ class RoleAddTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $response = $this->render([], [
             '__body' => json_encode([
@@ -26,7 +26,7 @@ class RoleAddTest extends Base
 
     public function testInputInvalid()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
@@ -38,7 +38,7 @@ class RoleAddTest extends Base
 
     public function testDescriptionRequired()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
@@ -52,4 +52,3 @@ class RoleAddTest extends Base
         ], []);
     }
 }
-

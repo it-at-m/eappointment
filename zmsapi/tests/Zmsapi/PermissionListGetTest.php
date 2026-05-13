@@ -8,11 +8,10 @@ class PermissionListGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $response = $this->render([], [], []);
         $this->assertStringContainsString('permission.json', (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
 }
-
