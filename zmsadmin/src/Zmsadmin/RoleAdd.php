@@ -2,7 +2,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsadmin\Helper\RoleInputHelper;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Role as RoleEntity;
 
@@ -25,9 +24,9 @@ class RoleAdd extends BaseController
         $submitted = null;
         $result = null;
         if ($request->getMethod() === 'POST') {
-            $input = RoleInputHelper::readFormInput($request);
-            $submitted = $input;
-            $result = $this->writeNewRole($input);
+            $input = $request->getParsedBody();
+            $submitted = is_array($input) ? $input : [];
+            $result = $this->writeNewRole($submitted);
             if ($result instanceof RoleEntity) {
                 return \BO\Slim\Render::redirect(
                     'roleEdit',
@@ -55,23 +54,31 @@ class RoleAdd extends BaseController
 
     protected function writeNewRole(array $input): RoleEntity|array|null
     {
-        $validated = RoleInputHelper::validateAndCreateEntity(
-            $input,
-            function ($data) {
-                return $this->transformValidationErrors($data);
+        $data = $input;
+        unset($data['id'], $data['assignedUserCount']);
+        $permissions = $data['permissions'] ?? [];
+        $data['permissions'] = is_array($permissions)
+            ? array_values(array_unique($permissions))
+            : [];
+        $entity = (new RoleEntity($data))->withCleanedUpFormData();
+
+        $roles = \App::$http->readGetResult('/roles/', [])->getCollection();
+        foreach ($roles as $existing) {
+            if ((string) $existing->name === $entity->name) {
+                return [
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig',
+                    'include' => true,
+                    'data' => [
+                        'name' => [
+                            'messages' => ['Eine Rolle mit diesem Namen existiert bereits.'],
+                        ],
+                    ],
+                ];
             }
-        );
-        if (!($validated instanceof RoleEntity)) {
-            return $validated;
         }
 
-        $duplicateNameError = RoleInputHelper::validateUniqueRoleName($validated->name);
-        if ($duplicateNameError !== null) {
-            return $duplicateNameError;
-        }
-
-        return $this->handleEntityWrite(function () use ($validated) {
-            return \App::$http->readPostResult('/roles/', $validated)->getEntity();
+        return $this->handleEntityWrite(function () use ($entity) {
+            return \App::$http->readPostResult('/roles/', $entity)->getEntity();
         });
     }
 }
