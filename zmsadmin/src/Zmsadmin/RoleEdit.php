@@ -2,7 +2,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsadmin\Helper\RoleInputHelper;
 use BO\Mellon\Validator;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Role as RoleEntity;
