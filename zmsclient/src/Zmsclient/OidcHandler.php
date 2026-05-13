@@ -92,7 +92,7 @@ class OidcHandler
                 'application' => $application,
                 'username' => $username,
                 'workstation_id' => $workstation->id ?? 'unknown',
-                'hashed_session_token' => $workstationHash,
+                'hashed_workstation_key' => $workstationHash,
             ]);
 
             $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
