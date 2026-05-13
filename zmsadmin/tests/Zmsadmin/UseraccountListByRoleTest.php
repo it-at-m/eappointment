@@ -4,15 +4,15 @@ namespace BO\Zmsadmin\Tests;
 
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 
-class UseraccountDeleteTest extends Base
+class UseraccountListByRoleTest extends Base
 {
     protected $arguments = [
-        'loginname' => 'testuser'
+        'level' => 50,
     ];
 
     protected $parameters = [];
 
-    protected $classname = "UseraccountDelete";
+    protected $classname = 'UseraccountListByRole';
 
     public function testRendering()
     {
@@ -22,18 +22,25 @@ class UseraccountDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json'),
                 ],
                 [
-                    'function' => 'readDeleteResult',
-                    'url' => '/useraccount/testuser/',
-                    'response' => $this->readFixture("GET_useraccount_testuser.json")
-                ]
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_ownerlist.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/role/50/useraccount/',
+                    'response' => $this->readFixture('GET_useraccountlist_role_50.json'),
+                ],
             ]
         );
+
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/users/?success=useraccount_deleted');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringContainsString('useraccount-list', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testMissingUseraccountRights()

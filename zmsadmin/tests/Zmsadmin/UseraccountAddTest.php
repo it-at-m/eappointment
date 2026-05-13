@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class UseraccountAddTest extends Base
 {
     protected $arguments = [];
@@ -170,5 +172,22 @@ class UseraccountAddTest extends Base
             ]
         );
         $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
+
+    public function testMissingUseraccountRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
     }
 }
