@@ -6,6 +6,10 @@ use BO\Zmsclient\Auth;
 use BO\Zmsclient\Http;
 use BO\Zmsclient\OidcHandler;
 use BO\Zmsclient\Result;
+use BO\Zmsentities\Collection\DepartmentList;
+use BO\Zmsentities\Department;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
 use PHPUnit\Framework\TestCase;
 
 class OidcHandlerTest extends TestCase
@@ -74,7 +78,7 @@ class OidcHandlerTest extends TestCase
         $authKey = 'matching-state-token';
         $_COOKIE[Auth::getCookieName()] = $authKey;
 
-        $workstation = $this->createWorkstationStub('user-1', 'ws-1', 0);
+        $workstation = $this->createWorkstationEntity(0);
 
         $resultMock = $this->createMock(Result::class);
         $resultMock->method('getEntity')->willReturn($workstation);
@@ -97,7 +101,7 @@ class OidcHandlerTest extends TestCase
         $authKey = 'matching-state-token';
         $_COOKIE[Auth::getCookieName()] = $authKey;
 
-        $workstation = $this->createWorkstationStub('user-1', 'ws-1', 3);
+        $workstation = $this->createWorkstationEntity(3);
 
         $resultMock = $this->createMock(Result::class);
         $resultMock->method('getEntity')->willReturn($workstation);
@@ -144,63 +148,40 @@ class OidcHandlerTest extends TestCase
         $this->handler->handleCallback('abc1234', 'zmsadmin');
     }
 
-    /**
-     * Creates a stub object exposing the fluent shape used by OidcHandler.
-     */
-    private function createWorkstationStub(string $username, string $workstationId, int $departmentCount)
+    public function testHandleCallbackThrowsWhenWorkstationEntityMissing(): void
     {
-        $departmentList = new class ($departmentCount) {
-            private int $count;
-            public function __construct(int $count)
-            {
-                $this->count = $count;
-            }
-            public function count(): int
-            {
-                return $this->count;
-            }
-        };
+        $authKey = 'matching-state-token';
+        $_COOKIE[Auth::getCookieName()] = $authKey;
 
-        $useraccount = new class ($username, $departmentList) {
-            public string $id;
-            private $departmentList;
-            public function __construct(string $id, $departmentList)
-            {
-                $this->id = $id;
-                $this->departmentList = $departmentList;
-            }
-            public function getDepartmentList()
-            {
-                return $this->departmentList;
-            }
-        };
+        $resultMock = $this->createMock(Result::class);
+        $resultMock->method('getEntity')->willReturn(false);
 
-        return new class ($useraccount, $workstationId) implements \ArrayAccess {
-            public string $id;
-            private $useraccount;
-            public function __construct($useraccount, string $id)
-            {
-                $this->useraccount = $useraccount;
-                $this->id = $id;
-            }
-            public function getUseraccount()
-            {
-                return $this->useraccount;
-            }
-            public function offsetExists($offset): bool
-            {
-                return $offset === 'authkey';
-            }
-            public function offsetGet($offset): mixed
-            {
-                return null;
-            }
-            public function offsetSet($offset, $value): void
-            {
-            }
-            public function offsetUnset($offset): void
-            {
-            }
-        };
+        $this->httpMock
+            ->expects($this->once())
+            ->method('readGetResult')
+            ->with('/workstation/', ['resolveReferences' => 2])
+            ->willReturn($resultMock);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('OIDC workstation lookup returned no entity');
+
+        $this->handler->handleCallback($authKey, 'zmsadmin');
+    }
+
+    private function createWorkstationEntity(int $departmentCount): Workstation
+    {
+        $departmentList = new DepartmentList();
+        for ($i = 0; $i < $departmentCount; $i++) {
+            $departmentList->addEntity(new Department(['id' => $i + 1]));
+        }
+        $useraccount = new Useraccount([
+            'id' => 'user-1',
+            'departments' => $departmentList,
+        ]);
+
+        return new Workstation([
+            'id' => 1,
+            'useraccount' => $useraccount,
+        ]);
     }
 }
