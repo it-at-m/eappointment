@@ -9,7 +9,7 @@ class RoleGet extends BaseController
 {
     public function readResponse($request, $response, array $args)
     {
-        (new Helper\User($request, 1))->checkPermissions('useraccount');
+        (new Helper\User($request, 1))->checkPermissions('superuser');
 
         $roleId = (int) $args['id'];
         $role = (new Role())->readRoleById($roleId);
