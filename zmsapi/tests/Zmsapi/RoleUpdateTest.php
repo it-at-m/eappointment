@@ -11,7 +11,7 @@ class RoleUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $created = (new RoleRepository())->addRole(new RoleEntity([
             'name' => 'test_role_api_update_before',
@@ -35,7 +35,7 @@ class RoleUpdateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $this->expectException('\BO\Zmsapi\Exception\Role\RoleDoesNotExist');
         $this->expectExceptionCode(404);
@@ -51,7 +51,7 @@ class RoleUpdateTest extends Base
 
     public function testDescriptionRequired()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');
+        $this->setWorkstation()->getUseraccount()->setPermissions('superuser');
 
         $created = (new RoleRepository())->addRole(new RoleEntity([
             'name' => 'test_role_api_update_description_before',
@@ -71,4 +71,3 @@ class RoleUpdateTest extends Base
         ], []);
     }
 }
-
