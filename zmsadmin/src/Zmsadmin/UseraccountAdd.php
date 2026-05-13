@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\RoleList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 
@@ -23,6 +24,10 @@ class UseraccountAdd extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $selectedDepartment = $request->getAttribute('validator')->getParameter('department')->isNumber()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();

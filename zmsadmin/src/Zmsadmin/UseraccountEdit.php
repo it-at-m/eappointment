@@ -10,6 +10,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\RoleList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
@@ -27,6 +28,10 @@ class UseraccountEdit extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/' . $userAccountName . '/')->getEntity();
