@@ -12,7 +12,7 @@ class RoleAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['useraccount'])) {
             throw new UserAccountMissingRights();
         }
