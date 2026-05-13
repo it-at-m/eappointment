@@ -13,7 +13,7 @@ class RoleDelete extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (!$workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
             throw new UserAccountMissingRights();
         }
 
