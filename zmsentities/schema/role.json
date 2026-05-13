@@ -17,23 +17,23 @@
     "properties": {
         "id": {
             "type": "integer",
-            "description": "Numeric identifier of the role (primary key in the role table)."
+            "description": "Numeric identifier of the role."
         },
         "name": {
             "type": "string",
-            "description": "Unique technical name stored in the database (ASCII, e.g. agent_queue, appointment_admin).",
+            "description": "Unique technical name stored in the database (e.g. agent_queue, appointment_admin).",
             "pattern": "^[a-z][a-z0-9_]{0,99}$"
         },
         "description": {
             "type": "string",
             "minLength": 1,
-            "description": "Display label for administrators (stored in role.description)."
+            "description": "Display label for administrators."
         },
         "assignedUserCount": {
             "type": "integer",
             "minimum": 0,
             "readOnly": true,
-            "description": "Number of user accounts that have this role assigned (read-only, from API)."
+            "description": "Number of user accounts that have this role assigned."
         },
         "permissions": {
             "type": "array",
