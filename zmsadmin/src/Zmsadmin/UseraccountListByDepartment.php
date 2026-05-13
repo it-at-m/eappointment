@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -24,6 +25,10 @@ class UseraccountListByDepartment extends BaseController
     ) {
         $departmentId = $args['id'];
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $department = \App::$http->readGetResult("/department/$departmentId/", ['resolveReferences' => 0])->getEntity();
 

@@ -16,7 +16,12 @@ class UseraccountDeleteTest extends Base
     {
         $this->setApiCalls(
             [
-
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                ],
                 [
                     'function' => 'readDeleteResult',
                     'url' => '/useraccount/testuser/',
