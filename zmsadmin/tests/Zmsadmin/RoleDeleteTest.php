@@ -5,7 +5,7 @@ namespace BO\Zmsadmin\Tests;
 class RoleDeleteTest extends Base
 {
     protected $arguments = [
-        'id' => 1
+        'id' => 1,
     ];
 
     protected $parameters = [];
@@ -20,13 +20,13 @@ class RoleDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved1.json")
+                    'response' => $this->readFixture("GET_Workstation_Superuser_Resolved1.json"),
                 ],
                 [
                     'function' => 'readDeleteResult',
                     'url' => '/roles/1/',
                     'parameters' => [],
-                    'response' => $this->readFixture("GET_role_1.json")
+                    'response' => $this->readFixture("GET_role_1.json"),
                 ],
             ]
         );
@@ -35,4 +35,3 @@ class RoleDeleteTest extends Base
         $this->assertEquals(204, $response->getStatusCode());
     }
 }
-
