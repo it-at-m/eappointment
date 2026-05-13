@@ -2,12 +2,12 @@
 
 namespace BO\Zmsdb\Query;
 
-/**
- * Junction table user ↔ role (writes only).
- */
 class UserRole extends Base
 {
-    public const TABLE = 'user_role';
+    /**
+     * @var string TABLE mysql table reference
+     */
+    const TABLE = 'user_role';
 
     public function addConditionUserId(int $userId): self
     {
