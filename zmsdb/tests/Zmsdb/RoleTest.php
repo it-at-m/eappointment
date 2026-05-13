@@ -102,6 +102,31 @@ class RoleTest extends Base
         $this->assertEquals("After", $updated->description);
     }
 
+    public function testUpdateRoleRewritesPermissionLinks()
+    {
+        $query = new Query();
+
+        $created = $query->addRole(new Entity([
+            'name' => 'test_role_perm_replace',
+            'description' => 'Initial permissions',
+            'permissions' => ['useraccount'],
+        ]));
+
+        $this->assertEntity('\\BO\\Zmsentities\\Role', $created);
+        $roleId = (int) $created->id;
+        $this->assertEquals(['useraccount'], $created->permissions);
+
+        $updated = $query->updateRole($roleId, new Entity([
+            'name' => 'test_role_perm_replace',
+            'description' => 'Replaced permissions',
+            'permissions' => ['superuser', 'logs'],
+        ]));
+
+        $this->assertEntity('\\BO\\Zmsentities\\Role', $updated);
+        $this->assertEquals($roleId, (int) $updated->id);
+        $this->assertEqualsCanonicalizing(['superuser', 'logs'], $updated->permissions);
+    }
+
     public function testDeleteRoleRemovesRole()
     {
         $query = new Query();
