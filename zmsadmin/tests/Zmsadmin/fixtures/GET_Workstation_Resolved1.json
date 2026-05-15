@@ -1,5 +1,5 @@
 {
-    "$schema": "https://minikube/api/2/",
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
     "meta": {
       "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
       "error": false,
