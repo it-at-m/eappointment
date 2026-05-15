@@ -104,6 +104,8 @@ class Role extends Base
             $this->writeItem($link);
         }
 
+        (new Useraccount())->invalidateAllCaches();
+
         return $this->readRoleById($roleId, $resolveReferences);
     }
 
@@ -138,6 +140,10 @@ class Role extends Base
         $this->deleteItem($deleteAssignments);
         $query = new Query\Role(Query\Base::DELETE);
         $query->addConditionRoleId($roleId);
-        return ($this->deleteItem($query)) ? $entity : null;
+        $deleted = ($this->deleteItem($query)) ? $entity : null;
+        if ($deleted) {
+            (new Useraccount())->invalidateAllCaches();
+        }
+        return $deleted;
     }
 }
