@@ -1,10 +1,10 @@
 {
-    "$schema": "https://minikube/api/2/",
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
     "meta": {
       "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
       "error": false,
       "generated": "2020-12-09T10:36:01+01:00",
-      "server": "Zmsapi-ENV (v2.23.06-27-gcfac51f)"
+      "server": "Zmsapi-ENV"
     },
     "data": {
       "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
