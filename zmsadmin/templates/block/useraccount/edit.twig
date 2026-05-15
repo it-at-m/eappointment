@@ -184,7 +184,7 @@
             }
         ] %}
 
-        {% if workstation.useraccount.rights.scope %}
+        {% if workstation.useraccount.permissions.useraccount %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
@@ -209,7 +209,7 @@
             ]) %}
         {% endif %}
 
-        {% if workstation.useraccount.rights.cluster %}
+        {% if workstation.useraccount.permissions.useraccount %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
@@ -224,7 +224,7 @@
             ]) %}
         {% endif %}
 
-        {% if workstation.useraccount.rights.superuser %}
+        {% if workstation.useraccount.permissions.superuser %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
