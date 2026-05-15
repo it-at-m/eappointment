@@ -1,7 +1,8 @@
 -- Flyway migration: Opening hours availability test data
 --
 -- Ruppertstraße Standorte 160, 181, 172, 184 (offices 10489 / 10502) live in
--- V19__ZMSKVR-1124_zmscitizenapi_opening_hours_for_ruppertstasse.sql — not duplicated here.
+-- V19__ZMSKVR-1124_opening_hours_for_ruppertstasse.sql — not duplicated here.
+-- feiertage test data is seeded in V10; @range_start is advanced past holidays below.
 
 -- round current time to next 5 minute slot
 SET @rounded_start :=
@@ -26,8 +27,23 @@ SET @appt_end :=
   IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
-SET @range_end :=
-  IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 8 DAY), DATE_ADD(CURDATE(), INTERVAL 7 DAY));
+
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+SET @range_start := IF(EXISTS (SELECT 1 FROM feiertage WHERE Datum = @range_start), DATE_ADD(@range_start, INTERVAL 1 DAY), @range_start);
+
+SET @range_end := DATE_ADD(@range_start, INTERVAL 7 DAY);
 
 INSERT IGNORE INTO `oeffnungszeit`
 (

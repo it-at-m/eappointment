@@ -257,6 +257,17 @@ jobs:
             done
           '
 
+      - name: Detect public holiday (feiertage test data)
+        id: holiday
+        shell: bash
+        run: |
+          set -euo pipefail
+          if bash zmsautomation/scripts/is-public-holiday-today.sh; then
+            echo "is_holiday=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_holiday=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run zmsautomation ATAF tests sequentially (by tag lines)
         shell: bash
         run: |
@@ -266,6 +277,7 @@ jobs:
           BROWSER="${{ matrix.browser }}"
           SCREENSHOT="${{ inputs.per_step_screenshots }}"
           INPUTS="${{ github.event_name == 'schedule' && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
+          IS_HOLIDAY="${{ steps.holiday.outputs.is_holiday }}"
 
           # Split by newlines and run sequentially.
           fail_any=0
@@ -276,6 +288,11 @@ jobs:
             expr="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
             if [ -z "$expr" ]; then
               continue
+            fi
+
+            if [ "$IS_HOLIDAY" = "true" ] && [[ "$expr" != *@NotOnHoliday* ]]; then
+              expr="($expr) and not @NotOnHoliday"
+              echo "Public holiday: excluding @NotOnHoliday scenarios from tag expression"
             fi
 
             echo "Running zmsautomation-test for tags: $expr"

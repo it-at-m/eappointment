@@ -565,6 +565,25 @@ cd "$PROJECT_ROOT/zmsautomation"
 # Run with default ataf profile
 # Maven arguments (e.g., -Dcucumber.filter.tags="@smoke") are passed through via MAVEN_ARGS.
 # Scenarios tagged @ignore are excluded unless @ignore is explicitly in the tag expression.
+# On public holidays (V10 feiertage test data), @NotOnHoliday scenarios are excluded unless that tag is requested.
+is_public_holiday_today() {
+  local migration="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration/V10__add_day_off_holidays_test_data.sql"
+  local today
+  today="$(TZ=Europe/Berlin date +%Y-%m-%d)"
+  grep -q "'${today}'" "$migration" 2>/dev/null
+}
+
+append_holiday_tag_filter() {
+  local value="$1"
+  if is_public_holiday_today && [[ "$value" != *@NotOnHoliday* ]]; then
+    info "Public holiday ($(
+      TZ=Europe/Berlin date +%Y-%m-%d
+    )): excluding @NotOnHoliday scenarios"
+    value="($value) and not @NotOnHoliday"
+  fi
+  printf '%s' "$value"
+}
+
 ATAF_MAVEN_ARGS=()
 HAS_CUCUMBER_TAGS=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
@@ -572,6 +591,7 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
     HAS_CUCUMBER_TAGS=true
     value="${arg#-Dcucumber.filter.tags=}"
     if [[ "$value" != *@ignore* ]]; then
+      value="$(append_holiday_tag_filter "$value")"
       ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
     else
       ATAF_MAVEN_ARGS+=("$arg")
@@ -581,7 +601,9 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   fi
 done
 if [[ "$HAS_CUCUMBER_TAGS" != true ]]; then
-  ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=not @ignore")
+  default_tags="not @ignore"
+  default_tags="$(append_holiday_tag_filter "$default_tags")"
+  ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=$default_tags")
 fi
 
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)

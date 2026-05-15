@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @ZMSKVR-1124
+@rest @zmscitizenapi @ZMSKVR-1124 @NotOnHoliday
 Feature: ZMSKVR-1124 Ruppertstraße booking — Citizen API (10502 / 10489 / 10492, jump-in allow-mix)
   As a citizen
   I want to complete a full appointment booking from offices-and-services through confirm

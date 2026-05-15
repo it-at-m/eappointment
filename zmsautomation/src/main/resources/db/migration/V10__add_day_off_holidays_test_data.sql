@@ -1,4 +1,4 @@
--- Flyway Migration: Add days off and holidays so opening hours can be created.
+-- Flyway Migration: Add days off and holidays (runs before V11 opening-hours seed data).
 
 INSERT INTO `feiertage` (`FeiertagID`, `Datum`, `Feiertag`, `BehoerdenID`, `updateTimestamp`) VALUES
 (54, '2025-08-15', 'MariaHimmelfahrt', 0, '2023-02-23 07:27:05'),
