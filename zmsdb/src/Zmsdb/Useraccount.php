@@ -43,6 +43,14 @@ class Useraccount extends Base
         return $version;
     }
 
+    public function invalidateAllCaches(): void
+    {
+        if (!App::$cache) {
+            return;
+        }
+        App::$cache->set(self::CACHE_VERSION_KEY, $this->getUseraccountCacheVersion() + 1);
+    }
+
     /**
      * Register a cache key for one or more department IDs so we can invalidate
      * only the affected department-based caches later on.

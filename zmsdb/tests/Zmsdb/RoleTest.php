@@ -148,6 +148,36 @@ class RoleTest extends Base
         $this->assertNull($missing);
     }
 
+    public function testUpdateRoleInvalidatesCachedUserRoleNames()
+    {
+        $roleQuery = new Query();
+        $userQuery = new \BO\Zmsdb\Useraccount();
+
+        $createdRole = $roleQuery->addRole(new Entity([
+            'name' => 'test_role_cache_before',
+            'description' => 'Cached role name',
+            'permissions' => ['useraccount'],
+        ]));
+
+        $user = (new \BO\Zmsentities\Useraccount())->getExample();
+        $user->id = $user->id . rand();
+        $createdUser = $userQuery->writeEntity($user);
+        $createdUser->roles = [$createdRole->name];
+        $userQuery->writeUpdatedEntity($createdUser->id, $createdUser, 1);
+
+        $cached = $userQuery->readEntity($createdUser->id, 1, false);
+        $this->assertSame(['test_role_cache_before'], $cached->roles);
+
+        $roleQuery->updateRole((int) $createdRole->id, new Entity([
+            'name' => 'test_role_cache_after',
+            'description' => 'Cached role name',
+            'permissions' => ['useraccount'],
+        ]));
+
+        $refreshed = $userQuery->readEntity($createdUser->id, 1, false);
+        $this->assertSame(['test_role_cache_after'], $refreshed->roles);
+    }
+
     public function testDeleteRoleRemovesAssignedUserRoleRelations()
     {
         $roleQuery = new Query();
