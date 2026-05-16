@@ -4,7 +4,6 @@
   "altcha": {
     "error": "Die Prüfung ist fehlgeschlagen. Versuchen Sie es später erneut.",
     "expired": "Die Zeit ist abgelaufen. Versuchen Sie es erneut.",
-    "footer": "Geschützt durch ALTCHA",
     "invalidCaptchaHeader": "Das hat leider nicht geklappt.",
     "invalidCaptchaText": "Bitte aktualisieren Sie diese Seite.",
     "label": "Ich bin kein Bot.",
