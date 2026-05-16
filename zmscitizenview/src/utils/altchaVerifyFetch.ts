@@ -11,6 +11,17 @@ export function isCaptchaVerifySuccess(
   return meta?.success === true && data?.valid === true;
 }
 
+export function extractPayload(
+  body: BodyInit | null | undefined
+): string | undefined {
+  if (typeof body !== "string") return undefined;
+  try {
+    return (JSON.parse(body) as { payload?: string }).payload;
+  } catch {
+    return undefined;
+  }
+}
+
 export const captchaVerifyFetch: typeof fetch = async (url, init) => {
   const response = await fetch(url, init);
   if (!response.headers.get("content-type")?.includes("json")) {
@@ -18,16 +29,14 @@ export const captchaVerifyFetch: typeof fetch = async (url, init) => {
   }
 
   const json = (await response.json()) as CaptchaVerifyResponse;
-  const requestBody = init?.body
-    ? (JSON.parse(String(init.body)) as { payload?: string })
-    : {};
+  const payload = extractPayload(init?.body);
   const valid = isCaptchaVerifySuccess(json.meta, json.data);
 
   return Response.json(
     {
       ...json,
       verified: valid,
-      payload: requestBody.payload,
+      payload,
     },
     { status: response.status }
   );
