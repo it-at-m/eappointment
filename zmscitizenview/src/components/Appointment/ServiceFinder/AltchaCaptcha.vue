@@ -22,18 +22,34 @@
 import "altcha";
 import "altcha/i18n/de";
 import "altcha/i18n/en";
-import { State, type WidgetAttributes, type WidgetMethods} from "altcha/types";
+
+import type { CaptchaVerifyResponse } from "@/utils/altchaVerifyFetch";
+import type { WidgetAttributes, WidgetMethods } from "altcha/types";
 import type { I18n } from "vue-i18n";
-import { computed, inject, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+
+import { State } from "altcha/types";
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import { I18nInjectionKey } from "vue-i18n";
+
+import { applyAltchaStrings, resolveAltchaLanguage } from "@/utils/altchaI18n";
+import {
+  captchaVerifyFetch,
+  isCaptchaVerifySuccess,
+} from "@/utils/altchaVerifyFetch";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT,
 } from "@/utils/Constants";
-import { applyAltchaStrings, resolveAltchaLanguage } from "@/utils/altchaI18n";
-import { captchaVerifyFetch, isCaptchaVerifySuccess, type CaptchaVerifyResponse } from "@/utils/altchaVerifyFetch";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -55,7 +71,9 @@ const emit = defineEmits<{
   (e: "tokenChanged", token: string | null): void;
 }>();
 
-const altchaWidget = ref<(HTMLElement & WidgetAttributes & WidgetMethods) | null>(null);
+const altchaWidget = ref<
+  (HTMLElement & WidgetAttributes & WidgetMethods) | null
+>(null);
 const captchaEnabled = ref(false);
 const challengeUrl = ref<string | null>(null);
 const verifyUrl = ref<string | null>(null);

@@ -3,7 +3,8 @@ export const ALTCHA_LANGUAGE = {
   "en-US": "en",
 } as const satisfies Record<string, "de" | "en">;
 
-export type AltchaLanguage = (typeof ALTCHA_LANGUAGE)[keyof typeof ALTCHA_LANGUAGE];
+export type AltchaLanguage =
+  (typeof ALTCHA_LANGUAGE)[keyof typeof ALTCHA_LANGUAGE];
 
 export const ALTCHA_I18N_KEYS = [
   "error",
