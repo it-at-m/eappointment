@@ -1,136 +1,147 @@
 <template>
-  <div v-if="captchaEnabled && captchaChallengeUrl && captchaVerifyUrl">
-    <altcha-widget
-      :challengeurl="captchaChallengeUrl"
-      :verifyurl="captchaVerifyUrl"
-      ref="altchaWidget"
-      :aria-label="props.t('altcha.ariaLabel')"
-      aria-describedby="captcha-description"
-    />
-    <div
-      id="captcha-description"
-      class="sr-only"
-    >
-      {{ props.t("altcha.screenReaderDescription") }}
-    </div>
-  </div>
-  <div v-else>
-    <p>{{ props.t("altcha.loadError") }}</p>
+  <altcha-widget
+    v-if="captchaEnabled && challengeUrl"
+    ref="altchaWidget"
+    class="altcha-captcha"
+    :challenge="challengeUrl"
+    :configuration="configuration"
+    :language="altchaLanguage"
+    :aria-label="t('altcha.ariaLabel')"
+    aria-describedby="captcha-description"
+  />
+  <p v-else>{{ t("altcha.loadError") }}</p>
+  <div
+    id="captcha-description"
+    class="sr-only"
+  >
+    {{ t("altcha.screenReaderDescription") }}
   </div>
 </template>
 
 <script setup lang="ts">
-import type { AltchaWidget } from "@/types/AltchaTypes";
-
-import { nextTick, onMounted, onUnmounted, ref } from "vue";
-
+import "altcha";
+import "altcha/i18n/de";
+import "altcha/i18n/en";
+import { State, type WidgetAttributes, type WidgetMethods} from "altcha/types";
+import type { I18n } from "vue-i18n";
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { I18nInjectionKey } from "vue-i18n";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT,
 } from "@/utils/Constants";
-
-import "altcha";
+import { applyAltchaStrings, resolveAltchaLanguage } from "@/utils/altchaI18n";
+import { captchaVerifyFetch, isCaptchaVerifySuccess, type CaptchaVerifyResponse } from "@/utils/altchaVerifyFetch";
 
 const props = defineProps<{
   t: (key: string) => string;
   baseUrl: string | undefined;
 }>();
 
-const altchaWidget = ref<Partial<AltchaWidget> | null>(null);
-const getWidget = () => altchaWidget.value as AltchaWidget;
+const i18n = inject<I18n | null>(I18nInjectionKey, null);
 
-const captchaChallengeUrl = ref<string | null>(null);
-const captchaVerifyUrl = ref<string | null>(null);
-const captchaEnabled = ref<boolean>(true);
+const vueLocale = computed(() => {
+  if (!i18n) return "de-DE";
+  const locale = i18n.global.locale;
+  return typeof locale === "string" ? locale : locale.value;
+});
+
+const altchaLanguage = computed(() => resolveAltchaLanguage(vueLocale.value));
 
 const emit = defineEmits<{
   (e: "validationResult", value: boolean): void;
   (e: "tokenChanged", token: string | null): void;
 }>();
 
+const altchaWidget = ref<(HTMLElement & WidgetAttributes & WidgetMethods) | null>(null);
+const captchaEnabled = ref(false);
+const challengeUrl = ref<string | null>(null);
+const verifyUrl = ref<string | null>(null);
+
+const configuration = computed(() =>
+  verifyUrl.value
+    ? JSON.stringify({
+        hideFooter: true,
+        hideLogo: true,
+        verifyUrl: verifyUrl.value,
+      })
+    : undefined
+);
+
+/* PoW finished locally; server check + JWT follow via serververification. */
+const onStateChange = (ev: CustomEvent | Event) => {
+  if (!("detail" in ev)) return;
+  const { state } = ev.detail as { state: State };
+  if (
+    state === State.VERIFYING ||
+    state === State.ERROR ||
+    state === State.EXPIRED
+  ) {
+    emit("validationResult", false);
+    emit("tokenChanged", null);
+  } else if (state === State.VERIFIED) {
+    emit("validationResult", true);
+  }
+};
+
+/* Authoritative server verification result and JWT for the booking flow. */
+const onServerVerification = (ev: CustomEvent | Event) => {
+  if (!("detail" in ev)) return;
+  const detail = ev.detail as CaptchaVerifyResponse;
+  const valid = isCaptchaVerifySuccess(detail.meta, detail.data);
+  emit("validationResult", valid);
+  emit("tokenChanged", valid ? (detail.token ?? null) : null);
+};
+
 const fetchCaptchaDetails = async () => {
   try {
+    const apiBase = getAPIBaseURL(props.baseUrl, false);
     const response = await fetch(
-      `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
+      `${apiBase}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
     );
-    if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
+    if (!response.ok) throw new Error("Failed to load captcha details");
     const data = await response.json();
-    captchaChallengeUrl.value = `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
-    captchaVerifyUrl.value = `${getAPIBaseURL(props.baseUrl, false)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
     captchaEnabled.value = data.captchaEnabled;
+    if (!data.captchaEnabled) return;
+    challengeUrl.value = `${apiBase}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
+    verifyUrl.value = `${apiBase}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
   } catch (error) {
-    console.error("Fehler beim Abrufen der Captcha-Details:", error);
+    console.error("Failed to fetch captcha details:", error);
     captchaEnabled.value = false;
   }
 };
 
-const handleStateChange = (ev: CustomEvent | Event) => {
-  if ("detail" in ev) {
-    const state = ev.detail.state;
-    if (state === "verifying") {
-      emit("validationResult", false);
-    }
-  }
-};
-
-const handleServerVerification = (ev: CustomEvent | Event) => {
-  if ("detail" in ev) {
-    const payload = ev.detail;
-    if (payload?.meta?.success === true && payload?.data?.valid === true) {
-      emit("validationResult", true);
-    } else {
-      emit("validationResult", false);
-      getWidget()?.configure({
-        strings: {
-          verified: props.t("altcha.error"),
-        },
-      });
-    }
-    emit("tokenChanged", ev.detail.token);
-  }
-};
-
-const configureWidget = () => {
-  const widget = getWidget();
-  if (widget) {
-    try {
-      widget.configure({
-        strings: {
-          error: props.t("altcha.error"),
-          expired: props.t("altcha.expired"),
-          footer: props.t("altcha.footer"),
-          label: props.t("altcha.label"),
-          verified: props.t("altcha.verified"),
-          verifying: props.t("altcha.verifying"),
-          waitAlert: props.t("altcha.waitAlert"),
-        },
-      });
-    } catch (error) {
-      console.error("Error configuring widget:", error);
-    }
-  } else {
-    console.warn("Widget not available for configuration");
-  }
-};
+watch(vueLocale, (locale, previous) => {
+  if (locale === previous) return;
+  applyAltchaStrings(props.t, resolveAltchaLanguage(locale));
+});
 
 onMounted(async () => {
+  applyAltchaStrings(props.t, altchaLanguage.value);
   await fetchCaptchaDetails();
-  getWidget()?.addEventListener("statechange", handleStateChange);
-  getWidget()?.addEventListener("serververification", handleServerVerification);
-  nextTick(() => {
-    configureWidget();
-  });
+  await nextTick();
+  const widget = altchaWidget.value;
+  if (widget && typeof widget.configure === "function") {
+    await widget.configure({ fetch: captchaVerifyFetch });
+  }
+  altchaWidget.value?.addEventListener("statechange", onStateChange);
+  altchaWidget.value?.addEventListener(
+    "serververification",
+    onServerVerification
+  );
 });
 
 onUnmounted(() => {
-  getWidget()?.removeEventListener("statechange", handleStateChange);
-  getWidget()?.removeEventListener(
+  altchaWidget.value?.removeEventListener("statechange", onStateChange);
+  altchaWidget.value?.removeEventListener(
     "serververification",
-    handleServerVerification
+    onServerVerification
   );
 });
+
+defineExpose({ onStateChange, onServerVerification });
 </script>
 
 <style scoped>
