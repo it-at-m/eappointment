@@ -6134,9 +6134,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->delete(
     '/workstation/process/',
-    '\BO\Zmsapi\WorkstationProcessDelete'
+    '\BO\Zmsapi\WorkstationProcessRemove'
 )
-    ->setName("WorkstationProcessDelete");
+    ->setName("WorkstationProcessRemove");
 
 /**
  *  @swagger
