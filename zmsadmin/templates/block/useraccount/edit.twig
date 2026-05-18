@@ -184,7 +184,7 @@
             }
         ] %}
 
-        {% if workstation.useraccount.rights.scope %}
+        {% if workstation.useraccount.permissions.useraccount %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
@@ -209,7 +209,7 @@
             ]) %}
         {% endif %}
 
-        {% if workstation.useraccount.rights.cluster %}
+        {% if workstation.useraccount.permissions.useraccount %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
@@ -224,7 +224,7 @@
             ]) %}
         {% endif %}
 
-        {% if workstation.useraccount.rights.superuser %}
+        {% if workstation.useraccount.permissions.superuser %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
@@ -239,6 +239,22 @@
             ]) %}
         {% endif %}
 
+        {# Roles from the user_role table; independent of legacy Berechtigungen above #}
+        {% set roleCheckboxes = [] %}
+        {% for role in roleList|default([]) %}
+            {% set checked = role.name in userAccountRoles|default([]) %}
+            {% set roleLabel = (role.description|default('')|trim) ? role.description : role.name %}
+            {% set roleCheckboxes = roleCheckboxes|merge([{
+                "type": "checkbox",
+                "parameter": {
+                    "label": roleLabel,
+                    "name": "roles[]",
+                    "value": role.name,
+                    "checked": checked ? 1 : 0,
+                    "id": "check_role_" ~ role.id
+                }
+            }]) %}
+        {% endfor %}
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>
@@ -247,6 +263,13 @@
         {"groupTag": "fieldset", "legend": "Berechtigungen", "controlgroupclass": "panel--heavy"},
         rightsCheckboxes
     ) }}
+
+    {% if roleCheckboxes|length > 0 %}
+    {{ formgroup(
+        {"groupTag": "fieldset", "legend": "Rollen", "controlgroupclass": "panel--heavy"},
+        roleCheckboxes
+    ) }}
+    {% endif %}
 
     <div class="form-actions">
     {% set label = "Nutzer anlegen" %}

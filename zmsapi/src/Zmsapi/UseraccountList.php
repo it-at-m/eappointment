@@ -24,7 +24,7 @@ class UseraccountList extends BaseController
         array $args
     ) {
         $helper = new Helper\User($request, 1);
-        $helper->checkRights('useraccount');
+        $helper->checkPermissions('useraccount');
         $parameters = $request->getParams();
 
         $workstation = Helper\User::$workstation;
