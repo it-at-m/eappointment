@@ -16,12 +16,10 @@ use BO\Zmsentities\Schema\Entity;
 class OidcHandler
 {
     private Http $http;
-    private $log;
 
-    public function __construct(Http $http, $logger = null)
+    public function __construct(Http $http)
     {
         $this->http = $http;
-        $this->log = $logger ?? (class_exists('App') ? \App::$log : null);
     }
 
     /**
@@ -50,7 +48,7 @@ class OidcHandler
             && $authKey !== ''
             && hash_equals($authKey, $state);
 
-        $this->logInfo('OIDC Login state validation', [
+        \App::$log->info('OIDC Login state validation', [
             'event' => 'oauth_login_state_validation',
             'timestamp' => date('c'),
             'provider' => Auth::getOidcProvider(),
@@ -60,7 +58,7 @@ class OidcHandler
         ]);
 
         if (!$stateIsValid) {
-            $this->logError('OIDC Login invalid state', [
+            \App::$log->error('OIDC Login invalid state', [
                 'event' => 'oauth_login_invalid_state',
                 'timestamp' => date('c'),
                 'provider' => Auth::getOidcProvider(),
@@ -90,7 +88,7 @@ class OidcHandler
             $workstationAuthKey = $workstation['authkey'] ?? Auth::getKey() ?? '';
             $workstationHash = hash('sha256', (string) $workstationAuthKey);
 
-            $this->logInfo('OIDC Login workstation access', [
+            \App::$log->info('OIDC Login workstation access', [
                 'event' => 'oauth_login_workstation_access',
                 'timestamp' => date('c'),
                 'provider' => Auth::getOidcProvider(),
@@ -102,7 +100,7 @@ class OidcHandler
 
             $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
 
-            $this->logInfo('OIDC Login department check', [
+            \App::$log->info('OIDC Login department check', [
                 'event' => 'oauth_login_department_check',
                 'timestamp' => date('c'),
                 'provider' => Auth::getOidcProvider(),
@@ -119,7 +117,7 @@ class OidcHandler
                 'redirect_to_index' => (0 === $departmentCount),
             ];
         } catch (\Throwable $e) {
-            $this->logError('OIDC Login workstation error', [
+            \App::$log->error('OIDC Login workstation error', [
                 'event' => 'oauth_login_workstation_error',
                 'timestamp' => date('c'),
                 'provider' => Auth::getOidcProvider(),
@@ -128,20 +126,6 @@ class OidcHandler
                 'code' => $e->getCode(),
             ]);
             throw $e;
-        }
-    }
-
-    private function logInfo(string $message, array $context): void
-    {
-        if ($this->log !== null) {
-            $this->log->info($message, $context);
-        }
-    }
-
-    private function logError(string $message, array $context): void
-    {
-        if ($this->log !== null) {
-            $this->log->error($message, $context);
         }
     }
 }

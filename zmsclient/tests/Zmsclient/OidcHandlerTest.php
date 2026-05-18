@@ -11,32 +11,35 @@ use BO\Zmsentities\Department;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class OidcHandlerTest extends TestCase
 {
     /** @var Http&\PHPUnit\Framework\MockObject\MockObject */
     private $httpMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject */
-    private $logMock;
-
     private OidcHandler $handler;
 
     private array $originalCookies = [];
+
+    private $originalLog;
 
     protected function setUp(): void
     {
         $this->originalCookies = $_COOKIE ?? [];
         $_COOKIE = [];
 
+        $this->originalLog = \App::$log;
+        \App::$log = $this->createMock(LoggerInterface::class);
+
         $this->httpMock = $this->createMock(Http::class);
-        $this->logMock = $this->createMock(\Monolog\Logger::class);
-        $this->handler = new OidcHandler($this->httpMock, $this->logMock);
+        $this->handler = new OidcHandler($this->httpMock);
     }
 
     protected function tearDown(): void
     {
         $_COOKIE = $this->originalCookies;
+        \App::$log = $this->originalLog;
     }
 
     public function testHandleCallbackThrowsOnMissingState(): void
