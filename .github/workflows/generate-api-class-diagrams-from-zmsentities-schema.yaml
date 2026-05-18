@@ -7,6 +7,10 @@ on:
         description: 'Name of the generated diagrams artifact'
         value: 'schema-diagrams'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   actions: write

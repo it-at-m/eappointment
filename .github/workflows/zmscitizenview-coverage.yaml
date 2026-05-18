@@ -10,6 +10,10 @@ on:
         description: "ZMSCitizenView test result"
         value: ${{ jobs.zmscitizenview-test.outputs.result }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   zmscitizenview-test:
     runs-on: ubuntu-latest

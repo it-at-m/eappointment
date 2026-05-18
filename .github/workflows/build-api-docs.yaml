@@ -7,6 +7,10 @@ on:
         description: "Build result"
         value: ${{ jobs.build.outputs.result }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   actions: write
