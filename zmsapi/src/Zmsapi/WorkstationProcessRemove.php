@@ -13,7 +13,7 @@ use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process as Query;
 use BO\Zmsentities\Process;
 
-class WorkstationProcessDelete extends BaseController
+class WorkstationProcessRemove extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
