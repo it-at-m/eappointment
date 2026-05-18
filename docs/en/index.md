@@ -21,7 +21,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 
 ## Repository Scope
 
-<img width="200" align="right" alt="Project logo" src="./img/logo.png" />
+<img width="200" align="right" alt="Project logo" src="../img/logo.png" />
 
 This monorepo contains Munich-specific adaptations of the original Berlin eAppointment software:
 [https://gitlab.com/eappointment/eappointment](https://gitlab.com/eappointment/eappointment)
@@ -58,12 +58,12 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
     <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
-    <td><img src="https://assets.muenchen.de/logos/itm/itm-logo-128.png" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
+    <td><img src="https://assets.muenchen.de/logos/itm/itM_Basislogo_gelb_schwarz-500.png" align="center" style="height: 30px; width: auto; object-fit: contain;"></td>
   </tr>
 </table>
 
 ## Screenshot
 
-<img alt="Screenshot of zmsadmin zmsstatistic zmscalldisplay and zmsticketprinter" src="./img/screenshot_1.png" />
+<img alt="Screenshot of zmsadmin zmsstatistic zmscalldisplay and zmsticketprinter" src="../img/screenshot_1.png" />
 
-<img alt="Screenshot of zmscitizenview" src="./img/screenshot_2.jpg" />
+<img alt="Screenshot of zmscitizenview" src="../img/screenshot_2.jpg" />
