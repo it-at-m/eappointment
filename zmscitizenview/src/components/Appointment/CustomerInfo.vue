@@ -115,8 +115,7 @@
       :label="selectedProvider.scope.customTextfieldLabel ?? undefined"
       :required="selectedProvider.scope.customTextfieldRequired ?? undefined"
       :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows1"
-      @input="handleInput1"
+      auto-rows
     />
     <muc-text-area
       v-if="
@@ -130,8 +129,7 @@
       :label="selectedProvider.scope.customTextfield2Label ?? undefined"
       :required="selectedProvider.scope.customTextfield2Required ?? undefined"
       :maxlength="MAX_CUSTOM_TEXT_CHARS"
-      :rows="textfieldRows2"
-      @input="handleInput2"
+      auto-rows
     />
   </form>
   <div class="m-button-group">
@@ -167,7 +165,7 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onMounted, ref } from "vue";
+import { computed, inject, ref } from "vue";
 
 import { GlobalState } from "@/types/GlobalState";
 import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
@@ -175,7 +173,6 @@ import {
   normalizePlainText,
   plainTextCharCount,
 } from "@/utils/processPlainText";
-import { countLines, handleInput } from "@/utils/textfieldRows";
 import { useReservationTimer } from "@/utils/useReservationTimer";
 
 /**
@@ -183,17 +180,6 @@ import { useReservationTimer } from "@/utils/useReservationTimer";
  * Backend entities validation is authoritative if client normalization differs.
  */
 const MAX_CUSTOM_TEXT_CHARS = 250;
-
-const inputLines1 = ref<number>(3);
-const inputLines2 = ref<number>(3);
-const textfieldRows1 = computed(() => inputLines1.value);
-const textfieldRows2 = computed(() => inputLines2.value);
-const handleInput1 = (event: Event) => {
-  handleInput(inputLines1, event);
-};
-const handleInput2 = (event: Event) => {
-  handleInput(inputLines2, event);
-};
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -362,11 +348,6 @@ const errorDisplayCustomTextfield2 = computed(
   () =>
     errorMessageCustomTextfield2.value ?? maxLengthMessageCustomTextfield2.value
 );
-
-onMounted(() => {
-  inputLines1.value = countLines(customerData.value.customTextfield ?? "");
-  inputLines2.value = countLines(customerData.value.customTextfield2 ?? "");
-});
 
 const validForm = computed(
   () =>
