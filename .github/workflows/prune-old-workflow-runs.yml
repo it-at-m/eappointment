@@ -12,10 +12,6 @@ on:
         default: '60'
         type: string
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   actions: write
   contents: read
