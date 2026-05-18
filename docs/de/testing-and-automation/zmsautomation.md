@@ -241,3 +241,11 @@ In Safari musst du außerdem aktivieren:
 ## Migrationshinweise
 
 - `zmsautomation` nutzt ATAF + Cucumber; CI-/Workflow-Umgebungen können separat festgepinnt werden.
+
+## Bekannte Einschränkungen
+
+### Buchungstests an gesetzlichen Feiertagen
+
+Die Slot-Berechnung erzeugt an gesetzlichen Feiertagen absichtlich keine Termine (Datensätze in der Tabelle `feiertage`, befüllt durch Migration V11). Die Testdaten für Öffnungszeiten in zmsautomation (relativ zum aktuellen Datum, z. B. in den Migrationen V10 und V19) können in einen Feiertag fallen. In diesem Fall gibt es am „ersten verfügbaren Tag“ ggf. keine buchbaren Slots und buchungsbezogene Szenarien (Citizen API und CitizenView Flows) können fehlschlagen.
+
+Das ist erwartetes Verhalten. Maßnahme: Pipeline am nächsten arbeitsfreien Nicht‑Feiertag erneut ausführen (oder lokal an einem Nicht‑Feiertag starten).
