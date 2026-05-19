@@ -43,10 +43,12 @@
     "vue-tsc": "^3.2.7"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
+  "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
     },
-    "@tootallnate/once": "^3.0.1"
+    "@tootallnate/once": "^3.0.1",
+    "ws": "^8.20.1"
   }
 }
