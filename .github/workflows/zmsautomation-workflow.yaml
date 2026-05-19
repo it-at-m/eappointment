@@ -327,7 +327,7 @@ jobs:
 
       - name: Upload test reports (best effort)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
           path: |
@@ -365,7 +365,7 @@ jobs:
 
       - name: Upload container logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
