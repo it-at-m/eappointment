@@ -34,7 +34,7 @@
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
-        "symfony/cache": "^6.0",
+        "symfony/cache": "^8.0",
         "psr/simple-cache": "^3.0",
         "ext-pdo": "*",
         "aura/sql": "^5",

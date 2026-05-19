@@ -30,7 +30,7 @@
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
-        "symfony/cache": "^6.0",
+        "symfony/cache": "^8.0",
         "psr/simple-cache": "^3.0",
         "firebase/php-jwt": "^7.0",
         "monolog/monolog": "^2.0",

@@ -19,8 +19,8 @@
         "league/html-to-markdown": "^5.0",
         "giggsey/libphonenumber-for-php": "^8.13.55",
         "twig/intl-extra": "^3.4",
-        "symfony/translation": "^5.4",
-        "symfony/twig-bridge": "^5.4",
+        "symfony/translation": "^8.0",
+        "symfony/twig-bridge": "^8.0",
         "opis/json-schema": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
