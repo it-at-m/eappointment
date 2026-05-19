@@ -1,0 +1,384 @@
+/*
+ *   Styleguide styles. 
+ *   Do not use these classes in production
+ */
+//@import "../settings"; 
+//@import "../mixins";
+ 
+$styleguide-namespace:              '' !default;
+
+
+#{$styleguide-namespace}pre code {
+    background-color:       #333333;
+        color:                  #ffffff;
+    display:                        block;
+    padding:                        1em; 
+    margin:                         0 0 2em 0;
+    width:                          100%;
+    //white-space:                     pre-wrap; 
+    overflow-x:                     scroll;
+    overflow-x:                     auto;
+    font-size:                      12px;
+    > * {
+        max-width:                  100%; 
+    }
+}
+
+#{$styleguide-namespace}.sg-collapse {
+    //background-color:       #FAFCBA;
+    margin-bottom:          3em;
+    code {
+        margin:             0;
+    }
+    .js-collapse-me-inner {
+        
+    }
+}
+
+#{$styleguide-namespace}form + .sg-collapse {
+    margin-top:             -$gridGutter;
+}
+
+#{$styleguide-namespace}.sg-code-inline {
+    display:                    inline;
+    margin:                     0;
+    vertical-align:             top;
+    background-color:       #f7f7f9;
+    color:                  #bd4147;
+    font-size:              12px;
+    padding:                0rem 0.4rem;
+    font-family:            monospace;
+    display:                inline-block;
+    width:                  auto;
+    margin:                 0;
+}
+
+#{$styleguide-namespace}.sg-tabs-list {
+    list-style:             none;
+    padding:                0;
+}
+
+#{$styleguide-namespace}.sg-boxeditems {
+    ul {
+        overflow: hidden; 
+        list-item-style:    none;  
+        h4 {
+            margin-top:     0;
+        }
+        > li {
+            //border:     1px solid #dddddd;
+            margin:     0 0.2em 0.2em 0;
+            overflow:   hidden;
+            //padding:    0.4em 0.5em; 
+            float:      left;
+            width:      13em;
+            text-align: left;
+            &::before {
+                display:none; // remove arrows
+            }
+        }
+        .sg-swatch {
+            display:    block;
+            height:     5em;
+            text-align: left;
+            border:     1px solid $color-border;
+            .fa-icon {
+                vertical-align: middle;
+                text-align:     left;
+                &::after {
+                    display:    inline-block;
+                    content:    "";
+                    height:     100%;
+                    vertical-align: middle;
+                }
+            }
+        }
+        .sg-label {
+            text-align:     left;
+            display:        block;
+            font-size:      $smallest-font-size;
+            &::after {
+                display:    block; 
+            }
+        }
+    }
+    &.small {
+        ul {
+            > li {
+                width:      10em;
+            }
+        }
+    }
+}
+
+#{$styleguide-namespace}.styelguide-colors {
+    .sg-label {
+        text-align:     left;
+        display:        block;
+        &::after {
+            display:    block;
+        }
+    }
+    .sg-color-white {
+        background-color: $color-white;
+    }
+    .sg-color-black {
+        background-color: $color-black;
+    }
+    .sg-color-grey {
+        background-color: $color-grey;
+    }
+    .sg-color-block-light {
+        background-color: $color-block-light;
+    }
+    .sg-color-block-heavy {
+        background-color: $color-block-heavy;
+    }
+    .sg-color-block-seperationheading {
+        background-color: $color-block-seperationheading;
+    }
+    .sg-color-block-seperationheading-dark {
+        background-color: $color-block-seperationheading-dark;
+    }
+    .sg-color-object-panel {
+        background-color: $color-object-panel;
+    }
+    .sg-color-red {
+        background-color: $color-red;
+    }
+    .sg-color-green {
+        background-color: $color-green;
+    }
+    .sg-color-blue {
+        background-color: $color-blue;
+    }
+    .sg-color-decorative-positive {
+        background-color: $color-decorative-positive;
+    }
+    .sg-color-decorative-destructive {
+        background-color: $color-decorative-destructive;
+    }
+    .sg-color-activestatuscolor {
+        background-color: $color-decorative-active;
+    }
+    .sg-color-text-base {
+        background-color: $color-text-base;
+    }
+    .sg-color-text-negative {
+        background-color: $color-text-negative;
+    }
+    .sg-color-text-disabled {
+        background-color: $color-text-disabled;
+    }
+    .sg-color-text-error {
+        background-color: $color-text-error;
+    }
+    .sg-color-text-lightest {
+        background-color: $color-text-lightest;
+    }
+    .sg-color-text-link {
+        background-color: $color-text-link;
+    }
+    .sg-color-text-seperationheading {
+        background-color: $color-text-seperationheading;
+    }
+    .sg-color-page-header {
+        background-color: $color-page-header;
+    }
+    .sg-color-page-footer {
+        background-color: $color-page-footer;
+    }
+    .sg-color-page-body {
+        background-color: $color-page-body;
+    }
+    .sg-color-border {
+        background-color: $color-border;
+    }
+    .sg-color-line {
+        background-color: $color-line;
+    }
+    .sg-color-decorative-primary {
+        background-color: $color-decorative-primary;
+    }
+    .sg-color-button-default {
+        background-color: $color-button-default;
+    }
+    .sg-color-button-default-hover {
+        background-color: $color-button-default-hover;
+    }
+    .sg-color-button-destructive {
+        background-color: $color-button-destructive;
+    }
+    .sg-color-button-destructive-hover {
+        background-color: $color-button-destructive-hover;
+    }
+    .sg-color-button-positive {
+        background-color: $color-button-positive;
+    }
+    .sg-color-button-positive-hover {
+        background-color: $color-button-positive-hover;
+    }
+    .sg-color-button-navigational {
+        background-color: $color-button-navigational;
+    }
+    .sg-color-button-navigational-hover {
+        background-color: $color-button-navigational-hover;
+    }
+    .sg-color-button-diamond {
+        background-color: $color-button-diamond;
+    }
+    .sg-color-button-diamond-hover {
+        background-color: $color-button-diamond-hover;
+    }
+    .sg-color-message-default {
+        background-color: $color-message-default;
+    }
+    .sg-color-message-success {
+        background-color: $color-message-success;
+    }
+    .sg-color-message-info {
+        background-color: $color-message-info;
+    }
+    .sg-color-message-error {
+        background-color: $color-message-error;
+    }
+
+    .sg-color-statistic-1_1 {background-color: $sg-color-statistic-1_1;}
+    .sg-color-statistic-1_2 {background-color: $sg-color-statistic-1_2;}
+    .sg-color-statistic-1_3 {background-color: $sg-color-statistic-1_3;}
+    .sg-color-statistic-1_4 {background-color: $sg-color-statistic-1_4;}
+    .sg-color-statistic-1_5 {background-color: $sg-color-statistic-1_5;}
+    .sg-color-statistic-1_6 {background-color: $sg-color-statistic-1_6;}
+    .sg-color-statistic-2_1 {background-color: $sg-color-statistic-2_1;}
+    .sg-color-statistic-2_2 {background-color: $sg-color-statistic-2_2;}
+    .sg-color-statistic-2_3 {background-color: $sg-color-statistic-2_3;}
+    .sg-color-statistic-2_4 {background-color: $sg-color-statistic-2_4;}
+    .sg-color-statistic-2_5 {background-color: $sg-color-statistic-2_5;}
+    .sg-color-statistic-2_6 {background-color: $sg-color-statistic-2_6;}
+    .sg-color-statistic-3_1 {background-color: $sg-color-statistic-3_1;}
+    .sg-color-statistic-3_2 {background-color: $sg-color-statistic-3_2;}
+    .sg-color-statistic-3_3 {background-color: $sg-color-statistic-3_3;}
+    .sg-color-statistic-3_4 {background-color: $sg-color-statistic-3_4;}
+    .sg-color-statistic-3_5 {background-color: $sg-color-statistic-3_5;}
+    .sg-color-statistic-3_6 {background-color: $sg-color-statistic-3_6;}
+    .sg-color-statistic-4_1 {background-color: $sg-color-statistic-4_1;}
+    .sg-color-statistic-4_2 {background-color: $sg-color-statistic-4_2;}
+    .sg-color-statistic-4_3 {background-color: $sg-color-statistic-4_3;}
+    .sg-color-statistic-4_4 {background-color: $sg-color-statistic-4_4;}
+    .sg-color-statistic-4_5 {background-color: $sg-color-statistic-4_5;}
+    .sg-color-statistic-4_6 {background-color: $sg-color-statistic-4_6;}
+}
+
+#{$styleguide-namespace}.styleguide {
+    .sg-def-p {
+        display:    block;
+    }
+    .sg-def-pb {
+        display:    block;
+    }
+    .sg-def-a {
+        display:    block;
+    }
+    .sg-color-greyBorder {
+        &::after {
+            content:    "#{$color-border}";
+        }
+    }
+    .sg-color-lightestTextGrey {
+        &::after {
+            content:    "#{$color-text-lightest}";
+        }
+    }
+}
+
+#{$styleguide-namespace}.styleguide-grids {
+    .grid__item > *:not([class*=grid]) {
+        min-height:         60px;
+        box-shadow: 0 0 1px inset;
+        display:            block;
+        margin-bottom:      $gridGutter;
+    }
+}
+
+#{$styleguide-namespace}.styleguide-heading-section {
+    border-bottom: 1px solid $color-border;
+    margin-top: 3em;
+    margin-bottom: 2em;
+    color:  $color-text-base;
+}
+
+#{$styleguide-namespace}.sg_dummy_dotted_border {
+    
+    border:         1px dotted cyan;
+    
+}
+
+#{$styleguide-namespace}.sg-layout-html {
+    width:              100%;
+    border:             1px solid $color-black;
+    background-color:   $color-page-body;
+    padding:            0 2em;
+    .sg-layout-page {
+        box-shadow:     0px, 0px, 10px, 0px, rgba(100, 100, 100, 0.2);
+        background-color:   $color-white;
+        .sg-layout-header {
+            min-height:     5em;
+            background:     $color-grey-dark;
+            margin-bottom:  $gridGutter;
+        }
+        .sg-layout-content {
+            min-height:     10em;
+            @include getRem('padding-left', $pagePaddingPalmPx);
+            @include getRem('padding-right', $pagePaddingPalmPx);
+            .grid__item span {
+                min-height:     5em;
+                border:         1px dotted $color-black;
+                background-color: #fafafa;
+                display:        block;
+                margin-bottom:  0.7em;
+            }
+        }
+        .sg-layout-footer { 
+            min-height:     5em;
+            background:     $color-grey-dark;
+            color:          $color-black;
+        }
+    }
+}
+
+
+$sg-landmark-gutter:    0.5em;
+#{$styleguide-namespace}.sg-page-landmarks {
+    color:                  #000000;
+    
+}
+.sg-landmark,
+.sg-landmark-light {
+    padding:            $sg-landmark-gutter;
+    margin:             $sg-landmark-gutter;
+    position:           relative;
+    .sg-landmark-name,
+    .sg-landmark-name-light {
+        position:           relative;
+        top:                -$sg-landmark-gutter;
+        left:               -$sg-landmark-gutter;
+        padding:            0.2em 0.3em;
+        display:            inline-block;
+    }
+}
+.sg-landmark {
+    border:             1px dotted #000000;
+}
+.sg-landmark-light {
+    border:             1px dotted blue;
+}
+.sg-landmark-name {
+    background:         yellow;
+    font-weight:        bold;
+    color:              black;
+}
+.sg-landmark-name-light {
+    background:         blue;
+    font-weight:        bold;
+    color:              white;
+}

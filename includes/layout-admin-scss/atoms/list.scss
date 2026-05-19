@@ -1,0 +1,271 @@
+$listElementMarginBottom:       0.5em !default;
+
+#{$namespace}dl {
+    @include getRem('margin-bottom', $blockBottomMarginPx/2);
+    dt {
+        margin-bottom:          $listElementMarginBottom/2;
+        font-weight:            bold;
+    }
+    dd {
+        margin-bottom:          $listElementMarginBottom;
+        word-break:             break-word;
+        margin-left:            0;
+    }
+}
+
+
+#{$namespace}ul {
+    padding-inline-start:       1em;
+    padding-left:               1em;
+    @include getRem('margin-bottom', $blockBottomMarginPx/2);
+    margin-top:                 0;
+    list-style-image:           none;
+    li {
+        margin-left:            0;
+        line-height:            1.3em;
+        margin-bottom:          $listElementMarginBottom;
+        > ul,
+        > ol {
+            margin-top:         $listElementMarginBottom;
+            margin-bottom:      $listElementMarginBottom;
+        }
+    }
+}
+
+#{$namespace}ol {
+    padding-inline-start:       0.5em;
+    padding-left:               0.5em;
+    @include getRem('margin-bottom', $blockBottomMarginPx/2);
+    li {
+        margin-left:            0.7em;
+        margin-bottom:          $listElementMarginBottom;
+        > ol,
+        > ul {
+            margin-top:         $listElementMarginBottom;
+            margin-bottom:      $listElementMarginBottom;
+        }
+    }
+}
+
+#{$namespace}.list--clean {
+    list-style:                     none;
+    padding-left:                   0;
+    > li {
+        margin-left:                0;
+    }
+}
+
+ 
+// Listitems(!) have half width
+ul.list--double {
+    @include media-query('lap-and-up') {
+        display: flex;
+        flex-wrap: wrap;
+        > li {
+            vertical-align:         top;
+            width:                  50%;
+            padding-right:          3em;
+        }
+    }
+}
+
+// Lists(!) have half width. We can place two lists side by side (Befi A-Z Letterlist)
+ul.list--half {
+    column-count:               1;
+    > li {
+        -webkit-column-break-inside: avoid;
+                  page-break-inside: avoid;
+                       break-inside: avoid;
+    }
+    @include media-query('lap-and-up') {
+        column-count:               2;
+        padding-left:               0;
+        li {
+            list-style-position:    outside;
+            margin-left:            1em;
+            padding-right:          3em;
+	    	.nowidows {
+	    		display:            table-cell;	// »widows« property is not supported by FF
+			}
+        }
+    }
+}
+
+#{$namespace}.list--arrowlist {
+    margin-left:  0;
+    padding: 0;
+    list-style: none;
+    > li { 
+        margin-left:            0;
+        padding-left:           1.25em;
+        &::before {
+            margin-left:        -1.3em;
+            color:              $color-decorative-primary;
+            content:            "\f061";
+            display:            inline-block;
+            float:              left;
+            font-family:        "Font Awesome 5 Free", "FontAwesome";
+            font-weight:        900;
+            text-indent:        0;
+        }
+    } 
+}
+
+// List in a table layout style
+#{$namespace}ul.list--table {
+    display:            table;
+    border-spacing:     0;
+    border-collapse:    collapse;
+    margin-left:        0;
+    padding-left:       0;
+    li {
+        display:        table-row;
+        .cell {
+            vertical-align:     top;
+            @include media-query('lap-and-up') {
+                display:            table-cell;
+                padding:            $table-cell-padding;
+                border:             1px solid $color-border;
+                &.middle {
+                    vertical-align: middle;
+                }
+                &.right {
+                    text-align:     right;
+                }
+                &.center {
+                    text-align:     center;
+                }
+            }
+            @include media-query('palm') {
+                &:last-child {
+                    margin-bottom:  0.5em;
+                }
+            }
+            &.th {
+                word-break:     normal; 
+                font-weight:    bold;
+            }
+            &.wordbreak {
+                word-break:     break-word; // long content (urls in debug)
+            }
+            > *:first-child {
+                margin-top:     0;
+            }
+            > *:last-child {
+                margin-bottom:     0;
+            }
+        }
+    }
+    &.clean {
+        li {
+           .cell { 
+                border:             1px solid transparent; // Barrierefreiheit
+                padding-top:        0;
+                padding-left:       0;
+                &:last-child {
+                    padding-right:  0;
+                }
+           }
+           &:last-child {
+            .cell { 
+                padding-bottom:     0;
+            }
+        }
+        }
+    }
+    &.wide {
+        width:                      100%;
+    }
+    &.compact {
+        .cell {
+            //padding:                0.5em 0;
+            padding-right:          0;
+            padding-left:           0;
+        }
+    }
+    &.bordered {
+        // simple border between rows
+        li {
+            .cell { 
+                border-width:       0 0 1px 0;
+                &:last-child {
+                    padding-right:  0;
+                }
+                &:first-child {
+                    padding-left:  0;
+                }
+            }
+            &:last-child {
+                .cell { 
+                    border-bottom:  0;
+                    padding-bottom: 0;
+                }
+            }
+            &:first-child {
+                .cell { 
+                    border-top:  0;
+                    padding-top: 0;
+                }
+            }
+        }
+    }
+}
+
+
+// Note: Remember that list--horizontal is also used in header metanavigation
+$horizontalListMargin: 1.25em;
+$horizontalListMarginCompact: 0.25em;
+#{$namespace}ul.list--horizontal {
+    @include clearfix();
+    display:                flex;
+    flex:                   0 1 auto;
+    flex-wrap:              wrap;
+    align-items:            center;
+    justify-content:        flex-start;
+    padding:                0;
+    margin:                 0 0 0.5em 0;
+    list-style:             none;
+    line-height:            $base-line-height;
+    li {
+        @include getRem('line-height', $base-line-height);
+        float:              none;
+        display:            inline-block; // not inline-flex!
+        vertical-align:     middle;
+        margin:             0 $horizontalListMargin 0 0;
+        &:last-child {
+            margin-right:   0;
+        }
+    }
+    &.stretch {
+        justify-content:    space-between;
+    }
+    &.bordered {
+        > li {
+            border-left:    1px solid rgba(150,150,150,0.5);
+            padding:        0.2em 0 0.3em $horizontalListMargin;
+            display:        inline-block;
+        }
+        > li:first-child {
+            border-left:         0 none;
+            padding-left:        0;
+        }
+    }
+    &.compact {
+        margin:             0;
+        flex-wrap:          nowrap; // dont wrap! (iconlist dldb)
+        li {
+            margin:         0 $horizontalListMarginCompact 0 0;
+        }
+        &.bordered {
+            > li {
+                border-left:    1px solid rgba(150,150,150,0.5);
+                padding:        0 0 0  $horizontalListMarginCompact;
+            }
+            > li:first-child {
+                border-left:         0 none;
+                padding-left:        0;
+            }
+        }
+    }
+}
+

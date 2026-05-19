@@ -1,0 +1,13 @@
+/* special rules for 200% zoom #56274 */
+.counter-view {
+    .grid {
+        > .three-twelfths {
+            width:          auto;
+            flex-basis:     25%;
+        }
+        > .six-twelfths {
+            width:          auto;
+            flex-basis:     50%;
+        }
+    }
+}

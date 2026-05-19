@@ -15,6 +15,9 @@
 @import 'bo-layout-admin-scss/template/content-wrapper.scss';
 @import 'bo-layout-admin-scss/template/flatpickr.scss';
 $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
+@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "@fortawesome/fontawesome-free/scss/regular.scss";
+@import "@fortawesome/fontawesome-free/scss/solid.scss";
 @import 'bo-layout-admin-scss/template/font.scss';
 @import 'bo-layout-admin-scss/template/grids.scss';
 @import 'bo-layout-admin-scss/template/html.scss';
@@ -83,6 +86,7 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 @import 'bo-layout-admin-scss/themes/zms/owner-list.scss';
 @import 'bo-layout-admin-scss/themes/zms/checkboxselect.scss';
 @import 'bo-layout-admin-scss/themes/zms/lightbox.scss';
+@import "react-datepicker/src/stylesheets/datepicker";
 @import 'bo-layout-admin-scss/themes/zms/add-date-picker.scss';
 @import 'bo-layout-admin-scss/themes/zms/form.scss';
 

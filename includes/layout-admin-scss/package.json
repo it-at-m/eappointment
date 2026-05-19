@@ -1,0 +1,13 @@
+{
+  "name": "bo-layout-admin-scss",
+  "version": "1.0.0",
+  "description": "layout for admin backends",
+  "main": "index.js",
+  "private": true,
+  "keywords": [],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12"
+  }
+}
