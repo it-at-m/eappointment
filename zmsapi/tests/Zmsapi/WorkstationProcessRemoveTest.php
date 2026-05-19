@@ -72,10 +72,18 @@ class WorkstationProcessRemoveTest extends Base
     private function assignCalledProcessToWorkstation(int $callCount): void
     {
         $process = (new \BO\Zmsdb\Process())->readEntity(self::CALLED_PROCESS_ID, self::CALLED_AUTHKEY, 1);
+        $previousStatus = $process->status;
+        $nowTs = \App::$now->getTimestamp();
+
         $process->status = Process::STATUS_CALLED;
         $process['status'] = Process::STATUS_CALLED;
         $process->queue['callCount'] = $callCount;
-        $process = (new \BO\Zmsdb\Process())->updateEntity($process, \App::$now, 0, Process::STATUS_CONFIRMED);
+        $process->queue['callTime'] = $nowTs;
+        $process->queue['lastCallTime'] = $nowTs;
+        $process->queue['arrivalTime'] = $nowTs - 600;
+        $process->queue['waitingTime'] = '00:10:00';
+
+        $process = (new \BO\Zmsdb\Process())->updateEntity($process, \App::$now, 0, $previousStatus);
         User::$workstation->process = (new \BO\Zmsdb\Workstation())->writeAssignedProcess(
             User::$workstation,
             $process,
