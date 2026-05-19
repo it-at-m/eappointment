@@ -45,25 +45,25 @@ jobs:
         run: mkdir -p public
 
       - name: Download schema diagrams
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: schema-diagrams
           path: public/diagrams
 
       - name: Download database schema diagrams
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: database-schema-diagrams
           path: public/diagrams
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.coverage_artifact }}
           path: public
 
       - name: Download API docs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.api_docs_artifact }}
           path: public
