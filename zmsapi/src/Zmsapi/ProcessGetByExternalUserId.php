@@ -28,7 +28,7 @@ class ProcessGetByExternalUserId extends BaseController
     ) {
         (new Helper\User($request, 2))->checkRights();
 
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $resolveReferences = (int) (Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue() ?? 2);
         $processId = (int) $args['id'];
         $externalUserId = $args['externalUserId'];
 
