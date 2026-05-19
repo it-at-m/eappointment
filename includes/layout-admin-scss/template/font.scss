@@ -1,0 +1,46 @@
+// FONTAWESOME — import @fortawesome in the consuming module (admin.scss / statistic.scss)
+// before this file; set $fa-font-path there as needed.
+
+// TEXT COLOR CLASSES FOR EASY COLORING
+#{$namespace}.color-decorative-primary {
+    color:          $color-decorative-primary !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-positive {
+    color:          $color-decorative-positive !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-destructive {
+    color:          $color-decorative-destructive !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-disabled {
+    color:          $color-disabled !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-black {
+    color:          $color-black !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-white {
+    color:          $color-white !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-red {
+    color:          $color-red !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-red-error {
+    color:          $color-errorRed !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-blue {
+    color:          $color-blue !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-blue-light {
+    color:          $color-blue-light !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-green {
+    color:          $color-green !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-green-light {
+    color:          $color-green-light !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-grey {
+    color:          $color-grey !important; // important because of fontawesome stacking icon background 
+}
+#{$namespace}.color-yellow {
+    color:          $color-yellow !important; // important because of fontawesome stacking icon background 
+}

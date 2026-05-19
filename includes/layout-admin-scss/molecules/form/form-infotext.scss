@@ -1,0 +1,81 @@
+/*
+ * Our Form Infotext (Flyin)
+ */
+
+$infoTextWrapperWidth:      26em !default;
+
+#{$namespace}.infotext {
+    &.js-infotext-flyin {
+        border:                     0px none;
+        position:                   relative;
+        display:                    inline-block;
+        .infotext__trigger {
+            display:                block;
+            padding:                0;
+            border:                 0;
+            background:             transparent;
+            position:               relative;
+            top:                    -0.125em;
+            margin-bottom:          0.5em;
+            .fa, .fas, i {
+                color:              #454545;    
+                padding:            0.25em;
+            }
+        }
+        .infotext__wrapper {
+            position:               fixed;
+            right:                  -$infoTextWrapperWidth; // fly-in
+            top:                    0;
+            z-index:                101;
+            height:                 100vh;
+            width:                  $infoTextWrapperWidth;
+            overflow-y:             scroll;
+            background-color:       $color-white;
+            box-shadow:             -2px 0 4px rgba(100,100,100,0.2);
+            border-left:            1px solid $color-border;
+            padding:                2em;
+            -webkit-transition:     opacity 0.2s ease-out, right 0.2s ease-out; /* Safari */
+                    transition:     opacity 0.2s ease-out, right 0.2s ease-out;
+            &.opened {
+                opacity:            1;
+                display:            block;
+                right:              0; // fly-in
+            }
+            > *:first-child {
+                margin-top:         0;
+            }
+            > *:last-child {
+                margin-bottom:      0;
+            }
+        }
+        .infotext__close {
+            display:                block;
+            position:               absolute;
+            right:                  0;
+            top:                    0;
+            background-color:       $color-white;
+            margin:                 0;
+            padding:                0.5em;
+            border:                 0 none;
+            font-size:              1.5em;
+        }
+        @include media-query('palm') {
+            .infotext__wrapper {
+                box-shadow:     none;
+                &.opened {
+                    width:      100vw !important;
+                    height:     100vh !important;
+                }
+            }
+            .infotext__close {
+                position:       absolute !important;
+                top:            0 !important;
+                right:          0 !important;
+                left:           auto !important;
+                height:         3em !important;
+                width:          3em !important;
+                box-shadow:     none; 
+            }
+        }
+    }
+}

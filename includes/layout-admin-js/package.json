@@ -1,0 +1,16 @@
+{
+  "name": "bo-layout-admin-js",
+  "version": "1.0.0",
+  "description": "layout for admin backends",
+  "main": "index.js",
+  "private": true,
+  "keywords": [],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "flatpickr": "^4.5.0",
+    "jquery": "^3.6",
+    "magnific-popup": "^1.1.0",
+    "shariff": "~2.0"
+  }
+}

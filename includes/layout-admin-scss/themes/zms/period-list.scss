@@ -1,0 +1,7 @@
+.table--base {
+    tr {
+        &.hide {
+            display:        none;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+// Footer Servicelinks Navigation
+#{$namespace}ul.footer-servicelinks {
+    list-style:                     none;
+    display:                        flex;
+    margin:                         0;
+    .logo {
+        max-width:                  8.5em;
+        height:                     auto;
+        vertical-align:             top;
+        display:                    inline-block;
+        margin-bottom:              0.5em;
+        background:                 $color-white;
+        padding:                    0.25em 0.5em;
+    }
+    a {
+        margin-bottom:              4px;
+        display:                    block;
+    }
+    @include media-query('lap-and-up') {
+        justify-content:            center;
+        li {
+            margin:                 0 1.5em;
+            > *:first-child {
+                margin-top:         0;
+            }
+        }
+    }
+    @include media-query('palm') {
+        justify-content:            left;
+        flex-direction:             column;
+        /* we get problems with the added arrows and borders if we have more than links in our list */
+        //padding:                    0;
+        //margin-left:                -$pagePaddingPalmPx;
+        //margin-right:                -$pagePaddingPalmPx;
+        li {
+            margin:                 0.5em 0;
+            a {
+                display:            block;
+            }
+        }
+    }
+}

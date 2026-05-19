@@ -1,0 +1,142 @@
+
+$boardSmallBottomMarginPx:  $blockBottomMarginPx / 2.5;
+$boxSmallPaddingPx:         $boxPaddingPx/ 2;
+
+
+#{$namespace}.board {
+    // border: 2px solid blue !important; // for testing!
+    @include clearfix();
+    @include getRem('margin-bottom', $blockBottomMarginPx);
+    display:                    block;
+    width:                      100%;
+    overflow:                   visible;
+    position:                   relative;
+    //@include media-query('palm') { 
+        //overflow-x:             auto; // no, we want scrollbars. see #55517
+    //}
+    > *:first-child {
+        margin-top:                 0;
+    }
+    > *:last-child {
+        margin-bottom:              0;
+        > *:last-child {
+            margin-bottom:              0;
+        }
+    }
+    > legend {
+        margin-bottom:              0;
+    }
+    &.panel--tiny {
+        @include getRem('margin-bottom', $blockSmallBottomMarginPx);
+    }
+    /*
+    &.board--heavy {
+        // Default
+    }
+    */
+    &.board--light {
+        > .board__body {
+            @include panel--light();
+        }
+        > .board__footer {
+            @include panel--light();
+            @include panel--tiny();
+            border-top:             0 none;
+        }
+    }
+    &.board--spaceless {
+        > .board__body {
+            padding:        0;
+            border:         0px none;
+            background:     transparent;
+        }
+        > .board__footer {
+            @include panel--light();
+            @include panel--tiny();
+            border-top:             0 none;
+        }
+    }
+}
+
+#{$namespace}.board__header {
+    @include blockHeader();
+}
+
+#{$namespace}.board__heading {
+    @include blockHeading();
+}
+
+#{$namespace}.board__body {
+    @include panel--heavy();
+    border-color:                   $color-border; 
+    > *:first-child {
+        margin-top:                 0;
+    }
+    > *:last-child {
+        margin-bottom:              0;
+        > *:last-child {
+            margin-bottom:          0;
+        }
+    }
+}
+
+#{$namespace}.board__footer {
+    @include panel--heavy();
+    @include panel--tiny();
+    border-color:                   $color-border;
+    text-align:                     center;
+    border-top:                     0px solid $color-border;
+    > *:last-child {
+        margin-bottom:              0;
+    }
+}
+
+#{$namespace}.board__actions {
+    // between board__heading and board__body
+    background-color: $color-decorative-primary;
+    color:  $color-text-negative;
+    padding: 0.5em 1em;
+    h2, h3, a:not(.button) {
+        color:  $color-text-negative;
+    }
+    button {
+        margin-bottom:      0;
+    }
+    @media print, (min-width: 45.001rem) {
+        display:    flex;
+        flex-wrap:  wrap;
+        align-items: center;
+        .board__heading {
+            margin:         0;
+        }
+        .left {
+            display: inline-flex;
+            flex-shrink: 0;
+            > * {
+                margin-right: 1em;
+            }
+        }
+        .form-group {
+            margin-bottom: 0;
+        }
+        .right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-grow: 1;
+            flex-shrink: 0;
+            margin-left: 2em;
+            > *,
+            .button {
+                margin-left: 0.5em;
+                margin-bottom: 0;
+            }
+        }
+        .form-group,
+        .form-check {
+            margin-bottom:  0;
+        }
+    }
+}
+
+

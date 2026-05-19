@@ -1,0 +1,157 @@
+$buttonMargin:                  0em !default;
+$btn-font-color:                $color-text-negative !default;
+$btn-border-color:              $color-button-default !default;
+$btn-heightPx:                  $formInputHeightPx !default;
+
+
+#{$namespace}button {
+    font-family:            $base-font-family;
+    cursor:                 pointer;
+}
+
+#{$namespace}.btn {
+    @include getRem('min-height', $btn-heightPx);
+    @include getRem('margin-bottom', $blockBottomMarginPx/2);
+    box-shadow:             none;
+    border-radius:          3px;
+    /* margin:                 $buttonMargin; // not here */
+    text-decoration:        none;
+    padding:                $buttonPaddingY $buttonPaddingX;
+    font-size:              1em;
+    line-height:            1.2;
+    display:                inline-block;
+    vertical-align:         top;
+    text-align:             center;
+    cursor:                 pointer; 
+    overflow:               visible;
+    background-color:       $color-button-default;
+    color:                  $btn-font-color;
+    border: 1px solid       $btn-border-color;
+    transition:             background-color 0.2s ease-out;
+    &:hover,
+    &:focus {
+        /* color:              $btn-font-color; // not here */
+        /* background-color:   $color-button-default-hover; // not here */
+        text-decoration:    none;
+    }
+    &:active {
+        box-shadow:         inset 0 3px 3px rgba(0, 0, 0, 0.12);
+    }
+}
+
+#{$namespace}.button {
+    @extend .btn;
+    background-color:   $color-button-default;
+    color:              $btn-font-color;
+    &:hover,
+    &:focus {
+        background-color:   $color-button-default-hover;
+    }
+}
+
+// Link as Button
+@mixin link_as_button() {
+    width:                  auto;
+    &:hover,
+    &:focus {
+        text-decoration:    none;
+    }
+}
+
+#{$namespace}a.button {
+    @include link_as_button();
+    line-height:            1.4;
+}
+
+#{$namespace}input.button {
+    // submit button
+    @include link_as_button();
+}
+
+@mixin button_as_link() {
+    background:     transparent;
+    border:         0 none;
+    color:          $color-text-link;
+    padding:        0;
+    margin:         0;
+    text-align:     left;
+    height:         auto;
+    cursor:         pointer;
+    font-size:      1em;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+#{$namespace}button.link {
+    @include button_as_link();
+}
+
+@mixin button--disabled() {
+    background-color:       $color-white;
+    border:                 1px solid lighten($color-text-disabled,10%);
+    color:                  $color-text-disabled;
+    font-weight:            normal;
+    opacity:                1;
+    cursor:                 not-allowed !important;
+    &:hover,
+    &:focus {
+        background-color:   $color-white;
+    }
+}
+
+#{$namespace}.button--disabled,
+#{$namespace}button.disabled,
+#{$namespace}.button[disabled] {
+    @include button--disabled();
+}
+
+#{$namespace}.button--navigational {
+    background-color:       $color-button-navigational;
+    border-color:           $color-button-navigational;
+    color:                  $color-text-base;
+    &:hover,
+    &:focus {
+        background-color:   $color-button-navigational-hover;
+    }
+}
+
+#{$namespace}.button--diamond {
+    background-color:       $color-button-diamond;
+    border-color:           $color-border;
+    color:                  $color-text-base;
+    &:hover,
+    &:focus {
+        background-color:   $color-button-diamond-hover;
+    }
+}
+
+#{$namespace}.button--ghost {
+    border-color:           $color-white;
+    background-color:       transparent;
+    color:                  $color-white;
+}
+
+#{$namespace}.button--positive,
+#{$namespace}.button--submit {
+    background-color:       $color-button-positive;
+    border-color:           $color-button-positive;
+    &:hover,
+    &:focus {
+        background-color:   $color-button-positive-hover;
+    }
+}
+
+#{$namespace}.button--destructive {
+    background-color:       $color-button-destructive;
+    border-color:           $color-button-destructive;
+    &:hover,
+    &:focus {
+        background-color:   $color-button-destructive-hover;
+    }
+}
+
+a.button--fullwidth,
+button.button--fullwidth {
+    width:                  100%;
+}

@@ -1,0 +1,40 @@
+// ToDo: Do we need a global checkbox select layout for all themes?
+.checkboxselect {
+    .inner {
+        border:             1px solid $formElementBorderColor;
+        background-color:   #ffffff;
+        padding:            0.5em;
+    }
+    label {
+        word-break:         break-word;
+    }
+    input[type=checkbox] {
+        cursor:             pointer;
+        + span {
+            cursor:         pointer;
+            display:        block;
+        }
+    }
+}
+
+.checkboxdeselect {
+    @include clearfix();
+    &:hover {
+        cursor:             pointer;
+    }
+    .inner {
+        border:             1px solid $formElementBorderColor;
+        background-color:   $color-white;
+        padding:            0.5em;
+        min-height:         5em;
+        overflow:           auto;
+        max-height:         20em;
+    }
+    label {
+        word-break:         break-word;
+        font-weight:        normal;
+    }
+    .clear-list {
+        float:              right;
+    }
+}
