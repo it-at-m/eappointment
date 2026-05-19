@@ -407,7 +407,7 @@ class ZmsApiClientService
     {
         try {
             $resolveReferences = 2;
-            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
             $result = \App::$http->readGetResult(
                 "/process/{$processId}/externaluserid/{$externalUserIdUrlEncoded}/",
                 [
@@ -507,7 +507,7 @@ class ZmsApiClientService
             if (!is_null($status)) {
                 $params['status'] = $status;
             }
-            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
             $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserIdUrlEncoded}/", $params);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {
