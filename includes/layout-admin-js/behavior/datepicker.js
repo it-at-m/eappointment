@@ -44,7 +44,6 @@ export default function() {
         $('option.js-add-selectOptionDatepicker').each( function (index) {
             var self = $(this);
             var mySelect = self.parent(); 
-            var valOri = self.val();
             
             // build a wrapper field for flatpickr to show the picker popup
             mySelect.wrap('<div class="js-datepicker-selectoption-input_'+index+'" ></div>'); 
