@@ -61,7 +61,7 @@ services:
       - db
 
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.7.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.8.0
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"
@@ -73,7 +73,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+    image: quay.io/keycloak/keycloak:26.6.2@sha256:e712055eab50036a06dda2921ee5158e4fdf8d362402ae3886cc0eb97012cffb
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -96,7 +96,7 @@ services:
     restart: unless-stopped
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    image: klg71/keycloakmigration:0.2.127@sha256:a48ce70ba2698e055d96184ce058cdd473e23707366955fe687707457730a073
     container_name: zms-init-keycloak
     depends_on:
       keycloak:

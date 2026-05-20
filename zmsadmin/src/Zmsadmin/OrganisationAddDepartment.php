@@ -46,7 +46,7 @@ class OrganisationAddDepartment extends BaseController
             $response,
             'page/department.twig',
             array(
-                'title' => 'Standort',
+                'title' => 'Behörde einrichten',
                 'action' => 'add',
                 'menuActive' => 'owner',
                 'workstation' => $workstation,

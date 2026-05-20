@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class UseraccountTest extends Base
 {
     protected $arguments = [];
@@ -74,5 +76,22 @@ class UseraccountTest extends Base
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string)$response->getBody());
         $this->assertStringNotContainsString('/users/berlinonline', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testMissingUseraccountRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
     }
 }

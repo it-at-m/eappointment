@@ -18,7 +18,7 @@
     "providerList": providerList
 } %}
 
-{% set rights = workstation.useraccount.rights %}
+{% set permissions = workstation.useraccount.permissions %}
 
 {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit %}
 
@@ -42,7 +42,7 @@
 				{% trans %}Neuen Standort hinzufügen{% endtrans %}
 			{% endif %}
 		</h2>
-		{% if scope %}
+		{% if scope and permissions.availability|default(false) %}
 			<a class="aside" href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}) }}" title="Öffnungszeiten">
 				(Öffnungszeiten bearbeiten
 				<i class="fas fa-edit" aria-hidden="true"></i>)
@@ -52,98 +52,7 @@
 
 	<form method="post" action="./" enctype="multipart/form-data" class="form--base">
 		<div class="scope-form-update">
-			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}"></div>
-			{#
-						                <fieldset>
-						                    <div class="panel--heavy">
-						                        {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
-
-						                        {% set sourceOptions = [{ "value": "0", "name": "bitte wählen Sie aus", "selected": 0 }]  %}
-						                        {% for source in sourceList %}
-						                            {% if source.source == scope.source %}
-						                                {% set selected = 1 %}
-						                            {% else %}
-						                                {% set selected = 0 %}
-						                            {% endif %}
-						                            {% set sourceOptions = sourceOptions|merge([{ "value": source.source, "name": source.label|default("- Keinen Namen angegeben -")|trans, "selected": selected }]) %}
-						                        {% endfor %}
-
-						                        {{ formgroup(
-						                            {"label": "Quelle der Standortdaten:"},
-						                            [{
-						                                "type":"select",
-						                                "parameter": {
-						                                    "name": "provider[source]",
-						                                    "id": "provider__source",
-						                                    "options": sourceOptions
-						                                }
-						                            }]
-						                        ) }}
-
-						                        {% set providerOptionsGroup = [{'name': "Nicht zugeordnet", 'options': [{ "value": "", "name": "bitte wählen Sie aus", "selected": 0}] }] %}
-						                        {% for type, optGroup in providerList %}
-						                            {% set providerOptions = [] %}
-						                            {% for provider in optGroup %}
-						                                {% if provider.id == scope.provider.id %}
-						                                    {% set selected = 1 %}
-						                                {% else %}
-						                                    {% set selected = 0 %}
-						                                {% endif %}
-						                                {% set optionName = provider.name ~" | "~ provider.contact.street ~" "~ provider.contact.streetNumber %}
-						                                {% set providerOptions = providerOptions|merge([{ "value": provider.id, "name": optionName, "selected": selected, "data": {"contact": provider.contact|json_encode()} }]) %}
-						                            {% endfor %}
-						                            {% if type == 'assigned' %}
-						                                {% set isAssigned = 'Bereits einem Standort zugewiesen' %}
-						                            {% else %}
-						                                {% set isAssigned = 'Keinem Standort zugewiesen' %}
-						                            {% endif %}
-						                            {% set providerOptionsGroup = providerOptionsGroup|merge([{ 'name' : isAssigned , 'options' : providerOptions }]) %}
-						                        {% endfor %}
-
-						                        {{ formgroup(
-						                            {"label": "Standortdaten:"},
-						                            [{
-						                                "type":"select",
-						                                "parameter": {
-						                                    "name": "provider[id]",
-						                                    "id": "provider__id",
-						                                    "options": providerOptionsGroup
-						                                }
-						                            }]
-						                        ) }}
-
-						                        {% set readOnly = 1 %}
-
-						                        {{ formgroup(
-						                            {"label": "Name:"},
-						                            [{
-						                                "type":"input",
-						                                "parameter": {
-						                                    "name": "contact[name]",
-						                                    "value": scope.provider.contact.name,
-						                                    "maxlength": 40,
-						                                    "readonly": readOnly,
-						                                }
-						                            }]
-						                        ) }}
-
-						                        {{ inputfield({ "name": "provider[name]", "type":"hidden", "value":scope.provider.name }) }}
-
-						                        {{ formgroup(
-						                            {"label": "Anschrift:"},
-						                            [{
-						                                "type":"input",
-						                                "parameter": {
-						                                    "name": "contact[street]",
-						                                    "value": scope.provider.contact.street ~" "~ scope.provider.contact.streetNumber,
-						                                    "maxlength": 70,
-						                                    "readonly": readOnly,
-						                                }
-						                            }]
-						                        ) }}
-						                        </div>
-						                    </fieldset>
-						                #}
+			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
 			<fieldset>
 				<legend>Standortdaten</legend>
 				<div class="panel--heavy">
@@ -364,7 +273,7 @@
                         }]
                     ) }}
 
-                    {% if rights.superuser %}
+                    {% if permissions.superuser %}
                         {{ formgroup(
                                 {
                                     "legend": "Captcha:",
@@ -536,7 +445,7 @@
 				</div>
 			</fieldset>
 
-            {% if rights.superuser %}
+            {% if permissions.superuser %}
                 <fieldset class="superuser-only-field">
                     <legend>
                         Kundenbefragung
@@ -611,7 +520,7 @@
 				</div>
 			</fieldset>
 
-            {% if rights.superuser %}
+            {% if permissions.superuser %}
                 <fieldset class="superuser-only-field">
                     <legend>
                         Wartenummern-Kiosk
@@ -757,7 +666,7 @@
                         }]
                     ) }}
 
-					{% if rights.superuser %}
+					{% if permissions.superuser %}
 						{{ formgroup(
 							{
                             "legend": "Hinweismeldungen bzgl. der Terminverfügbarkeiten an die Bürger*innen:",

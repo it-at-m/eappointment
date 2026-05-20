@@ -333,6 +333,56 @@ describe("AppointmentSelection", () => {
       const locationTitles = wrapper.findAll('.location-title');
       expect(locationTitles.length).toBe(0);
     });
+
+    it("preselects provider when preselectedOfficeId matches office parentId", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-17", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747224600]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        props: {
+          preselectedOfficeId: "101135",
+        },
+        selectedService: {
+          id: "2",
+          providers: [
+            {
+              name: "Planvorbesprechung Grundstücksentwässerung",
+              id: 1,
+              parentId: 101135,
+              priority: 1,
+              address: {
+                street: "Friedenstraße",
+                house_number: "40",
+              },
+              scope: {
+                id: "369",
+              },
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.selectedProviders).toEqual({
+        1: true,
+      });
+
+      expect(wrapper.vm.noProviderSelected).toBe(false);
+    });
   });
 
   describe("CalendarView Integration", () => {
@@ -362,7 +412,11 @@ describe("AppointmentSelection", () => {
     await nextTick();
 
     // Uncheck the provider - with new behavior, availableDays still contains data for all providers
-    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
+    wrapper.vm.selectedProviders = {
+      "102522": false,
+      "54261": false,
+      "10489": false,
+    };
     await nextTick();
 
     // availableDays still has data (we always fetch all providers), but allowedDates
