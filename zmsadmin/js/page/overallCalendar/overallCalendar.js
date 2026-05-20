@@ -6,6 +6,7 @@ let currentRequest = null;
 let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 const STEP_MIN = 5;
+const MAX_WORKDAYS = 10;
 
 function eventCellLabel(event) {
     const displayNumber = event?.displayNumber;
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fromDate = new Date(fromInput.value);
         const maxDate = new Date(fromDate);
         let workdays = 0;
-        while (workdays < 4) {
+        while (workdays < MAX_WORKDAYS - 1) {
             maxDate.setDate(maxDate.getDate() + 1);
             if (![0, 6].includes(maxDate.getDay())) workdays++;
         }
@@ -175,8 +176,8 @@ async function handleSubmit(event) {
             if (![0, 6].includes(current.getDay())) workdays++;
             current.setDate(current.getDate() + 1);
         }
-        if (workdays > 5) {
-            alert('Bitte wählen Sie maximal 5 Werktage (Mo–Fr) aus.');
+        if (workdays > MAX_WORKDAYS) {
+            alert('Bitte wählen Sie maximal 10 Werktage (2 Wochen, Mo–Fr) aus.');
             return;
         }
     }
