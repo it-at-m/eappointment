@@ -96,7 +96,6 @@ export default function() {
     }
     
     function initDatepicker() {
-        var jsbase = $('#bo-behavior-js')[0].src.replace(/\/[\w]+\.js(?:\?.*)?$/, '');
         //console.log('jsbase '+jsbase); // ToDo: make webpack build flatpickr files
         /*
         // ToDO "include" is not working
