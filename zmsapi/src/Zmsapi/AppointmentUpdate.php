@@ -42,7 +42,7 @@ class AppointmentUpdate extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkRights();
+            (new Helper\User($request))->checkDepartments('appointment');
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);

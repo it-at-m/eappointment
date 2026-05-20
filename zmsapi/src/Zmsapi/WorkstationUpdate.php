@@ -22,7 +22,7 @@ class WorkstationUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $currentWorkstation = (new Helper\User($request))->checkRights();
+        $currentWorkstation = (new Helper\User($request))->checkPermissions();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
