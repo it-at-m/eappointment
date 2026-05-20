@@ -53,7 +53,7 @@ For `zmsclient` you need the php base image which starts a local mock server. Th
 
 ```bash
 cd zmsclient
-docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
+docker compose down && docker compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
 **Using Podman:**
