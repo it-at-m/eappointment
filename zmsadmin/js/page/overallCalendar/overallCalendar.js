@@ -7,6 +7,14 @@ let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 const STEP_MIN = 5;
 
+function eventCellLabel(ev) {
+    const displayNumber = ev?.displayNumber;
+    if (displayNumber != null && String(displayNumber).trim() !== '') {
+        return String(displayNumber);
+    }
+    return ev?.processId != null ? String(ev.processId) : '';
+}
+
 function buildScopeColorMap(days) {
     const ids = [...new Set(days.flatMap(d => d.scopes.map(s => s.id)))];
     const map = Object.create(null);
@@ -294,8 +302,12 @@ function mergeDelta(deltaDays, deletedProcessIds = []) {
 
         if (!Array.isArray(scope.events)) scope.events = [];
         scope.events.push({
-            processId: ev.processId, start: ev.start, end: ev.end,
-            status: 'confirmed', updatedAt: ev.updatedAt
+            processId: ev.processId,
+            displayNumber: ev.displayNumber ?? null,
+            start: ev.start,
+            end: ev.end,
+            status: 'confirmed',
+            updatedAt: ev.updatedAt
         });
     }
 
@@ -489,7 +501,7 @@ function renderMultiDayCalendar(days) {
                         if (occupied.has(toKey(row, laneCol))) continue;
 
                         const cell = addCell({
-                            text: ev.processId ?? '',
+                            text: eventCellLabel(ev),
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row, col: laneCol, rowSpan: spanRows,
                             dataStatus: ev.status
