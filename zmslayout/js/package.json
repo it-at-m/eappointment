@@ -1,7 +1,7 @@
 {
   "name": "bo-zms-layout-js",
   "version": "1.0.0",
-  "description": "Shared ZMS staff UI behaviors (zmsadmin, zmsstatistic)",
+  "description": "Shared ZMS layout behaviors (zmsadmin, zmsstatistic)",
   "main": "index.js",
   "private": true,
   "keywords": [],

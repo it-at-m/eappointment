@@ -8,11 +8,12 @@ The graph also shows the runtime services every deployment depends on:
 - `Digital Citizen Service (DBS)` — Munich's open-source citizen identity broker for BundID, BayernID and Elster, reached at the `refarch-gateway` layer (see [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
 - `CaptchaService` — Munich's open-source ALTCHA-based proof-of-work CAPTCHA service that gates the citizen booking flow against bot scraping. Fetched by `zmscitizenview` to render the challenge and called by `zmscitizenapi` to verify the solution (see [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
 - `zmsautomation` — Maven-based acceptance tests on **ATAF** (Agile Test Automation Framework; artifacts `de.muenchen.ataf`): Cucumber scenarios with **REST Assured** for API tests and **Selenium** (via ATAF web) for UI tests. Not a Composer dependency of the PHP modules; it drives HTTP/browser flows against deployed instances (see [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
+- `zmslayout` — vendored layout assets (shared SCSS/JS). Consumed via npm `file:` dependencies from `zmsadmin` and `zmsstatistic` (see [`zmslayout/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmslayout/README.md)).
 
 **Reading the edges**
 
 - Solid arrow (`A --> B`): A has B as a code dependency (composer).
-- Dashed arrow (`A -.-> B`): build / integration dependency. A is built and deployed on top of B but does not pull it as a code dependency.
+- Dashed arrow (`A -.-> B`): build / integration dependency, or npm `file:` dependency (for example `zmsadmin` → `zmslayout`). A is built and deployed on top of B but does not pull it as a Composer dependency.
 - Thick arrow (`A ==> B`): runtime / infrastructure dependency. A talks to B at runtime, or B provides A's runtime environment.
 
 In the **Test automation** subgraph only, the dashed edge **`ataf -.-> zmsautomation`** reads as _framework → consumer_ (ATAF supplies Cucumber plus REST Assured for API and Selenium for UI to `zmsautomation`), not as the Composer-style “A built on B” rule above.
@@ -34,6 +35,10 @@ graph TD;
     zmsslim --> mellon;
 
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+
+    %% npm file: dependencies (dashed)
+    zmsadmin -.-> zmslayout;
+    zmsstatistic -.-> zmslayout;
 
     %% Build / integration dependencies (dashed)
     zmscitizenapi -.-> zmsapi;
@@ -90,6 +95,11 @@ graph TD;
         zmsautomation
     end
 
+    subgraph shared_frontend [Shared layout assets]
+        style shared_frontend stroke-dasharray: 5, 2, 1, 2
+        zmslayout["zmslayout<br>vendored SCSS/JS"]
+    end
+
     %% Styling
     classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
@@ -97,6 +107,7 @@ graph TD;
     classDef runtimeSvc fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef infra fill:#e3f2fd,stroke:#0277bd,stroke-width:3px;
     classDef automation fill:#fce4ec,stroke:#880e4f,stroke-width:2px;
+    classDef layout fill:#fff8e1,stroke:#f9a825,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
     class refarch-gateway gateway;
@@ -106,6 +117,7 @@ graph TD;
     class phpbase infra;
     class zmsautomation automation;
     class ataf automation;
+    class zmslayout layout;
 ```
 
 ## Frontend vs Backend Modules
@@ -118,6 +130,10 @@ graph TD;
 - `zmsstatistic`: statistics/reporting UI module (with backend/API integration).
 - `zmscalldisplay`: call display UI module.
 - `zmsticketprinter`: ticket printer UI/runtime module.
+
+### Shared layout assets
+
+- `zmslayout`: vendored Berlin Online layout SCSS and JavaScript (`bo-zms-layout-js`, `bo-zms-layout-scss`), shared by `zmsadmin` and `zmsstatistic` via npm `file:` dependencies. `zmscalldisplay` and `zmsticketprinter` use their own PHP/Twig UI stacks and do not depend on `zmslayout` today. A RefArch/Vue refactor of `zmsadmin`, `zmsstatistic`, and the other internal PHP frontends (see [Product-Oriented RefArch Roadmap](/on-the-future/product-oriented-refarch-roadmap)) would replace `zmslayout` with Vue/Vuetify rather than extending it.
 
 `zmscitizenview` follows the RefArch reference architecture patterns and uses `refarch-gateway` as its gateway layer.
 This means requests from `zmscitizenview` are routed through `refarch-gateway` before they reach `zmscitizenapi`.

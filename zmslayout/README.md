@@ -1,6 +1,6 @@
 # zmslayout
 
-Vendored staff UI layout assets (ZMSKVR-1321), shared by `zmsadmin` and `zmsstatistic`.
+Vendored layout assets (ZMSKVR-1321), shared by `zmsadmin` and `zmsstatistic`.
 
 - `js/` — UI behavior scripts (`bo-zms-layout-js`)
 - `scss/` — SCSS structure (`bo-zms-layout-scss`)
