@@ -110,6 +110,7 @@ export default function() {
         	}
         }); 
         */
+        buildDatepicker();
     }
     
     if ( $('.datepicker-input').length 
