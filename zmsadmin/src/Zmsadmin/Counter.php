@@ -19,7 +19,6 @@ class Counter extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstation->getUseraccount()->testPermissions(['counter']);
         $validator = $request->getAttribute('validator');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
@@ -34,6 +33,8 @@ class Counter extends BaseController
                 )
             );
         }
+
+        $workstation->getUseraccount()->testPermissions(['counter']);
 
         return \BO\Slim\Render::withHtml(
             $response,
