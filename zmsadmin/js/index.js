@@ -38,15 +38,15 @@ import validateClusterScopes from './element/form/validateClusterScopes'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
-import accordion from 'bo-layout-admin-js/behavior/accordion';
-import tabs from 'bo-layout-admin-js/behavior/tabs';
-import collapse from 'bo-layout-admin-js/behavior/collapse';
-import stickytrigger from 'bo-layout-admin-js/behavior/form-actions--sticky-trigger';
-import navigationprimary from 'bo-layout-admin-js/behavior/navigation-primary';
-import datepicker from 'bo-layout-admin-js/behavior/datepicker';
-import infotext from 'bo-layout-admin-js/behavior/form-infotext-flyin';
-import metanavi from 'bo-layout-admin-js/behavior/header-metanavi-popup';
-import formalerts from 'bo-layout-admin-js/behavior/formalerts-flyin';
+import accordion from 'bo-zms-layout-js/behavior/accordion';
+import tabs from 'bo-zms-layout-js/behavior/tabs';
+import collapse from 'bo-zms-layout-js/behavior/collapse';
+import stickytrigger from 'bo-zms-layout-js/behavior/form-actions--sticky-trigger';
+import navigationprimary from 'bo-zms-layout-js/behavior/navigation-primary';
+import datepicker from 'bo-zms-layout-js/behavior/datepicker';
+import infotext from 'bo-zms-layout-js/behavior/form-infotext-flyin';
+import metanavi from 'bo-zms-layout-js/behavior/header-metanavi-popup';
+import formalerts from 'bo-zms-layout-js/behavior/formalerts-flyin';
 
 // Import overall-calendar from ./page/overallCalendar
 import './page/overallCalendar/overallCalendar.js';

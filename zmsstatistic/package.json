@@ -44,8 +44,8 @@
     "svgo": "^4.0.1"
   },
   "dependencies": {
-    "bo-layout-admin-js": "file:../includes/layout-admin-js",
-    "bo-layout-admin-scss": "file:../includes/layout-admin-scss",
+    "bo-zms-layout-js": "file:../zmslayout/js",
+    "bo-zms-layout-scss": "file:../zmslayout/scss",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities/-/archive/2.24.14/zmsentities-2.24.14.tar.gz",
     "moment": "^2.30.1"
   }
