@@ -30,7 +30,7 @@ export default function() {
             }
 
             return elementParentWithClass(parent, expectedClass, iteration + 1);
-        }
+        };
 
         // CLOSE Navigation
         function closeNavi() {
