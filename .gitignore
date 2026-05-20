@@ -221,6 +221,7 @@ nbdist/
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/terminals.json
+.continue
 
 # Covers other editors
 *.suo
