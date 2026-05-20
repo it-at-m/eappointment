@@ -33,7 +33,7 @@ class UserQueue extends BaseController
 
         $message = Response\Message::create($request);
 
-        $workstation = (new Helper\User($request, 2))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkPermissions();
         $queueList = new QueueList();
         foreach ($workstation->getUseraccount()['departments'] as $department) {
             $queueList->addList((new Department())->readQueueList($department->id, $dateTime, 2));
