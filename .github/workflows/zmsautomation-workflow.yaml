@@ -233,14 +233,26 @@ jobs:
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
             temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # Satisfy node_modules -> ../../zmslayout/* symlinks inside the temp container (/zmslayout).
+            # GHCR images mount the module at /var/www/html; npm file: deps symlink to
+            # ../../zmslayout/* => /var/www/zmslayout (not /zmslayout).
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
-              docker cp ./zmslayout "${temp_id}:/zmslayout"
+              docker cp ./zmslayout "${temp_id}:/var/www/zmslayout"
             fi
             # `docker cp` between two containers is not supported.
             # Copy temp container -> runner filesystem -> zms-web container.
             tmp_dir="$(mktemp -d)"
             docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
+            # Replace layout symlinks with real trees (docker cp rejects broken symlinks).
+            if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
+              for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
+                name="${spec%%:*}"
+                dir="${spec##*:}"
+                if [[ -L "$tmp_dir/node_modules/${name}" ]]; then
+                  rm -f "$tmp_dir/node_modules/${name}"
+                  cp -a "./zmslayout/${dir}" "$tmp_dir/node_modules/${name}"
+                fi
+              done
+            fi
             docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
             rm -rf "$tmp_dir"
             docker rm "$temp_id" >/dev/null
