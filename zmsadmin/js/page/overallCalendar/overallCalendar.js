@@ -7,12 +7,12 @@ let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 const STEP_MIN = 5;
 
-function eventCellLabel(ev) {
-    const displayNumber = ev?.displayNumber;
+function eventCellLabel(event) {
+    const displayNumber = event?.displayNumber;
     if (displayNumber != null && String(displayNumber).trim() !== '') {
         return String(displayNumber);
     }
-    return ev?.processId != null ? String(ev.processId) : '';
+    return event?.processId != null ? String(event.processId) : '';
 }
 
 function buildScopeColorMap(days) {
@@ -229,7 +229,7 @@ function mergeDelta(deltaDays, deletedProcessIds = []) {
         for (const day of calendarCache) {
             for (const scope of day.scopes) {
                 if (!Array.isArray(scope.events)) continue;
-                scope.events = scope.events.filter(e => !dead.has(e.processId));
+                scope.events = scope.events.filter(event => !dead.has(event.processId));
             }
         }
     }
@@ -281,33 +281,33 @@ function mergeDelta(deltaDays, deletedProcessIds = []) {
     for (const day of calendarCache) {
         for (const scope of day.scopes) {
             if (!Array.isArray(scope.events)) continue;
-            scope.events = scope.events.filter(e => !affected.has(e.processId));
+            scope.events = scope.events.filter(event => !affected.has(event.processId));
         }
     }
 
-    for (const ev of latestByPid.values()) {
-        if (ev.status !== 'confirmed') continue;
+    for (const event of latestByPid.values()) {
+        if (event.status !== 'confirmed') continue;
 
-        let day = calendarCache.find(d => d.date === ev.__day);
+        let day = calendarCache.find(d => d.date === event.__day);
         if (!day) {
-            day = {date: ev.__day, scopes: []};
+            day = {date: event.__day, scopes: []};
             calendarCache.push(day);
         }
 
-        let scope = day.scopes.find(s => s.id === ev.__scope);
+        let scope = day.scopes.find(s => s.id === event.__scope);
         if (!scope) {
-            scope = {id: ev.__scope, intervals: [], events: []};
+            scope = {id: event.__scope, intervals: [], events: []};
             day.scopes.push(scope);
         }
 
         if (!Array.isArray(scope.events)) scope.events = [];
         scope.events.push({
-            processId: ev.processId,
-            displayNumber: ev.displayNumber ?? null,
-            start: ev.start,
-            end: ev.end,
+            processId: event.processId,
+            displayNumber: event.displayNumber ?? null,
+            start: event.start,
+            end: event.end,
             status: 'confirmed',
-            updatedAt: ev.updatedAt
+            updatedAt: event.updatedAt
         });
     }
 
@@ -492,8 +492,8 @@ function renderMultiDayCalendar(days) {
                 const byStart = eventsIndex.get(idxKey) || new Map();
                 const startingNow = byStart.get(time) || [];
 
-                for (const ev of startingNow) {
-                    const spanMin = Math.max(1, timeToMin(ev.end) - timeToMin(ev.start));
+                for (const event of startingNow) {
+                    const spanMin = Math.max(1, timeToMin(event.end) - timeToMin(event.start));
                     const spanRows = Math.max(1, Math.ceil(spanMin / STEP_MIN));
 
                     for (let ln = 0; ln < lanes; ln++) {
@@ -501,13 +501,13 @@ function renderMultiDayCalendar(days) {
                         if (occupied.has(toKey(row, laneCol))) continue;
 
                         const cell = addCell({
-                            text: eventCellLabel(ev),
+                            text: eventCellLabel(event),
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row, col: laneCol, rowSpan: spanRows,
-                            dataStatus: ev.status
+                            dataStatus: event.status
                         });
                         cell.style.background = SCOPE_COLORS[scope.id];
-                        if (ev.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
+                        if (event.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
 
                         for (let i = 0; i < spanRows; i++) occupied.add(toKey(row + i, laneCol));
                         break;
@@ -627,10 +627,10 @@ function maxConcurrentEvents(events = []) {
 
 function indexEventsByStart(events = []) {
     const map = new Map();
-    for (const ev of events) {
-        const key = ev.start;
+    for (const event of events) {
+        const key = event.start;
         if (!map.has(key)) map.set(key, []);
-        map.get(key).push(ev);
+        map.get(key).push(event);
     }
     return map;
 }
