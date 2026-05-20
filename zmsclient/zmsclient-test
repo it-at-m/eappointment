@@ -80,13 +80,10 @@ fi
 
 if [[ "$USE_PODMAN" == false ]]; then
   require_cmd docker
-  # Check for docker compose v2 (space) or v1 (hyphen)
   if docker compose version >/dev/null 2>&1; then
     COMPOSE_CMD="docker compose"
-  elif command -v docker-compose >/dev/null 2>&1; then
-    COMPOSE_CMD="docker-compose"
   else
-    echo "ERROR: docker compose or docker-compose is required" >&2
+    echo "ERROR: docker compose (Compose V2 plugin) is required" >&2
     exit 1
   fi
   info "Using Docker ($COMPOSE_CMD)"
