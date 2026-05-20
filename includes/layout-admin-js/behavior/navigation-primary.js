@@ -62,7 +62,7 @@ export default function() {
             container.show(); 
             hamburger.attr('aria-expanded','true');
             // we need a short delay to make css transition work because of hidden attribute
-            var delayedWrapperShow = setTimeout(function(){
+            delayedWrapperShow = setTimeout(function(){
                 //trigger.addClass('active').attr('aria-expanded', true).attr('aria-label', ariaTriggerCloseText);
                 container.addClass('opened').attr('aria-expanded', true);
             }, 1);
