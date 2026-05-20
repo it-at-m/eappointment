@@ -21,7 +21,6 @@ export default function() {
             trigger.addClass('active');
             popup.addClass('opened'); // first open popup to make offset work!
             var myPos = metanaviWrapper.offset(); //trigger.offset();
-            var popupPos = popup.offset();
             popup.css({
                 'position': 'absolute',
                 'right' : '1em',
