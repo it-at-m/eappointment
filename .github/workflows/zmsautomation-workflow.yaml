@@ -221,11 +221,22 @@ jobs:
           WEB_CONT="zms-web"
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
           modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          layout_modules=(zmsadmin zmsstatistic)
+
+          # zmsadmin/zmsstatistic use file:../zmslayout deps (symlinks in node_modules).
+          # Prebuilt images only contain the module tree; provide zmslayout for copy + runtime.
+          echo "Injecting zmslayout from checkout into $WEB_CONT:/var/www/html/zmslayout"
+          docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+          docker cp ./zmslayout/. "$WEB_CONT:/var/www/html/zmslayout/"
 
           for m in "${modules[@]}"; do
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
             temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
+            # Satisfy node_modules -> ../../zmslayout/* symlinks inside the temp container (/zmslayout).
+            if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
+              docker cp ./zmslayout "${temp_id}:/zmslayout"
+            fi
             # `docker cp` between two containers is not supported.
             # Copy temp container -> runner filesystem -> zms-web container.
             tmp_dir="$(mktemp -d)"
@@ -236,6 +247,8 @@ jobs:
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
+
+          docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/zmslayout 2>/dev/null || true; chmod -R 755 /var/www/html/zmslayout 2>/dev/null || true"
 
       - name: Ensure writable cache directories
         shell: bash
