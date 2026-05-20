@@ -31,6 +31,8 @@ Key drivers:
 
 `zmscitizenview` and `refarch-gateway` are built on top of `zmscitizenapi`, but they do not directly pull dependencies from it. Similarly, while `zmscitizenapi` sends requests to `zmsapi`, `zmsapi` is not a direct dependency of `zmscitizenapi`.
 
+`zmsadmin` and `zmsstatistic` share vendored layout assets in `zmslayout` (npm `file:` dependencies). `zmscalldisplay` and `zmsticketprinter` use separate PHP/Twig stacks and do not depend on `zmslayout` today. Refactoring the internal PHP frontends to Vue/Vuetify (per the target architecture below) replaces `zmslayout` with RefArch UI patterns rather than growing the legacy SCSS/JS library.
+
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 graph TD;
@@ -49,6 +51,10 @@ graph TD;
 
     %% zmscitizenapi dependencies
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+
+    %% npm file: dependencies (dashed)
+    zmsadmin -.-> zmslayout;
+    zmsstatistic -.-> zmslayout;
 
     %% Build dependencies (dashed lines)
     zmscitizenapi -.-> zmsapi;
@@ -80,14 +86,21 @@ graph TD;
         zmscitizenapi
     end
 
+    subgraph shared_frontend [Shared layout assets]
+        style shared_frontend stroke-dasharray: 5, 2, 1, 2
+        zmslayout["zmslayout<br/>vendored SCSS/JS"]
+    end
+
     %% Styling for the three modules
     classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
     classDef citizenview fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
+    classDef layout fill:#fff8e1,stroke:#f9a825,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
+    class zmslayout layout;
 ```
 
 ## Future Architecture (3-5 Years)
@@ -207,16 +220,16 @@ graph TD;
 
 ### Key Architectural Changes:
 
-- **Frontend Modernization**: All frontend modules converted to Vue.js applications
+- **Frontend Modernization**: All frontend modules converted to Vue.js applications. Refactoring `zmsadmin`, `zmsstatistic`, `zmsticketprinter`, and `zmscalldisplay` to Vue/Vuetify retires `zmslayout` (today’s shared BO SCSS/JS shell for `zmsadmin` and `zmsstatistic`) in favor of RefArch/Vuetify components—the same direction already taken by `zmscitizenview`.
 - **API Gateway Pattern**: Separate gateways for internal and citizen-facing applications
 - **Backend Refactoring**: Core services migrated to Spring Boot (zmsbackend)
 - **EAI Services**: zmsmessaging and zmsdldb as dedicated Spring Boot EAI services
 - **External Integration**: zmsdldb handles Stadt München services/locations mapping
 - **Microservices Architecture**: Clear separation of concerns with dedicated services
 
-### Key Architectural Changes:
+### Key Architectural Changes (detail):
 
-- **Frontend Modernization**: All frontend modules converted to Vue.js applications
+- **Frontend Modernization**: All frontend modules converted to Vue.js applications; `zmsadmin` and `zmsstatistic` no longer depend on `zmslayout`
 - **API Gateway Pattern**: Separate gateways for internal and citizen-facing applications
 - **Backend Refactoring**: Core services migrated to Spring Boot consolidates: `zmsapi`, `zmsdb`, `zmsclient`, `zmsentities`, `zmsslim`, `mellon` -> (`zmsbackend`)
 - **zmsmessaging**: Dedicated EAI service for notifications
@@ -227,7 +240,7 @@ graph TD;
 
 | **Aspect**               | **Current State**        | **Target State**             | **Benefits**                        |
 | ------------------------ | ------------------------ | ---------------------------- | ----------------------------------- |
-| **Frontend**             | Mixed PHP/Twig templates | Vue.js SPA applications      | Modern UX, better maintainability   |
+| **Frontend**             | Mixed PHP/Twig templates; `zmslayout` for `zmsadmin` / `zmsstatistic` | Vue.js SPA applications (Vuetify/RefArch) | Modern UX; `zmslayout` retired with frontend refactors |
 | **API Layer**            | Direct service calls     | RefArch API Gateways         | Centralized security, monitoring    |
 | **Backend**              | PHP monolith             | Spring Boot microservices    | Better scalability, maintainability |
 | **EAI**                  | Integrated messaging     | Dedicated EAI services       | Clear separation of concerns        |

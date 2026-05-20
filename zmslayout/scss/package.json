@@ -1,7 +1,7 @@
 {
   "name": "bo-zms-layout-scss",
   "version": "1.0.0",
-  "description": "Shared ZMS staff UI styles (zmsadmin, zmsstatistic)",
+  "description": "Shared ZMS layout styles (zmsadmin, zmsstatistic)",
   "main": "index.js",
   "private": true,
   "keywords": [],
