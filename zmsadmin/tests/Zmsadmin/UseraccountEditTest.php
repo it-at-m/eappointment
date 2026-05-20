@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
+
 class UseraccountEditTest extends Base
 {
     protected $arguments = [
@@ -39,6 +41,12 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -144,6 +152,12 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -209,6 +223,12 @@ class UseraccountEditTest extends Base
                     'parameters' => [],
                     'xtoken' => 'secure-token',
                     'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/roles/',
+                    'parameters' => [],
+                    'response' => $this->readFixture("GET_rolelist.json")
                 ]
             ]
         );
@@ -278,5 +298,22 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
+    }
+
+    public function testMissingUseraccountRights()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved1_No_Useraccount_Permission.json'),
+                ],
+            ]
+        );
+
+        $this->expectException(UserAccountMissingRights::class);
+        $this->render($this->arguments, $this->parameters, []);
     }
 }

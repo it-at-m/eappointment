@@ -13,7 +13,7 @@ use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process as Query;
 use BO\Zmsentities\Process;
 
-class WorkstationProcessDelete extends BaseController
+class WorkstationProcessRemove extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -65,7 +65,10 @@ class WorkstationProcessDelete extends BaseController
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif ($isRequeueCalled && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
+        } elseif (
+            ($isRequeueCalled || $isRequeueAndSkipToNext)
+            && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')
+        ) {
             $process->setWasMissed(true);
         } elseif ($isRequeueDecrementCalled) {
             $process->status = Process::STATUS_QUEUED;
@@ -79,8 +82,6 @@ class WorkstationProcessDelete extends BaseController
             }
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif ($isRequeueAndSkipToNext) {
-            $process->setWasMissed(true);
         }
 
         $process = (new Query())->updateEntity(
