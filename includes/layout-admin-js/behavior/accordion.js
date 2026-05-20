@@ -64,7 +64,7 @@ export default function() {
                     // timout to enable transition effect
                     setTimeout(function(){document.getElementById(target.getAttribute('aria-controls')).classList.add('opened');}, 1);
                 }
-                else if (allowToggle && isExpanded) {
+                else if (allowToggle) {
                     // Set the expanded state on the triggering element
                     target.setAttribute('aria-expanded', 'false');
                     // Hide the accordion sections, using aria-controls to specify the desired section
