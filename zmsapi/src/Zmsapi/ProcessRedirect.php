@@ -26,7 +26,7 @@ class ProcessRedirect extends BaseController
      */
     public function readResponse(\Psr\Http\Message\RequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
     {
-        $workstation = (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request))->checkPermissions('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);

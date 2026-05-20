@@ -25,7 +25,7 @@ class WorkstationProcessDelete extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $workstation = (new Helper\User($request, 2))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkPermissions();
         if (! $workstation->process['id']) {
             throw new Exception\Process\ProcessNotFound();
         }
