@@ -34,7 +34,7 @@ export default function() {
             // add global event handler: hide popup when clicking anywhere else except the popup and the trigger
             $(document).on('click.metanavipopup touch.metanavipopup', function(event) {
                 if (!$(event.target).parents().addBack().is(trigger)) {
-                    closePopup(popup,trigger);
+                    closePopup();
                 }
             });
             FocusTrap.addFocusTrap(popup);
@@ -72,10 +72,10 @@ export default function() {
                     trigger.removeClass('active');
                     if (activeStatus) {
                         // close popup when clicking on an activ trigger
-                        closePopup(popup,trigger);
+                        closePopup();
                     } else {
                         // reopen popup when clicking on an inactiv trigger
-                        openPopup(popup,trigger);
+                        openPopup();
                     }
                 });
                 // close popup on ESCAPE key
