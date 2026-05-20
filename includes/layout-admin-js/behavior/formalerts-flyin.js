@@ -60,7 +60,7 @@ export default function() {
                 clearTimeout(delayedWrapperHide);
                 popupWrapper.removeAttr('hidden'); 
                 // we need a short delay to make css transition work
-                var delayedWrapperShow = setTimeout(function(){
+                setTimeout(function(){
                     trigger.addClass('active').attr('aria-expanded', true).attr('aria-label', ariaTriggerCloseText);
                     self.addClass('opened');
                 }, 1);
