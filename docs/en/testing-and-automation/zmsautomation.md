@@ -1,23 +1,23 @@
 # zmsautomation Documentation
 
-## ZMS Automation - ATAF Integration
+## ZMS Automation - [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Integration
 
-This module contains API and UI tests for ZMS using ATAF (Test Automation Framework) with Cucumber.
-`zmsautomation` is built on [it-at-m/agile-test-automation-framework](https://github.com/it-at-m/agile-test-automation-framework).
+This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) (Test Automation Framework) with Cucumber.
+`zmsautomation` is built on [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/).
 
 ## Prerequisites
 
 - Java 21
 - Maven 3.9+
 - MySQL/MariaDB database (for local testing)
-- Access to Maven Central (ATAF artifacts are published under `de.muenchen.ataf:core|rest|web`)
+- Access to Maven Central ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) artifacts are published under `de.muenchen.ataf:core|rest|web`)
 
 ## Project Structure
 
 - `src/test/java/zms/api/` - original REST-assured + JUnit tests (standalone profile)
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` - REST step definitions (REST Assured)
-  - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)
+  - `zms/ataf/ui/steps/` - UI step definitions (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
   - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, Buergeransicht, Mailinator
 - `src/test/resources/features/` - Cucumber feature files
   - `rest/zmsapi/` - ZMS REST API features
@@ -35,7 +35,7 @@ This module contains API and UI tests for ZMS using ATAF (Test Automation Framew
 The `zmsautomation-test` script handles database setup, migrations, and test execution.
 
 ```bash
-# Run all ATAF tests (API + UI)
+# Run all [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
 
 # Run specific tags (scenarios tagged @ignore are excluded unless you include @ignore in the expression)
@@ -49,7 +49,7 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 # Run only API tests (no Selenium)
 ./zmsautomation/zmsautomation-test -Pataf-api
 
-# Run only UI tests (Selenium/ATAF web)
+# Run only UI tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
 ./zmsautomation/zmsautomation-test -Pataf-ui
 ```
 
@@ -80,13 +80,13 @@ cd zmsautomation
 mvn test -Pstandalone
 ```
 
-### ATAF as default
+### [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) as default
 
-The `ataf` Maven profile is active by default in this module, so `mvn test` and `mvn test-compile` already include ATAF/Cucumber/TestNG/Selenium dependencies.
+The `ataf` Maven profile is active by default in this module, so `mvn test` and `mvn test-compile` already include [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)/Cucumber/TestNG/Selenium dependencies.
 
-### ATAF Profiles (local development)
+### [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Profiles (local development)
 
-- Run all ATAF tests (API + UI):
+- Run all [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests (API + UI):
 
 ```bash
 cd zmsautomation
@@ -103,7 +103,7 @@ mvn test -Pataf-api
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi"
 ```
 
-- UI-only tests (Selenium/ATAF web, no REST Assured):
+- UI-only tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web, no REST Assured):
 
 ```bash
 mvn test -Pataf-ui
@@ -173,7 +173,7 @@ cd zmsautomation && mvn test
 
 ## Database Setup
 
-ATAF tests automatically run Flyway migrations before executing tests. Migrations are under `src/main/resources/db/migration/`.
+[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests automatically run Flyway migrations before executing tests. Migrations are under `src/main/resources/db/migration/`.
 
 ## Some Test Tag Examples
 
@@ -240,7 +240,7 @@ In Safari, you must also enable:
 
 ## Migration Notes
 
-- `zmsautomation` uses ATAF + Cucumber; CI/workflows may pin environments separately.
+- `zmsautomation` uses [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) + Cucumber; CI/workflows may pin environments separately.
 
 ## Known limitations
 
