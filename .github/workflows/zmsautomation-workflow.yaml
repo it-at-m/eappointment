@@ -231,31 +231,36 @@ jobs:
 
           for m in "${modules[@]}"; do
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # GHCR images mount the module at /var/www/html; npm file: deps symlink to
-            # ../../zmslayout/* => /var/www/zmslayout (not /zmslayout).
-            if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
-              docker cp ./zmslayout "${temp_id}:/var/www/zmslayout"
-            fi
-            # `docker cp` between two containers is not supported.
-            # Copy temp container -> runner filesystem -> zms-web container.
             tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            # Replace layout symlinks with real trees (docker cp rejects broken symlinks).
+            image="ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}"
+
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
-              for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
-                name="${spec%%:*}"
-                dir="${spec##*:}"
-                if [[ -L "$tmp_dir/node_modules/${name}" ]]; then
-                  rm -f "$tmp_dir/node_modules/${name}"
-                  cp -a "./zmslayout/${dir}" "$tmp_dir/node_modules/${name}"
-                fi
-              done
+              # docker cp to the runner resolves symlinks on the host (../../zmslayout/js does not exist there).
+              # Materialize inside the module image, then stream a tarball to the runner.
+              docker run --rm \
+                -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
+                "$image" \
+                bash -lc 'set -euo pipefail
+                  cd /var/www/html
+                  for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
+                    name="${spec%%:*}"
+                    dir="${spec##*:}"
+                    if [[ -L "node_modules/${name}" ]]; then
+                      rm -f "node_modules/${name}"
+                      cp -a "/var/www/zmslayout/${dir}" "node_modules/${name}"
+                    fi
+                  done
+                  tar cf - -C /var/www/html .' \
+                | tar xf - -C "$tmp_dir"
+            else
+              temp_id="$(docker create "$image")"
+              docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
+              docker rm "$temp_id" >/dev/null
             fi
+
             docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
             rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
