@@ -5,7 +5,6 @@
  */
 
 // TODO Add Javascript and handle jquery integration
-import FocusTrap from './behavior/focus-trap';
 import stickyheader from './behavior/sticky-header';
 import accordion from './behavior/accordion';
 import tabs from './behavior/tabs';
