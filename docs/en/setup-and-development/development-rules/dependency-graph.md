@@ -7,7 +7,7 @@ The graph also shows the runtime services every deployment depends on:
 - `eappointment-php-base` — pre-built PHP runtime images for every PHP module (see [PHP Base Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` — Munich's open-source citizen identity broker for BundID, BayernID and Elster, reached at the `refarch-gateway` layer (see [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
 - `CaptchaService` — Munich's open-source ALTCHA-based proof-of-work CAPTCHA service that gates the citizen booking flow against bot scraping. Fetched by `zmscitizenview` to render the challenge and called by `zmscitizenapi` to verify the solution (see [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
-- `zmsautomation` — Maven-based acceptance tests on **ATAF** (Agile Test Automation Framework; artifacts `de.muenchen.ataf`): Cucumber scenarios with **REST Assured** for API tests and **Selenium** (via ATAF web) for UI tests. Not a Composer dependency of the PHP modules; it drives HTTP/browser flows against deployed instances (see [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
+- `zmsautomation` — Maven-based acceptance tests on **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (Agile Test Automation Framework; artifacts `de.muenchen.ataf`): Cucumber scenarios with **REST Assured** for API tests and **Selenium** (via [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web) for UI tests. Not a Composer dependency of the PHP modules; it drives HTTP/browser flows against deployed instances (see [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
 
 **Reading the edges**
 
@@ -15,7 +15,7 @@ The graph also shows the runtime services every deployment depends on:
 - Dashed arrow (`A -.-> B`): build / integration dependency. A is built and deployed on top of B but does not pull it as a code dependency.
 - Thick arrow (`A ==> B`): runtime / infrastructure dependency. A talks to B at runtime, or B provides A's runtime environment.
 
-In the **Test automation** subgraph only, the dashed edge **`ataf -.-> zmsautomation`** reads as _framework → consumer_ (ATAF supplies Cucumber plus REST Assured for API and Selenium for UI to `zmsautomation`), not as the Composer-style “A built on B” rule above.
+In the **Test automation** subgraph only, the dashed edge **`ataf -.-> zmsautomation`** reads as _framework → consumer_ ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) supplies Cucumber plus REST Assured for API and Selenium for UI to `zmsautomation`), not as the Composer-style “A built on B” rule above.
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
@@ -140,7 +140,7 @@ For gateway behavior and security/routing details, see the RefArch API Gateway d
 
 ### Test automation
 
-- `zmsautomation`: Maven module; **REST Assured** for API tests and **Selenium** (ATAF web) for UI tests, both driven by Cucumber under **ATAF** (`de.muenchen.ataf`). Not part of the Composer graph — it validates running deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), local [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typical targets include `zmsapi`, `zmscitizenapi`, and browser flows against `zmsadmin`, `zmscitizenview`, `zmsstatistic`, and `refarch-gateway`.
+- `zmsautomation`: Maven module; **REST Assured** for API tests and **Selenium** ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web) for UI tests, both driven by Cucumber under **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (`de.muenchen.ataf`). Not part of the Composer graph — it validates running deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), local [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typical targets include `zmsapi`, `zmscitizenapi`, and browser flows against `zmsadmin`, `zmscitizenview`, `zmsstatistic`, and `refarch-gateway`.
 
 ### Runtime Services and Infrastructure
 
