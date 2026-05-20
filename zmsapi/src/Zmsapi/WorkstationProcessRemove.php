@@ -65,7 +65,10 @@ class WorkstationProcessRemove extends BaseController
             $process->queue['wayTime'] = 0;
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif ($isRequeueCalled && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
+        } elseif (
+            ($isRequeueCalled || $isRequeueAndSkipToNext)
+            && $process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')
+        ) {
             $process->setWasMissed(true);
         } elseif ($isRequeueDecrementCalled) {
             $process->status = Process::STATUS_QUEUED;
@@ -79,8 +82,6 @@ class WorkstationProcessRemove extends BaseController
             }
             $process['showUpTime'] = null;
             $process['timeoutTime'] = null;
-        } elseif ($isRequeueAndSkipToNext) {
-            $process->setWasMissed(true);
         }
 
         $process = (new Query())->updateEntity(
