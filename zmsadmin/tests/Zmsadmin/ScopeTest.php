@@ -52,7 +52,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -120,7 +120,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -224,7 +224,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -319,7 +319,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -414,7 +414,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -490,7 +490,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -593,7 +593,7 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1,
-                        'accessRights' => 'scope',
+                        'accessRights' => 'restrictedscope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")

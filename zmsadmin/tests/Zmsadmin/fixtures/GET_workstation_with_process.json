@@ -21,6 +21,9 @@
                 "ticketprinter": "1",
                 "useraccount": "1"
             },
+            "permissions": {
+                "useraccount": "1"
+            },
             "departments": [
                 {
                     "id": "74",

@@ -18,6 +18,12 @@ class Permission extends Base implements MappingInterface
         ];
     }
 
+    public function addOrderByName(string $order = 'ASC'): self
+    {
+        $this->query->orderBy('permission.name', $order);
+        return $this;
+    }
+
     public function addConditionName(string $name): self
     {
         $this->query->where('permission.name', '=', $name);

@@ -66,6 +66,15 @@ class Useraccount extends Base implements MappingInterface
         ORDER BY behoerdenid
     ';
 
+    const QUERY_DELETE_USER_ROLES = '
+        DELETE FROM user_role WHERE user_id = ?
+    ';
+
+    const QUERY_INSERT_USER_ROLES_BY_NAME = '
+        INSERT INTO user_role (user_id, role_id)
+        SELECT ?, r.id FROM role r WHERE r.name IN (:roleNames)
+    ';
+
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
         SELECT behoerde.`BehoerdenID` AS id
         FROM ' . Department::TABLE . '
