@@ -24,7 +24,9 @@ class ScopeEmergencyTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('emergency');
         $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => '{
             }'
@@ -36,7 +38,9 @@ class ScopeEmergencyTest extends Base
 
     public function testNoAccess()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('emergency');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
         $this->expectExceptionCode(403);
         $this->render(['id' => 141], [

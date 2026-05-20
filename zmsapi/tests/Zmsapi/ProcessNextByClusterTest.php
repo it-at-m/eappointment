@@ -10,7 +10,9 @@ class ProcessNextByClusterTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -18,7 +20,9 @@ class ProcessNextByClusterTest extends Base
 
     public function testClusterWideCallDisabled()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render(['id' => 109], ['allowClusterWideCall' => false], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"id":0', (string)$response->getBody());
@@ -27,14 +31,18 @@ class ProcessNextByClusterTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testClusterNotFound()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
