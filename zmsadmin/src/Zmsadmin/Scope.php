@@ -102,15 +102,13 @@ class Scope extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            if (!$entity->id) {
+            if (!$existingScope) {
                 throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
             }
-            if ($existingScope) {
-                $entity = $entity->withProviderSourceFrom($existingScope);
-            }
+            $entity = $entity->withProviderSourceFrom($existingScope);
         }
-        return $this->handleEntityWrite(function () use ($entity, $entityId) {
-            if ($entity->id) {
+        return $this->handleEntityWrite(function () use ($entity, $entityId, $existingScope) {
+            if ($existingScope) {
                 $entity->id = $entityId;
                 return \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             }
