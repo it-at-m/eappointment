@@ -379,6 +379,14 @@ class ProcessTest extends Base
         $this->assertEquals(105, $collection->count());
     }
 
+    public function testProcessListByScopesAndTimeWithEmptyScopeIds()
+    {
+        $now = static::$now;
+        $collection = (new Query)->readProcessListByScopesAndTime([], $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
+        $this->assertEquals(0, $collection->count());
+    }
+
     public function testReadSlotCount()
     {
         $now = static::$now;
