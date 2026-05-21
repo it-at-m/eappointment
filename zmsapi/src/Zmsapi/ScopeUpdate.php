@@ -29,6 +29,7 @@ class ScopeUpdate extends BaseController
         }
         $scope = clone $existingScope;
         $scope->addData($input);
+        $scope->id = $existingScope->id;
         $scope->testValid('de_DE', 1);
         $user = new Helper\User($request, 2);
 
