@@ -27,7 +27,8 @@ class ScopeUpdate extends BaseController
         if (! $existingScope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $scope = $existingScope->addData($input);
+        $scope = clone $existingScope;
+        $scope->addData($input);
         $scope->testValid('de_DE', 1);
         $user = new Helper\User($request, 2);
 
