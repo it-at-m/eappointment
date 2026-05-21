@@ -276,11 +276,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "882e349baa756c027cd589972c9d6a31d09a6158"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "ext-json": ">=0",
@@ -325,7 +325,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -384,11 +384,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "882e349baa756c027cd589972c9d6a31d09a6158"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -441,11 +441,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "882e349baa756c027cd589972c9d6a31d09a6158"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",

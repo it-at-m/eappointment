@@ -21,6 +21,9 @@ class MailTemplates extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['mailtemplates'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $providerId = $workstation->scope['provider']['id'];
 
         $scopeName = $workstation->scope['contact']['name'];
@@ -75,7 +78,7 @@ class MailTemplates extends BaseController
             $response,
             'page/mailtemplates.twig',
             array(
-                'title' => 'Konfiguration System',
+                'title' => 'Mail Templates',
                 'pageTitle' => 'Mail Templates für ' . $scopeName,
                 'providerId' => $providerId,
                 'workstation' => $workstation,
