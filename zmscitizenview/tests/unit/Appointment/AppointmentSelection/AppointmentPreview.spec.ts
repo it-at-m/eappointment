@@ -73,8 +73,10 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      const iconUse = Array.from(wrapper.element.querySelectorAll("use")).find(
-        (element) =>
+      const iconUse = Array.from(
+        (wrapper.element as HTMLElement).querySelectorAll("use")
+      ).find(
+        (element: Element) =>
           element.getAttribute("xlink:href") === `#${variant.icon}` ||
           element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ===
             `#${variant.icon}`
@@ -106,8 +108,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 
@@ -141,8 +145,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 
