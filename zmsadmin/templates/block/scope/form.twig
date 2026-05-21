@@ -15,8 +15,7 @@
     "provider": provider,
     "sourcelist": sourceList, 
     "source": source, 
-    "providerList": providerList,
-    "isSuperuser": workstation.useraccount.rights.superuser
+    "providerList": providerList
 } %}
 
 {% set permissions = workstation.useraccount.permissions %}
@@ -53,7 +52,11 @@
 
 	<form method="post" action="./" enctype="multipart/form-data" class="form--base">
 		<div class="scope-form-update">
-			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
+			{% if permissions.superuser %}
+				<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
+			{% else %}
+				<div class="scope-form-sources-details" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
+			{% endif %}
 			<fieldset>
 				<legend>Standortdaten</legend>
 				<div class="panel--heavy">
