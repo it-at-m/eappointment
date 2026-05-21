@@ -19,6 +19,9 @@ class Dayoff extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['dayoff'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'page/dayoff.twig',
