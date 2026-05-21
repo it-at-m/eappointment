@@ -15,11 +15,13 @@
                 cssDef2 += '.scope-appointments-by-day .appointments-by-day-table .col-text { white-space: normal; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; line-height: 1.25; }';
                 cssDef2 += '.scope-appointments-by-day .board__body { padding: 0; margin: 0; }';
                 cssDef2 += '@media print {';
-                cssDef2 += ' @page { size: A4 landscape; margin: 8mm; }';
-                cssDef2 += ' .navigation-primary, .one-sixths { display: none !important; }';
+                cssDef2 += ' @page { size: A4 landscape; margin-top: 8mm; margin-bottom: 8mm; margin-left: 8mm; margin-right: 8mm; }';
+                cssDef2 += ' html, body { margin: 0 !important; padding: 0 !important; }';
+                cssDef2 += ' #page-header, #page-footer, .navigation-primary, .one-sixth, .one-sixths { display: none !important; }';
+                cssDef2 += ' #page-wrapper, #content-wrapper, #main-content, .grid, .grid__item { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; float: none !important; box-sizing: border-box; }';
                 cssDef2 += ' .grid { display: block !important; }';
-                cssDef2 += ' .five-sixths, #page-wrapper, .board { width: 100% !important; margin: 0; padding: 0; }';
-                cssDef2 += ' .scope-appointments-by-day .appointments-by-day-table { font-size: 7pt; }';
+                cssDef2 += ' .five-sixths, .scope-appointments-by-day, .scope-appointments-by-day .board, .scope-appointments-by-day .board__body { width: 100% !important; margin: 0 !important; padding: 0 !important; }';
+                cssDef2 += ' .scope-appointments-by-day .appointments-by-day-table { font-size: 7pt; width: 100%; }';
                 cssDef2 += ' .scope-appointments-by-day .appointments-by-day-table th, .scope-appointments-by-day .appointments-by-day-table td { padding: 2px 4px; }';
                 cssDef2 += '}';
             let style2 = document.createElement('style');
