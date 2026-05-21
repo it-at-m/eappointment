@@ -9,9 +9,8 @@
 
 namespace BO\Zmsadmin;
 
-use League\Csv\Writer;
-use League\Csv\Reader;
-use League\Csv\EscapeFormula;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 /**
  * Handle requests concerning services
@@ -81,24 +80,44 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             if ($customTextfield2Activated) {
                 $row[] = $queueItem->customTextfield2;
             }
-            $rows[] = $row;
+            $rows[] = array_map([$this, 'escapeSpreadsheetFormula'], $row);
         }
-        $writer = Writer::createFromString();
-        $writer->setDelimiter(';');
-        $writer->addFormatter(new EscapeFormula());
-        $writer->insertOne($xlsHeaders);
-        $writer->setOutputBOM(Reader::BOM_UTF8);
-        $writer->insertAll($rows);
 
-        $response->getBody()->write($writer->toString());
-        $fileName = sprintf("Tagesübersicht_%s_%s.csv", $scope->contact['name'], $xlsSheetTitle);
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator('eappointment')
+            ->setTitle('Tagesübersicht ' . $xlsSheetTitle);
+        $spreadsheet->getActiveSheet()->fromArray(
+            array_merge([$xlsHeaders], $rows),
+            null,
+            'A1'
+        );
+
+        $resource = fopen('php://temp', 'r+');
+        IOFactory::createWriter($spreadsheet, 'Xlsx')->save($resource);
+        rewind($resource);
+        $response->getBody()->write(stream_get_contents($resource));
+        fclose($resource);
+
+        $fileName = sprintf("Tagesübersicht_%s_%s.xlsx", $scope->contact['name'], $xlsSheetTitle);
         return $response
-            ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('Content-Description', 'File Transfer')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="' . $this->convertspecialChars($fileName) . '"')
+                sprintf('attachment; filename="%s"', $this->convertspecialChars($fileName))
             );
+    }
+
+    protected function escapeSpreadsheetFormula($value)
+    {
+        if (!is_string($value) || $value === '') {
+            return $value;
+        }
+        if (preg_match('/^[=\-+@\t\r]/u', $value)) {
+            return "'" . $value;
+        }
+        return $value;
     }
 
     protected function convertspecialchars($string)
