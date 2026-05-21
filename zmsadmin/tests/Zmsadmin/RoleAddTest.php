@@ -139,3 +139,4 @@ class RoleAddTest extends Base
         $this->render($this->arguments, $this->parameters, []);
     }
 }
+

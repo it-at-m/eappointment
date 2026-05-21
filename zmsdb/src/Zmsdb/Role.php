@@ -20,9 +20,14 @@ class Role extends Base
             return null;
         }
 
+        return $role;
     }
 
     public function readAllRoles(string $order = 'ASC', int $resolveReferences = 1): Collection
+    {
+        $roleList = new Collection();
+        $query = new Query\Role(Query\Base::SELECT);
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addOrderBy('id', $order);
         $result = $this->fetchList($query, new Entity());

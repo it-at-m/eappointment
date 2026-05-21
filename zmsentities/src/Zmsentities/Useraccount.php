@@ -263,36 +263,6 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function testPermissions(array $requiredPermissions)
-    {
-        if (! $this->hasId()) {
-            throw new Exception\UserAccountMissingLogin();
-        }
-
-        if (! $this->hasPermissions($requiredPermissions)) {
-            throw new Exception\UserAccountMissingRights(
-                "Missing permissions " . htmlspecialchars(implode(',', $requiredPermissions))
-            );
-        }
-
-        return $this;
-    }
-
-    public function testAnyPermission(array $requiredPermissions)
-    {
-        if (! $this->hasId()) {
-            throw new Exception\UserAccountMissingLogin();
-        }
-
-        if (! $this->hasAnyPermission($requiredPermissions)) {
-            throw new Exception\UserAccountMissingRights(
-                "Missing any of permissions " . htmlspecialchars(implode(',', $requiredPermissions))
-            );
-        }
-
-        return $this;
-    }
-
     public function isOveraged(\DateTimeInterface $dateTime)
     {
         if (Property::__keyExists('lastLogin', $this)) {

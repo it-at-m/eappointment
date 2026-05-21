@@ -31,9 +31,6 @@ import DefaultTheme from "vitepress/theme";
 import LatestReleaseTag from "./LatestReleaseTag.vue";
 import MermaidRenderer from "./MermaidRenderer.vue";
 
-import LatestReleaseTag from "./LatestReleaseTag.vue";
-import MermaidRenderer from "./MermaidRenderer.vue";
-
 const { Layout } = DefaultTheme;
 </script>
 

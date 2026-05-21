@@ -20,8 +20,6 @@ To wipe Podman or Docker completely on the host and recreate the stack, see [Qui
 
 On **macOS**, see [Podman and Dev Containers on macOS](/setup-and-development/getting-started/macos-local-configuration/podman-and-dev-containers) and [Local HTTPS SSL for DDEV (macOS)](/setup-and-development/getting-started/macos-local-configuration/local-https-ddev).
 
-On **macOS**, see [Podman and Dev Containers on macOS](/getting-started-macos-podman-devcontainer) and [Local HTTPS SSL for DDEV (macOS)](/getting-started-macos-ddev-https).
-
 ## Containers and local endpoints
 
 The following local containers are automatically created when running `ddev start` or `devcontainer up --workspace-folder .`:
@@ -51,18 +49,7 @@ ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
-<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
 
-=======
->>>>>>> 45ce4a780 (docs(ZMSKVR): split code in docs):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
-=======
-
->>>>>>> 66ed8b077 (clean(ZMSKVR): docs format code):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
-=======
-
->>>>>>> 8c5ad7608 (docs(ZMSKVR): add German locale and duplicate English under /en/)
 ```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
@@ -86,18 +73,7 @@ You can rerun full setup at any time:
 # DDEV
 ddev exec ./cli db full-setup
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
-<<<<<<< HEAD:docs/en/setup-and-development/getting-started/ddev-and-devcontainer.md
 
-=======
->>>>>>> 45ce4a780 (docs(ZMSKVR): split code in docs):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
-=======
-
->>>>>>> 66ed8b077 (clean(ZMSKVR): docs format code):docs/setup-and-development/getting-started/ddev-and-devcontainer.md
-=======
-
->>>>>>> 8c5ad7608 (docs(ZMSKVR): add German locale and duplicate English under /en/)
 ```bash
 # Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"

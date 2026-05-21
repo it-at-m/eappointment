@@ -747,6 +747,13 @@ class Useraccount extends Base
         $this->perform($query, array_merge([$userId], $roleNames));
     }
 
+    public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
+    {
+        $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
+        $query = new Query\Useraccount(Query\Base::UPDATE);
+        $query->addConditionLoginName($loginName);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
 
