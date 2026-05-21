@@ -14,7 +14,6 @@ permissions:
   pages: write
   id-token: write
   actions: write
-  security-events: write
 
 jobs:
   call-php-code-quality:
