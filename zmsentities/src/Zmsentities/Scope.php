@@ -326,6 +326,17 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     }
 
     /**
+     * Keep provider and source unchanged (non-superusers must not reassign scope location data).
+     */
+    public function withProviderSourceFrom(self $reference): self
+    {
+        $entity = clone $this;
+        $entity['source'] = $reference->getSource();
+        $entity->provider = new Provider($reference->getProvider()->getArrayCopy());
+        return $entity;
+    }
+
+    /**
      * Reduce data of dereferenced entities to a required minimum
      *
      */

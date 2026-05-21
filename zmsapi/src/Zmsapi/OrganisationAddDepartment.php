@@ -22,9 +22,11 @@ class OrganisationAddDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $user = new Helper\User($request, 2);
+        $user->checkPermissions('superuser');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new \BO\Zmsdb\Organisation())->readEntity($args['id'], 1);
-        (new Helper\User($request, 2))->checkRights(
+        $user->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );

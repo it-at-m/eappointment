@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Department as Entity;
 use BO\Mellon\Validator;
 
@@ -21,6 +22,9 @@ class OrganisationAddDepartment extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
+            throw new UserAccountMissingRights();
+        }
         $input = $request->getParsedBody();
         $organisationId = Validator::value($args['id'])->isNumber()->getValue();
         $organisation = \App::$http->readGetResult('/organisation/' . $organisationId . '/')->getEntity();

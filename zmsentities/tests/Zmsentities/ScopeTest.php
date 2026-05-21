@@ -31,6 +31,20 @@ class ScopeTest extends EntityCommonTests
         $this->assertArrayNotHasKey('save', (array) $entity->withCleanedUpFormData());
     }
 
+    public function testWithProviderSourceFrom()
+    {
+        $existing = (new $this->entityclass())->getExample();
+        $updated = (new $this->entityclass())->getExample();
+        $updated->provider = ['id' => '999999', 'source' => 'other'];
+        $updated['source'] = 'other';
+
+        $locked = $updated->withProviderSourceFrom($existing);
+
+        $this->assertEquals($existing->getSource(), $locked->getSource());
+        $this->assertEquals($existing->getProviderId(), $locked->getProviderId());
+        $this->assertEquals($existing->getProvider()->source, $locked->getProvider()->source);
+    }
+
     public function testProvider()
     {
         $entity = (new $this->entityclass())->getExample();

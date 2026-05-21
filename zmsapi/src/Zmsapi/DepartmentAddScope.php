@@ -23,10 +23,12 @@ class DepartmentAddScope extends BaseController
         array $args
     ) {
         $department = (new \BO\Zmsdb\Department())->readEntity($args['id'], 1);
-        (new Helper\User($request, 2))->checkRights(
+        $user = new Helper\User($request, 2);
+        $user->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );
+        $user->checkPermissions('superuser');
         Helper\User::checkDepartment($args['id']);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $scope = new \BO\Zmsentities\Scope($input);
