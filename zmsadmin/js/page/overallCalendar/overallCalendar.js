@@ -6,7 +6,14 @@ let currentRequest = null;
 let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 const STEP_MIN = 5;
-const MAX_WORKDAYS = 10;
+const MAX_DAYS = 14;
+
+function inclusiveDayCount(dateFrom, dateUntil) {
+    const from = new Date(dateFrom);
+    const until = new Date(dateUntil);
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return Math.round((until - from) / millisecondsPerDay) + 1;
+}
 
 function eventCellLabel(event) {
     const displayNumber = event?.displayNumber;
@@ -116,11 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const fromDate = new Date(fromInput.value);
         const maxDate = new Date(fromDate);
-        let workdays = 0;
-        while (workdays < MAX_WORKDAYS - 1) {
-            maxDate.setDate(maxDate.getDate() + 1);
-            if (![0, 6].includes(maxDate.getDay())) workdays++;
-        }
+        maxDate.setDate(maxDate.getDate() + (MAX_DAYS - 1));
         untilInput.min = fromInput.value;
         untilInput.max = maxDate.toISOString().slice(0, 10);
         if (untilInput.value < untilInput.min || untilInput.value > untilInput.max) {
@@ -171,13 +174,9 @@ async function handleSubmit(event) {
     errorMessage.textContent = '';
 
     if (dateFrom && dateUntil) {
-        let current = new Date(dateFrom), until = new Date(dateUntil), workdays = 0;
-        while (current <= until) {
-            if (![0, 6].includes(current.getDay())) workdays++;
-            current.setDate(current.getDate() + 1);
-        }
-        if (workdays > MAX_WORKDAYS) {
-            alert('Bitte wählen Sie maximal 10 Werktage (2 Wochen, Mo–Fr) aus.');
+        const dayCount = inclusiveDayCount(dateFrom, dateUntil);
+        if (dayCount > MAX_DAYS) {
+            alert('Bitte wählen Sie maximal 14 Tage aus.');
             return;
         }
     }
