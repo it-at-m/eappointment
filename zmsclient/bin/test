@@ -27,7 +27,7 @@ else
     echo "Checking $PHPFILES"
 fi
 
-docker-compose up -d
+docker compose up -d
 
 docker exec zmsclient_test_1 vendor/bin/phpcs --standard=psr2 $PHPFILES
 if [ $? -eq 0 ]; then
@@ -38,4 +38,4 @@ if [ $? -eq 0 ]; then
     docker exec zmsclient_test_1 vendor/bin/phpunit -v
 fi
 
-docker-compose down
+docker compose down
