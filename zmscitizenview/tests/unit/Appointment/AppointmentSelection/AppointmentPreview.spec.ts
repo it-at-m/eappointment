@@ -73,7 +73,13 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
+      const iconUse = Array.from(wrapper.element.querySelectorAll("use")).find(
+        (element) =>
+          element.getAttribute("xlink:href") === `#${variant.icon}` ||
+          element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ===
+            `#${variant.icon}`
+      );
+      expect(iconUse).toBeTruthy();
       expect(wrapper.text()).toContain(t(variant.textKey));
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");
