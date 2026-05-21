@@ -148,6 +148,108 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($entity->hasRights(['counter']), "User doesn't have counter permission");
     }
 
+    public function testSetPermissions()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->permissions['counter'] = false;
+        $entity->permissions['logs'] = false;
+
+        $returned = $entity->setPermissions('counter', '__unknown_permission__', 'logs');
+        $this->assertSame($entity, $returned);
+        $this->assertTrue($entity->permissions['counter']);
+        $this->assertTrue($entity->permissions['logs']);
+        $this->assertFalse($entity->permissions['openqueue']);
+    }
+
+    public function testHasPermissionsAllRequiredAndSuperuserBypass()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasPermissions(['appointment']));
+        $this->assertTrue($entity->hasPermissions(['appointment', 'availability']));
+        $this->assertFalse($entity->hasPermissions(['appointment', 'counter']));
+
+        $entity->rights['superuser'] = false;
+        $entity->permissions['superuser'] = true;
+        $this->assertTrue($entity->isSuperUser());
+        $this->assertTrue($entity->hasPermissions(['counter', 'logs']), 'Superuser bypasses permission checks');
+    }
+
+    public function testHasPermissionsWithRightsInterface()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $access = new \BO\Zmsentities\Useraccount\EntityAccess($department);
+
+        $this->assertFalse($entity->hasPermissions([$access]));
+        $entity->addDepartment($department);
+        $this->assertTrue($entity->hasPermissions([$access]));
+        $this->assertTrue($entity->hasPermissions([$access, 'appointment']));
+    }
+
+    public function testHasAnyPermissionAndSuperuserBypass()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasAnyPermission(['counter', 'appointment']));
+        $this->assertFalse($entity->hasAnyPermission(['counter', 'logs']));
+
+        $entity->rights['superuser'] = false;
+        $entity->permissions['superuser'] = true;
+        $this->assertTrue($entity->hasAnyPermission(['counter', 'logs']));
+    }
+
+    public function testHasAnyPermissionWithRightsInterface()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $access = new \BO\Zmsentities\Useraccount\EntityAccess($department);
+
+        $this->assertFalse($entity->hasAnyPermission([$access]));
+        $entity->addDepartment($department);
+        $this->assertTrue($entity->hasAnyPermission([$access]));
+    }
+
+    public function testTestPermissionsMethodMissingLogin()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity['id']);
+        $entity->testPermissions(['appointment']);
+    }
+
+    public function testTestPermissionsMethodMissingRights()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $entity = (new $this->entityclass())->getExample();
+        $entity->testPermissions(['counter']);
+    }
+
+    public function testTestPermissionsMethodSuccessReturnsSelf()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertSame($entity, $entity->testPermissions(['appointment']));
+    }
+
+    public function testTestAnyPermissionMethodMissingLogin()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity['id']);
+        $entity->testAnyPermission(['appointment']);
+    }
+
+    public function testTestAnyPermissionMethodMissingRights()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $entity = (new $this->entityclass())->getExample();
+        $entity->testAnyPermission(['counter', 'logs']);
+    }
+
+    public function testTestAnyPermissionMethodSuccessReturnsSelf()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertSame($entity, $entity->testAnyPermission(['counter', 'appointment']));
+    }
+
     public function testMixedRightsAndPermissions()
     {
         $entity = (new $this->entityclass())->getExample();

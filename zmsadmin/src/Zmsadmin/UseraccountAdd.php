@@ -7,6 +7,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\RoleList;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 
@@ -22,6 +24,10 @@ class UseraccountAdd extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $selectedDepartment = $request->getAttribute('validator')->getParameter('department')->isNumber()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
@@ -50,6 +56,20 @@ class UseraccountAdd extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
+        $roleList = new RoleList();
+
+        // Until all controllers have been updated, only superusers should be allowed to assign the new roles
+        // @todo: remove isSuperUser() and replace with hasPermissions(['useraccount']) with ZMSKVR-1173
+        if ($workstation->getUseraccount()->isSuperUser()) {
+            $roleResult = \App::$http->readGetResult('/roles/', []);
+            if ($roleResult) {
+                $loaded = $roleResult->getCollection();
+                if ($loaded !== null) {
+                    $roleList = $loaded;
+                }
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -64,7 +84,8 @@ class UseraccountAdd extends BaseController
                 'userAccount' => $submittedUserAccount, // Use submitted data to preserve form values on error
                 'selectedDepartment' => $selectedDepartment,
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'roleList' => $roleList,
             ]
         );
     }

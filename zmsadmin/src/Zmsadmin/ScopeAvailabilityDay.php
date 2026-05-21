@@ -21,6 +21,9 @@ class ScopeAvailabilityDay extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['availability'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
