@@ -76,7 +76,7 @@
 				Geparkte Termine</h2>
 			{% if processListParked|length %}
 				<div class="table-responsive-wrapper">
-					<table id="table-parked-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
+					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
 								{#<th class="queue-status"></th>#}
@@ -272,7 +272,7 @@
 				</span>
 				Warteschlange</h2>
 			{% if processList|length %}
-				<table id="table-queued-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
+				<table id="table-queued-appointments" class="table--base compact">
 					<thead>
 						<tr>
 							{#<th class="queue-status"></th>#}
@@ -481,7 +481,7 @@
 				Verpasste Termine</h2>
 			{% if processListMissed|length %}
 				<div class="table-responsive-wrapper">
-					<table id="table-missed-appointments" class="table--base compact queue-table-textcols-{{ queueTextColumnCount }}">
+					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
 								{#<th class="queue-status"></th>#}
