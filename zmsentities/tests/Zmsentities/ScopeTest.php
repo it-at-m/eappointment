@@ -48,16 +48,21 @@ class ScopeTest extends EntityCommonTests
     public function testWithProviderSourceFromAfterAddData()
     {
         $existing = (new $this->entityclass())->getExample();
+        $originalProviderId = $existing->getProviderId();
+        $originalSource = $existing->getSource();
         $updated = clone $existing;
         $updated->addData([
             'provider' => ['id' => '999999', 'source' => 'other'],
             'source' => 'other',
         ]);
 
+        $this->assertEquals($originalProviderId, $existing->getProviderId());
+        $this->assertEquals($originalSource, $existing->getSource());
+
         $locked = $updated->withProviderSourceFrom($existing);
 
-        $this->assertEquals($existing->getProviderId(), $locked->getProviderId());
-        $this->assertEquals($existing->getSource(), $locked->getSource());
+        $this->assertEquals($originalProviderId, $locked->getProviderId());
+        $this->assertEquals($originalSource, $locked->getSource());
     }
 
     public function testProvider()
