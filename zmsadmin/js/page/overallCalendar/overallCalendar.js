@@ -358,6 +358,12 @@ function renderMultiDayCalendar(days) {
 
         container.style.display = 'none';
         deferredRemove(container);
+
+        const fullscreenButton = document.getElementById('calendar-fullscreen');
+        if (fullscreenButton) {
+            fullscreenButton.style.display = 'none';
+            exitCalendarFullscreen();
+        }
         return;
     }
 
@@ -559,7 +565,26 @@ function renderMultiDayCalendar(days) {
     deferredRemove(container);
 
     const fullscreenButton = document.getElementById('calendar-fullscreen');
-    if (fullscreenButton && next.children.length) fullscreenButton.style.display = 'inline-block';
+    if (fullscreenButton) {
+        if (next.children.length) {
+            fullscreenButton.style.display = 'inline-block';
+        } else {
+            fullscreenButton.style.display = 'none';
+            exitCalendarFullscreen();
+        }
+    }
+}
+
+function exitCalendarFullscreen() {
+    const wrapper = document.querySelector('.overall-calendar-wrapper');
+    const fullscreenButton = document.getElementById('calendar-fullscreen');
+    if (!wrapper?.classList.contains('fullscreen')) return;
+    wrapper.classList.remove('fullscreen');
+    if (fullscreenButton) {
+        fullscreenButton.classList.remove('is-active');
+        fullscreenButton.title = 'Vollbild';
+    }
+    togglePageScroll(false);
 }
 
 function togglePageScroll(disable) {
