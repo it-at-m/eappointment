@@ -496,7 +496,12 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeIds($scopeIds)
     {
-        if (count($scopeIds) == 1) {
+        if (count($scopeIds) === 0) {
+            $this->query->where(self::expression('1'), '=', 0);
+            return $this;
+        }
+
+        if (count($scopeIds) === 1) {
             return $this->addConditionScopeId($scopeIds[0]);
         }
 
@@ -909,6 +914,13 @@ class Process extends Base implements MappingInterface
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
+        } elseif (
+            $process->status == 'queued'
+            && isset($previousStatus)
+            && in_array($previousStatus, ['called', 'processing'], true)
+        ) {
+            $data['showUpTime'] = null;
+            $data['timeoutTime'] = null;
         }
 
 
@@ -968,8 +980,8 @@ class Process extends Base implements MappingInterface
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
 
-        if (isset($process->queue['callCount']) && $process->queue['callCount']) {
-            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+        if (isset($process->queue['callCount'])) {
+            $data['AnzahlAufrufe'] = (int) $process->queue['callCount'];
         }
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTimeImmutable())
@@ -993,13 +1005,32 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
+        $hasWaitingTimeAlready = (
+            isset($process->queue['waitingTime'])
+            && $process->queue['waitingTime']
+            && $process->queue['waitingTime'] !== '00:00:00'
+        );
 
         if (
+            !$hasWaitingTimeAlready
+            && (
             (
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
-                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
+                && (
+                    (
+                        isset($process->queue['callCount'])
+                        && $process->queue['callCount'] <= 0
+                    )
+                    || (
+                        ($previousStatus === 'queued' || $previousStatus === 'confirmed')
+                        && (
+                            !isset($process->queue['callTime'])
+                            || (int) $process->queue['callTime'] === 0
+                        )
+                    )
+                )
             )
             ||
             (
@@ -1010,6 +1041,7 @@ class Process extends Base implements MappingInterface
                 && !empty($process['wasMissed'])
                 && isset($process->queue)
                 && isset($process->queue->waitingTime)
+            )
             )
         ) {
             $wartezeitInSeconds = $process->getWaitedSeconds();

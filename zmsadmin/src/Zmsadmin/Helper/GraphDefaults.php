@@ -41,6 +41,7 @@ class GraphDefaults
     }
     useraccount {
         rights
+        permissions
     }
 }
 EOS;
@@ -350,6 +351,7 @@ EOS;
             name 
             data { 
                 payment 
+                slotTimeInMinutes
             }
         }
         preferences{

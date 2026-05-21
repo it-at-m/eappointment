@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsentities\Exchange;
+
 class ExchangeRequestdepartment extends Base
 {
     /**
@@ -18,8 +20,8 @@ class ExchangeRequestdepartment extends Base
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
-              WHEN statistikJoin.anliegenid = -1 THEN "Dienstleistung wurde nicht erfasst"
-              WHEN statistikJoin.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
+              WHEN statistikJoin.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN statistikJoin.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
               ELSE r.name
             END
         ) as name,
