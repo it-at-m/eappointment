@@ -17,11 +17,12 @@ if (getenv('MYSQL_PORT')) {
 } else {
     $host = '127.0.0.1';
 }
-if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
-    \BO\Zmsdb\Connection\Select::$username = 
-        getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root';
-    \BO\Zmsdb\Connection\Select::$password =
-        getenv('MYSQL_ROOT_PASSWORD') ? getenv('MYSQL_ROOT_PASSWORD') : getenv('MYSQL_PASSWORD');
+if (getenv('MYSQL_USER') && getenv('MYSQL_PASSWORD')) {
+    \BO\Zmsdb\Connection\Select::$username = getenv('MYSQL_USER');
+    \BO\Zmsdb\Connection\Select::$password = getenv('MYSQL_PASSWORD');
+} elseif (getenv('MYSQL_ROOT_PASSWORD')) {
+    \BO\Zmsdb\Connection\Select::$username = 'root';
+    \BO\Zmsdb\Connection\Select::$password = getenv('MYSQL_ROOT_PASSWORD');
 } else {
     \BO\Zmsdb\Connection\Select::$username = 'server';
     \BO\Zmsdb\Connection\Select::$password = 'internet';
