@@ -3,12 +3,6 @@ name: 🛡️ Trivy Security Check
 on:
   pull_request:
   workflow_call:
-  push:
-    branches:
-      - main
-      - next
-  schedule:
-    - cron: "0 6 * * *"
 
 jobs:
   build:
