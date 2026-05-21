@@ -38,6 +38,9 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
 
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
+        $customTextfieldActivated = (int) $scope->getCustomTextfieldActivated() === 1;
+        $customTextfield2Activated = (int) $scope->getCustomTextfield2Activated() === 1;
+
         $xlsHeaders = [
             $clusterColumn,
             'Uhrzeit/Ankunftszeit',
@@ -47,17 +50,23 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             'Email',
             'Dienstleistung',
             'Anmerkungen',
-            'Freitextfeld',
-            'Freitextfeld2'
         ];
+
+        if ($customTextfieldActivated) {
+            $label = trim((string) $scope->getCustomTextfieldLabel());
+            $xlsHeaders[] = $label !== '' ? $label : 'Freitextfeld 1';
+        }
+        if ($customTextfield2Activated) {
+            $label = trim((string) $scope->getCustomTextfield2Label());
+            $xlsHeaders[] = $label !== '' ? $label : 'Freitextfeld 2';
+        }
 
         $rows = [];
         $key = 1;
         foreach ($processList as $queueItem) {
             $client = $queueItem->getFirstClient();
-            $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
-            $rows[] = [
-                $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++ ,
+            $row = [
+                $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++,
                 $queueItem->getArrivalTime()->setTimezone(\App::$now->getTimezone())->format('H:i:s'),
                 $queueItem->queue['number'],
                 $client['familyName'],
@@ -65,9 +74,14 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $client['email'],
                 $queueItem->requests->getCsvForProperty('name'),
                 $queueItem->amendment,
-                $queueItem->customTextfield,
-                $queueItem->customTextfield2,
             ];
+            if ($customTextfieldActivated) {
+                $row[] = $queueItem->customTextfield;
+            }
+            if ($customTextfield2Activated) {
+                $row[] = $queueItem->customTextfield2;
+            }
+            $rows[] = $row;
         }
         $writer = Writer::createFromString();
         $writer->setDelimiter(';');

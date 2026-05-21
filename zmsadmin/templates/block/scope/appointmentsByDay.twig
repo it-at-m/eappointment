@@ -1,20 +1,26 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'scope-appointments-by-day'} %}
     {% from 'element/helper/form.twig' import formgroup, formbutton %}
+    {% set customTextfieldActivated = scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+    {% set customTextfield2Activated = scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+    {% set customTextfieldLabel = scope.preferences.client.customTextfieldLabel|default('')|trim %}
+    {% set customTextfield2Label = scope.preferences.client.customTextfield2Label|default('')|trim %}
     {% block board_title %} {{title}}{% endblock %}
     {% block board_body %}
         <script>
             let cssDef2 = '.board__body {padding:0px; margin:0px}';
-                cssDef2 += 'table {width: 100%;}';
-                cssDef2 += 'table th, table td {display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left;}';
+                cssDef2 += 'table {width: 100%; font-size: 0.85rem;}';
+                cssDef2 += 'table th, table td {display: table-cell; padding: 2px 8px; text-align:left; vertical-align: top;}';
                 cssDef2 += 'h1 {margin: 0px;}';
-                cssDef2 += 'td.wrap {white-space: break-spaces;}';
+                cssDef2 += 'td.wrap, th.wrap {white-space: normal; word-wrap: break-word; overflow-wrap: anywhere; max-width: 14rem;}';
                 cssDef2 += '@media print {';
                 cssDef2 += ' .navigation-primary, .one-sixths {display:none !important;}';
                 cssDef2 += ' .grid {display:block !important;}';
                 cssDef2 += ' .five-sixths {width: 100% !important; margin:0px; padding:0px;}';
                 cssDef2 += ' #page-wrapper {margin:0px; padding:0px;}';
-                cssDef2 += ' table {margin:0px; padding:0px;}';
-                cssDef2 += ' table th, table td { display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left; vertical-align: top;}';
+                cssDef2 += ' table {margin:0px; padding:0px; font-size: 0.7rem;}';
+                cssDef2 += ' table th, table td { display: table-cell; padding: 2px 6px; text-align:left; vertical-align: top;}';
+                cssDef2 += ' table th:not(.wrap), table td:not(.wrap) { white-space: nowrap; }';
+                cssDef2 += ' td.wrap, th.wrap {white-space: normal; word-wrap: break-word; overflow-wrap: anywhere; max-width: 12rem;}';
                 cssDef2 += ' .board {margin:0px; padding:0px;}';
                 cssDef2 += '}';
             let style2 = document.createElement('style');
@@ -32,7 +38,13 @@
                     <th>Telefon</th>
                     <th>Email</th>
                     <th>Dienstleistung</th>
-                    <th>Anmerkungen</th>
+                    <th class="wrap">Anmerkungen</th>
+                    {% if customTextfieldActivated %}
+                        <th class="wrap">{{ customTextfieldLabel ?: 'Freitextfeld 1' }}</th>
+                    {% endif %}
+                    {% if customTextfield2Activated %}
+                        <th class="wrap">{{ customTextfield2Label ?: 'Freitextfeld 2' }}</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +57,13 @@
                         <td>{{ item.clients.0.telephone }}</td>
                         <td>{{ item.clients.0.email }}</td>
                         <td class="wrap">{{ item.requests.0.name }}</td>
-                        <td class="limited-width"><div class="queue-table-text-cell queue-table-free-text">{{ item.amendment|default('')|e|nl2br }}</div></td>
+                        <td class="wrap">{{ item.amendment|default('')|e|nl2br }}</td>
+                        {% if customTextfieldActivated %}
+                            <td class="wrap">{{ item.customTextfield|default('')|e|nl2br }}</td>
+                        {% endif %}
+                        {% if customTextfield2Activated %}
+                            <td class="wrap">{{ item.customTextfield2|default('')|e|nl2br }}</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
