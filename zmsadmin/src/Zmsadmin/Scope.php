@@ -98,15 +98,15 @@ class Scope extends BaseController
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
      * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
-    protected function writeUpdatedEntity($input, $entityId = null, Entity $existing = null, $workstation = null)
+    protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
             if (!$entity->id) {
                 throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
             }
-            if ($existing) {
-                $entity = $entity->withProviderSourceFrom($existing);
+            if ($existingScope) {
+                $entity = $entity->withProviderSourceFrom($existingScope);
             }
         }
         return $this->handleEntityWrite(function () use ($entity, $entityId) {

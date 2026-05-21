@@ -23,11 +23,11 @@ class ScopeUpdate extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $existing = (new Scope())->readEntity($args['id'], 1);
-        if (! $existing) {
+        $existingScope = (new Scope())->readEntity($args['id'], 1);
+        if (! $existingScope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $scope = $existing->addData($input);
+        $scope = $existingScope->addData($input);
         $scope->testValid('de_DE', 1);
         $user = new Helper\User($request, 2);
 
@@ -37,11 +37,11 @@ class ScopeUpdate extends BaseController
         );
 
         $user->checkRights(
-            new \BO\Zmsentities\Useraccount\EntityAccess($existing)
+            new \BO\Zmsentities\Useraccount\EntityAccess($existingScope)
         );
 
         if (! Helper\User::readWorkstation()->getUseraccount()->isSuperUser()) {
-            $scope = $scope->withProviderSourceFrom($existing);
+            $scope = $scope->withProviderSourceFrom($existingScope);
         }
 
         $message = Response\Message::create($request);
