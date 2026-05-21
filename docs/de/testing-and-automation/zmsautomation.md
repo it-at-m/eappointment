@@ -1,23 +1,23 @@
 # zmsautomation-Dokumentation
 
-## ZMS Automation – ATAF-Integration
+## ZMS Automation – [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Integration
 
-Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von ATAF (Test Automation Framework) und Cucumber.
-`zmsautomation` baut auf [it-at-m/agile-test-automation-framework](https://github.com/it-at-m/agile-test-automation-framework) auf.
+Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) (Test Automation Framework) und Cucumber.
+`zmsautomation` baut auf [it-at-m/agile-test-automation-framework](https://it-at-m.github.io/agile-test-automation-framework/) auf.
 
 ## Voraussetzungen
 
 - Java 21
 - Maven 3.9+
 - MySQL-/MariaDB-Datenbank (für lokale Tests)
-- Zugriff auf Maven Central (ATAF-Artefakte werden unter `de.muenchen.ataf:core|rest|web` veröffentlicht)
+- Zugriff auf Maven Central ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Artefakte werden unter `de.muenchen.ataf:core|rest|web` veröffentlicht)
 
 ## Projektstruktur
 
 - `src/test/java/zms/api/` – ursprüngliche REST-assured + JUnit-Tests (Standalone-Profil)
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` – REST-Step-Definitionen (REST Assured)
-  - `zms/ataf/ui/steps/` – UI-Step-Definitionen (Selenium/ATAF web)
+  - `zms/ataf/ui/steps/` – UI-Step-Definitionen (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
   - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, Buergeransicht, Mailinator
 - `src/test/resources/features/` – Cucumber-Feature-Dateien
   - `rest/zmsapi/` – Features der ZMS-REST-API
@@ -35,7 +35,7 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von ATAF (Test Automa
 Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung.
 
 ```bash
-# alle ATAF-Tests ausführen (API + UI)
+# alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
 
 # Tests mit bestimmten Tags ausführen (mit @ignore markierte Szenarien sind ausgeschlossen, sofern @ignore nicht im Ausdruck enthalten ist)
@@ -49,7 +49,7 @@ Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen un
 # nur API-Tests (kein Selenium)
 ./zmsautomation/zmsautomation-test -Pataf-api
 
-# nur UI-Tests (Selenium/ATAF web)
+# nur UI-Tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
 ./zmsautomation/zmsautomation-test -Pataf-ui
 ```
 
@@ -80,13 +80,13 @@ cd zmsautomation
 mvn test -Pstandalone
 ```
 
-### ATAF als Standard
+### [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) als Standard
 
-Das Maven-Profil `ataf` ist in diesem Modul standardmäßig aktiv, daher binden `mvn test` und `mvn test-compile` bereits die ATAF-/Cucumber-/TestNG-/Selenium-Abhängigkeiten ein.
+Das Maven-Profil `ataf` ist in diesem Modul standardmäßig aktiv, daher binden `mvn test` und `mvn test-compile` bereits die [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-/Cucumber-/TestNG-/Selenium-Abhängigkeiten ein.
 
-### ATAF-Profile (lokale Entwicklung)
+### [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Profile (lokale Entwicklung)
 
-- Alle ATAF-Tests ausführen (API + UI):
+- Alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI):
 
 ```bash
 cd zmsautomation
@@ -103,7 +103,7 @@ mvn test -Pataf-api
 # mvn test -Pataf-api -Dcucumber.filter.tags="@zmscitizenapi"
 ```
 
-- Nur UI-Tests (Selenium/ATAF web, kein REST Assured):
+- Nur UI-Tests (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web, kein REST Assured):
 
 ```bash
 mvn test -Pataf-ui
@@ -173,7 +173,7 @@ cd zmsautomation && mvn test
 
 ## Datenbankeinrichtung
 
-ATAF-Tests führen vor der Testausführung automatisch Flyway-Migrationen aus. Die Migrationen liegen unter `src/main/resources/db/migration/`.
+[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests führen vor der Testausführung automatisch Flyway-Migrationen aus. Die Migrationen liegen unter `src/main/resources/db/migration/`.
 
 ## Beispiele für Test-Tags
 
@@ -240,4 +240,12 @@ In Safari musst du außerdem aktivieren:
 
 ## Migrationshinweise
 
-- `zmsautomation` nutzt ATAF + Cucumber; CI-/Workflow-Umgebungen können separat festgepinnt werden.
+- `zmsautomation` nutzt [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) + Cucumber; CI-/Workflow-Umgebungen können separat festgepinnt werden.
+
+## Bekannte Einschränkungen
+
+### Buchungstests an gesetzlichen Feiertagen
+
+Die Slot-Berechnung erzeugt an gesetzlichen Feiertagen absichtlich keine Termine (Datensätze in der Tabelle `feiertage`, befüllt durch Migration V11). Die Testdaten für Öffnungszeiten in zmsautomation (relativ zum aktuellen Datum, z. B. in den Migrationen V10 und V19) können in einen Feiertag fallen. In diesem Fall gibt es am „ersten verfügbaren Tag“ ggf. keine buchbaren Slots und buchungsbezogene Szenarien (Citizen API und CitizenView Flows) können fehlschlagen.
+
+Das ist erwartetes Verhalten. Maßnahme: Pipeline am nächsten arbeitsfreien Nicht‑Feiertag erneut ausführen (oder lokal an einem Nicht‑Feiertag starten).
