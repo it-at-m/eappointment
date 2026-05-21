@@ -8,11 +8,11 @@
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "882e349baa756c027cd589972c9d6a31d09a6158"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "ext-json": ">=0",

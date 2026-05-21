@@ -24,6 +24,7 @@ import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
 import EmergencyEnd from './block/scope/emergencyend'
+import RolesListView from './block/roles-list'
 //import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
@@ -113,6 +114,10 @@ $('.emergency-end').each(function () {
 
 $('.client-processed').each(function () {
     new StatisticView(this, getDataAttributes(this));
+})
+
+$('.roles-list').each(function () {
+    new RolesListView(this, getDataAttributes(this));
 })
 
 $('form').each(function () {

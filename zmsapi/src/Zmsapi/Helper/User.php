@@ -3,7 +3,6 @@
 namespace BO\Zmsapi\Helper;
 
 use BO\Slim\Render;
-use BO\Zmsdb\Useraccount;
 use BO\Zmsdb\Workstation;
 use BO\Zmsapi\Helper\UserAuth;
 use BO\Zmsentities\Collection\DepartmentList;
@@ -121,6 +120,28 @@ class User
         if (\App::RIGHTSCHECK_ENABLED) {
             $workstation->getUseraccount()->testRights($requiredRights);
         }
+        return $workstation;
+    }
+
+    public static function checkPermissions(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testPermissions($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
+    public static function checkAnyPermission(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testAnyPermission($requiredPermissions);
+        }
+
         return $workstation;
     }
 
