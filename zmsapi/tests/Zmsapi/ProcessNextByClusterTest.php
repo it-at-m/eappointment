@@ -13,6 +13,12 @@ class ProcessNextByClusterTest extends Base
         $this->setWorkstation()
             ->getUseraccount()
             ->setPermissions('appointment');
+        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
+            'id' => 1,
+            'scopes' => [
+                ['id' => 141],
+            ],
+        ]));
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,6 +29,12 @@ class ProcessNextByClusterTest extends Base
         $this->setWorkstation()
             ->getUseraccount()
             ->setPermissions('appointment');
+        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
+            'id' => 1,
+            'scopes' => [
+                ['id' => 141],
+            ],
+        ]));
         $response = $this->render(['id' => 109], ['allowClusterWideCall' => false], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"id":0', (string)$response->getBody());
