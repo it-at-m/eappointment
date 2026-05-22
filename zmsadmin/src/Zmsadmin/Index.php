@@ -52,11 +52,7 @@ class Index extends BaseController
             );
         }
         if ($workstation instanceof Workstation && $workstation->hasId()) {
-            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
-                ModuleAccess::MODULE_ADMIN,
-                $workstation,
-                $response
-            )) {
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
                 return $wrongModuleResponse;
             }
         }

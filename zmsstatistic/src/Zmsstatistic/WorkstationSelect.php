@@ -31,11 +31,7 @@ class WorkstationSelect extends BaseController
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
         }
-        if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
-            ModuleAccess::MODULE_STATISTIC,
-            $workstation,
-            $response
-        )) {
+        if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
             return $wrongModuleResponse;
         }
         $input = $request->getParsedBody();
