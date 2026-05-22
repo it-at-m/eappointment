@@ -29,7 +29,7 @@ class Db
         }
 
         if ($verbose) {
-            echo "Importing " . basename($file) . "\n";
+            self::logCli('info', 'Importing SQL file', ['file' => basename($file)]);
         }
         $query = '';
         while ($line = $readFunction($sqlFile)) {
@@ -37,14 +37,11 @@ class Db
             if (preg_match('/;\s*$/', $line)) {
                 try {
                     $pdo->exec($query);
-                    if ($verbose) {
-                        echo ".";
-                    }
                     //echo "Successful:\n$query\n";
                     $query = '';
                 } catch (\Exception $exception) {
                     if ($verbose) {
-                        echo "Offending query: \n$query\n";
+                        self::logCli('error', 'SQL import failed', ['query' => $query]);
                     }
                     throw $exception;
                 }
@@ -53,7 +50,10 @@ class Db
         $closeFunction($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
         if ($verbose) {
-            echo "\nTook $time seconds\n";
+            self::logCli('info', 'SQL import finished', [
+                'file' => basename($file),
+                'seconds' => $time,
+            ]);
         }
     }
 
@@ -79,7 +79,9 @@ class Db
         }
 
         if ($verbose) {
-            error_log("Use Connection " . \BO\Zmsdb\Connection\Select::$writeSourceName);
+            self::logCli('info', 'Using database connection', [
+                'dsn' => \BO\Zmsdb\Connection\Select::$writeSourceName,
+            ]);
         }
 
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -117,7 +119,10 @@ class Db
             if (!array_key_exists($migrationName, $migrationsDoneList)) {
                 $addedMigrations++;
                 if (!$commit) {
-                    echo "$addedMigrations. Add migration $migrationName\n";
+                    self::logCli('info', 'Pending migration', [
+                        'index' => $addedMigrations,
+                        'migration' => $migrationName,
+                    ]);
                 } else {
                     self::startExecuteSqlFile($migrationFile);
                     $pdo->prepare('INSERT INTO `migrations` SET `filename` = :filename')
@@ -125,8 +130,20 @@ class Db
                 }
             }
         }
-        echo "\nFound " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.\n";
+        self::logCli('info', 'Migration check finished', [
+            'completed' => count($migrationsDoneList),
+            'added' => $addedMigrations,
+        ]);
         return $addedMigrations;
+    }
+
+    private static function logCli(string $level, string $message, array $context = []): void
+    {
+        if (!class_exists('\App', false) || !\App::$log) {
+            return;
+        }
+        $level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
+        \App::$log->{$level}($message, $context);
     }
 
     public static function executeTestData(string $testName, string $step)
