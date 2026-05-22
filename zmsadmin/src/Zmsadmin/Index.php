@@ -35,15 +35,8 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
-                $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
-                    ModuleAccess::MODULE_ADMIN,
-                    $loginData,
-                    $response
-                );
-                if ($wrongModuleResponse !== null) {
-                    return $wrongModuleResponse;
-                }
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)
+                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
             return \BO\Slim\Render::withHtml(
                 $response,
@@ -59,12 +52,11 @@ class Index extends BaseController
             );
         }
         if ($workstation instanceof Workstation && $workstation->hasId()) {
-            $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
                 ModuleAccess::MODULE_ADMIN,
                 $workstation,
                 $response
-            );
-            if ($wrongModuleResponse !== null) {
+            )) {
                 return $wrongModuleResponse;
             }
         }
