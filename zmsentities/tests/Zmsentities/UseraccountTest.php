@@ -197,6 +197,25 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasAnyPermission(['counter', 'logs']));
     }
 
+    public function testHasExclusivePermission()
+    {
+        $statisticOnly = new $this->entityclass(['permissions' => ['statistic' => true]]);
+        $this->assertTrue($statisticOnly->hasExclusivePermission('statistic'));
+        $this->assertFalse($statisticOnly->hasExclusivePermission('appointment'));
+
+        $withAdmin = new $this->entityclass([
+            'permissions' => ['statistic' => true, 'appointment' => true],
+        ]);
+        $this->assertFalse($withAdmin->hasExclusivePermission('statistic'));
+
+        $withoutStatistic = new $this->entityclass(['permissions' => ['appointment' => true]]);
+        $this->assertFalse($withoutStatistic->hasExclusivePermission('statistic'));
+
+        $statisticOnly->permissions['superuser'] = true;
+        $statisticOnly->rights['superuser'] = false;
+        $this->assertFalse($statisticOnly->hasExclusivePermission('statistic'), 'Superuser is never exclusive');
+    }
+
     public function testHasAnyPermissionWithRightsInterface()
     {
         $entity = (new $this->entityclass())->getExample();
