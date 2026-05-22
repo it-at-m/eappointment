@@ -19,7 +19,7 @@
     "fast-uri": "^3.1.2",
     "fast-xml-builder": "^1.1.7",
     "postcss": "^8.5.10",
-    "protobufjs": "^7.5.6"
+    "protobufjs": "^8.0.0"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
