@@ -43,6 +43,12 @@ class ClusterGet extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
+        if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
+            (new Helper\User($request))->checkPermissions(
+                new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
+            );
+        }
+
         $message->data = $cluster;
 
         $response = Render::withLastModified($response, time(), '0');
