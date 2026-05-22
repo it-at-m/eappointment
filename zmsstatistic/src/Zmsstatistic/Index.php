@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsentities\Workstation;
 
 class Index extends BaseController
@@ -35,9 +36,14 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
-                if (!$loginData->getUseraccount()->hasPermissions(['statistic'])) {
-                    $url = str_replace('/statistic', '/admin', Application::$includeUrl) . '/';
-                    return $response->withRedirect($url);
+                $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
+                    ModuleAccess::MODULE_STATISTIC,
+                    $loginData->getUseraccount(),
+                    $response,
+                    $loginData
+                );
+                if ($wrongModuleResponse !== null) {
+                    return $wrongModuleResponse;
                 }
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
@@ -57,9 +63,14 @@ class Index extends BaseController
             );
         } else {
             if ($workstation instanceof Workstation && $workstation->hasId()) {
-                if (!$workstation->getUseraccount()->hasPermissions(['statistic'])) {
-                    $url = str_replace('/statistic', '/admin', Application::$includeUrl) . '/';
-                    return $response->withRedirect($url);
+                $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
+                    ModuleAccess::MODULE_STATISTIC,
+                    $workstation->getUseraccount(),
+                    $response,
+                    $workstation
+                );
+                if ($wrongModuleResponse !== null) {
+                    return $wrongModuleResponse;
                 }
             }
             return \BO\Slim\Render::withHtml(
