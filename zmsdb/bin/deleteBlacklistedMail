@@ -12,14 +12,16 @@ foreach ($mailAddressList as $mailAddress) {
     $mailAddress = trim($mailAddress);
     if ($mailAddress) {
         if ($verbose) {
-            \App::$log->info('Delete blacklisted mail address', ['mailAddress' => $mailAddress]);
+            \App::$log->info('Delete blacklisted mail address', [
+                'mailAddressHash' => $query->hashStringValue($mailAddress, 'sha256'),
+            ]);
         }
         $results = [];
         $maxRuns = $verbose ? 1 : 20;
         do {
             foreach ($results as $process) {
                 if ($verbose) {
-                    \App::$log->info('Change process mail', ['process' => (string) $process]);
+                    \App::$log->info('Change process mail', ['processId' => $process->id]);
                 }
                 if ($commit) {
                     $process->getFirstClient()->email = '';
