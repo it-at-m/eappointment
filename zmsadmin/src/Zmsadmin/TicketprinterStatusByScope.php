@@ -26,7 +26,9 @@ class TicketprinterStatusByScope extends BaseController
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-
+        if (!$workstation->getUseraccount()->hasPermissions(['ticketprinter', 'scope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
             'gql' => Helper\GraphDefaults::getScope()

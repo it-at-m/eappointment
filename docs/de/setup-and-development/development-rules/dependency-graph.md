@@ -7,7 +7,7 @@ Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deploymen
 - `eappointment-php-base` – vorgefertigte PHP-Laufzeit-Images für alle PHP-Module (siehe [PHP-Basis-Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` – Münchens Open-Source-Identitätsbroker für Bürger:innen für BundID, BayernID und Elster, eingebunden auf der `refarch-gateway`-Ebene (siehe [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
 - `CaptchaService` – Münchens quelloffener ALTCHA-Proof-of-Work-CAPTCHA-Dienst, der den Bürger-Buchungsfluss vor Bot-Scraping schützt. `zmscitizenview` bezieht die Challenge, `zmscitizenapi` prüft die Lösung vor der Verarbeitung einer Buchung (siehe [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
-- `zmsautomation` – Maven-basierte Akzeptanztests auf **ATAF** (Agile Test Automation Framework; Artefakte `de.muenchen.ataf`): Cucumber-Szenarien mit **REST Assured** für API-Tests und **Selenium** (über ATAF Web) für UI-Tests. Keine Composer-Abhängigkeit der PHP-Module; die Tests spielen HTTP-/Browser-Flows gegen laufende Instanzen ein (siehe [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
+- `zmsautomation` – Maven-basierte Akzeptanztests auf **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (Agile Test Automation Framework; Artefakte `de.muenchen.ataf`): Cucumber-Szenarien mit **REST Assured** für API-Tests und **Selenium** (über [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Web) für UI-Tests. Keine Composer-Abhängigkeit der PHP-Module; die Tests spielen HTTP-/Browser-Flows gegen laufende Instanzen ein (siehe [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
 
 **Lesart der Kanten**
 
@@ -15,7 +15,7 @@ Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deploymen
 - Gestrichelter Pfeil (`A -.-> B`): Build-/Integrationsabhängigkeit. A wird auf B aufgebaut und gegen B deployt, zieht es aber nicht als Code-Abhängigkeit.
 - Dicker Pfeil (`A ==> B`): Laufzeit-/Infrastruktur-Abhängigkeit. A spricht zur Laufzeit mit B, oder B stellt die Laufzeitumgebung von A bereit.
 
-Nur im Subgraph **Testautomatisierung**: Der gestrichelte Pfeil **`ataf -.-> zmsautomation`** bedeutet _Framework → Nutzer_ (ATAF liefert Cucumber sowie REST Assured für API und Selenium für UI an `zmsautomation`), nicht die Composer-Lesart „A auf B aufgebaut“ von oben.
+Nur im Subgraph **Testautomatisierung**: Der gestrichelte Pfeil **`ataf -.-> zmsautomation`** bedeutet _Framework → Nutzer_ ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) liefert Cucumber sowie REST Assured für API und Selenium für UI an `zmsautomation`), nicht die Composer-Lesart „A auf B aufgebaut“ von oben.
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
@@ -140,7 +140,7 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 
 ### Testautomatisierung
 
-- `zmsautomation`: Maven-Modul; **REST Assured** für API-Tests und **Selenium** (ATAF Web) für UI-Tests, angebunden über Cucumber unter **ATAF** (`de.muenchen.ataf`). Kein Teil des Composer-Graphen — es prüft laufende Deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), lokal [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typische Ziele sind `zmsapi`, `zmscitizenapi` sowie Browser-Flows gegen `zmsadmin`, `zmscitizenview`, `zmsstatistic` und `refarch-gateway`.
+- `zmsautomation`: Maven-Modul; **REST Assured** für API-Tests und **Selenium** ([ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Web) für UI-Tests, angebunden über Cucumber unter **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (`de.muenchen.ataf`). Kein Teil des Composer-Graphen — es prüft laufende Deployments (CI [`zmsautomation-workflow`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsautomation-workflow.yaml), lokal [`zmsautomation-test`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/zmsautomation-test)). Typische Ziele sind `zmsapi`, `zmscitizenapi` sowie Browser-Flows gegen `zmsadmin`, `zmscitizenview`, `zmsstatistic` und `refarch-gateway`.
 
 ### Laufzeitdienste und Infrastruktur
 
