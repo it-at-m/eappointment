@@ -37,9 +37,8 @@ class Index extends BaseController
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
                 $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
                     ModuleAccess::MODULE_ADMIN,
-                    $loginData->getUseraccount(),
-                    $response,
-                    $loginData
+                    $loginData,
+                    $response
                 );
                 if ($wrongModuleResponse !== null) {
                     return $wrongModuleResponse;
@@ -62,9 +61,8 @@ class Index extends BaseController
         if ($workstation instanceof Workstation && $workstation->hasId()) {
             $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
                 ModuleAccess::MODULE_ADMIN,
-                $workstation->getUseraccount(),
-                $response,
-                $workstation
+                $workstation,
+                $response
             );
             if ($wrongModuleResponse !== null) {
                 return $wrongModuleResponse;

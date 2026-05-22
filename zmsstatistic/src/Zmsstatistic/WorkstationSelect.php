@@ -33,9 +33,8 @@ class WorkstationSelect extends BaseController
         }
         $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
             ModuleAccess::MODULE_STATISTIC,
-            $workstation->getUseraccount(),
-            $response,
-            $workstation
+            $workstation,
+            $response
         );
         if ($wrongModuleResponse !== null) {
             return $wrongModuleResponse;
