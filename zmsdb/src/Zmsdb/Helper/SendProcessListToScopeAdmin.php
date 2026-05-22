@@ -42,7 +42,7 @@ class SendProcessListToScopeAdmin
                    ->withStatus(array('confirmed', 'queued', 'reserved'))
                    ->withSortedArrival()
                    ->toProcessList();
-                if (0 <= $processList->count()) {
+                if ($processList->count() > 0) {
                     if ($this->sendListToQueue($scope, $processList) && $this->verbose) {
                         \App::$log->info('Send processList to scope admin', [
                             'email' => $scope->getContactEmail(),
