@@ -11,6 +11,12 @@ abstract class Base extends \BO\Zmsclient\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsadmin\\';
 
+    public function tearDown(): void
+    {
+        \BO\Zmsclient\Auth::removeKey();
+        parent::tearDown();
+    }
+
     public function readFixture($filename)
     {
         $path = dirname(__FILE__) . '/fixtures/' . $filename;

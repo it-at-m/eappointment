@@ -29,7 +29,7 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
-        $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
+        $sessionHash = Auth::getKey() ? hash('sha256', Auth::getKey()) : '';
         App::$log->info('User logged out', [
             'event' => 'auth_logout',
             'timestamp' => date('c'),
