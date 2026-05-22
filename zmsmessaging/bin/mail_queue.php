@@ -18,12 +18,28 @@ if (! $send) {
     \App::$log->notice('Use with --send to send emails.');
 }
 
-if ($verbose) {
-    foreach ($resultList as $mail) {
-        if (isset($mail['errorInfo'])) {
-            \App::$log->error('Mail queue transmission error', ['errorInfo' => $mail['errorInfo']]);
+foreach ($resultList as $mail) {
+    if (isset($mail['errorInfo'])) {
+        if (str_contains($mail['errorInfo'], 'No mail entry found in Database')) {
+            \App::$log->notice('Mail queue empty');
         } else {
-            \App::$log->info('Test mail sent successfully', ['mailId' => $mail['id'] ?? null]);
+            \App::$log->error('Mail queue transmission error', ['errorInfo' => $mail['errorInfo']]);
+        }
+        continue;
+    }
+
+    if (isset($mail['mailId'])) {
+        \App::$log->info('Mail sent from queue', [
+            'mailId' => $mail['mailId'],
+            'processId' => $mail['processId'] ?? null,
+            'createTimestamp' => $mail['createTimestamp'] ?? null,
+        ]);
+        if ($verbose) {
+            \App::$log->debug('Mail send details', [
+                'mailId' => $mail['mailId'],
+                'recipients' => $mail['recipients'] ?? null,
+                'mime' => isset($mail['mime']) ? trim((string) $mail['mime']) : null,
+            ]);
         }
     }
 }

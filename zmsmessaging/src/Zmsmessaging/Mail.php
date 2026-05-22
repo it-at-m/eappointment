@@ -58,6 +58,7 @@ class Mail extends BaseController
                     try {
                         $results = $this->sendQueueItems($action, $itemIds);
                         foreach ($results as $result) {
+                            $resultList[] = $result;
                             if (isset($result['errorInfo'])) {
                                 $this->log("Error processing mail item: " . $result['errorInfo']);
                             }
@@ -100,9 +101,10 @@ class Mail extends BaseController
                 }
             }
         } else {
-            $resultList[] = array(
-                'errorInfo' => 'No mail entry found in Database...'
-            );
+            $resultList[] = [
+                'errorInfo' => 'No mail entry found in Database...',
+            ];
+            $this->log('No mail entry found in Database');
         }
 
         return $resultList;
@@ -130,11 +132,12 @@ class Mail extends BaseController
         }
 
         $results = [];
-        $processedItems = [];
+        $processedMails = [];
         $successfullySentIds = [];
 
         foreach ($mailItems as $item) {
             $entity = new \BO\Zmsentities\Mail($item);
+            $processId = $entity['process']['id'] ?? null;
             $mailer = $this->getValidMailer($entity);
             if (!$mailer) {
                 $this->log("No valid mailer for mail ID: " . $entity->id);
@@ -144,26 +147,44 @@ class Mail extends BaseController
             try {
                 $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof PHPMailer) {
-                    $results[] = [
+                    $mailResult = [
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'mailId' => $entity->id,
+                        'processId' => $processId,
+                        'createTimestamp' => $entity->createTimestamp,
                         'recipients' => $result->getAllRecipientAddresses(),
                         'mime' => $result->getMailMIME(),
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     ];
+                    $results[] = $mailResult;
+                    $processedMails[] = [
+                        'mailId' => $entity->id,
+                        'processId' => $processId,
+                        'createTimestamp' => $entity->createTimestamp,
+                    ];
+                    \App::$log->info('Mail processed from queue', [
+                        'mailId' => $entity->id,
+                        'processId' => $processId,
+                        'createTimestamp' => $entity->createTimestamp,
+                    ]);
                     $successfullySentIds[] = $entity->id;
                 } else {
                     $results[] = [
-                        'errorInfo' => $result->ErrorInfo
+                        'errorInfo' => $result->ErrorInfo,
+                        'mailId' => $entity->id,
+                        'processId' => $processId,
                     ];
                     $this->log("Mail send failed with error: " . $result['errorInfo']);
                 }
             } catch (\Exception $e) {
                 $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
-                $results[] = ['errorInfo' => $e->getMessage()];
+                $results[] = [
+                    'errorInfo' => $e->getMessage(),
+                    'mailId' => $entity->id,
+                    'processId' => $processId,
+                ];
             }
-
-            $processedItems[] = '[' . $entity->id . ', ' . $entity['process']['id'] . ', ' . $entity->createTimestamp . ']';
         }
 
         if ($action && !empty($successfullySentIds)) {
@@ -174,7 +195,19 @@ class Mail extends BaseController
             }
         }
 
-        $this->log("Processing finished for IDs [emailId, processId, createdTimestamp)]: " . implode(', ', $processedItems));
+        if (!empty($processedMails)) {
+            \App::$log->info('Mail queue batch finished', [
+                'count' => count($processedMails),
+                'mails' => $processedMails,
+            ]);
+            $this->log(
+                'Processing finished for IDs [emailId, processId, createdTimestamp)]: '
+                . implode(', ', array_map(
+                    static fn (array $mail) => '[' . $mail['mailId'] . ', ' . $mail['processId'] . ', ' . $mail['createTimestamp'] . ']',
+                    $processedMails
+                ))
+            );
+        }
 
         return $results;
     }
