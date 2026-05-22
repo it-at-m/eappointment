@@ -27,6 +27,9 @@ class Application
     const MODULE_NAME = 'zmsmessaging';
 
     const DEBUG = false;
+    const DEBUGLEVEL = 'INFO';
+    const CHARSET = 'UTF-8';
+    const TIMEZONE = 'Europe/Berlin';
 
     public static $now = '';
 

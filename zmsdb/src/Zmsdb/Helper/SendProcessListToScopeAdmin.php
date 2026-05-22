@@ -17,7 +17,7 @@ class SendProcessListToScopeAdmin
     {
         $this->dateTime = new \DateTimeImmutable();
         if ($verbose) {
-            error_log("INFO: Send process list of current day to scope admin");
+            \App::$log->info('Send process list of current day to scope admin');
             $this->verbose = true;
         }
         if ($scopeId) {
@@ -32,7 +32,7 @@ class SendProcessListToScopeAdmin
     {
         foreach ($this->scopeList as $scope) {
             if ($this->verbose) {
-                error_log("INFO: Processing $scope");
+                \App::$log->info('Processing scope', ['scope' => (string) $scope]);
             }
             if ($commit) {
                 $processList = (new \BO\Zmsdb\Process())
@@ -44,10 +44,12 @@ class SendProcessListToScopeAdmin
                    ->toProcessList();
                 if (0 <= $processList->count()) {
                     if ($this->sendListToQueue($scope, $processList) && $this->verbose) {
-                        error_log('INFO: Send processList to:' . $scope->getContactEmail());
+                        \App::$log->info('Send processList to scope admin', [
+                            'email' => $scope->getContactEmail(),
+                        ]);
                     }
                 } else {
-                    error_log("WARNING: Processlist empty for $scope->id");
+                    \App::$log->warning('Processlist empty for scope', ['scopeId' => $scope->id]);
                 }
             }
         }
@@ -57,7 +59,7 @@ class SendProcessListToScopeAdmin
     {
         $entity = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $this->dateTime);
         if (! (new \BO\Zmsdb\Mail())->writeInQueueWithDailyProcessList($scope, $entity)) {
-            error_log("WARNING: Mail writing in queue not successfull empty!");
+            \App::$log->warning('Mail writing in queue not successful');
         }
     }
 }

@@ -19,7 +19,11 @@ class Performance
     {
         $lastTime = array_pop(self::$times);
         $timeDiff = microtime(true) - $lastTime;
-        error_log(sprintf("%03d %f \t%s", static::$counter++, $timeDiff, "$message"));
+                    \App::$log->debug($message, [
+                'component' => 'CalculateSlots',
+                'step' => static::$counter++,
+                'elapsed' => $timeDiff,
+                    ]);
         return $timeDiff;
     }
 }

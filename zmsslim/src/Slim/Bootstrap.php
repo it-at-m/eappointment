@@ -35,6 +35,32 @@ class Bootstrap
         Profiler::add("Init");
     }
 
+    /**
+     * Logger + locale for CLI/cron without loading Slim (same JSON format as init()).
+     */
+    public static function initForCli(): void
+    {
+        $bootstrap = self::getInstance();
+        $bootstrap->configureAppStatics();
+        $level = defined('\\App::DEBUGLEVEL') ? \App::DEBUGLEVEL : (getenv('DEBUGLEVEL') ?: 'INFO');
+        $identifier = defined('\\App::IDENTIFIER') ? \App::IDENTIFIER : 'zms';
+        $bootstrap->configureLogger($level, $identifier);
+        $charset = defined('\\App::CHARSET') ? \App::CHARSET : 'UTF-8';
+        $timezone = defined('\\App::TIMEZONE') ? \App::TIMEZONE : 'Europe/Berlin';
+        $bootstrap->configureLocale($charset, $timezone);
+    }
+
+    /**
+     * Guarantee App::$log for CLI/cron entrypoints (idempotent).
+     */
+    public static function ensureLogger(): void
+    {
+        if (!class_exists('\App', false) || \App::$log) {
+            return;
+        }
+        self::initForCli();
+    }
+
     public static function getInstance()
     {
         self::$instance = (self::$instance instanceof Bootstrap) ? self::$instance : new self();
