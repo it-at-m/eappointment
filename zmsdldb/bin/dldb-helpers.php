@@ -36,7 +36,7 @@ function dldbLog(string $message, string $level = 'info', array $context = []): 
     $levelName = class_exists(\BO\Slim\Bootstrap::class, false)
         ? strtoupper(\BO\Slim\Bootstrap::normalizeLogLevelName($level))
         : strtoupper($level);
-    fwrite(STDERR, json_encode([
+    fwrite(STDOUT, json_encode([
         'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
         'application' => 'zms',
         'module' => 'zmsdldb',

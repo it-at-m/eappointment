@@ -52,7 +52,7 @@ class Bootstrap
 
     /**
      * Guarantee App::$log for CLI/cron entrypoints (idempotent).
-     * Replaces legacy config.php loggers (stdout + LineFormatter) with JSON on stderr.
+     * Replaces legacy config.php loggers (stdout + LineFormatter) with JSON on stdout (CLI) or stderr (web).
      */
     public static function ensureLogger(): void
     {
@@ -139,7 +139,9 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = new StreamHandler('php://stderr', $level);
+        // Cron/CLI: stdout so Kubernetes/CAP collectors parse JSON; web: stderr
+        $stream = PHP_SAPI === 'cli' ? 'php://stdout' : 'php://stderr';
+        $handler = new StreamHandler($stream, $level);
 
         $formatter = new JsonFormatter();
 

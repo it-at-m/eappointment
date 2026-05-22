@@ -139,11 +139,23 @@ class Db
 
     private static function logCli(string $level, string $message, array $context = []): void
     {
-        if (!class_exists('\App', false) || !\App::$log) {
+        if (class_exists('\App', false) && \App::$log) {
+            $level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
+            \App::$log->{$level}($message, $context);
             return;
         }
-        $level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
-        \App::$log->{$level}($message, $context);
+
+        $levelName = class_exists(\BO\Slim\Bootstrap::class, false)
+            ? strtoupper(\BO\Slim\Bootstrap::normalizeLogLevelName($level))
+            : strtoupper($level);
+        fwrite(STDOUT, json_encode([
+            'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
+            'application' => 'zms',
+            'module' => 'zmsdb',
+            'message' => $message,
+            'level' => $levelName,
+            'context' => $context,
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
     }
 
     public static function executeTestData(string $testName, string $step)
