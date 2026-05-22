@@ -3,6 +3,12 @@ name: 🛡️ Trivy Security Check
 on:
   pull_request:
   workflow_call:
+  push:
+    branches:
+      - main
+      - next
+  schedule:
+    - cron: "0 6 * * *"
 
 jobs:
   build:
@@ -10,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      security-events: write
+      actions: read
     steps:
       - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@1a673d9c3be4a4f59cf29f425bc2b00fc42751fd # v1.0.32
+        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
