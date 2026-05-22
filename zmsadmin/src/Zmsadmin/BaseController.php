@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsadmin\Helper\TwigExceptionHandler;
+use BO\Zmsclient\Auth;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,16 +22,20 @@ abstract class BaseController extends \BO\Slim\Controller
     {
         $request = $this->initRequest($request);
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
-        try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
+        if (Auth::getKey()) {
             $workstation = null;
-        }
-        if ($workstation && $workstation->hasId()) {
-            $useraccount = $workstation->getUseraccount();
-            if ($useraccount->hasPermissions(['statistic']) && !$useraccount->isSuperUser()) {
-                $url = str_replace('/admin', '/statistic', Application::$includeUrl) . '/';
-                return $response->withRedirect($url);
+            try {
+                $result = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0]);
+                $workstation = ($result) ? $result->getEntity() : null;
+            } catch (\Exception $workstationexception) {
+                $workstation = null;
+            }
+            if ($workstation && $workstation->hasId()) {
+                $useraccount = $workstation->getUseraccount();
+                if ($useraccount->hasPermissions(['statistic']) && !$useraccount->isSuperUser()) {
+                    $url = str_replace('/admin', '/statistic', Application::$includeUrl) . '/';
+                    return $noCacheResponse->withRedirect($url);
+                }
             }
         }
         return $this->readResponse($request, $noCacheResponse, $args);
