@@ -187,6 +187,41 @@ class IndexTest extends Base
         $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
 
+    public function testReportingViewerWrongModuleOnLogin(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'response' => $this->readFixture("GET_Workstation_reporting_viewer.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/workstation/login/reporting.user/',
+                    'response' => $this->readFixture("GET_Workstation_reporting_viewer.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture("GET_config.json"),
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertStringContainsString('Statistiken/Auswertungen', (string) $response->getBody());
+        $this->assertStringContainsString('Weiterführende Links', (string) $response->getBody());
+        $this->assertNull(\BO\Zmsclient\Auth::getKey());
+    }
+
     public function testLoginFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
