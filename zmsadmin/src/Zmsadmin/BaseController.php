@@ -21,6 +21,18 @@ abstract class BaseController extends \BO\Slim\Controller
     {
         $request = $this->initRequest($request);
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        } catch (\Exception $workstationexception) {
+            $workstation = null;
+        }
+        if ($workstation && $workstation->hasId()) {
+            $useraccount = $workstation->getUseraccount();
+            if ($useraccount->hasPermissions(['statistic']) && !$useraccount->isSuperUser()) {
+                $url = str_replace('/admin', '/statistic', Application::$includeUrl) . '/';
+                return $response->withRedirect($url);
+            }
+        }
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
