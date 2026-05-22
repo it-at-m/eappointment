@@ -28,9 +28,8 @@ class Oidc extends BaseController
 
             $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
                 ModuleAccess::MODULE_ADMIN,
-                $result['workstation']->getUseraccount(),
-                $response,
-                $result['workstation']
+                $result['workstation'],
+                $response
             );
             if ($wrongModuleResponse !== null) {
                 return $wrongModuleResponse;

@@ -2,7 +2,6 @@
 
 namespace BO\Zmsclient;
 
-use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use Psr\Http\Message\ResponseInterface;
 
@@ -14,10 +13,11 @@ class ModuleAccess
 
     public static function rejectWrongModuleAccess(
         string $application,
-        Useraccount $useraccount,
-        ResponseInterface $response,
-        ?Workstation $workstation = null
+        Workstation $workstation,
+        ResponseInterface $response
     ): ?ResponseInterface {
+        $useraccount = $workstation->getUseraccount();
+
         if ($useraccount->isSuperUser()) {
             return null;
         }
@@ -38,19 +38,16 @@ class ModuleAccess
         return \BO\Slim\Render::withHtml($response, $template, [], 403);
     }
 
-    private static function endSession(?Workstation $workstation = null): void
+    private static function endSession(Workstation $workstation): void
     {
-        if (!Auth::getKey() && $workstation instanceof Workstation && !empty($workstation->authkey)) {
+        if (!Auth::getKey() && !empty($workstation->authkey)) {
             Auth::setKey($workstation->authkey, time() + \App::SESSION_DURATION);
         }
         if (!Auth::getKey()) {
             return;
         }
         try {
-            if (!$workstation instanceof Workstation || !$workstation->hasId()) {
-                $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])?->getEntity();
-            }
-            if ($workstation instanceof Workstation && $workstation->hasId()) {
+            if ($workstation->hasId()) {
                 \App::$http->readDeleteResult('/workstation/login/' . $workstation->getUseraccount()->id . '/');
             }
         } catch (\Exception $exception) {
