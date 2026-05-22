@@ -25,7 +25,7 @@ abstract class BaseController extends Helper\Access
             $useraccount = $this->workstation->getUseraccount();
             if (!$useraccount->hasPermissions(['statistic'])) {
                 $url = str_replace('/statistic', '/admin', Application::$includeUrl) . '/';
-                return $response->withRedirect($url);
+                return $noCacheResponse->withRedirect($url);
             }
         }
         return $this->readResponse($request, $noCacheResponse, $args);
