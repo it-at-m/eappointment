@@ -23,13 +23,16 @@ class ProcessListByScopeAndStatus extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkPermissions();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope())->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
+        (new Helper\User($request, 2))->checkPermissions(
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        );
+        
         $query = new Process();
         $message = Response\Message::create($request);
         $message->data = $query->readProcessListByScopeAndStatus($scope->id, $args['status'], $resolveReferences);

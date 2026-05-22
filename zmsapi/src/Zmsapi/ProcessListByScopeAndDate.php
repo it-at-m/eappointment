@@ -24,7 +24,6 @@ class ProcessListByScopeAndDate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkPermissions();
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
@@ -47,6 +46,10 @@ class ProcessListByScopeAndDate extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
 
+        (new Helper\User($request, 2))->checkPermissions(
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        );
+        
         $queueList = new QueueList();
         foreach ($dates as $date) {
             $queueList->addList($query->readQueueListWithWaitingTime(

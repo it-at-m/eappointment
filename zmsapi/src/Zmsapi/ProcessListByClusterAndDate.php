@@ -48,6 +48,11 @@ class ProcessListByClusterAndDate extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
+        (new Helper\User($request, 2))->checkPermissions(
+            'appointment',
+            new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
+        );
+
         $shortNames = [];
         foreach ($cluster->scopes as $scope) {
             $shortNames[$scope->id] = $scope->shortName;
