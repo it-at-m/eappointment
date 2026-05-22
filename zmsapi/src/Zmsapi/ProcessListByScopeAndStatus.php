@@ -32,7 +32,7 @@ class ProcessListByScopeAndStatus extends BaseController
         (new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
-        
+
         $query = new Process();
         $message = Response\Message::create($request);
         $message->data = $query->readProcessListByScopeAndStatus($scope->id, $args['status'], $resolveReferences);

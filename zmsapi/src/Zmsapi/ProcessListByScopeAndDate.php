@@ -49,7 +49,7 @@ class ProcessListByScopeAndDate extends BaseController
         (new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
-        
+
         $queueList = new QueueList();
         foreach ($dates as $date) {
             $queueList->addList($query->readQueueListWithWaitingTime(
