@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsclient\OidcHandler;
 
 class Oidc extends BaseController
@@ -24,6 +25,16 @@ class Oidc extends BaseController
             $state = $request->getParam('state');
             $handler = new OidcHandler(\App::$http);
             $result = $handler->handleCallback($state, 'zmsadmin');
+
+            $wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
+                ModuleAccess::MODULE_ADMIN,
+                $result['workstation']->getUseraccount(),
+                $response,
+                $result['workstation']
+            );
+            if ($wrongModuleResponse !== null) {
+                return $wrongModuleResponse;
+            }
 
             if ($result['redirect_to_index']) {
                 return \BO\Slim\Render::redirect(
