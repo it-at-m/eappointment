@@ -26,11 +26,7 @@ class Oidc extends BaseController
             $handler = new OidcHandler(\App::$http);
             $result = $handler->handleCallback($state, 'zmsstatistic');
 
-            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(
-                ModuleAccess::MODULE_STATISTIC,
-                $result['workstation'],
-                $response
-            )) {
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $result['workstation'], $response)) {
                 return $wrongModuleResponse;
             }
 
