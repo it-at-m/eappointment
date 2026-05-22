@@ -42,7 +42,7 @@ $helpers = new DldbHelpers($destinationPath, $cli);
 
 // Ensure the destination directory exists
 if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-    print($cli->red("Failed to create the destination directory at $destinationPath\n\n"));
+    dldbLog('Failed to create destination directory', 'error', ['path' => $destinationPath]);
     exit(1);
 }
 
@@ -63,7 +63,7 @@ $rollbackDay = $helpers->getRollbackDay();
 if ($rollbackDay !== "none") {
     $helpers->performRollback($rollbackDay);
 } else {
-    print("No rollback is requested fetching current...\n\n");
+    dldbLog('No rollback requested, fetching current DLDB export', 'info');
     $downloads = [
         [
             'url' => '/export/standorte/json/',
@@ -101,12 +101,19 @@ if ($rollbackDay !== "none") {
         $request = Request::get($baseDomain . $download['url'])->send();
         
         if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
-            print($cli->red("Error: Failed to download or validate {$download['file']}\n\n"));
+            dldbLog('Failed to download or validate DLDB file', 'error', [
+                'file' => $download['file'],
+                'url' => $baseDomain . $download['url'],
+                'httpCode' => $request->code,
+            ]);
             continue;
         }
     
         $newContent = $request->raw_body;
-        print("Download {$baseDomain}{$download['url']} to $destFile\n\n");
+        dldbLog('Downloaded DLDB file', 'info', [
+            'url' => $baseDomain . $download['url'],
+            'destination' => $destFile,
+        ]);
         file_put_contents($destFile, $newContent);
         $downloadedFiles[$download['file']] = $destFile;
     }
@@ -119,4 +126,4 @@ if ($rollbackDay !== "none") {
 
 }
 
-print("Downloads and backups (if necessary) completed.\n\n");
+dldbLog('Downloads and backups completed', 'info');
