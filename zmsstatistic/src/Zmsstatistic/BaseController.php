@@ -22,11 +22,6 @@ abstract class BaseController extends Helper\Access
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
         if ($this->withAccess) {
             $this->initAccessRights($request);
-            $useraccount = $this->workstation->getUseraccount();
-            if (!$useraccount->hasPermissions(['statistic'])) {
-                $url = str_replace('/statistic', '/admin', Application::$includeUrl) . '/';
-                return $noCacheResponse->withRedirect($url);
-            }
         }
         return $this->readResponse($request, $noCacheResponse, $args);
     }
