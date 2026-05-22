@@ -8,7 +8,7 @@ cron_log() {
     local level="$1"
     local message="$2"
     local context="${3:-{}}"
-    php "$CRON_LOG" "$level" "$message" "$context" 2>/dev/null || echo "$message"
+    php "$CRON_LOG" "$level" "$message" "$context" || echo "$message" >&2
 }
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
