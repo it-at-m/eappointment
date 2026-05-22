@@ -11,6 +11,14 @@ class ProcessListByScopeAndStatusTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
+
+        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
+            'id' => 1,
+            'scopes' => [
+                ['id' => 141],
+            ],
+        ]));
+
         $response = $this->render(['id' => 141, 'status' => 'confirmed'], [], []);
         $this->assertStringContainsString('metaresult.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
