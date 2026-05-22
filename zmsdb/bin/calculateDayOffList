@@ -30,8 +30,8 @@ if ($targetYear) {
     }
 } else {
     \App::$log->error('Missing year argument', ['usage' => trim($usage)]);
+}
 
 if (!$commit) {
     \App::$log->notice('Use with --commit to save dayoffs.');
-}
 }
