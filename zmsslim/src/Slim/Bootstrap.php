@@ -119,6 +119,22 @@ class Bootstrap
         return isset(static::$debuglevels[$level]) ? static::$debuglevels[$level] : static::$debuglevels['DEBUG'];
     }
 
+    /**
+     * PSR-3 / Monolog method name (lowercase) for App::$log->{$level}().
+     */
+    public static function normalizeLogLevelName(string $level): string
+    {
+        $upper = strtoupper($level);
+        if ($upper === 'WARN') {
+            $upper = 'WARNING';
+        }
+        if (!isset(static::$debuglevels[$upper])) {
+            return 'info';
+        }
+
+        return strtolower($upper);
+    }
+
     protected function configureLogger(string $level, string $identifier): void
     {
         App::$log = new Logger($identifier);

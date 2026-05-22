@@ -7,6 +7,8 @@ namespace BO\Zmsdb\Helper;
  */
 class ArchivedDataIntoStatisticByCron
 {
+    use VerboseCronLogTrait;
+
     protected $verbose = false;
 
     protected $limit = 1000;
@@ -70,11 +72,9 @@ class ArchivedDataIntoStatisticByCron
         return $this->archivedList;
     }
 
-    protected function logMessage($message)
+    protected function logMessage($message, string $level = 'info')
     {
-        if ($this->verbose) {
-            \App::$log->info($message);
-        }
+        $this->writeVerboseCronLog($message, $level);
     }
 
     protected function writeProcessInStatisticTable(
