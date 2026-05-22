@@ -52,13 +52,32 @@ class Bootstrap
 
     /**
      * Guarantee App::$log for CLI/cron entrypoints (idempotent).
+     * Replaces legacy config.php loggers (stdout + LineFormatter) with JSON on stderr.
      */
     public static function ensureLogger(): void
     {
-        if (!class_exists('\App', false) || \App::$log) {
+        if (!class_exists('\App', false)) {
             return;
         }
+        if (\App::$log instanceof LoggerInterface && !(\App::$log instanceof Logger)) {
+            return;
+        }
+        if (\App::$log instanceof Logger && self::loggerUsesJsonFormatter(\App::$log)) {
+            return;
+        }
+        \App::$log = null;
         self::initForCli();
+    }
+
+    protected static function loggerUsesJsonFormatter(Logger $log): bool
+    {
+        foreach ($log->getHandlers() as $handler) {
+            if ($handler->getFormatter() instanceof JsonFormatter) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function getInstance()
