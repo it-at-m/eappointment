@@ -1,6 +1,11 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+import {
+  VARIANT_ID_PRESENCE,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO
+} from "@/utils/Constants";
 
 // @ts-expect-error: Vue SFC import for test
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
@@ -13,6 +18,8 @@ interface ServiceImpl {
   count?: number;
   subServices?: any[];
   combinable?: any;
+  parentId?: string | null;
+  variantId?: number | null;
   showOnStartPage?: boolean;
 }
 
@@ -834,94 +841,276 @@ describe("ServiceFinder", () => {
   });
 
   describe("Variants", () => {
-    const makeBaseAndVariants = () => {
-      const base = {
-        id: "10",
-        name: "Basis Service",
-        parentId: null,
-        variantId: null,
-        maxQuantity: 5,
-        combinable: null,
-      };
-      const variant2 = {
-        id: "12",
-        name: "Basis Service (Variante 2)",
-        parentId: "10",
-        variantId: 2,
-        maxQuantity: 5,
-        combinable: null,
-      };
-      return { base, variant2 };
-    };
+    const VARIANT_ID_LARGE_CUSTOMER = 4;
+    const VARIANT_ID_SMALL_CUSTOMER = 5;
 
-    it("should include synthetic variant 1 (id 10) and real variant 2 (id 12) in sorted order", async () => {
-      const { base, variant2 } = makeBaseAndVariants();
-      const wrapper = createWrapper(base);
-      wrapper.vm.services = [variant2, base];
-      wrapper.vm.service = base;
-      await nextTick();
-
-      const vs = wrapper.vm.variantServices;
-      expect(Array.isArray(vs)).toBeTruthy();
-      expect(vs.map((v: any) => v.variantId)).toEqual([1, 2]);
-      expect(vs[0].id).toBe("10");
-      expect(vs[1].id).toBe("12");
+    const makeServiceVariant = ({
+      id,
+      name,
+      parentId = null,
+      variantId = null,
+      showOnStartPage = false,
+      combinable = null,
+    }: {
+      id: string;
+      name: string;
+      parentId?: string | null;
+      variantId?: number | null;
+      showOnStartPage?: boolean;
+      combinable?: any;
+    }) => ({
+      id,
+      name,
+      parentId,
+      variantId,
+      maxQuantity: 5,
+      combinable,
+      showOnStartPage,
     });
 
-    it("should switch service correctly when changing selectedVariant (2 -> 1)", async () => {
-      const { base, variant2 } = makeBaseAndVariants();
-      const wrapper = createWrapper(base);
-      wrapper.vm.services = [base, variant2];
-      wrapper.vm.service = base;
+    const makeBaseAndTelephoneVariant = () => {
+      const baseService = makeServiceVariant({
+        id: "10",
+        name: "Basis Service",
+        showOnStartPage: true,
+      });
+
+      const telephoneVariant = makeServiceVariant({
+        id: "12",
+        name: "Basis Service Telefon",
+        parentId: "10",
+        variantId: VARIANT_ID_TELEPHONE,
+      });
+
+      return { baseService, telephoneVariant };
+    };
+
+    it("should include implicit presence variant when a telephone variant exists", async () => {
+      const { baseService, telephoneVariant } = makeBaseAndTelephoneVariant();
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [telephoneVariant, baseService];
+      wrapper.vm.service = baseService;
+
       await nextTick();
 
-      wrapper.vm.selectedVariant = "2";
+      const variantServices = wrapper.vm.variantServices as any[];
+
+      expect(Array.isArray(variantServices)).toBeTruthy();
+      expect(variantServices.map((variant) => variant.variantId)).toEqual([
+        VARIANT_ID_PRESENCE,
+        VARIANT_ID_TELEPHONE,
+      ]);
+      expect(variantServices[0].id).toBe("10");
+      expect(variantServices[1].id).toBe("12");
+    });
+
+    it("should include implicit presence variant when a video variant exists", async () => {
+      const baseService = makeServiceVariant({
+        id: "10",
+        name: "Basis Service",
+        showOnStartPage: true,
+      });
+
+      const videoVariant = makeServiceVariant({
+        id: "13",
+        name: "Basis Service Video",
+        parentId: "10",
+        variantId: VARIANT_ID_VIDEO,
+      });
+
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [videoVariant, baseService];
+      wrapper.vm.service = baseService;
+
       await nextTick();
+
+      const variantServices = wrapper.vm.variantServices as any[];
+
+      expect(variantServices.map((variant) => variant.variantId)).toEqual([
+        VARIANT_ID_PRESENCE,
+        VARIANT_ID_VIDEO,
+      ]);
+      expect(variantServices[0].id).toBe("10");
+      expect(variantServices[1].id).toBe("13");
+    });
+
+    it("should not include implicit presence variant when only small and large customer variants exist", async () => {
+      const baseService = makeServiceVariant({
+        id: "20",
+        name: "Planeinsicht Grundstücksentwässerung",
+        showOnStartPage: true,
+      });
+
+      const smallCustomerVariant = makeServiceVariant({
+        id: "21",
+        name: "Planeinsicht Grundstücksentwässerung – Kleinkunden",
+        parentId: "20",
+        variantId: VARIANT_ID_SMALL_CUSTOMER,
+      });
+
+      const largeCustomerVariant = makeServiceVariant({
+        id: "22",
+        name: "Planeinsicht Grundstücksentwässerung – Großkunden",
+        parentId: "20",
+        variantId: VARIANT_ID_LARGE_CUSTOMER,
+      });
+
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [
+        baseService,
+        smallCustomerVariant,
+        largeCustomerVariant,
+      ];
+      wrapper.vm.service = baseService;
+
+      await nextTick();
+
+      const variantServices = wrapper.vm.variantServices as any[];
+
+      expect(variantServices.map((variant) => variant.variantId)).toEqual([
+        VARIANT_ID_LARGE_CUSTOMER,
+        VARIANT_ID_SMALL_CUSTOMER,
+      ]);
+      expect(
+        variantServices.some(
+          (variant) => variant.variantId === VARIANT_ID_PRESENCE
+        )
+      ).toBe(false);
+      expect(variantServices.map((variant) => variant.id)).not.toContain("20");
+    });
+
+    it("should not include implicit presence variant when only a small customer variant exists", async () => {
+      const baseService = makeServiceVariant({
+        id: "20",
+        name: "Planeinsicht Grundstücksentwässerung",
+        showOnStartPage: true,
+      });
+
+      const smallCustomerVariant = makeServiceVariant({
+        id: "21",
+        name: "Planeinsicht Grundstücksentwässerung – Kleinkunden",
+        parentId: "20",
+        variantId: VARIANT_ID_SMALL_CUSTOMER,
+      });
+
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [baseService, smallCustomerVariant];
+      wrapper.vm.service = baseService;
+
+      await nextTick();
+
+      const variantServices = wrapper.vm.variantServices as any[];
+
+      expect(variantServices.map((variant) => variant.variantId)).toEqual([
+        VARIANT_ID_SMALL_CUSTOMER,
+      ]);
+      expect(
+        variantServices.some(
+          (variant) => variant.variantId === VARIANT_ID_PRESENCE
+        )
+      ).toBe(false);
+    });
+
+    it("should not include implicit presence variant when only a large customer variant exists", async () => {
+      const baseService = makeServiceVariant({
+        id: "20",
+        name: "Planeinsicht Grundstücksentwässerung",
+        showOnStartPage: true,
+      });
+
+      const largeCustomerVariant = makeServiceVariant({
+        id: "22",
+        name: "Planeinsicht Grundstücksentwässerung – Großkunden",
+        parentId: "20",
+        variantId: VARIANT_ID_LARGE_CUSTOMER,
+      });
+
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [baseService, largeCustomerVariant];
+      wrapper.vm.service = baseService;
+
+      await nextTick();
+
+      const variantServices = wrapper.vm.variantServices as any[];
+
+      expect(variantServices.map((variant) => variant.variantId)).toEqual([
+        VARIANT_ID_LARGE_CUSTOMER,
+      ]);
+      expect(
+        variantServices.some(
+          (variant) => variant.variantId === VARIANT_ID_PRESENCE
+        )
+      ).toBe(false);
+    });
+
+    it("should switch service correctly when changing selectedVariant from telephone to presence", async () => {
+      const { baseService, telephoneVariant } = makeBaseAndTelephoneVariant();
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [baseService, telephoneVariant];
+      wrapper.vm.service = baseService;
+
+      await nextTick();
+
+      wrapper.vm.selectedVariant = String(VARIANT_ID_TELEPHONE);
+      await nextTick();
+
       expect(wrapper.vm.service.id).toBe("12");
-      expect(wrapper.vm.service.name).toContain("Variante 2");
+      expect(wrapper.vm.service.name).toContain("Telefon");
 
-      wrapper.vm.selectedVariant = "1";
+      wrapper.vm.selectedVariant = String(VARIANT_ID_PRESENCE);
       await nextTick();
+
       expect(wrapper.vm.service.id).toBe("10");
     });
 
-    it("should show subservices only for variant 1 (base) and hide them for variant 2", async () => {
+    it("should show subservices only for presence variant and hide them for telephone variant", async () => {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
         status: 200,
         json: async () => ({ services: [], offices: [], relations: [] }),
       }));
 
-      const base = {
+      const baseService = makeServiceVariant({
         id: "10",
         name: "Basis Service",
-        parentId: null,
-        variantId: null,
-        maxQuantity: 5,
+        showOnStartPage: true,
         combinable: { a: { "2": ["1"] } },
-      };
-      const variant2 = {
-        id: "12",
-        name: "Basis Service (Variante 2)",
-        parentId: "10",
-        variantId: 2,
-        maxQuantity: 5,
-        combinable: null,
-      };
-      const sub = { id: "2", name: "Sub Service", maxQuantity: 5, combinable: null };
+      });
 
-      const wrapper = createWrapper(base);
-      wrapper.vm.services = [base, variant2, sub];
-      wrapper.vm.service = base;
+      const telephoneVariant = makeServiceVariant({
+        id: "12",
+        name: "Basis Service Telefon",
+        parentId: "10",
+        variantId: VARIANT_ID_TELEPHONE,
+      });
+
+      const subService = makeServiceVariant({
+        id: "2",
+        name: "Sub Service",
+      });
+
+      const wrapper = createWrapper(baseService);
+
+      wrapper.vm.services = [baseService, telephoneVariant, subService];
+      wrapper.vm.service = baseService;
+
       await nextTick();
 
       expect(wrapper.vm.showSubservices).toBeFalsy();
 
-      wrapper.vm.selectedVariant = "1";
+      wrapper.vm.selectedVariant = String(VARIANT_ID_PRESENCE);
       await nextTick();
+
       expect(wrapper.vm.showSubservices).toBeTruthy();
 
-      wrapper.vm.selectedVariant = "2";
+      wrapper.vm.selectedVariant = String(VARIANT_ID_TELEPHONE);
       await nextTick();
+
       expect(wrapper.vm.showSubservices).toBeFalsy();
     });
   });
