@@ -184,8 +184,12 @@ class OverallCalendarRead extends BaseController
             $start = substr($bookingRow['starts_at'], 11, 5);
             $end = substr($bookingRow['ends_at'], 11, 5);
 
+            $displayNumber = isset($bookingRow['display_number'])
+                ? trim((string)$bookingRow['display_number'])
+                : '';
             $days[$dKey]['scopes'][$sid]['events'][] = [
                 'processId' => (int)$bookingRow['process_id'],
+                'displayNumber' => $displayNumber !== '' ? $displayNumber : null,
                 'start' => $start,
                 'end' => $end,
                 'status' => $bookingRow['status'],

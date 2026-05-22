@@ -48,10 +48,12 @@ class OverviewCalendar extends Base
     const SELECT_RANGE = "
         SELECT b.id, b.scope_id, b.process_id, b.status,
                b.starts_at, b.ends_at, b.updated_at,
+               p.displayNumber AS display_number,
                s.Bezeichnung   AS scope_name,
                s.standortkuerzel AS scope_short
           FROM overview_calendar b
           JOIN standort s ON b.scope_id = s.StandortID
+          LEFT JOIN buerger p ON b.process_id = p.BuergerID
          WHERE b.scope_id IN (%s)
            AND b.ends_at   > :from
            AND b.starts_at < :until
@@ -62,10 +64,12 @@ class OverviewCalendar extends Base
     const SELECT_RANGE_UPDATED = "
         SELECT b.id, b.scope_id, b.process_id, b.status,
                b.starts_at, b.ends_at, b.updated_at,
+               p.displayNumber AS display_number,
                s.Bezeichnung   AS scope_name,
                s.standortkuerzel AS scope_short
           FROM overview_calendar b
           JOIN standort s ON b.scope_id = s.StandortID
+          LEFT JOIN buerger p ON b.process_id = p.BuergerID
          WHERE b.scope_id IN (%s)
            AND b.ends_at   > :from
            AND b.starts_at < :until

@@ -122,11 +122,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-next",
+            "version": "dev-feat-zmskvr-1383-display-number-overall-calendar",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "c70ec3effa4a3cf3557a1ab28e2c97681bfef910"
+                "reference": "b3844baaf136cb9de0f51f1c0446b2bffd1396cd"
             },
             "require": {
                 "ext-json": ">=0",
@@ -171,7 +171,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-next",
+            "version": "dev-feat-zmskvr-1383-display-number-overall-calendar",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -230,11 +230,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-next",
+            "version": "dev-feat-zmskvr-1383-display-number-overall-calendar",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "c70ec3effa4a3cf3557a1ab28e2c97681bfef910"
+                "reference": "b3844baaf136cb9de0f51f1c0446b2bffd1396cd"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -287,11 +287,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-next",
+            "version": "dev-feat-zmskvr-1383-display-number-overall-calendar",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "c70ec3effa4a3cf3557a1ab28e2c97681bfef910"
+                "reference": "b3844baaf136cb9de0f51f1c0446b2bffd1396cd"
             },
             "require": {
                 "eappointment/mellon": "@dev",
