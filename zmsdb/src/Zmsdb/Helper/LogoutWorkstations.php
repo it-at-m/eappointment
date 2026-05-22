@@ -29,11 +29,10 @@ class LogoutWorkstations
             $dataEntity->setResolveLevel($query->getResolveLevel());
             if ($dataEntity->useraccount->lastLogin) {
                 if ($verbose) {
-                    //var_export($data);
-                                            \App::$log->info('Workstation logout', [
-                            'workstationId' => $dataEntity->id,
-                            'useraccountId' => $dataEntity->useraccount->id,
-                                            ]);
+                    \App::$log->info('Workstation logout', [
+                        'workstationId' => $dataEntity->id,
+                        'useraccountId' => $dataEntity->useraccount->id,
+                    ]);
                 }
                 (new \BO\Zmsdb\Workstation())->writeEntityLogoutByName($dataEntity->useraccount->id);
             }
