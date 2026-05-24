@@ -8,20 +8,9 @@ use BO\Zmscitizenapi\Utils\ErrorMessages;
 
 class ExceptionService
 {
-    private static ?string $currentLanguage = null;
-    public static function setLanguageContext(?string $language): void
-    {
-        self::$currentLanguage = $language;
-    }
-
-    public static function getLanguageContext(): ?string
-    {
-        return self::$currentLanguage;
-    }
-
     private static function getError(string $key): array
     {
-        return ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key);
     }
 
     /**
@@ -101,6 +90,14 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail':
                 $error = self::getError('tooManyAppointmentsWithSameMail');
+
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedSlotsPerAppointment':
+                $error = self::getError('tooManySlotsPerAppointment');
+
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedQuantityPerService':
+                $error = self::getError('tooManyServicesPerAppointment');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':

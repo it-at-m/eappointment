@@ -11,14 +11,10 @@ class ExchangeClientscope extends Base
 
     const BATABLE = 'buergeranliegen';
 
-    const NOTIFICATIONSTABLE = 'abrechnung';
-
     const QUERY_READ_REPORT = '
     SELECT
         MIN(subjectid) as subjectid,
         date,
-        notificationscount,
-        0 as notificationscost,
         SUM(clientscount) as clientscount,
         SUM(missed) as missed,
         SUM(withappointment) as withappointment,
@@ -29,27 +25,8 @@ class ExchangeClientscope extends Base
 
     FROM (
           SELECT
-            StandortID as subjectid,        
-            IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
-            IFNULL(SUM(gesendet), 0) as notificationscount,
-            0 as notificationscost,
-            0 AS clientscount,
-            0 AS missed,
-            0 AS withappointment,
-            0 AS missedwithappointment,
-            0 AS requestcount,
-            0 AS ticketprinter,
-            0 AS ticketprintermissed
-          FROM ' . self::NOTIFICATIONSTABLE . '
-          WHERE `StandortID` IN (:scopeids) AND `Datum` BETWEEN :datestart AND :dateend
-          GROUP BY date
-
-      UNION ALL
-          SELECT
             StandortID as subjectid,          
             IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
-            0 AS notificationscount,
-            0 as notificationscost,
             SUM(IF(`nicht_erschienen`=0,AnzahlPersonen,0)) as clientscount,
             SUM(IF(`nicht_erschienen`=1,AnzahlPersonen,0)) as missed,
             SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
@@ -65,8 +42,6 @@ class ExchangeClientscope extends Base
           SELECT
             StandortID as subjectid,
             IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
-            0 AS notificationscount,
-            0 as notificationscost,
             0 AS clientscount,
             0 AS missed,
             0 AS withappointment,

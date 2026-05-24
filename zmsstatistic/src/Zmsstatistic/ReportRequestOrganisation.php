@@ -42,7 +42,8 @@ class ReportRequestOrganisation extends BaseController
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()
-            ->withAverage('processingtime');
+            ->withAverage('processingtime')
+            ->withUncapturedRequestRowSortedLast();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();

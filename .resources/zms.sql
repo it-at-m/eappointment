@@ -259,8 +259,8 @@ INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
 ('appointments__enableTakenCountdown', 'none', '2025-10-22 13:57:26'),
 ('appointments__enableTakenStatistic', 'none', '2025-10-22 13:57:26'),
 ('appointments__setTakenCountdownLength', '60', '2025-10-22 13:57:26'),
-('appointments__urlAppointments', 'https://service.berlin.de/terminvereinbarung/', '2019-08-23 17:22:23'),
-('appointments__urlChange', 'https://service.berlin.de/terminvereinbarung/termin/manage/', '2019-08-23 17:22:23'),
+('appointments__urlAppointments', 'http://localhost:8082/', '2019-08-23 17:22:23'),
+('appointments__urlChange', 'http://localhost:8082/', '2019-08-23 17:22:23'),
 ('availability__calculateSlotsOnDemand', 'none', '2025-10-22 13:57:26'),
 ('availability__calculateSlotsOnSave', 'none', '2025-10-22 13:57:26'),
 ('buergerarchiv__setRetentionPeriodDays', '90', '2024-02-19 23:00:00'),
@@ -306,7 +306,7 @@ INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
 ('notifications__gateway', 'mail', '2019-08-23 17:22:23'),
 ('notifications__gatewayUrl', '', '2019-08-23 17:22:23'),
 ('notifications__headsUpContent', 'Sie sind in Kürze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist', '2019-08-23 17:22:23'),
-('notifications__kommandoAbfrage', 'Berlin', '2019-08-23 17:22:23'),
+('notifications__kommandoAbfrage', 'München', '2019-08-23 17:22:23'),
 ('notifications__kommandoAbsage', 'Storno', '2019-08-23 17:22:23'),
 ('notifications__noAttachmentDomains', 'outlook.,live.,hotmail.', '2019-08-23 15:22:22'),
 ('notifications__number', '0174-0000', '2022-04-14 05:17:28'),
@@ -923,36 +923,6 @@ CREATE TABLE `preferences` (
   `updateTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `preferences`
---
-
-INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`) VALUES
-('scope', 0, 'appointment', 'deallocationDuration', '15', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'endInDaysDefault', '60', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'multipleSlotsEnabled', '0', '2022-04-12 11:31:15'),
-('scope', 0, 'appointment', 'reservationDuration', '15', '2022-03-16 14:04:36'),
-('scope', 0, 'appointment', 'startInDaysDefault', '2', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'callDisplayText', 'Herzlich Willkommen', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'firstNumber', '1', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'lastNumber', '999', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'maxNumberContingent', '999', '2022-03-16 14:04:36'),
-('scope', 0, 'queue', 'processingTimeAverage', '12', '2022-03-16 14:04:36'),
-('scope', 1, 'appointment', 'endInDaysDefault', '60', '2019-08-23 15:22:22'),
-('scope', 1, 'appointment', 'startInDaysDefault', '0', '2019-08-23 15:22:22'),
-('scope', 3, 'appointment', 'deallocationDuration', '15', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'endInDaysDefault', '60', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'reservationDuration', '15', '2022-04-12 11:32:03'),
-('scope', 3, 'appointment', 'startInDaysDefault', '2', '2022-04-12 11:32:03'),
-('scope', 3, 'client', 'emailFrom', 'noreply@muenchen.de', '2022-04-12 11:32:03'),
-('scope', 3, 'notifications', 'headsUpTime', '10', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'callDisplayText', 'Herzlich Willkommen', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'firstNumber', '1', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'lastNumber', '999', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'maxNumberContingent', '999', '2022-04-12 11:32:03'),
-('scope', 3, 'queue', 'processingTimeAverage', '12', '2022-04-12 11:32:03'),
-('scope', 3, 'ticketprinter', 'buttonName', 'Termin Wartebereich BB Leonrod', '2022-04-12 11:32:03'),
-('scope', 3, 'workstation', 'emergencyRefreshInterval', '5', '2022-04-12 11:32:03');
 
 -- --------------------------------------------------------
 
@@ -1226,7 +1196,7 @@ CREATE TABLE `standort` (
   `standortkuerzel` varchar(40) DEFAULT NULL,
   `aufrufanzeigetext` text NOT NULL,
   `reservierungsdauer` int(4) NOT NULL DEFAULT 60,
-  `anzahlwiederaufruf` int(2) NOT NULL DEFAULT 3,
+  `anzahlwiederaufruf` int(2) NOT NULL DEFAULT 0,
   `startwartenr` int(5) NOT NULL DEFAULT 1,
   `endwartenr` int(5) NOT NULL DEFAULT 999,
   `letztewartenr` int(5) NOT NULL DEFAULT 0,

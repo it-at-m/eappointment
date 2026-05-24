@@ -28,9 +28,7 @@
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": "0",
                         "reservationDuration": "60",
-                        "startInDaysDefault": "1",
-                        "notificationConfirmationEnabled": "1",
-                        "notificationHeadsUpEnabled": "1"
+                        "startInDaysDefault": "1"
                     },
                     "client": {
                         "amendmentActivated": "0",
@@ -40,11 +38,6 @@
                         "adminMailOnDeleted": "0",
                         "telephoneActivated": "0",
                         "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                        "confirmationContent": "",
-                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                        "headsUpTime": "30"
                     },
                     "queue": {
                         "callCountMax": "2",
@@ -62,11 +55,7 @@
                     },
                     "ticketprinter": {
                         "buttonName": "Bürgeramt Halemweg (Außenstelle)",
-                        "confirmationEnabled": "0",
-                        "deactivatedText": "",
-                        "notificationsAmendmentEnabled": "0",
-                        "notificationsEnabled": "1",
-                        "notificationsDelay": "0"
+                        "deactivatedText": ""
                     },
                     "workstation": {
                         "emergencyEnabled": "0",
@@ -123,9 +112,7 @@
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": "0",
                         "reservationDuration": "20",
-                        "startInDaysDefault": "0",
-                        "notificationConfirmationEnabled": "1",
-                        "notificationHeadsUpEnabled": "1"
+                        "startInDaysDefault": "0"
                     },
                     "client": {
                         "amendmentActivated": "0",
@@ -135,11 +122,6 @@
                         "adminMailOnDeleted": "0",
                         "telephoneActivated": "0",
                         "telephoneRequired": "0"
-                    },
-                    "notifications": {
-                        "confirmationContent": "",
-                        "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
-                        "headsUpTime": "30"
                     },
                     "queue": {
                         "callCountMax": "0",
@@ -157,11 +139,7 @@
                     },
                     "ticketprinter": {
                         "buttonName": "Bürgeramt",
-                        "confirmationEnabled": "0",
-                        "deactivatedText": "0",
-                        "notificationsAmendmentEnabled": "0",
-                        "notificationsEnabled": "0",
-                        "notificationsDelay": "0"
+                        "deactivatedText": "0"
                     },
                     "workstation": {
                         "emergencyEnabled": "1",
@@ -223,14 +201,6 @@
             "country": "Germany",
             "name": ""
         },
-        "preferences": {
-            "notifications": {
-                "enabled": "1",
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": "1",
-                "sendReminderEnabled": "1"
-            }
-        },
         "clusters": [
             {
                 "scopes": [
@@ -252,9 +222,7 @@
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
-                                "notificationConfirmationEnabled": "1",
-                                "notificationHeadsUpEnabled": "1"
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
@@ -264,11 +232,6 @@
                                 "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
-                            },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
-                                "headsUpTime": "30"
                             },
                             "queue": {
                                 "callCountMax": "0",
@@ -286,11 +249,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt Hohenzollerndamm",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "1",
-                                "notificationsDelay": "0"
+                                "deactivatedText": ""
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",
@@ -345,9 +304,7 @@
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
-                                "notificationConfirmationEnabled": "1",
-                                "notificationHeadsUpEnabled": "1"
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
@@ -357,11 +314,6 @@
                                 "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
-                            },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                "headsUpTime": "30"
                             },
                             "queue": {
                                 "callCountMax": "0",
@@ -379,11 +331,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "1",
-                                "notificationsDelay": "0"
+                                "deactivatedText": ""
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",
@@ -438,9 +386,7 @@
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
-                                "notificationConfirmationEnabled": "1",
-                                "notificationHeadsUpEnabled": "1"
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
@@ -450,11 +396,6 @@
                                 "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
-                            },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                "headsUpTime": "30"
                             },
                             "queue": {
                                 "callCountMax": "0",
@@ -472,11 +413,7 @@
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt Wilmersdorfer Straße",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "1",
-                                "notificationsDelay": "0"
+                                "deactivatedText": ""
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",

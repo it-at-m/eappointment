@@ -3619,7 +3619,8 @@
             "allowed": false
           }
         }
-      ]
+      ],
+      "slotTimeInMinutes": 12
     },
     {
       "id": "122219",

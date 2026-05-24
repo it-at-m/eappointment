@@ -1,19 +1,25 @@
 
+let clockIntervalId = null;
+
 class View {
     constructor () {
-        setInterval(this.setClock, 1000);
+        if (clockIntervalId) {
+            clearInterval(clockIntervalId);
+        }
+        
+        clockIntervalId = setInterval(this.setClock, 1000);
         this.setDate();
 
     }
 
     setClock() {
+        const now = new Date();
+
         if (document.querySelector('.second-hand')) {
             this.setAnalogClock();
         }
 
         if (document.querySelector('.digital-clock')) {
-            const now = new Date();
-
             document.querySelector('.digital-clock').innerHTML =
                 new Intl.DateTimeFormat('de-DE', {hour: '2-digit', minute: '2-digit'}).format(now)
 

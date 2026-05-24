@@ -102,8 +102,8 @@ class ExchangeTest extends EntityCommonTests
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
 
-        $entity->addDataSet([141, '2016-04-01', 'Dienstleistung wurde nicht erfasst', 25]);
-        $entity->addDataSet([141, '2016-04-01', 'Dienstleistung konnte nicht erbracht werden', 2]);
+        $entity->addDataSet([141, '2016-04-01', \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED, 25]);
+        $entity->addDataSet([141, '2016-04-01', \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT, 2]);
         $entity->addDataSet([141, '2016-04-01', 'Personalausweis beantragen', 14]);
         $entity->addDataSet([141, '2016-04-02', 'Personalausweis beantragen', 17]);
 
@@ -219,5 +219,46 @@ class ExchangeTest extends EntityCommonTests
         $entity = (new $this->entityclass());
         $entity->period = true;
         $entity->testValid();
+    }
+
+    public function testWithUncapturedRequestRowSortedLast()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+        $exchange->data = [
+            'Zebra' => ['x' => 1],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT => ['x' => 9],
+            \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED => ['x' => 2],
+            'Alpha' => ['x' => 3],
+            'sum' => ['Alpha' => 10, 'Zebra' => 20],
+            'average_processingtime' => ['Alpha' => 1, 'Zebra' => 2],
+        ];
+        $sorted = $exchange->withUncapturedRequestRowSortedLast();
+        $this->assertSame(
+            [
+                'Alpha',
+                'Zebra',
+                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_UNCATEGORIZED,
+                \BO\Zmsentities\Exchange::REQUEST_STAT_NAME_NONEXISTENT,
+                'sum',
+                'average_processingtime',
+            ],
+            array_keys($sorted->data)
+        );
+    }
+
+    public function testWithUncapturedRequestRowSortedLastWithoutUncapturedBucket()
+    {
+        $exchange = new \BO\Zmsentities\Exchange();
+        $exchange->data = [
+            'Zebra' => ['x' => 1],
+            'Alpha' => ['x' => 2],
+            'sum' => [],
+            'average_processingtime' => [],
+        ];
+        $sorted = $exchange->withUncapturedRequestRowSortedLast();
+        $this->assertSame(
+            ['Alpha', 'Zebra', 'sum', 'average_processingtime'],
+            array_keys($sorted->data)
+        );
     }
 }

@@ -117,9 +117,10 @@ class ProcessList extends Base
                 $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')] = [];
             }
             foreach ($process->getAppointments() as $appointment) {
-                $availabilityId = ($appointment->getAvailability()->getId()) ?
-                    $appointment->getAvailability()->getId() :
-                    $appointment->getAvailability()->tempId;
+                $availability = $appointment->getAvailability();
+                $availabilityId = $availability->getId()
+                    ? $availability->getId()
+                    : ($availability['tempId'] ?? null);
                 $appointmentList[] = [
                     'startTime' => $appointment->getStartTime()->format('H:i'),
                     'endTime' => $appointment->getEndTime()->format('H:i'),
@@ -217,18 +218,6 @@ class ProcessList extends Base
         foreach ($this as $process) {
             if ($slotList->removeAppointment($process->getFirstAppointment())) {
                 $processList[] = clone $process;
-            }
-        }
-        return $processList;
-    }
-
-    public function withDepartmentNotificationEnabled()
-    {
-        $processList = new static();
-        foreach ($this as $process) {
-            if ($process->scope->hasNotificationReminderEnabled()) {
-                $entity = clone $process;
-                $processList->addEntity($entity);
             }
         }
         return $processList;

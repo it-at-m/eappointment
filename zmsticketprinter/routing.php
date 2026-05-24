@@ -32,18 +32,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET', 'POST'], '/message/{status:[a-z_]+}/', '\BO\Zmsticketprinter\Message')
     ->setName("Message");
 
-//input queue number to get process for notification
-\App::$slim->post('/notification/amendment/', '\BO\Zmsticketprinter\NotificationAmendment')
-    ->setName("NotificationAmendment");
-
-//set notification number and send to assign controller
-\App::$slim->post('/notification/', '\BO\Zmsticketprinter\Notification')
-    ->setName("Notification");
-
-//assign notification number for process in notification queue
-\App::$slim->post('/notification/assign/', '\BO\Zmsticketprinter\NotificationAssign')
-    ->setName("NotificationAssign");
-
 \App::$slim->get('/dialog/', '\BO\Zmsticketprinter\Helper\DialogHandler')
     ->setName("dialogHandler");
 

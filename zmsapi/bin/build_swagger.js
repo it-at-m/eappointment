@@ -77,13 +77,7 @@ function readFileContent(file) {
 }
 
 function readApiVersion() {
-    fs.readFile('./VERSION', 'utf8' , (err, data) => {
-        if (err) {
-          console.error(err)
-          return
-        }
-        return data;
-      })
+    const v = readFileContent('./VERSION');
+    return v !== undefined ? v.trim() : '';
 }
-
 

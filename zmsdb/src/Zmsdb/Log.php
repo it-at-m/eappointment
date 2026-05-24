@@ -83,6 +83,7 @@ class Log extends Base
             "Terminnummer" => $process->getDisplayNumber(),
             "Wartenummer" => $process->getQueueNumber(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
+            "Slots" => $process->getFirstAppointment()->slotCount ?? null,
             "Bürger*in" => $process->getFirstClient()->familyName,
             "Dienstleistungen" => implode(', ', array_map(function ($request) {
                 return $request->getName();

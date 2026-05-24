@@ -16,10 +16,18 @@ class WorkstationProcessNext extends BaseController
      * @return String
      */
 
-    public function timeToUnix($timeString)
+    public function timeToUnix($timeValue): ?int
     {
-        list($hours, $minutes, $seconds) = explode(':', $timeString);
-        return mktime($hours, $minutes, $seconds);
+        if ($timeValue === null) {
+            return null;
+        }
+        $timeString = trim((string) $timeValue);
+        if ($timeString === '') {
+            return null;
+        }
+        $unixTimestamp = strtotime($timeString);
+
+        return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
     public function readResponse(
@@ -49,12 +57,12 @@ class WorkstationProcessNext extends BaseController
 
         foreach ($processList as $process) {
             if ($process->status === "queued" || $process->status === "confirmed") {
-                $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
+                $timeoutTimeUnix = $this->timeToUnix($process->timeoutTime ?? null);
                 $currentTimeUnix = time();
 
                 if (!isset($process->timeoutTime)) {
                     $filteredProcessList->addEntity(clone $process);
-                } elseif (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
+                } elseif ($timeoutTimeUnix !== null && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
                 } else {
                     if (!empty($excludedIds)) {

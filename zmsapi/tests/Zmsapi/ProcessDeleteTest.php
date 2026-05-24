@@ -70,6 +70,13 @@ class ProcessDeleteTest extends Base
         $this->render(['id' => '10030', 'authKey' => $this->authKey], [], []); //day off Beispiel Termin
     }
 
+    public function testFamilyNameIsNotAcceptedAsAuthKey()
+    {
+        $this->expectException('BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => '10030', 'authKey' => 'Dayoff'], [], []);
+    }
+
     public function testFailedDelete()
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessNotFound');

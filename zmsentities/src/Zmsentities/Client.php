@@ -12,7 +12,6 @@ class Client extends Schema\Entity
             'familyName' => '',
             'email' => '',
             'emailSendCount' => 0,
-            'notificationsSendCount' => 0,
             'surveyAccepted' => false,
             'telephone' => ''
         ];
@@ -36,11 +35,6 @@ class Client extends Schema\Entity
     public function getEmailSendCount()
     {
         return $this->toProperty()->emailSendCount->get();
-    }
-
-    public function getNotificationsSendCount()
-    {
-        return $this->toProperty()->notificationsSendCount->get();
     }
 
     public function hasSurveyAccepted()

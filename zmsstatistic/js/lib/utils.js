@@ -1,7 +1,5 @@
-import Baseview from './baseview';
 import $ from 'jquery'
 import moment from 'moment'
-import settings from '../settings';
 
 export const timeToFloat = (time) => {
     const momentTime = moment(time, 'HH:mm:ss')
@@ -89,32 +87,20 @@ export const lightbox = (parentElement, onBackgroundClick) => {
 
 export const noOp = () => { }
 
+const unsafeQueryParamKey = (key) =>
+    key === '__proto__' || key === 'constructor' || key === 'prototype'
+
 export const getUrlParameters = () => {
-    return document.location.search.replace(/^\?/, "")
-        .split("&")
-        .reduce((carry, current) => {
+    const pairs = []
+    document.location.search.replace(/^\?/, '')
+        .split('&')
+        .forEach((current) => {
             const [key, value] = current.split('=')
-
-            if (key) {
-                return Object.assign({}, carry, { [key]: value })
-            } else {
-                return carry
+            if (key && !unsafeQueryParamKey(key)) {
+                pairs.push([key, value])
             }
-        }, {})
-}
-
-export const forceHttps = () => {
-    if (document.location.protocol !== "https:") {
-        Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
-            Baseview.loadDialogStatic(response,
-                () => {
-                    document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
-                },
-                Baseview,
-                true
-            );
-        });
-    }
+        })
+    return Object.fromEntries(pairs)
 }
 
 export const showSpinner = ($container = null) => {

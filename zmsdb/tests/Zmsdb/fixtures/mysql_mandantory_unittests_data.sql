@@ -97,14 +97,14 @@ INSERT INTO `oeffnungszeit`
  `Timeslot`,
  `Anzahlarbeitsplaetze`,`Anzahlterminarbeitsplaetze`,
  `kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,
- `reduktionTermineCallcenter`,`Offen_ab`,`Offen_bis`,`updateTimestamp`)
+ `Offen_ab`,`Offen_bis`,`updateTimestamp`)
 VALUES
     (965202, 65202, '2025-05-14','2025-05-14',
      0,1,32,
      '09:00:00','09:00:00','11:00:00','11:00:00',
      '00:05:00',
      3,3,
-     'UT Availability 65202', 0,1, 0,0,0, '2025-05-05 00:00:00');
+     'UT Availability 65202', 0,1,0,0, '2025-05-05 00:00:00');
 
 INSERT INTO `overview_calendar`
 (`scope_id`,`process_id`,`status`,`starts_at`,`ends_at`,`updated_at`)

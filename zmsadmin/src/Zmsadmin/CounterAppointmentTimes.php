@@ -40,7 +40,8 @@ class CounterAppointmentTimes extends BaseController
             'block/appointment/times.twig',
             array(
                 'workstation' => $workstation,
-                'availabilityList' => $availabilityList
+                'availabilityList' => $availabilityList,
+                'selectedDate' => $selectedDate
             )
         );
     }

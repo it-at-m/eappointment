@@ -45,11 +45,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": 0
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -66,11 +61,7 @@
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
             },
             "workstation": {
               "emergencyEnabled": "1",
@@ -130,11 +121,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": 0
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "",
@@ -151,11 +137,7 @@
             },
             "ticketprinter": {
               "buttonName": "Wohnungsamt",
-              "confirmationEnabled": "0",
-              "deactivatedText": "",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": ""
             },
             "workstation": {
               "emergencyEnabled": "0",

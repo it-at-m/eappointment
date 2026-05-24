@@ -7,7 +7,17 @@
 [![Issues][issues-shield]][issues-url]
 <!-- [![EUPL License][license-shield]][license-url] -->
 
+---
+
 # E-Appointment
+
+## Documentation
+
+- Published developer handbook (GitHub Pages root): [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
+
+
+## About eAppointment
+
 <img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
 This monorepo contains the Munich-specific adjustments to the original Berlin version. You can explore the original project here: https://gitlab.com/eappointment/eappointment
@@ -31,23 +41,6 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
-[Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
-
-
-## Projects
-
-### ZMS
-The original project to replace commercial proprietary software with the open source Berlin solution ZMS and went live with each city agency/department. This foundational project established the core appointment management system infrastructure for Munich's municipal services.
-
-### MPDZBS
-The creation of the PHP zmscitizenapi and the replacement of the first open source Vue2 frontend ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) with the Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) citizen frontend, plus the creation of the city's Vue patternlab ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). This project modernized the citizen-facing components and established design system standards.
-
-### ZMSKVR
-To add still needed features and requirements for the city's agencies/departments and improve weaknesses in user experiences. This includes implementing features in zmscitizenview that were not completed by MPDZBS, ensuring comprehensive functionality for all municipal departments.
-
-### MUXDBS
-Builds on MPDZBS following the Reifegradmodell (Maturity Level Model) as an implementation framework for Onlinezugangsgesetz (OZG - Online Access Act) compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) and adds additional components to zmscitizenview which will allow things such as login with BundID, BayernID and Elster for seamless online citizen appointments. This project represents the next maturity level of digital government services following federal implementation guidelines.
-
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
 BerlinOnline Stadtportal GmbH & Co KG Contact: 
@@ -61,11 +54,13 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
     <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
-    <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/itm/itM_Basislogo_gelb_schwarz-500.png" height="30" align="center"></td>
   </tr>
 </table>
 
 ---
+
+## Über eAppointment
 
 <img width="200" align="right" alt="web-app-manifest-512x512" src="https://github.com/user-attachments/assets/5dc7c4db-cc17-47a4-ad11-25e096b4e7e8" />
 
@@ -92,21 +87,6 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 * Sammeln von Statistiken wie Wartezeiten oder bedienten Kunden pro Tag
 * Notruf für Mitarbeiter
 
-[Code-Abdeckung ZMSAPI und ZMSCITIZENAPI Dokumentation](https://it-at-m.github.io/eappointment/)
-
-## Projekte
-
-### ZMS
-Das ursprüngliche Projekt zur Ersetzung kommerzieller proprietärer Software durch die Open-Source-Berlin-Lösung ZMS und ging mit jeder städtischen Behörde/Abteilung live. Dieses grundlegende Projekt etablierte die Kerninfrastruktur des Terminverwaltungssystems für Münchens kommunale Dienstleistungen.
-
-### MPDZBS
-Die Erstellung der PHP zmscitizenapi und der Ersatz des ersten Open-Source Vue2-Frontends ([eappointment-buergeransicht](https://github.com/it-at-m/eappointment-buergeransicht)) durch das Vue3 zmscitizenview/[refarch](https://refarch.oss.muenchen.de/) Bürger-Frontend, plus die Erstellung des städtischen Vue-Patternlabs ([muc-patternlab-vue](https://github.com/it-at-m/muc-patternlab-vue)). Dieses Projekt modernisierte die bürgerseitigen Komponenten und etablierte Design-System-Standards.
-
-### ZMSKVR
-Um noch benötigte Funktionen und Anforderungen für die städtischen Behörden/Abteilungen hinzuzufügen und Schwächen in der Benutzererfahrung zu verbessern. Dies umfasst die Implementierung von Funktionen in zmscitizenview, die von MPDZBS nicht abgeschlossen wurden, um umfassende Funktionalität für alle kommunalen Abteilungen sicherzustellen.
-
-### MUXDBS
-Baut auf MPDZBS auf und folgt dem Reifegradmodell (Reifegradmodell) als Implementierungsrahmen für Onlinezugangsgesetz (OZG) Compliance ([digitale-verwaltung.de](https://www.digitale-verwaltung.de/Webs/DV/DE/onlinezugangsgesetz/ozg-grundlagen/info-reifegradmodell/info-reifegradmodell-node.html)) und fügt zusätzliche Komponenten zu zmscitizenview hinzu, die Dinge wie Login mit BundID, BayernID und Elster für nahtlose Online-Bürgertermine ermöglichen werden. Dieses Projekt repräsentiert das nächste Reifegradniveau digitaler Regierungsdienstleistungen entsprechend den bundesweiten Implementierungsrichtlinien.
 
 ## Kontakt
 BerlinOnline Stadtportal GmbH & Co KG Kontakt: 
@@ -120,11 +100,13 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
     <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
-    <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/itm/itM_Basislogo_gelb_schwarz-500.png" height="30" align="center"></td>
   </tr>
 </table>
 
-----
+## Dokumentation (Deutsch)
+
+- Veröffentlichtes Entwicklerhandbuch (GitHub Pages, Startseite): [https://it-at-m.github.io/eappointment/](https://it-at-m.github.io/eappointment/)
 
 ## Getting Started
 
@@ -703,7 +685,6 @@ graph TD;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
 ```
-
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
 ![combined_image](https://github.com/user-attachments/assets/87902e60-fe90-48a0-bf60-c5edec210dc9)

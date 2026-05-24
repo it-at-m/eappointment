@@ -291,12 +291,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
-     * Read authKey by processId
+     * Read auth data by processId (for request-side auth checks).
      *
-     * @param
-     * processId
-     *
-     * @return String authKey
+     * @return array{authKey: string}|null
      */
     public function readAuthKeyByProcessId($processId)
     {
@@ -307,7 +304,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
         return ($process->hasId()) ? array(
-            'authName' => $process->getFirstClient()['familyName'],
             'authKey' => $process->authKey
         ) : null;
     }
@@ -663,11 +659,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
+        $newAuthKey = bin2hex(random_bytes(32));
         $query = Query\Process::QUERY_CANCELED;
         $this->perform($query, [
             'processId' => $processId,
             'authKey' => $authKey,
-            'canceledTimestamp' => $canceledTimestamp
+            'canceledTimestamp' => $canceledTimestamp,
+            'newAuthKey' => $newAuthKey
         ]);
         $process = $this->readEntity($processId, new Helper\NoAuth(), 0);
         Log::writeProcessLog("DELETE (Process::writeCanceledEntity) $processId ", Log::ACTION_CANCELED, $process, $useraccount);
@@ -806,22 +804,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readNotificationReminderProcessList(\DateTimeInterface $dateTime, $limit = 500, $offset = null, $resolveReferences = 0)
-    {
-        $selectQuery = new Query\Process(Query\Base::SELECT);
-        $selectQuery
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessReminderInterval($dateTime)
-            ->addConditionHasTelephone()
-            ->addConditionAssigned()
-            ->addConditionIgnoreSlots()
-            ->addConditionStatus('confirmed')
-            ->addLimit($limit, $offset);
-        $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences)->withDepartmentNotificationEnabled();
-    }
-
     public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, $resolveReferences = 0)
     {
         $selectQuery = new Query\Process(Query\Base::SELECT);
@@ -884,6 +866,69 @@ class Process extends Base implements Interfaces\ResolveReferences
         return true;
     }
 
+    public function isAppointmentSlotCountAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope)) {
+            return true;
+        }
+
+        $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
+
+        if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
+            $maxSlotsPerAppointment = Slot::MAX_SLOTS;
+        }
+
+        $appointment = $entity->getAppointments()->getFirst();
+        if (!$appointment) {
+            return true;
+        }
+
+        $slotCount = (int) ($appointment->slotCount ?? 0);
+        if ($slotCount <= 0) {
+            return true;
+        }
+
+        return $slotCount <= (int) $maxSlotsPerAppointment;
+    }
+
+    public function isServiceQuantityAllowed(Entity $entity): bool
+    {
+        if (empty($entity->scope) || empty($entity->requests)) {
+            return true;
+        }
+
+        try {
+            $providerId = $entity->scope->getProviderId();
+        } catch (\Exception $e) {
+            return true;
+        }
+        if (!$providerId) {
+            return true;
+        }
+
+        $requestCounts = [];
+        foreach ($entity->requests as $request) {
+            $requestId = $request->getId();
+            if (!isset($requestCounts[$requestId])) {
+                $requestCounts[$requestId] = 0;
+            }
+            $requestCounts[$requestId]++;
+        }
+
+        $requestRelationDb = new RequestRelation();
+        foreach ($requestCounts as $requestId => $count) {
+            $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
+            if ($requestRelation) {
+                $maxQuantity = $requestRelation->getMaxQuantity();
+                if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
@@ -920,11 +965,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readResolvedReferences($process, 1);
     }
 
-    /**
-     * Read processList by external user id
-     *
-     * @return Collection processList
-     */
     public function readProcessListByExternalUserId(string $externalUserId, ?int $filterId = null, ?string $status = null, $resolveReferences = 0, $limit = 1000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
@@ -943,5 +983,17 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
+    }
+
+    public function readAssignedWorkstationIdForUpdate(int $processId): ?int
+    {
+        $query = (new Query\Process(Query\Base::SELECT))->getLockAssignedWorkstationId();
+        $value = $this->fetchValue($query, ['processId' => $processId]);
+
+        if ($value === false || $value === null) {
+            return null;
+        }
+
+        return (int) $value;
     }
 }

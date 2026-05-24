@@ -92,8 +92,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
-                    "parentId" => null
+                    "slotsPerAppointment" => null,
+                    "parentId" => null,
+                    "allowDisabledServicesMix" => null,
                 ],
                 [
                     "id" => 9999999,
@@ -150,8 +151,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
-                    "parentId" => null
+                    "slotsPerAppointment" => null,
+                    "parentId" => null,
+                    "allowDisabledServicesMix" => null,
                 ]
             ],
             "services" => [
@@ -267,8 +269,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
-                    "parentId" => null
+                    "slotsPerAppointment" => null,
+                    "parentId" => null,
+                    "allowDisabledServicesMix" => null,
                 ],
                 [
                     "id" => 9999999,
@@ -325,8 +328,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "activationDuration" => null,
                         "hint" => null
                     ],
-                    "maxSlotsPerAppointment" => null,
-                    "parentId" => null
+                    "slotsPerAppointment" => null,
+                    "parentId" => null,
+                    "allowDisabledServicesMix" => null,
                 ]
             ],
             "services" => [

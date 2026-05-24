@@ -5,7 +5,7 @@ import moment from 'moment'
 import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
-import {weekDayList, repeat} from '../helpers'
+import { weekDayList } from '../helpers'
 import * as Inputs from '../../../lib/inputs'
 const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
@@ -17,16 +17,15 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
-            kind: this.props.attributes.kind,            
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
             minTime: setHours(setMinutes(new Date(), 1), 0),
             maxTime: setHours(setMinutes(new Date(), 59), 23),
+            excludeTimeList: [],
             datePickerIsOpen: false,
             timePickerIsOpen: false,
             timePickerInitialized: this.props.attributes.availability.kind !== "new"
-        }
+        };
         this.escHandler = this.escHandler.bind(this);
         //datepicker
         this.openDatePicker = this.openDatePicker.bind(this);
@@ -58,14 +57,15 @@ class AvailabilityDatePicker extends Component
     }
 
     updateState(name, date) {
-        let startTime = this.props.attributes.availability.startTime ? 
-            moment(this.props.attributes.availability.startTime, 'HH:mm') : null;
-        let startDate = moment.unix(this.props.attributes.availability.startDate)
+        const availability = this.props.attributes.availability
+        let startTime = availability.startTime ?
+            moment(availability.startTime, 'HH:mm') : null
+        let startDate = moment.unix(availability.startDate)
             .set({"h": startTime ? startTime.hours() : 0, "m": startTime ? startTime.minutes() : 0})
             .toDate()
-        let endTime = this.props.attributes.availability.endTime ? 
-            moment(this.props.attributes.availability.endTime, 'HH:mm') : null;
-        let endDate = moment.unix(this.props.attributes.availability.endDate)
+        let endTime = availability.endTime ?
+            moment(availability.endTime, 'HH:mm') : null
+        let endDate = moment.unix(availability.endDate)
             .set({"h": endTime ? endTime.hours() : 0, "m": endTime ? endTime.minutes() : 0})
             .toDate()
 
@@ -73,16 +73,13 @@ class AvailabilityDatePicker extends Component
         let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
 
         if (name && date) {
-            startDate = ("startDate" == name) ? date.startOf('day') : startDate;
-            endDate = ("endDate" == name) ? date.startOf('day') : endDate;
-            selectedDate = date
+            selectedDate = date;
         }
-        this.setState({
-            availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist,
+        this.setState(() => ({
+            availability: availability,
             selectedDate: selectedDate,
-            timePickerInitialized: this.props.attributes.availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
-        })
+            timePickerInitialized: availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
+        }))
     }
 
     setClassNameForSelectedWeekDay(className, date) {

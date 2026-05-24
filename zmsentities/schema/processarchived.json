@@ -202,8 +202,6 @@
             "infoForAllAppointments": "",
             "endInDaysDefault": "60",
             "multipleSlotsEnabled": true,
-            "notificationConfirmationEnabled": true,
-            "notificationHeadsUpEnabled": true,
             "reservationDuration": "5",
             "startInDaysDefault": "2"
         },
@@ -222,11 +220,6 @@
             "telephoneActivated": true,
             "telephoneRequired": false
         },
-        "notifications": {
-            "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
-            "headsUpTime": 15,
-            "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
-        },
         "queue": {
             "callCountMax": 3,
             "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
@@ -242,11 +235,7 @@
         },
         "ticketprinter": {
             "buttonName": "Bürgeramt",
-            "confirmationEnabled": true,
-            "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
-            "notificationsAmendmentEnabled": true,
-            "notificationsEnabled": true,
-            "notificationsDelay": 30
+            "deactivatedText": "Die Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis."
         },
         "workstation": {
             "emergencyEnabled": false,
@@ -331,8 +320,18 @@
       "description": "unix timestamp of showing up after call"
     },
     "processingTime": {
-      "type": "string",
-      "description": "unix timestamp that cumulates time each time a processes is called"
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "Cumulative time spent being served at the workstation (from show-up until finish or timeout), summed across interrupted sessions. MySQL TIME string (H+:MM:SS) from persistence, or fractional minutes as number; null if unset—not a Unix timestamp"
     },
     "finishTime": {
         "type": "string",

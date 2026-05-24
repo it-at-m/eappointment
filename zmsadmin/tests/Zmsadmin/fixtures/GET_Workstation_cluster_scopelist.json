@@ -84,14 +84,6 @@
               "country": "Germany",
               "name": ""
             },
-            "preferences": {
-              "notifications": {
-                "enabled": "1",
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": "1",
-                "sendReminderEnabled": "1"
-              }
-            },
             "clusters": [
               {
                 "scopes": [
@@ -253,14 +245,6 @@
               "street": "Egon-Erwin-Kisch-Str.",
               "country": "Germany",
               "name": ""
-            },
-            "preferences": {
-              "notifications": {
-                "enabled": "1",
-                "identification": "test@example.com",
-                "sendConfirmationEnabled": "1",
-                "sendReminderEnabled": "1"
-              }
             },
             "clusters": [
               {
@@ -1068,11 +1052,6 @@
             "telephoneActivated": "0",
             "telephoneRequired": 0
           },
-          "notifications": {
-            "confirmationContent": "",
-            "headsUpContent": "",
-            "headsUpTime": "0"
-          },
           "queue": {
             "callCountMax": "0",
             "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
@@ -1089,11 +1068,7 @@
           },
           "ticketprinter": {
             "buttonName": "Bürgeramt",
-            "confirmationEnabled": "0",
-            "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
-            "notificationsAmendmentEnabled": "0",
-            "notificationsEnabled": "0",
-            "notificationsDelay": "0"
+            "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n "
           },
           "workstation": {
             "emergencyEnabled": "1",

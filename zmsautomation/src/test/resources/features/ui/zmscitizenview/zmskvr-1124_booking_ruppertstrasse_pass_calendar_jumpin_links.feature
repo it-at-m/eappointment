@@ -1,0 +1,227 @@
+#language: en
+@web @zmscitizenview @ZMSKVR-1124 @executeLocally
+Feature: ZMSKVR-1124 Ruppertstraße booking — zmscitizenview (Passkalender 10502, Hauptkalender 10489, Abholung 10492, jump-in)
+  As a citizen
+  I want to book via the citizen view UI
+  So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)
+  And allowDisabledServicesMix jump-ins stay valid; Pass-only still books on the Passkalender (10502)
+
+  # Flow: calendar + slot → Ausgewählter Termin callout → Weiter (= reserve) → Kontakt form → Weiter (= update) →
+  # preconfirm (summary + privacy) → Weiter → activation callout (“Aktivieren Sie Ihren Termin.”)
+  # Slot selection is split into steps (wait for slots → Später if available → scroll/highlight timeslot → click slot → Weiter/reserve)
+  # so Cucumber reports and per-step @AfterStep screenshots show the time slot grid (highlight step) before the click.
+
+  Background:
+    Given the Citizen API is available
+    When I request the offices and services endpoint
+    Then the response status code should be 200
+    And the response should contain offices and services
+
+  # --- Invalid jump-in: Passkalender 10502 only offers Pass family services (three Pass services). Hauptkalender 10489 also supports a Non-Pass service (e.g. 1063475 Wohnsitzanmeldung) in combination with Pass. Jumping in with this Non-Pass alone on 10502 has no relation → invalid jump-in callout. ---
+  @jumpin @passCalendar
+  Scenario: Non-Pass service jump-in with Passkalender 10502 is rejected
+    Given I open zmscitizenview with jump-in service "1063475" and location "10502"
+    Then the invalid jump-in callout should be visible in the citizen view
+
+  # --- allowDisabledServicesMix (jump-in): Pass service 1063441 with location 10489 (Hauptkalender) is valid. The Pass-only combination must still list and book to Passkalender 10502; confirms allowDisabledServicesMix behaviour across locations. ---
+  @jumpin @allowDisabledServicesMix @passCalendar
+  Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
+    Given I open zmscitizenview with jump-in service "1063441" and location "10489"
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    When I continue from the service combination step
+    Then provider checkbox 10502 should be visible in the citizen view
+    When I select office 10502 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- Passkalender 10502 (jump-in): direct Reisepass jump-in must show only Pass-family combination services and book consistently to provider 10502 in Ort, Ausgewählter Termin, booking summary, and confirmation views. ---
+  @jumpin @passCalendar
+  Scenario: Reisepass jump-in Passkalender 10502 books to provider 10502 with correct summaries
+    Given I open zmscitizenview with jump-in service "1063453" and location "10502"
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    And only Pass calendar services should be offered on the combination step
+    When I continue from the service combination step
+    Then provider checkbox 10502 should be visible in the citizen view
+    And provider checkbox 10489 should not appear in the citizen view
+    And provider checkbox 10492 should not appear in the citizen view
+    When I select office 10502 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- Hauptkalender 10489 (jump-in, allowDisabledServicesMix): Pass jump-in lands on the combination step where Pass is combinable with Wohnsitzanmeldung. Booking must stay on Hauptkalender provider 10489, with duration 15 → 30 minutes after adding Wohnsitzanmeldung. ---
+  @jumpin @mainCalendar
+  Scenario: Non-Pass jump-in Hauptkalender 10489 shows Pass combinable and books to provider 10489
+    Given I open zmscitizenview with jump-in service "1063453" and location "10489"
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    When I add subservice "Wohnsitzanmeldung" with quantity 1 on the service combination step
+    Then the estimated duration on the service combination step should be 30 minutes
+    And I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the booking summary should be 30 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the confirmation view should be 30 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- Abholung 10295182 (jump-in): pick-up service is only offered at provider 10492 (KVR-II/211). Jump-in must show only 10492 on Ort, and the booking must stay on 10492 in all summary views. ---
+  @jumpin @pickupCalendar
+  Scenario: Abholung jump-in only Abholstandort 10492 and books to provider 10492
+    Given I open zmscitizenview with jump-in service "10295182" and location "10492"
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 10 minutes
+    When I continue from the service combination step
+    Then provider checkbox 10492 should be visible in the citizen view
+    And provider checkbox 10489 should not appear in the citizen view
+    And provider checkbox 10502 should not appear in the citizen view
+    When I select office 10492 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10492 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10492 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10492 in the citizen view
+    And the estimated duration in the booking summary should be 10 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10492 in the citizen view
+    And the estimated duration in the confirmation view should be 10 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- Full entry (no jump-in): Service Finder path for Personalausweis without preselected office. Passkalender 10502 scenario — only Pass-family services on the combination step and booking tied to provider 10502 throughout. ---
+  @serviceFinder @passCalendar
+  Scenario: Personalausweis full entry Passkalender 10502
+    Given I open the zmscitizenview booking page
+    Then the Service Finder should be visible on the start page
+    When I select service "Personalausweis" from the service finder and continue
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    When I continue from the service combination step
+    Then provider checkbox 10502 should be visible in the citizen view
+    And I keep only providers "10502" checked in the citizen view
+    When I select office 10502 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10502 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the booking summary should be 15 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    # Second mail fetch: confirmation mail (with appointment view link) exists only after opening the confirm link above
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10502 in the citizen view
+    And the estimated duration in the confirmation view should be 15 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- Full entry (no jump-in): Service Finder path for Personalausweis with Hauptkalender 10489. Pass is combinable with Wohnsitzanmeldung on the combination step; adding Wohnsitzanmeldung changes duration 15 → 30 minutes and booking must be tied to provider 10489 in all summaries. ---
+  @serviceFinder @mainCalendar
+  Scenario: Personalausweis full entry Hauptkalender 10489
+    Given I open the zmscitizenview booking page
+    Then the Service Finder should be visible on the start page
+    When I select service "Personalausweis" from the service finder and continue
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    When I add subservice "Wohnsitzanmeldung" with quantity 1 on the service combination step
+    Then the estimated duration on the service combination step should be 30 minutes
+    And I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    And I keep only providers "10489" checked in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the booking summary should be 30 minutes in the citizen view
+    When I accept privacy and communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the confirmation view should be 30 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view

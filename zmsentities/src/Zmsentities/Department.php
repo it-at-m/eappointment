@@ -27,29 +27,6 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return ($this->toProperty()->email->isAvailable() && $this->toProperty()->email->get());
     }
 
-    public function hasNotificationEnabled()
-    {
-        $prefs = $this->getNotificationPreferences();
-        return ($prefs['identification'] && $prefs['enabled']);
-    }
-
-    public function hasNotificationReminderEnabled()
-    {
-        $prefs = $this->getNotificationPreferences();
-        return ($this->hasNotificationEnabled() && $prefs['sendReminderEnabled']);
-    }
-
-    public function hasNotificationConfirmationEnabled()
-    {
-        $prefs = $this->getNotificationPreferences();
-        return ($this->hasNotificationEnabled() && $prefs['sendConfirmationEnabled']);
-    }
-
-    public function getNotificationPreferences()
-    {
-        return $this->toProperty()->preferences->notifications->get();
-    }
-
     public function getContactPerson()
     {
         return $this->toProperty()->contact->name->get();
@@ -170,8 +147,6 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         if (isset($entity['preferences'])) {
             unset($entity['preferences']);
             $entity['preferences'] = [];
-            $entity['preferences']['notifications'] = [];
-            $entity['preferences']['notifications']['enabled'] = $this['preferences']['notifications']['enabled'];
         }
         if (isset($entity['email'])) {
             unset($entity['email']);

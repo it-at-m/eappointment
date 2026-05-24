@@ -175,68 +175,6 @@
                                 }
                             }]
                         ) }}
-                        {% if department.preferences.notifications.enabled %}
-                            <div id="sms">
-                                {% if department.preferences.notifications.sendConfirmationEnabled %}
-                                    {{ formgroup(
-                                        {},
-                                        [{
-                                            "type": "checkbox",
-                                            "parameter": {
-                                                "name": "sendConfirmation",
-                                                "label": "Terminbestätigung per SMS",
-                                                "value": 1,
-                                                "accesskey":"b",
-                                                "checked": 0
-                                            }
-                                        }]
-                                    ) }}
-                                {% endif %}
-                                {% if scope.preferences.appointment.notificationHeadsUpEnabled and department.preferences.notifications.sendReminderEnabled %}
-
-                                    {% set selectedProcessHeadsUpTime = 0 %}
-                                    {% set minutesToAppointment = selectedDate|date('U') %}
-                                    {% if selectedProcess %}
-                                        {% set selectedProcessHeadsUpTime = selectedProcess.appointments|first.date - selectedProcess.reminderTimestamp %}
-                                        {% set minutesToAppointment = (selectedProcess.appointments|first.date - getNow()|date('U')) / 60 %}
-                                    {% endif %}
-                                    {% set allowedHeadsUpTime = [30,60,120,180,240,1440,2880] %}
-                                    {% set headsUpTimeOptions = [{"value": 0, "name": "ohne Erinnerung"}] %}
-                                    {% for headsUpTimeValue in allowedHeadsUpTime %}
-                                        {% set value = headsUpTimeValue / 60 %}
-                                        {% if value < 1 %}
-                                            {% set label = headsUpTimeValue ~ " Minuten" %}
-                                        {% elseif value == 1 %}
-                                            {% set label = "1 Stunde" %}
-                                        {% elseif value > 1 and value < 24 %}
-                                            {% set label = value ~ " Stunden" %}
-                                        {% elseif value == 24 %}
-                                            {% set label = "1 Tag" %}
-                                        {% elseif value > 24 %}
-                                            {% set label = value / 24 ~ " Tage" %}
-                                        {% endif %}
-
-                                        {% if headsUpTimeValue * 60 == selectedProcessHeadsUpTime %}{% set selected = "selected"%}{% else %}{% set selected = ""%}{% endif %}
-
-                                        {% if headsUpTimeValue <= minutesToAppointment %}
-                                            {% set headsUpTimeOptions = headsUpTimeOptions|merge([{ "value": headsUpTimeValue * 60, "name": label ~ " vorher", "selected": selected }]) %}
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {{ formgroup(
-                                        {"label": "Terminerinnerung per SMS"},
-                                        [{
-                                            "type": "select",
-                                            "parameter": {
-                                                "name": "headsUpTime",
-                                                "options": headsUpTimeOptions,
-                                                "accesskey":"r"
-                                            }
-                                        }]
-                                    ) }}
-                                {% endif %}
-                            </div>
-                        {% endif %}
 
                         {% if scope.preferences.client.emailRequired or scope.preferences.client.emailFrom %}
                             <div id="email">

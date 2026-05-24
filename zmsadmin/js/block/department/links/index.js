@@ -96,36 +96,34 @@ class LinksView extends Component {
 
     componentDidMount() {
         getEntity('link').then((entity) => {
-            this.setState({
-                links: this.props.links.length > 0 ? this.props.links : [entity]
-            })
+            this.setState((prevState, props) => ({
+                links: props.links.length > 0 ? props.links : [entity]
+            }))
         })
     }
 
     changeItemField(index, field, value) {
         //console.log('change item field', index, field, value)
-        this.setState({
-            links: this.state.links.map((link, linkIndex) => {
+        this.setState((prevState) => ({
+            links: prevState.links.map((link, linkIndex) => {
                 return index === linkIndex ? Object.assign({}, link, { [field]: value }) : link
             })
-        })
+        }))
     }
 
     addNewItem() {
         getEntity('link').then((entity) => {
-            this.setState({
-                links: this.state.links.concat([entity])
-            })
+            this.setState((prevState) => ({
+                links: prevState.links.concat([entity])
+            }))
         })
 
     }
 
     deleteItem(deleteIndex) {
-        this.setState({
-            links: this.state.links.filter((link, index) => {
-                return index !== deleteIndex
-            })
-        })
+        this.setState((prevState) => ({
+            links: prevState.links.filter((link, index) => index !== deleteIndex)
+        }))
     }
 
     render() {

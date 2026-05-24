@@ -70,22 +70,47 @@ class CallDisplayConfigView extends Component {
         })
     }
 
-    buildHost() {
-        return document.location.origin;
+    buildAppUrlFromPath(basePath, hashParameters, target, displayNumber = 1) {
+        if (typeof document === 'undefined' || !document.location) {
+            return ''
+        }
+        const origin = document.location.origin
+        if (typeof basePath !== 'string' || !basePath.trim()) {
+            return ''
+        }
+        let url
+        try {
+            url = new URL(basePath.trim(), origin)
+        } catch {
+            return ''
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return ''
+        }
+        if (url.origin !== origin) {
+            return ''
+        }
+        const queryParts = this.buildParameters(hashParameters, target, displayNumber)
+        for (const part of queryParts) {
+            const eq = part.indexOf('=')
+            if (eq === -1) {
+                continue
+            }
+            const key = part.slice(0, eq)
+            const value = part.slice(eq + 1)
+            url.searchParams.append(key, value)
+        }
+        return url.toString()
     }
 
     buildCalldisplayUrl(displayNumber = 1) {
-        const baseUrl  = this.props.config.calldisplay.baseUrl
-        let parameters = this.buildParameters(false, 'calldisplay', displayNumber);
-
-        return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
+        const baseUrl = this.props.config?.calldisplay?.baseUrl
+        return this.buildAppUrlFromPath(baseUrl, false, 'calldisplay', displayNumber)
     }
 
     buildWebcalldisplayUrl() {
-        const baseUrl  = this.props.config.webcalldisplay.baseUrl
-        let parameters = this.buildParameters(true, 'webcalldisplay');
-
-        return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
+        const baseUrl = this.props.config?.webcalldisplay?.baseUrl
+        return this.buildAppUrlFromPath(baseUrl, true, 'webcalldisplay')
     }
 
     buildParameters(hashParameters, target = 'calldisplay', displayNumber = 1) {
@@ -290,6 +315,9 @@ class CallDisplayConfigView extends Component {
         const calldisplayUrl = this.buildCalldisplayUrl()
         const calldisplayUrl2 = this.buildCalldisplayUrl(2)
         const webcalldisplayUrl = this.buildWebcalldisplayUrl()
+        const calldisplayHref = calldisplayUrl || undefined
+        const calldisplayHref2 = calldisplayUrl2 || undefined
+        const webcalldisplayHref = webcalldisplayUrl || undefined
 
         const onQueueStatusChange = (_, value) => {
             this.setState({
@@ -365,7 +393,20 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                    <a
+                        href={calldisplayHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="button button-submit"
+                        aria-disabled={!calldisplayUrl}
+                        onClick={ev => {
+                            if (!calldisplayUrl) {
+                                ev.preventDefault()
+                            }
+                        }}
+                    >
+                        <i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen
+                    </a>
                 </div>
 
 
@@ -380,7 +421,20 @@ class CallDisplayConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <div className="form-actions">
-                        <a href={calldisplayUrl2} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                        <a
+                            href={calldisplayHref2}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="button button-submit"
+                            aria-disabled={!calldisplayUrl2}
+                            onClick={ev => {
+                                if (!calldisplayUrl2) {
+                                    ev.preventDefault()
+                                }
+                            }}
+                        >
+                            <i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen
+                        </a>
                     </div>
                 </div>
                     : null }
@@ -413,7 +467,20 @@ class CallDisplayConfigView extends Component {
                 </FormGroup>
                 <div className="form-actions">
                     <button className="button" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
-                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> in der mobilen Anzeige öffnen</a>
+                    <a
+                        href={webcalldisplayHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="button button-submit"
+                        aria-disabled={!webcalldisplayUrl}
+                        onClick={ev => {
+                            if (!webcalldisplayUrl) {
+                                ev.preventDefault()
+                            }
+                        }}
+                    >
+                        <i className="fas fa-external-link-alt"></i> in der mobilen Anzeige öffnen
+                    </a>
                 </div>
                 { this.state.showQrCode ? <QrCodeView text='QrCode für die mobile Ansicht des Aufrufsystems' targetUrl={webcalldisplayUrl} togglePopup={this.toggleQrCodeView.bind(this)} /> : null }
             </form>
@@ -427,10 +494,10 @@ CallDisplayConfigView.propTypes = {
     organisation: PropTypes.object,
     config: PropTypes.shape({
         calldisplay: PropTypes.shape({
-            baseUrl: PropTypes.object
+            baseUrl: PropTypes.string
         }),
         webcalldisplay: PropTypes.shape({
-            baseUrl: PropTypes.object
+            baseUrl: PropTypes.string
         })
     })
 }

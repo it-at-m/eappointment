@@ -61,8 +61,9 @@ class BaseView extends BindHandler {
         }
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
-            destroyLightbox(),
-                (callbackAsBackgroundAction) ? callback() : () => { }
+            if (callbackAsBackgroundAction) {
+                callback();
+            }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,

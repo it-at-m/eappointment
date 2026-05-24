@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportRequestIndex extends BaseController
 {
-    protected $resolveLevel = 3;
+    protected $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -108,7 +108,7 @@ class ReportRequestIndex extends BaseController
             $response,
             'page/reportRequestIndex.twig',
             array(
-                'title' => 'Kundenstatistik Standort',
+                'title' => 'Dienstleistungsstatistik Standort',
                 'activeScope' => 'active',
                 'menuActive' => 'request',
                 'department' => $this->department,

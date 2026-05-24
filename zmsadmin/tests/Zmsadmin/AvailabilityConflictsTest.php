@@ -6,7 +6,7 @@ class AvailabilityConflictsTest extends Base
 {
     protected $arguments = [];
 
-    protected $classname = "AvailabilityConflicts";
+    protected $classname = "\BO\Zmsadmin\Helper\AvailabilityConflicts";
 
     public function testRendering()
     {
@@ -35,7 +35,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -83,9 +82,7 @@ class AvailabilityConflictsTest extends Base
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
-                                    "startInDaysDefault": "0",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "0"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -94,11 +91,6 @@ class AvailabilityConflictsTest extends Base
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": 0
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                    "headsUpTime": "30"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -116,11 +108,7 @@ class AvailabilityConflictsTest extends Base
                                 },
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
-                                    "confirmationEnabled": "0",
-                                    "deactivatedText": "",
-                                    "notificationsAmendmentEnabled": "0",
-                                    "notificationsEnabled": "1",
-                                    "notificationsDelay": "0"
+                                    "deactivatedText": ""
                                 },
                                 "workstation": {
                                     "emergencyEnabled": "1",
@@ -493,7 +481,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": 0,
-                            "callcenter": 0,
                             "intern": 0
                         },
                         "lastChange": 1566566532,
@@ -541,9 +528,7 @@ class AvailabilityConflictsTest extends Base
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
-                                    "startInDaysDefault": "0",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "0"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -552,11 +537,6 @@ class AvailabilityConflictsTest extends Base
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": 0
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                    "headsUpTime": "30"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -574,11 +554,7 @@ class AvailabilityConflictsTest extends Base
                                 },
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
-                                    "confirmationEnabled": "0",
-                                    "deactivatedText": "",
-                                    "notificationsAmendmentEnabled": "0",
-                                    "notificationsEnabled": "1",
-                                    "notificationsDelay": "0"
+                                    "deactivatedText": ""
                                 },
                                 "workstation": {
                                     "emergencyEnabled": "1",
@@ -952,7 +928,6 @@ class AvailabilityConflictsTest extends Base
                         },
                         "workstationCount": {
                             "public": "3",
-                            "callcenter": "3",
                             "intern": "3"
                         },
                         "lastChange": 1566566532,
@@ -1000,9 +975,7 @@ class AvailabilityConflictsTest extends Base
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
-                                    "startInDaysDefault": "0",
-                                    "notificationConfirmationEnabled": "1",
-                                    "notificationHeadsUpEnabled": "1"
+                                    "startInDaysDefault": "0"
                                 },
                                 "client": {
                                     "amendmentActivated": "0",
@@ -1011,11 +984,6 @@ class AvailabilityConflictsTest extends Base
                                     "emailRequired": "0",
                                     "telephoneActivated": "0",
                                     "telephoneRequired": 0
-                                },
-                                "notifications": {
-                                    "confirmationContent": "",
-                                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                    "headsUpTime": "30"
                                 },
                                 "queue": {
                                     "callCountMax": "0",
@@ -1033,11 +1001,7 @@ class AvailabilityConflictsTest extends Base
                                 },
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
-                                    "confirmationEnabled": "0",
-                                    "deactivatedText": "",
-                                    "notificationsAmendmentEnabled": "0",
-                                    "notificationsEnabled": "1",
-                                    "notificationsDelay": "0"
+                                    "deactivatedText": ""
                                 },
                                 "workstation": {
                                     "emergencyEnabled": "1",
@@ -1413,7 +1377,6 @@ class AvailabilityConflictsTest extends Base
                     },
                     "workstationCount": {
                         "public": "3",
-                        "callcenter": "3",
                         "intern": "3"
                     },
                     "lastChange": 1566566532,
@@ -1461,9 +1424,7 @@ class AvailabilityConflictsTest extends Base
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
-                                "startInDaysDefault": "0",
-                                "notificationConfirmationEnabled": "1",
-                                "notificationHeadsUpEnabled": "1"
+                                "startInDaysDefault": "0"
                             },
                             "client": {
                                 "amendmentActivated": "0",
@@ -1472,11 +1433,6 @@ class AvailabilityConflictsTest extends Base
                                 "emailRequired": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": 0
-                            },
-                            "notifications": {
-                                "confirmationContent": "",
-                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                                "headsUpTime": "30"
                             },
                             "queue": {
                                 "callCountMax": "0",
@@ -1494,11 +1450,7 @@ class AvailabilityConflictsTest extends Base
                             },
                             "ticketprinter": {
                                 "buttonName": "Bürgeramt",
-                                "confirmationEnabled": "0",
-                                "deactivatedText": "",
-                                "notificationsAmendmentEnabled": "0",
-                                "notificationsEnabled": "1",
-                                "notificationsDelay": "0"
+                                "deactivatedText": ""
                             },
                             "workstation": {
                                 "emergencyEnabled": "1",

@@ -83,14 +83,15 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
                 (availability.tempId && availability.__modified)
             ); 
 
-            const isSelected = (data && (
+            const isSelected = Boolean(data && (
                 (data.id && availability.id == data.id) || 
-                (data.tempId && availability.tempId == data.tempId))
-            );
+                (data.tempId && availability.tempId == data.tempId)
+            ));
 
             return (
     <tr 
         key={key} 
+        aria-selected={isSelected}
         style={(() => {
             const hasDescriptionText = (text) => 
                 availability?.description?.includes(text);
@@ -147,7 +148,7 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
                 {availability.slotTimeInMinutes}min
             </td>
             <td>
-                {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
+                {availability.workstationCount.intern}/{availability.workstationCount.public}
             </td>
             <td>
                 {(availability.bookable?.startInDays !== undefined && availability.bookable?.startInDays !== null && availability.bookable?.startInDays !== '' 

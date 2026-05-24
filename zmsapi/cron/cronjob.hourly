@@ -4,7 +4,19 @@ BIN=$DIR/../vendor/bin
 EXPORT=$DIR/../data/
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
+[ -e /etc/sysconfig/zms-proxy ] && source /etc/sysconfig/zms-proxy
 set +a
+# Non-interactive jobs (cron, CI) never load ~/.bashrc — same proxy as interactive curl
+if [ -z "${HTTPS_PROXY:-}${https_proxy:-}${HTTP_PROXY:-}${http_proxy:-}" ] && [ -f "${HOME:-/root}/.bashrc" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            export\ HTTPS_PROXY=*|export\ https_proxy=*|export\ HTTP_PROXY=*|export\ http_proxy=*|export\ NO_PROXY=*|export\ no_proxy=*|HTTPS_PROXY=*|https_proxy=*|HTTP_PROXY=*|http_proxy=*|NO_PROXY=*|no_proxy=*)
+                line="${line#export }"
+                export "$line" 2>/dev/null || true
+                ;;
+        esac
+    done < "${HOME:-/root}/.bashrc"
+fi
 
 # Parse --city flag
 CITY=""

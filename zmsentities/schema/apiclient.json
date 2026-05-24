@@ -37,7 +37,6 @@
             "description": "access level of the api key",
             "enum": [
                 "public",
-                "callcenter",
                 "intern",
                 "blocked"
             ]

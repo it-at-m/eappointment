@@ -350,6 +350,7 @@ EOS;
             name 
             data { 
                 payment 
+                slotTimeInMinutes
             }
         }
         preferences{

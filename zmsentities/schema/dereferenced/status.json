@@ -96,23 +96,6 @@
                 }
             }
         },
-        "notification": {
-            "type": "object",
-            "properties": {
-                "queueCount": {
-                    "type": "number",
-                    "description": "Number of unsend items in the queue"
-                },
-                "oldestSeconds": {
-                    "type": "number",
-                    "description": "Unix timestamp of oldest unsend item in queue"
-                },
-                "newestSeconds": {
-                    "type": "number",
-                    "description": "Unix timestamp of newest unsend item in queue"
-                }
-            }
-        },
         "database": {
             "type": "object",
             "properties": {

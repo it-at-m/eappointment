@@ -22,7 +22,6 @@ class SessionTest extends EntityCommonTests
         $this->assertTrue($entity->hasRequests(), 'requests not accessible');
         $this->assertTrue($entity->hasProvider(), 'providers not accessible');
         $this->assertTrue($entity->hasScope(), 'scope not accessible');
-        $this->assertFalse($entity->hasConfirmationNotification(), 'confirmation notification should not be set');
         $this->assertTrue($entity->hasAuthKey(), 'authKey should be set');
         $this->assertTrue($entity->hasDate(), 'date should be set');
         $this->assertFalse(

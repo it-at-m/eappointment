@@ -10,6 +10,15 @@ class WorkstationSelectTest extends Base
 
     protected $classname = "WorkstationSelect";
 
+    /**
+     * Request URI must contain "select" so Access::isPathWithoutScope() is false and
+     * WorkstationSelect is not treated like a route that requires an assigned scope.
+     */
+    private function selectPageParameters(array $extra = []): array
+    {
+        return array_merge(['__uri' => '/workstation/select/'], $extra);
+    }
+
     public function testRendering()
     {
         $this->setApiCalls(
@@ -17,8 +26,8 @@ class WorkstationSelectTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -37,7 +46,7 @@ class WorkstationSelectTest extends Base
                 ],
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
+        $response = $this->render($this->arguments, $this->selectPageParameters(), []);
         $this->assertStringContainsString('Standort auswählen', (string)$response->getBody());
         $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
@@ -53,12 +62,12 @@ class WorkstationSelectTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
+                    'parameters' => ['resolveReferences' => 2],
                     'exception' => $exception
                 ]
             ]
         );
-        $this->render($this->arguments, $this->parameters, []);
+        $this->render($this->arguments, $this->selectPageParameters(), []);
     }
 
     public function testRenderingSelect()
@@ -68,8 +77,8 @@ class WorkstationSelectTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -89,13 +98,13 @@ class WorkstationSelectTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [
+        $response = $this->render($this->arguments, $this->selectPageParameters([
             'scope' => 141
-        ], [], 'POST');
+        ]), [], 'POST');
         $this->assertRedirect($response, '/overview/');
         $this->assertEquals(302, $response->getStatusCode());
     }
@@ -107,8 +116,8 @@ class WorkstationSelectTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -127,9 +136,9 @@ class WorkstationSelectTest extends Base
                 ],
             ]
         );
-        $response = $this->render($this->arguments, [
+        $response = $this->render($this->arguments, $this->selectPageParameters([
             'scope' => ''
-        ], [], 'POST');
+        ]), [], 'POST');
         $this->assertStringContainsString('has-error', (string)$response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Standort aus', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());

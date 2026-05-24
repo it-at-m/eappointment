@@ -1,0 +1,76 @@
+{
+  "services": [],
+  "locations": [
+    {
+      "names": ["Hauptabteilung II Bürgerangelegenheiten", "Bürgerbüro Ruppertstraße"],
+      "displayName": "Bürgerbüro Ruppertstraße",
+      "altname1": "KVR-II/221",
+      "altname2": "Bürgerbüro Ruppertstraße",
+      "coordinate": {
+        "lat": "48.124681688670854",
+        "lon": "11.549865797138638",
+        "system": "wgs84"
+      },
+      "id": "10502",
+      "organisation": "Landeshauptstadt München",
+      "orgUnit": "Kreisverwaltungsreferat",
+      "address": {
+        "street": "Ruppertstraße",
+        "streetNumber": "19",
+        "zip": "80337",
+        "city": "München"
+      },
+      "postalAddress": {
+        "street": "Ruppertstraße",
+        "streetNumber": "19",
+        "zip": "80466",
+        "city": "München"
+      },
+      "phone": "089 233-96000",
+      "fax": "089 233-45371",
+      "email": "buergerbuero221.kvr@muenchen.de",
+      "communication": {
+        "phone": {"record": [{"number": "089 233-96000"}]},
+        "fax": {"record": [{"number": "089 233-45371"}]},
+        "label": "buergerbuero221.kvr@muenchen.de"
+      },
+      "extendedServiceReferences": [
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "1063453",
+          "public": true
+        },
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "1063441",
+          "public": true
+        },
+        {
+          "fields": [{
+            "label": "ZMS intern",
+            "id": "sf33",
+            "name": "ZMS_INTERN",
+            "type": "BOOLEAN",
+            "value": false
+          }],
+          "refId": "1080582",
+          "public": true
+        }
+      ],
+      "extendedLocationType": true,
+      "public": true
+    }
+  ]
+}

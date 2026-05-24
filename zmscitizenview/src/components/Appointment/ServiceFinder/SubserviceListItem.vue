@@ -3,6 +3,7 @@
     <div class="list-item">
       <muc-counter
         v-model="count"
+        :id="`service-${subService.id}`"
         :label="subService.name"
         :link="getServiceBaseURL() + subService.id"
         :max="maxValue"
@@ -16,14 +17,17 @@
 import { MucCounter } from "@muenchen/muc-patternlab-vue";
 import { computed, ref, watch } from "vue";
 
-import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
-import { getServiceBaseURL, MAX_SLOTS } from "@/utils/Constants";
+import { getServiceBaseURL } from "@/utils/Constants";
+import {
+  calculateMaxCountBySlots,
+  getMaxSlotOfProvider,
+} from "@/utils/slotCalculations";
 
 const props = defineProps<{
   subService: SubService;
   currentSlots: number;
-  maxSlotsPerAppointment: number;
+  minSlotsPerAppointment: number;
 }>();
 
 const emit = defineEmits<(e: "change", id: string, count: number) => void>();
@@ -34,29 +38,31 @@ watch(count, (newCount) => {
   emit("change", props.subService.id, newCount);
 });
 
+/**
+ * Calculates the maximum count for this subservice, considering both:
+ * - maxQuantity: the subservice's own limit
+ * - minSlotsPerAppointment: remaining slots after accounting for main service and other subservices
+ */
 const maxValue = computed(() => {
-  return checkPlusEndabled.value ? props.subService.maxQuantity : count.value;
+  const subServiceSlots = getMaxSlotOfProvider(props.subService.providers);
+
+  // Calculate slots currently used by this subservice
+  const thisSlotsUsed = subServiceSlots * count.value;
+
+  // Slots used by others = currentSlots - this subservice's contribution
+  const slotsUsedByOthers = props.currentSlots - thisSlotsUsed;
+
+  return calculateMaxCountBySlots(
+    subServiceSlots,
+    props.subService.maxQuantity,
+    props.minSlotsPerAppointment,
+    slotsUsedByOthers
+  );
 });
 
 const disabled = computed(() => {
-  return !checkPlusEndabled.value && count.value === 0;
+  return maxValue.value === 0 && count.value === 0;
 });
-
-const checkPlusEndabled = computed(
-  () =>
-    props.currentSlots + getMinSlotOfProvider(props.subService.providers) <=
-    props.maxSlotsPerAppointment
-);
-
-const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
-  let minSlot = MAX_SLOTS;
-  provider.forEach((provider) => {
-    if (provider.slots) {
-      minSlot = Math.min(minSlot, provider.slots);
-    }
-  });
-  return minSlot;
-};
 </script>
 
 <style lang="scss" scoped>

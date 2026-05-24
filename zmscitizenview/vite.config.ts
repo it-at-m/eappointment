@@ -36,7 +36,33 @@ export default defineConfig({
     ],
   },
   server: {
+    host: '0.0.0.0',
     port: 8082,
+    watch: {
+      // In containerized dev on macOS/Podman, inotify events may not
+      // propagate correctly for bind mounts, so force polling.
+      usePolling: true,
+    },
+    // Allow dev server access via the Docker service name "citizenview"
+    // from the zms-web container (used by ATAF UI tests).
+    allowedHosts: ['citizenview'],
+    proxy: {
+      '/buergeransicht/api': {
+        target: 'http://refarch-gateway:8080',
+        changeOrigin: true,
+        // zmscitizenapi prefers HTTP_X_FORWARDED_HOST for ACCESS_UNPUBLISHED_ON_DOMAIN; changeOrigin
+        // overwrites Host to refarch-gateway, so forward the browser host for gateway → zms-web.
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            const raw = req.headers.host
+            const host = Array.isArray(raw) ? raw[0] : raw
+            if (host) {
+              proxyReq.setHeader('X-Forwarded-Host', host)
+            }
+          })
+        },
+      },
+    },
   },
   build: {
     ssrManifest: true,

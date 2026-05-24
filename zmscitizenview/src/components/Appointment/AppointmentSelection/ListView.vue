@@ -461,7 +461,7 @@ async function snapToNearestForCurrentSelection() {
         if (day) {
           const availableDayParts = getListDayAvailableDayParts(day);
           if (availableDayParts.length > 0) {
-            let newDayPart = currentDayPart;
+            let newDayPart: "am" | "pm";
             if (currentDayPart === "am" && availableDayParts.includes("pm")) {
               newDayPart = "pm";
             } else if (

@@ -22,13 +22,14 @@ const background = () => {
     </div>
 }
 
-const conflicts = (showConflicts, conflicts) => {
-    if (showConflicts) {
-        return (
-            <div className="bars conflict-level">{conflicts}</div>
-        )
+const renderConflictLayer = (showConflicts, conflictNodes) => {
+    if (!showConflicts) {
+        return null;
     }
-}
+    return (
+        <div className="bars conflict-level">{conflictNodes}</div>
+    );
+};
 
 const refScroll = (element) => {
     if (element)
@@ -51,6 +52,7 @@ const GraphBodyLayout = (props) => {
                     <div className="availability-timetable_container" ref={refScroll} style={{ fontSize: "70px" }} >
                         <div className="inner">
                             {background()}
+                            {renderConflictLayer(props.showConflicts, props.conflicts)}
                             <div className="bars opening-level">{props.openings}</div>
                         </div>
                     </div>

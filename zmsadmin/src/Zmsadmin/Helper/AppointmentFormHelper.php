@@ -100,17 +100,12 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMailAndNotification($formData, \BO\Zmsentities\Process $process)
+    public static function updateMail($formData, \BO\Zmsentities\Process $process)
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
             $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
             self::writeMail($mailConfirmation, $process);
-        }
-        if (isset($formData['sendConfirmation'])) {
-            $smsConfirmation = $formData['sendConfirmation'];
-            $smsConfirmation = (isset($smsConfirmation['value'])) ? $smsConfirmation['value'] : $smsConfirmation;
-            self::writeNotification($smsConfirmation, $process);
         }
     }
 
@@ -164,20 +159,6 @@ class AppointmentFormHelper
             ? $process->getFirstAppointment()->getSlotCount()
             : $slotsRequired;
         return $slotsRequired;
-    }
-
-    protected static function writeNotification($smsConfirmation, \BO\Zmsentities\Process $process)
-    {
-        if (
-            $smsConfirmation &&
-            $process->scope->hasNotificationEnabled() &&
-            $process->getFirstClient()->hasTelephone()
-        ) {
-            \App::$http->readPostResult(
-                '/process/' . $process->id . '/' . $process->authKey . '/confirmation/notification/',
-                $process
-            );
-        }
     }
 
     protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process)

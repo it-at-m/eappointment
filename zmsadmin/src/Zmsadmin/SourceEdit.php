@@ -35,9 +35,8 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
-        $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
-        $parentProviders = $parents->providers ?? [];
-        $parentRequests  = $parents->requests  ?? [];
+        $currentSource = $args['name'] ?? null;
+        [$parentProviders, $parentRequests] = $this->loadParentsFromSources($currentSource);
 
         try {
             $apiRes  = \App::$http->readGetResult('/requestvariants/');
@@ -82,5 +81,38 @@ class SourceEdit extends BaseController
         return $this->handleEntityWrite(function () use ($entity) {
             return \App::$http->readPostResult('/source/', $entity)->getEntity();
         });
+    }
+
+    private function loadParentsFromSources(?string $currentSource): array
+    {
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 2])->getCollection();
+
+        $allowed = ['dldb'];
+        if ($currentSource && $currentSource !== 'add') {
+            $allowed[] = $currentSource;
+        }
+        $allowed = array_unique($allowed);
+
+        $parentProviders = [];
+        $parentRequests  = [];
+
+        foreach ($sourceList as $fullSource) {
+            $srcName = $fullSource->source ?? null;
+            if (!$srcName || !in_array($srcName, $allowed, true)) {
+                continue;
+            }
+
+            foreach (($fullSource->providers ?? []) as $provider) {
+                $parentProviders[] = $provider;
+            }
+            foreach (($fullSource->requests ?? []) as $req) {
+                $parentRequests[] = $req;
+            }
+        }
+
+        usort($parentProviders, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+        usort($parentRequests, fn($a, $b) => strcasecmp($a->name ?? '', $b->name ?? ''));
+
+        return [$parentProviders, $parentRequests];
     }
 }

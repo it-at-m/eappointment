@@ -27,7 +27,7 @@ class View extends BaseView {
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
         this.slotsRequired = 0;
-        this.reloadTimer;
+        this.reloadTimer = null;
         this.lastReload = 0;
         this.initiator = 'Sachbearbeiter';
         this.bindPublicMethods(
@@ -55,8 +55,6 @@ class View extends BaseView {
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
-            'onSendCustomNotification',
-            'onSendNotificationReminder',
             'onReloadQueueTable',
             'onChangeTableView',
             'onChangeSlotCount',
@@ -106,8 +104,10 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        if ('counter' == this.page)
+        if ('counter' == this.page){
+            this.loadAppointmentTimes();
             this.loadQueueInfo();
+        }
         this.loadQueueTable();
         this.loadAppointmentForm(true, !this.selectedProcess).loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
@@ -458,7 +458,7 @@ class View extends BaseView {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
-            this.loadDialog(response, (() => {
+            const submitDialog = () => {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
@@ -466,44 +466,19 @@ class View extends BaseView {
                     { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
-                    (response) => this.loadMessage(response, () => {
-                    }, null, event.currentTarget)
+                    (response) => {
+                        hideSpinner($container);
+                        const hasDialogForm = $(response).find('form[name="mail"]').length > 0;
+                        if (hasDialogForm) {
+                            this.loadDialog(response, submitDialog, null, event.currentTarget);
+                            return;
+                        }
+                        this.loadMessage(response, () => {}, null, event.currentTarget);
+                    }
                 );
-            }), null, event.currentTarget)
+            };
+            this.loadDialog(response, submitDialog, null, event.currentTarget)
         });
-    }
-
-    onSendCustomNotification($container, event) {
-        stopEvent(event);
-        const processId = $(event.currentTarget).data('process');
-        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&dialog=1`).then((response) => {
-            this.loadDialog(response, (() => {
-                showSpinner($container);
-                const sendData = $('.dialog form').serializeArray();
-                sendData.push(
-                    { 'name': 'submit', 'value': 'form' },
-                    { 'name': 'dialog', 'value': 1 }
-                );
-                this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-                    (response) => this.loadMessage(response, () => {
-                    }, null, event.currentTarget)
-                );
-            }), null, event.currentTarget)
-        });
-    }
-
-    onSendNotificationReminder($container, event) {
-        stopEvent(event);
-        showSpinner($container);
-        const processId = $(event.currentTarget).data('process');
-        const sendData = {
-            'selectedprocess': processId,
-            'submit': 'reminder'
-        }
-        this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
-            (response) => this.loadMessage(response, () => {
-            }, null, event.currentTarget)
-        );
     }
 
     onGhostWorkstationChange($container, event) {
@@ -622,8 +597,6 @@ class View extends BaseView {
             onResetProcess: this.onResetProcess,
             onAbortMessage: this.onAbortMessage,
             onSendCustomMail: this.onSendCustomMail,
-            onSendCustomNotification: this.onSendCustomNotification,
-            onSendNotificationReminder: this.onSendNotificationReminder,
             onChangeScope: this.onChangeScope,
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,

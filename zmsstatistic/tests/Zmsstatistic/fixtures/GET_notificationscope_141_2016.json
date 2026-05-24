@@ -16,7 +16,6 @@
       "freeAppointments": {
         "public": 0,
         "intern": 0,
-        "callcenter": 0,
         "type": "free"
       }
     },
@@ -28,7 +27,6 @@
       "freeAppointments": {
         "public": 0,
         "intern": 0,
-        "callcenter": 0,
         "type": "free"
       }
     },
@@ -67,13 +65,6 @@
         "variable": "scopename",
         "type": "string",
         "description": "name of the scope",
-        "reference": ""
-      },
-      {
-        "position": 5,
-        "variable": "notificationscount",
-        "type": "number",
-        "description": "Amount of notifications ",
         "reference": ""
       }
     ],

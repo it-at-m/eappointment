@@ -28,11 +28,6 @@
       "oldestSeconds": "17952",
       "newestSeconds": "11903"
     },
-    "notification": {
-      "queueCount": "4",
-      "oldestSeconds": "81051",
-      "newestSeconds": "81051"
-    },
     "sources": {
       "dldb": {
         "last": "2018-04-10T14:47:06+02:00"

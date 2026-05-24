@@ -37,8 +37,6 @@ definitions:
     $ref: "schema/mimepart.json"
   metaresult:
     $ref: "schema/metaresult.json"
-  notification:
-    $ref: "schema/notification.json"
   organisation:
     $ref: "schema/organisation.json"
   owner:

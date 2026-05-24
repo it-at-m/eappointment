@@ -158,14 +158,11 @@ class Department extends Base
             $emailDelete = $this->perform(Query\Department::QUERY_MAIL_DELETE, array(
                 $departmentId
             ));
-            $notificationsDelete = $this->perform(Query\Department::QUERY_NOTIFICATIONS_DELETE, array(
-                $departmentId
-            ));
         }
 
         $this->removeCache($entity);
 
-        return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
+        return ($entity && $entityDelete && $emailDelete) ? $entity : null;
     }
 
     public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
@@ -193,9 +190,6 @@ class Department extends Base
                 $entity->sendEmailReminderEnabled,
                 $entity->sendEmailReminderMinutesBefore
             );
-        }
-        if ($entity->getNotificationPreferences()) {
-            $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         }
 
         $this->removeCache($entity);
@@ -225,7 +219,6 @@ class Department extends Base
                 $entity->sendEmailReminderMinutesBefore
             );
         }
-        $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         $this->removeCache($entity);
         return $this->readEntity($departmentId, 0, true);
     }
@@ -292,23 +285,6 @@ class Department extends Base
         return $result;
     }
 
-    protected function writeDepartmentNotifications($departmentId, $preferences)
-    {
-        self::$departmentCache = [];
-
-        $result = $this->perform(
-            Query\Department::QUERY_NOTIFICATIONS_INSERT,
-            array(
-                $departmentId,
-                (isset($preferences['enabled']) && $preferences['enabled']) ? 1 : 0,
-                $preferences['identification'],
-                (isset($preferences['sendConfirmationEnabled']) && $preferences['sendConfirmationEnabled']) ? 1 : 0,
-                (isset($preferences['sendReminderEnabled']) && $preferences['sendReminderEnabled']) ? 1 : 0
-            )
-        );
-        return $result;
-    }
-
     protected function updateDepartmentMail(
         $departmentId,
         $email,
@@ -323,26 +299,6 @@ class Department extends Base
             'sendEmailReminderEnabled' => $sendEmailReminderEnabled,
             'sendEmailReminderMinutesBefore' => $sendEmailReminderMinutesBefore
         ));
-    }
-
-    protected function updateDepartmentNotifications($departmentId, $preferences)
-    {
-        self::$departmentCache = [];
-        $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
-        return $this->fetchAffected(
-            $query,
-            array(
-                'enabled' =>
-                    (isset($preferences['enabled'])) ? $preferences['enabled'] : 0,
-                'identification' =>
-                    (isset($preferences['identification'])) ? $preferences['identification'] : 0,
-                'sendConfirmationEnabled' =>
-                    (isset($preferences['sendConfirmationEnabled'])) ? $preferences['sendConfirmationEnabled'] : 0,
-                'sendReminderEnabled' =>
-                    (isset($preferences['sendReminderEnabled'])) ? $preferences['sendReminderEnabled'] : 0,
-                'departmentId' => $departmentId
-            )
-        );
     }
 
     public function readQueueList(

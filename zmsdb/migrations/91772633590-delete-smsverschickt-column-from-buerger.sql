@@ -1,0 +1,2 @@
+ALTER TABLE buerger
+  DROP COLUMN IF EXISTS SMSverschickt;

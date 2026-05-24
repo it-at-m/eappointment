@@ -17,8 +17,7 @@
                 "clientAmendment": "Notiz zum Termin",
                 "clientCustomTextfield": "Notiz zum Termin",
                 "clientCustomTextfield2": "Notiz zum Termin",
-                "authKey": "1234",
-                "notificationConfirmation": false
+                "authKey": "1234"
             },
             "human": {
                 "captcha_text": "kck6Qz",
@@ -119,9 +118,6 @@
                         },
                         "authKey": {
                             "type": "string"
-                        },
-                        "notificationConfirmation": {
-                            "type": "boolean"
                         }
                     }
                 },

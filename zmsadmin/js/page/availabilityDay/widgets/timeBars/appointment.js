@@ -19,7 +19,7 @@ const Appointment = props => {
     const endTime = moment(data.endTime, 'hh:mm:ss').format('HH:mm');
 
     const description = (data.description) ? `${data.description}, ` : ``;
-    const title = `${description}${startTime} - ${endTime} - Insgesamt:${data.workstationCount.intern} / Callcenter: ${data.workstationCount.callcenter} / Internet: ${data.workstationCount.public}`
+    const title = `${description}${startTime} - ${endTime} - Insgesamt:${data.workstationCount.intern} / Internet: ${data.workstationCount.public}`
 
     const style = {
         height: `${heightEm}em`,

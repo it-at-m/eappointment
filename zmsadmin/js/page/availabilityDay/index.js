@@ -12,6 +12,8 @@ import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 import ExceptionHandler from '../../lib/exceptionHandler';
+import BaseView from '../../lib/baseview';
+import { buildConfirmDialogHtml } from '../../lib/confirmDialog';
 
 import {
     getInitialState,
@@ -91,7 +93,8 @@ class AvailabilityPage extends Component {
                 maxslots: data.maxSlotsForAvailabilities,
                 slotbuckets: data.slotBuckets,
             }
-            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
+            const mergedProps = Object.assign({}, this.props, newProps)
+            this.setState(() => Object.assign({}, getStateFromProps(mergedProps), {
                 stateChanged: false
             }))
 
@@ -101,42 +104,55 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
-        if (ok) {
-            showSpinner();
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendData = this.state.availabilitylist
-                .filter((availability) => {
-                    return (
-                        (availability.__modified ||
-                            (availability.tempId && availability.tempId.includes('__temp__'))) &&
-                        !this.hasErrors(availability)
+        const payload = this.prepareAvailabilityPayload();
+        $.ajax({
+            url: `${this.props.links.includeurl}/availability/checkdayoff/`,
+            method: 'POST',
+            data: JSON.stringify(payload),
+            contentType: 'application/json',
+            success: response => {
+                if (response.overridesDayOff) {
+                    const dialogHtml = buildConfirmDialogHtml(
+                        'Öffnungszeit für Feiertag',
+                        'Sie sind dabei, eine Öffnungszeit für einen Feiertag zu erstellen. Bitte beachten Sie, dass Feiertage normalerweise für Buchungen gesperrt sind.<br><br>Möchten Sie dennoch fortfahren und Termine für diesen Tag zur Buchung freigeben?',
+                        'Fortfahren'
                     );
-                })
-                .map(availability => {
-                    const sendAvailability = Object.assign({}, availability);
-                    if (availability.tempId) {
-                        delete sendAvailability.tempId;
-                    }
-                    if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
-                        sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
-                    }
-                    if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
-                        sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
-                    }
-                    return {
-                        ...sendAvailability,
-                        kind: availability.kind || 'default',
-                    };
-                })
-                .map(cleanupAvailabilityForSave);
+                    BaseView.loadDialogStatic(
+                        dialogHtml,
+                        () => this.doSaveUpdates(payload),
+                        () => {},
+                        { $main: $('body') }
+                    );
+                    return;
+                }
+                this.doSaveUpdates(payload);
+            },
+            error: (err) => {
+                let isException = err.responseText?.toLowerCase().includes('exception');
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.error('checkdayoff error', err);
+                }
+            }
+        });
+    }
 
-            const payload = {
-                availabilityList: sendData,
-                selectedDate: selectedDate
-            };
+    doSaveUpdates(payload) {
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeiten speichern',
+            'Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?',
+            'Speichern'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
 
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
@@ -150,21 +166,59 @@ class AvailabilityPage extends Component {
                 }
                 hideSpinner();
             }).fail((err) => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                let isException = err.responseText?.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
+                } else {
+                    console.error('save error', err);
                 }
                 this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
             });
-        } else {
-            hideSpinner();
-        }
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
+
+    prepareAvailabilityPayload() {
+    const selectedDate = formatTimestampDate(this.props.timestamp);
+
+    const defaultStartInDays = this.props.scope?.preferences?.appointment?.startInDaysDefault ?? 0;
+    const defaultEndInDays   = this.props.scope?.preferences?.appointment?.endInDaysDefault   ?? 60;
+
+    const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
+        const isModified = availability.__modified === true;
+        const isTemporary = availability.tempId?.includes('__temp__');
+        const hasErrors = this.hasErrors(availability);
+
+        return (isModified || isTemporary) && !hasErrors;
+    });
+
+    const availabilityPayload = modifiedAvailabilities.map(availability => {
+
+        const availabilityForBackend = { ...availability };
+        delete availabilityForBackend.tempId;
+        availabilityForBackend.bookable.startInDays =
+            availabilityForBackend.bookable.startInDays ?? defaultStartInDays;
+
+        availabilityForBackend.bookable.endInDays =
+            availabilityForBackend.bookable.endInDays ?? defaultEndInDays;
+
+        availabilityForBackend.kind = availability.kind || 'default';
+
+        return cleanupAvailabilityForSave(availabilityForBackend);
+    });
+
+    return {
+        availabilityList: availabilityPayload,
+        selectedDate
+    };
+}
 
     updateSaveBarState(type, success) {
 
@@ -182,8 +236,8 @@ class AvailabilityPage extends Component {
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
-        this.setState(Object.assign({}, getInitialState(this.props), {
-            selectedTab: this.state.selectedTab
+        this.setState((prevState, props) => Object.assign({}, getInitialState(props), {
+            selectedTab: prevState.selectedTab
         }), () => {
             this.refreshData()
             this.getValidationList()
@@ -191,56 +245,65 @@ class AvailabilityPage extends Component {
     }
 
     onDeleteAvailability(availability) {
-        showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
-        const id = availability.id
-        if (ok) {
-            $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                method: 'GET'
-            }).done(() => {
-                const newState = deleteAvailabilityInState(this.state, availability);
+        const id = availability.id;
+        const dialogHtml = buildConfirmDialogHtml(
+            'Öffnungszeit löschen',
+            'Soll diese Öffnungszeit wirklich gelöscht werden?',
+            'Löschen'
+        );
+        BaseView.loadDialogStatic(
+            dialogHtml,
+            () => {
+                showSpinner();
+                $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
+                    method: 'DELETE'
+                }).done(() => {
+                    this.setState((prevState) => {
+                        const newState = deleteAvailabilityInState(prevState, availability);
 
-                if (this.state.fullAvailabilityList) {
-                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
-                        item => item.id !== availability.id
-                    );
-                }
+                        if (prevState.fullAvailabilityList) {
+                            newState.fullAvailabilityList = prevState.fullAvailabilityList.filter(
+                                item => item.id !== availability.id
+                            );
+                        }
 
-                if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
-                    newState.selectedAvailability = null;
-                }
+                        if (prevState.selectedAvailability && prevState.selectedAvailability.id === id) {
+                            newState.selectedAvailability = null;
+                        }
 
-                this.setState(newState, () => {
-                    this.refreshData();
-                    if (newState.availabilitylist.length > 0) {
-                        this.getConflictList();
-                    }
-                    this.getValidationList();
-                });
-
-                this.updateSaveBarState('delete', true);
-
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
-                hideSpinner();
-            }).fail(err => {
-                console.log('delete error', err);
-                let isException = err.responseText.toLowerCase().includes('exception');
-                if (err.status >= 400 && isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
+                        return newState
+                    }, () => {
+                        this.refreshData();
+                        if (this.state.availabilitylist.length > 0) {
+                            this.getConflictList();
+                        }
+                        this.getValidationList();
                     });
-                } else {
-                    console.log('delete error', err);
-                }
-                this.updateSaveBarState('delete', false);
-                hideSpinner();
-            })
-        } else {
-            hideSpinner();
-        }
+
+                    this.updateSaveBarState('delete', true);
+
+                    if (this.successElement) {
+                        this.successElement.scrollIntoView();
+                    }
+                    hideSpinner();
+                }).fail(err => {
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
+                    if (err.status >= 400 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: responseText
+                        });
+                    } else {
+                        console.error('delete error', err);
+                    }
+                    this.updateSaveBarState('delete', false);
+                    hideSpinner();
+                });
+            },
+            () => {},
+            { $main: $('body') }
+        );
     }
 
     onCopyAvailability(availability) {
@@ -253,9 +316,9 @@ class AvailabilityPage extends Component {
             id: null,
             description: `Kopie von ${copysourcetitle}`
         })
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [copyAvailability]),
+            mergeAvailabilityListIntoState(prevState, [copyAvailability]),
             { selectedAvailability: copyAvailability, stateChanged: true }
         ), () => {
             this.getValidationList()
@@ -263,17 +326,12 @@ class AvailabilityPage extends Component {
     }
 
     onSelectAvailability(availability) {
-        if (availability || !this.state.selectedAvailability) {
-            this.setState({
-                selectedAvailability: availability
-            }, () => {
-            })
-        } else {
-            this.setState({
-                selectedAvailability: null
-            })
-        }
-
+        this.setState((prevState) => {
+            if (availability || !prevState.selectedAvailability) {
+                return { selectedAvailability: availability }
+            }
+            return { selectedAvailability: null }
+        })
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
@@ -348,15 +406,6 @@ class AvailabilityPage extends Component {
 
         // Update weekdays for each availability using the same algorithm as validateWeekdays
         const weekdayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        const germanWeekdays = {
-            'sunday': 'Sonntag',
-            'monday': 'Montag',
-            'tuesday': 'Dienstag',
-            'wednesday': 'Mittwoch',
-            'thursday': 'Donnerstag',
-            'friday': 'Freitag',
-            'saturday': 'Samstag'
-        };
 
         // First, get the original selected weekdays
         const originalSelectedWeekdays = new Set();
@@ -395,8 +444,8 @@ class AvailabilityPage extends Component {
             }
         });
 
-        this.setState(Object.assign({},
-            mergeAvailabilityListIntoState(this.state, newAvailabilities),
+        this.setState((prevState) => Object.assign({},
+            mergeAvailabilityListIntoState(prevState, newAvailabilities),
             {
                 selectedAvailability: exclusionAvailability,
                 stateChanged: true
@@ -434,8 +483,8 @@ class AvailabilityPage extends Component {
             )
         }
 
-        this.setState(Object.assign({},
-            mergeAvailabilityListIntoState(this.state, [
+        this.setState((prevState) => Object.assign({},
+            mergeAvailabilityListIntoState(prevState, [
                 originAvailability,
                 futureAvailability
             ]),
@@ -450,16 +499,14 @@ class AvailabilityPage extends Component {
     }
 
     onNewAvailability() {
-        let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
         newAvailability.type = "appointment"
         newAvailability.__modified = true
-        state = Object.assign(
-            state,
-            updateAvailabilityInState(this.state, newAvailability),
+        this.setState((prevState) => Object.assign(
+            {},
+            updateAvailabilityInState(prevState, newAvailability),
             { selectedAvailability: null, stateChanged: true }
-        );
-        this.setState(state);
+        ));
         $('body').scrollTop(0);
     }
 
@@ -506,15 +553,17 @@ class AvailabilityPage extends Component {
             };
 
             try {
-                const list = this.state.availabilitylist
-                    .map(validateData)
-                    .flat();
-
                 this.setState(
-                    {
-                        errorList: list.length ? list : [],
+                    (prevState) => {
+                        const list = prevState.availabilitylist
+                            .map(validateData)
+                            .flat();
+                        return {
+                            errorList: list.length ? list : [],
+                        }
                     },
                     () => {
+                        const list = this.state.errorList
                         if (list.length > 0) {
                             const nonPastTimeErrors = list.filter(error =>
                                 !error.itemList?.flat(2).some(item => item?.type === 'endTimePast' || item?.type === 'timePastToday')
@@ -564,11 +613,12 @@ class AvailabilityPage extends Component {
                     }
                 },
                 (err) => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
+                    const responseText = err.responseText || '';
+                    let isException = responseText.toLowerCase().includes('exception');
                     if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
-                            message: err.responseText
+                            message: responseText
                         });
                     } else {
                         console.log('conflict error', err);
@@ -611,24 +661,27 @@ class AvailabilityPage extends Component {
                 'busySlots': this.state.busyslots
             })
         }).done((responseData) => {
-            let availabilityList = writeSlotCalculationIntoAvailability(
-                this.state.availabilitylist,
-                responseData['maxSlots'],
-                responseData['busySlots']
-            );
-            this.setState({
-                availabilitylistslices: availabilityList,
-                maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
+            this.setState((prevState) => {
+                const availabilityList = writeSlotCalculationIntoAvailability(
+                    prevState.availabilitylist,
+                    responseData['maxSlots'],
+                    responseData['busySlots']
+                );
+                return {
+                    availabilitylistslices: availabilityList,
+                    maxWorkstationCount: parseInt(responseData['maxWorkstationCount'], 10),
+                }
             })
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')
             } else {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const responseText = err.responseText || '';
+                let isException = responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
-                        message: err.responseText
+                        message: responseText
                     });
                 } else {
                     console.log('reading calculated availability list error', err);
@@ -642,7 +695,7 @@ class AvailabilityPage extends Component {
         if (data.__modified) {
             clearTimeout(this.timer)
             this.setState(
-                Object.assign({}, updateAvailabilityInState(this.state, data)),
+                (prevState) => Object.assign({}, updateAvailabilityInState(prevState, data)),
                 () => {
                     this.readCalculatedAvailabilityList();
                     if (data.tempId || data.id) {
@@ -689,9 +742,9 @@ class AvailabilityPage extends Component {
                 futureAvailabilityFromState.endDate :
                 moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix()
         });
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
+            mergeAvailabilityListIntoState(prevState, [exclusionAvailability, futureAvailability, data])
         ));
     }
 
@@ -715,9 +768,9 @@ class AvailabilityPage extends Component {
                 moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()
         });
 
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [
+            mergeAvailabilityListIntoState(prevState, [
                 originAvailability,
                 futureAvailability,
                 exclusionAvailability
@@ -740,9 +793,9 @@ class AvailabilityPage extends Component {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
 
-        this.setState(Object.assign(
+        this.setState((prevState) => Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
+            mergeAvailabilityListIntoState(prevState, [originAvailability, exclusionAvailability, data])
         ));
     }
 

@@ -123,12 +123,6 @@ class AppointmentDeallocateByCronTest extends Base
                         "telephoneActivated"=>"1",
                         "telephoneRequired"=>"1"
                     ],
-                    "notifications"=>[
-                        "confirmationContent"=>"",
-                        "enabled"=>"0",
-                        "headsUpContent"=>"",
-                        "headsUpTime"=>"0"
-                    ],
                     "queue"=>[
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",
@@ -142,10 +136,7 @@ class AppointmentDeallocateByCronTest extends Base
                         "label"=>""
                     ],
                     "ticketprinter"=>[
-                        "confirmationEnabled"=>"0",
-                        "deactivatedText"=>"",
-                        "notificationsAmendmentEnabled"=>"0",
-                        "notificationsDelay"=>"0"
+                        "deactivatedText"=>""
                     ],
                     "workstation"=>[
                         "emergencyEnabled"=>"0"
@@ -180,15 +171,7 @@ class AppointmentDeallocateByCronTest extends Base
                     ],
                     "email"=>"buergeraemter@reinickendorf.berlin.de",
                     "id"=>"77",
-                    "name"=>"Bürgeramt",
-                    "preferences"=>[
-                        "notifications"=>[
-                            "enabled"=>false,
-                            "identification"=>"",
-                            "sendConfirmationEnabled"=>false,
-                            "sendReminderEnabled"=>false
-                        ]
-                    ]
+                    "name"=>"Bürgeramt"
                 ],
                 "provider"=>[
                     "contact"=>[
@@ -212,7 +195,6 @@ class AppointmentDeallocateByCronTest extends Base
                     "email"=>"max@service.berlin.de",
                     "emailSendCount"=>"1",
                     "familyName"=>"Max Mustermann",
-                    "notificationsSendCount"=>"1",
                     "surveyAccepted"=>"0",
                     "telephone"=>"030 115"
                 ]

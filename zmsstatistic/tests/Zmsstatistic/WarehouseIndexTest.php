@@ -46,7 +46,6 @@ class WarehouseIndexTest extends Base
         $this->assertStringContainsString('Kategorie auswählen', (string) $response->getBody());
         $this->assertStringContainsString('Wartestatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString('Kundenstatistik Behörde', (string) $response->getBody());
-        $this->assertStringContainsString('SMS-Statistik Organisation', (string) $response->getBody());
         $this->assertStringContainsString('Dienstleistungsstatistik Organisation', (string) $response->getBody());
     }
 }

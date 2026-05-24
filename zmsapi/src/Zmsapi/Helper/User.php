@@ -115,11 +115,11 @@ class User
      * @return \BO\Zmsentities\Workstation
      *
      */
-    public static function checkRights()
+    public static function checkRights(...$requiredRights)
     {
         $workstation = static::readWorkstation();
         if (\App::RIGHTSCHECK_ENABLED) {
-            $workstation->getUseraccount()->testRights(func_get_args());
+            $workstation->getUseraccount()->testRights($requiredRights);
         }
         return $workstation;
     }

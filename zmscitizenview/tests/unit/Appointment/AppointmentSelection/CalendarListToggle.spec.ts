@@ -12,23 +12,34 @@ describe("CalendarListToggle", () => {
       props: { t },
     });
 
+    const toggle = wrapper.find("button.m-toggle-switch");
+
     // initial state
-    expect(wrapper.attributes("aria-checked")).toBeUndefined();
-    expect(wrapper.find(".m-toggle-switch").attributes("aria-checked")).toBe("false");
+    expect(toggle.classes()).not.toContain("m-toggle-switch--pressed");
     expect(wrapper.emitted("update:isListView")).toBeUndefined();
 
+    expect(toggle.attributes("aria-label")).toBe(
+      "calendarViewActiveLabel switchToListViewAriaLabel"
+    );
+
     // click to toggle ON (list view)
-    await wrapper.find(".m-toggle-switch").trigger("click");
+    await toggle.trigger("click");
     await nextTick();
     let emits = wrapper.emitted("update:isListView");
     expect(emits && emits[0] && emits[0][0]).toBe(true);
-    expect(wrapper.find(".m-toggle-switch").attributes("aria-checked")).toBe("true");
+    expect(toggle.classes()).toContain("m-toggle-switch--pressed");
+    expect(toggle.attributes("aria-label")).toBe(
+      "listViewActiveLabel switchToCalendarViewAriaLabel"
+    );
 
     // click to toggle OFF (calendar view)
-    await wrapper.find(".m-toggle-switch").trigger("click");
+    await toggle.trigger("click");
     await nextTick();
     emits = wrapper.emitted("update:isListView");
     expect(emits && emits[1] && emits[1][0]).toBe(false);
-    expect(wrapper.find(".m-toggle-switch").attributes("aria-checked")).toBe("false");
+    expect(toggle.classes()).not.toContain("m-toggle-switch--pressed"); // statt aria-checked="false"
+    expect(toggle.attributes("aria-label")).toBe(
+      "calendarViewActiveLabel switchToListViewAriaLabel"
+    );
   });
 });
