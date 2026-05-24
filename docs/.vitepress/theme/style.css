@@ -1,0 +1,203 @@
+/* Latest release under title: desktop/tablet only so mobile nav height stays single-line for hamburger alignment */
+@media (min-width: 768px) {
+  .VPNavBarTitle .title {
+    flex-wrap: wrap;
+    row-gap: 2px;
+    align-content: center;
+    height: auto;
+    min-height: var(--vp-nav-height);
+    padding-top: 6px;
+    padding-bottom: 4px;
+    box-sizing: border-box;
+  }
+
+  .VPNavBar .container {
+    height: auto;
+    min-height: var(--vp-nav-height);
+  }
+}
+
+/* Hide desktop title-row release on small screens (release is shown in VPNavScreen instead) */
+@media (max-width: 767px) {
+  .latest-release--title,
+  .title-after-break {
+    display: none !important;
+  }
+
+  /* Re-order drawer: … Appearance → Latest release → Social (slot is last in DOM) */
+  .VPNavScreen .container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "menu"
+      "translations"
+      "appearance"
+      "latest"
+      "social";
+  }
+
+  .VPNavScreen .container > .menu {
+    grid-area: menu;
+  }
+
+  .VPNavScreen .container > .translations {
+    grid-area: translations;
+  }
+
+  .VPNavScreen .container > .appearance {
+    grid-area: appearance;
+  }
+
+  .VPNavScreen .container > .social-links {
+    grid-area: social;
+  }
+
+  .VPNavScreen .container > .latest-release-screen-slot {
+    grid-area: latest;
+  }
+}
+
+:root {
+  --muc-logo-filter: invert(0);
+}
+
+.dark {
+  --muc-logo-filter: invert(1);
+}
+
+footer.VPFooter {
+  display: block !important;
+  z-index: 100 !important;
+}
+
+@media all and (max-width: 450px) {
+  .VPNav div.logo a {
+    overflow: hidden;
+    width: 23px;
+  }
+
+  .VPNav div.logo a img {
+    object-fit: cover;
+    object-position: left;
+  }
+}
+
+/* Mermaid: inline scroll + enlarge control */
+.vp-doc .mermaid-diagram-block {
+  position: relative;
+  margin: 16px 0;
+}
+
+.vp-doc .mermaid-diagram-inner {
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.vp-doc .mermaid-zoom-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  box-shadow: var(--vp-shadow-1);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.vp-doc .mermaid-zoom-btn:hover {
+  background: var(--vp-c-bg-elv);
+  border-color: var(--vp-c-brand-1);
+}
+
+/* Full-screen lightbox for enlarged diagrams */
+.mermaid-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  padding: 48px 16px 16px;
+  background: color-mix(in srgb, var(--vp-c-bg) 88%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.dark .mermaid-lightbox {
+  background: color-mix(in srgb, #000000 75%, transparent);
+}
+
+.mermaid-lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10001;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.mermaid-lightbox-close:hover {
+  background: var(--vp-c-bg-elv);
+}
+
+.mermaid-lightbox-toolbar {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.mermaid-lightbox-tool {
+  min-width: 44px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.mermaid-lightbox-tool:hover {
+  border-color: var(--vp-c-brand-1);
+}
+
+.mermaid-lightbox-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px;
+}
+
+.mermaid-lightbox-scale {
+  transform-origin: top center;
+  transition: transform 0.12s ease-out;
+}
+
+.mermaid-lightbox-scale svg {
+  display: block;
+  max-width: none;
+  height: auto;
+}

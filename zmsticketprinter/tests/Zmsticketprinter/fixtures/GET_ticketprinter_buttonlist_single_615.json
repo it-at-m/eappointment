@@ -46,11 +46,6 @@
               "telephoneActivated": "0",
               "telephoneRequired": "0"
             },
-            "notifications": {
-              "confirmationContent": "",
-              "headsUpContent": "",
-              "headsUpTime": "0"
-            },
             "queue": {
               "callCountMax": "0",
               "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail: ordnungsamt@charlottenburg-wilmersdorf.de",
@@ -66,11 +61,7 @@
             },
             "ticketprinter": {
               "buttonName": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
-              "confirmationEnabled": "0",
-              "deactivatedText": "",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "deactivatedText": ""
             },
             "workstation": {
               "emergencyEnabled": "0"

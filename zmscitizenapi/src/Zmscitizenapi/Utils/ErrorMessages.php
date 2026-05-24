@@ -158,7 +158,13 @@ class ErrorMessages
             'errorCode' => 'invalidCustomTextfield',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorType' => 'warning',
-            'errorMessage' => 'customTextfield should be a string.'
+            'errorMessage' => 'customTextfield must be non-empty when required and at most 250 characters after normalization.'
+        ],
+        'invalidCustomTextfield2' => [
+            'errorCode' => 'invalidCustomTextfield2',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'warning',
+            'errorMessage' => 'customTextfield2 must be non-empty when required and at most 250 characters after normalization.'
         ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
@@ -346,6 +352,18 @@ class ErrorMessages
             'errorCode' => 'tooManyAppointmentsWithSameMail',
             'errorMessage' => 'You can only book a limited number of appointments with your e-mail address. Please cancel another appointment before you book a new one.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorType' => 'error'
+        ],
+        'tooManySlotsPerAppointment' => [
+            'errorCode' => 'tooManySlotsPerAppointment',
+            'errorMessage' => 'The number of slots exceeds the maximum allowed slots per appointment.',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorType' => 'error'
+        ],
+        'tooManyServicesPerAppointment' => [
+            'errorCode' => 'tooManyServicesPerAppointment',
+            'errorMessage' => 'The quantity of a service exceeds the maximum allowed quantity.',
+            'statusCode' => self::HTTP_BAD_REQUEST,
             'errorType' => 'error'
         ],
         'scopesNotFound' => [

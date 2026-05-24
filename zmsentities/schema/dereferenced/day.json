@@ -1,19 +1,17 @@
 {
     "type": "object",
-    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While public values might be positive, the intern value can be negative. This is due to calculation. The public values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
     "example": {
         "year": 2015,
         "month": 11,
         "day": 19,
         "scopeIDs": "141",
         "freeAppointments": {
-            "callcenter": 0,
             "intern": 3,
             "public": 0,
             "type": "sum"
         },
         "allAppointments": {
-            "callcenter": 0,
             "intern": 3,
             "public": 3,
             "type": "sum"
@@ -54,17 +52,11 @@
             "example": {
                 "public": 3,
                 "intern": 10,
-                "callcenter": 8,
                 "type": "sum",
                 "time": "11:50"
             },
             "additionalProperties": false,
             "properties": {
-                "callcenter": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
-                },
                 "intern": {
                     "type": "number",
                     "default": 0,
@@ -103,17 +95,11 @@
             "example": {
                 "public": 3,
                 "intern": 10,
-                "callcenter": 8,
                 "type": "sum",
                 "time": "11:50"
             },
             "additionalProperties": false,
             "properties": {
-                "callcenter": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
-                },
                 "intern": {
                     "type": "number",
                     "default": 0,
@@ -152,17 +138,11 @@
             "example": {
                 "public": 3,
                 "intern": 10,
-                "callcenter": 8,
                 "type": "sum",
                 "time": "11:50"
             },
             "additionalProperties": false,
             "properties": {
-                "callcenter": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
-                },
                 "intern": {
                     "type": "number",
                     "default": 0,
@@ -201,17 +181,11 @@
             "example": {
                 "public": 3,
                 "intern": 10,
-                "callcenter": 8,
                 "type": "sum",
                 "time": "11:50"
             },
             "additionalProperties": false,
             "properties": {
-                "callcenter": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
-                },
                 "intern": {
                     "type": "number",
                     "default": 0,
@@ -294,22 +268,10 @@
                             "source": "dldb"
                         }
                     ],
-                    "showUpTime": {
-                        "type": "string",
-                        "description": "unix timestamp of showing up after call"
-                    },
-                    "processingTime": {
-                        "type": "string",
-                        "description": "unix timestamp that cumulates time each time a processes is called"
-                    },
-                    "timeoutTime": {
-                        "type": "string",
-                        "description": "unix timestamp of after a call is entered or re-entered into the queue"
-                    },  
-                    "finishTime": {
-                        "type": "string",
-                        "description": "unix timestamp og time when process has been finished"
-                    },
+                    "showUpTime": "2016-04-01 11:55:00",
+                    "processingTime": "00:15:00",
+                    "timeoutTime": null,
+                    "finishTime": null,
                     "scope": {
                         "id": 123,
                         "hint": "Standort aus Beispiel-Termin",
@@ -393,6 +355,32 @@
                     "lastChange": {
                         "type": "number",
                         "description": "unix timestamp of the last change on this process"
+                    },
+                    "showUpTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp of showing up after call"
+                    },
+                    "processingTime": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ],
+                        "description": "Cumulative time spent being served at the workstation (from show-up until finish or timeout), summed across interrupted sessions. MySQL TIME string (H+:MM:SS) from persistence, or fractional minutes as number; null if unset—not a Unix timestamp"
+                    },
+                    "timeoutTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp of after a call is entered or re-entered into the queue"
+                    },
+                    "finishTime": {
+                        "type": ["string", "null"],
+                        "description": "unix timestamp og time when process has been finished"
                     },
                     "queue": {
                         "$ref": "queue.json"

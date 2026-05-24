@@ -379,6 +379,14 @@ class ProcessTest extends Base
         $this->assertEquals(105, $collection->count());
     }
 
+    public function testProcessListByScopesAndTimeWithEmptyScopeIds()
+    {
+        $now = static::$now;
+        $collection = (new Query)->readProcessListByScopesAndTime([], $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
+        $this->assertEquals(0, $collection->count());
+    }
+
     public function testReadSlotCount()
     {
         $now = static::$now;
@@ -734,8 +742,7 @@ class ProcessTest extends Base
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",
-                        "startInDaysDefault"=>"0",
-                        "notificationHeadsUpEnabled"=>"1"
+                        "startInDaysDefault"=>"0"
                     ],
                     "client"=>[
                         "amendmentActivated"=>"0",
@@ -744,12 +751,6 @@ class ProcessTest extends Base
                         "telephoneActivated"=>"1",
                         "telephoneRequired"=>"1",
                         "emailFrom"=>"1"
-                    ],
-                    "notifications"=>[
-                        "confirmationContent"=>"",
-                        "enabled"=>"0",
-                        "headsUpContent"=>"",
-                        "headsUpTime"=>"0"
                     ],
                     "queue"=>[
                         "callCountMax"=>"0",
@@ -764,10 +765,7 @@ class ProcessTest extends Base
                         "label"=>""
                     ],
                     "ticketprinter"=>[
-                        "confirmationEnabled"=>"0",
-                        "deactivatedText"=>"",
-                        "notificationsAmendmentEnabled"=>"0",
-                        "notificationsDelay"=>"0"
+                        "deactivatedText"=>""
                     ],
                     "workstation"=>[
                         "emergencyEnabled"=>"0"
@@ -802,15 +800,7 @@ class ProcessTest extends Base
                     ],
                     "email"=>"buergeraemter@reinickendorf.berlin.de",
                     "id"=>"77",
-                    "name"=>"Bürgeramt",
-                    "preferences"=>[
-                        "notifications"=>[
-                            "enabled"=>false,
-                            "identification"=>"",
-                            "sendConfirmationEnabled"=>false,
-                            "sendReminderEnabled"=>false
-                        ]
-                    ]
+                    "name"=>"Bürgeramt"
                 ],
                 "provider"=>[
                     "contact"=>[
@@ -834,7 +824,6 @@ class ProcessTest extends Base
                     "email"=>"max@service.berlin.de",
                     "emailSendCount"=>"1",
                     "familyName"=>"Max Mustermann",
-                    "notificationsSendCount"=>"1",
                     "surveyAccepted"=>"0",
                     "telephone"=>"030 115"
                 ]

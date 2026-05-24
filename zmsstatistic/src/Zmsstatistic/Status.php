@@ -19,8 +19,6 @@ class Status extends BaseController
 {
     protected $withAccess = false;
 
-    //protected $resolveLevel = 3;
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface

@@ -17,7 +17,7 @@
       "name": "Charlottenburg-Wilmersdorf"
     },
     "preferences": {
-      "ticketPrinterProtectionEnabled": "0"
+      "ticketPrinterActivation": "0"
     },
     "departments": [
       {
@@ -29,14 +29,6 @@
           "street": "Otto-Suhr-Allee 100, 10585 Berlin",
           "country": "Germany",
           "name": "Fr. Krause-Jentsch"
-        },
-        "preferences": {
-          "notifications": {
-            "enabled": "1",
-            "identification": "support@berlin.de",
-            "sendConfirmationEnabled": "1",
-            "sendReminderEnabled": "1"
-          }
         },
         "clusters": [
           {

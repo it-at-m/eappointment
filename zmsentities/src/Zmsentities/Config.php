@@ -13,24 +13,6 @@ class Config extends Schema\Entity
                 'urlChange' => 'https://service.berlin.de/terminvereinbarung/termin/manage/',
                 'urlAppointments' => 'https://service.berlin.de/terminvereinbarung/',
             ],
-            'notifications' => [
-                'kommandoAbsage' => 'Storno',
-                'kommandoAbfrage' => 'Berlin',
-                'number' => '0174-8882288',
-                'absage' => false,
-                'gateway' => 'mail',
-                'gatewayUrl' => '',
-                'eMailkonfigurierbar' => false,
-                'benachrichtigungsfrist' => 10,
-                'headsUpContent' => '
-                    Sie sind in Kürze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist
-                ',
-                'confirmationContent' => '
-                    Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenr. lautet:
-                ',
-                'costs' => '0.15',
-                'erinnerungsvorlauf' => 180,
-            ],
             'ticketprinter' => [
                 'baseUrl' => '/terminvereinbarung/ticketprinter/'
             ],
@@ -45,11 +27,6 @@ class Config extends Schema\Entity
                 'telephone' => '(030) 9222-2000'
             ]
         ];
-    }
-
-    public function getNotificationPreferences()
-    {
-        return $this->toProperty()->notifications->get();
     }
 
     public function hasType($type)

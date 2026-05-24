@@ -1,5 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "baseBranches": ["next", "/^release\\/.*/"]
+
+  "baseBranches": ["next", "/^release\\/.*/"],
+
+  "timezone": "Europe/Berlin",
+  "schedule": ["* 0-4 * * *"]
 }

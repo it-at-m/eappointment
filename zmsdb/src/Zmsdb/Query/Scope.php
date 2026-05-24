@@ -54,17 +54,20 @@ class Scope extends Base implements MappingInterface
     public function getQuerySimpleClusterMatch()
     {
         return '
-            SELECT standortID AS id
-            FROM `clusterzuordnung`
+            SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
+            FROM `clusterzuordnung` AS cz
+            INNER JOIN `standort` AS s ON s.StandortID = cz.standortID
+            LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
+                AND p.source = s.source
             WHERE
-                clusterID = ?
+                cz.clusterID = ?
         ';
     }
 
     public function getQuerySimpleDepartmentMatch()
     {
         return '
-            SELECT s.StandortID AS id, p.name AS contact__name
+            SELECT s.StandortID AS id, p.name AS contact__name, s.standortkuerzel AS shortName
             FROM `standort` AS s
             LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
                 AND p.source = s.source
@@ -138,15 +141,6 @@ class Scope extends Base implements MappingInterface
             );
         }
 
-        if ($this->shouldLoadEntity('scopesms') && $this->shouldLoadEntity('scopedepartment')) {
-            $this->leftJoin(
-                new Alias('sms', 'scopesms'),
-                'scopedepartment.BehoerdenID',
-                '=',
-                'scopesms.BehoerdenID'
-            );
-        }
-
         if ($this->shouldLoadEntity('scopemail') && $this->shouldLoadEntity('scopedepartment')) {
             $this->leftJoin(
                 new Alias('email', 'scopemail'),
@@ -183,16 +177,6 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__activationDuration' => 'scope.aktivierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
-            'preferences__appointment__notificationConfirmationEnabled' =>
-                $this->shouldLoadEntity('scopesms')
-                    ? self::expression(
-                        'scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'
-                    )
-                : '',
-            'preferences__appointment__notificationHeadsUpEnabled' =>
-                $this->shouldLoadEntity('scopesms')
-                ? self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung')
-                : '',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailFrom' => $this->shouldLoadEntity('scopemail')
@@ -216,9 +200,6 @@ class Scope extends Base implements MappingInterface
             'preferences__client__adminMailOnDeleted' => 'scope.admin_mail_on_deleted',
             'preferences__client__adminMailOnUpdated' => 'scope.admin_mail_on_updated',
             'preferences__client__adminMailOnMailSent' => 'scope.admin_mail_on_mail_sent',
-            'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
-            'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
-            'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
             'preferences__queue__callCountMax' => 'scope.anzahlwiederaufruf',
             'preferences__queue__callDisplayText' => 'scope.aufrufanzeigetext',
             'preferences__queue__firstNumber' => 'scope.startwartenr',
@@ -235,11 +216,7 @@ class Scope extends Base implements MappingInterface
             'preferences__ticketprinter__buttonName' => self::expression(
                 'IF(`scope`.`standortinfozeile`!="", `scope`.`standortinfozeile`, `scope`.`Bezeichnung`)'
             ),
-            'preferences__ticketprinter__confirmationEnabled' => 'scope.smswmsbestaetigung',
             'preferences__ticketprinter__deactivatedText' => 'scope.wartenrhinweis',
-            'preferences__ticketprinter__notificationsAmendmentEnabled' => 'scope.smsnachtrag',
-            'preferences__ticketprinter__notificationsEnabled' => 'scope.smswarteschlange',
-            'preferences__ticketprinter__notificationsDelay' => 'scope.smskioskangebotsfrist',
             'preferences__workstation__emergencyEnabled' => 'scope.notruffunktion',
             'preferences__workstation__emergencyRefreshInterval' => self::expression(
                 '(SELECT `value` FROM config WHERE `name`="emergency__refreshInterval")'
@@ -260,6 +237,9 @@ class Scope extends Base implements MappingInterface
             ) : '',
             'provider__source' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
                 'IF(`scopeprovider`.`source`!="", `scopeprovider`.`source`, `scope`.`source`)'
+            ) : '',
+            'provider__data' => $this->shouldLoadEntity('scopeprovider') ? self::expression(
+                'IFNULL(`scopeprovider`.`data`, "{}")'
             ) : '',
             'source' => 'scope.source'
         ], 'strlen');
@@ -352,7 +332,6 @@ class Scope extends Base implements MappingInterface
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
-        // notificationConfirmationEnabled and notificationHeadsUpEnabled are saved in department!
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
@@ -376,9 +355,6 @@ class Scope extends Base implements MappingInterface
         $data['admin_mail_on_deleted'] = $entity->getPreference('client', 'adminMailOnDeleted');
         $data['admin_mail_on_updated'] = $entity->getPreference('client', 'adminMailOnUpdated', true);
         $data['admin_mail_on_mail_sent'] = $entity->getPreference('client', 'adminMailOnMailSent', true);
-        $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
-        $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
-        $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
         $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText', false, '');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
@@ -392,11 +368,7 @@ class Scope extends Base implements MappingInterface
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
         $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
-        $data['smswmsbestaetigung'] = $entity->getPreference('ticketprinter', 'confirmationEnabled', true);
         $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText', false, '');
-        $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled', true);
-        $data['smswarteschlange'] = $entity->getPreference('ticketprinter', 'notificationsEnabled', true);
-        $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
         $data['notruffunktion'] = $entity->getPreference('workstation', 'emergencyEnabled', true);
         $data['notrufantwort'] = $entity->getStatus('emergency', 'acceptedByWorkstation');
         $data['notrufausgeloest'] = $entity->getStatus('emergency', 'activated');

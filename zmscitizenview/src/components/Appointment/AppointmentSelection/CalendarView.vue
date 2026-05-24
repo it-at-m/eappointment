@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Calendar Component -->
-    <div class="m-component">
+    <div class="m-component calendar-root">
       <muc-calendar
         :key="calendarKey"
         :model-value="selectedDay"
@@ -475,5 +475,22 @@ function onLater(type: "hour" | "dayPart") {
 .no-top-margin,
 .no-top-margin h3 {
   margin-top: 0 !important;
+}
+
+.calendar-root
+  :deep(
+    .container-wrapper:has(
+        .muc-calendar-view-full-size
+          > .muc-calendar-container:nth-of-type(2)
+          > :nth-child(36) 
+          /* :nth-child(36) checks whether the day grid has at least 36 direct children.
+          With 7 columns, 35 items fit into 5 rows; the 36th item means a 6th row is needed,
+          so we increase the calendar height only for 6-week months. */
+      )
+      .container-view-size
+  ) {
+  --cal-container-view-height: 336px !important;
+  height: var(--cal-container-view-height) !important;
+  min-height: var(--cal-container-view-height) !important;
 }
 </style>

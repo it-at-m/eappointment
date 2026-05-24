@@ -105,14 +105,25 @@ class ProcessChange extends BaseController
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            ->validateText(
+        ;
+
+        $scope = $process->getCurrentScope();
+        if ((int) $scope->getCustomTextfieldActivated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
-            )
-            ->validateText(
+                $delegatedProcess->setter('customTextfield'),
+                (bool) (int) $scope->getCustomTextfieldRequired()
+            );
+        }
+        if ((int) $scope->getCustomTextfield2Activated()) {
+            $processValidator->validateCustomTextfield(
                 $validator->getParameter('customTextfield2'),
-                $delegatedProcess->setter('customTextfield2')
-            )
+                $delegatedProcess->setter('customTextfield2'),
+                (bool) (int) $scope->getCustomTextfield2Required()
+            );
+        }
+
+        $processValidator
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
@@ -154,21 +165,21 @@ class ProcessChange extends BaseController
                 ]
             )->getEntity();
         }
-        static::writeDeletedMailAndNotification($oldProcess);
-        static::writeConfirmedMailAndNotification($input, $newProcess);
+        static::writeDeletedMail($oldProcess);
+        static::writeConfirmedMail($input, $newProcess);
         return $newProcess;
     }
 
-    protected static function writeDeletedMailAndNotification($oldProcess)
+    protected static function writeDeletedMail($oldProcess)
     {
             $oldProcess->status = 'deleted';
             ProcessDelete::writeDeleteMailNotifications($oldProcess);
     }
 
-    protected static function writeConfirmedMailAndNotification($input, $newProcess)
+    protected static function writeConfirmedMail($input, $newProcess)
     {
         if ('confirmed' == $newProcess->getStatus()) {
-            Helper\AppointmentFormHelper::updateMailAndNotification($input, $newProcess);
+            Helper\AppointmentFormHelper::updateMail($input, $newProcess);
         }
     }
 }

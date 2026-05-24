@@ -232,11 +232,6 @@ function isValidTimestamp(timestamp) {
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
-    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
-    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
-    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
-    //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
 
@@ -255,28 +250,6 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             })
         }
     */
-
-    if (data.startTime && data.endTime) {
-        const startHourInt = parseInt(startHour);
-        const endHourInt = parseInt(endHour);
-        const startMinuteInt = parseInt(startMinute);
-        const endMinuteInt = parseInt(endMinute);
-        if (
-            (startHourInt === 22 && startMinuteInt > 0) || 
-            startHourInt === 23 || 
-            startHourInt === 0 || 
-            (endHourInt === 22 && endMinuteInt > 0) || 
-            endHourInt === 23 || 
-            endHourInt === 0 ||
-            (startHourInt === 1 && startMinuteInt > 0) ||
-            (endHourInt === 1 && endMinuteInt > 0)
-        ) {
-            errorList.push({
-                type: 'startOfDay',
-                message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-            });
-        }
-    }
 
     return errorList;
 }

@@ -47,7 +47,7 @@ class CalendarTest extends EntityCommonTests
     public function testToString()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertStringContainsString('Day notBookable@2015-11-19 with slot#free@0:00 p/c/i=2/0/3', (string) $entity);
+        $this->assertStringContainsString('Day notBookable@2015-11-19 with slot#free@0:00 p/i=2/3', (string) $entity);
         $this->assertStringContainsString('scope#141', (string) $entity);
     }
 

@@ -1,15 +1,15 @@
 services:
+  # php-base uses per-arch tags. devcontainer initializeCommand runs
+  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json) sets ZMS_PHP_BASE_TAG from host uname.
+  # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
-    build:
-      context: .
-      dockerfile: Containerfile
+    image: ghcr.io/it-at-m/eappointment-php-base:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
     volumes:
-      - ..:/var/www/html:cached
-      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro
+      - ..:/var/www/html:cached,z
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
     ports:
       - "8090:80"
-      - "8091:443"
     env_file:
       - .env
     depends_on:
@@ -17,6 +17,21 @@ services:
       - keycloak
     networks:
       - default
+
+  citizenview:
+    image: node:22
+    container_name: zms-citizenview
+    working_dir: /workspace/zmscitizenview
+    volumes:
+      - ..:/workspace:cached,z
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 8082"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - web
+    networks:
+      - default
+    restart: unless-stopped
 
   db:
     image: mariadb:10.11
@@ -26,6 +41,7 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/mysql
+      - ../.resources/zms.sql:/docker-entrypoint-initdb.d/01-zms.sql:ro,z
     ports:
       - "3306:3306"
 
@@ -53,13 +69,13 @@ services:
       - SPRING_PROFILES_ACTIVE=no-security
       - WEBCOMPONENT_URI=http://localhost:8080
     volumes:
-      - ./local-gateway-application.yml:/deployments/application.yml:ro
+      - ./local-gateway-application.yml:/deployments/application.yml:ro,z
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.1.5@sha256:be6a86215213145bfb4fb3e2b3ab982a806d00262655abdcf3ffa6a38d241c7c
+    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
     container_name: zms-keycloak
-    hostname: keycloak.local
+    hostname: keycloak
     command:
       - start-dev
     environment:
@@ -72,15 +88,16 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak/plugins:/opt/keycloak/providers/
+      - ./keycloak/plugins:/opt/keycloak/providers/:z
     networks:
       default:
         aliases:
-          - keycloak.local
+          - keycloak
     restart: unless-stopped
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.81@sha256:2c73c904a644b75637a01434f357caee9c029f37bd8960793c68233d5afa468a
+    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    container_name: zms-init-keycloak
     depends_on:
       keycloak:
         condition: service_started
@@ -92,7 +109,7 @@ services:
       - FAIL_ON_UNDEFINED_VARIABLES=true
       - KEYCLOAK_CHANGELOG=/migration/keycloak-changelog.yml
     volumes:
-      - ../.resources/keycloak/migration:/migration
+      - ../.resources/keycloak/migration:/migration:z
     networks:
       - default
     restart: "no"

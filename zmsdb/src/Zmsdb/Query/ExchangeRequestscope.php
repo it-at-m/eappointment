@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsentities\Exchange;
+
 class ExchangeRequestscope extends Base
 {
     /**
@@ -19,13 +21,13 @@ class ExchangeRequestscope extends Base
         DATE_FORMAT(s.`Datum`, :groupby) as date,
         (
             CASE
-              WHEN s.anliegenid = -1 THEN "Dienstleistung wurde nicht erfasst"
-                      WHEN s.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
-                      ELSE r.name
-                END
-            ) as name,
+              WHEN s.anliegenid = -1 THEN \'' . Exchange::REQUEST_STAT_NAME_UNCATEGORIZED . '\'
+              WHEN s.anliegenid = 0 THEN \'' . Exchange::REQUEST_STAT_NAME_NONEXISTENT . '\'
+              ELSE r.name
+            END
+        ) as name,
         COUNT(s.anliegenid) as requestscount,
-        AVG(s.bearbeitungszeit) as processingtime
+        AVG(s.processing_time) as processingtime
     FROM ' . self::TABLE . ' AS s
         LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
     WHERE s.`standortid` IN (:scopeid) AND s.`Datum` BETWEEN :datestart AND :dateend

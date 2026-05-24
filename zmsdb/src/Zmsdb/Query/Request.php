@@ -48,6 +48,7 @@ class Request extends Base
             ')
         );
         $this->query->where('buergeranliegen.BuergerID', '=', $processId);
+        $this->query->orderBy('buergeranliegen.BuergeranliegenID', 'ASC');
         return $this;
     }
 
@@ -61,6 +62,7 @@ class Request extends Base
             ')
         );
         $this->query->where('buergeranliegen.BuergerarchivID', '=', $archiveId);
+        $this->query->orderBy('buergeranliegen.BuergeranliegenID', 'ASC');
         return $this;
     }
 

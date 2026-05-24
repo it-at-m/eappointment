@@ -1,8 +1,6 @@
 
 import $ from 'jquery'
 import moment from 'moment'
-import Baseview from './baseview';
-import settings from '../settings';
 
 export const timeToFloat = (time) => {
     const momentTime = moment(time, 'HH:mm:ss')
@@ -69,7 +67,7 @@ export const getFieldList = (field) => {
     let match;
     let reg = RegExp('([^[]+)', 'g');
     while ((match = reg.exec(field))) {
-        fieldList.push(match.pop().replace(']', ''))
+        fieldList.push(match.pop().replace(/\]/g, ''))
     }
     return fieldList;
 }
@@ -169,34 +167,20 @@ export const stopEvent = (ev) => {
     }
 }
 
+const unsafeQueryParamKey = (key) =>
+    key === '__proto__' || key === 'constructor' || key === 'prototype'
+
 export const getUrlParameters = () => {
-    return document.location.search.replace(/^\?/, "")
+    const pairs = []
+    document.location.search.replace(/^\?/, "")
         .split("&")
-        .reduce((carry, current) => {
+        .forEach((current) => {
             const [key, value] = current.split('=')
-            if (key) {
-                return Object.assign({}, carry, { [key]: value })
-            } else {
-                return carry
+            if (key && !unsafeQueryParamKey(key)) {
+                pairs.push([key, value])
             }
-        }, {})
-}
-
-export const forceHttps = () => {
-    var forceCallback = () => {
-        document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
-    }
-    if (document.location.protocol !== "https:") {
-        Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
-            Baseview.loadDialogStatic(response,
-                forceCallback,
-                forceCallback,
-                Baseview,
-                true
-            );
-        });
-    }
-
+        })
+    return Object.fromEntries(pairs)
 }
 
 export const showSpinner = ($container = null) => {

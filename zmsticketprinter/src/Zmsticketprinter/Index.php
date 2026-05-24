@@ -26,14 +26,12 @@ class Index extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Helper\HomeUrl::create($request);
-        // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
-        //$config = $this->getConfig();
 
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $this->getDefaultTemplate($validator);
         $languageConfig = $this->getLanguageConfig($validator);
 
-        $currentLang = $this->getCurrentLanguage($validator);
+        $currentLang = $this->getCurrentLanguage($validator, $languageConfig);
         $queryString = $this->getQueryStringWithLang();
 
         $translations = $this->getTranslations($languageConfig, $currentLang);
@@ -68,13 +66,12 @@ class Index extends BaseController
                 'urlQueryString' => $queryString,
                 'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
-                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
+                    || !$organisation->getPreference('ticketPrinterActivation'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
                 'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                //'config' => $config,
                 'defaultLanguage' => $defaultLanguage,
                 'languages' => $languages,
                 'translations' => $translations,
@@ -82,12 +79,6 @@ class Index extends BaseController
             ]
         );
     }
-
-    // TODO: Remove unused config request - https://github.com/it-at-m/eappointment/issues/1807
-    /*private function getConfig()
-    {
-        return \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
-    }*/
 
     private function getDefaultTemplate($validator)
     {
@@ -107,9 +98,11 @@ class Index extends BaseController
         return json_decode($decoded, true);
     }
 
-    private function getCurrentLanguage($validator)
+    private function getCurrentLanguage($validator, $languageConfig)
     {
-        return $validator->getParameter("lang")->isString()->getValue();
+        $lang = $validator->getParameter("lang")->isString()->getValue();
+
+        return $lang ?: ($languageConfig['defaultLanguage'] ?? 'de');
     }
 
     private function getQueryStringWithLang()
@@ -124,25 +117,39 @@ class Index extends BaseController
     private function getTranslations($languageConfig, $currentLang)
     {
         $translations = ['printText' => ''];
-        if ($languageConfig) {
-            foreach ($languageConfig['languages'] as $language) {
-                if ($language['language'] !== $currentLang) {
-                    continue;
-                }
-                foreach ($language['translations'] as $requestId => $translation) {
-                    $translations[$requestId] = $translation;
-                }
+
+        if (!$languageConfig || empty($languageConfig['languages'])) {
+            return $translations;
+        }
+
+        foreach ($languageConfig['languages'] as $language) {
+            if (($language['language'] ?? null) !== $currentLang) {
+                continue;
             }
-            if (empty($currentLang) || $currentLang === 'de') {
-                $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
+
+            if (!empty($language['services'])) {
+                foreach ($language['services'] as $requestId => $serviceData) {
+                    $translations[$requestId] = [
+                        'label' => $serviceData['label'] ?? null,
+                        'customText1' => $serviceData['customText1'] ?? '',
+                        'customText2' => $serviceData['customText2'] ?? '',
+                    ];
+                }
             }
         }
+
+        if ($currentLang === 'de') {
+            $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
+        }
+
         return $translations;
     }
 
     private function getAvailableLanguages($languageConfig)
     {
-        return array_column($languageConfig['languages'] ?? [], 'language');
+        return array_values(array_unique(
+            array_column($languageConfig['languages'] ?? [], 'language')
+        ));
     }
 
     private function getDepartment($scope)

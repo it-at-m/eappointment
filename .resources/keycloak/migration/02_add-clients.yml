@@ -8,6 +8,11 @@ changes:
       publicClient: false
       enabled: true
       redirectUris:
+        - http://localhost/*
+        - http://localhost/terminvereinbarung/admin/*
+        - http://localhost/terminvereinbarung/admin/oidc/*
+        - http://localhost/terminvereinbarung/statistic/*
+        - http://localhost/terminvereinbarung/statistic/oidc/*
         - http://localhost:8090/*
         - http://localhost:8090/terminvereinbarung/admin/*
         - http://localhost:8090/terminvereinbarung/admin/oidc/*
@@ -16,6 +21,11 @@ changes:
         - https://localhost:8091/terminvereinbarung/admin/oidc/*
         - https://localhost:8091/terminvereinbarung/statistic/*
         - https://localhost:8091/terminvereinbarung/statistic/oidc/*
+        # Port 443 used when UI tests run inside container (keycloak.json temporarily rewritten 8091→443)
+        - https://localhost:443/terminvereinbarung/admin/*
+        - https://localhost:443/terminvereinbarung/admin/oidc/*
+        - https://localhost:443/terminvereinbarung/statistic/*
+        - https://localhost:443/terminvereinbarung/statistic/oidc/*
         - https://*.ddev.site/*
         - http://*.ddev.site/*
 

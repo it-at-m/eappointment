@@ -18,6 +18,25 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=FAKE_SITE_KEY');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=https://captcha-k.muenchen.de/api/v1/captcha/verify');
+        putenv('CAPTCHA_ENABLED=1');
+        putenv('CAPTCHA_TOKEN_SECRET=FAKE_TOKEN_SECRET_THAT_IS_SUFFICIENTLY_LONG');
+
+        \App::initialize();
+    }
+
+    public function tearDown(): void
+    {
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=');
+        putenv('CAPTCHA_ENABLED=');
+        putenv('CAPTCHA_TOKEN_SECRET=');
+
+        parent::tearDown();
     }
 
     public function testRendering()
@@ -259,7 +278,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/process/101002/wrongKey/',
+                    'url' => '/process/101002/cafe/',
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
@@ -270,7 +289,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
     
         $parameters = [
             'processId' => '101002',
-            'authKey' => 'wrongKey',
+            'authKey' => 'cafe',
         ];
     
         $response = $this->render([], $parameters, []);

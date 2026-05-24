@@ -26,13 +26,7 @@
 
         {#Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
         <br />#}
-        
-        {#{% if config.appointments.sms.telephone %}
-            Oder schicken Sie eine SMS mit dem Inhalt "{{ config.appointments.sms.textCancel }}\{{ process.id }}" an die Rufnummer {{ config.appointments.sms.telephone }}.
-            "Hierbei ist die Groß- und Kleinschreibung von "{{ config.appointments.sms.textCancel }}" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br />
-            <br />
-        {% endif %}
-        #}
+
         {#{% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
             Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
         {% endif %}#}
@@ -67,41 +61,4 @@
 
         {{ block("sendoff_german") }}
     </div>
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "EventReservation",
-  "reservationNumber": "{{ process.displayNumber }}",
-  "reservationStatus": "http://schema.org/Confirmed",
-  "modifyReservationUrl": "{{ config.appointments.urlChange }}",
-  "modifiedTime": "{{ process.createTimestamp|date('c') }}",
-  "underName": {
-    "@type": "Person",
-    "name": "{{ client.familyName }}"
-  },
-  "reservationFor": {
-    "@type": "Event",
-    "name": "{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}",
-    "startDate": "{{ date|date('c') }}",
-    "location": {
-      "@type": "Place",
-      "name": "{{ process.scope.provider.displayName }}",
-      "url": "{{process.scope.provider.link}}",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "{{process.scope.provider.contact.lat}}",
-        "longitude": "{{process.scope.provider.contact.lon}}"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "{{process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber}}",
-        "addressLocality": "{{process.scope.provider.contact.city}}",
-        "addressRegion": "{{process.scope.provider.contact.city}}",
-        "postalCode": "{{process.scope.provider.contact.postalCode}}",
-        "addressCountry": "DE"
-      }
-    }
-  }
-}
-</script>
 {% endblock %}

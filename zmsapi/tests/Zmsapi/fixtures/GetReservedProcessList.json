@@ -34,7 +34,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -63,7 +62,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -127,7 +125,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -156,7 +153,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -220,7 +216,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -249,7 +244,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -313,7 +307,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -342,7 +335,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -406,7 +398,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -435,7 +426,6 @@
                 "familyName": "Jeremy Sullivan",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -499,7 +489,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -528,7 +517,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount": 0,
                 "surveyAccepted": false,
                 "telephone": ""
             }
@@ -592,7 +580,6 @@
                     },
                     "workstationCount": {
                         "public": 0,
-                        "callcenter": 0,
                         "intern": 0
                     },
                     "multipleSlotsAllowed": true,
@@ -621,7 +608,6 @@
                 "familyName": "webreservierung",
                 "email": "test@example.com",
                 "emailSendCount": 0,
-                "notificationsSendCount":  0 ,
                 "surveyAccepted": 0,
                 "telephone": ""
             }

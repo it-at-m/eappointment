@@ -23,7 +23,7 @@ class AvailableAppointmentsListService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableAppointmentsList(array $queryParams): AvailableAppointments|array
+    public function getAvailableAppointmentsList(array $queryParams, bool $showUnpublished = false): AvailableAppointments|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -31,7 +31,7 @@ class AvailableAppointmentsListService
             return $errors;
         }
 
-        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
         if ($errors !== null) {
             return $errors;
         }
@@ -95,7 +95,7 @@ class AvailableAppointmentsListService
         );
     }
 
-    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointments|AvailableAppointmentsByOffice|array
+    public function getAvailableAppointmentsListByOffice($queryParams, bool $showUnpublished = false): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -103,7 +103,7 @@ class AvailableAppointmentsListService
             return $errors;
         }
 
-        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds, $showUnpublished);
         if ($errors !== null) {
             return $errors;
         }

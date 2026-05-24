@@ -55,7 +55,7 @@ class Process extends Base implements MappingInterface
                 process.NutzerID = 0,
                 process.vorlaeufigeBuchung = 1,
                 process.status = 'deleted',
-                process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
+                process.absagecode = :newAuthKey
             WHERE
                 (process.BuergerID = :processId AND process.absagecode = :authKey)
                 OR process.istFolgeterminvon = :processId
@@ -106,6 +106,14 @@ class Process extends Base implements MappingInterface
     public function getLockProcessId()
     {
         return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId FOR UPDATE';
+    }
+
+    public function getLockAssignedWorkstationId()
+    {
+        return 'SELECT p.`NutzerID`
+            FROM `' . self::getTablename() . '` p
+            WHERE p.`BuergerID` = :processId
+            FOR UPDATE';
     }
 
     public function addJoin()
@@ -274,7 +282,6 @@ class Process extends Base implements MappingInterface
             'clients__0__email' => 'process.EMail',
             'clients__0__emailSendCount' => 'process.EMailverschickt',
             'clients__0__familyName' => 'process.Name',
-            'clients__0__notificationsSendCount' => 'process.SMSverschickt',
             'clients__0__surveyAccepted' => 'process.zustimmung_kundenbefragung',
             'clients__0__telephone' => self::expression(
                 'IF(`process`.`telefonnummer_fuer_rueckfragen`!="",
@@ -289,7 +296,7 @@ class Process extends Base implements MappingInterface
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
-            'processingTime' => 'process.processingTime',
+            'processingTime' => 'process.processing_time',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
             'status' => $status_expression,
@@ -325,8 +332,8 @@ class Process extends Base implements MappingInterface
             'queue__destinationHint' => $this->shouldLoadEntity('processuser')
                 ? 'processuser.aufrufzusatz'
                 : '',
-            'queue__waitingTime' => 'process.wartezeit',
-            'queue__wayTime' => 'process.wegezeit',
+            'queue__waitingTime' => 'process.waiting_time',
+            'queue__wayTime' => 'process.way_time',
             'queue__withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
                     "0",
@@ -489,7 +496,12 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeIds($scopeIds)
     {
-        if (count($scopeIds) == 1) {
+        if (count($scopeIds) === 0) {
+            $this->query->where(self::expression('1'), '=', 0);
+            return $this;
+        }
+
+        if (count($scopeIds) === 1) {
             return $this->addConditionScopeId($scopeIds[0]);
         }
 
@@ -541,12 +553,7 @@ class Process extends Base implements MappingInterface
     public function addConditionAuthKey($authKey)
     {
         $authKey = urldecode($authKey);
-        $this->query
-            ->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($authKey) {
-                $condition
-                    ->andWith('process.absagecode', '=', $authKey)
-                    ->orWith('process.Name', '=', $authKey);
-            });
+        $this->query->where('process.absagecode', '=', $authKey);
         return $this;
     }
 
@@ -872,9 +879,6 @@ class Process extends Base implements MappingInterface
         if ($client && $client->offsetExists('emailSendCount')) {
             $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
         }
-        if ($client && $client->offsetExists('notificationsSendCount')) {
-            $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
-        }
         $data['Anmerkung'] = $process->getAmendment();
         $data['custom_text_field'] = $process->getCustomTextfield();
         $data['custom_text_field2'] = $process->getCustomTextfield2();
@@ -910,6 +914,13 @@ class Process extends Base implements MappingInterface
         } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
+        } elseif (
+            $process->status == 'queued'
+            && isset($previousStatus)
+            && in_array($previousStatus, ['called', 'processing'], true)
+        ) {
+            $data['showUpTime'] = null;
+            $data['timeoutTime'] = null;
         }
 
 
@@ -936,7 +947,7 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
 
-            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            $data['processing_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         } elseif (isset($timeoutTime) && isset($process->showUpTime)) {
             $showUpDateTime = new \DateTime($process->showUpTime);
             $timeoutDateTime = new \DateTime($timeoutTime);
@@ -958,7 +969,7 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
 
-            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            $data['processing_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
@@ -969,8 +980,8 @@ class Process extends Base implements MappingInterface
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
 
-        if (isset($process->queue['callCount']) && $process->queue['callCount']) {
-            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+        if (isset($process->queue['callCount'])) {
+            $data['AnzahlAufrufe'] = (int) $process->queue['callCount'];
         }
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTimeImmutable())
@@ -994,13 +1005,32 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
+        $hasWaitingTimeAlready = (
+            isset($process->queue['waitingTime'])
+            && $process->queue['waitingTime']
+            && $process->queue['waitingTime'] !== '00:00:00'
+        );
 
         if (
+            !$hasWaitingTimeAlready
+            && (
             (
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
                 && $process['status'] == 'called'
-                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
+                && (
+                    (
+                        isset($process->queue['callCount'])
+                        && $process->queue['callCount'] <= 0
+                    )
+                    || (
+                        ($previousStatus === 'queued' || $previousStatus === 'confirmed')
+                        && (
+                            !isset($process->queue['callTime'])
+                            || (int) $process->queue['callTime'] === 0
+                        )
+                    )
+                )
             )
             ||
             (
@@ -1012,6 +1042,7 @@ class Process extends Base implements MappingInterface
                 && isset($process->queue)
                 && isset($process->queue->waitingTime)
             )
+            )
         ) {
             $wartezeitInSeconds = $process->getWaitedSeconds();
             $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
@@ -1021,7 +1052,7 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($wartezeitInSeconds % 3600, 60);
             $seconds = $wartezeitInSeconds % 60;
 
-            $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            $data['waiting_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
@@ -1032,8 +1063,11 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         if ($process['status'] == 'processing') {
-            $wegezeit = $process->getWayMinutes();
-            $data['wegezeit'] = $wegezeit > 0 ? $wegezeit : 0;
+            $wayTimeInSeconds = max(0, (int) $process->getWaySeconds());
+            $hours = intdiv($wayTimeInSeconds, 3600);
+            $minutes = intdiv($wayTimeInSeconds % 3600, 60);
+            $seconds = $wayTimeInSeconds % 60;
+            $data['way_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
         $this->addValues($data);
     }

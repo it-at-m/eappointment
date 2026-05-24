@@ -22,10 +22,10 @@ class UseraccountTest extends EntityCommonTests
         $this->assertTrue($entity->hasDepartment('123'), 'add department failed');
         $this->assertFalse($entity->hasDepartment('55'), 'department 55 should not exists');
 
-        $this->assertTrue($entity->hasProperties('id', 'password', 'rights'));
+        $this->assertTrue($entity->hasProperties('id', 'password', 'rights', 'permissions'));
         unset($entity['id']);
         try {
-            $entity->hasProperties('id', 'password', 'rights');
+            $entity->hasProperties('id', 'password', 'rights', 'permissions');
             $this->fail("Expected exception UserAccountMissingProperties not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingProperties $exception) {
             $this->assertEquals(500, $exception->getCode());
@@ -138,6 +138,52 @@ class UseraccountTest extends EntityCommonTests
             "EntityAccess(department#123)",
             (string)(new \BO\Zmsentities\Useraccount\EntityAccess($department))
         );
+        $this->assertTrue($entity->hasRights(['ticketprinter']), "User has tickerprinter right");
+    }
+
+    public function testPermissions()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasRights(['appointment']), "User has appointment permission");
+        $this->assertFalse($entity->hasRights(['counter']), "User doesn't have counter permission");
+    }
+
+    public function testMixedRightsAndPermissions()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasRights(['basic', 'appointment']), "User has basic right and appointment permission");
+        $this->assertFalse($entity->hasRights(['basic', 'counter']), "User has basic right but not counter permission");
+        $this->assertFalse($entity->hasRights(['department', 'cherrypick']), "User neither has department right nor cherrypick permission");
+    }
+
+    public function testIsSuperUserViaPermissionsOnly()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->rights['superuser'] = false;
+        $entity->permissions['superuser'] = true;
+        $this->assertTrue($entity->isSuperUser());
+    }
+
+    public function testSuperuserBypassesHasRights()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->rights['superuser'] = true;
+        $this->assertTrue($entity->hasRights(['department']), "Superuser right passes any string right check");
+    }
+
+    public function testTestRightsMissingLogin()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity['id']);
+        $entity->testRights(['basic']);
+    }
+
+    public function testTestRightsMissingRights()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $entity = (new $this->entityclass())->getExample();
+        $entity->testRights(['counter']);
     }
 
     public function testWithCleanedUpFormData()

@@ -105,11 +105,6 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
             'Anzahl der Terminarbeitsplätze'
         );
         $entity->addDictionaryEntry(
-            'minusCall',
-            'number',
-            'Anzahl der Terminarbeitsplätze, um die für Callcenter das Angebot reduziert wird'
-        );
-        $entity->addDictionaryEntry(
             'minusOnline',
             'number',
             'Anzahl der Terminarbeitsplätze, um die für die Internetbuchung das Angebot reduziert wird'
@@ -155,7 +150,6 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
                     Wochentag & 1 sonntag,
                     oeffnungszeit.Timeslot,
                     oeffnungszeit.Anzahlterminarbeitsplaetze Arbpltz,
-                    oeffnungszeit.reduktionTermineCallcenter minusCall,
                     oeffnungszeit.reduktionTermineImInternet minusOnline,
                     oeffnungszeit.erlaubemehrfachslots mehrfach,
                     IF(oeffnungszeit.`Offen_ab`,

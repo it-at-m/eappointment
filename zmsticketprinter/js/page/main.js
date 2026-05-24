@@ -1,5 +1,4 @@
 import BaseView from '../lib/baseview';
-import $ from "jquery";
 class View extends BaseView {
 
     constructor (element) {
@@ -11,10 +10,7 @@ class View extends BaseView {
 
     reloadPage () {
         console.log('reload...')
-
-        $.get( this.getUrl('/home/'), function( response ) {
-            $("body").html($($.parseHTML(response)));
-        });
+        window.location.href = this.getUrl('/home/');
     }
 
     setReloadInterval () {
