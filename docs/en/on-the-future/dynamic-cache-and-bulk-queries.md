@@ -68,7 +68,7 @@ Possible directions:
 | **Consistency**         | Define TTLs, invalidation rules, and bulk-write boundaries per domain (calendar, reservation, scope).                                                                                                                                                   |
 | **Failure mode**        | Document fallback to database reads if the cache is unavailable; avoid silent stale reads for booking-critical data.                                                                                                                                    |
 | **RefArch alignment**   | Spring Boot microservices often use Redis for distributed caching; see community write-ups on [in-memory caching for Spring Boot microservices](https://medium.com/@sachin2713/in-memory-caching-solutions-for-spring-boot-microservices-4c14789abae3). |
-| **Operations at scale** | Large deployments have long used dedicated cache tiers (for example [Twemcache at X/Twitter](https://blog.x.com/engineering/en_us/a/2012/caching-with-twemcache)); similar separation of cache and application tiers applies here.                      |
+| **Operations at scale** | Large deployments typically use dedicated cache tiers separate from application servers; a similar separation applies here.                                                                                                                             |
 
 ## Out of scope for this concept
 
