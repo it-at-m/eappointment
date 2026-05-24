@@ -68,7 +68,7 @@ Mögliche Richtungen:
 | **Konsistenz**                | TTLs, Invalidierungsregeln und Bulk-Write-Grenzen pro Domäne (Kalender, Reservierung, Standort) definieren.                                                                                                                              |
 | **Ausfallverhalten**          | Fallback auf Datenbank-Lesepfad dokumentieren, wenn der Cache nicht erreichbar ist; keine stillen veralteten Reads für buchungskritische Daten.                                                                                          |
 | **RefArch-Ausrichtung**       | Spring-Boot-Microservices nutzen oft Redis für verteiltes Caching; siehe z. B. [In-Memory-Caching für Spring-Boot-Microservices](https://medium.com/@sachin2713/in-memory-caching-solutions-for-spring-boot-microservices-4c14789abae3). |
-| **Betrieb im großen Maßstab** | Große Systeme trennen Cache- und Applikationstiers seit langem (z. B. [Twemcache bei X/Twitter](https://blog.x.com/engineering/en_us/a/2012/caching-with-twemcache)); ein ähnliches Muster gilt hier.                                    |
+| **Betrieb im großen Maßstab** | Große Systeme nutzen typischerweise eigene Cache-Tiers getrennt von Applikationsservern; ein ähnliches Muster gilt hier.                                                                                                                 |
 
 ## Nicht Gegenstand dieses Konzepts
 
