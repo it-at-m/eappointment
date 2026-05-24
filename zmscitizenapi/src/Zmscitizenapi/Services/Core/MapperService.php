@@ -23,6 +23,7 @@ use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Provider;
+use BO\Zmsentities\Queue;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
@@ -471,8 +472,7 @@ class MapperService
         $processEntity->requests = self::createRequests($thinnedProcess);
 
         if (isset($thinnedProcess->status)) {
-            $processEntity->queue = new \stdClass();
-            $processEntity->queue->status = $thinnedProcess->status;
+            $processEntity->queue = new Queue(['status' => $thinnedProcess->status]);
             $processEntity->status = $thinnedProcess->status;
         }
 
