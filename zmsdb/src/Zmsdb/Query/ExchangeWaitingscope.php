@@ -9,6 +9,12 @@ class ExchangeWaitingscope extends Base
      */
     const TABLE = 'wartenrstatistik';
 
+    /** DB column suffix for scheduled (appointment) citizens */
+    public const HOUR_SUFFIX_SCHEDULED = 'appointment';
+
+    /** DB column suffix for walk-in (spontaneous) citizens */
+    public const HOUR_SUFFIX_WALK_IN = 'spontaneous';
+
     const WAITING_VALUES = "
         AVG(hour_00_waiting_time_spontaneous) as hour_00_waiting_time_spontaneous,
         AVG(hour_01_waiting_time_spontaneous) as hour_01_waiting_time_spontaneous,
@@ -291,7 +297,7 @@ class ExchangeWaitingscope extends Base
      */
     public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
-        $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
+        $hourSuffix = $withAppointment ? self::HOUR_SUFFIX_SCHEDULED : self::HOUR_SUFFIX_WALK_IN;
 
         $query = sprintf(
             "SELECT
@@ -323,7 +329,7 @@ class ExchangeWaitingscope extends Base
      */
     public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
-        $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
+        $hourSuffix = $withAppointment ? self::HOUR_SUFFIX_SCHEDULED : self::HOUR_SUFFIX_WALK_IN;
 
         $query = sprintf(
             "UPDATE %s

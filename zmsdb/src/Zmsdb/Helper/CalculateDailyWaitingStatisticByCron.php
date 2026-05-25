@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Helper;
 
 use BO\Zmsdb\Base;
+use BO\Zmsdb\Query\ExchangeWaitingscope;
 use DateTimeImmutable;
 
 /**
@@ -104,15 +105,14 @@ class CalculateDailyWaitingStatisticByCron extends Base
         return $scopeId;
     }
 
-    // Unterscheidung zwischen "spontan" und "termin"
-    // - Wenn 'Uhrzeit'=='00:00:00', behandeln wir es als spontan angekommen => Stunde aus wsm_aufnahmezeit
+    // Walk-in vs scheduled: Uhrzeit 00:00:00 means walk-in => hour from wsm_aufnahmezeit
     private function determineHourAndType(array $buergerRecord): array
     {
-        $type = 'termin';
+        $type = 'scheduled';
         $hourStr = $buergerRecord['Uhrzeit'];
 
         if ($buergerRecord['Uhrzeit'] === '00:00:00') {
-            $type = 'spontan';
+            $type = 'walkin';
             $hourStr = $buergerRecord['wsm_aufnahmezeit'];
         }
 
@@ -133,8 +133,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
             $statsByScopeDate[$scopeId][$dateStr] = [];
             foreach (range(0, 23) as $h) {
                 $statsByScopeDate[$scopeId][$dateStr][$h] = [
-                    'spontan' => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
-                    'termin'  => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
+                    'walkin' => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
+                    'scheduled' => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
                 ];
             }
         }
@@ -174,10 +174,10 @@ class CalculateDailyWaitingStatisticByCron extends Base
         ];
         $updateCols = [];
 
-        // Für jede Stunde 0..23 Spalten für "spontan" und "termin" füllen
+        // Für jede Stunde 0..23 Spalten für walk-in und scheduled füllen
         foreach (range(0, 23) as $hour) {
-            $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'spontan');
-            $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'termin');
+            $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'walkin');
+            $this->addHourUpdateColumns($updateCols, $updateParams, $hour, $hoursData, 'scheduled');
         }
 
         $sqlUpdate = sprintf(
@@ -259,6 +259,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
 
     private function hourSuffixForStatistic(string $type): string
     {
-        return $type === 'termin' ? 'appointment' : 'spontaneous';
+        return $type === 'scheduled'
+            ? ExchangeWaitingscope::HOUR_SUFFIX_SCHEDULED
+            : ExchangeWaitingscope::HOUR_SUFFIX_WALK_IN;
     }
 }

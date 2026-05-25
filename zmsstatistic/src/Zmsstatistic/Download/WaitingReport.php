@@ -17,23 +17,23 @@ use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
-    private const CUSTOMER_TYPE_GESAMT = 'gesamt';
-    private const CUSTOMER_TYPE_TERMIN = 'termin';
-    private const CUSTOMER_TYPE_SPONTAN = 'spontan';
+    private const CITIZEN_TYPE_TOTAL = 'total';
+    private const CITIZEN_TYPE_SCHEDULED = 'scheduled';
+    private const CITIZEN_TYPE_WALK_IN = 'walkin';
 
-    protected $reportPartsGesamt = [
+    protected $reportPartsTotal = [
         'waitingtime_total' => 'Durchschnittliche Wartezeit in Min. (Gesamt)',
         'waitingcount_total' => 'Wartende Gesamtkunden',
         'waytime_total' => 'Durchschnittliche Wegezeit in Min. (Gesamt)',
     ];
 
-    protected $reportPartsTermin = [
+    protected $reportPartsScheduled = [
         'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
         'waitingcount_termin' => 'Wartende Terminkunden',
         'waytime_termin' => 'Durchschnittliche Wegezeit in Min. (Terminkunden)',
     ];
 
-    protected $reportPartsSpontan = [
+    protected $reportPartsWalkIn = [
         'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
         'waitingcount' => 'Wartende Spontankunden',
         'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',
@@ -47,7 +47,7 @@ class WaitingReport extends Base
         Spreadsheet $spreadsheet,
         string $sheetTitle,
         array $args,
-        string $customerType,
+        string $citizenType,
         bool $isFirstSheet = false
     ): void {
         if (!$isFirstSheet) {
@@ -58,7 +58,7 @@ class WaitingReport extends Base
         $spreadsheet->setActiveSheetIndexByName($sheetTitle);
         $this->writeInfoHeader($args, $spreadsheet);
         foreach ($args['reports'] as $report) {
-            $this->writeWaitingReport($report, $spreadsheet, $customerType, 'dd.MM.yyyy');
+            $this->writeWaitingReport($report, $spreadsheet, $citizenType, 'dd.MM.yyyy');
         }
     }
 
@@ -71,9 +71,9 @@ class WaitingReport extends Base
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
 
-        $this->createAndPopulateSheet($spreadsheet, 'Gesamt', $args, self::CUSTOMER_TYPE_GESAMT, true);
-        $this->createAndPopulateSheet($spreadsheet, 'Terminkunden', $args, self::CUSTOMER_TYPE_TERMIN);
-        $this->createAndPopulateSheet($spreadsheet, 'Spontankunden', $args, self::CUSTOMER_TYPE_SPONTAN);
+        $this->createAndPopulateSheet($spreadsheet, 'Gesamt', $args, self::CITIZEN_TYPE_TOTAL, true);
+        $this->createAndPopulateSheet($spreadsheet, 'Terminkunden', $args, self::CITIZEN_TYPE_SCHEDULED);
+        $this->createAndPopulateSheet($spreadsheet, 'Spontankunden', $args, self::CITIZEN_TYPE_WALK_IN);
 
         // Für den Download das erste Blatt aktiv lassen
         $spreadsheet->setActiveSheetIndexByName('Gesamt');
@@ -81,17 +81,17 @@ class WaitingReport extends Base
         return $download->writeDownload($response);
     }
 
-    private function assertValidCustomerType(string $customerType): void
+    private function assertValidCitizenType(string $citizenType): void
     {
         $validTypes = [
-            self::CUSTOMER_TYPE_GESAMT,
-            self::CUSTOMER_TYPE_TERMIN,
-            self::CUSTOMER_TYPE_SPONTAN,
+            self::CITIZEN_TYPE_TOTAL,
+            self::CITIZEN_TYPE_SCHEDULED,
+            self::CITIZEN_TYPE_WALK_IN,
         ];
 
-        if (!in_array($customerType, $validTypes, true)) {
+        if (!in_array($citizenType, $validTypes, true)) {
             throw new \InvalidArgumentException(
-                "Invalid customer type: {$customerType}. Must be one of: " . implode(', ', $validTypes)
+                "Invalid citizen type: {$citizenType}. Must be one of: " . implode(', ', $validTypes)
             );
         }
     }
@@ -99,20 +99,20 @@ class WaitingReport extends Base
     public function writeWaitingReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        string $customerType,
+        string $citizenType,
         $datePatternCol = 'dd.MM.yyyy',
     ) {
-        $this->assertValidCustomerType($customerType);
+        $this->assertValidCitizenType($citizenType);
 
         $sheet = $spreadsheet->getActiveSheet();
         $this->writeHeader($report, $sheet, $datePatternCol);
-        $this->writeTotals($report, $sheet, $customerType);
-        if ($customerType === self::CUSTOMER_TYPE_TERMIN) {
-            $parts = $this->reportPartsTermin;
-        } elseif ($customerType === self::CUSTOMER_TYPE_SPONTAN) {
-            $parts = $this->reportPartsSpontan;
+        $this->writeTotals($report, $sheet, $citizenType);
+        if ($citizenType === self::CITIZEN_TYPE_SCHEDULED) {
+            $parts = $this->reportPartsScheduled;
+        } elseif ($citizenType === self::CITIZEN_TYPE_WALK_IN) {
+            $parts = $this->reportPartsWalkIn;
         } else {
-            $parts = $this->reportPartsGesamt;
+            $parts = $this->reportPartsTotal;
         }
         foreach ($parts as $partName => $headline) {
             $this->writeReportPart($report, $sheet, $partName, $headline);
@@ -145,39 +145,39 @@ class WaitingReport extends Base
         }
     }
 
-    private function getCustomerTypeKeys(string $customerType): array
+    private function getCitizenTypeKeys(string $citizenType): array
     {
-        $this->assertValidCustomerType($customerType);
+        $this->assertValidCitizenType($citizenType);
         $keyMappings = [
-            self::CUSTOMER_TYPE_TERMIN => [
+            self::CITIZEN_TYPE_SCHEDULED => [
                 'max' => 'max_waitingtime_termin',
                 'avg' => 'average_waitingtime_termin',
                 'avg_way' => 'average_waytime_termin',
             ],
-            self::CUSTOMER_TYPE_SPONTAN => [
+            self::CITIZEN_TYPE_WALK_IN => [
                 'max' => 'max_waitingtime',
                 'avg' => 'average_waitingtime',
                 'avg_way' => 'average_waytime',
             ],
-            self::CUSTOMER_TYPE_GESAMT => [
+            self::CITIZEN_TYPE_TOTAL => [
                 'max' => 'max_waitingtime_total',
                 'avg' => 'average_waitingtime_total',
                 'avg_way' => 'average_waytime_total',
             ],
         ];
 
-        return $keyMappings[$customerType];
+        return $keyMappings[$citizenType];
     }
 
-    public function writeTotals(ReportEntity $report, $sheet, string $customerType)
+    public function writeTotals(ReportEntity $report, $sheet, string $citizenType)
     {
-        $this->assertValidCustomerType($customerType);
+        $this->assertValidCitizenType($citizenType);
 
         $entity = clone $report;
         $totals = $entity->data['max'];
         unset($entity->data['max']);
 
-        $keys = $this->getCustomerTypeKeys($customerType);
+        $keys = $this->getCitizenTypeKeys($citizenType);
 
         $reportTotal['max'][] = 'Stunden-Max (Spaltenmaximum) der Wartezeit in Min.';
         $reportTotal['average'][] = 'Stundendurchschnitt (Spalten) der Wartezeit in Min.';
