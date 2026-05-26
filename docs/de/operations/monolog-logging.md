@@ -119,6 +119,10 @@ Aktualisierung auch bei `npm run docs:dev` / `docs:build`. Nutze die Filter, die
 
 <LogInventory />
 
+## Verwandtes
+
+- [Monitoring und Status](./monitoring-and-status.md) — `GET /status/`-Metriken und Grafana
+
 ## Verwandter Code
 
 - `zmsslim/src/Slim/Application.php` — `ZMS_DEBUGLEVEL`, `DEBUGLEVEL`, `public static $log`
