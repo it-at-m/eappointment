@@ -39,8 +39,7 @@ Zählungen gelten für Nicht-Folgetermin-Zeilen in `buerger` (`istFolgeterminvon
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Anzahl pro `buerger.status`                                                |
 | `withExternalUserId`                                                                   | Prozesse mit gesetztem OIDC-/Bürger-`external_user_id` (beliebiger Status) |
-| `confirmedWithExternalUserId`                                                          | Bestätigte Termine mit externem Nutzer                                     |
-| `reservedWithExternalUserId`                                                           | Reservierte Termine mit externem Nutzer                                    |
+| `confirmedWithExternalUserId`                                                          | Bestätigte Termine mit externem Nutzer (wird in `zmscitizenapi` beim Appointment-Update gesetzt, nach der Reservierung) |
 | `sinceMidnight`, `last7days`, `lastInsert`                                             | Buchungsaktivität (kein Gesamtbestand aller Prozesse)                      |
 | `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot-Wartung (wenn Statistik aktiv)                                        |
 

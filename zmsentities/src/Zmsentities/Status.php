@@ -26,7 +26,6 @@ class Status extends Schema\Entity
                 'reserved' => 0,
                 'withExternalUserId' => 0,
                 'confirmedWithExternalUserId' => 0,
-                'reservedWithExternalUserId' => 0,
                 'lastInsert' => 0,
             ),
             'mail' => array (
