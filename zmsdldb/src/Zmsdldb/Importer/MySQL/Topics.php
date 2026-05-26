@@ -16,8 +16,7 @@ class Topics extends Base
                     $topic->save();
                 }
             } else {
-                print_r('NO Topics(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
-                #print_r($this->metaObject);
+                $this->logNoUpdateNeeded();
             }
             /*
             error_log(

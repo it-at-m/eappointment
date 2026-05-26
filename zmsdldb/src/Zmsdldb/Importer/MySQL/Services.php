@@ -16,7 +16,7 @@ class Services extends Base
                     $service->save();
                 }
             } else {
-                print_r('NO Services(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
+                $this->logNoUpdateNeeded();
             }
             /*
             error_log(

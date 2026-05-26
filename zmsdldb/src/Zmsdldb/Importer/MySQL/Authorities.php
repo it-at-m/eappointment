@@ -16,8 +16,7 @@ class Authorities extends Base
                     $authority->save();
                 }
             } else {
-                print_r('NO Authorities(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
-                #print_r($this->metaObject);
+                $this->logNoUpdateNeeded();
             }
             /*
             error_log(

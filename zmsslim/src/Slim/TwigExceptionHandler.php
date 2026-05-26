@@ -93,20 +93,16 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 $status
             );
         } catch (\Throwable $subexception) {
-            error_log(
-                "Not catchable Exception: "
-                . $exception->getMessage()
-                . " "
-                . $exception->getFile()
-                . ":"
-                . $exception->getLine()
-                . " "
-                . $exception->getTraceAsString()
-                . " ---- because of "
-                . $subexception->getMessage()
-                . " "
-                . $subexception->getTraceAsString()
-            );
+            \App::$log->critical('Not catchable exception while rendering error page', [
+                'exception' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+                'cause' => get_class($subexception),
+                'causeMessage' => $subexception->getMessage(),
+                'causeTrace' => $subexception->getTraceAsString(),
+            ]);
         }
     }
 

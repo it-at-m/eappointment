@@ -16,8 +16,7 @@ class Locations extends Base
                     $location->save();
                 }
             } else {
-                print_r('NO Locations(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
-                #print_r($this->metaObject);
+                $this->logNoUpdateNeeded();
             }
             /*
             error_log(

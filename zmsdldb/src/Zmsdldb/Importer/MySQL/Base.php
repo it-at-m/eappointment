@@ -206,5 +206,15 @@ abstract class Base implements Options
     {
     }
 
+    protected function logNoUpdateNeeded(): void
+    {
+        if (class_exists('\App', false) && isset(\App::$log)) {
+            \App::$log->notice('DLDB entity import skipped, no update needed', [
+                'entity' => $this->entityClass,
+                'locale' => $this->getLocale(),
+            ]);
+        }
+    }
+
     abstract public function runImport();
 }
