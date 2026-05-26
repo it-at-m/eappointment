@@ -17,6 +17,7 @@ class Status extends Schema\Entity
             ),
             'processes' => array (
                 'blocked' => 0,
+                'called' => 0,
                 'confirmed' => 0,
                 'preconfirmed' => 0,
                 'deleted' => 0,
