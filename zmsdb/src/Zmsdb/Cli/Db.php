@@ -41,7 +41,13 @@ class Db
                     $query = '';
                 } catch (\Exception $exception) {
                     if ($verbose) {
-                        \App::$log->error('SQL import failed', ['query' => $query]);
+                        \App::$log->error('SQL import failed', [
+                            'file' => basename($file),
+                            'method' => __METHOD__,
+                            'exception' => get_class($exception),
+                            'message' => $exception->getMessage(),
+                            'code' => $exception->getCode(),
+                        ]);
                     }
                     throw $exception;
                 }
