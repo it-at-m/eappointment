@@ -1,11 +1,8 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
-// @ts-expect-error: Vue SFC import for test
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
-// @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
-// @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { useLogin } from "@/utils/auth";
 // beforeEach is already imported from vitest on line 2

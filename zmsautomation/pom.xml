@@ -13,14 +13,14 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.jupiter.version>6.0.3</junit.jupiter.version>
+    <junit.jupiter.version>6.1.0</junit.jupiter.version>
     <restassured.version>6.0.0</restassured.version>
     <assertj.version>3.27.7</assertj.version>
     <surefire.version>3.5.5</surefire.version>
     <cucumber.version>7.34.3</cucumber.version>
     <testng.version>7.12.0</testng.version>
-    <flyway.version>12.5.0</flyway.version>
-    <log4j.version>2.25.4</log4j.version>
+    <flyway.version>12.6.2</flyway.version>
+    <log4j.version>2.26.0</log4j.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
     <ataf.version>0.3.3</ataf.version>
   </properties>
@@ -75,7 +75,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.1</version>
         <configuration>
           <java>
             <includes>

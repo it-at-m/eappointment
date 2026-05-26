@@ -269,6 +269,7 @@ const sidebarLabels = {
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
+    dynamicCache: "Dynamic Cache Layer and Bulk Queries",
   },
   de: {
     overview: "Übersicht",
@@ -312,6 +313,7 @@ const sidebarLabels = {
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
+    dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
   },
 };
 
@@ -484,6 +486,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.modernizeArch,
           link: `${prefix}/on-the-future/product-oriented-refarch-roadmap`,
+        },
+        {
+          text: t.dynamicCache,
+          link: `${prefix}/on-the-future/dynamic-cache-and-bulk-queries`,
         },
       ],
     },

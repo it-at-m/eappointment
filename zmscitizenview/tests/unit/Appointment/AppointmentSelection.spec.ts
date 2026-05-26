@@ -1,13 +1,11 @@
-import { mount } from "@vue/test-utils";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import { describe, it, expect, vi, type Mock, beforeEach, afterEach } from "vitest";
 import { flushPromises } from '@vue/test-utils';
-// @ts-expect-error: Vue SFC import for test
 import AppointmentSelection from "@/components/Appointment/AppointmentSelection.vue";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, type Ref } from "vue";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
-// @ts-expect-error: API import for test
 } from "@/api/ZMSAppointmentAPI";
 
 const t = vi.fn((key: string) => key);
@@ -30,6 +28,13 @@ vi.mock('@/api/ZMSAppointmentAPI', () => ({
   fetchAvailableDays: vi.fn(),
   fetchAvailableTimeSlots: vi.fn(),
 }));
+
+interface LoadingStates {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+}
 
 interface WrapperOverrides {
   selectedService?: any;
@@ -333,6 +338,56 @@ describe("AppointmentSelection", () => {
       const locationTitles = wrapper.findAll('.location-title');
       expect(locationTitles.length).toBe(0);
     });
+
+    it("preselects provider when preselectedOfficeId matches office parentId", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-17", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747224600]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        props: {
+          preselectedOfficeId: "101135",
+        },
+        selectedService: {
+          id: "2",
+          providers: [
+            {
+              name: "Planvorbesprechung Grundstücksentwässerung",
+              id: 1,
+              parentId: 101135,
+              priority: 1,
+              address: {
+                street: "Friedenstraße",
+                house_number: "40",
+              },
+              scope: {
+                id: "369",
+              },
+            },
+          ],
+        },
+      });
+
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.selectedProviders).toEqual({
+        1: true,
+      });
+
+      expect(wrapper.vm.noProviderSelected).toBe(false);
+    });
   });
 
   describe("CalendarView Integration", () => {
@@ -362,7 +417,11 @@ describe("AppointmentSelection", () => {
     await nextTick();
 
     // Uncheck the provider - with new behavior, availableDays still contains data for all providers
-    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522];
+    wrapper.vm.selectedProviders = {
+      "102522": false,
+      "54261": false,
+      "10489": false,
+    };
     await nextTick();
 
     // availableDays still has data (we always fetch all providers), but allowedDates
@@ -1561,9 +1620,9 @@ describe("AppointmentSelection", () => {
   });
 
   describe('Submission/Loading State Integration', () => {
-    let wrapper;
-    let selectedTimeslotRef;
-    let loadingStates;
+    let wrapper: VueWrapper<InstanceType<typeof AppointmentSelection>>;
+    let selectedTimeslotRef: Ref<number>;
+    let loadingStates: LoadingStates;
     beforeEach(async () => {
       selectedTimeslotRef = ref(0);
       loadingStates = {

@@ -24,7 +24,7 @@ class UseraccountGet extends BaseController
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
-        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
+        (new Helper\User($request, $resolveReferences))->checkPermissions('useraccount');
 
         $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
         if (! $useraccount || ! $useraccount->hasId()) {

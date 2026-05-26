@@ -2,18 +2,9 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-$usage = <<<EOS
-
-Usage: {$argv[0]} [--verbose] --commit [141]
-        ATTENTION! Sends process list of current day to scopes admin email . USE WITH CAUTION!
-        --verbose       only shows what would be deleted
-        --commit        no dry run, delete processes
-        scope ids       numbers of specific scope
-
-EOS;
-
 $scopeIds = preg_grep('#^\d+$#', $argv);
-if (count($scopeIds)){
+$scopeId = false;
+if (count($scopeIds)) {
     $scopeId = array_shift($scopeIds);
 }
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
@@ -23,5 +14,5 @@ $job = new \BO\Zmsdb\Helper\SendProcessListToScopeAdmin($verbose, $scopeId);
 $job->startProcessing($commit);
 
 if (!$commit) {
-    error_log("Use with --commit to send email.");
+    \App::$log->notice('Use with --commit to send email.');
 }

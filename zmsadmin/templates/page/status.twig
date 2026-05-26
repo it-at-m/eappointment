@@ -72,9 +72,9 @@
             <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
         </tr>
         {% if workstation %}
-        {% set rights = workstation.useraccount.rights %}
+        {% set permissions = workstation.useraccount.permissions %}
         {% set versionstring = 'v' ~ status.version.major ~ '.' ~  status.version.minor ~ '.' ~  status.version.patch %}
-        {% if rights.superuser %}
+        {% if permissions.superuser %}
         <tr>
             <th colspan="2">
                 <h2>Automatische Tests</h2>

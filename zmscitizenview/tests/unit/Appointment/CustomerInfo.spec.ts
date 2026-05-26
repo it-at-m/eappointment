@@ -2,7 +2,6 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it, beforeEach } from "vitest";
 import { nextTick, ref } from "vue";
 
-// @ts-expect-error: Vue SFC import for test
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 
 describe("CustomerInfo", () => {

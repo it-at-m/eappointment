@@ -3,11 +3,6 @@
 ini_set('memory_limit', '1024M');
 require_once(__DIR__."/script_bootstrap.php");
 
-function logMessage($message, $level = 'INFO') {
-    $time = date('Y-m-d H:i:s');
-    error_log("[$time] [$level] $message");
-}
-
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 $now = new \DateTimeImmutable();
 if (count($dates)) {
@@ -15,31 +10,34 @@ if (count($dates)) {
 } elseif (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
-$repair = false;
 if (preg_grep('#^--repair$#', $argv)) {
-    $repair = true;
+    // repair flag consumed by CalculateSlots via argv
 }
 if (preg_grep('#^--commit$#', $argv)) {
-    logMessage("⏳    Start Slot-Berechnung: {$now->format('c')}");
+    \App::$log->info('Start slot calculation', ['time' => $now->format('c')]);
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     try {
         $stepStart = microtime(true);
         $delete = preg_grep('#^--delete$#', $argv);
         $calculator->writeCalculations($now, $delete);
-        logMessage("✅    Slot-Berechnung fertig in " . round(microtime(true) - $stepStart, 2) . " s");
+        \App::$log->info('Slot calculation finished', [
+            'duration_seconds' => round(microtime(true) - $stepStart, 2),
+        ]);
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();
-        error_log($exception->getTraceAsString());
+        \App::$log->error('Slot calculation lock timeout', [
+            'trace' => $exception->getTraceAsString(),
+        ]);
     } catch (\Exception $exception) {
         $calculator->dumpLogs();
         throw $exception;
     }
 } else {
-    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
-    $username = \BO\Zmsdb\Connection\Select::$username;
-    echo "Usage: {$argv[0]} --commit [--verbose] [--delete] [--repair] [2018-04-01]\n"
-        . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
-    echo "\tDatabase:             $dbname as $username\n";
-    echo "\tDate for calculation: ".$now->format('c')."\n\n";
+    \App::$log->notice('calculateSlots usage', [
+        'usage' => "Usage: {$argv[0]} --commit [--verbose] [--delete] [--repair] [2018-04-01]",
+        'database' => \BO\Zmsdb\Connection\Select::$writeSourceName,
+        'username' => \BO\Zmsdb\Connection\Select::$username,
+        'calculationTime' => $now->format('c'),
+    ]);
 }

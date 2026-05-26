@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once(__DIR__."/script_bootstrap.php");
+
 $usage = <<<EOS
 
 Usage: {$argv[0]} year [--verbose] --commit
@@ -24,13 +25,13 @@ if ($targetYear) {
     $verboseList = $job->writeDayOffListUntilYear($commit, $fromnow);
     if ($verbose) {
         foreach ($verboseList as $dayOff) {
-            error_log("$dayOff");
+            \App::$log->info('Day off entry', ['dayOff' => (string) $dayOff]);
         }
     }
 } else {
-    error_log("Missing year argument!$usage");
+    \App::$log->error('Missing year argument', ['usage' => trim($usage)]);
 }
 
 if (!$commit) {
-    error_log("Use with --commit to save dayoffs.");
+    \App::$log->notice('Use with --commit to save dayoffs.');
 }

@@ -23,8 +23,7 @@ class OfficeList extends Entity implements JsonSerializable
                 }
                 $this->offices[] = $office;
             } catch (\Exception $e) {
-                error_log("Invalid Office encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid Office skipped', ['exception' => $e->getMessage()]);
             }
         }
 

@@ -22,6 +22,9 @@ class DayoffByYear extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['dayoff'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $year = Validator::value($args['year'])->isNumber()->getValue();
         $collection = \App::$http->readGetResult('/dayoff/' . $year . '/')->getCollection();
