@@ -26,11 +26,6 @@ The response follows [`status.json`](https://github.com/it-at-m/eappointment/blo
 Use `includeProcessStats=0` for high-frequency liveness probes; use `1` for dashboards that track appointment volumes.
 
 ### Example (process stats enabled)
-
-```bash
-curl -s "https://<host>/terminvereinbarung/api/2/status/?includeProcessStats=1" | jq '.data.processes'
-```
-
 ### `processes` metrics (high level)
 
 Counts are for non-follow-up rows in `buerger` (`istFolgeterminvon` empty), same filter as the status SQL.
