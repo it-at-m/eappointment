@@ -1,17 +1,5 @@
 {% set permissions = workstation.useraccount.permissions %}
-<section class="message message--info" role="alert">
-    <h2 class="message__heading">Permissions Debug</h2>
 
-    {% if permissions is iterable %}
-        <ul>
-            {% for permission, value in permissions %}
-                <li>{{ permission }}: {{ value ? 'true' : 'false' }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Keine Permissions gefunden.</p>
-    {% endif %}
-</section>
 <section class="message message--info" role="alert">
     <h2 class="message__heading">Hinweis</h2>
     <p>Um alle Funktionen des Systems nutzen zu können, müssen Sie noch folgende Angaben machen:</p>
