@@ -39,8 +39,7 @@ Counts are for non-follow-up rows in `buerger` (`istFolgeterminvon` empty), same
 | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Count per `buerger.status`                                        |
 | `withExternalUserId`                                                                   | Processes with OIDC / citizen `external_user_id` set (any status) |
-| `confirmedWithExternalUserId`                                                          | Confirmed appointments linked to an external user                 |
-| `reservedWithExternalUserId`                                                           | Reserved appointments linked to an external user                  |
+| `confirmedWithExternalUserId`                                                          | Confirmed appointments linked to an external user (set on appointment update in `zmscitizenapi`, after reservation) |
 | `sinceMidnight`, `last7days`, `lastInsert`                                             | Booking activity (not a total of all processes)                   |
 | `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot maintenance (added when stats are included)                  |
 
