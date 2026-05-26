@@ -171,6 +171,7 @@ defineExpose({ onStateChange, onServerVerification });
   --altcha-checkbox-border-width: 2px;
   --altcha-color-base-content: var(--mde-color-neutral-grey, #3a5368);
   --altcha-color-error: var(--mde-color-status-error, #984447);
+  --altcha-color-success: var(--mde-color-status-success, #3a7f53);
   --altcha-padding: 1.25rem;
 }
 
