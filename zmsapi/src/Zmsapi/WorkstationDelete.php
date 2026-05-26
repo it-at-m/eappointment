@@ -25,7 +25,7 @@ class WorkstationDelete extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $workstation = (new Helper\User($request, 1))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkPermissions();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         if (! (new Useraccount())->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();

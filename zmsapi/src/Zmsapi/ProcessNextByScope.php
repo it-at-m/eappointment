@@ -23,7 +23,7 @@ class ProcessNextByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkPermissions('appointment');
         $query = new Query();
 
         $selectedDate = Validator::param('date')->isString()->getValue();
