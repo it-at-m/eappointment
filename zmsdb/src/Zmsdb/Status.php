@@ -215,6 +215,28 @@ class Status extends Base
                 COALESCE(SUM(CASE WHEN b.status = "missed" THEN 1 ELSE 0 END), 0) AS missed,
                 COALESCE(SUM(CASE WHEN b.status = "parked" THEN 1 ELSE 0 END), 0) AS parked,
                 COALESCE(SUM(CASE WHEN b.status = "reserved" THEN 1 ELSE 0 END), 0) AS reserved,
+                COALESCE(SUM(
+                    CASE
+                        WHEN b.external_user_id IS NOT NULL AND b.external_user_id != ""
+                        THEN 1 ELSE 0
+                    END
+                ), 0) AS withExternalUserId,
+                COALESCE(SUM(
+                    CASE
+                        WHEN b.status = "confirmed"
+                            AND b.external_user_id IS NOT NULL
+                            AND b.external_user_id != ""
+                        THEN 1 ELSE 0
+                    END
+                ), 0) AS confirmedWithExternalUserId,
+                COALESCE(SUM(
+                    CASE
+                        WHEN b.status = "reserved"
+                            AND b.external_user_id IS NOT NULL
+                            AND b.external_user_id != ""
+                        THEN 1 ELSE 0
+                    END
+                ), 0) AS reservedWithExternalUserId,
                 global.sinceMidnight,
                 global.last7days,
                 global.lastInsert
