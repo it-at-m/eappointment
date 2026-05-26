@@ -64,6 +64,14 @@ CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI:-http://citizenview:${CITIZENVIEW_P
 CITIZENVIEW_BASE_URI="${CITIZENVIEW_BASE_URI%/}/"
 export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
 
+# Safari CI lite prepare: compose uses prebuilt zmscitizenview (nginx on :8080). The parent shell may
+# source .env with Vite dev (:8082). Flyway and health checks must match the running container.
+if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
+  export CITIZENVIEW_PORT="8080"
+  CITIZENVIEW_BASE_URI="http://citizenview:${CITIZENVIEW_PORT}/"
+  export CITIZEN_VIEW_BASE_URI="${CITIZENVIEW_BASE_URI}"
+fi
+
 DB_NAME="${MYSQL_DATABASE}"
 DB_USER="${MYSQL_USER}"
 DB_PASSWORD="${MYSQL_PASSWORD}"
@@ -371,26 +379,33 @@ section "6. PHP Migrations"
 ( cd "$PROJECT_ROOT/zmsapi" && vendor/bin/migrate --update )
 
 # 7. Hourly Cronjob (inherit ZMS_TIMEADJUST from env)
-section "7. Hourly Cronjob"
-export ZMS_CRONROOT=1
-export ZMS_ENV="${ZMS_ENV:-dev}"
-run_hourly_with_retries || true
-clear_caches
+# ZMS_SAFARI_CI_LITE_PREP=1: skip heavy data prep for GitHub Safari (hourly DLDB, minutely+slots, standalone calculateSlots).
+# Minutely alone can run slot rebuild for minutes and starve health checks; Flyway+migrations already seed CI DB.
+if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
+  warn "ZMS_SAFARI_CI_LITE_PREP=1 — skipping sections 7–8 (hourly DLDB import, minutely cron, calculateSlots) for Safari CI prep."
+  clear_caches
+else
+  section "7. Hourly Cronjob"
+  export ZMS_CRONROOT=1
+  export ZMS_ENV="${ZMS_ENV:-dev}"
+  run_hourly_with_retries || true
+  clear_caches
 
-section "8. Minutly Cronjob"
-export ZMS_CRONROOT=1
-export ZMS_ENV="${ZMS_ENV:-dev}"
-info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
-(
-  cd "$PROJECT_ROOT/zmsapi" \
-  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
-) || true
+  section "8. Minutly Cronjob"
+  export ZMS_CRONROOT=1
+  export ZMS_ENV="${ZMS_ENV:-dev}"
+  info "Running minutly cron with ZMS_TIMEADJUST=$ZMS_TIMEADJUST ..."
+  (
+    cd "$PROJECT_ROOT/zmsapi" \
+    && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" ZMS_ENV="$ZMS_ENV" ZMS_CRONROOT=1 ./cron/cronjob.minutly
+  ) || true
 
-info "Forcing slot calculation fallback (mocked time) ..."
-(
-  cd "$PROJECT_ROOT/zmsapi" \
-  && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
-) || true
+  info "Forcing slot calculation fallback (mocked time) ..."
+  (
+    cd "$PROJECT_ROOT/zmsapi" \
+    && ZMS_TIMEADJUST="$ZMS_TIMEADJUST" php vendor/bin/calculateSlots --commit --delete
+  ) || true
+fi
 
 # 9. Health Checks (5 min total; 15s per try; curl uses explicit --noproxy)
 #
@@ -409,7 +424,7 @@ HEALTH_PERTRY_TIMEOUT="${HEALTH_PERTRY_TIMEOUT:-15}"
 ZMS_API_HEALTH_URL="$(join_url "${BASE_URI}" "status/")"
 : "${CITIZEN_API_BASE_URI:?CITIZEN_API_BASE_URI must be set}"
 CITIZEN_API_HEALTH_URL="$(join_url "${CITIZEN_API_BASE_URI}" "offices-and-services/")"
-ZMSCITIZENVIEW_HEALTH_URL="${CITIZENVIEW_BASE_URI}"
+ZMSCITIZENVIEW_HEALTH_URL="$(join_url "${CITIZENVIEW_BASE_URI}" "actuator/health")"
 REFARCH_GATEWAY_OFFICES_URL="${REFARCH_GATEWAY_OFFICES_URL:-http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/}"
 
 # derive a date range similar to the Java steps (today .. today+6 months)
@@ -420,8 +435,8 @@ AVAIL_DAYS_END_DATE="$(TZ=Europe/Berlin date -d "${AVAIL_DAYS_START_DATE} +6 mon
 # Personalausweis at Bürgerbüro Ruppertstraße (10502) – lands at 10502
 CITIZEN_API_AVAIL_DAYS_URL="$(join_url "${CITIZEN_API_BASE_URI}" "available-days-by-office/")?officeId=10502&serviceId=1063441&startDate=${AVAIL_DAYS_START_DATE}&endDate=${AVAIL_DAYS_END_DATE}&serviceCount=1"
 
-# one-shot warm-up (ignore exit code)
-curl -sS -o /dev/null --max-time 30 "$CITIZEN_API_HEALTH_URL" || true
+# one-shot warm-up (ignore exit code); --noproxy '*' so Docker hostname `web` is never sent via HTTP_PROXY on CI runners.
+curl -sS -o /dev/null --max-time 30 --noproxy '*' "$CITIZEN_API_HEALTH_URL" || true
 
 wait_http() { # name url
   local n="$1" u="$2" tries=$(( (HEALTH_MAX_WAIT + HEALTH_INTERVAL - 1)/HEALTH_INTERVAL ))
@@ -449,10 +464,15 @@ wait_http_direct() { # name url
 }
 
 fail=false
-wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
+# Use wait_http_direct (curl --noproxy '*') for zms-web URLs: corporate HTTP_PROXY must not capture host `web`.
+wait_http_direct "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
-wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
-wait_http "citizenapi-available-days"  "$CITIZEN_API_AVAIL_DAYS_URL"  || fail=true
+wait_http_direct "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
+if [[ "${ZMS_SAFARI_CI_LITE_PREP:-}" == "1" ]]; then
+  info "ZMS_SAFARI_CI_LITE_PREP=1 — skipping citizenapi-available-days health (sections 7–8 skipped; no slot pipeline for Ruppertstraße scenario)."
+else
+  wait_http_direct "citizenapi-available-days"  "$CITIZEN_API_AVAIL_DAYS_URL"  || fail=true
+fi
 # zmscitizenview / refarch-gateway: curl --noproxy '*' so Docker service hostnames are never proxied.
 wait_http_direct "zmscitizenview"      "$ZMSCITIZENVIEW_HEALTH_URL"   || fail=true
 if [[ "${SKIP_REFARCH_GATEWAY_HEALTH:-}" == "1" ]]; then
@@ -463,6 +483,13 @@ fi
 $fail && { warn "One or more health checks failed"; exit 1; }
 
 info "All health checks passed."
+
+if [[ "${ZMS_AUTOMATION_SETUP_ONLY:-}" == "1" ]]; then
+  # Prepare DB/stack (sections 1–9) for ATAF on the Mac host (Safari); skip cleanup so DB stays migrated.
+  info "ZMS_AUTOMATION_SETUP_ONLY=1 — prepared DB/stack; exiting before browser setup and ATAF Maven tests."
+  trap - EXIT INT TERM
+  exit 0
+fi
 
 # 10. Browser Setup (for UI tests)
 section "10. Browser Setup"
