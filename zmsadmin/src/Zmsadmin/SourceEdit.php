@@ -25,8 +25,8 @@ class SourceEdit extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        if (!$workstation->hasSuperUseraccount()) {
-            throw new Exception\NotAllowed();
+        if (!$workstation->getUseraccount()->hasPermissions(['source'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
 
         if ('add' != $args['name']) {

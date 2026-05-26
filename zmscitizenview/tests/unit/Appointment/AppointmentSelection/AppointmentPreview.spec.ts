@@ -5,6 +5,10 @@ import AppointmentPreview from "@/components/Appointment/AppointmentSelection/Ap
 
 const t = vi.fn((key: string) => key);
 
+const svgUseHref = (element: Element): string | null =>
+  element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ??
+  element.getAttribute("href");
+
 const calloutStub = {
   template:
     '<div data-test="muc-callout"><slot name="header"></slot><slot name="content"></slot></div>',
@@ -73,7 +77,9 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
+      const useElement = wrapper.find("use");
+      expect(useElement.exists()).toBe(true);
+      expect(svgUseHref(useElement.element)).toBe(`#${variant.icon}`);
       expect(wrapper.text()).toContain(t(variant.textKey));
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");

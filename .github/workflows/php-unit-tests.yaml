@@ -75,7 +75,7 @@ jobs:
             --display-deprecations --display-warnings --fail-on-deprecation
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.module }}
           path: ${{ matrix.module }}/coverage/
@@ -171,7 +171,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-zmsapi
           path: zmsapi/coverage/
@@ -238,7 +238,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-zmsdb
           path: zmsdb/coverage/
@@ -271,12 +271,6 @@ jobs:
           done
         shell: bash
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
       - name: Run Unit Tests
         env:
           XDEBUG_MODE: coverage
@@ -284,17 +278,17 @@ jobs:
           set -e  # Exit immediately on any error
           cd ./zmsclient
           mkdir -p coverage
-          docker-compose up -d
+          docker compose up -d
           
           echo "Running tests WITH coverage for zmsclient"
-          docker-compose exec -T test php -dmemory_limit=-1 \
+          docker compose exec -T test php -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-zmsclient
           path: zmsclient/coverage/

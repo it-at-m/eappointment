@@ -23,7 +23,7 @@ class UseraccountAdd extends BaseController
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
+        (new Helper\User($request, $resolveReferences))->checkPermissions('useraccount');
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $entity = new \BO\Zmsentities\Useraccount($input);

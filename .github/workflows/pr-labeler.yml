@@ -11,5 +11,5 @@ jobs:
       issues: write # permission to create labels if not exist
     runs-on: ubuntu-latest
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-pr-labeler@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-pr-labeler@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
 

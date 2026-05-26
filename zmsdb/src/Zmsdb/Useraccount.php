@@ -43,6 +43,14 @@ class Useraccount extends Base
         return $version;
     }
 
+    public function invalidateAllCaches(): void
+    {
+        if (!App::$cache) {
+            return;
+        }
+        App::$cache->set(self::CACHE_VERSION_KEY, $this->getUseraccountCacheVersion() + 1);
+    }
+
     /**
      * Register a cache key for one or more department IDs so we can invalidate
      * only the affected department-based caches later on.
@@ -703,7 +711,43 @@ class Useraccount extends Base
         return (int) $row['id'];
     }
 
-    public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
+    protected function extractRequestedRoleNames(Entity $entity): array
+    {
+        $roles = $entity->offsetExists('roles') ? $entity['roles'] : [];
+        if (!is_array($roles)) {
+            return [];
+        }
+
+        $requestedRoles = [];
+        foreach ($roles as $roleName) {
+            if (!is_string($roleName)) {
+                continue;
+            }
+
+            $roleName = trim($roleName);
+            if ($roleName === '' || isset($requestedRoles[$roleName])) {
+                continue;
+            }
+
+            $requestedRoles[$roleName] = true;
+        }
+
+        return array_keys($requestedRoles);
+    }
+
+    protected function replaceUserRoles(int $userId, array $roleNames): void
+    {
+        $this->perform(Query\Useraccount::QUERY_DELETE_USER_ROLES, [$userId]);
+        if (empty($roleNames)) {
+            return;
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($roleNames), '?'));
+        $query = str_replace(':roleNames', $placeholders, Query\Useraccount::QUERY_INSERT_USER_ROLES_BY_NAME);
+        $this->perform($query, array_merge([$userId], $roleNames));
+    }
+
+    public function writeUpdatedEntity($loginName, Entity $entity, $resolveReferences = 0)
     {
         $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
         $query = new Query\Useraccount(Query\Base::UPDATE);
@@ -712,6 +756,22 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
+
+        if ($entity->offsetExists('roles')) {
+            try {
+                $userId = (int) $this->readEntityIdByLoginName($loginName);
+                $roleNames = $this->extractRequestedRoleNames($entity);
+                $this->replaceUserRoles($userId, $roleNames);
+            } catch (\Throwable $e) {
+                if (App::$log) {
+                    App::$log->warning('user_role update on useraccount save failed', [
+                        'login' => $loginName,
+                        'message' => $e->getMessage(),
+                    ]);
+                }
+                throw $e;
+            }
+        }
 
         $this->removeCache($entity, $previousDepartmentIds, $loginName);
 
