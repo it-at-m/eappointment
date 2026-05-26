@@ -15,21 +15,7 @@ class Services extends Base
                     $this->removeEntityFromCurrentList($service->get('id'));
                     $service->save();
                 }
-            } else {
-                print_r('NO Services(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
             }
-            /*
-            error_log(
-                print_r([
-                    'delete',
-                    $this->entityClass::getTableName(),
-                    $this->getLocale(),
-                    count($this->getCurrentEntitys()),
-                    array_keys($this->getCurrentEntitys())
-                ],
-            1));
-            */
-
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();
             }

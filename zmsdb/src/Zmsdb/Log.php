@@ -244,7 +244,7 @@ class Log extends Base
             $result = $this->writeItem($query);
             return $result !== false;
         } catch (\Exception $e) {
-            error_log("Error during log cleanup: " . $e->getMessage());
+            \App::$log->error('Error during log cleanup', ['exception' => $e->getMessage()]);
             return false;
         }
     }
