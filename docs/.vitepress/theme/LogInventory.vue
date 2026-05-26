@@ -173,9 +173,11 @@ const githubBase = "https://github.com/it-at-m/eappointment/blob/main/";
                 @click="toggleSort(col.key)"
               >
                 {{ col.label }}
-                <span class="log-inventory-sort-icon" aria-hidden="true">{{
-                  sortIndicator(col.key)
-                }}</span>
+                <span
+                  class="log-inventory-sort-icon"
+                  aria-hidden="true"
+                  >{{ sortIndicator(col.key) }}</span
+                >
               </button>
             </th>
           </tr>
