@@ -229,14 +229,6 @@ class Status extends Base
                         THEN 1 ELSE 0
                     END
                 ), 0) AS confirmedWithExternalUserId,
-                COALESCE(SUM(
-                    CASE
-                        WHEN b.status = "reserved"
-                            AND b.external_user_id IS NOT NULL
-                            AND b.external_user_id != ""
-                        THEN 1 ELSE 0
-                    END
-                ), 0) AS reservedWithExternalUserId,
                 global.sinceMidnight,
                 global.last7days,
                 global.lastInsert
