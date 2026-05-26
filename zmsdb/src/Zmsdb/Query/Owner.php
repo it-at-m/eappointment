@@ -37,7 +37,6 @@ class Owner extends Base implements MappingInterface
 
     public function addConditionOrganisationId($organisationId)
     {
-        //error_log(var_export($isNotAssigned,1));
         $this->leftJoin(
             new Alias(Organisation::TABLE, 'ownerorganisation'),
             'owner.KundenID',

@@ -35,7 +35,7 @@ class TwigExtensionCompat extends \Twig_Extension
 
     public function includeUrl($withUri = true)
     {
-        //error_log("TODO: Remove includeUrl and baseUrl functions and use template parameters");
+        // TODO: Remove includeUrl and baseUrl functions and use template parameters
         return "/";
     }
 
