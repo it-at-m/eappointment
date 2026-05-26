@@ -4,6 +4,7 @@ namespace BO\Slim;
 
 use App;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
@@ -72,7 +73,10 @@ class Bootstrap
     protected static function loggerUsesJsonFormatter(Logger $log): bool
     {
         foreach ($log->getHandlers() as $handler) {
-            if ($handler->getFormatter() instanceof JsonFormatter) {
+            if (
+                $handler instanceof FormattableHandlerInterface
+                && $handler->getFormatter() instanceof JsonFormatter
+            ) {
                 return true;
             }
         }
