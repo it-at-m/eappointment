@@ -28,8 +28,8 @@ if ($commit || $verbose) {
     $job = new \BO\Zmsdb\Helper\ArchivedDataIntoStatisticByCron($limit, $verbose);
     $job->startProcessing($now, $commit);
     if (!$commit) {
-        error_log("Use with --commit to insert all entries into statistic table.");
+        \App::$log->notice('Use with --commit to insert all entries into statistic table.');
     }
 } else {
-    echo $usage;
+    \App::$log->notice('archiveStatisticData usage', ['usage' => trim($usage)]);
 }
