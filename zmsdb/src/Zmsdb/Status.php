@@ -208,6 +208,7 @@ class Status extends Base
         $processStats = $this->getReader()->fetchOne(
             'SELECT
                 COALESCE(SUM(CASE WHEN b.status = "blocked" THEN 1 ELSE 0 END), 0) AS blocked,
+                COALESCE(SUM(CASE WHEN b.status = "called" THEN 1 ELSE 0 END), 0) AS called,
                 COALESCE(SUM(CASE WHEN b.status = "confirmed" THEN 1 ELSE 0 END), 0) AS confirmed,
                 COALESCE(SUM(CASE WHEN b.status = "pending" THEN 1 ELSE 0 END), 0) AS pending,
                 COALESCE(SUM(CASE WHEN b.status = "deleted" THEN 1 ELSE 0 END), 0) AS deleted,
