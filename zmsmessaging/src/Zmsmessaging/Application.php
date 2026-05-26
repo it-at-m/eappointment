@@ -18,7 +18,7 @@ if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
-class Application
+class Application extends \BO\Slim\Application
 {
     /**
      * Name of the application
@@ -27,11 +27,6 @@ class Application
     const MODULE_NAME = 'zmsmessaging';
 
     const DEBUG = false;
-    const DEBUGLEVEL = 'INFO';
-    const CHARSET = 'UTF-8';
-    const TIMEZONE = 'Europe/Berlin';
-
-    public static $now = '';
 
     /*
      * -----------------------------------------------------------------------
@@ -52,22 +47,15 @@ class Application
 
     public static $http_curl_config = array();
 
-        /**
-    * config preferences
-    */
+    /**
+     * config preferences
+     */
     const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
-
 
     /**
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
-
-    /*
-     * -----------------------------------------------------------------------
-     * Logging PSR3 compatible
-     */
-    public static $log = null;
 
     /*
      * -----------------------------------------------------------------------
