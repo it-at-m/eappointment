@@ -1,6 +1,5 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
-// @ts-expect-error: SFC import for test
 import AppointmentPreview from "@/components/Appointment/AppointmentSelection/AppointmentPreview.vue";
 
 const t = vi.fn((key: string) => key);
