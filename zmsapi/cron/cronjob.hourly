@@ -35,6 +35,7 @@ for arg in "$@"; do
 done
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
+    export ZMS_CRON_LOG=1
     # Determine which URL and transformer to use based on city flag
     if [[ $CITY =~ ^munich$ ]]; then
         # Use Munich transformer for SADB export

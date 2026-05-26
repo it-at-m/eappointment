@@ -135,6 +135,19 @@ class Bootstrap
         return strtolower($upper);
     }
 
+    /**
+     * True when ZMS_CRON_LOG is set by cronjob.* shell entrypoints (searchable JSON field "cron").
+     */
+    public static function isCronLogging(): bool
+    {
+        $value = getenv('ZMS_CRON_LOG');
+        if ($value === false || $value === '') {
+            return false;
+        }
+
+        return !in_array(strtolower((string) $value), ['0', 'false', 'off', 'no'], true);
+    }
+
     protected function configureLogger(string $level, string $identifier): void
     {
         App::$log = new Logger($identifier);
@@ -154,6 +167,7 @@ class Bootstrap
                 'remote_user' => '',
                 'application' => defined('\\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
                 'module' => defined('\\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
+                'cron' => static::isCronLogging(),
                 'message' => $record['message'],
                 'level' => $record['level_name'],
                 'context' => $record['context'],
