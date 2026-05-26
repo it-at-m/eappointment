@@ -170,12 +170,13 @@ class Mail extends BaseController
                     ]);
                     $successfullySentIds[] = $entity->id;
                 } else {
+                    $errorInfo = $result->ErrorInfo ?? 'Unknown mailer error';
                     $results[] = [
-                        'errorInfo' => $result->ErrorInfo,
+                        'errorInfo' => $errorInfo,
                         'mailId' => $entity->id,
                         'processId' => $processId,
                     ];
-                    $this->log("Mail send failed with error: " . $result['errorInfo']);
+                    $this->log('Mail send failed with error: ' . $errorInfo);
                 }
             } catch (\Exception $e) {
                 $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
