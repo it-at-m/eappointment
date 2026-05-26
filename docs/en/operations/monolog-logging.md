@@ -158,6 +158,10 @@ It updates when you run `npm run docs:dev` or `docs:build` (VitePress config run
 
 <LogInventory />
 
+## Related
+
+- [Monitoring and status](./monitoring-and-status.md) — `GET /status/` metrics and Grafana
+
 ## Related code
 
 - `zmsslim/src/Slim/Application.php` — `ZMS_DEBUGLEVEL`, `DEBUGLEVEL`, `public static $log`

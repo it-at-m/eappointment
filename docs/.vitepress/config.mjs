@@ -241,6 +241,7 @@ const sidebarLabels = {
     branchingStrategy: "Branching Strategy",
     commitMessageConvention: "Commit Message Convention",
     monologLogging: "Monolog logging",
+    statusMonitoring: "Monitoring and status",
     codeOfConduct: "Code of Conduct",
     contributing: "Contributing",
     security: "Security",
@@ -286,6 +287,7 @@ const sidebarLabels = {
     branchingStrategy: "Branching-Strategie",
     commitMessageConvention: "Commit-Message-Konvention",
     monologLogging: "Monolog-Logging",
+    statusMonitoring: "Monitoring und Status",
     codeOfConduct: "Verhaltenskodex",
     contributing: "Mitwirken",
     security: "Sicherheit",
@@ -467,6 +469,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.monologLogging,
           link: `${prefix}/operations/monolog-logging`,
+        },
+        {
+          text: t.statusMonitoring,
+          link: `${prefix}/operations/monitoring-and-status`,
         },
       ],
     },

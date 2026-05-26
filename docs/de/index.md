@@ -18,6 +18,7 @@ Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.git
 - [API-Referenz](./operations/api-reference.md) — ReDoc und Diagramme
 - [Modul-READMEs](./reference/module-readmes.md)
 - [DLDB-Schnittstellendokumentation](./operations/dldb-interface-documentation.md)
+- [Monitoring und Status](./operations/monitoring-and-status.md) — Grafana, `GET /status/`
 
 ## Repository-Umfang
 
