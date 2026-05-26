@@ -274,6 +274,20 @@ For nice URLs you need a `.htaccess` file if you use an Apache2 webserver:
     RewriteRule ^ /index.php [QSA,L]
 ```
 
+## Logging (Monolog / `App::$log`)
+
+All ZMS Slim modules share one PSR-3 logger: `App::$log`, configured by `BO\Slim\Bootstrap::configureLogger()`.
+
+- Minimum level: `App::DEBUGLEVEL` (env `DEBUGLEVEL`, default `INFO`; defined as `ZMS_DEBUGLEVEL` in `Application.php`)
+- Web: JSON logs on **stderr**; CLI/cron: **stdout**
+- Use `\App::$log->info('message', ['key' => $value])` — not PHP `error_log()`
+
+Full guide, level reference, and an auto-generated inventory of all `App::$log` calls in the monorepo:
+
+**[Monolog logging (docs)](https://it-at-m.github.io/eappointment/operations/monolog-logging.html)**
+
+Regenerate the inventory locally: `cd docs && npm run docs:log-inventory`
+
 ## Twig integration
 
 Our implementation of Slim uses Twig as the templating engine.

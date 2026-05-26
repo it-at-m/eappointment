@@ -367,17 +367,14 @@ class Useraccount extends Schema\Entity
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
-            //error_log(__METHOD__ . "::legacy_hash\n");
             $result = $this->password === md5($password);
         } else {
-            //error_log(__METHOD__ . "::password_verify\n");
             $result = password_verify($password, $this->password);
         }
 
         // on passed validation check if the hash needs updating.
         if ($result && $this->isPasswordNeedingRehash()) {
             $this->password = $this->getHash($password);
-            //error_log(__METHOD__ . "::rehash\n");
         }
 
         return $this;
