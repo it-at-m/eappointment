@@ -26,7 +26,11 @@ class CalculateSlots
         $text = sprintf("[CalculateSlots %07.3fs %07.1fmb] %s", "$time", $memory, $message);
         $this->logList[] = $text;
         if ($this->verbose) {
-            error_log($text);
+            \App::$log->info($message, [
+                'component' => 'CalculateSlots',
+                'elapsed' => $time,
+                'memory_mb' => $memory,
+            ]);
         }
         return $this;
     }
@@ -35,7 +39,7 @@ class CalculateSlots
     {
         foreach ($this->logList as $text) {
             if (!$this->verbose) {
-                error_log($text);
+                \App::$log->info($text, ['component' => 'CalculateSlots']);
             }
         }
         $this->verbose = true;

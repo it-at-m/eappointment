@@ -25,7 +25,7 @@ class EventLogCleanUpByCron
     protected function log($message)
     {
         if ($this->verbose) {
-            error_log($message);
+            \App::$log->info($message);
         }
     }
 

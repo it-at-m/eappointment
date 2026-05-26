@@ -1,5 +1,5 @@
 name: ⚙️ zmsautomation
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branch next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branches main + next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
@@ -37,7 +37,7 @@ on:
         type: boolean
         default: true
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 5 * * *"
 
 permissions:
   contents: read
@@ -49,6 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        branch: ${{ fromJson(github.event_name == 'schedule' && '["main","next"]' || format('["{0}"]', github.ref_name)) }}
         browser: ${{ fromJson(github.event_name == 'schedule' && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
     env:
       # Align with php-build-images.yaml tagging logic for branches
@@ -58,14 +59,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          # Scheduled runs should execute against the `next` branch.
-          ref: ${{ github.event_name == 'schedule' && 'next' || github.ref }}
+          ref: ${{ github.event_name == 'schedule' && matrix.branch || github.ref }}
 
       - name: Create runtime env file
         run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -77,9 +77,8 @@ jobs:
         run: |
           set -euo pipefail
           # Schedule events don't provide the target branch as workflow_dispatch does.
-          # Force `next` as effective ref so scheduled runs consume `next` images/tags.
           REF_TYPE="${{ github.event_name == 'schedule' && 'branch' || github.ref_type }}"
-          REF_NAME="${{ github.event_name == 'schedule' && 'next' || github.ref_name }}"
+          REF_NAME="${{ github.event_name == 'schedule' && matrix.branch || github.ref_name }}"
 
           # Match `.github/workflows/php-build-images.yaml` tagging logic:
           # - for branches: branch-<sanitized>
@@ -327,9 +326,9 @@ jobs:
 
       - name: Upload test reports (best effort)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
@@ -365,8 +364,8 @@ jobs:
 
       - name: Upload container logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.browser }}
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn

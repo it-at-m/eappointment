@@ -21,7 +21,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation()
             ->getUseraccount()
-            ->setRights('scope');
+            ->setPermissions('overviewcalendar');
     }
 
     public function testCalendarStructure(): void
@@ -87,6 +87,30 @@ class OverallCalendarReadTest extends Base
             );
         }
         $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
+    }
+
+    public function testEventIncludesDisplayNumberWhenSet(): void
+    {
+        $this->initializeSuperUserWorkstation();
+
+        $response = $this->render([], self::VALID_PARAMS);
+        $json = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $events = [];
+        foreach ($json['data']['days'] as $day) {
+            foreach ($day['scopes'] as $scope) {
+                foreach ($scope['events'] as $event) {
+                    $events[(int)$event['processId']] = $event;
+                }
+            }
+        }
+
+        $this->assertArrayHasKey(972201, $events);
+        $this->assertSame('TT1201', $events[972201]['displayNumber']);
+        $this->assertArrayHasKey(972202, $events);
+        $this->assertNull($events[972202]['displayNumber']);
     }
 
     public function testDeltaBranchIncludesCancelledAndHasTombstonesField(): void

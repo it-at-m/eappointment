@@ -51,9 +51,5 @@ if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }
 
-// Initialize logger (similar to zmsapi)
-if (!App::$log) {
-    // Use Monolog, log to stdout instead of file
-    App::$log = new Monolog\Logger('zmsdb');
-    App::$log->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', Monolog\Logger::INFO));
-}
+// Same Monolog JSON setup as zmsapi/zmsadmin (Bootstrap::configureLogger → stderr)
+\BO\Slim\Bootstrap::ensureLogger();

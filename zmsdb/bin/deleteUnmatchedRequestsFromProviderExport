@@ -14,7 +14,7 @@ Usage: {$argv[0]} [requestJsonFile] [providerJsonFile]
 EOS;
 
 if (! $argv[1] || ! $argv[2]) {
-    echo $usage;
+            \App::$log->notice('deleteUnmatchedRequestsFromProviderExport usage', ['usage' => trim($usage)]);
     exit;
 }
 
@@ -42,10 +42,14 @@ foreach ($providerJson['data'] as $providerKey => $providerItem) {
     }
     $providerJson['data'][$providerKey]['services'] = array_values($providerJson['data'][$providerKey]['services']);
     if ($counter) {
-        error_log('deleted '. $counter . ' ('. join(',', $deletedIds) .') services for provider '. $providerItem['name']);
+                    \App::$log->info('Deleted services for provider', [
+                'count' => $counter,
+                'ids' => $deletedIds,
+                'provider' => $providerItem['name'],
+            ]);
         $all += $counter;
     }
 }
-error_log('deleted '. $all . ' services at all');
+    \App::$log->info('Deleted services in total', ['count' => $all]);
 
 file_put_contents($argv[2], json_encode($providerJson, JSON_PRETTY_PRINT));
