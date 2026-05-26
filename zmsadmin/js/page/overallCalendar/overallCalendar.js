@@ -6,46 +6,62 @@ let currentRequest = null;
 let SCOPE_COLORS = {};
 let CLOSURES = new Set();
 const STEP_MIN = 5;
+const MAX_DAYS = 14;
+
+function inclusiveDayCount(dateFrom, dateUntil) {
+    const from = new Date(dateFrom);
+    const until = new Date(dateUntil);
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return Math.round((until - from) / millisecondsPerDay) + 1;
+}
+
+function eventCellLabel(event) {
+    const displayNumber = event?.displayNumber;
+    if (displayNumber != null && String(displayNumber).trim() !== '') {
+        return String(displayNumber);
+    }
+    return event?.processId != null ? String(event.processId) : '';
+}
 
 function buildScopeColorMap(days) {
-    const ids = [...new Set(days.flatMap(d => d.scopes.map(s => s.id)))];
+    const ids = [...new Set(days.flatMap(day => day.scopes.map(scope => scope.id)))];
     const map = Object.create(null);
-    ids.forEach((id, idx) => {
-        const hue = Math.round((idx * 137.508) % 360);
+    ids.forEach((id, index) => {
+        const hue = Math.round((index * 137.508) % 360);
         map[id] = `hsl(${hue} 60% 85%)`;
     });
     return map;
 }
 
 function toMysql(date) {
-    const d = (date instanceof Date) ? date : new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
+    const parsedDate = (date instanceof Date) ? date : new Date(date);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+    const hours = String(parsedDate.getHours()).padStart(2, '0');
+    const minutes = String(parsedDate.getMinutes()).padStart(2, '0');
+    const seconds = String(parsedDate.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 async function fetchClosures({scopeIds, dateFrom, dateUntil}) {
-    const res = await fetch(`closureData/?${new URLSearchParams({
+    const response = await fetch(`closureData/?${new URLSearchParams({
         scopeIds: scopeIds.join(','),
         dateFrom,
         dateUntil
     })}`);
-    if (!res.ok) throw new Error('Fehler beim Laden der Closures');
-    const {data} = await res.json();
+    if (!response.ok) throw new Error('Fehler beim Laden der Closures');
+    const {data} = await response.json();
     const set = new Set();
-    for (const it of (data?.items || [])) {
-        set.add(`${it.date}|${it.scopeId}`);
+    for (const closureItem of (data?.items || [])) {
+        set.add(`${closureItem.date}|${closureItem.scopeId}`);
     }
     CLOSURES = set;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('overall-calendar-form');
-    const btnRefresh = document.getElementById('refresh-calendar');
+    const refreshButton = document.getElementById('refresh-calendar');
     const fromInput = document.getElementById('calendar-date-from');
     const untilInput = document.getElementById('calendar-date-until');
     const todayIso = new Date().toISOString().slice(0, 10);
@@ -63,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (form) form.addEventListener('submit', handleSubmit);
 
-    if (btnRefresh) {
-        btnRefresh.addEventListener('click', async () => {
+    if (refreshButton) {
+        refreshButton.addEventListener('click', async () => {
             if (!currentRequest) return;
             const {scopeIds, dateFrom, dateUntil} = currentRequest;
             try {
@@ -73,29 +89,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     fetchClosures({scopeIds, dateFrom, dateUntil})
                 ]);
                 renderMultiDayCalendar(calendarCache);
-            } catch (e) {
-                alert('Fehler beim Aktualisieren: ' + e.message);
+            } catch (error) {
+                alert('Fehler beim Aktualisieren: ' + error.message);
             }
         });
     }
 
-    const fsBtn = document.getElementById('calendar-fullscreen');
+    const fullscreenButton = document.getElementById('calendar-fullscreen');
     const wrapper = document.querySelector('.overall-calendar-wrapper');
-    if (fsBtn && wrapper) {
-        fsBtn.addEventListener('click', () => {
-            const isFull = wrapper.classList.toggle('fullscreen');
-            fsBtn.classList.toggle('is-active', isFull);
-            fsBtn.title = isFull ? 'Vollbild schließen' : 'Vollbild';
-            togglePageScroll(isFull);
-            if (isFull) fsBtn.focus();
+    if (fullscreenButton && wrapper) {
+        fullscreenButton.addEventListener('click', () => {
+            const isFullscreen = wrapper.classList.toggle('fullscreen');
+            fullscreenButton.classList.toggle('is-active', isFullscreen);
+            fullscreenButton.title = isFullscreen ? 'Vollbild schließen' : 'Vollbild';
+            togglePageScroll(isFullscreen);
+            if (isFullscreen) fullscreenButton.focus();
         });
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && wrapper.classList.contains('fullscreen')) {
+        document.addEventListener('keydown', keyboardEvent => {
+            if (keyboardEvent.key === 'Escape' && wrapper.classList.contains('fullscreen')) {
                 wrapper.classList.remove('fullscreen');
-                fsBtn.classList.remove('is-active');
-                fsBtn.title = 'Vollbild';
+                fullscreenButton.classList.remove('is-active');
+                fullscreenButton.title = 'Vollbild';
                 togglePageScroll(false);
-                fsBtn.focus();
+                fullscreenButton.focus();
             }
         });
     }
@@ -107,11 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const fromDate = new Date(fromInput.value);
         const maxDate = new Date(fromDate);
-        let workdays = 0;
-        while (workdays < 4) {
-            maxDate.setDate(maxDate.getDate() + 1);
-            if (![0, 6].includes(maxDate.getDay())) workdays++;
-        }
+        maxDate.setDate(maxDate.getDate() + (MAX_DAYS - 1));
         untilInput.min = fromInput.value;
         untilInput.max = maxDate.toISOString().slice(0, 10);
         if (untilInput.value < untilInput.min || untilInput.value > untilInput.max) {
@@ -121,16 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}) {
-    const paramsObj = {scopeIds: scopeIds.join(','), dateFrom, dateUntil};
+    const requestParams = {scopeIds: scopeIds.join(','), dateFrom, dateUntil};
     if (!fullReload && lastUpdateAfter) {
-        paramsObj.updateAfter = lastUpdateAfter;
+        requestParams.updateAfter = lastUpdateAfter;
     }
 
-    const res = await fetch(`overallcalendarData/?${new URLSearchParams(paramsObj)}`);
-    if (!res.ok) throw new Error('Fehler beim Laden des Kalenders');
-    const json = await res.json();
+    const response = await fetch(`overallcalendarData/?${new URLSearchParams(requestParams)}`);
+    if (!response.ok) throw new Error('Fehler beim Laden des Kalenders');
+    const json = await response.json();
     calendarMeta = json.data.meta || calendarMeta;
-    const serverTs = json.data.maxUpdatedAt || toMysql(new Date());
+    const serverTimestamp = json.data.maxUpdatedAt || toMysql(new Date());
 
     if (fullReload) {
         calendarCache = json.data.days;
@@ -140,35 +152,31 @@ async function fetchCalendar({scopeIds, dateFrom, dateUntil, fullReload = false}
     }
 
     currentRequest = {scopeIds, dateFrom, dateUntil};
-    lastUpdateAfter = serverTs;
+    lastUpdateAfter = serverTimestamp;
 }
 
 async function handleSubmit(event) {
     event.preventDefault();
 
     const select = event.target.querySelector('select[name="scopes[]"]');
-    const scopeIds = Array.from(select.selectedOptions).map(o => o.value);
+    const scopeIds = Array.from(select.selectedOptions).map(option => option.value);
     const dateFrom = event.target.querySelector('input[name="calendarDateFrom"]').value;
     const dateUntil = event.target.querySelector('input[name="calendarDateUntil"]').value;
     const errorBox = document.getElementById('scope-error');
-    const errorMsg = errorBox.querySelector('.msg');
+    const errorMessage = errorBox.querySelector('.msg');
 
     if (!scopeIds.length) {
-        errorMsg.textContent = 'Bitte mindestens einen Standort auswählen';
+        errorMessage.textContent = 'Bitte mindestens einen Standort auswählen';
         errorBox.style.display = 'inline-flex';
         return;
     }
     errorBox.style.display = 'none';
-    errorMsg.textContent = '';
+    errorMessage.textContent = '';
 
     if (dateFrom && dateUntil) {
-        let current = new Date(dateFrom), until = new Date(dateUntil), workdays = 0;
-        while (current <= until) {
-            if (![0, 6].includes(current.getDay())) workdays++;
-            current.setDate(current.getDate() + 1);
-        }
-        if (workdays > 5) {
-            alert('Bitte wählen Sie maximal 5 Werktage (Mo–Fr) aus.');
+        const dayCount = inclusiveDayCount(dateFrom, dateUntil);
+        if (dayCount > MAX_DAYS) {
+            alert('Bitte wählen Sie maximal 14 Tage aus.');
             return;
         }
     }
@@ -181,8 +189,8 @@ async function handleSubmit(event) {
         SCOPE_COLORS = buildScopeColorMap(calendarCache);
         renderMultiDayCalendar(calendarCache);
         startAutoRefresh();
-    } catch (e) {
-        alert('Fehler beim Laden' + e.message);
+    } catch (error) {
+        alert('Fehler beim Laden' + error.message);
     }
 }
 
@@ -201,11 +209,11 @@ async function fetchIncrementalUpdate() {
     if (!currentRequest || !lastUpdateAfter) return;
     const {scopeIds, dateFrom, dateUntil} = currentRequest;
 
-    const res = await fetch(`overallcalendarData/?${new URLSearchParams({
+    const response = await fetch(`overallcalendarData/?${new URLSearchParams({
         scopeIds: scopeIds.join(','), dateFrom, dateUntil, updateAfter: lastUpdateAfter
     })}`);
-    if (res.ok) {
-        const json = await res.json();
+    if (response.ok) {
+        const json = await response.json();
         calendarMeta = json.data.meta || calendarMeta;
         lastUpdateAfter = json.data.maxUpdatedAt || toMysql(new Date());
         mergeDelta(json.data.days, json.data.deletedProcessIds || []);
@@ -217,11 +225,11 @@ async function fetchIncrementalUpdate() {
 
 function mergeDelta(deltaDays, deletedProcessIds = []) {
     if (Array.isArray(deletedProcessIds) && deletedProcessIds.length) {
-        const dead = new Set(deletedProcessIds.map(Number));
+        const deletedIds = new Set(deletedProcessIds.map(Number));
         for (const day of calendarCache) {
             for (const scope of day.scopes) {
                 if (!Array.isArray(scope.events)) continue;
-                scope.events = scope.events.filter(e => !dead.has(e.processId));
+                scope.events = scope.events.filter(event => !deletedIds.has(event.processId));
             }
         }
     }
@@ -230,72 +238,76 @@ function mergeDelta(deltaDays, deletedProcessIds = []) {
         return;
     }
 
-    for (const dDay of deltaDays) {
-        let fullDay = calendarCache.find(cd => cd.date === dDay.date);
+    for (const deltaDay of deltaDays) {
+        let fullDay = calendarCache.find(cachedDay => cachedDay.date === deltaDay.date);
         if (!fullDay) {
-            fullDay = {date: dDay.date, scopes: []};
+            fullDay = {date: deltaDay.date, scopes: []};
             calendarCache.push(fullDay);
         }
 
-        for (const dScope of (dDay.scopes || [])) {
-            let fullScope = fullDay.scopes.find(s => s.id === dScope.id);
+        for (const deltaScope of (deltaDay.scopes || [])) {
+            let fullScope = fullDay.scopes.find(scope => scope.id === deltaScope.id);
             if (!fullScope) {
-                fullScope = {id: dScope.id, intervals: [], events: []};
+                fullScope = {id: deltaScope.id, intervals: [], events: []};
                 fullDay.scopes.push(fullScope);
             }
-            if (Array.isArray(dScope.intervals)) {
-                fullScope.intervals = dScope.intervals.map(iv => ({...iv}));
+            if (Array.isArray(deltaScope.intervals)) {
+                fullScope.intervals = deltaScope.intervals.map(interval => ({...interval}));
             }
         }
     }
 
-    const latestByPid = new Map();
-    for (const dDay of deltaDays) {
-        for (const dScope of (dDay.scopes || [])) {
-            for (const event of (dScope.events || [])) {
+    const latestByProcessId = new Map();
+    for (const deltaDay of deltaDays) {
+        for (const deltaScope of (deltaDay.scopes || [])) {
+            for (const event of (deltaScope.events || [])) {
                 if (!event || typeof event !== 'object') continue;
-                const key = event.processId;
-                const cand = {...event, __day: dDay.date, __scope: dScope.id};
-                const prev = latestByPid.get(key);
-                if (!prev || (event.updatedAt && event.updatedAt >= prev.updatedAt)) {
-                    latestByPid.set(key, cand);
+                const processId = event.processId;
+                const candidate = {...event, __day: deltaDay.date, __scope: deltaScope.id};
+                const previous = latestByProcessId.get(processId);
+                if (!previous || (event.updatedAt && event.updatedAt >= previous.updatedAt)) {
+                    latestByProcessId.set(processId, candidate);
                 }
             }
         }
     }
 
-    if (!latestByPid.size) {
+    if (!latestByProcessId.size) {
         sortCalendarCache();
         return;
     }
 
-    const affected = new Set(latestByPid.keys());
+    const affectedProcessIds = new Set(latestByProcessId.keys());
     for (const day of calendarCache) {
         for (const scope of day.scopes) {
             if (!Array.isArray(scope.events)) continue;
-            scope.events = scope.events.filter(e => !affected.has(e.processId));
+            scope.events = scope.events.filter(event => !affectedProcessIds.has(event.processId));
         }
     }
 
-    for (const ev of latestByPid.values()) {
-        if (ev.status !== 'confirmed') continue;
+    for (const event of latestByProcessId.values()) {
+        if (event.status !== 'confirmed') continue;
 
-        let day = calendarCache.find(d => d.date === ev.__day);
+        let day = calendarCache.find(cachedDay => cachedDay.date === event.__day);
         if (!day) {
-            day = {date: ev.__day, scopes: []};
+            day = {date: event.__day, scopes: []};
             calendarCache.push(day);
         }
 
-        let scope = day.scopes.find(s => s.id === ev.__scope);
+        let scope = day.scopes.find(cachedScope => cachedScope.id === event.__scope);
         if (!scope) {
-            scope = {id: ev.__scope, intervals: [], events: []};
+            scope = {id: event.__scope, intervals: [], events: []};
             day.scopes.push(scope);
         }
 
         if (!Array.isArray(scope.events)) scope.events = [];
         scope.events.push({
-            processId: ev.processId, start: ev.start, end: ev.end,
-            status: 'confirmed', updatedAt: ev.updatedAt
+            processId: event.processId,
+            displayNumber: event.displayNumber ?? null,
+            start: event.start,
+            end: event.end,
+            status: 'confirmed',
+            updatedAt: event.updatedAt
         });
     }
 
@@ -303,16 +315,16 @@ function mergeDelta(deltaDays, deletedProcessIds = []) {
 }
 
 function sortCalendarCache() {
-    calendarCache.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    calendarCache.sort((dayA, dayB) => String(dayA.date).localeCompare(String(dayB.date)));
 
     for (const day of calendarCache) {
-        day.scopes.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+        day.scopes.sort((scopeA, scopeB) => (scopeA.id ?? 0) - (scopeB.id ?? 0));
         for (const scope of day.scopes) {
             if (!Array.isArray(scope.events)) continue;
             scope.events.sort(
-                (a, b) =>
-                    String(a.start).localeCompare(String(b.start)) ||
-                    (a.processId - b.processId)
+                (eventA, eventB) =>
+                    String(eventA.start).localeCompare(String(eventB.start)) ||
+                    (eventA.processId - eventB.processId)
             );
         }
     }
@@ -335,9 +347,9 @@ function renderMultiDayCalendar(days) {
         const oldId = container.id;
 
         next.removeAttribute('id');
-        const p = document.createElement('p');
-        p.textContent = 'Keine Daten verfügbar.';
-        next.appendChild(p);
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = 'Keine Daten verfügbar.';
+        next.appendChild(emptyMessage);
 
         parent.insertBefore(next, container);
 
@@ -346,13 +358,19 @@ function renderMultiDayCalendar(days) {
 
         container.style.display = 'none';
         deferredRemove(container);
+
+        const fullscreenButton = document.getElementById('calendar-fullscreen');
+        if (fullscreenButton) {
+            fullscreenButton.style.display = 'none';
+            exitCalendarFullscreen();
+        }
         return;
     }
 
 
     const axis = calendarMeta.axis;
     const allTimes = buildTimeAxis(axis);
-    const frag = document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
 
     const laneCache = new Map();
     for (const day of days) {
@@ -373,28 +391,28 @@ function renderMultiDayCalendar(days) {
         }
     }
     const templateCols = ['max-content'];
-    days.forEach((day, dayIdx) => {
-        day.scopes.forEach((scope, scopeIdx) => {
+    days.forEach((day, dayIndex) => {
+        day.scopes.forEach((scope, scopeIndex) => {
             const lanes = getLanes(day.date, scope.id);
             templateCols.push(`repeat(${lanes}, minmax(120px,1fr))`);
-            if (scopeIdx < day.scopes.length - 1) templateCols.push('2px');
+            if (scopeIndex < day.scopes.length - 1) templateCols.push('2px');
         });
-        if (dayIdx < days.length - 1) templateCols.push('4px');
+        if (dayIndex < days.length - 1) templateCols.push('4px');
     });
     container.style.display = 'grid';
     container.style.gridTemplateColumns = templateCols.join(' ');
     container.style.minWidth = 'fit-content';
 
     const addCell = ({text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null}) => {
-        const div = document.createElement('div');
-        if (text) div.textContent = text;
-        div.className = className;
-        div.style.gridRow = `${row} / span ${rowSpan}`;
-        div.style.gridColumn = `${col} / span ${colSpan}`;
-        if (id) div.id = id;
-        if (dataStatus) div.dataset.status = dataStatus;
-        frag.appendChild(div);
-        return div;
+        const cellElement = document.createElement('div');
+        if (text) cellElement.textContent = text;
+        cellElement.className = className;
+        cellElement.style.gridRow = `${row} / span ${rowSpan}`;
+        cellElement.style.gridColumn = `${col} / span ${colSpan}`;
+        if (id) cellElement.id = id;
+        if (dataStatus) cellElement.dataset.status = dataStatus;
+        fragment.appendChild(cellElement);
+        return cellElement;
     };
 
     addCell({
@@ -403,12 +421,12 @@ function renderMultiDayCalendar(days) {
         row: 1, col: 1
     });
 
-    let colCursor = 2, totalRows = allTimes.length + 2;
-    days.forEach((day, dayIdx) => {
-        const daySpan = day.scopes.reduce((totalCols, scope, scopeIndex) => {
+    let columnCursor = 2, totalRows = allTimes.length + 2;
+    days.forEach((day, dayIndex) => {
+        const daySpan = day.scopes.reduce((totalColumns, scope, scopeIndex) => {
             const laneCount = getLanes(day.date, scope.id);
             const hasNextScope = scopeIndex < day.scopes.length - 1;
-            return totalCols + laneCount + (hasNextScope ? 1 : 0);
+            return totalColumns + laneCount + (hasNextScope ? 1 : 0);
         }, 0);
         const label = new Date(day.date).toLocaleDateString('de-DE', {
             weekday: 'short',
@@ -419,11 +437,11 @@ function renderMultiDayCalendar(days) {
         addCell({
             text: label,
             className: 'overall-calendar-head overall-calendar-day-header overall-calendar-stick-top',
-            row: 1, col: colCursor, colSpan: daySpan
+            row: 1, col: columnCursor, colSpan: daySpan
         });
 
-        colCursor += daySpan;
-        if (dayIdx < days.length - 1) colCursor += 1;
+        columnCursor += daySpan;
+        if (dayIndex < days.length - 1) columnCursor += 1;
     });
 
     addCell({
@@ -432,37 +450,37 @@ function renderMultiDayCalendar(days) {
         row: 2, col: 1
     });
 
-    colCursor = 2;
-    days.forEach((day, dayIdx) => {
+    columnCursor = 2;
+    days.forEach((day, dayIndex) => {
         const dateIso = day.date;
-        day.scopes.forEach((scope, scopeIdx) => {
+        day.scopes.forEach((scope, scopeIndex) => {
             const meta = calendarMeta.scopes?.[scope.id] || {};
             const lanes = getLanes(day.date, scope.id);
-            const head = addCell({
+            const headerCell = addCell({
                 text: meta.shortName || meta.name || `Scope ${scope.id}`,
                 className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-top',
-                row: 2, col: colCursor, colSpan: lanes
+                row: 2, col: columnCursor, colSpan: lanes
             });
-            head.style.background = SCOPE_COLORS[scope.id];
-            if (isScopeClosed(dateIso, scope.id)) head.classList.add('is-closed');
+            headerCell.style.background = SCOPE_COLORS[scope.id];
+            if (isScopeClosed(dateIso, scope.id)) headerCell.classList.add('is-closed');
 
-            colCursor += lanes;
-            if (scopeIdx < day.scopes.length - 1) {
-                addCell({className: 'overall-calendar-separator', row: 2, col: colCursor, rowSpan: totalRows - 1});
-                colCursor++;
+            columnCursor += lanes;
+            if (scopeIndex < day.scopes.length - 1) {
+                addCell({className: 'overall-calendar-separator', row: 2, col: columnCursor, rowSpan: totalRows - 1});
+                columnCursor++;
             }
         });
-        if (dayIdx < days.length - 1) {
-            addCell({className: 'overall-calendar-day-separator', row: 1, col: colCursor, rowSpan: totalRows});
-            colCursor++;
+        if (dayIndex < days.length - 1) {
+            addCell({className: 'overall-calendar-day-separator', row: 1, col: columnCursor, rowSpan: totalRows});
+            columnCursor++;
         }
     });
 
     const occupied = new Set();
-    const toKey = (r, c) => `${r}-${c}`;
+    const rowColumnKey = (row, column) => `${row}-${column}`;
 
-    allTimes.forEach((time, tIdx) => {
-        const row = tIdx + 3;
+    allTimes.forEach((time, timeIndex) => {
+        const row = timeIndex + 3;
 
         addCell({
             text: time,
@@ -470,59 +488,61 @@ function renderMultiDayCalendar(days) {
             row, col: 1
         });
 
-        let col = 2;
-        days.forEach((day, dayIdx) => {
+        let column = 2;
+        days.forEach((day, dayIndex) => {
             const dateIso = day.date;
 
-            day.scopes.forEach((scope, scopeIdx) => {
+            day.scopes.forEach((scope, scopeIndex) => {
                 const lanes = getLanes(day.date, scope.id);
-                const idxKey = `${day.date}_${scope.id}`;
-                const byStart = eventsIndex.get(idxKey) || new Map();
-                const startingNow = byStart.get(time) || [];
+                const eventsIndexKey = `${day.date}_${scope.id}`;
+                const eventsByStart = eventsIndex.get(eventsIndexKey) || new Map();
+                const startingNow = eventsByStart.get(time) || [];
 
-                for (const ev of startingNow) {
-                    const spanMin = Math.max(1, timeToMin(ev.end) - timeToMin(ev.start));
-                    const spanRows = Math.max(1, Math.ceil(spanMin / STEP_MIN));
+                for (const event of startingNow) {
+                    const spanMinutes = Math.max(1, timeToMin(event.end) - timeToMin(event.start));
+                    const spanRows = Math.max(1, Math.ceil(spanMinutes / STEP_MIN));
 
-                    for (let ln = 0; ln < lanes; ln++) {
-                        const laneCol = col + ln;
-                        if (occupied.has(toKey(row, laneCol))) continue;
+                    for (let laneIndex = 0; laneIndex < lanes; laneIndex++) {
+                        const laneColumn = column + laneIndex;
+                        if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
                         const cell = addCell({
-                            text: ev.processId ?? '',
+                            text: eventCellLabel(event),
                             className: 'overall-calendar-seat overall-calendar-termin',
-                            row, col: laneCol, rowSpan: spanRows,
-                            dataStatus: ev.status
+                            row, col: laneColumn, rowSpan: spanRows,
+                            dataStatus: event.status
                         });
                         cell.style.background = SCOPE_COLORS[scope.id];
-                        if (ev.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
+                        if (event.status === 'cancelled') cell.classList.add('overall-calendar-cancelled');
 
-                        for (let i = 0; i < spanRows; i++) occupied.add(toKey(row + i, laneCol));
+                        for (let spanRowIndex = 0; spanRowIndex < spanRows; spanRowIndex++) {
+                            occupied.add(rowColumnKey(row + spanRowIndex, laneColumn));
+                        }
                         break;
                     }
                 }
 
-                const capNow = capacityAt(scope.intervals, time);
+                const capacityNow = capacityAt(scope.intervals, time);
                 const closed = isScopeClosed(dateIso, scope.id);
-                const maxOpenLanes = Math.min(lanes, capNow);
-                // for (let ln = 0; ln < lanes; ln++) {
+                const maxOpenLanes = Math.min(lanes, capacityNow);
+                // for (let laneIndex = 0; laneIndex < lanes; laneIndex++) {
                 // somit werden keine Leere Zellen erstellt (empty)
-                for (let ln = 0; ln < maxOpenLanes; ln++) {
-                    const laneCol = col + ln;
-                    if (occupied.has(toKey(row, laneCol))) continue;
+                for (let laneIndex = 0; laneIndex < maxOpenLanes; laneIndex++) {
+                    const laneColumn = column + laneIndex;
+                    if (occupied.has(rowColumnKey(row, laneColumn))) continue;
 
-                    const isOpenLane = ln < capNow;
+                    const isOpenLane = laneIndex < capacityNow;
                     addCell({
                         className: `overall-calendar-seat overall-calendar-${isOpenLane ? 'open' : 'empty'}${closed ? ' overall-calendar-closed' : ''}`,
-                        row, col: laneCol
+                        row, col: laneColumn
                     });
                 }
 
-                col += lanes;
-                if (scopeIdx < day.scopes.length - 1) col++;
+                column += lanes;
+                if (scopeIndex < day.scopes.length - 1) column++;
             });
 
-            if (dayIdx < days.length - 1) col++;
+            if (dayIndex < days.length - 1) column++;
         });
     });
 
@@ -534,7 +554,7 @@ function renderMultiDayCalendar(days) {
     next.style.display = 'grid';
     next.style.gridTemplateColumns = templateCols.join(' ');
     next.style.minWidth = 'fit-content';
-    next.appendChild(frag);
+    next.appendChild(fragment);
 
     parent.insertBefore(next, container);
 
@@ -544,8 +564,27 @@ function renderMultiDayCalendar(days) {
     container.style.display = 'none';
     deferredRemove(container);
 
-    const fsBtn = document.getElementById('calendar-fullscreen');
-    if (fsBtn && next.children.length) fsBtn.style.display = 'inline-block';
+    const fullscreenButton = document.getElementById('calendar-fullscreen');
+    if (fullscreenButton) {
+        if (next.children.length) {
+            fullscreenButton.style.display = 'inline-block';
+        } else {
+            fullscreenButton.style.display = 'none';
+            exitCalendarFullscreen();
+        }
+    }
+}
+
+function exitCalendarFullscreen() {
+    const wrapper = document.querySelector('.overall-calendar-wrapper');
+    const fullscreenButton = document.getElementById('calendar-fullscreen');
+    if (!wrapper?.classList.contains('fullscreen')) return;
+    wrapper.classList.remove('fullscreen');
+    if (fullscreenButton) {
+        fullscreenButton.classList.remove('is-active');
+        fullscreenButton.title = 'Vollbild';
+    }
+    togglePageScroll(false);
 }
 
 function togglePageScroll(disable) {
@@ -558,12 +597,15 @@ function isScopeClosed(dateIso, scopeId) {
 }
 
 function buildTimeAxis(axis) {
-    const toHHMM = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    const minutesToHhmm = minutesFromMidnight =>
+        String(Math.floor(minutesFromMidnight / 60)).padStart(2, '0') + ':' + String(minutesFromMidnight % 60).padStart(2, '0');
     const start = timeToMin(axis.start);
     const end = timeToMin(axis.end);
 
     const output = [];
-    for (let t = start; t < end; t += STEP_MIN) output.push(toHHMM(t));
+    for (let minuteOffset = start; minuteOffset < end; minuteOffset += STEP_MIN) {
+        output.push(minutesToHhmm(minuteOffset));
+    }
     return output;
 }
 
@@ -598,7 +640,7 @@ function maxConcurrentEvents(events = []) {
         }
     }
 
-    timeline.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    timeline.sort((entryA, entryB) => entryA[0] - entryB[0] || entryA[1] - entryB[1]);
 
     let activeCount = 0;
     let maxConcurrent = 0;
@@ -615,10 +657,10 @@ function maxConcurrentEvents(events = []) {
 
 function indexEventsByStart(events = []) {
     const map = new Map();
-    for (const ev of events) {
-        const key = ev.start;
+    for (const event of events) {
+        const key = event.start;
         if (!map.has(key)) map.set(key, []);
-        map.get(key).push(ev);
+        map.get(key).push(event);
     }
     return map;
 }
