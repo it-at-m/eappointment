@@ -21,7 +21,7 @@ class CleanProcessArchivedToday
     protected function log($message)
     {
         if ($this->verbose) {
-            error_log($message);
+            \App::$log->info($message);
         }
     }
 
@@ -29,9 +29,9 @@ class CleanProcessArchivedToday
     {
         $logRepo = new ProcessStatusArchived();
         if ($commit) {
-            error_log("Executing cleanup with commit...");
+            \App::$log->info('Executing archived process cleanup with commit');
             $result = $logRepo->deleteAllToday();
-            error_log("Cleanup completed. Result: " . ($result ? "success" : "failed"));
+            \App::$log->info('Archived process cleanup completed', ['success' => (bool) $result]);
         }
     }
 }

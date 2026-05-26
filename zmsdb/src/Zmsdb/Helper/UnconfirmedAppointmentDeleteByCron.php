@@ -7,6 +7,8 @@ namespace BO\Zmsdb\Helper;
  */
 class UnconfirmedAppointmentDeleteByCron
 {
+    use VerboseCronLogTrait;
+
     protected $verbose = false;
 
     protected $limit = 1000;
@@ -30,11 +32,9 @@ class UnconfirmedAppointmentDeleteByCron
         $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
-    protected function log($message)
+    protected function log($message, string $level = 'info')
     {
-        if ($this->verbose) {
-            error_log($message);
-        }
+        $this->writeVerboseCronLog($message, $level);
     }
 
     public function getCount()
