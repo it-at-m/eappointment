@@ -8,7 +8,7 @@ set -a
 set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    export ZMS_CRON_LOG=1
+    export ZMS_CRON_LOG=1 ZMS_CRON_NAME=zmsapi_minutely
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
 	      $API config cron deleteUnconfirmedAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteUnconfirmedAppointmentData --commit
         $API config cron deallocateAppointmentData|grep -q "$ZMS_ENV" && $BIN/deallocateAppointmentData --commit

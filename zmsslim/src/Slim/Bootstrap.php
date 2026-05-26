@@ -148,6 +148,22 @@ class Bootstrap
         return !in_array(strtolower((string) $value), ['0', 'false', 'off', 'no'], true);
     }
 
+    /**
+     * Cron job id from ZMS_CRON_NAME (e.g. zmsapi_hourly).
+     */
+    public static function getCronLogName(): string
+    {
+        if (!static::isCronLogging()) {
+            return '';
+        }
+        $name = getenv('ZMS_CRON_NAME');
+        if ($name === false || $name === '') {
+            return '';
+        }
+
+        return (string) $name;
+    }
+
     protected function configureLogger(string $level, string $identifier): void
     {
         App::$log = new Logger($identifier);
@@ -168,6 +184,7 @@ class Bootstrap
                 'application' => defined('\\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
                 'module' => defined('\\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
                 'cron' => static::isCronLogging(),
+                'cron_name' => static::getCronLogName(),
                 'message' => $record['message'],
                 'level' => $record['level_name'],
                 'context' => $record['context'],
