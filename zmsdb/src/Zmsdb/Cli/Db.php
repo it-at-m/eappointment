@@ -29,7 +29,7 @@ class Db
         }
 
         if ($verbose) {
-            self::logCli('info', 'Importing SQL file', ['file' => basename($file)]);
+            \App::$log->info('Importing SQL file', ['file' => basename($file)]);
         }
         $query = '';
         while ($line = $readFunction($sqlFile)) {
@@ -41,7 +41,7 @@ class Db
                     $query = '';
                 } catch (\Exception $exception) {
                     if ($verbose) {
-                        self::logCli('error', 'SQL import failed', ['query' => $query]);
+                        \App::$log->error('SQL import failed', ['query' => $query]);
                     }
                     throw $exception;
                 }
@@ -50,7 +50,7 @@ class Db
         $closeFunction($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
         if ($verbose) {
-            self::logCli('info', 'SQL import finished', [
+            \App::$log->info('SQL import finished', [
                 'file' => basename($file),
                 'seconds' => $time,
             ]);
@@ -79,7 +79,7 @@ class Db
         }
 
         if ($verbose) {
-            self::logCli('info', 'Using database connection', [
+            \App::$log->info('Using database connection', [
                 'dsn' => \BO\Zmsdb\Connection\Select::$writeSourceName,
             ]);
         }
@@ -119,7 +119,7 @@ class Db
             if (!array_key_exists($migrationName, $migrationsDoneList)) {
                 $addedMigrations++;
                 if (!$commit) {
-                    self::logCli('info', 'Pending migration', [
+                    \App::$log->info('Pending migration', [
                         'index' => $addedMigrations,
                         'migration' => $migrationName,
                     ]);
@@ -130,32 +130,11 @@ class Db
                 }
             }
         }
-        self::logCli('info', 'Migration check finished', [
+        \App::$log->info('Migration check finished', [
             'completed' => count($migrationsDoneList),
             'added' => $addedMigrations,
         ]);
         return $addedMigrations;
-    }
-
-    private static function logCli(string $level, string $message, array $context = []): void
-    {
-        if (class_exists('\App', false) && \App::$log) {
-            $level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
-            \App::$log->{$level}($message, $context);
-            return;
-        }
-
-        $levelName = class_exists(\BO\Slim\Bootstrap::class, false)
-            ? strtoupper(\BO\Slim\Bootstrap::normalizeLogLevelName($level))
-            : strtoupper($level);
-        fwrite(STDOUT, json_encode([
-            'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
-            'application' => 'zms',
-            'module' => 'zmsdb',
-            'message' => $message,
-            'level' => $levelName,
-            'context' => $context,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
     }
 
     public static function executeTestData(string $testName, string $step)
