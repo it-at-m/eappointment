@@ -46,7 +46,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         ResponseInterface $response,
         \Throwable $exception,
         $status = 500
-    ) {
+    ): ResponseInterface {
         try {
             $request = Controller::prepareRequest($request);
             if ($exception->getCode() >= 200) {
@@ -103,6 +103,13 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 'causeMessage' => $subexception->getMessage(),
                 'causeTrace' => $subexception->getTraceAsString(),
             ]);
+
+            $fallback = $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'text/plain; charset=UTF-8');
+            $fallback->getBody()->write('Internal Server Error');
+
+            return $fallback;
         }
     }
 
