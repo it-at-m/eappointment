@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsentities\Workstation;
 use BO\Zmsadmin\Helper\LoginForm;
 use BO\Mellon\Validator;
@@ -34,7 +35,8 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $loginData, $response)
+                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
             return \BO\Slim\Render::withHtml(
                 $response,
@@ -49,6 +51,12 @@ class Index extends BaseController
                 )
             );
         }
+        if ($workstation instanceof Workstation && $workstation->hasId()) {
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
+                return $wrongModuleResponse;
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
