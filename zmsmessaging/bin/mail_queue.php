@@ -37,8 +37,8 @@ foreach ($resultList as $mail) {
         if ($verbose) {
             \App::$log->debug('Mail send details', [
                 'mailId' => $mail['mailId'],
-                'recipients' => $mail['recipients'] ?? null,
-                'mime' => isset($mail['mime']) ? trim((string) $mail['mime']) : null,
+                'recipientCount' => isset($mail['recipients']) ? count((array) $mail['recipients']) : null,
+                'mimeBytes' => isset($mail['mime']) ? strlen((string) $mail['mime']) : null,
             ]);
         }
     }
