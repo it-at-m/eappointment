@@ -201,7 +201,9 @@ export const writeLogInventory = () => {
   return { output: OUTPUT, totals: data.totals };
 };
 
-const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const isMain =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 if (isMain) {
   const { output, totals } = writeLogInventory();
