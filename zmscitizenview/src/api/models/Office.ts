@@ -93,4 +93,10 @@ export interface Office {
    * @memberof Office
    */
   priority?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Office
+   */
+  parentId?: number;
 }

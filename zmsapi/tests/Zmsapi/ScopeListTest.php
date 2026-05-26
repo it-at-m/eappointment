@@ -13,7 +13,7 @@ class ScopeListTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $this->setWorkstation()->getUseraccount()->setPermissions('restrictedscope');
         $response = $this->render([], [], []);
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());

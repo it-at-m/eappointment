@@ -312,11 +312,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feat-zmskvr-1317-pdf-export-custom-text-fields",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "f4d24006dd387bfe8ab3398f4be8c3f3b8bfa6bc"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "ext-json": ">=0",
@@ -361,7 +361,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feat-zmskvr-1317-pdf-export-custom-text-fields",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -420,11 +420,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feat-zmskvr-1317-pdf-export-custom-text-fields",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f4d24006dd387bfe8ab3398f4be8c3f3b8bfa6bc"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -477,11 +477,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feat-zmskvr-1317-pdf-export-custom-text-fields",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f4d24006dd387bfe8ab3398f4be8c3f3b8bfa6bc"
+                "reference": "1048488a9c9fa52052c263448edf6c60f39d47d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",
