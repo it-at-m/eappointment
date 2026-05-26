@@ -5,8 +5,9 @@ namespace BO\Slim\Tests\Helper;
 use BO\Slim\Helper\TemplateUrls;
 use BO\Slim\Request;
 use PHPUnit\Framework\TestCase;
-use Slim\Psr7\Factory\ServerRequestFactory;
-use Slim\Psr7\Factory\UriFactory;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Stream;
+use Slim\Psr7\Uri;
 
 class TemplateUrlsTest extends TestCase
 {
@@ -29,20 +30,25 @@ class TemplateUrlsTest extends TestCase
     {
         $request = $this->createRequest('/terminvereinbarung/admin/status/');
 
-        $this->assertStringContainsString('/terminvereinbarung/admin', TemplateUrls::resolveIncludeUrl($request));
-        $this->assertNotSame('', TemplateUrls::resolveBaseUrl($request));
+        $this->assertSame('/terminvereinbarung/admin', TemplateUrls::resolveIncludeUrl($request));
+        $this->assertSame('/terminvereinbarung/admin', TemplateUrls::resolveBaseUrl($request));
     }
 
-    private function createRequest(string $path): Request
+    private function createRequest(string $requestUri): Request
     {
-        $uri = (new UriFactory())->createUri('https://localhost' . $path);
-        $serverRequest = (new ServerRequestFactory())->createServerRequest('GET', $uri)
-            ->withUri($uri)
-            ->withServerParams([
-                'REQUEST_URI' => $path,
-                'SCRIPT_NAME' => '/index.php',
-            ]);
+        $uri = new Uri('https', 'localhost', 80, $requestUri);
+        $serverParams = [
+            'REQUEST_URI' => $requestUri,
+            'SCRIPT_NAME' => '/terminvereinbarung/admin/index.php',
+        ];
 
-        return new Request($serverRequest);
+        return new Request(
+            'GET',
+            $uri,
+            new Headers([]),
+            [],
+            $serverParams,
+            new Stream(fopen('php://temp', 'wb+'))
+        );
     }
 }
