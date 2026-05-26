@@ -13,13 +13,13 @@ class WorkstationProcessCall extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $validator = $request->getAttribute('validator');
