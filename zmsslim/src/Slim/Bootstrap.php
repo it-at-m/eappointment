@@ -4,6 +4,7 @@ namespace BO\Slim;
 
 use App;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
@@ -33,6 +34,54 @@ class Bootstrap
         $bootstrap->configureSlim();
         $bootstrap->configureLocale();
         Profiler::add("Init");
+    }
+
+    /**
+     * Logger + locale for CLI/cron without loading Slim (same JSON format as init()).
+     */
+    public static function initForCli(): void
+    {
+        $bootstrap = self::getInstance();
+        $bootstrap->configureAppStatics();
+        $level = defined('\\App::DEBUGLEVEL') ? \App::DEBUGLEVEL : (getenv('DEBUGLEVEL') ?: 'INFO');
+        $identifier = defined('\\App::IDENTIFIER') ? \App::IDENTIFIER : 'zms';
+        $bootstrap->configureLogger($level, $identifier);
+        $charset = defined('\\App::CHARSET') ? \App::CHARSET : 'UTF-8';
+        $timezone = defined('\\App::TIMEZONE') ? \App::TIMEZONE : 'Europe/Berlin';
+        $bootstrap->configureLocale($charset, $timezone);
+    }
+
+    /**
+     * Guarantee App::$log for CLI/cron entrypoints (idempotent).
+     * Replaces legacy config.php loggers (stdout + LineFormatter) with JSON on stdout (CLI) or stderr (web).
+     */
+    public static function ensureLogger(): void
+    {
+        if (!class_exists('\App', false)) {
+            return;
+        }
+        if (\App::$log instanceof LoggerInterface && !(\App::$log instanceof Logger)) {
+            return;
+        }
+        if (\App::$log instanceof Logger && self::loggerUsesJsonFormatter(\App::$log)) {
+            return;
+        }
+        \App::$log = null;
+        self::initForCli();
+    }
+
+    protected static function loggerUsesJsonFormatter(Logger $log): bool
+    {
+        foreach ($log->getHandlers() as $handler) {
+            if (
+                $handler instanceof FormattableHandlerInterface
+                && $handler->getFormatter() instanceof JsonFormatter
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function getInstance()
@@ -74,11 +123,58 @@ class Bootstrap
         return isset(static::$debuglevels[$level]) ? static::$debuglevels[$level] : static::$debuglevels['DEBUG'];
     }
 
+    /**
+     * PSR-3 / Monolog method name (lowercase) for App::$log->{$level}().
+     */
+    public static function normalizeLogLevelName(string $level): string
+    {
+        $upper = strtoupper($level);
+        if ($upper === 'WARN') {
+            $upper = 'WARNING';
+        }
+        if (!isset(static::$debuglevels[$upper])) {
+            return 'info';
+        }
+
+        return strtolower($upper);
+    }
+
+    /**
+     * True when ZMS_CRON_LOG is set by cronjob.* shell entrypoints (searchable JSON field "cron").
+     */
+    public static function isCronLogging(): bool
+    {
+        $value = getenv('ZMS_CRON_LOG');
+        if ($value === false || $value === '') {
+            return false;
+        }
+
+        return !in_array(strtolower((string) $value), ['0', 'false', 'off', 'no'], true);
+    }
+
+    /**
+     * Cron job id from ZMS_CRON_NAME (e.g. zmsapi_hourly).
+     */
+    public static function getCronLogName(): string
+    {
+        if (!static::isCronLogging()) {
+            return '';
+        }
+        $name = getenv('ZMS_CRON_NAME');
+        if ($name === false || $name === '') {
+            return '';
+        }
+
+        return (string) $name;
+    }
+
     protected function configureLogger(string $level, string $identifier): void
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = new StreamHandler('php://stderr', $level);
+        // Cron/CLI: stdout so Kubernetes/CAP collectors parse JSON; web: stderr
+        $stream = PHP_SAPI === 'cli' ? 'php://stdout' : 'php://stderr';
+        $handler = new StreamHandler($stream, $level);
 
         $formatter = new JsonFormatter();
 
@@ -91,6 +187,8 @@ class Bootstrap
                 'remote_user' => '',
                 'application' => defined('\\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
                 'module' => defined('\\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
+                'cron' => static::isCronLogging(),
+                'cron_name' => static::getCronLogName(),
                 'message' => $record['message'],
                 'level' => $record['level_name'],
                 'context' => $record['context'],

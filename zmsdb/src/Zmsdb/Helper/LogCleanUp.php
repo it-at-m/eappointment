@@ -26,24 +26,27 @@ class LogCleanUp
     protected function log($message)
     {
         if ($this->verbose) {
-            error_log($message);
+            \App::$log->info($message);
         }
     }
 
     public static function startProcessing($commit = false)
     {
-        error_log("Starting log cleanup process...");
+        \App::$log->info('Starting log cleanup process');
 
         $config = (new ConfigRepository())->readEntity();
         $olderThan = $config->getPreference('log', 'deleteOlderThanDays') ?? 90;
         $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
-        error_log("Config loaded, older than: $olderThan days (Datum: " . $olderThanDate->format('Y-m-d H:i:s') . ")");
+        \App::$log->info('Log cleanup config loaded', [
+            'olderThanDays' => $olderThan,
+            'olderThanDate' => $olderThanDate->format('Y-m-d H:i:s'),
+        ]);
 
         $logRepo = new Log();
         if ($commit) {
-            error_log("Executing cleanup with commit...");
+            \App::$log->info('Executing log cleanup with commit');
             $result = $logRepo->clearLogsOlderThan((int) $olderThan);
-            error_log("Cleanup completed. Result: " . ($result ? "success" : "failed"));
+            \App::$log->info('Log cleanup completed', ['success' => (bool) $result]);
         }
     }
 }

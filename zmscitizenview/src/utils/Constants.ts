@@ -88,6 +88,25 @@ export const getVariantHint = (
     : undefined;
 };
 
+export const VARIANT_ID_PRESENCE = 1;
+export const VARIANT_ID_TELEPHONE = 2;
+export const VARIANT_ID_VIDEO = 3;
+
+export const VARIANT_IDS_REQUIRING_IMPLICIT_PRESENCE = [
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+] as const;
+
+export function shouldAddImplicitPresenceVariant(
+  variantIds: Array<number | null | undefined>
+): boolean {
+  return variantIds.some((variantId) =>
+    VARIANT_IDS_REQUIRING_IMPLICIT_PRESENCE.includes(
+      variantId as (typeof VARIANT_IDS_REQUIRING_IMPLICIT_PRESENCE)[number]
+    )
+  );
+}
+
 export function getAPIBaseURL(
   baseUrl: string | undefined,
   authenticated: boolean

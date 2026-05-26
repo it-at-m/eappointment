@@ -24,7 +24,7 @@ class UseraccountListByRole extends BaseController
         array $args
     ) {
         $roleLevel = $args['level'];
-        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
+        $workstation = (new Helper\User($request, 1))->checkPermissions('useraccount');
 
         $useraccountList = (new Useraccount())->readListRole($roleLevel, 0, $workstation);
 

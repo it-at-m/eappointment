@@ -1,5 +1,5 @@
 {
-    "$schema": "https://minikube/api/2/",
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
     "meta": {
       "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
       "error": false,
@@ -21,6 +21,12 @@
           "ticketprinter": "1",
           "useraccount": "1"
         },
+        "permissions": {
+          "useraccount": "1"
+        },
+        "roles": [
+          "user_admin"
+        ],
         "id": "testadmin",
         "email": "test@example.com",
         "lastLogin": 1459461600
