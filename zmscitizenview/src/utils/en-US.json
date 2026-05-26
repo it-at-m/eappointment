@@ -3,7 +3,6 @@
   "altcha": {
     "error": "Verification failed. Try again later.",
     "expired": "Verification expired. Try again.",
-    "footer": "Protected by ALTCHA",
     "invalidCaptcha": "Please refresh this page.",
     "invalidCaptchaHeader": "Something went wrong.",
     "label": "I'm not a robot",
