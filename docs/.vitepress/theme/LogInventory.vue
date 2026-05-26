@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
+
 import inventoryData from "../data/log-inventory.json";
 
 const inventory = ref(inventoryData);
@@ -23,7 +24,8 @@ const filteredEntries = computed(() => {
     if (!q) {
       return true;
     }
-    const haystack = `${entry.module} ${entry.level} ${entry.message} ${entry.file}`.toLowerCase();
+    const haystack =
+      `${entry.module} ${entry.level} ${entry.message} ${entry.file}`.toLowerCase();
     return haystack.includes(q);
   });
 });
@@ -45,7 +47,11 @@ const githubBase = "https://github.com/it-at-m/eappointment/blob/main/";
       <label>
         Level
         <select v-model="levelFilter">
-          <option v-for="opt in levelOptions" :key="opt" :value="opt">
+          <option
+            v-for="opt in levelOptions"
+            :key="opt"
+            :value="opt"
+          >
             {{ opt === "all" ? "All levels" : opt }}
           </option>
         </select>
@@ -53,7 +59,11 @@ const githubBase = "https://github.com/it-at-m/eappointment/blob/main/";
       <label>
         Module
         <select v-model="moduleFilter">
-          <option v-for="opt in moduleOptions" :key="opt" :value="opt">
+          <option
+            v-for="opt in moduleOptions"
+            :key="opt"
+            :value="opt"
+          >
             {{ opt === "all" ? "All modules" : opt }}
           </option>
         </select>
@@ -84,8 +94,13 @@ const githubBase = "https://github.com/it-at-m/eappointment/blob/main/";
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, idx) in filteredEntries" :key="idx">
-            <td><code>{{ row.module }}</code></td>
+          <tr
+            v-for="(row, idx) in filteredEntries"
+            :key="idx"
+          >
+            <td>
+              <code>{{ row.module }}</code>
+            </td>
             <td>
               <span :class="['log-level', `log-level--${row.level}`]">{{
                 row.level

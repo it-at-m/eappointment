@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { writeLogInventory } from "../scripts/generate-log-inventory.mjs";
 
 const FEATURES_ROOT = path.resolve(
