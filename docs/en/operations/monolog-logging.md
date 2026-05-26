@@ -2,51 +2,84 @@
 
 ZMS applications use a single PSR-3 logger on the global `App` class: **`App::$log`**. It is configured in [`zmsslim`](https://github.com/it-at-m/eappointment/tree/main/zmsslim) by `BO\Slim\Bootstrap` and shared by all Slim-based modules (`zmsapi`, `zmsadmin`, `zmscitizenapi`, …).
 
+The **minimum log level** is also centralized in zmsslim: you set **`DEBUGLEVEL`** once in the environment; zmsslim exposes it as **`ZMS_DEBUGLEVEL`**, and every module’s `App::DEBUGLEVEL` inherits that value for `Bootstrap::configureLogger()`.
+
 ## Quick reference
 
-| Topic | Detail |
-| --- | --- |
-| Logger property | `App::$log` (`Monolog\Logger`, `null` before bootstrap) |
-| Minimum level | `App::DEBUGLEVEL` ← env `DEBUGLEVEL` ← default `INFO` (constant `ZMS_DEBUGLEVEL` in zmsslim) |
-| Web bootstrap | `\BO\Slim\Bootstrap::init()` |
-| CLI / cron | `\BO\Slim\Bootstrap::ensureLogger()` or `initForCli()` via `script_bootstrap.php` |
-| Output | JSON lines to **stderr** (web) or **stdout** (CLI/cron) |
-| Do not use | PHP `error_log()`, `print_r()`, `echo` for application logging |
+| Topic                   | Detail                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| Logger property         | `App::$log` (`Monolog\Logger`, `null` before bootstrap)                               |
+| Env variable            | `DEBUGLEVEL` (e.g. in `.env`, DDEV, deployment) — default `INFO`                      |
+| zmsslim define          | `ZMS_DEBUGLEVEL` — set in `Application.php` from `getenv('DEBUGLEVEL')`               |
+| App constant            | `App::DEBUGLEVEL` — each module inherits `ZMS_DEBUGLEVEL` from `\BO\Slim\Application` |
+| Effective minimum level | Whichever of the above applies after bootstrap (`App::DEBUGLEVEL` at runtime)         |
+| Web bootstrap           | `\BO\Slim\Bootstrap::init()`                                                          |
+| CLI / cron              | `\BO\Slim\Bootstrap::ensureLogger()` or `initForCli()` via `script_bootstrap.php`     |
+| Output                  | JSON lines to **stderr** (web) or **stdout** (CLI/cron)                               |
+| Do not use              | PHP `error_log()`, `print_r()`, `echo` for application logging                        |
+
+## Central debug level (`ZMS_DEBUGLEVEL`)
+
+zmsslim owns the debug-level wiring for **all** Slim modules. You do not configure a separate log level per module in production; one environment variable applies everywhere that bootstraps through `\BO\Slim\Bootstrap`.
+
+```mermaid
+flowchart LR
+  env["DEBUGLEVEL env"]
+  zms["ZMS_DEBUGLEVEL\n(zmsslim Application.php)"]
+  app["App::DEBUGLEVEL\n(each module App)"]
+  boot["Bootstrap::configureLogger()"]
+  mono["Monolog minimum level\n(App::$log)"]
+
+  env --> zms --> app --> boot --> mono
+```
+
+1. **Operations** set `DEBUGLEVEL` (for example `INFO` or `WARNING`) in `.env`, DDEV, or deployment config.
+2. When `zmsslim/src/Slim/Application.php` is loaded, it defines **`ZMS_DEBUGLEVEL`** from that env var (default `INFO` if unset).
+3. `\BO\Slim\Application` declares **`const DEBUGLEVEL = ZMS_DEBUGLEVEL`**. Each module’s `class App extends \BO\Zmsapi\Application` (etc.) inherits the same constant unless you override it locally.
+4. On bootstrap, **`Bootstrap::init()`** / **`ensureLogger()`** / **`initForCli()`** call **`configureLogger(App::DEBUGLEVEL, App::IDENTIFIER)`**. The level is shared; only **`App::IDENTIFIER`** and **`App::MODULE_NAME`** differ per module in the JSON output.
+
+So **`ZMS_DEBUGLEVEL` is the single zmsslim source of truth** for how verbose logging is across zmsapi, zmsadmin, zmscitizenapi, zmsmessaging, cron scripts, and the other Slim apps.
+
+**What you configure:** `DEBUGLEVEL` in the environment (not a separate `ZMS_DEBUGLEVEL` env name).
+
+**What code reads at runtime:** `App::DEBUGLEVEL` (backed by `ZMS_DEBUGLEVEL`).
+
+**Rare override:** a module `config.php` may redefine `const DEBUGLEVEL = 'WARNING';` for local experiments only — avoid this in shared deployment config.
+
+**CLI fallback:** if `App::DEBUGLEVEL` is not defined yet, `Bootstrap::initForCli()` reads `getenv('DEBUGLEVEL')` directly.
 
 ## Log levels
 
-`DEBUGLEVEL` / `App::DEBUGLEVEL` sets the **minimum** level written by Monolog. Messages below that level are dropped.
+`App::DEBUGLEVEL` (from `ZMS_DEBUGLEVEL`) sets the **minimum** level written by Monolog. Messages below that level are dropped.
 
-| `DEBUGLEVEL` env / constant | Monolog constant | Typical use in ZMS |
-| --- | --- | --- |
-| `DEBUG` | `Logger::DEBUG` | Verbose diagnostics (mail payloads, cache details) |
-| `INFO` | `Logger::INFO` | Normal operations (login, cron progress, cache hits) |
-| `NOTICE` | `Logger::NOTICE` | Notable but expected events |
-| `WARNING` | `Logger::WARNING` | Recoverable problems (rate limits, skipped entities) |
-| `ERROR` | `Logger::ERROR` | Failures that need attention |
-| `CRITICAL` | `Logger::CRITICAL` | Severe errors (unhandled exceptions in Twig handler) |
-| `ALERT` | `Logger::ALERT` | Rare; same scale as Monolog |
-| `EMERGENCY` | `Logger::EMERGENCY` | Rare; same scale as Monolog |
+| `DEBUGLEVEL` env / constant | Monolog constant    | Typical use in ZMS                                   |
+| --------------------------- | ------------------- | ---------------------------------------------------- |
+| `DEBUG`                     | `Logger::DEBUG`     | Verbose diagnostics (mail payloads, cache details)   |
+| `INFO`                      | `Logger::INFO`      | Normal operations (login, cron progress, cache hits) |
+| `NOTICE`                    | `Logger::NOTICE`    | Notable but expected events                          |
+| `WARNING`                   | `Logger::WARNING`   | Recoverable problems (rate limits, skipped entities) |
+| `ERROR`                     | `Logger::ERROR`     | Failures that need attention                         |
+| `CRITICAL`                  | `Logger::CRITICAL`  | Severe errors (unhandled exceptions in Twig handler) |
+| `ALERT`                     | `Logger::ALERT`     | Rare; same scale as Monolog                          |
+| `EMERGENCY`                 | `Logger::EMERGENCY` | Rare; same scale as Monolog                          |
 
 Implementation mapping lives in `zmsslim/src/Slim/Bootstrap.php` (`$debuglevels` and `parseDebugLevel()`).
 
-### Environment variable
+### Example configuration
 
 ```bash
-# .env / deployment / DDEV
+# .env / deployment / DDEV — applies to all Slim modules via zmsslim
 DEBUGLEVEL=INFO
 ```
 
-`zmsslim/src/Slim/Application.php` defines:
+Definition in `zmsslim/src/Slim/Application.php`:
 
 ```php
 define('ZMS_DEBUGLEVEL', getenv('DEBUGLEVEL') ? getenv('DEBUGLEVEL') : 'INFO');
 const DEBUGLEVEL = ZMS_DEBUGLEVEL;
 ```
 
-Each module’s `class App extends \BO\…\Application` inherits this. Override in `config.php` only for local experiments, e.g. `const DEBUGLEVEL = 'WARNING';`.
-
-Invalid values fall back to **DEBUG** (permissive) in `parseDebugLevel()`.
+Invalid values fall back to **DEBUG** (permissive) in `Bootstrap::parseDebugLevel()`.
 
 ## How to log
 
@@ -127,6 +160,6 @@ It updates when you run `npm run docs:dev` or `docs:build` (VitePress config run
 
 ## Related code
 
-- `zmsslim/src/Slim/Application.php` — `public static $log`
+- `zmsslim/src/Slim/Application.php` — `ZMS_DEBUGLEVEL`, `DEBUGLEVEL`, `public static $log`
 - `zmsslim/src/Slim/Bootstrap.php` — `configureLogger()`, `ensureLogger()`, `normalizeLogLevelName()`
 - `zmsslim/README.md` — Slim bootstrap overview
