@@ -2,6 +2,7 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 setlocale (LC_ALL, "de_DE.UTF-8");
+
 $usage = <<<EOS
 
 Usage: {$argv[0]} hours [--verbose] --commit
@@ -24,8 +25,8 @@ if ($defaultTimeInterval) {
     $job = new \BO\Zmsdb\Helper\SendMailReminder($now, array_shift($defaultTimeInterval), $verbose);
     $job->startProcessing($commit);
 } else {
-    error_log("Missing default time interval argument!$usage");
-}
+    \App::$log->error('Missing default time interval argument', ['usage' => trim($usage)]);
 if (! $commit) {
-    error_log("Use with --commit to send emails.");
+    \App::$log->notice('Use with --commit to send emails.');
+}
 }

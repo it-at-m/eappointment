@@ -23,8 +23,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
                 }
                 $this->scopes[] = $scope;
             } catch (\Exception $e) {
-                error_log("Invalid ThinnedScope encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid ThinnedScope skipped', ['exception' => $e->getMessage()]);
             }
         }
 

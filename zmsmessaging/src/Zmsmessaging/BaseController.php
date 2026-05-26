@@ -162,15 +162,18 @@ class BaseController
 
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
-        $text = sprintf("[MailProcessor log %07.3fs %07.1fmb] %s", $time, $memory, $message);
+        static::$logList[] = $message;
 
+        $context = [
+            'component' => 'zmsmessaging',
+            'elapsed' => $time,
+            'memory_mb' => $memory,
+        ];
         if ($this->verbose) {
-            //error_log($text);
+            \App::$log->debug($message, $context);
+        } else {
+            \App::$log->info($message, $context);
         }
-
-        // Explicitly flush the output buffer
-        echo $text . "\n";
-        flush();
     }
 
     protected function convertCollectionToArray($collection)

@@ -39,8 +39,8 @@ if ($commit || $verbose) {
     $job = new \BO\Zmsdb\Helper\AvailabilityDeleteByCron($verbose);
     $job->startProcessing($datetime, $commit);
     if (!$commit) {
-        error_log("INFO: Use --commit to delete availabilities");
+        \App::$log->notice('Use with --commit to delete availabilities');
     }
 } else {
-    echo $usage;
+    \App::$log->notice('deleteOldAvailabilityData usage', ['usage' => trim($usage)]);
 }

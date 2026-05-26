@@ -39,7 +39,7 @@ class SendMailTest extends Base
         $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
             if (isset($mail['errorInfo'])) {
-                echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
+                $this->fail('Mail error: ' . $mail['errorInfo']);
             } else {
                 $this->assertStringContainsString('text/html', trim($mail['mime']));
                 $this->assertStringContainsString('calendar', json_encode($mail['attachments'][0]));
