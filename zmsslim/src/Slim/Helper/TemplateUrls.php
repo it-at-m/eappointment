@@ -32,6 +32,6 @@ class TemplateUrls
             $uri = preg_replace('#^https?://[^/]+#', '', $uri);
         }
 
-        return Helper::proxySanitizeUri($uri);
+        return \BO\Slim\Helper::proxySanitizeUri($uri);
     }
 }
