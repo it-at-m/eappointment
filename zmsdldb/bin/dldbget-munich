@@ -51,40 +51,40 @@ if ($rollbackDay !== "none") {
     exit(0);
 }
 
-dldbLog('No rollback requested, fetching current Munich SADB export', 'info');
+\App::$log->info('No rollback requested, fetching current Munich SADB export');
 
 $transformer = new Munich();
 try {
     $data = $transformer->fetchLatestExport($indexUrl);
 } catch (\Exception $e) {
-    dldbLog('Failed to fetch Munich SADB export', 'error', ['message' => $e->getMessage()]);
+    \App::$log->error('Failed to fetch Munich SADB export', ['message' => $e->getMessage()]);
     exit(1);
 }
 
 // Same as dldb-mapper mapImport mergeExports(prod.json): Passkalender 10502 + relations for E2E/prod parity
 $data = $transformer->applySadbOverwrite($data);
-dldbLog('Applied bundled munich_sadb_overwrite.json', 'info');
+\App::$log->info('Applied bundled munich_sadb_overwrite.json');
 
 // Helper to safely write JSON files (defined before first use)
 function writeJsonFile($path, $data) {
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     if ($json === false) {
-        dldbLog('JSON encoding failed', 'error', ['message' => json_last_error_msg()]);
+        \App::$log->error('JSON encoding failed', ['message' => json_last_error_msg()]);
         exit(1);
     }
     if (file_put_contents($path, $json) === false) {
-        dldbLog('Failed to write JSON file', 'error', ['file' => basename($path)]);
+        \App::$log->error('Failed to write JSON file', ['file' => basename($path)]);
         exit(1);
     }
 }
 
-dldbLog('Transforming services', 'info');
+\App::$log->info('Transforming services');
 $servicesData = $transformer->transformServices($data);
 
-dldbLog('Transforming locations and merging location refs into services', 'info');
+\App::$log->info('Transforming locations and merging location refs into services');
 $locationTransform = $transformer->transformLocations($data, $servicesData);
 if (empty($locationTransform['services'])) {
-    dldbLog('transformLocations did not return enriched services payload', 'error');
+    \App::$log->error('transformLocations did not return enriched services payload');
     exit(1);
 }
 writeJsonFile($destinationPath . '/services_de.json', $locationTransform['services']);
@@ -117,4 +117,4 @@ $helpers->checkAndCreateBackup($downloadedFiles);
 // Cleanup old backups
 $helpers->cleanupOldBackups();
 
-dldbLog('Munich transformation completed', 'info');
+\App::$log->info('Munich transformation completed');

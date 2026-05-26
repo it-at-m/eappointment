@@ -22,30 +22,6 @@ require_once(__DIR__."/script_bootstrap.php");
 use Garden\Cli\Cli;
 use BO\Zmsdb\Config as ConfigRepository;
 
-function dldbLog(string $message, string $level = 'info', array $context = []): void
-{
-    if (class_exists('\App', false)) {
-        \BO\Slim\Bootstrap::ensureLogger();
-        if (\App::$log) {
-            $level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
-            \App::$log->{$level}($message, $context);
-            return;
-        }
-    }
-
-    $levelName = class_exists(\BO\Slim\Bootstrap::class, false)
-        ? strtoupper(\BO\Slim\Bootstrap::normalizeLogLevelName($level))
-        : strtoupper($level);
-    fwrite(STDOUT, json_encode([
-        'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
-        'application' => 'zms',
-        'module' => 'zmsdldb',
-        'message' => $message,
-        'level' => $levelName,
-        'context' => $context,
-    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
-}
-
 class DldbHelpers
 {
     protected $cli;
@@ -69,14 +45,14 @@ class DldbHelpers
                     $val = $retentionSetting[0] ?? '';
                     if (strtolower((string)$val) !== 'none') {
                         if (ctype_digit((string)$val) && (int)$val > 0) {
-                            dldbLog('Retention period set in admin system config', 'info', ['days' => (int) $val]);
+                            \App::$log->info('Retention period set in admin system config', ['days' => (int) $val]);
                             return (int)$val;
                         }
-                        dldbLog('Invalid retention value, falling back to 7 days', 'warning', ['value' => $val]);
+                        \App::$log->warning('Invalid retention value, falling back to 7 days', ['value' => $val]);
                         return 7;
                     }
         }
-        dldbLog('Using default retention period', 'info', ['days' => 7]);
+        \App::$log->info('Using default retention period', ['days' => 7]);
         return 7;
     }
 
@@ -86,11 +62,11 @@ class DldbHelpers
         if ($envValue !== false) {
             $rollbackDaySetting = explode(',', $this->config->getPreference('dldbBackup', 'setRollbackDay'));
             if ($rollbackDaySetting[0] !== "none") {
-                dldbLog('Rollback day set in admin system config', 'info', ['day' => (int) $rollbackDaySetting[0]]);
+                \App::$log->info('Rollback day set in admin system config', ['day' => (int) $rollbackDaySetting[0]]);
                 return (int)$rollbackDaySetting[0];
             }
         }
-        dldbLog('Using default no rollback', 'info');
+        \App::$log->info('Using default no rollback');
         return "none";
     }
 
@@ -100,12 +76,12 @@ class DldbHelpers
                     return false;
                 }
 
-                dldbLog('Rollback requested', 'info', ['day' => $rollbackDay]);
+                \App::$log->info('Rollback requested', ['day' => $rollbackDay]);
 
                 // Ensure target paths exist
                 $this->ensureDestinationDirectory();
                 if (!is_dir($this->backupPath)) {
-                    dldbLog('No backups directory', 'warning', ['path' => $this->backupPath]);
+                    \App::$log->warning('No backups directory', ['path' => $this->backupPath]);
                     return false;
                 }
 
@@ -115,21 +91,21 @@ class DldbHelpers
                 });
 
                 if (!isset($backupDirectories[$rollbackDay - 1])) {
-                    dldbLog('Specified rollback day does not exist in backups', 'error', ['day' => $rollbackDay]);
+                    \App::$log->error('Specified rollback day does not exist in backups', ['day' => $rollbackDay]);
                     return false;
                 }
 
                 $rollbackDir = $backupDirectories[$rollbackDay - 1];
-                dldbLog('Rolling back using backup', 'info', ['backupDir' => $rollbackDir]);
+                \App::$log->info('Rolling back using backup', ['backupDir' => $rollbackDir]);
 
                 $hadError = false;
                 foreach (glob($rollbackDir . '/*.json') as $file) {
                     $destFile = $this->destinationPath . '/' . basename($file);
                     if (!@copy($file, $destFile)) {
-                        dldbLog('Failed to rollback file', 'error', ['source' => $file, 'destination' => $destFile]);
+                        \App::$log->error('Failed to rollback file', ['source' => $file, 'destination' => $destFile]);
                         $hadError = true;
                     } else {
-                        dldbLog('Rolled back file', 'info', ['source' => $file, 'destination' => $destFile]);
+                        \App::$log->info('Rolled back file', ['source' => $file, 'destination' => $destFile]);
                     }
                 }
 
@@ -138,7 +114,7 @@ class DldbHelpers
 
     public function checkAndCreateBackup($newFiles)
     {
-        dldbLog('Checking if backup is required', 'info');
+        \App::$log->info('Checking if backup is required');
         $backupRequired = false;
 
         // Track files that need backup
@@ -162,7 +138,7 @@ class DldbHelpers
         }
 
         if ($backupRequired && !empty($filesToBackup)) {
-            dldbLog('Backup is required', 'info');
+            \App::$log->info('Backup is required');
             $timestamp = date('Y-m-d');
             $backupDir = $this->backupPath . '/' . $timestamp;
 
@@ -173,10 +149,10 @@ class DldbHelpers
             // Backup all JSON files in destination
             foreach (glob($this->destinationPath . '/*.json') as $file) {
                 if (!copy($file, $backupDir . '/' . basename($file))) {
-                    dldbLog('Failed to backup file', 'error', ['file' => $file]);
+                    \App::$log->error('Failed to backup file', ['file' => $file]);
                 }
             }
-            dldbLog('Backup created', 'info', ['backupDir' => $backupDir]);
+            \App::$log->info('Backup created', ['backupDir' => $backupDir]);
         }
 
         return $backupRequired;
@@ -184,7 +160,7 @@ class DldbHelpers
 
     public function cleanupOldBackups()
     {
-        dldbLog('Fetching the backup retention period', 'info');
+        \App::$log->info('Fetching the backup retention period');
         $retentionDays = $this->getBackupRetentionDays();
         $limitDate = time() - ($retentionDays * 24 * 60 * 60);
         
@@ -198,7 +174,7 @@ class DldbHelpers
                     }
                 }
                 rmdir($dir);
-                dldbLog('Deleted old backup', 'info', ['backupDir' => $dir]);
+                \App::$log->info('Deleted old backup', ['backupDir' => $dir]);
             }
         }
     }
