@@ -15,8 +15,6 @@ class Locations extends Base
                     $this->removeEntityFromCurrentList($location->get('id'));
                     $location->save();
                 }
-            } else {
-                $this->logNoUpdateNeeded();
             }
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();

@@ -15,8 +15,6 @@ class Topics extends Base
                     $this->removeEntityFromCurrentList($topic->get('id'));
                     $topic->save();
                 }
-            } else {
-                $this->logNoUpdateNeeded();
             }
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();

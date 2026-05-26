@@ -15,10 +15,7 @@ class Services extends Base
                     $this->removeEntityFromCurrentList($service->get('id'));
                     $service->save();
                 }
-            } else {
-                $this->logNoUpdateNeeded();
             }
-
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();
             }

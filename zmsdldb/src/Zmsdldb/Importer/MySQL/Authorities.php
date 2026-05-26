@@ -15,8 +15,6 @@ class Authorities extends Base
                     $this->removeEntityFromCurrentList($authority->get('id'));
                     $authority->save();
                 }
-            } else {
-                $this->logNoUpdateNeeded();
             }
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();
