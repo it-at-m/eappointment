@@ -66,6 +66,18 @@
         "reserved": {
           "type": "number",
           "description": "Number of reserved appointments in the database."
+        },
+        "withExternalUserId": {
+          "type": "number",
+          "description": "Number of processes with externalUserId set (buerger.external_user_id is not null and not empty), any status."
+        },
+        "confirmedWithExternalUserId": {
+          "type": "number",
+          "description": "Number of confirmed processes with externalUserId set (OIDC-linked appointments)."
+        },
+        "reservedWithExternalUserId": {
+          "type": "number",
+          "description": "Number of reserved processes with externalUserId set (OIDC-linked reservations)."
         }
       }
     },
