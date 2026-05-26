@@ -29,7 +29,7 @@ class Db
         }
 
         if ($verbose) {
-            echo "Importing " . basename($file) . "\n";
+            \App::$log->info('Importing SQL file', ['file' => basename($file)]);
         }
         $query = '';
         while ($line = $readFunction($sqlFile)) {
@@ -37,14 +37,17 @@ class Db
             if (preg_match('/;\s*$/', $line)) {
                 try {
                     $pdo->exec($query);
-                    if ($verbose) {
-                        echo ".";
-                    }
                     //echo "Successful:\n$query\n";
                     $query = '';
                 } catch (\Exception $exception) {
                     if ($verbose) {
-                        echo "Offending query: \n$query\n";
+                        \App::$log->error('SQL import failed', [
+                            'file' => basename($file),
+                            'method' => __METHOD__,
+                            'exception' => get_class($exception),
+                            'message' => $exception->getMessage(),
+                            'code' => $exception->getCode(),
+                        ]);
                     }
                     throw $exception;
                 }
@@ -53,7 +56,10 @@ class Db
         $closeFunction($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
         if ($verbose) {
-            echo "\nTook $time seconds\n";
+            \App::$log->info('SQL import finished', [
+                'file' => basename($file),
+                'seconds' => $time,
+            ]);
         }
     }
 
@@ -79,7 +85,9 @@ class Db
         }
 
         if ($verbose) {
-            error_log("Use Connection " . \BO\Zmsdb\Connection\Select::$writeSourceName);
+            \App::$log->info('Using database connection', [
+                'dsn' => \BO\Zmsdb\Connection\Select::$writeSourceName,
+            ]);
         }
 
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -117,7 +125,10 @@ class Db
             if (!array_key_exists($migrationName, $migrationsDoneList)) {
                 $addedMigrations++;
                 if (!$commit) {
-                    echo "$addedMigrations. Add migration $migrationName\n";
+                    \App::$log->info('Pending migration', [
+                        'index' => $addedMigrations,
+                        'migration' => $migrationName,
+                    ]);
                 } else {
                     self::startExecuteSqlFile($migrationFile);
                     $pdo->prepare('INSERT INTO `migrations` SET `filename` = :filename')
@@ -125,7 +136,10 @@ class Db
                 }
             }
         }
-        echo "\nFound " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.\n";
+        \App::$log->info('Migration check finished', [
+            'completed' => count($migrationsDoneList),
+            'added' => $addedMigrations,
+        ]);
         return $addedMigrations;
     }
 

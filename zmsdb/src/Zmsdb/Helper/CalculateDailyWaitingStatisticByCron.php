@@ -16,13 +16,13 @@ class CalculateDailyWaitingStatisticByCron extends Base
 {
     public function run(DateTimeImmutable $day, bool $commit = false)
     {
-        echo "CalculateDailyWaitingStatisticByCron->run for date={$day->format('Y-m-d')}\n";
+                    \App::$log->info('CalculateDailyWaitingStatisticByCron started', ['date' => $day->format('Y-m-d')]);
 
         $buergerRows = $this->fetchBuergerData($day);
         $statsByScopeDate = $this->processBuergerRows($buergerRows);
         $this->saveStatistics($statsByScopeDate, $commit);
 
-        echo "Done collecting stats for {$day->format('Y-m-d')}\n";
+                    \App::$log->info('CalculateDailyWaitingStatisticByCron finished', ['date' => $day->format('Y-m-d')]);
     }
 
     // Alle 'buerger'-Einträge für das Datum laden (außer stornierte bzw. gelöschte).
@@ -192,7 +192,10 @@ class CalculateDailyWaitingStatisticByCron extends Base
         if ($commit) {
             $this->perform($sqlUpdate, $updateParams);
         } else {
-            echo "[DRY RUN] update scope=$scopeId, date=$dateStr with stats.\n";
+                            \App::$log->info('[DRY RUN] update scope statistics', [
+                    'scopeId' => $scopeId,
+                    'date' => $dateStr,
+                            ]);
         }
     }
 

@@ -77,7 +77,10 @@ class ReservedDataDeleteByCron
 
     protected function log($message): bool
     {
-        return $this->verbose && error_log($message);
+        if ($this->verbose) {
+            \App::$log->info($message);
+        }
+        return $this->verbose;
     }
 
     protected function deleteExpiredReservations(ScopeList $scopeList): void
