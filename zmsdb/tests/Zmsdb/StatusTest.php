@@ -12,6 +12,7 @@ class StatusTest extends Base
         $status = (new Query())->readEntity($now);
         //var_dump(json_encode($status, JSON_PRETTY_PRINT));
         $this->assertInstanceOf("\\BO\\Zmsentities\\Status", $status);
+        $this->assertArrayHasKey('called', $status['processes']);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 }
