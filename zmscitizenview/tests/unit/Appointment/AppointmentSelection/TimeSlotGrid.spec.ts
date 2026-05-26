@@ -4,7 +4,6 @@ import { nextTick } from "vue";
 vi.mock("@/utils/formatAppointmentDateTime", () => ({
   formatTimeFromUnix: (t: number) => `fmt-${t}`,
 }));
-// @ts-expect-error: SFC import for test
 import TimeSlotGrid from "@/components/Appointment/AppointmentSelection/TimeSlotGrid.vue";
 
 describe("TimeSlotGrid", () => {

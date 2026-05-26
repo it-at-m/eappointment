@@ -7,7 +7,6 @@ import {
   VARIANT_ID_VIDEO
 } from "@/utils/Constants";
 
-// @ts-expect-error: Vue SFC import for test
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 
 interface ServiceImpl {

@@ -2,7 +2,6 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 
-// @ts-expect-error: Vue SFC import for test
 import AltchaCaptcha from "@/components/Appointment/ServiceFinder/AltchaCaptcha.vue";
 
 // Mock window.scrollTo for jsdom
