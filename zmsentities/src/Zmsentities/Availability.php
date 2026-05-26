@@ -412,12 +412,10 @@ class Availability extends Schema\Entity
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
 
         if ($bookableCurrentTime->getTimestamp() < $startDate->getTimestamp()) {
-            //error_log("START " . $bookableCurrentTime->format('c').'<'.$startDate->format('c'). " " . $this);
             return false;
         }
         $endDate = $this->getBookableEnd($now)->modify('23:59:59');
         if ($bookableCurrentTime->getTimestamp() > $endDate->getTimestamp()) {
-            //error_log("END " . $bookableCurrentTime->format('c').'>'.$endDate->format('c'). " " . $this);
             return false;
         }
         if (
@@ -427,10 +425,6 @@ class Availability extends Schema\Entity
             // Avoid releasing all appointments on midnight, allow smaller contingents distributed over the day
             $delayedStart = $this->getBookableEnd($now)->modify($this->getStartDateTime()->format('H:i:s'));
             if ($bookableCurrentTime->getTimestamp() < $delayedStart->getTimestamp()) {
-                //error_log(
-                //    sprintf("DELAY %s<%s", $bookableCurrentTime->format('c'), $delayedStart->format('c'))
-                //    ." $this"
-                //);
                 return false;
             }
         }

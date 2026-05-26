@@ -81,12 +81,11 @@ class OverallCalendarReadTest extends Base
         if (!$result->isValid()) {
             $formatter = new ErrorFormatter();
             $errors    = $formatter->format($result->error());
-            error_log(
-                "Schema validation failed:\n"
+            $this->fail(
+                'Response does not match calendar schema: '
                 . json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             );
         }
-        $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
     }
 
     public function testEventIncludesDisplayNumberWhenSet(): void

@@ -307,7 +307,10 @@ class Bootstrap
             try {
                 $container['router']->setCacheFile($cacheFile);
             } catch (\Exception $exception) {
-                error_log("Could not write Router-Cache-File: $cacheFile");
+                App::$log->warning('Could not write router cache file', [
+                    'cacheFile' => $cacheFile,
+                    'exception' => $exception->getMessage(),
+                ]);
                 throw $exception;
             }
         }

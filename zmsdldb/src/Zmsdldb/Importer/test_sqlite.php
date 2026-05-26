@@ -97,9 +97,9 @@ try {
     $sqLiteIporter->commit();
 } catch (\Exception $e) {
     $sqLiteIporter->rollBack();
-    error_log('Import faild');
+    fwrite(STDERR, 'Import failed: ' . $e->getMessage() . PHP_EOL);
+    exit(1);
 }
 
-
 unset($timer);
-echo "Memory usage: " . number_format((memory_get_usage() / (1024 * 1024)), 2) . ' mb' . PHP_EOL;
+fwrite(STDERR, 'Memory usage: ' . number_format((memory_get_usage() / (1024 * 1024)), 2) . ' mb' . PHP_EOL);
