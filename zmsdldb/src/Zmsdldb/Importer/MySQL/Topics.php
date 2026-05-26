@@ -15,21 +15,7 @@ class Topics extends Base
                     $this->removeEntityFromCurrentList($topic->get('id'));
                     $topic->save();
                 }
-            } else {
-                print_r('NO Topics(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
-                #print_r($this->metaObject);
             }
-            /*
-            error_log(
-                print_r([
-                    'delete',
-                    $this->entityClass::getTableName(),
-                    $this->getLocale(),
-                    count($this->getCurrentEntitys()),
-                    array_keys($this->getCurrentEntitys())
-                ],
-            1));
-            */
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();
             }

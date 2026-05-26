@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { writeLogInventory } from "../scripts/generate-log-inventory.mjs";
 
 const FEATURES_ROOT = path.resolve(
   import.meta.dirname,
@@ -168,6 +169,7 @@ const renderCucumberDoc = () => {
 };
 
 renderCucumberDoc();
+writeLogInventory();
 
 // docs/en/ is the single on-disk source for English content. We use VitePress
 // `rewrites` so every docs/en/<path>.md is rendered at URL /<path>.html (the
@@ -237,6 +239,7 @@ const sidebarLabels = {
     dependencyGraph: "Dependency Graph",
     branchingStrategy: "Branching Strategy",
     commitMessageConvention: "Commit Message Convention",
+    monologLogging: "Monolog logging",
     codeOfConduct: "Code of Conduct",
     contributing: "Contributing",
     security: "Security",
@@ -281,6 +284,7 @@ const sidebarLabels = {
     dependencyGraph: "Abhängigkeitsgraph",
     branchingStrategy: "Branching-Strategie",
     commitMessageConvention: "Commit-Message-Konvention",
+    monologLogging: "Monolog-Logging",
     codeOfConduct: "Verhaltenskodex",
     contributing: "Mitwirken",
     security: "Sicherheit",
@@ -458,6 +462,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.dldb,
           link: `${prefix}/operations/dldb-interface-documentation`,
+        },
+        {
+          text: t.monologLogging,
+          link: `${prefix}/operations/monolog-logging`,
         },
       ],
     },
