@@ -26,11 +26,6 @@ Die Antwort folgt [`status.json`](https://github.com/it-at-m/eappointment/blob/m
 Für häufige Liveness-Probes `includeProcessStats=0`; für Dashboards zu Terminmengen `1`.
 
 ### Beispiel (mit Prozess-Statistik)
-
-```bash
-curl -s "https://<host>/terminvereinbarung/api/2/status/?includeProcessStats=1" | jq '.data.processes'
-```
-
 ### Metriken unter `processes` (Überblick)
 
 Zählungen gelten für Nicht-Folgetermin-Zeilen in `buerger` (`istFolgeterminvon` leer), analog zur Status-SQL.
