@@ -115,7 +115,7 @@ Die folgende Tabelle wird **automatisch** aus `App::$log->…` in Modul-PHP-Quel
 cd docs && npm run docs:log-inventory
 ```
 
-Aktualisierung auch bei `npm run docs:dev` / `docs:build`.
+Aktualisierung auch bei `npm run docs:dev` / `docs:build`. Nutze die Filter, die Suche oder **Klick auf eine Spaltenüberschrift** zum Sortieren (auf-/absteigend umschalten).
 
 <LogInventory />
 

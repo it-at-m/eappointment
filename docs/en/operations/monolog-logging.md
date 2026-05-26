@@ -154,7 +154,7 @@ The table below is **generated automatically** from `App::$log->…` calls in mo
 cd docs && npm run docs:log-inventory
 ```
 
-It updates when you run `npm run docs:dev` or `docs:build` (VitePress config runs the generator first).
+It updates when you run `npm run docs:dev` or `docs:build` (VitePress config runs the generator first). Use the dropdown filters, search box, or **click a column header** to sort (toggle ascending/descending).
 
 <LogInventory />
 
