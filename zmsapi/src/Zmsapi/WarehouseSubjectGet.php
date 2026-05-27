@@ -21,7 +21,7 @@ class WarehouseSubjectGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('scope');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject ?? '');
         if (! class_exists($exchangeClass)) {

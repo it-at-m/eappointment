@@ -9,21 +9,8 @@
     "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
         "useraccount": {
-            "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
-            },
             "permissions": {
-                "waitingqueue": true,
-                "appointment": true
+                "logs": "1"
             },
             "departments": [
                 {
@@ -42,6 +29,13 @@
                                 "name": "Häschenschule"
                             },
                             "$ref": "/scope/1/"
+                        },
+                        {
+                            "id": "141",
+                            "contact": {
+                                "name": "Häschenschule"
+                            },
+                            "$ref": "/scope/141/"
                         }
                     ],
                     "links": [
@@ -115,10 +109,11 @@
         "name": "12",
         "id": "136",
         "authkey": "8520c285985b5bd209a0110442dc4e45",
+        "password": "$2y$10$1pl\/ZPVjrqSPgI6rvR.zgOfCLqvPGI3DdbQW\/YTOgZDP2yJjfrsgO",
         "hint": "12",
         "queue": {
             "appointmentsOnly": "0",
-            "clusterEnabled": "1"
+            "clusterEnabled": "0"
         },
         "scope": {
             "id": "141",
@@ -135,7 +130,10 @@
                 "source": "dldb",
                 "id": "122217",
                 "link": "https://service.berlin.de/standort/122217/",
-                "name": "Bürgeramt Heerstraße"
+                "name": "Bürgeramt Heerstraße",
+                "data": {
+                    "slotTimeInMinutes": 12
+                }
             },
             "hint": "Nr. wird zum Termin aufgerufen",
             "contact": {
