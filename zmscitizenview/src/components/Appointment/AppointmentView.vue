@@ -109,6 +109,7 @@
                 "
                 :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
+                @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
               />
             </div>
@@ -1078,6 +1079,11 @@ const handleServiceFinderRateLimitError = () => {
     currentErrorData.value,
     "warning"
   );
+};
+
+const clearBookingError = () => {
+  captchaError.value = false;
+  errorStateMap.value.apiErrorAppointmentNotAvailable.value = false;
 };
 
 const redirectToAppointmentStart = () => {
