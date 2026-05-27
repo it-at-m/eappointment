@@ -324,7 +324,7 @@ function sortCalendarCache() {
             scope.events.sort(
                 (eventA, eventB) =>
                     String(eventA.start).localeCompare(String(eventB.start)) ||
-                    String(eventA.updatedAt || '').localeCompare(String(eventB.updatedAt || '')) |
+                    String(eventA.updatedAt || '').localeCompare(String(eventB.updatedAt || '')) ||
                     (eventA.processId - eventB.processId)
             );
         }
