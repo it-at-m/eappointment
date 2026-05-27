@@ -34,8 +34,6 @@ class Counter extends BaseController
             );
         }
 
-        $workstation->getUseraccount()->testPermissions(['counter']);
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/counter.twig',

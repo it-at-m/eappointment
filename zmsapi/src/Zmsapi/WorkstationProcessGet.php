@@ -21,7 +21,7 @@ class WorkstationProcessGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkPermissions();
+        $workstation = (new Helper\User($request))->checkRights();
         $query = new Process();
         $processId = $args['id'];
 

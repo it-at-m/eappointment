@@ -9,7 +9,6 @@ class CounterGhostWorkstationTest extends Base
     public function testRendering()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setPermissions('counter');
         $workstation->scope['id'] = 146; //ghostworkstation count 3
         $response = $this->render([], [
             '__body' => '{
@@ -34,18 +33,15 @@ class CounterGhostWorkstationTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('counter');
+        $this->setWorkstation();
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testUnvalidInput()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('counter');        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
@@ -56,9 +52,7 @@ class CounterGhostWorkstationTest extends Base
 
     public function testNoAccess()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('counter');
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
         $this->expectExceptionCode(403);
         $this->render([], [
@@ -68,9 +62,8 @@ class CounterGhostWorkstationTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('counter');        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{

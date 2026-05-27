@@ -42,9 +42,7 @@
             <div class="grid">
                 {% if not hideNavigation %}
                 <div class="grid__item one-sixth">
-                    {% if workstation.useraccount.permissions.emergency|default(false) %}
-                        {% include "block/emergency/emergency.twig" %}
-                    {% endif %}
+                    {% include "block/emergency/emergency.twig" %}
                     <nav class="navigation-primary" aria-labelledby="navigation-primary-title">
                         <h2 class="aural" id="navigation-primary-title">Hauptnavigation</h2>
                         <div class="nav__wrapper">

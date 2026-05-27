@@ -27,7 +27,7 @@ class ProcessFree extends BaseController
         $slotType = Validator::param('slotType')->isString()->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkPermissions();
+            (new Helper\User($request))->checkRights();
         } else {
             $slotsRequired = 0;
             $slotType = 'public';

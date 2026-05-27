@@ -10,15 +10,7 @@ class ProcessNextByClusterTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-                ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -26,15 +18,7 @@ class ProcessNextByClusterTest extends Base
 
     public function testClusterWideCallDisabled()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-                ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
         $response = $this->render(['id' => 109], ['allowClusterWideCall' => false], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"id":0', (string)$response->getBody());
@@ -43,18 +27,14 @@ class ProcessNextByClusterTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
+        $this->setWorkstation();
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testClusterNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);

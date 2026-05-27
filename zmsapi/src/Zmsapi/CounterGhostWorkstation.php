@@ -23,7 +23,7 @@ class CounterGhostWorkstation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkPermissions('counter');
+        $workstation = (new Helper\User($request))->checkRights('basic');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);
         $entity->testValid();

@@ -9,7 +9,9 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
 use BO\Zmsdb\ProcessStatusQueued;
+use BO\Zmsdb\Cluster;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -26,7 +28,7 @@ class WorkstationProcessWaitingnumber extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        (new Helper\User($request))->checkPermissions();
+        (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);

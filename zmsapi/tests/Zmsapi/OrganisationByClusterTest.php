@@ -10,9 +10,7 @@ class OrganisationByClusterTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('cluster');
+        $this->setWorkstation();
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -28,18 +26,14 @@ class OrganisationByClusterTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('cluster');
+        $this->setWorkstation();
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('cluster');        
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
@@ -47,9 +41,7 @@ class OrganisationByClusterTest extends Base
 
     public function testOrganisationNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('cluster');        
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 1], [], []);

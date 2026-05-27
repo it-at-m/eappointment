@@ -33,7 +33,7 @@ class Workstation extends BaseController
                 )
             );
         }
-        $workstation->getUseraccount()->testPermissions(['appointment']);
+
         $validator = $request->getAttribute('validator');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;

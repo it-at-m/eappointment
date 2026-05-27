@@ -10,15 +10,8 @@ class ClusterQueueTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-            ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], [], []);
         $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -26,24 +19,16 @@ class ClusterQueueTest extends Base
 
     public function testQueueEmpty()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-                ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], ['date' => '2015-04-01'], []);
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testClusterNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);

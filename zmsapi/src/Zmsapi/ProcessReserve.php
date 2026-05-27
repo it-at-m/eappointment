@@ -40,7 +40,7 @@ class ProcessReserve extends BaseController
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         if ($slotType || $slotsRequired) {
-            $workstation = (new Helper\User($request))->checkPermissions();
+            $workstation = (new Helper\User($request))->checkRights();
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);

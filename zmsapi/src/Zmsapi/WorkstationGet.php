@@ -22,7 +22,7 @@ class WorkstationGet extends BaseController
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $workstation = (new Helper\User($request, $resolveReferences))->checkPermissions();
+        $workstation = (new Helper\User($request, $resolveReferences))->checkRights();
 
         // Check if the password field exists and remove it from the response
         if (isset($workstation['useraccount']['password'])) {

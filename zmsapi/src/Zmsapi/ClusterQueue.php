@@ -23,6 +23,7 @@ class ClusterQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkRights('basic');
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $selectedDate = Validator::param('date')->isString()->getValue();
@@ -33,10 +34,6 @@ class ClusterQueue extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        (new Helper\User($request, 2))->checkPermissions(
-            'appointment',
-            new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
-        );
         $message = Response\Message::create($request);
         $queues = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
         $message->data = $queues;

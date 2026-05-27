@@ -8,22 +8,10 @@ class ProcessListByScopeAndDateTest extends Base
 {
     protected $classname = "ProcessListByScopeAndDate";
 
-    private function setWorkstationWithScopeAccess($scopeId = 141): void
-    {
-        $this->setWorkstation();
-
-        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-        $scopeList->addEntity(new \BO\Zmsentities\Scope(['id' => $scopeId]));
-
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => $scopeList,
-        ]));
-    }
-
     public function testRendering()
     {
-        $this->setWorkstationWithScopeAccess();
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -31,7 +19,8 @@ class ProcessListByScopeAndDateTest extends Base
 
     public function testWithGraphQL()
     {
-        $this->setWorkstationWithScopeAccess();
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(
             ['id' => 141, 'date' => '2016-04-01'],
             ['gql' => '{ id authKey scope{ id source shortName } }', 'resolveReferences' => 1],
@@ -45,7 +34,8 @@ class ProcessListByScopeAndDateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstationWithScopeAccess();
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999, 'date' => '2016-04-01'], [], []);
@@ -53,7 +43,8 @@ class ProcessListByScopeAndDateTest extends Base
 
     public function testWithResolveReferencesZero()
     {
-        $this->setWorkstationWithScopeAccess();
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], ['resolveReferences' => 0]);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -61,7 +52,8 @@ class ProcessListByScopeAndDateTest extends Base
 
     public function testProviderSlotTimeIsPresentInProcessScope()
     {
-        $this->setWorkstationWithScopeAccess();
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], []);
         $payload = json_decode((string)$response->getBody(), true);
 

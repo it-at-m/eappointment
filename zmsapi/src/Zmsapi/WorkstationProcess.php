@@ -30,7 +30,7 @@ class WorkstationProcess extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
         try {
-            $workstation = (new Helper\User($request, 1))->checkPermissions();
+            $workstation = (new Helper\User($request, 1))->checkRights();
             $input = Validator::input()->isJson()->assertValid()->getValue();
             $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
             if ($workstation->process && $workstation->process->hasId() && $workstation->process->getId() != $input['id']) {

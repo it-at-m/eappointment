@@ -26,7 +26,7 @@ class CalendarGet extends BaseController
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkPermissions();
+            (new Helper\User($request))->checkRights();
         } else {
             $slotsRequired = 0;
             $slotType = 'public';

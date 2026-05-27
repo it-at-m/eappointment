@@ -48,7 +48,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readDepartment()
     {
-        if ($this->workstation->getUseraccount()->hasPermissions(['statistic'])) {
+        if ($this->workstation->getUseraccount()->hasRights(['departmentStats'])) {
             return \App::$http
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
@@ -57,7 +57,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readOrganisation()
     {
-        if ($this->workstation->getUseraccount()->isSuperUser()) {
+        if ($this->workstation->getUseraccount()->hasRights(['organisation'])) {
             return \App::$http
                 ->readGetResult('/department/' . $this->department->getId() . '/organisation/')
                 ->getEntity();

@@ -22,7 +22,7 @@ class ScopeEmergency extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkPermissions('emergency');
+        $workstation = (new Helper\User($request, 1))->checkRights();
         if (! $workstation->getScopeList()->hasEntity($args['id'])) {
             throw new Exception\Scope\ScopeNoAccess();
         }

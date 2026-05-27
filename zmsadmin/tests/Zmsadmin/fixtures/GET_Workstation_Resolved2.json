@@ -22,10 +22,6 @@
                 "ticketprinter": "1",
                 "useraccount": "1"
             },
-            "permissions": {
-                "waitingqueue": true,
-                "appointment": true
-            },
             "departments": [
                 {
                     "id": "74",

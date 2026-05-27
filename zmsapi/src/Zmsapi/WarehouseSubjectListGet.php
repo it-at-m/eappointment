@@ -22,7 +22,7 @@ class WarehouseSubjectListGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
+        $workstation = (new Helper\User($request, 2))->checkRights('scope');
 
         $message = Response\Message::create($request);
         $subjectsList = (new Query())->readSubjectsList();

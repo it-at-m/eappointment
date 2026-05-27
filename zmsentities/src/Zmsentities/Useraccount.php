@@ -171,9 +171,6 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    /**
-     * Returns true when the user has all of the given permissions.
-     */
     public function hasPermissions(array $requiredPermissions): bool
     {
         if ($this->isSuperUser()) {
@@ -198,9 +195,6 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    /**
-     * Returns true when the user has any of the given permissions.
-     */
     public function hasAnyPermission(array $requiredPermissions): bool
     {
         if ($this->isSuperUser()) {
@@ -223,33 +217,6 @@ class Useraccount extends Schema\Entity
         }
 
         return false;
-    }
-
-    /**
-     * Returns true when the user has only the given permission and no other permission.
-     */
-    public function hasExclusivePermission(string $permission): bool
-    {
-        if ($this->isSuperUser()) {
-            return false;
-        }
-
-        $permissions = $this['permissions'] ?? [];
-        $requiredPermission = $permissions[$permission] ?? false;
-        if (!is_array($permissions) || !$requiredPermission || '0' === $requiredPermission) {
-            return false;
-        }
-
-        foreach ($permissions as $name => $enabled) {
-            if ($permission === $name || 'superuser' === $name) {
-                continue;
-            }
-            if ($enabled && '0' !== $enabled) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public function testRights(array $requiredRights)

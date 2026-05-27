@@ -19,15 +19,8 @@ class ProcessListByClusterAndDateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-                ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109, 'date' => '2016-04-01'], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -35,9 +28,8 @@ class ProcessListByClusterAndDateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999, 'date' => '2016-04-01'], [], []);
@@ -45,15 +37,8 @@ class ProcessListByClusterAndDateTest extends Base
 
     public function testProviderSlotTimeIsPresentInProcessScope()
     {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setPermissions('appointment');
-        User::$workstation->useraccount->addDepartment(new \BO\Zmsentities\Department([
-            'id' => 1,
-            'scopes' => [
-                ['id' => 141],
-            ],
-        ]));
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109, 'date' => '2016-04-01'], [], []);
         $payload = json_decode((string)$response->getBody(), true);
 

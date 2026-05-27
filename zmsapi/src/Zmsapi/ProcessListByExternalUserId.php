@@ -21,7 +21,7 @@ class ProcessListByExternalUserId extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkPermissions();
+        $workstation = (new Helper\User($request, 2))->checkRights();
         $externalUserId = $args['externalUserId']; // present and validated because of URL argument
         $status = Validator::param('status')->isString()->setDefault(null)->getValue();
         $filterId = Validator::param('filterId')->isNumber()->setDefault(null)->getValue();
