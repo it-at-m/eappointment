@@ -6,12 +6,14 @@ namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableDaysListService
 {
+    use CaptchaRequirementTrait;
     use ServiceLocationValidationTrait;
 
     private TokenValidationService $tokenValidator;
@@ -57,31 +59,9 @@ class AvailableDaysListService
         ];
     }
 
-    private function isCaptchaRequired(array $officeIds): bool
-    {
-        foreach ($officeIds as $officeIdRaw) {
-            $officeId = (int) $officeIdRaw;
-            if ($officeId <= 0) {
-                continue;
-            }
-
-            try {
-                $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-                if (($scope->captchaActivatedRequired ?? false) === true) {
-                    return true;
-                }
-            } catch (\Throwable $e) {
-                // Ignore transient lookup failures and continue with remaining offices.
-                continue;
-            }
-        }
-
-        return false;
-    }
-
     private function validateClientData(object $data): array
     {
-        $captchaRequired = $this->isCaptchaRequired($data->officeIds);
+        $captchaRequired = $this->isCaptchaRequiredForOfficeIds($data->officeIds);
 
         return ValidationService::validateGetBookableFreeDays(
             $data->officeIds,
