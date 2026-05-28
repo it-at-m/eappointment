@@ -118,7 +118,7 @@
             <nav role="navigation" aria-labelledby="admin-title">
                 <ul class="nav__list">
                 {% if workstation.id > 0 %}
-                    {% if workstation.useraccount.rights.superuser %}
+                    {% if permissions.superuser %}
                         <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
                             <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
                         </li>
