@@ -13,13 +13,13 @@ class ScopeEmergency extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $url = sprintf('/scope/%d/emergency/', $entityId);
 

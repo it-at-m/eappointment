@@ -29,13 +29,13 @@ class UrlParameterSigning extends BaseController
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @param SlimRequest $request
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $data = $validator->getInput()->isJson()->assertValid()->getValue();
         $this->testData($data);
