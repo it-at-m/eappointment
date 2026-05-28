@@ -14,13 +14,13 @@ namespace BO\Zmsadmin;
 class Workstation extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 2,
             'gql' => Helper\GraphDefaults::getWorkstation()
@@ -33,7 +33,7 @@ class Workstation extends BaseController
                 )
             );
         }
-
+        $workstation->getUseraccount()->testPermissions(['appointment']);
         $validator = $request->getAttribute('validator');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;

@@ -23,20 +23,12 @@ class TwigExtensionCompat extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('urlGet', array($this, 'urlGet')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude')),
-            new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
-            new \Twig_SimpleFunction('baseUrl', array($this, 'includeUrl')),
         );
     }
 
     public function urlGet($routeName, $params = array(), $getparams = array())
     {
         return "#$routeName(".implode(',', $params)."):".json_encode($getparams);
-    }
-
-    public function includeUrl($withUri = true)
-    {
-        //error_log("TODO: Remove includeUrl and baseUrl functions and use template parameters");
-        return "/";
     }
 
     public static function remoteInclude($uri)

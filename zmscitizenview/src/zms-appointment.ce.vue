@@ -167,6 +167,7 @@ onMounted(() => {
 <style>
 @import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
+@import "altcha/altcha.css";
 
 :host {
   font-family:

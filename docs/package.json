@@ -5,6 +5,7 @@
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
+    "docs:log-inventory": "node scripts/generate-log-inventory.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -12,7 +13,12 @@
     "@muenchen/prettier-codeformat": "^1.0.2",
     "markdown-it": "^14.1.0",
     "prettier": "^3.5.3",
-    "mermaid": "^11.14.0",
+    "mermaid": "^11.15.0",
     "vitepress": "^1.6.3"
+  },
+  "overrides": {
+    "uuid": "^11.1.1",
+    "vite": "^6.4.2",
+    "esbuild": "^0.25.0"
   }
 }

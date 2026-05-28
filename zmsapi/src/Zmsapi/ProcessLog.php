@@ -23,7 +23,7 @@ class ProcessLog extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('audit');
+        (new Helper\User($request))->checkPermissions('logs');
         $searchQuery = Validator::param('searchQuery')->isString()->setDefault(null)->getValue();
         $service = Validator::param('service')->isString()->setDefault(null)->getValue();
         $provider = Validator::param('provider')->isString()->setDefault(null)->getValue();

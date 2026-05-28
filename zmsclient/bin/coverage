@@ -11,6 +11,6 @@ EEND="\033[00m"
 echo "Testing application with coverage"
 cd $ROOT
 
-docker-compose up -d
+docker compose up -d
 XDEBUG_MODE=coverage php -dmemory_limit=-1 $ROOT/vendor/bin/phpunit -v --colors=never --coverage-text --coverage-html $ROOT/public/_tests/coverage/ --log-junit $ROOT/public/_tests/junit.xml
-docker-compose down
+docker compose down

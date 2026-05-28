@@ -194,9 +194,10 @@ class AvailabilityPage extends Component {
     const modifiedAvailabilities = this.state.availabilitylist.filter(availability => {
         const isModified = availability.__modified === true;
         const isTemporary = availability.tempId?.includes('__temp__');
-        const hasErrors = this.hasErrors(availability);
 
-        return (isModified || isTemporary) && !hasErrors;
+        // Keep conflicted/error availabilities in payload so backend can respond
+        // with detailed validation results instead of receiving an empty list.
+        return isModified || isTemporary;
     });
 
     const availabilityPayload = modifiedAvailabilities.map(availability => {

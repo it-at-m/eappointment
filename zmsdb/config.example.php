@@ -17,11 +17,12 @@ if (getenv('MYSQL_PORT')) {
 } else {
     $host = '127.0.0.1';
 }
-if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
-    \BO\Zmsdb\Connection\Select::$username = 
-        getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root';
-    \BO\Zmsdb\Connection\Select::$password =
-        getenv('MYSQL_ROOT_PASSWORD') ? getenv('MYSQL_ROOT_PASSWORD') : getenv('MYSQL_PASSWORD');
+if (getenv('MYSQL_USER') && getenv('MYSQL_PASSWORD')) {
+    \BO\Zmsdb\Connection\Select::$username = getenv('MYSQL_USER');
+    \BO\Zmsdb\Connection\Select::$password = getenv('MYSQL_PASSWORD');
+} elseif (getenv('MYSQL_ROOT_PASSWORD')) {
+    \BO\Zmsdb\Connection\Select::$username = 'root';
+    \BO\Zmsdb\Connection\Select::$password = getenv('MYSQL_ROOT_PASSWORD');
 } else {
     \BO\Zmsdb\Connection\Select::$username = 'server';
     \BO\Zmsdb\Connection\Select::$password = 'internet';
@@ -50,9 +51,5 @@ if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }
 
-// Initialize logger (similar to zmsapi)
-if (!App::$log) {
-    // Use Monolog, log to stdout instead of file
-    App::$log = new Monolog\Logger('zmsdb');
-    App::$log->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', Monolog\Logger::INFO));
-}
+// Same Monolog JSON setup as zmsapi/zmsadmin (Bootstrap::configureLogger → stderr)
+\BO\Slim\Bootstrap::ensureLogger();

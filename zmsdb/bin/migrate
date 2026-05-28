@@ -5,7 +5,7 @@ require_once(__DIR__."/script_bootstrap.php");
 $updateOption = count(preg_grep('#^--update$#', $argv)) == 1;
 $migrationFiles = preg_grep('#^[^-]#', array_slice($argv, 1));
 
-echo "Checking for open migrations...\n\n";
+    \App::$log->info('Checking for open migrations', ['update' => $updateOption]);
 
 if ($migrationFiles) {
     $added = \BO\Zmsdb\Cli\Db::startMigrations($migrationFiles, $updateOption);
@@ -14,9 +14,8 @@ if ($migrationFiles) {
     $added = \BO\Zmsdb\Cli\Db::startMigrations($migrations, $updateOption);
 }
 if (!$updateOption && $added) {
-    echo "\nUse the following command to activate listed migrations:\n\n\t"
-        . $argv[0]
-        . " --update "
-        . implode(' ', array_slice($argv, 1))
-        . "\n\n";
+    \App::$log->notice('Migrations pending — run with --update to activate', [
+        'command' => $argv[0] . ' --update ' . implode(' ', array_slice($argv, 1)),
+        'pending' => $added,
+    ]);
 }

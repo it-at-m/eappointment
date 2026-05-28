@@ -1,82 +1,60 @@
-import { mount } from "@vue/test-utils";
+import { State } from "altcha/types";
+import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
-import { nextTick } from "vue";
 
-// @ts-expect-error: Vue SFC import for test
 import AltchaCaptcha from "@/components/Appointment/ServiceFinder/AltchaCaptcha.vue";
 
-// Mock window.scrollTo for jsdom
 globalThis.scrollTo = vi.fn();
 
 describe("AltchaCaptcha", () => {
   const mockBaseUrl = "https://www.muenchen.de";
 
-  const createWrapper = (props = {}) => {
-    return mount(AltchaCaptcha, {
+  const createWrapper = () =>
+    mount(AltchaCaptcha, {
       props: {
         baseUrl: mockBaseUrl,
         t: (key: string) => key,
-        ...props,
       },
       global: {
-        stubs: {
-          'altcha-widget': {
-            template: "<div data-test='altcha-widget'></div>",
-            props: ["challengeurl", "verifyurl"],
-            emits: ["statechange", "serververification"],
-          },
-        },
+        stubs: { "altcha-widget": true },
       },
     });
-  };
 
-  describe("Rendering", () => {
-    it("shows error message when captcha is disabled", async () => {
-      const wrapper = createWrapper();
-      wrapper.vm.captchaEnabled = false;
-      await nextTick();
-      expect(wrapper.find('[data-test="altcha-widget"]').exists()).toBe(false);
-      expect(wrapper.text()).toContain("altcha.loadError");
-    });
+  it("shows error message when captcha is disabled", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ captchaEnabled: false }),
+    } as Response);
+    const wrapper = createWrapper();
+    await flushPromises();
+    expect(wrapper.find("altcha-widget-stub").exists()).toBe(false);
+    expect(wrapper.text()).toContain("altcha.loadError");
   });
 
-  describe("Event Handling", () => {
-    it("emits validationResult when statechange event is triggered", async () => {
-      const wrapper = createWrapper();
-      await nextTick();
-      const altchaWidget = wrapper.find('[data-test="altcha-widget"]');
-      if (altchaWidget.exists()) {
-        altchaWidget.trigger("statechange", { detail: { state: "verified" } });
-        const validationResult = wrapper.emitted("validationResult");
-        expect(validationResult).toBeTruthy();
-        if (validationResult) {
-          expect(validationResult[0]).toEqual([true]);
-        }
-      }
-    });
-
-    it("emits tokenChanged when serververification event is triggered", async () => {
-      const wrapper = createWrapper();
-      await nextTick();
-      const altchaWidget = wrapper.find('[data-test="altcha-widget"]');
-      if (altchaWidget.exists()) {
-        altchaWidget.trigger("serververification", { detail: { token: "test-token" } });
-        const tokenChanged = wrapper.emitted("tokenChanged");
-        expect(tokenChanged).toBeTruthy();
-        if (tokenChanged) {
-          expect(tokenChanged[0]).toEqual(["test-token"]);
-        }
-      }
-    });
+  it("emits validationResult on statechange", () => {
+    const wrapper = createWrapper();
+    wrapper.vm.onStateChange({ detail: { state: State.VERIFIED } });
+    expect(wrapper.emitted("validationResult")?.at(-1)).toEqual([true]);
   });
 
-  describe("Error Handling", () => {
-    it("disables captcha when fetchCaptchaDetails fails", async () => {
-      const wrapper = createWrapper();
-      await nextTick();
-      vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error("Fetch failed"));
-      await wrapper.vm.fetchCaptchaDetails();
-      expect(wrapper.vm.captchaEnabled).toBe(false);
+  it("emits tokenChanged on serververification", () => {
+    const wrapper = createWrapper();
+    wrapper.vm.onServerVerification({
+      detail: {
+        meta: { success: true },
+        data: { valid: true },
+        token: "test-token",
+      },
     });
+    expect(wrapper.emitted("tokenChanged")?.at(-1)).toEqual(["test-token"]);
+  });
+
+  it("shows load error when fetchCaptchaDetails fails", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(
+      new Error("Fetch failed")
+    );
+    const wrapper = createWrapper();
+    await flushPromises();
+    expect(wrapper.text()).toContain("altcha.loadError");
   });
 });

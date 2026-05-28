@@ -27,6 +27,7 @@ class LogoutTest extends Base
                 ]
             ]
         );
+        \BO\Zmsclient\Auth::setKey('8520c285985b5bd209a0110442dc4e45', time() + \App::SESSION_DURATION);
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString('Erfolgreich abgemeldet', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());

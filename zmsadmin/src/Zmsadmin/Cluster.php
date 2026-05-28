@@ -14,14 +14,17 @@ class Cluster extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
 
@@ -61,7 +64,7 @@ class Cluster extends BaseController
             $response,
             'page/cluster.twig',
             array(
-                'title' => 'Cluster',
+                'title' => 'Cluster bearbeiten',
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'organisation' => $organisation,

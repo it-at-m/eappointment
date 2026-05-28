@@ -33,7 +33,7 @@ WHERE `standortid` = 2
 --  - Nicht erschienene Spontan-Kunden: 1
 --  - Dienstleistungen (Tag): 3 distinct services
 --  - Dienstleistungsstatistik rows (previous day):
---      * "Güterkraftverkehr – Erlaubnis und Lizenz"            => 1
+--      * "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag"            => 1
 --      * "Taxi oder Mietwagen – Unterlagen nachreichen"        => 1
 --      * "Zulassung Taxi oder Mietwagen"                       => 1
 INSERT INTO `buergerarchiv`
@@ -51,8 +51,8 @@ INSERT INTO `buergerarchiv`
   `wegezeit`
 )
 VALUES
-  -- Appeared Termin-Kunde (1) with service "Güterkraftverkehr – Erlaubnis und Lizenz"
-  (2, @stats_date, 1, 0, '08:00:00', 5, 1, 10, 'Termin-Kunde 1', 'Güterkraftverkehr – Erlaubnis und Lizenz', 2);
+  -- Appeared Termin-Kunde (1) with service "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag"
+  (2, @stats_date, 1, 0, '08:00:00', 5, 1, 10, 'Termin-Kunde 1', 'Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag', 2);
 SET @ba1 := LAST_INSERT_ID();
 
 INSERT INTO `buergerarchiv`
@@ -114,7 +114,7 @@ SET @ba4 := LAST_INSERT_ID();
 
 -- Minimal statistik rows associated with the archive entries above.
 -- Use real service IDs for anliegenid/info_dl_id to match test data:
---   1063712   -> "Güterkraftverkehr – Erlaubnis und Lizenz"
+--   1063712   -> "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag"
 --   10300793  -> "Taxi oder Mietwagen – Unterlagen nachreichen"
 --   10300814  -> "Zulassung Taxi oder Mietwagen"
 INSERT INTO `statistik`
