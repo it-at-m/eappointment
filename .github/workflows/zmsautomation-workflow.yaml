@@ -37,7 +37,8 @@ on:
         type: boolean
         default: true
   schedule:
-    - cron: "0 5 * * *"
+    # GitHub Actions cron uses UTC. 03:00 UTC ≈ 05:00 Europe/Berlin (CEST) / 04:00 (CET).
+    - cron: "0 3 * * *"
 
 permissions:
   contents: read
