@@ -9,6 +9,7 @@ class ProcessQueuedTest extends Base
     public function testRendering()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation->getUseraccount()->setPermissions('appointment');
         $workstation['queue']['clusterEnabled'] = 1;
 
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
@@ -23,7 +24,9 @@ class ProcessQueuedTest extends Base
     public function testScopeHasRequests()
     {
         $this->expectException('BO\Zmsapi\Exception\Matching\RequestNotFound');
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process->requests[0]->id = "9999999";
         $response = $this->render([], [
@@ -39,6 +42,7 @@ class ProcessQueuedTest extends Base
         $this->expectExceptionCode(403);
 
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation->getUseraccount()->setPermissions('appointment');
         $workstation['queue']['clusterEnabled'] = 1;
         $workstation->process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process = json_decode($this->readFixture("GetProcess_10029.json"));
@@ -49,7 +53,9 @@ class ProcessQueuedTest extends Base
 
     public function testUnvalidInput()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -61,7 +67,9 @@ class ProcessQueuedTest extends Base
 
     public function testProcessNotFound()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
@@ -75,7 +83,9 @@ class ProcessQueuedTest extends Base
 
     public function testAuthKeyMatchFailed()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
         $this->expectExceptionCode(403);
         $this->render([], [

@@ -1,8 +1,12 @@
+{% set permissions = workstation.useraccount.permissions %}
+
 <section class="message message--info" role="alert">
     <h2 class="message__heading">Hinweis</h2>
     <p>Um alle Funktionen des Systems nutzen zu können, müssen Sie noch folgende Angaben machen:</p>
     <ul>
-        <li>Für den <strong>Tresendienst</strong> lassen Sie bitte die Platz-Nr. frei.</li>
+        {% if permissions.counter|default(false) %}
+            <li>Für den <strong>Tresendienst</strong> lassen Sie bitte die Platz-Nr. frei.</li>
+        {% endif %}
         <li>Wenn Sie sich als Sachbearbeiter anmelden, geben Sie bitte die <strong>Nummer Ihres aktuellen Arbeitsplatzes</strong> an, damit die Kunden richtig aufgerufen werden können.</li>
     </ul>
 </section>
@@ -68,17 +72,24 @@
                 ) }}
 
 
+                {% set hasCounter = permissions.counter|default(false) %}
+                {% set workstationRequired = permissions.appointment|default(false) and not hasCounter %}
                 {{ formgroup(
                     {
-                        "label": "Platz-Nr. oder Tresen", "errors": advancedData.workstation.messages,
-                        "description" : "(Ohne Angabe einer Platz-Nr. werden Sie als Tresen/Ausgabe eingeloggt)"
+                        "label": hasCounter ? "Platz-Nr. oder Tresen" : "Platz-Nr.",
+                        "errors": advancedData.workstation.messages,
+                        "required": workstationRequired,
+                        "description": hasCounter
+                            ? "(Ohne Angabe einer Platz-Nr. werden Sie als Tresen/Ausgabe eingeloggt)"
+                            : null
                     },
                     [{
                         "type":"input",
                         "parameter": {
                             "name": "workstation",
                             "value": workstation.name,
-                            "placeholder" : "Tresen",
+                            "placeholder": hasCounter ? "Tresen" : "Platz-Nr.",
+                            "required": workstationRequired,
                             "maxlength": 8,
                             "width": 1,
                             "accesskey":"p"
@@ -105,8 +116,10 @@
                 {{ inputfield({ "name":"appointmentsOnly", "type":"hidden", "value":workstation.queue.appointmentsOnly }) }}
                 <div class="form-actions">
                     {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a"}) }}
+                    {% if permissions.counter|default(false) %}
                     <button type="button" class="button button--diamond" data-button-print accesskey="y"><i class="fas fa-print" aria-hidden="true"></i> Heutige Termine des Standorts drucken</button>
                     <button type="button" class="button button--diamond" data-button-download accesskey="r"><i class="fas fa-download" aria-hidden="true"></i> Heutige Termine als Tabelle downloaden</button>
+                    {% endif %}
                 </div>
             </form>
         </div>
