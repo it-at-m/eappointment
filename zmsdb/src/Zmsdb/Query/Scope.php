@@ -324,7 +324,7 @@ class Scope extends Base implements MappingInterface
         return (int) $value;
     }
 
-    private function normalizeAppointmentsPerMail($value): ?int
+    private function normalizeNullableIntegerValue($value): ?int
     {
         $value = preg_replace('/\D/', '', (string) $value);
 
@@ -332,9 +332,7 @@ class Scope extends Base implements MappingInterface
             return null;
         }
 
-        $value = (int) $value;
-
-        return $value < 2 ? 2 : $value;
+        return (int) $value;
     }
 
     public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
@@ -371,8 +369,8 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field2_required'] = $entity->getPreference('client', 'customTextfield2Required', true);
         $data['custom_text_field2_label'] = $entity->getPreference('client', 'customTextfield2Label');
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
-        $data['appointments_per_mail'] = $this->normalizeAppointmentsPerMail($entity->getPreference('client', 'appointmentsPerMail'));
-        $data['slots_per_appointment'] = $this->normalizeIntegerValue($entity->getPreference('client', 'slotsPerAppointment'));
+        $data['appointments_per_mail'] = $this->normalizeNullableIntegerValue($entity->getPreference('client', 'appointmentsPerMail'));
+        $data['slots_per_appointment'] = $this->normalizeNullableIntegerValue($entity->getPreference('client', 'slotsPerAppointment'));
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
@@ -408,7 +406,7 @@ class Scope extends Base implements MappingInterface
         $data['source'] = $entity->getProvider()->source;
 
         $data = array_filter($data, function ($value, $key) {
-            if ($key === 'appointments_per_mail') {
+            if (in_array($key, ['appointments_per_mail', 'slots_per_appointment'], true)) {
                 return $value !== false;
             }
 
