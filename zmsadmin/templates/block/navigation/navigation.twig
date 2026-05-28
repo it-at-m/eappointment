@@ -16,9 +16,11 @@
                         </li>
                     {% endif %}
                     {% if workstation.scope.id %}
-                        <li class="nav__link{{ menuActive == 'counter'? ' active' }}">
-                            <a title="{% trans %}Termine vereinbaren, ändern & löschen und die Warteschlange verwalten{% endtrans %}" href="{{ urlGet('counter', {}, {}) }}" {{ menuActive == 'counter'? ' aria-current="page"'}}>Tresen</a>
-                        </li>
+                        {% if permissions.counter|default(false) %}
+                            <li class="nav__link{{ menuActive == 'counter'? ' active' }}">
+                                <a title="{% trans %}Termine vereinbaren, ändern & löschen und die Warteschlange verwalten{% endtrans %}" href="{{ urlGet('counter', {}, {}) }}" {{ menuActive == 'counter'? ' aria-current="page"'}}>Tresen</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     {% if workstation.scope.id and workstation.name %}
                         <li class="nav__link{{ menuActive == 'workstation'? ' active' }}">
