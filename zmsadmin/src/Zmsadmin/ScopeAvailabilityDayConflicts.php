@@ -14,13 +14,13 @@ class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $data = static::getAvailabilityData($args['id'], $args['date']);
         return \BO\Slim\Render::withJson(
             $response,
