@@ -44,7 +44,7 @@
 
 	<form method="post" action="./" enctype="multipart/form-data" class="form--base">
 		<div class="scope-form-update">
-			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
+			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
 			<fieldset>
 				<legend>Standortdaten</legend>
 				<div class="panel--heavy">
@@ -492,7 +492,7 @@
                     data-scope="{{workstation.scope | json_encode}}"
                     data-scopestate={{ scopeState|json_encode|e('html_attr') }}
                     data-labels={{ dataLabels|json_encode|e('html_attr') }}
-                    data-includeurl="{{ includeUrl() }}"
+                    data-includeurl="{{ includeUrl }}"
                 >
 					{{ formgroup(
                         {
