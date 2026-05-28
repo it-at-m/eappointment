@@ -1,8 +1,10 @@
-DELETE FROM `role_permission` WHERE `role_id` = 1;
+DELETE FROM role_permission WHERE role_id = 1;
 
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 1;
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 8;
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 11;
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 12;
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 16;
-INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 20;
+INSERT INTO role_permission (role_id, permission_id)
+VALUES
+    (1, 1),
+    (1, 8),
+    (1, 11),
+    (1, 12),
+    (1, 16),
+    (1, 20);
