@@ -27,13 +27,24 @@
                             <a title="{% trans %}Die Oberfläche für den Sachberarbeiter mit der Möglichkeit, Kunden aufzurufen{% endtrans %}" href="{{ urlGet('workstation', {}, {}) }}" {{ menuActive == 'workstation'? ' aria-current="page"' }}>Sach&shy;bearbeiter&shy;platz</a>
                         </li>
                     {% endif %}
-                    {% if rights.ticketprinter and workstation.scope.id %}
-                        {% if workstation.useraccount.rights.superuser %}
+                    {% if workstation.scope.id %}
+                        {% if permissions.calldisplay|default(false) %}
                             <li class="nav__link{{ menuActive == 'calldisplay'? ' active' }}">
-                                <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}" href="{{ urlGet('calldisplay', {}, {}) }}" {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>Anzeige Aufrufsystem</a>
+                                <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}"
+                                href="{{ urlGet('calldisplay', {}, {}) }}"
+                                {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>
+                                    Anzeige Aufrufsystem
+                                </a>
                             </li>
+                        {% endif %}
+
+                        {% if permissions.ticketprinter|default(false) %}
                             <li class="nav__link{{ menuActive == 'ticketprinter'? ' active' }}">
-                                <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
+                                <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}"
+                                href="{{ urlGet('ticketprinter', {}, {}) }}"
+                                {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>
+                                    Wartenummern
+                                </a>
                             </li>
                         {% endif %}
                     {% endif %}
