@@ -204,17 +204,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
 
-        if ($appointmentsPerMail === null || $appointmentsPerMail === '') {
-            return null;
-        }
-
-        $appointmentsPerMail = (int) $appointmentsPerMail;
-
-        if ($appointmentsPerMail < 1) {
-            return null;
-        }
-
-        return max(2, $appointmentsPerMail);
+        return ($appointmentsPerMail) ? $appointmentsPerMail : null;
     }
 
     public function getSlotsPerAppointment()

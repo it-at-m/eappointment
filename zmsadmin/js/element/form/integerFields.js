@@ -1,27 +1,64 @@
 /**
  * Adds client-side handling for integer-only configuration fields.
  *
- * The module prevents non-digit input, normalizes empty integer fields to "0",
- * and applies the special appointments-per-mail rule where the value may be
- * empty but must be at least 2 if provided.
+ * The module prevents non-digit input and normalizes empty integer fields
+ * according to their field configuration.
  */
 
-const INTEGER_FIELD_NAMES = [
-    'preferences[appointment][startInDaysDefault]',
-    'preferences[appointment][endInDaysDefault]',
-    'preferences[appointment][reservationDuration]',
-    'preferences[appointment][activationDuration]',
-    'preferences[appointment][deallocationDuration]',
-    'preferences[client][slotsPerAppointment]',
-    'preferences[queue][callCountMax]',
-    'preferences[queue][firstNumber]',
-    'preferences[queue][lastNumber]',
-    'preferences[queue][maxNumberContingent]',
-    'preferences[queue][processingTimeAverage]',
-    'sendEmailReminderMinutesBefore'
+const INTEGER_FIELDS = [
+    {
+        name: 'preferences[appointment][startInDaysDefault]',
+        nullable: false
+    },
+    {
+        name: 'preferences[appointment][endInDaysDefault]',
+        nullable: false
+    },
+    {
+        name: 'preferences[appointment][reservationDuration]',
+        nullable: false
+    },
+    {
+        name: 'preferences[appointment][activationDuration]',
+        nullable: false
+    },
+    {
+        name: 'preferences[appointment][deallocationDuration]',
+        nullable: false
+    },
+    {
+        name: 'preferences[client][appointmentsPerMail]',
+        nullable: true
+    },
+    {
+        name: 'preferences[client][slotsPerAppointment]',
+        nullable: true
+    },
+    {
+        name: 'preferences[queue][callCountMax]',
+        nullable: false
+    },
+    {
+        name: 'preferences[queue][firstNumber]',
+        nullable: false
+    },
+    {
+        name: 'preferences[queue][lastNumber]',
+        nullable: false
+    },
+    {
+        name: 'preferences[queue][maxNumberContingent]',
+        nullable: false
+    },
+    {
+        name: 'preferences[queue][processingTimeAverage]',
+        nullable: false
+    },
+    {
+        name: 'sendEmailReminderMinutesBefore',
+        nullable: false
+    }
 ];
-
-const APPOINTMENTS_PER_MAIL_NAME = 'preferences[client][appointmentsPerMail]';
 
 const toInputSelector = (name) => `input[name="${name}"]`;
 
@@ -82,29 +119,15 @@ const sanitizeCurrentValue = (input) => {
     }
 };
 
-const normalizeDefaultIntegerField = (input) => {
+const normalizeIntegerField = (input, nullable) => {
     sanitizeCurrentValue(input);
 
-    if (input.value === '') {
+    if (!nullable && input.value === '') {
         input.value = '0';
     }
 };
 
-const normalizeAppointmentsPerMailField = (input) => {
-    sanitizeCurrentValue(input);
-
-    if (input.value === '') {
-        return;
-    }
-
-    const numericValue = parseInt(input.value, 10);
-
-    if (numericValue < 2) {
-        input.value = '2';
-    }
-};
-
-const bindIntegerField = (input, normalize) => {
+const bindIntegerField = (input, nullable) => {
     if (input.dataset.integerFieldBound === '1') {
         return;
     }
@@ -123,7 +146,7 @@ const bindIntegerField = (input, normalize) => {
     });
 
     input.addEventListener('blur', () => {
-        normalize(input);
+        normalizeIntegerField(input, nullable);
     });
 };
 
@@ -135,40 +158,24 @@ const bindSubmitNormalization = (form) => {
     form.dataset.integerSubmitNormalizationBound = '1';
 
     form.addEventListener('submit', () => {
-        INTEGER_FIELD_NAMES.forEach((name) => {
-            const input = form.querySelector(toInputSelector(name));
+        INTEGER_FIELDS.forEach((field) => {
+            const input = form.querySelector(toInputSelector(field.name));
 
             if (input) {
-                normalizeDefaultIntegerField(input);
+                normalizeIntegerField(input, field.nullable);
             }
         });
-
-        const appointmentsPerMailInput = form.querySelector(
-            toInputSelector(APPOINTMENTS_PER_MAIL_NAME)
-        );
-
-        if (appointmentsPerMailInput) {
-            normalizeAppointmentsPerMailField(appointmentsPerMailInput);
-        }
     });
 };
 
 export default function integerFields(form) {
-    INTEGER_FIELD_NAMES.forEach((name) => {
-        const input = form.querySelector(toInputSelector(name));
+    INTEGER_FIELDS.forEach((field) => {
+        const input = form.querySelector(toInputSelector(field.name));
 
         if (input) {
-            bindIntegerField(input, normalizeDefaultIntegerField);
+            bindIntegerField(input, field.nullable);
         }
     });
-
-    const appointmentsPerMailInput = form.querySelector(
-        toInputSelector(APPOINTMENTS_PER_MAIL_NAME)
-    );
-
-    if (appointmentsPerMailInput) {
-        bindIntegerField(appointmentsPerMailInput, normalizeAppointmentsPerMailField);
-    }
 
     bindSubmitNormalization(form);
 }
