@@ -5,10 +5,26 @@
     {% set hasWorkViews =
         (not hasScope)
         or (hasScope and permissions.counter|default(false))
-        or (hasScope and workstation.name|default(false))
+        or (hasScope and permissions.appointment|default(false))
         or (hasScope and permissions.calldisplay|default(false))
         or (hasScope and permissions.ticketprinter|default(false))
         or permissions.overviewcalendar|default(false)
+    %}
+
+    {% set hasAdminViews =
+        (workstation.id > 0 and permissions.superuser|default(false))
+        or (hasScope and permissions.ticketprinter|default(false))
+        or permissions.organisation|default(false)
+        or permissions.scope|default(false)
+        or permissions.restrictedscope|default(false)
+        or permissions.department|default(false)
+        or permissions.cluster|default(false)
+        or permissions.availability|default(false)
+        or permissions.useraccount|default(false)
+        or permissions.dayoff|default(false)
+        or permissions.source|default(false)
+        or permissions.mailtemplates|default(false)
+        or permissions.config|default(false)
     %}
     <ul class="nav__list">
     {% if workstation %}
@@ -32,7 +48,7 @@
                                 </li>
                             {% endif %}
                         {% endif %}
-                        {% if workstation.scope.id and workstation.name %}
+                        {% if workstation.scope.id and workstation.name and permissions.appointment|default(false) %}
                             <li class="nav__link{{ menuActive == 'workstation'? ' active' }}">
                                 <a title="{% trans %}Die Oberfläche für den Sachberarbeiter mit der Möglichkeit, Kunden aufzurufen{% endtrans %}" href="{{ urlGet('workstation', {}, {}) }}" {{ menuActive == 'workstation'? ' aria-current="page"' }}>Sach&shy;bearbeiter&shy;platz</a>
                             </li>
@@ -120,7 +136,7 @@
         </li>
     {% endif %}
 
-    {% if workstation %}
+    {% if workstation and hasAdminViews %}
         <li class="nav__block">
             <h3 class="nav__heading">
                 <span id="admin-title" class="heading__label">Administration</span>
