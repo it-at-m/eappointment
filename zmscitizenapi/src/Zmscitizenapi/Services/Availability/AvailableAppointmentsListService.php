@@ -58,14 +58,24 @@ class AvailableAppointmentsListService
 
     private function isCaptchaRequired(array $officeIds): bool
     {
-        $officeId = (int)($officeIds[0] ?? 0);
+        foreach ($officeIds as $officeIdRaw) {
+            $officeId = (int) $officeIdRaw;
+            if ($officeId <= 0) {
+                continue;
+            }
 
-        try {
-            $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-            return $scope->captchaActivatedRequired ?? false;
-        } catch (\Throwable $e) {
-            return false;
+            try {
+                $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
+                if (($scope->captchaActivatedRequired ?? false) === true) {
+                    return true;
+                }
+            } catch (\Throwable $e) {
+                // Ignore transient lookup failures and continue with remaining offices.
+                continue;
+            }
         }
+
+        return false;
     }
 
     private function validateClientData(object $data): array
