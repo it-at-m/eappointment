@@ -313,6 +313,30 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
+    private function normalizeIntegerValue($value): int
+    {
+        $value = preg_replace('/\D/', '', (string) $value);
+
+        if ($value === '') {
+            return 0;
+        }
+
+        return (int) $value;
+    }
+
+    private function normalizeAppointmentsPerMail($value): ?int
+    {
+        $value = preg_replace('/\D/', '', (string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $value = (int) $value;
+
+        return $value < 2 ? 2 : $value;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
     {
         $data = array();
@@ -326,14 +350,14 @@ class Scope extends Base implements MappingInterface
         $data['Bezeichnung'] = $entity->getName();
         $data['standortkuerzel'] = $entity->shortName;
         $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
-        $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
+        $data['loeschdauer'] = $this->normalizeIntegerValue($entity->getPreference('appointment', 'deallocationDuration'));
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['info_for_all_appointments'] = $entity->getPreference('appointment', 'infoForAllAppointments');
-        $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
-        $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
+        $data['Termine_bis'] = $this->normalizeIntegerValue($entity->getPreference('appointment', 'endInDaysDefault'));
+        $data['Termine_ab'] = $this->normalizeIntegerValue($entity->getPreference('appointment', 'startInDaysDefault'));
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
-        $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
-        $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
+        $data['reservierungsdauer'] = $this->normalizeIntegerValue($entity->getPreference('appointment', 'reservationDuration'));
+        $data['aktivierungsdauer'] = $this->normalizeIntegerValue($entity->getPreference('appointment', 'activationDuration'));
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
@@ -347,23 +371,23 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field2_required'] = $entity->getPreference('client', 'customTextfield2Required', true);
         $data['custom_text_field2_label'] = $entity->getPreference('client', 'customTextfield2Label');
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
-        $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
-        $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
+        $data['appointments_per_mail'] = $this->normalizeAppointmentsPerMail($entity->getPreference('client', 'appointmentsPerMail'));
+        $data['slots_per_appointment'] = $this->normalizeIntegerValue($entity->getPreference('client', 'slotsPerAppointment'));
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
         $data['admin_mail_on_deleted'] = $entity->getPreference('client', 'adminMailOnDeleted');
         $data['admin_mail_on_updated'] = $entity->getPreference('client', 'adminMailOnUpdated', true);
         $data['admin_mail_on_mail_sent'] = $entity->getPreference('client', 'adminMailOnMailSent', true);
-        $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
+        $data['anzahlwiederaufruf'] = $this->normalizeIntegerValue($entity->getPreference('queue', 'callCountMax'));
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText', false, '');
-        $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
-        $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
-        $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
+        $data['startwartenr'] = $this->normalizeIntegerValue($entity->getPreference('queue', 'firstNumber'));
+        $data['endwartenr'] = $this->normalizeIntegerValue($entity->getPreference('queue', 'lastNumber'));
+        $data['wartenummernkontingent'] = $this->normalizeIntegerValue($entity->getPreference('queue', 'maxNumberContingent'));
         $data['display_number_prefix'] = $entity->getPreference('queue', 'displayNumberPrefix')
             ? strtoupper($entity->getPreference('queue', 'displayNumberPrefix'))
             : '';
-        $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
+        $data['Bearbeitungszeit'] = gmdate("H:i", $this->normalizeIntegerValue($entity->getPreference('queue', 'processingTimeAverage')) * 60);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
@@ -383,9 +407,13 @@ class Scope extends Base implements MappingInterface
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
         $data['source'] = $entity->getProvider()->source;
 
-        $data = array_filter($data, function ($value) {
+        $data = array_filter($data, function ($value, $key) {
+            if ($key === 'appointments_per_mail') {
+                return $value !== false;
+            }
+
             return ($value !== null && $value !== false);
-        });
+        }, ARRAY_FILTER_USE_BOTH);
         return $data;
     }
 
