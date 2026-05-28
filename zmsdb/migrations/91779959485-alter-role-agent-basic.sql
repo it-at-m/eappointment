@@ -1,4 +1,4 @@
-DELETE FROM role_permission WHERE role_id = 1;
+DELETE FROM `role_permission` WHERE `role_id` = 1;
 
 INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 1;
 INSERT INTO `role_permission` SET `role_id` = 1, `permission_id` = 8;
