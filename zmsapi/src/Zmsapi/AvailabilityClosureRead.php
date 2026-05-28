@@ -14,7 +14,7 @@ class AvailabilityClosureRead extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkPermissions('availability');
+        (new Helper\User($request))->checkAnyPermission('availability', 'overviewcalendar');
 
         try {
             $scopeIdCsv = Validator::param('scopeIds')
