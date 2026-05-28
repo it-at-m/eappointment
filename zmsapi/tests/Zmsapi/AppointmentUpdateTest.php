@@ -23,7 +23,9 @@ class AppointmentUpdateTest extends Base
 
     public function testWithSlotsRequired()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         \App::$now->modify('2016-05-30');
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
@@ -38,7 +40,9 @@ class AppointmentUpdateTest extends Base
     public function testWithSlotsRequiredExceeded()
     {
         $this->expectException('BO\Zmsdb\Exception\Process\ProcessReserveFailed');
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         \App::$now->modify('2016-05-30');
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
@@ -52,7 +56,9 @@ class AppointmentUpdateTest extends Base
 
     public function testWithClientKey()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         \App::$now->modify('2016-05-30');
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
@@ -66,7 +72,9 @@ class AppointmentUpdateTest extends Base
     public function testWithClientKeyBlocked()
     {
         $this->expectException('\BO\Zmsapi\Exception\Process\ApiclientInvalid');
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         \App::$now->modify('2016-05-30');
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
