@@ -30,7 +30,6 @@ abstract class Base extends TestCase
 
     public function tearDown(): void
     {
-        //error_log("Memory usage " . round(memory_get_peak_usage() / 1024, 0) . "kb");
         \BO\Zmsdb\Scope::$cache = [];
         \BO\Zmsdb\Availability::$cache = [];
         \BO\Zmsdb\Department::$departmentCache = [];

@@ -18,7 +18,7 @@ $verbose = in_array('--verbose', $argv);
 $commit = in_array('--commit', $argv);
 
 if (!$commit && !$verbose) {
-    echo $usage;
+            \App::$log->notice('anonymizeStatisticData usage', ['usage' => trim($usage)]);
     exit;
 }
 
@@ -32,5 +32,5 @@ $job = new \BO\Zmsdb\Helper\AnonymizeStatisticDataByCron($verbose);
 $job->startAnonymizing($now, $commit);
 
 if (!$commit) {
-    error_log("Use with --commit to perform anonymization.");
+    \App::$log->notice('Use with --commit to perform anonymization.');
 }

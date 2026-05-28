@@ -82,17 +82,6 @@ class ProcessValidator
         $length = strlen((string)$valid->getUnvalidated());
         $process = $this->getProcess();
 
-        /*
-        error_log(
-            "Mail validate: ".$valid->getUnvalidated()
-            ." ($length) with scope mail required="
-            . ($process->getCurrentScope()->isEmailRequired() ? 'yes' : 'no')
-            ." with appointment="
-            . ($process->isWithAppointment() ? 'yes' : 'no')
-            ." with callback="
-            . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
-        );
-        */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
             $valid->isBiggerThan(
                 6,

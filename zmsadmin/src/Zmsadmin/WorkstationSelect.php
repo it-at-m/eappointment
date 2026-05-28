@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsadmin\Helper\LoginForm;
 use BO\Mellon\Validator;
 
@@ -14,17 +15,20 @@ class WorkstationSelect extends BaseController
 {
     /**
      * @SuppressWarnings(Parameter)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         /** @var \BO\Zmsentities\Workstation $workstation */
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
+        }
+        if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_ADMIN, $workstation, $response)) {
+            return $wrongModuleResponse;
         }
 
         $input = $request->getParsedBody();

@@ -1,11 +1,7 @@
 import { describe, it, expect } from "vitest";
-// @ts-expect-error: Vue SFC import for test
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-// @ts-expect-error: Vue SFC import for test
 import { ServiceImpl } from "@/types/ServiceImpl";
-// @ts-expect-error: Vue SFC import for test
 import { OfficeImpl } from "@/types/OfficeImpl";
-// @ts-expect-error: Vue SFC import for test
 import { SubService } from "@/types/SubService";
 
 function makeProvider(id: string, slotTimeInMinutes = 10, slots = 1): OfficeImpl {

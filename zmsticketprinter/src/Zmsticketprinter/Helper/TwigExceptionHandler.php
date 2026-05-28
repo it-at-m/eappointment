@@ -12,7 +12,7 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
         ResponseInterface $response,
         \Throwable $exception,
         $status = 500
-    ) {
+    ): ResponseInterface {
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
         if ($ticketprinterHash) {
             // @codeCoverageIgnoreStart

@@ -12,7 +12,7 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
         ResponseInterface $response,
         \Throwable $exception,
         $status = 500
-    ) {
+    ): ResponseInterface {
         if ($exception instanceof \Slim\Exception\HttpNotFoundException) {
             \BO\Slim\Controller::prepareRequest($request);
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');

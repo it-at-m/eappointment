@@ -6,12 +6,14 @@ namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableAppointmentsListService
 {
+    use CaptchaRequirementTrait;
     use ServiceLocationValidationTrait;
 
     private TokenValidationService $tokenValidator;
@@ -56,21 +58,9 @@ class AvailableAppointmentsListService
         ];
     }
 
-    private function isCaptchaRequired(array $officeIds): bool
-    {
-        $officeId = (int)($officeIds[0] ?? 0);
-
-        try {
-            $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-            return $scope->captchaActivatedRequired ?? false;
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
     private function validateClientData(object $data): array
     {
-        $captchaRequired = $this->isCaptchaRequired($data->officeIds);
+        $captchaRequired = $this->isCaptchaRequiredForOfficeIds($data->officeIds);
         $captchaToken = $data->captchaToken;
 
         return ValidationService::validateGetAvailableAppointments(

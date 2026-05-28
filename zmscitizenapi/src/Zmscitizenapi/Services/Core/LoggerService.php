@@ -43,7 +43,7 @@ class LoggerService
     private static function checkRateLimit(): bool
     {
         if (Application::$cache === null) {
-            error_log('Cache not available for rate limiting');
+            \App::$log->notice('Cache not available for rate limiting');
             return true;
         }
 
@@ -84,7 +84,7 @@ class LoggerService
                     }
                 }
             } catch (\Throwable $e) {
-                error_log('Rate limiting error: ' . $e->getMessage());
+                \App::$log->warning('Rate limiting error', ['exception' => $e->getMessage()]);
             }
 
             $attempt++;

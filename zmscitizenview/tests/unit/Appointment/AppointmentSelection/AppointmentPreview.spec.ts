@@ -1,9 +1,12 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
-// @ts-expect-error: SFC import for test
 import AppointmentPreview from "@/components/Appointment/AppointmentSelection/AppointmentPreview.vue";
 
 const t = vi.fn((key: string) => key);
+
+const svgUseHref = (element: Element): string | null =>
+  element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ??
+  element.getAttribute("href");
 
 const calloutStub = {
   template:
@@ -82,6 +85,9 @@ describe("AppointmentPreview", () => {
             `#${variant.icon}`
       );
       expect(iconUse).toBeTruthy();
+      const useElement = wrapper.find("use");
+      expect(useElement.exists()).toBe(true);
+      expect(svgUseHref(useElement.element)).toBe(`#${variant.icon}`);
       expect(wrapper.text()).toContain(t(variant.textKey));
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");

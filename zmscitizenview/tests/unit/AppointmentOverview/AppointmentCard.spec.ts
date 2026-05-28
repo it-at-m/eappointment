@@ -1,9 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
-// @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
-// @ts-expect-error: Vue SFC import for test
 import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
 
 describe("AppointmentCard", () => {
