@@ -813,6 +813,17 @@ public class CitizenViewPage extends BasePage {
                     deepProviderCheckboxChecked(officeId),
                     "Expected provider checkbox " + officeId + " to be checked after provider normalization.");
         }
+
+        if (allowed.size() == 1) {
+            lastSlotBookingOfficeId = allowed.iterator().next();
+            waitUntilProviderToggleSettled(30);
+            try {
+                waitUntilAppointmentSlotsReady(Math.min(60, slotBookingWaitTimeoutSeconds()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: slot wait after provider normalization: {}", e.toString());
+            }
+        }
     }
 
     /** Wait until provider-toggle spinner activity has settled (best effort). */
@@ -1096,17 +1107,19 @@ public class CitizenViewPage extends BasePage {
                 + "function findGrid(root,id){if(!root)return null;var g=root.querySelector('#timeslot-grid-provider-'+id);"
                 + "if(g)return g;var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)"
                 + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
-                + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'start'});}"
+                + "var grid=findGrid(document.body,oid);if(!grid)return false;"
+                + "grid.scrollIntoView({block:'start'});"
                 + "window.scrollBy(0,200);"
                 + "function collectSlots(root,arr){if(!root)return;var n=root;"
                 + "if(n.nodeType===1){"
-                + " if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
+                + " if(n.id&&n.id.indexOf('provider-'+oid+'-timeslot-')===0){arr.push(n);}"
+                + " else if((n.id&&n.id.indexOf('-timeslot-')>=0)||(n.classList&&n.classList.contains('timeslot'))){"
                 + "   arr.push(n);"
                 + " }"
                 + " if(n.shadowRoot)collectSlots(n.shadowRoot,arr);"
                 + "}"
                 + "var c=n.children; if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr);}"
-                + "var slots=[];collectSlots(document.body,slots);"
+                + "var slots=[];collectSlots(grid,slots);"
                 + "if(!slots.length)return false;"
                 + "var minTs=Math.floor(Date.now()/1000)+3600;"
                 + "function slotTs(node){"
@@ -1203,7 +1216,7 @@ public class CitizenViewPage extends BasePage {
                 Boolean.TRUE.equals(slotClickResult),
                 "zmscitizenview: could not click highlighted timeslot");
         try {
-            Thread.sleep(800L);
+            Thread.sleep(1200L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -1263,15 +1276,22 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: reserve settle delay done");
     }
 
-    /** Info callout after slot pick: {@code Ausgewählter Termin} + {@code #provider-{officeId}}. */
+    /** Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}. */
     public void assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
-        waitUntilShadowContains("Ausgewählter Termin", DEFAULT_EXPLICIT_WAIT_TIME);
+        String providerSelector = "#provider-" + officeId;
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d ->
+                                (shadowDomContainsText("Ausgewählter Termin")
+                                                || shadowDomContainsText("Selected Appointment"))
+                                        && deepElementExists(providerSelector));
         Assert.assertTrue(
-                shadowDomContainsText("Ausgewählter Termin"),
-                "Ausgewählter Termin callout missing after slot click");
+                shadowDomContainsText("Ausgewählter Termin")
+                        || shadowDomContainsText("Selected Appointment"),
+                "Selected-appointment callout header missing after slot click");
         Assert.assertTrue(
-                deepElementExists("#provider-" + officeId),
+                deepElementExists(providerSelector),
                 "Expected #provider-" + officeId + " in selected-appointment callout");
         ScenarioLogManager.getLogger()
                 .info(
