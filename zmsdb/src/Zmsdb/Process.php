@@ -48,10 +48,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         if (0 <= $resolveReferences) {
             if ($process->archiveId) {
-                $process['requests'] = (new Request())
+                $process->requests = (new Request())
                     ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
             } else {
-                $process['requests'] = (new Request())
+                $process->requests = (new Request())
                     ->readRequestByProcessId($process->id, $resolveReferences - 1);
             }
         }
@@ -65,8 +65,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($process['id']);
-        $query->addConditionAuthKey($process['authKey']);
+        $query->addConditionProcessId($process->getId());
+        $query->addConditionAuthKey($process->getAuthKey());
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
@@ -87,8 +87,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateEntityDisplayNumber(Entity $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($process['id']);
-        $query->addConditionAuthKey($process['authKey']);
+        $query->addConditionProcessId($process->getId());
+        $query->addConditionAuthKey($process->getAuthKey());
 
         $process->displayNumber = $query->getNewDisplayNumber($process);
         $query->addValueDisplayNumber($process);

@@ -8,7 +8,7 @@
 {% block content %}
     {{ parent() }}
     <!-- page profile -->
-    <div class="profile-view" data-includeurl="{{ includeUrl() }}">
+    <div class="profile-view" data-includeurl="{{ includeUrl }}">
         <div class="grid">
             <div class="grid__item one-half">
                 {% include "block/useraccount/info.twig" %}

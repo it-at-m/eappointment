@@ -14,13 +14,13 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         return \BO\Slim\Render::withJson(
             $response,
             static::readProviderList($args['source'])

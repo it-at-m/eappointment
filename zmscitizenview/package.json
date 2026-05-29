@@ -8,6 +8,7 @@
     "build": "vite build --mode production && npm run post-build",
     "post-build": "node ./processes/post-build.js",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "type-check:tests": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "prettier src/ --check",
     "format": "prettier --write src/",
     "test": "vitest run",
@@ -15,12 +16,12 @@
   },
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "9.0.2",
-    "altcha": "^1.2.0",
-    "jsdom": "^26.0.0",
+    "altcha": "^3.0.10",
+    "dompurify": "^3.4.5",
+    "jsdom": "^29.0.0",
     "vue": "^3.5.33",
     "vue-i18n": "11.4.4",
-    "webfontloader": "^1.0.0",
-    "dompurify": "^3.4.1"
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.21.4",
@@ -40,7 +41,7 @@
     "typescript": "^6.0.3",
     "vite": "^8.0.11",
     "vitest": "^4.1.4",
-    "vue-tsc": "^3.2.7"
+    "vue-tsc": "^3.3.1"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
   "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
@@ -49,6 +50,7 @@
       "make-dir": "5.1.0"
     },
     "@tootallnate/once": "^3.0.1",
+    "tmp": "^0.2.6",
     "ws": "^8.20.1"
   }
 }

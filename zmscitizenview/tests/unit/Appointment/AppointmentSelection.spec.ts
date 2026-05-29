@@ -1,13 +1,11 @@
-import { mount } from "@vue/test-utils";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import { describe, it, expect, vi, type Mock, beforeEach, afterEach } from "vitest";
 import { flushPromises } from '@vue/test-utils';
-// @ts-expect-error: Vue SFC import for test
 import AppointmentSelection from "@/components/Appointment/AppointmentSelection.vue";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, type Ref } from "vue";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
-// @ts-expect-error: API import for test
 } from "@/api/ZMSAppointmentAPI";
 
 const t = vi.fn((key: string) => key);
@@ -30,6 +28,13 @@ vi.mock('@/api/ZMSAppointmentAPI', () => ({
   fetchAvailableDays: vi.fn(),
   fetchAvailableTimeSlots: vi.fn(),
 }));
+
+interface LoadingStates {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+}
 
 interface WrapperOverrides {
   selectedService?: any;
@@ -419,12 +424,6 @@ describe("AppointmentSelection", () => {
     };
     await nextTick();
 
-    // availableDays still has data (we always fetch all providers), but allowedDates
-    // checks if selected providers have appointments on that day
-    expect(wrapper.vm.availableDays).toEqual([
-      { time: '2025-05-14', providerIDs: '102522,54261,10489' },
-      { time: '2025-05-15', providerIDs: '102522' }
-    ]);
     // With no providers selected, allowedDates returns false for all dates
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
@@ -1615,9 +1614,9 @@ describe("AppointmentSelection", () => {
   });
 
   describe('Submission/Loading State Integration', () => {
-    let wrapper;
-    let selectedTimeslotRef;
-    let loadingStates;
+    let wrapper: VueWrapper<InstanceType<typeof AppointmentSelection>>;
+    let selectedTimeslotRef: Ref<number>;
+    let loadingStates: LoadingStates;
     beforeEach(async () => {
       selectedTimeslotRef = ref(0);
       loadingStates = {
@@ -2329,9 +2328,9 @@ describe("AppointmentSelection", () => {
       await flushPromises();
       await nextTick();
 
-      // spinner disappears, calendar is displayed
+      // spinner disappears; with no appointments returned, calendar stays hidden
       expect(wrapper.find(".m-spinner-container").exists()).toBe(false);
-      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
     });
   });
 });

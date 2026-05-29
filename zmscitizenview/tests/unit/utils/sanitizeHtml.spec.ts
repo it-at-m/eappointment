@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 
-// @ts-expect-error: Vue SFC import for test
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 describe("sanitizeHtml", () => {

@@ -21,7 +21,7 @@ class WarehousePeriodListGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
+        (new Helper\User($request))->checkPermissions('statistic');
         $validator = $request->getAttribute('validator');
         $period = $validator->getParameter('period')->isString()->isBiggerThan(2)->setDefault('month')->getValue();
         $subject = Validator::value($args['subject'])->isString()->getValue();

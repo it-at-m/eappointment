@@ -19,13 +19,13 @@ class ScopeDelete extends BaseController
 {
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $entityId = Validator::value($args['id'])->isNumber()
             ->getValue();
 

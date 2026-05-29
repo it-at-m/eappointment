@@ -171,6 +171,9 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    /**
+     * Returns true when the user has all of the given permissions.
+     */
     public function hasPermissions(array $requiredPermissions): bool
     {
         if ($this->isSuperUser()) {
@@ -195,6 +198,9 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    /**
+     * Returns true when the user has any of the given permissions.
+     */
     public function hasAnyPermission(array $requiredPermissions): bool
     {
         if ($this->isSuperUser()) {
@@ -217,6 +223,33 @@ class Useraccount extends Schema\Entity
         }
 
         return false;
+    }
+
+    /**
+     * Returns true when the user has only the given permission and no other permission.
+     */
+    public function hasExclusivePermission(string $permission): bool
+    {
+        if ($this->isSuperUser()) {
+            return false;
+        }
+
+        $permissions = $this['permissions'] ?? [];
+        $requiredPermission = $permissions[$permission] ?? false;
+        if (!is_array($permissions) || !$requiredPermission || '0' === $requiredPermission) {
+            return false;
+        }
+
+        foreach ($permissions as $name => $enabled) {
+            if ($permission === $name || 'superuser' === $name) {
+                continue;
+            }
+            if ($enabled && '0' !== $enabled) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function testRights(array $requiredRights)
@@ -367,17 +400,14 @@ class Useraccount extends Schema\Entity
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
-            //error_log(__METHOD__ . "::legacy_hash\n");
             $result = $this->password === md5($password);
         } else {
-            //error_log(__METHOD__ . "::password_verify\n");
             $result = password_verify($password, $this->password);
         }
 
         // on passed validation check if the hash needs updating.
         if ($result && $this->isPasswordNeedingRehash()) {
             $this->password = $this->getHash($password);
-            //error_log(__METHOD__ . "::rehash\n");
         }
 
         return $this;

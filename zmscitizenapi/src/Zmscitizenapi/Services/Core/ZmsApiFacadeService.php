@@ -803,11 +803,7 @@ class ZmsApiFacadeService
             return ZmsApiClientService::getProcessById($processId, $authKey);
         } elseif (!is_null($user)) {
             $externalUserId = $user->getExternalUserId();
-            $process = ZmsApiClientService::getProcessByIdAuthenticated($processId);
-            if ($externalUserId !== $process->getExternalUserId()) {
-                throw new UnauthorizedException();
-            }
-            return $process;
+            return ZmsApiClientService::getProcessByIdAuthenticated($processId, $externalUserId);
         } else {
             throw new UnauthorizedException();
         }

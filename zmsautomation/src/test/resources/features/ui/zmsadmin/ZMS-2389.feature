@@ -16,13 +16,13 @@ Funktionalität: Default
 		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "Kundenstatistik1" aufruft.
 		Dann wird der wartende Kunde aufgerufen.
 		Dann sollte der Kunde erschienen sein und der Termin fertiggestellt.
-#Kunde b Güterkraftverkehr – Erlaubnis und Lizenz
-		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr – Erlaubnis und Lizenz" buchen.
+#Kunde b Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag
+		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag" buchen.
 		Dann wird der Spontankunden in der Warteschlange angezeigt.
 		Wenn Der Sachbearbeiter den wartenden Kunden aufruft.
 		Dann sollte der Kunde erschienen sein und der Termin fertiggestellt.
-#Kunde d Güterkraftverkehr – Erlaubnis und Lizenz
-		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr – Erlaubnis und Lizenz" buchen.
+#Kunde d Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag
+		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag" buchen.
 		Dann wird der Spontankunden in der Warteschlange angezeigt.
 		Wenn Der Sachbearbeiter den wartenden Kunden aufruft.
 		Dann sollte der Kunde nicht erschienen sein.

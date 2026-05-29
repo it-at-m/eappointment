@@ -208,12 +208,27 @@ class Status extends Base
         $processStats = $this->getReader()->fetchOne(
             'SELECT
                 COALESCE(SUM(CASE WHEN b.status = "blocked" THEN 1 ELSE 0 END), 0) AS blocked,
+                COALESCE(SUM(CASE WHEN b.status = "called" THEN 1 ELSE 0 END), 0) AS called,
                 COALESCE(SUM(CASE WHEN b.status = "confirmed" THEN 1 ELSE 0 END), 0) AS confirmed,
                 COALESCE(SUM(CASE WHEN b.status = "pending" THEN 1 ELSE 0 END), 0) AS pending,
                 COALESCE(SUM(CASE WHEN b.status = "deleted" THEN 1 ELSE 0 END), 0) AS deleted,
                 COALESCE(SUM(CASE WHEN b.status = "missed" THEN 1 ELSE 0 END), 0) AS missed,
                 COALESCE(SUM(CASE WHEN b.status = "parked" THEN 1 ELSE 0 END), 0) AS parked,
                 COALESCE(SUM(CASE WHEN b.status = "reserved" THEN 1 ELSE 0 END), 0) AS reserved,
+                COALESCE(SUM(
+                    CASE
+                        WHEN b.external_user_id IS NOT NULL AND b.external_user_id != ""
+                        THEN 1 ELSE 0
+                    END
+                ), 0) AS withExternalUserId,
+                COALESCE(SUM(
+                    CASE
+                        WHEN b.status = "confirmed"
+                            AND b.external_user_id IS NOT NULL
+                            AND b.external_user_id != ""
+                        THEN 1 ELSE 0
+                    END
+                ), 0) AS confirmedWithExternalUserId,
                 global.sinceMidnight,
                 global.last7days,
                 global.lastInsert

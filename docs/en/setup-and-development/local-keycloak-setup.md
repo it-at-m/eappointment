@@ -30,15 +30,17 @@ echo "127.0.0.1 keycloak" | sudo tee -a /etc/hosts
 
 After adding the entry, restart Keycloak/container stack:
 
+### Podman
+
 ```bash
-# Podman
 podman machine stop && \
 podman machine start && \
 devcontainer up --workspace-folder .
 ```
 
+### DDEV
+
 ```bash
-# DDEV
 ddev restart
 ```
 

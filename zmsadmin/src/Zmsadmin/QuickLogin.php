@@ -15,13 +15,13 @@ class QuickLogin extends BaseController
     /**
      * @SuppressWarnings(Param)
      * @param \Psr\Http\Message\RequestInterface|\BO\Slim\Request $request
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $loginData = Helper\LoginForm::fromQuickLogin();
         if ($loginData->hasFailed()) {
             throw new \BO\Zmsentities\Exception\QuickLoginFailed();

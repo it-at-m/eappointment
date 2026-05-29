@@ -1,7 +1,7 @@
 # Slimframework project base
 
-[![pipeline status](https://gitlab.com/eappointment/zmsslim/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsslim/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsslim/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsslim/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsslim/html/)
 
 
 This module is intended to help with the creation of a Slim based framework application.
@@ -273,6 +273,20 @@ For nice URLs you need a `.htaccess` file if you use an Apache2 webserver:
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ /index.php [QSA,L]
 ```
+
+## Logging (Monolog / `App::$log`)
+
+All ZMS Slim modules share one PSR-3 logger: `App::$log`, configured by `BO\Slim\Bootstrap::configureLogger()`.
+
+- Minimum level: `App::DEBUGLEVEL` (env `DEBUGLEVEL`, default `INFO`; defined as `ZMS_DEBUGLEVEL` in `Application.php`)
+- Web: JSON logs on **stderr**; CLI/cron: **stdout**
+- Use `\App::$log->info('message', ['key' => $value])` — not PHP `error_log()`
+
+Full guide, level reference, and an auto-generated inventory of all `App::$log` calls in the monorepo:
+
+**[Monolog logging (docs)](https://it-at-m.github.io/eappointment/operations/monolog-logging.html)**
+
+Regenerate the inventory locally: `cd docs && npm run docs:log-inventory`
 
 ## Twig integration
 

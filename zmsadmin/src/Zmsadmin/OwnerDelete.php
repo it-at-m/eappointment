@@ -17,13 +17,13 @@ use BO\Slim\Render;
 class OwnerDelete extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         \App::$http->readDeleteResult('/owner/' . $entityId . '/')->getEntity();
         return \BO\Slim\Render::redirect(

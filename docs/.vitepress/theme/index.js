@@ -3,6 +3,7 @@ import DefaultTheme from "vitepress/theme";
 import BerlinChangelogEmbed from "./BerlinChangelogEmbed.vue";
 import ChangelogEmbed from "./ChangelogEmbed.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
+import LogInventory from "./LogInventory.vue";
 
 import "./style.css";
 
@@ -15,5 +16,6 @@ export default {
     }
     ctx.app.component("BerlinChangelogEmbed", BerlinChangelogEmbed);
     ctx.app.component("ChangelogEmbed", ChangelogEmbed);
+    ctx.app.component("LogInventory", LogInventory);
   },
 };

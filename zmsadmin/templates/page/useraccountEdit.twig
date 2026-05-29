@@ -12,7 +12,7 @@
 {% block content %}
     {{ parent() }}
     <!-- page useraccountEdit -->
-    <div class="useraccount-edit-view" data-includeurl="{{ includeUrl() }}" data-selecteduserid="{{ userAccount.id }}">
+    <div class="useraccount-edit-view" data-includeurl="{{ includeUrl }}" data-selecteduserid="{{ userAccount.id }}">
         {% include "block/useraccount/edit.twig" %}
     </div>
     <!-- /page useraccountEdit -->

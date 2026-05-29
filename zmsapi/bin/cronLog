@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+define('APP_PATH', dirname(__DIR__));
+require APP_PATH . '/vendor/autoload.php';
+require APP_PATH . '/config.php';
+
+\BO\Slim\Bootstrap::ensureLogger();
+
+$level = $argv[1] ?? 'info';
+$message = $argv[2] ?? '';
+$contextJson = $argv[3] ?? '{}';
+$context = json_decode($contextJson, true);
+if (!is_array($context)) {
+    $context = [];
+}
+
+$level = \BO\Slim\Bootstrap::normalizeLogLevelName($level);
+\App::$log->{$level}($message, $context);

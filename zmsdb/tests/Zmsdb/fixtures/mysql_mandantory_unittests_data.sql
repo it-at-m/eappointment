@@ -66,7 +66,7 @@ UPDATE `buerger` SET `status` = 'confirmed' WHERE `BuergerID` IN (10118, 10114, 
    Test-Daten OverviewCalendarTest, OverallCalendarRead
 -------------------------------------------------------------------*/
 
-LOCK TABLES `standort` WRITE, `oeffnungszeit` WRITE, `overview_calendar` WRITE;
+LOCK TABLES `standort` WRITE, `oeffnungszeit` WRITE, `overview_calendar` WRITE, `buerger` WRITE;
 
 INSERT IGNORE INTO `standort`
   (`StandortID`,`Bezeichnung`,`standortkuerzel`,`wartenrhinweis`,`aufrufanzeigetext`)
@@ -112,5 +112,13 @@ VALUES
     (65202, 972201, 'confirmed', '2025-05-14 09:30:00', '2025-05-14 09:45:00', '2025-05-05 00:00:00'),
     (65202, 972202, 'confirmed', '2025-05-14 10:15:00', '2025-05-14 10:30:00', '2025-05-05 00:00:00'),
     (65202, 972203, 'cancelled', '2025-05-14 10:45:00', '2025-05-14 11:00:00', '2025-05-05 00:00:00');
+
+INSERT IGNORE INTO `buerger` (`BuergerID`,`StandortID`,`Datum`,`Uhrzeit`,`status`)
+VALUES
+    (972201, 65202, '2025-05-14', '09:30:00', 'confirmed'),
+    (972202, 65202, '2025-05-14', '10:15:00', 'confirmed'),
+    (972203, 65202, '2025-05-14', '10:45:00', 'cancelled');
+
+UPDATE `buerger` SET `displayNumber` = 'TT1201' WHERE `BuergerID` = 972201;
 
 UNLOCK TABLES;

@@ -142,8 +142,12 @@ class AbstractAccess
             }
             throw new Exception("Instance for accessing $instanceName failed");
         }
-        echo '<pre>' . print_r($this->accessInstance, 1) . '</pre>';
-        //exit;
+        if (class_exists('\App', false) && isset(\App::$log)) {
+            \App::$log->error('DLDB access locale missing', [
+                'instance' => $instanceName,
+                'locale' => $locale,
+            ]);
+        }
         throw new Exception("Locale for accessing $instanceName does not exists");
     }
 

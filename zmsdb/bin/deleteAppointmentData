@@ -21,7 +21,7 @@ $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
 $pending = preg_grep('#^--pending$#', $argv);
 if ($verbose) {
-    error_log("Using Path $dir");
+    \App::$log->debug('deleteAppointmentData started', ['cwd' => getcwd()]);
 }
 if ($timeInterval !== null) {
     if (class_exists('\App') && isset(\App::$now)) {
@@ -32,8 +32,8 @@ if ($timeInterval !== null) {
     $job = new \BO\Zmsdb\Helper\AppointmentDeleteByCron($timeInterval, $now, $verbose);
     $job->startProcessing($commit, $pending);
 } else {
-    error_log("Missing time interval argument!$usage");
+    \App::$log->error('Missing time interval argument', ['usage' => trim($usage)]);
 }
 if (!$commit) {
-    error_log("Use with --commit to delete entries.");
+    \App::$log->notice('Use with --commit to delete entries.');
 }

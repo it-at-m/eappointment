@@ -1,10 +1,8 @@
 import { mount } from "@vue/test-utils";
 import {afterAll, beforeAll, describe, expect, it, vi} from "vitest";
-// @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
 import { nextTick } from "vue";
 
-// @ts-expect-error: Vue SFC import for test
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
 
 globalThis.scrollTo = vi.fn();
