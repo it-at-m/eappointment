@@ -155,3 +155,43 @@ jobs:
         run: |
           TAG="${{ env.VERSION_BASE }}-${{ matrix.tag_suffix }}"
           docker run --rm -i "${{ env.IMAGE }}:${TAG}" php -v
+
+  php_v8_4_local:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: linux/amd64
+            tag_suffix: amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            tag_suffix: arm64
+    runs-on: ${{ matrix.runner }}
+    env:
+      IMAGE: ghcr.io/it-at-m/eappointment/zmsbase
+      VERSION_BASE: "8.4-local"
+      DOCKERFILE: php84-local/Dockerfile
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push single-arch image
+        run: |
+          TAG="${{ env.VERSION_BASE }}-${{ matrix.tag_suffix }}"
+          docker build --pull --no-cache \
+            --platform "${{ matrix.platform }}" \
+            -f "${{ env.DOCKERFILE }}" \
+            -t "${{ env.IMAGE }}:${TAG}" \
+            .
+          docker push "${{ env.IMAGE }}:${TAG}"
+
+      - name: Validate PHP setup
+        run: |
+          TAG="${{ env.VERSION_BASE }}-${{ matrix.tag_suffix }}"
+          docker run --rm -i "${{ env.IMAGE }}:${TAG}" php -v
