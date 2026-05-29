@@ -398,14 +398,22 @@ class ZmsApiClientService
         }
     }
 
-    public static function getProcessByIdAuthenticated(int $processId): Process
+    /**
+     * Load a process for a citizen authenticated via JWT (validated in zmscitizenapi).
+     * Calls zmsapi ProcessGetByExternalUserId — not WorkstationProcessGet — so access
+     * is limited to processes owned by the given external user id (GH-1582).
+     */
+    public static function getProcessByIdAuthenticated(int $processId, string $externalUserId): Process
     {
         try {
             $resolveReferences = 2;
-            // This endpoint is normally reserved for workstation (zmsadmin) Users.
-            $result = \App::$http->readGetResult("/process/{$processId}/", [
-                'resolveReferences' => $resolveReferences
-            ]);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
+            $result = \App::$http->readGetResult(
+                "/process/{$processId}/externaluserid/{$externalUserIdUrlEncoded}/",
+                [
+                    'resolveReferences' => $resolveReferences,
+                ]
+            );
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();
@@ -499,7 +507,7 @@ class ZmsApiClientService
             if (!is_null($status)) {
                 $params['status'] = $status;
             }
-            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
             $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserIdUrlEncoded}/", $params);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {

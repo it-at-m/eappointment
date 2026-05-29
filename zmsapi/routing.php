@@ -2924,6 +2924,55 @@
 
 /**
  *  @swagger
+ *  "/process/{id}/externaluserid/{externalUserId}/":
+ *      get:
+ *          summary: Get a process for a citizen external user id (service auth)
+ *          description: "Trusted backends (e.g. zmscitizenapi after JWT validation) use this instead of WorkstationProcessGet. Requires X-Authkey and matching process.externalUserId."
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key for service/workstation account
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: externalUserId
+ *                  description: external user id from citizen login (must match the process)
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "external user id does not match"
+ *              404:
+ *                  description: "process not found"
+ */
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/externaluserid/{externalUserId}/',
+    '\BO\Zmsapi\ProcessGetByExternalUserId'
+)
+    ->setName("ProcessGetByExternalUserId");
+
+/**
+ *  @swagger
  *  "/process/{id}/{authKey}/appointment/":
  *      post:
  *          summary: Update an appointment of a process
