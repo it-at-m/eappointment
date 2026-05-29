@@ -4,7 +4,7 @@
 
 Der Graph zeigt zusätzlich die zur Laufzeit benötigten Dienste jedes Deployments:
 
-- `eappointment-php-base` – vorgefertigte PHP-Laufzeit-Images für alle PHP-Module (siehe [PHP-Basis-Images](../php-base-images)).
+- `zmsbase` – vorgefertigte PHP-Laufzeit-Images für alle PHP-Module (siehe [PHP-Basis-Images](../php-base-images)).
 - `Digital Citizen Service (DBS)` – Münchens Open-Source-Identitätsbroker für Bürger:innen für BundID, BayernID und Elster, eingebunden auf der `refarch-gateway`-Ebene (siehe [it-at-m/dbs](https://it-at-m.github.io/dbs/)).
 - `CaptchaService` – Münchens quelloffener ALTCHA-Proof-of-Work-CAPTCHA-Dienst, der den Bürger-Buchungsfluss vor Bot-Scraping schützt. `zmscitizenview` bezieht die Challenge, `zmscitizenapi` prüft die Lösung vor der Verarbeitung einer Buchung (siehe [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/)).
 - `zmsautomation` – Maven-basierte Akzeptanztests auf **[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)** (Agile Test Automation Framework; Artefakte `de.muenchen.ataf`): Cucumber-Szenarien mit **REST Assured** für API-Tests und **Selenium** (über [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) Web) für UI-Tests. Keine Composer-Abhängigkeit der PHP-Module; die Tests spielen HTTP-/Browser-Flows gegen laufende Instanzen ein (siehe [`zmsautomation/README.md`](https://github.com/it-at-m/eappointment/blob/main/zmsautomation/README.md)).
@@ -81,7 +81,7 @@ graph TD;
 
     subgraph foundation [Infrastruktur-Fundament]
         style foundation stroke-dasharray: 2, 4
-        phpbase["eappointment-php-base<br>PHP-Laufzeit-Images"]
+        phpbase["zmsbase<br>PHP-Laufzeit-Images"]
     end
 
     subgraph testing [Testautomatisierung]
@@ -146,6 +146,6 @@ Hinweise zu Gateway-Verhalten sowie Sicherheits-/Routing-Details siehe RefArch-A
 
 Diese werden nicht als Code-Abhängigkeiten gezogen, sind aber zur Build-/Laufzeit erforderlich.
 
-- `eappointment-php-base`: Vorgefertigte PHP-Laufzeit-Images, auf denen jedes PHP-Modul läuft. Detaillierte Abhängigkeitsansicht: [PHP-Basis-Images](../php-base-images).
+- `zmsbase`: Vorgefertigte PHP-Laufzeit-Images, auf denen jedes PHP-Modul läuft. Detaillierte Abhängigkeitsansicht: [PHP-Basis-Images](../php-base-images).
 - `Digital Citizen Service (DBS)`: Münchens Open-Source-Identitätsbroker für Bürger:innen für BundID, BayernID und Elster, eingebunden auf der `refarch-gateway`-Ebene vor `zmscitizenapi` für den Bürger-Buchungsfluss. Siehe [it-at-m/dbs](https://it-at-m.github.io/dbs/).
 - `CaptchaService`: Münchens quelloffener ALTCHA-Proof-of-Work-CAPTCHA-Dienst. Schützt den Bürger-Buchungsfluss vor Bot-Scraping — `zmscitizenview` bezieht die Challenge, `zmscitizenapi` prüft die Lösung vor der Verarbeitung einer Buchung. DSGVO-konform by design (keine Cookies, kein Tracking, keine Aufrufe an Drittanbieter). Siehe [it-at-m/captchaservice](https://it-at-m.github.io/captchaservice/).
