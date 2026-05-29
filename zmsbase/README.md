@@ -27,4 +27,4 @@ Handbook: [PHP base images (EN)](../docs/en/setup-and-development/php-base-image
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see the [repository root LICENSE](../LICENSE).
