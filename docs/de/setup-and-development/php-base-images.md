@@ -36,9 +36,8 @@ Workflow: [🐳 Build ZMS base images](https://github.com/it-at-m/eappointment/b
 
 Er läuft bei:
 
-- Pushes, die `zmsbase/**` oder die Workflow-Datei ändern (alle Branches und Tags)
-- monatlichem Zeitplan (`0 0 1 * *`)
-- manuellem `workflow_dispatch`
+- wöchentlichem Zeitplan auf `main` (Montags `0 3 * * 1` UTC ≈ 05:00 Europe/Berlin im Sommer; geplante Workflows laufen nur auf dem Default-Branch)
+- manuellem `workflow_dispatch` auf jedem Branch (nach Änderungen an `zmsbase/` auf einem Feature-Branch, bevor CI neue Images braucht)
 
 Jeder Image-Job meldet sich bei GHCR an, baut die Image-Targets, validiert den PHP-Start (`php-fpm -t` oder `php -v`) und pusht die resultierenden Tags nach:
 

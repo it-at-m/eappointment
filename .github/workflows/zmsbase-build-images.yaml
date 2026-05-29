@@ -1,16 +1,10 @@
 name: 🐳 Build ZMS base images
 
 on:
-  push:
-    branches:
-      - "*"
-    tags:
-      - "*"
-    paths:
-      - "zmsbase/**"
-      - ".github/workflows/zmsbase-build-images.yaml"
+  # Scheduled workflows run on the default branch (main) only.
   schedule:
-    - cron: "0 0 1 * *"
+    # GitHub Actions cron uses UTC. 03:00 UTC Monday ≈ 05:00 Europe/Berlin (CEST) / 04:00 (CET).
+    - cron: "0 3 * * 1"
   workflow_dispatch:
 
 permissions:
