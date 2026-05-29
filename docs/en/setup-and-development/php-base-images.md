@@ -1,17 +1,18 @@
-# E-Appointment PHP Base Images
+# E-Appointment PHP base images (`zmsbase`)
 
-Infrastructure Foundation: `eappointment-php-base` provides standardized pre-built PHP runtime environments for eappointment [build](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/php-build-images.yaml#L43) via the [Containerfile](https://github.com/it-at-m/eappointment/blob/main/.resources/Containerfile).
+Infrastructure foundation: the [`zmsbase`](https://github.com/it-at-m/eappointment/tree/main/zmsbase) directory in this monorepo provides standardized, pre-built PHP runtime images for eappointment [module builds](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/php-build-images.yaml) via the [Containerfile](https://github.com/it-at-m/eappointment/blob/main/.resources/Containerfile).
 
-- External Munich repository: [it-at-m/eappointment-php-base](https://github.com/it-at-m/eappointment-php-base)
+- Source: [`zmsbase/`](https://github.com/it-at-m/eappointment/tree/main/zmsbase) in [it-at-m/eappointment](https://github.com/it-at-m/eappointment)
+- Historical standalone repo: [it-at-m/eappointment-php-base](https://github.com/it-at-m/eappointment-php-base) (superseded by `zmsbase`)
 - Original Berlin repository: [gitlab.com/eappointment/php-base](https://gitlab.com/eappointment/php-base)
 
 ## Image variants and usage
 
-Based on `eappointment-php-base/.github/workflows/build-images.yaml`, the project publishes three groups of images:
+Based on [`.github/workflows/zmsbase-build-images.yaml`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml), the project publishes three groups of images:
 
-- `8.4-base` and `8.4-dev` from `php84/Dockerfile`
-- `8.3-base` and `8.3-dev` from `php83/Dockerfile`
-- `8.3-local-amd64` and `8.3-local-arm64` from `php83-local/Dockerfile`
+- `8.4-base` and `8.4-dev` from `zmsbase/php84/Dockerfile`
+- `8.3-base` and `8.3-dev` from `zmsbase/php83/Dockerfile`
+- `8.3-local-amd64` and `8.3-local-arm64` from `zmsbase/php83-local/Dockerfile`
 
 The role split is:
 
@@ -27,19 +28,21 @@ The `php_v8_3_local` job builds single-architecture tags in a matrix:
 - `linux/amd64` on `ubuntu-latest` -> `8.3-local-amd64`
 - `linux/arm64` on `ubuntu-24.04-arm` -> `8.3-local-arm64`
 
-This ensures local Linux images are available for both major architectures used in developer machines and CI execution contexts.
+Devcontainer and DDEV set `ZMS_PHP_BASE_TAG` via [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh).
 
 ## Build and publish workflow behavior
 
-The workflow runs on:
+Workflow: [🐳 Build ZMS base images](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml) (`zmsbase-build-images.yaml`).
 
-- pushes to all branches (`'*'`)
-- pushes of all tags (`'*'`)
+It runs on:
+
+- pushes that change `zmsbase/**` or the workflow file (all branches and tags)
 - monthly schedule (`0 0 1 * *`)
+- manual `workflow_dispatch`
 
 Each image job logs in to GHCR, builds image targets, validates PHP startup (`php-fpm -t` or `php -v`), and pushes resulting tags to:
 
-- `ghcr.io/it-at-m/eappointment-php-base`
+- `ghcr.io/it-at-m/eappointment/zmsbase`
 
 ## Module dependency context
 
@@ -47,7 +50,7 @@ Each image job logs in to GHCR, builds image targets, validates PHP startup (`ph
 %%{init: {"flowchart": {"defaultRenderer":"elk"}}}%%
 graph TD
     subgraph InfrastructureFoundation["Infrastructure Foundation"]
-        PHPBASE["eappointment-php-base<br>PHP Docker Base Images<br>Runtime Environment"]
+        PHPBASE["zmsbase<br>PHP Docker Base Images<br>Runtime Environment"]
     end
 
     zmsapi --> zmsslim
@@ -141,7 +144,3 @@ graph TD
     class refarch_gateway gateway
     class zmscitizenview citizenview
 ```
-
-## Note
-
-This repository may be moved into the eappointment monorepo in the near future.
