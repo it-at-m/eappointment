@@ -1,4 +1,45 @@
-
+## Release Muc-42 (29.05.2026) 
+                              
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1340'>ZMSKVR-1340</a>] -         Beim Verschieben, erster verfügbare Tag ausgegraut
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1373'>ZMSKVR-1373</a>] -         Bestehende Öffnungszeit wird überschrieben beim Anlegen einer neuen Öffnungszeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1374'>ZMSKVR-1374</a>] -         Öffnungszeit wird doppelt angelegt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1405'>ZMSKVR-1405</a>] -         [Kundenstatistik] Erste zwei Spalten mit Gesamtanzahl der Termine fehlen im Excel-Export
+</li>
+</ul>
+                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-444'>ZMSKVR-444</a>] -         Bürgerfrontend2: Fehlermeldung für Captcha-Time-Out 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1172'>ZMSKVR-1172</a>] -         Umstellung Rechteprüfung – Statistik und Innenrevision
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1294'>ZMSKVR-1294</a>] -         Umstellung Rechteprüfung - Behörden, Standorte, Gesamtübersicht und Öffnungszeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1295'>ZMSKVR-1295</a>] -         Umstellung Rechteprüfung – Freie Tage, Mandanten, Mailtemplates, Wartenummern und Systemkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1296'>ZMSKVR-1296</a>] -         Umstellung Rechteprüfung – Sachbearbeitung, Tresen und Warteschlangen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1317'>ZMSKVR-1317</a>] -         MSE PDF-Export erweitern: Anzeige von Freitextfeld 1 und 2 analog zum Excel-Export
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1318'>ZMSKVR-1318</a>] -         MSE Terminvarianten „Entwässerungsplanvorbesprechung“ (Vor Ort / Video)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1319'>ZMSKVR-1319</a>] -         MSE Terminvarianten „Planeinsicht Grundstücksentwässerung“ (Kleinkunde / Gewerbekunde) mit separaten Kalendern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1398'>ZMSKVR-1398</a>] -         Rollen-Verwaltung und gezielte Zuordnung zu Nutzer*innen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1399'>ZMSKVR-1399</a>] -         Umstellung Rechteprüfung – Benutzerverwaltung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1412'>ZMSKVR-1412</a>] -         Captcha Altcha Version von 1.5.1 auf 3.0.5 Heben (automatisiert durch Dependapot nicht geklappt)
+</li>
+</ul>
+                                                        
 ## Release Muc-41 (08.05.2026) 
                                 
 <h2>        Bug

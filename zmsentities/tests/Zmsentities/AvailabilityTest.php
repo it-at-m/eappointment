@@ -409,7 +409,6 @@ class AvailabilityTest extends EntityCommonTests
         $entity['startDate'] = $time->modify("-60 day")->getTimestamp();
         $entity['endDate'] = $time->modify("+200 day")->getTimestamp();
         $entity['scope'] = (new \BO\Zmsentities\Scope())->getExample();
-        //error_log(__METHOD__ . ": $entity ". $time->format('c'));
         $this->assertTrue(
             $entity->isBookable($time->modify("+1month"), $time),
             'Availability endInDays is before startInDays'
@@ -920,13 +919,6 @@ class AvailabilityTest extends EntityCommonTests
         $conflicts = $availabilityList->getConflicts($startDate, $startDate);
         $list = [];
         foreach ($conflicts as $conflict) {
-            /*error_log(
-                "\n$conflict " .
-                $conflict->amendment .
-                "(ID: ". $conflict->getFirstAppointment()->getAvailability()->getId() ." ". $conflict->getFirstAppointment()->getAvailability()->getStartDateTime() ." - ". $conflict->getFirstAppointment()->getAvailability()->getEndDateTime() .")"
-            );
-            */
-
             $id = $conflict->getFirstAppointment()->getAvailability()->getId();
             if (! isset($list[$conflict->amendment])) {
                 $list[$conflict->amendment] = [];

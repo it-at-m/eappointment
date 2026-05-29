@@ -293,7 +293,6 @@ abstract class Base
     protected function leftJoin($alias, $left = null, $operator = null, $right = null)
     {
         $aliasId = $alias->getAliasIdentifier();
-        //error_log(get_class($this) . " JOIN $aliasId CHECK " . implode(',', $this->joinedAliasList));
         if (!in_array($aliasId, $this->joinedAliasList)) {
             $this->joinedAliasList[] = $aliasId;
             $this->query->leftJoin($alias, $left, $operator, $right);

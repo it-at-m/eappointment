@@ -3,12 +3,11 @@
 require_once __DIR__ . '/script_bootstrap.php';
 
 $now = date('Y-m-d H:i:s');
-$logPrefix = "[cleanupOverviewCalendar]";
 
-error_log("$logPrefix Start at $now");
+    \App::$log->info('cleanupOverviewCalendar started', ['time' => $now]);
 
 if (!in_array('--commit', $argv, true)) {
-    error_log("$logPrefix Dry run (no --commit), exiting.");
+            \App::$log->notice('cleanupOverviewCalendar dry run (no --commit), exiting');
     exit(0);
 }
 
@@ -16,4 +15,4 @@ $svc = new \BO\Zmsdb\OverviewCalendar();
 $svc->deleteOlderThan(new DateTimeImmutable('today'));
 
 $end = date('Y-m-d H:i:s');
-error_log("$logPrefix Finished at $end");
+    \App::$log->info('cleanupOverviewCalendar finished', ['time' => $end]);

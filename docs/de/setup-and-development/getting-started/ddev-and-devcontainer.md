@@ -2,13 +2,15 @@
 
 ## Lokalen Stack starten
 
+### DDEV
+
 ```bash
-# DDEV
 ddev start
 ```
 
+### Devcontainer (Podman)
+
 ```bash
-# Devcontainer (Podman)
 devcontainer up --workspace-folder .
 ```
 
@@ -43,15 +45,17 @@ Damit umfassen `ddev start` und `devcontainer up --workspace-folder .` bereits d
 
 Modul-Abhängigkeits-/Build-Befehle kannst du jederzeit erneut ausführen:
 
+### DDEV
+
 ```bash
-# DDEV
 ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
 ```
 
+### Podman
+
 ```bash
-# Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
 podman exec -it zms-web bash -lc "./cli modules loop npm install"
 podman exec -it zms-web bash -lc "./cli modules loop npm build"
@@ -69,13 +73,15 @@ Die lokale Einrichtung führt `./cli db full-setup` aus und:
 
 Du kannst die vollständige Einrichtung jederzeit erneut ausführen:
 
+### DDEV
+
 ```bash
-# DDEV
 ddev exec ./cli db full-setup
 ```
 
+### Podman
+
 ```bash
-# Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
 

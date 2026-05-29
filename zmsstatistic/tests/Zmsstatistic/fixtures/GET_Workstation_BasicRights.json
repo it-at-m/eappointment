@@ -21,6 +21,10 @@
                 "ticketprinter": "0",
                 "useraccount": "0"
             },
+            "permissions": {
+                "statistic": "0",
+                "superuser": "0"
+            },
             "id": "testuser",
             "lastLogin": 1459461600
         },
