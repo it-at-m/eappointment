@@ -11,7 +11,17 @@ final class PhpErrorHandler
 {
     public static function register(): void
     {
+        if (self::isTestEnvironment()) {
+            return;
+        }
+
         set_error_handler([self::class, 'handle']);
+    }
+
+    public static function isTestEnvironment(): bool
+    {
+        return defined('PHPUNIT_COMPOSER_INSTALL')
+            || getenv('PHPUNIT_COMPOSER_INSTALL') !== false;
     }
 
     public static function handle(int $severity, string $message, string $file, int $line): bool
