@@ -24,12 +24,11 @@ class ClientIp
             }
 
             $ips = array_map('trim', explode(',', (string) $_SERVER[$header]));
-            $ip = $ips[0];
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                return $ip;
+            foreach ($ips as $ip) {
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
             }
-
-            return $ip;
         }
 
         return '127.0.0.1';
