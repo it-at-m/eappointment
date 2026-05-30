@@ -41,6 +41,11 @@ class Application extends \BO\Slim\Application
      */
     public static $locale = 'de';
 
+    /**
+     * Base path for static assets (_css, _js). Must match routing and js/settings.js.
+     */
+    public static $includeUrl = '/terminvereinbarung/calldisplay';
+
     public static $supportedLanguages = array(
         // Default language
         'de' => array(
