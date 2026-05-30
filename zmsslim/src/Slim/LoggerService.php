@@ -210,8 +210,8 @@ class LoggerService
         $uri = $request->getUri();
         $path = preg_replace('#/+#', '/', $uri->getPath());
 
-        $queryParams = array_filter($request->getQueryParams(), function ($key, $value) {
-            return !preg_match('#^/|//#', (string) $key) && !preg_match('#^/|//#', (string) $value);
+        $queryParams = array_filter($request->getQueryParams(), function ($value, $key) {
+            return !preg_match('#^/|//#', (string) $value) && !preg_match('#^/|//#', (string) $key);
         }, ARRAY_FILTER_USE_BOTH);
 
         $queryParts = [];
