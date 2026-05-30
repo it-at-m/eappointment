@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Middleware;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

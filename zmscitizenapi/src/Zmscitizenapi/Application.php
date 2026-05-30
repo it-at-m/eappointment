@@ -91,6 +91,7 @@ class Application extends \BO\Slim\Application
         self::$LOGGER_BACKOFF_MIN = (int) (getenv('LOGGER_BACKOFF_MIN') ?: 100);
         self::$LOGGER_BACKOFF_MAX = (int) (getenv('LOGGER_BACKOFF_MAX') ?: 1000);
         self::$LOGGER_LOCK_TIMEOUT = (int) (getenv('LOGGER_LOCK_TIMEOUT') ?: 5);
+        \BO\Slim\LoggerService::configure(self::getLoggerConfig());
     }
 
     private static function initializeCaptcha(): void
@@ -161,6 +162,7 @@ class Application extends \BO\Slim\Application
     {
         $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
         self::$cache = new Psr16Cache($psr6);
+        \BO\Slim\LoggerService::$cache = self::$cache;
     }
 
     public static function getLoggerConfig(): array

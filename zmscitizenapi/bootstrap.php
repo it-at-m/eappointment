@@ -1,6 +1,8 @@
 <?php
 
-use BO\Zmscitizenapi\Services\Core\LoggerService;
+use BO\Slim\LoggerService;
+use BO\Zmscitizenapi\Services\Core\ProcessContextExtractor;
+use BO\Zmscitizenapi\Utils\ErrorMessages;
 // @codingStandardsIgnoreFile
 chdir(__DIR__);
 
@@ -42,6 +44,8 @@ $cache = new \Symfony\Component\Cache\Psr16Cache(
 
 
 $logger = new LoggerService();
+LoggerService::$requestContextEnricher = [ProcessContextExtractor::class, 'extractProcessContext'];
+LoggerService::$errorCodeResolver = static fn (string $errorCode): array => ErrorMessages::get($errorCode);
 // Security middleware (order is important)
 // Maintenance middleware must be first to intercept all requests
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());

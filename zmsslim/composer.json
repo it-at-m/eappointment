@@ -23,7 +23,8 @@
         "stevenmaguire/oauth2-keycloak": "^6.0",
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9",
-        "roave/security-advisories": "dev-latest"
+        "roave/security-advisories": "dev-latest",
+        "psr/simple-cache": "^3.0"
     },
     "require-dev": {
         "phpmd/phpmd": "@stable",
