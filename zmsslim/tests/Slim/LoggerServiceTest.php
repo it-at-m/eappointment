@@ -134,6 +134,33 @@ class LoggerServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testLogRequestWithArrayQueryParams(): void
+    {
+        $request = $this->createMock(ServerRequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $uri = $this->createMock(UriInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getUri')->willReturn($uri);
+        $request->method('getQueryParams')->willReturn(['statusList' => ['called']]);
+        $request->method('getHeaders')->willReturn(['User-Agent' => ['test']]);
+
+        $uri->method('getPath')->willReturn('/ticketprinter');
+
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getBody')->willReturn($stream);
+        $stream->method('isSeekable')->willReturn(true);
+        $stream->method('rewind');
+
+        $this->cache->method('has')->willReturn(false);
+        $this->cache->method('set')->willReturn(true);
+        $this->cache->method('get')->willReturn(null);
+
+        LoggerService::logRequest($request, $response);
+        $this->assertTrue(true);
+    }
+
     public function testRateLimitExceeded(): void
     {
         $this->cache->method('has')->willReturn(false);

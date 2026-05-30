@@ -211,7 +211,14 @@ class LoggerService
         $path = preg_replace('#/+#', '/', $uri->getPath());
 
         $queryParams = array_filter($request->getQueryParams(), function ($value, $key) {
-            return !preg_match('#^/|//#', (string) $value) && !preg_match('#^/|//#', (string) $key);
+            if (preg_match('#^/|//#', (string) $key)) {
+                return false;
+            }
+            if (is_array($value)) {
+                return true;
+            }
+
+            return !preg_match('#^/|//#', (string) $value);
         }, ARRAY_FILTER_USE_BOTH);
 
         $queryParts = [];
@@ -219,6 +226,8 @@ class LoggerService
             $encodedKey = urlencode((string) $key);
             if (in_array(strtolower((string) $key), self::SENSITIVE_PARAMS, true)) {
                 $queryParts[] = "$encodedKey=****";
+            } elseif (is_array($value)) {
+                $queryParts[] = $encodedKey . '=' . urlencode(json_encode($value, JSON_UNESCAPED_UNICODE) ?: '[]');
             } else {
                 $encodedValue = urlencode((string) $value);
                 $queryParts[] = "$encodedKey=$encodedValue";
