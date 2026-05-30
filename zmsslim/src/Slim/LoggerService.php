@@ -235,6 +235,9 @@ class LoggerService
 
         $bodyStream = $response->getBody();
         $rawBody = $bodyStream !== null ? (string) $bodyStream : null;
+        if ($bodyStream !== null && $bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
 
         if (self::$requestContextEnricher !== null) {
             $processContext = (self::$requestContextEnricher)($request, $rawBody);

@@ -31,10 +31,16 @@ class RequestLoggingMiddlewareTest extends MiddlewareTestCase
         $request->method('getQueryParams')->willReturn([]);
 
         $response = new Response(200);
+        $response->getBody()->write('{"meta":{"error":false},"data":[]}');
+        $response->getBody()->rewind();
         $handler = $this->createHandler($response);
 
         $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
+        $this->assertSame(
+            '{"meta":{"error":false},"data":[]}',
+            (string) $result->getBody()
+        );
     }
 
     public function testLogsAndRethrowsHandlerException(): void
