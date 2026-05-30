@@ -24,7 +24,8 @@
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9",
         "roave/security-advisories": "dev-latest",
-        "psr/simple-cache": "^3.0"
+        "psr/simple-cache": "^3.0",
+        "symfony/cache": "^6.0"
     },
     "require-dev": {
         "phpmd/phpmd": "@stable",
