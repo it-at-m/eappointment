@@ -1,8 +1,13 @@
 <?php
 
 use BO\Slim\LoggerService;
+use BO\Slim\Middleware\RequestLoggingMiddleware;
+use BO\Slim\Middleware\RequestSanitizerMiddleware;
+use BO\Slim\Middleware\SecurityHeadersMiddleware;
 use BO\Zmscitizenapi\Services\Core\ProcessContextExtractor;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 // @codingStandardsIgnoreFile
 chdir(__DIR__);
 
@@ -46,13 +51,28 @@ $cache = new \Symfony\Component\Cache\Psr16Cache(
 $logger = new LoggerService();
 LoggerService::$requestContextEnricher = [ProcessContextExtractor::class, 'extractProcessContext'];
 LoggerService::$errorCodeResolver = static fn (string $errorCode): array => ErrorMessages::get($errorCode);
+
+$requestLimits = App::getRequestLimits();
+$securityHeaderErrorResponse = static function (\Throwable $e, ServerRequestInterface $request): ResponseInterface {
+    $response = App::$slim->getResponseFactory()->createResponse();
+    $error = ErrorMessages::get('securityHeaderViolation');
+    $response = $response->withStatus($error['statusCode'])
+        ->withHeader('Content-Type', 'application/json');
+    $response->getBody()->write(json_encode(['errors' => [$error]]));
+    return $response;
+};
+
 // Security middleware (order is important)
 // Maintenance middleware must be first to intercept all requests
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\MaintenanceMiddleware());
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
+App::$slim->add(new RequestLoggingMiddleware($logger));
+App::$slim->add(new SecurityHeadersMiddleware($logger, null, $securityHeaderErrorResponse));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
+App::$slim->add(new RequestSanitizerMiddleware(
+    $logger,
+    $requestLimits['maxRecursionDepth'],
+    $requestLimits['maxStringLength']
+));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSizeLimitMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\IpFilterMiddleware($logger));
 

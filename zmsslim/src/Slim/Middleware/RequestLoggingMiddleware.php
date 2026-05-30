@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Middleware;
+namespace BO\Slim\Middleware;
 
 use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
@@ -16,22 +16,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestLoggingMiddleware implements MiddlewareInterface
 {
     private LoggerService $logger;
-/**
-     * @param LoggerService $logger Service for logging requests and responses
-     */
+
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
     }
 
-    /**
-     * Process an incoming server request and log its details
-     *
-     * @param ServerRequestInterface $request The request to process
-     * @param RequestHandlerInterface $handler The handler to process the request
-     * @return ResponseInterface The resulting response
-     * @throws \Throwable If an error occurs during request handling
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

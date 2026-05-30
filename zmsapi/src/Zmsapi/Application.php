@@ -7,6 +7,7 @@
 
 namespace BO\Zmsapi;
 
+use BO\Slim\LoggerService;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
@@ -35,6 +36,19 @@ class Application extends \BO\Slim\Application
     // Cache config
     public static string $CACHE_DIR;
     public static int $SOURCE_CACHE_TTL;
+    // Logger config
+    public static int $LOGGER_MAX_REQUESTS;
+    public static int $LOGGER_RESPONSE_LENGTH;
+    public static int $LOGGER_STACK_LINES;
+    public static int $LOGGER_MESSAGE_SIZE;
+    public static int $LOGGER_CACHE_TTL;
+    public static int $LOGGER_MAX_RETRIES;
+    public static int $LOGGER_BACKOFF_MIN;
+    public static int $LOGGER_BACKOFF_MAX;
+    public static int $LOGGER_LOCK_TIMEOUT;
+    // Request sanitizer config
+    public static int $MAX_STRING_LENGTH;
+    public static int $MAX_RECURSION_DEPTH;
 
     /**
      * @var Bool DEBUG
@@ -129,6 +143,26 @@ class Application extends \BO\Slim\Application
         self::setupCache();
     }
 
+    private static function initializeLogger(): void
+    {
+        self::$LOGGER_MAX_REQUESTS = (int) (getenv('LOGGER_MAX_REQUESTS') ?: 1000);
+        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('LOGGER_RESPONSE_LENGTH') ?: 1048576);
+        self::$LOGGER_STACK_LINES = (int) (getenv('LOGGER_STACK_LINES') ?: 20);
+        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('LOGGER_MESSAGE_SIZE') ?: 8192);
+        self::$LOGGER_CACHE_TTL = (int) (getenv('LOGGER_CACHE_TTL') ?: 60);
+        self::$LOGGER_MAX_RETRIES = (int) (getenv('LOGGER_MAX_RETRIES') ?: 3);
+        self::$LOGGER_BACKOFF_MIN = (int) (getenv('LOGGER_BACKOFF_MIN') ?: 100);
+        self::$LOGGER_BACKOFF_MAX = (int) (getenv('LOGGER_BACKOFF_MAX') ?: 1000);
+        self::$LOGGER_LOCK_TIMEOUT = (int) (getenv('LOGGER_LOCK_TIMEOUT') ?: 5);
+        LoggerService::configure(self::getLoggerConfig());
+    }
+
+    private static function initializeRequestLimits(): void
+    {
+        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
+        self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
+    }
+
     private static function validateCacheDirectory(): void
     {
         if (!is_dir(self::$CACHE_DIR)) {
@@ -146,11 +180,37 @@ class Application extends \BO\Slim\Application
     {
         $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
         self::$cache = new Psr16Cache($psr6);
+        LoggerService::$cache = self::$cache;
+    }
+
+    public static function getLoggerConfig(): array
+    {
+        return [
+            'maxRequests' => self::$LOGGER_MAX_REQUESTS,
+            'responseLength' => self::$LOGGER_RESPONSE_LENGTH,
+            'stackLines' => self::$LOGGER_STACK_LINES,
+            'messageSize' => self::$LOGGER_MESSAGE_SIZE,
+            'cacheTtl' => self::$LOGGER_CACHE_TTL,
+            'maxRetries' => self::$LOGGER_MAX_RETRIES,
+            'backoffMin' => self::$LOGGER_BACKOFF_MIN,
+            'backoffMax' => self::$LOGGER_BACKOFF_MAX,
+            'lockTimeout' => self::$LOGGER_LOCK_TIMEOUT,
+        ];
+    }
+
+    public static function getRequestLimits(): array
+    {
+        return [
+            'maxStringLength' => self::$MAX_STRING_LENGTH,
+            'maxRecursionDepth' => self::$MAX_RECURSION_DEPTH,
+        ];
     }
 
     public static function initialize(): void
     {
+        self::initializeLogger();
         self::initializeCache();
+        self::initializeRequestLimits();
     }
 }
 
