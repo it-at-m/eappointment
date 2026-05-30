@@ -30,7 +30,7 @@ final class PhpErrorHandler
             'line' => $line,
         ]);
 
-        return true;
+        throw new \ErrorException($message, 0, $severity, $file, $line);
     }
 
     public static function severityToLogLevel(int $severity): int
