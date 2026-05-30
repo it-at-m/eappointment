@@ -234,15 +234,14 @@ jobs:
 
           for m in "${modules[@]}"; do
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # `docker cp` between two containers is not supported.
-            # Copy temp container -> runner filesystem -> zms-web container.
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
+            # `docker cp` to the runner fails when vendor contains path-repo symlinks
+            # (e.g. vendor/eappointment/mellon -> ../../../mellon/) because those
+            # targets are outside the module image. Stream tar image -> zms-web instead;
+            # symlinks stay valid against the checked-out monorepo at /var/www/html.
+            docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG" \
+              -cf - -C /var/www/html . \
+              | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
