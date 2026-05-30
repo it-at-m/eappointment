@@ -116,7 +116,7 @@ class Application extends \BO\Slim\Application
     public static function initialize(): void
     {
         ModuleLoggerInitializer::configure('ZMS_ADMIN');
-        self::$cache = ModuleLoggerInitializer::initializeCache();
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
     }
 }
 

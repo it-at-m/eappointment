@@ -93,7 +93,7 @@ class Application extends \BO\Slim\Application
     public static function initialize(): void
     {
         ModuleLoggerInitializer::configure('ZMS_STATISTIC');
-        self::$cache = ModuleLoggerInitializer::initializeCache();
+        self::$cache = ModuleLoggerInitializer::tryInitializeCache();
     }
 }
 

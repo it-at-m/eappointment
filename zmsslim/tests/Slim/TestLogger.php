@@ -63,12 +63,25 @@ class TestLogger extends LoggerService
         ?ResponseInterface $response = null,
         array $context = []
     ): void {
+        if (self::$testCase === null) {
+            throw new \RuntimeException('Test case not initialized. Call initTest() first.');
+        }
+
         $expected = array_shift(self::$expectedLogs);
         if (!$expected) {
             self::$testCase->fail('Unexpected log error: ' . $exception->getMessage());
         }
         self::$testCase->assertEquals('error', $expected[0]);
         self::$testCase->assertInstanceOf(get_class($expected[1]), $exception);
+        if ($expected[1] instanceof \Throwable) {
+            self::$testCase->assertSame($expected[1]->getMessage(), $exception->getMessage());
+        }
+        if (!empty($expected[2])) {
+            foreach ($expected[2] as $key => $value) {
+                self::$testCase->assertArrayHasKey($key, $context);
+                self::$testCase->assertEquals($value, $context[$key]);
+            }
+        }
     }
 
     public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void

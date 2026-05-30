@@ -57,7 +57,10 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
             if ($this->errorResponseBuilder !== null) {
-                return ($this->errorResponseBuilder)($e, $request);
+                $response = ($this->errorResponseBuilder)($e, $request);
+                if ($response !== null) {
+                    return $response;
+                }
             }
             throw $e;
         }

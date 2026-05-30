@@ -62,4 +62,12 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
 
         $this->middleware->process($request, $handler);
     }
+
+    public function testRejectsNonPositiveLimits(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('maxRecursionDepth must be greater than 0');
+
+        new RequestSanitizerMiddleware($this->logger, 0, 32768);
+    }
 }

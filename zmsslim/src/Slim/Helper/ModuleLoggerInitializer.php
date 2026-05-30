@@ -45,6 +45,17 @@ final class ModuleLoggerInitializer
         return $cache;
     }
 
+    public static function tryInitializeCache(?string $cacheDir = null): ?CacheInterface
+    {
+        try {
+            return self::initializeCache($cacheDir);
+        } catch (\RuntimeException) {
+            LoggerService::$cache = null;
+
+            return null;
+        }
+    }
+
     /**
      * @return array{maxStringLength: int, maxRecursionDepth: int}
      */

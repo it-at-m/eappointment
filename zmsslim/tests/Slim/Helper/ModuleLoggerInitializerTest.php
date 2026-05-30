@@ -14,6 +14,8 @@ class ModuleLoggerInitializerTest extends TestCase
     {
         putenv('ZMS_ADMIN_LOGGER_MAX_REQUESTS');
         LoggerService::$cache = null;
+        LoggerService::$requestContextEnricher = null;
+        LoggerService::$errorCodeResolver = null;
         LoggerService::configure([
             'maxRequests' => 1000,
             'responseLength' => 1048576,
@@ -44,5 +46,13 @@ class ModuleLoggerInitializerTest extends TestCase
 
         $this->assertSame(32768, $limits['maxStringLength']);
         $this->assertSame(10, $limits['maxRecursionDepth']);
+    }
+
+    public function testTryInitializeCacheReturnsNullWhenDirectoryIsInvalid(): void
+    {
+        $cache = ModuleLoggerInitializer::tryInitializeCache('/dev/null/not-a-writable-cache-dir');
+
+        $this->assertNull($cache);
+        $this->assertNull(LoggerService::$cache);
     }
 }

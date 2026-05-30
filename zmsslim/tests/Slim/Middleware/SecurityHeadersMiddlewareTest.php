@@ -58,4 +58,27 @@ class SecurityHeadersMiddlewareTest extends MiddlewareTestCase
             json_decode((string) $result->getBody(), true)
         );
     }
+
+    public function testRethrowsWhenErrorResponseBuilderReturnsNull(): void
+    {
+        $middleware = new SecurityHeadersMiddleware(
+            $this->logger,
+            null,
+            static function (\Throwable $e, ServerRequestInterface $request): ?ResponseInterface {
+                return null;
+            }
+        );
+        $request = $this->createRequest(['X-Test' => 'test']);
+        $response = $this->createMock(Response::class);
+        $response->method('withHeader')
+            ->willThrowException(new \RuntimeException('Header error'));
+        $handler = $this->createHandler($response);
+
+        TestLogger::expectLogError(new \RuntimeException('Header error'));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Header error');
+
+        $middleware->process($request, $handler);
+    }
 }
