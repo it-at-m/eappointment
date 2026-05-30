@@ -98,7 +98,10 @@ jobs:
             PHP_TAG="$REF_NAME"
           fi
 
+          BRANCH_SLUG="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
+
           echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
@@ -336,7 +339,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
@@ -374,6 +377,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn
