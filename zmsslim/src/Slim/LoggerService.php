@@ -209,34 +209,11 @@ class LoggerService
 
         $uri = $request->getUri();
         $path = preg_replace('#/+#', '/', $uri->getPath());
-
-        $queryParams = array_filter($request->getQueryParams(), function ($value, $key) {
-            if (preg_match('#^/|//#', (string) $key)) {
-                return false;
-            }
-            if (is_array($value)) {
-                return true;
-            }
-
-            return !preg_match('#^/|//#', (string) $value);
-        }, ARRAY_FILTER_USE_BOTH);
-
-        $queryParts = [];
-        foreach ($queryParams as $key => $value) {
-            $encodedKey = urlencode((string) $key);
-            if (in_array(strtolower((string) $key), self::SENSITIVE_PARAMS, true)) {
-                $queryParts[] = "$encodedKey=****";
-            } elseif (is_array($value)) {
-                $queryParts[] = $encodedKey . '=' . urlencode(json_encode($value, JSON_UNESCAPED_UNICODE) ?: '[]');
-            } else {
-                $encodedValue = urlencode((string) $value);
-                $queryParts[] = "$encodedKey=$encodedValue";
-            }
-        }
+        $logPath = self::buildLogPath($path, $request->getQueryParams());
 
         $data = [
             'method' => $request->getMethod(),
-            'path' => $path . ($queryParts ? '?' . implode('&', $queryParts) : ''),
+            'path' => $logPath,
             'status' => $response->getStatusCode(),
             'ip' => ClientIp::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders()),
@@ -255,23 +232,68 @@ class LoggerService
             }
         }
 
-        if ($response->getStatusCode() >= 400 && !empty($rawBody)) {
-            $decodedBody = json_decode($rawBody, true);
-            if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
-                $errorMessages = [];
-                foreach ($decodedBody['errors'] as $error) {
-                    if (isset($error['errorCode']) && self::$errorCodeResolver !== null) {
-                        $errorMessages[] = (self::$errorCodeResolver)((string) $error['errorCode']);
-                    } else {
-                        $errorMessages[] = $error;
-                    }
-                }
-                $data['errors'] = $errorMessages;
-            }
-        }
+        $data = self::appendResponseErrors($data, $response->getStatusCode(), $rawBody);
 
         $level = $response->getStatusCode() >= 400 ? 'error' : 'info';
         \App::$log->$level('HTTP Request', $data);
+    }
+
+    private static function buildLogPath(string $path, array $queryParams): string
+    {
+        $queryParts = [];
+        foreach ($queryParams as $key => $value) {
+            if (preg_match('#^/|//#', (string) $key)) {
+                continue;
+            }
+            if (!is_array($value) && preg_match('#^/|//#', (string) $value)) {
+                continue;
+            }
+            $queryParts[] = self::formatQueryParamForLog($key, $value);
+        }
+
+        return $path . ($queryParts ? '?' . implode('&', $queryParts) : '');
+    }
+
+    private static function formatQueryParamForLog(mixed $key, mixed $value): string
+    {
+        $encodedKey = urlencode((string) $key);
+        if (in_array(strtolower((string) $key), self::SENSITIVE_PARAMS, true)) {
+            return "$encodedKey=****";
+        }
+        if (is_array($value)) {
+            return $encodedKey . '=' . urlencode(json_encode($value, JSON_UNESCAPED_UNICODE) ?: '[]');
+        }
+
+        return $encodedKey . '=' . urlencode((string) $value);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private static function appendResponseErrors(array $data, int $statusCode, ?string $rawBody): array
+    {
+        if ($statusCode < 400 || empty($rawBody)) {
+            return $data;
+        }
+
+        $decodedBody = json_decode($rawBody, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !isset($decodedBody['errors'])) {
+            return $data;
+        }
+
+        $errorMessages = [];
+        foreach ($decodedBody['errors'] as $error) {
+            if (isset($error['errorCode']) && self::$errorCodeResolver !== null) {
+                $errorMessages[] = (self::$errorCodeResolver)((string) $error['errorCode']);
+            } else {
+                $errorMessages[] = $error;
+            }
+        }
+
+        $data['errors'] = $errorMessages;
+
+        return $data;
     }
 
     private static function filterSensitiveHeaders(array $headers): array
