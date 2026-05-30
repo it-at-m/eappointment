@@ -17,6 +17,7 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
+\BO\Slim\Helper\ModuleLoggerInitializer::registerHttpMiddleware();
 \BO\Slim\Bootstrap::addTwigExtension(new Twig\Extra\Intl\IntlExtension());
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
