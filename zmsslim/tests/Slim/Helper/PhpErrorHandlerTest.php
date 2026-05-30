@@ -34,16 +34,16 @@ class PhpErrorHandlerTest extends TestCase
         $this->assertSame(Logger::ERROR, PhpErrorHandler::severityToLogLevel(E_USER_ERROR));
     }
 
-    public function testHandleLogsWarningAndThrowsErrorException(): void
+    public function testHandleLogsWarningWithoutThrowing(): void
     {
-        try {
-            PhpErrorHandler::handle(E_USER_WARNING, 'Attempt to read property "support" on null', __FILE__, __LINE__);
-            $this->fail('Expected ErrorException was not thrown');
-        } catch (\ErrorException $exception) {
-            $this->assertSame('Attempt to read property "support" on null', $exception->getMessage());
-            $this->assertSame(E_USER_WARNING, $exception->getSeverity());
-        }
+        $handled = PhpErrorHandler::handle(
+            E_USER_WARNING,
+            'Attempt to read property "support" on null',
+            __FILE__,
+            __LINE__
+        );
 
+        $this->assertTrue($handled);
         $this->assertCount(1, $this->logHandler->getRecords());
         $record = $this->logHandler->getRecords()[0];
         $this->assertSame(Logger::WARNING, $record['level']);
