@@ -56,13 +56,15 @@ final class ModuleLoggerInitializer
         ];
     }
 
-    public static function registerHttpMiddleware(): void
+    public static function registerHttpMiddleware(bool $includeSecurityHeaders = true): void
     {
         $logger = new LoggerService();
         $requestLimits = self::getRequestLimits();
 
         \App::$slim->add(new RequestLoggingMiddleware($logger));
-        \App::$slim->add(new SecurityHeadersMiddleware($logger));
+        if ($includeSecurityHeaders) {
+            \App::$slim->add(new SecurityHeadersMiddleware($logger));
+        }
         \App::$slim->add(new RequestSanitizerMiddleware(
             $logger,
             $requestLimits['maxRecursionDepth'],

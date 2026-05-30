@@ -67,6 +67,14 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 @import 'bo-layout-admin-scss/organisms/page-footer.scss';
 @import 'bo-layout-admin-scss/organisms/page-header.scss';
 
+body.zms-env-dev #page-header {
+    background-color: #2ECC40;
+}
+
+body.zms-env-stage #page-header {
+    background-color: #7FDBFF;
+}
+
 
 // -----------------------------------------------------------------------
 
