@@ -143,6 +143,10 @@ class Application extends \BO\Slim\Application
         self::setupCache();
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract logger initialization logic into a dedicated LoggerInitializer class
+     */
     private static function initializeLogger(): void
     {
         self::$LOGGER_MAX_REQUESTS = (int) (getenv('LOGGER_MAX_REQUESTS') ?: 1000);
