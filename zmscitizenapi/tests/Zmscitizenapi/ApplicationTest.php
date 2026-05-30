@@ -42,15 +42,15 @@ class ApplicationTest extends TestCase
     public function testInitializeLogger(): void
     {
         // Test with custom values
-        putenv('LOGGER_MAX_REQUESTS=500');
-        putenv('LOGGER_RESPONSE_LENGTH=2097152');
-        putenv('LOGGER_STACK_LINES=30');
-        putenv('LOGGER_MESSAGE_SIZE=16384');
-        putenv('LOGGER_CACHE_TTL=120');
-        putenv('LOGGER_MAX_RETRIES=5');
-        putenv('LOGGER_BACKOFF_MIN=200');
-        putenv('LOGGER_BACKOFF_MAX=2000');
-        putenv('LOGGER_LOCK_TIMEOUT=10');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS=500');
+        putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH=2097152');
+        putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES=30');
+        putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE=16384');
+        putenv('ZMS_CITIZENAPI_LOGGER_CACHE_TTL=120');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES=5');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN=200');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX=2000');
+        putenv('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT=10');
 
         Application::initialize();
         $config = Application::getLoggerConfig();
@@ -66,15 +66,15 @@ class ApplicationTest extends TestCase
         $this->assertEquals(10, $config['lockTimeout']);
 
         // Test default values
-        putenv('LOGGER_MAX_REQUESTS');
-        putenv('LOGGER_RESPONSE_LENGTH');
-        putenv('LOGGER_STACK_LINES');
-        putenv('LOGGER_MESSAGE_SIZE');
-        putenv('LOGGER_CACHE_TTL');
-        putenv('LOGGER_MAX_RETRIES');
-        putenv('LOGGER_BACKOFF_MIN');
-        putenv('LOGGER_BACKOFF_MAX');
-        putenv('LOGGER_LOCK_TIMEOUT');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS');
+        putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH');
+        putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES');
+        putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE');
+        putenv('ZMS_CITIZENAPI_LOGGER_CACHE_TTL');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX');
+        putenv('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT');
 
         Application::initialize();
         $config = Application::getLoggerConfig();
@@ -181,15 +181,15 @@ class ApplicationTest extends TestCase
 
         // Reset environment variables
         putenv('MAINTENANCE_ENABLED');
-        putenv('LOGGER_MAX_REQUESTS');
-        putenv('LOGGER_RESPONSE_LENGTH');
-        putenv('LOGGER_STACK_LINES');
-        putenv('LOGGER_MESSAGE_SIZE');
-        putenv('LOGGER_CACHE_TTL');
-        putenv('LOGGER_MAX_RETRIES');
-        putenv('LOGGER_BACKOFF_MIN');
-        putenv('LOGGER_BACKOFF_MAX');
-        putenv('LOGGER_LOCK_TIMEOUT');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_REQUESTS');
+        putenv('ZMS_CITIZENAPI_LOGGER_RESPONSE_LENGTH');
+        putenv('ZMS_CITIZENAPI_LOGGER_STACK_LINES');
+        putenv('ZMS_CITIZENAPI_LOGGER_MESSAGE_SIZE');
+        putenv('ZMS_CITIZENAPI_LOGGER_CACHE_TTL');
+        putenv('ZMS_CITIZENAPI_LOGGER_MAX_RETRIES');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MIN');
+        putenv('ZMS_CITIZENAPI_LOGGER_BACKOFF_MAX');
+        putenv('ZMS_CITIZENAPI_LOGGER_LOCK_TIMEOUT');
         putenv('CAPTCHA_ENABLED');
         putenv('CAPTCHA_TOKEN_TTL');
         putenv('CAPTCHA_TOKEN_SECRET');
