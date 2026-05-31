@@ -39,7 +39,7 @@
     },
     "require-dev": {
         "vimeo/psalm": "6.5.0",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "^2.3",
         "squizlabs/php_codesniffer": "^4.0",

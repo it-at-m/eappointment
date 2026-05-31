@@ -20,7 +20,7 @@
         "vimeo/psalm": "6.5.0",
         "phpmd/phpmd": "^2.13",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
