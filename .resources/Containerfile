@@ -5,6 +5,7 @@ COPY --chown=build:build . /build
 ARG MODULE
 WORKDIR /build/${MODULE}
 USER build:build
+ENV COMPOSER_MIRROR_PATH_REPOS=1
 RUN make live
 
 ARG PHP_VERSION
