@@ -1,5 +1,5 @@
 # Workflow for advanced CodeQL setup used for scanning Java/JavaScript/TypeScript/Vue/Python based source files
-name: 🛡️ CodeQL Advanced
+name: 🛡️ ☕ 📜 🐍 CodeQL Advanced
 env:
   # Whether to analyze Java code or not (only set to true if repo has Java source code)
   analyze-java: true
