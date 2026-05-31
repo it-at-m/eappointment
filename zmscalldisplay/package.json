@@ -39,7 +39,7 @@
     "cssnano": "^8.0.1",
     "eslint": "^9.0.0",
     "flatted": "^3.4.2",
-    "immutable": "^5.1.5",
+    "immutable": "^5.1.6",
     "minimatch": "^10.2.5",
     "picomatch": "^4.0.4",
     "eslint-plugin-import": "^2.24.2",
