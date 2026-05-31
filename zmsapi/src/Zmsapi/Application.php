@@ -90,11 +90,19 @@ class Application extends \BO\Slim\Application
 
     /**
      * language preferences
+     *
+     * @var string
+     *
+     * @psalm-var 'de'
      */
+    public static string $locale = 'de';
 
-    public static $locale = 'de';
-
-    public static $supportedLanguages = array(
+    /**
+     * @var (string|true)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE.utf-8', default: true}}
+     */
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -105,15 +113,19 @@ class Application extends \BO\Slim\Application
 
     /**
      * dldb data path
+     *
+     * @var string
+     *
+     * @psalm-var '/data'
      */
-    public static $data = '/data';
+    public static string $data = '/data';
 
     /**
      * @var \DateTimeInterface $now time to use for today (testing)
      */
     public static $now = null;
 
-    public static function getNow()
+    public static function getNow(): \DateTimeInterface
     {
         if (self::$now instanceof \DateTimeInterface) {
             return self::$now;

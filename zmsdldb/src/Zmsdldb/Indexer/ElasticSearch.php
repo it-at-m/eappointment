@@ -18,7 +18,12 @@ class ElasticSearch
 
     const ES_INDEX_DATE = 'Ymd-His';
 
-    protected $localeList = array(
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'de', 'en'}
+     */
+    protected array $localeList = array(
         'de',
         'en'
     );
@@ -98,10 +103,11 @@ class ElasticSearch
     }
 
     /**
+     * @return \Elastica\Document[]
      *
-     * @return self
+     * @psalm-return list{0?: \Elastica\Document,...}
      */
-    protected function readTopics()
+    protected function readTopics(): array
     {
         $esTypeTopic = $this->getIndex()->getType('topic');
         $esTypeLinks = $this->getIndex()->getType('links');
@@ -132,10 +138,11 @@ class ElasticSearch
     }
 
     /**
+     * @return \Elastica\Document[]
      *
-     * @return self
+     * @psalm-return list{0?: \Elastica\Document,...}
      */
-    protected function readServices()
+    protected function readServices(): array
     {
         $esType = $this->getIndex()->getType('service');
         $docs = array();
@@ -150,10 +157,11 @@ class ElasticSearch
     }
 
     /**
+     * @return \Elastica\Document[]
      *
-     * @return self
+     * @psalm-return list{0?: \Elastica\Document,...}
      */
-    protected function readLocations()
+    protected function readLocations(): array
     {
         $esType = $this->getIndex()->getType('location');
         $docs = array();
@@ -168,10 +176,11 @@ class ElasticSearch
     }
 
     /**
+     * @return \Elastica\Document[]
      *
-     * @return self
+     * @psalm-return list{0?: \Elastica\Document,...}
      */
-    protected function readAuthorities()
+    protected function readAuthorities(): array
     {
         $esType = $this->getIndex()->getType('authority');
         $docs = array();

@@ -13,7 +13,9 @@ use BO\Zmsdb\Status as Query;
 class Healthcheck extends BaseController
 {
     /**
-     * @SuppressWarnings(UnusedFormalParameter)
+     * @SuppressWarnings (UnusedFormalParameter)
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,

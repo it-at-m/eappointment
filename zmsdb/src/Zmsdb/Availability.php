@@ -12,7 +12,10 @@ class Availability extends Base implements Interfaces\ResolveReferences
 {
     public static $cache = [];
 
-    public function readEntity($availabilityId, $resolveReferences = 0, $preferCache = false)
+    /**
+     * @param false|string $availabilityId
+     */
+    public function readEntity(string|false $availabilityId, $resolveReferences = 0, $preferCache = false)
     {
         $cacheKey = "$availabilityId-$resolveReferences";
         if (!$preferCache || !array_key_exists($cacheKey, self::$cache)) {
@@ -28,6 +31,9 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return clone self::$cache[$cacheKey];
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
@@ -105,10 +111,10 @@ class Availability extends Base implements Interfaces\ResolveReferences
 
     public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         \DateTimeImmutable $startDate = null,
         \DateTimeImmutable $endDate = null
-    ) {
+    ): Collection {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
         $query
@@ -162,7 +168,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /*
     ** Returns a list of availabilities with end date older than 4 weeks
     */
-    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0)
+    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
@@ -183,7 +189,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $collection;
     }
 
-    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
+    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
@@ -245,12 +251,14 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * update an availability
      *
-     * @param
+     * @param 
      * entityId
      *
      * @return Entity
+     *
+     * @psalm-param 0|2 $resolveReferences
      */
-    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity, $resolveReferences = 0)
+    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity, int $resolveReferences = 0)
     {
         self::$cache = [];
         $entity->testValid();
@@ -265,12 +273,12 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * remove an availability
      *
-     * @param
+     * @param 
      * availabilityId
      *
-     * @return Resource Status
+     * @return bool Status
      */
-    public function deleteEntity($availabilityId)
+    public function deleteEntity($availabilityId): bool
     {
         self::$cache = [];
         $query =  new Query\Availability(Query\Base::DELETE);

@@ -10,11 +10,16 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusFree extends Process
 {
+    /**
+     * @return (Day|\BO\Zmsentities\Calendar|array)[]
+     *
+     * @psalm-return list{\BO\Zmsentities\Calendar, Day, list{0?: mixed,...}}
+     */
     private function prepareCalendarAndDays(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotsRequired = null
-    ) {
+        int|null $slotsRequired = null
+    ): array {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
@@ -32,9 +37,9 @@ class ProcessStatusFree extends Process
 
     private function getProcessDataHandle(
         array $days,
-        $slotType,
-        $slotsRequired,
-        $groupData
+        string $slotType,
+        int|null $slotsRequired,
+        bool $groupData
     ) {
         return $this->fetchHandle(
             sprintf(
@@ -53,10 +58,10 @@ class ProcessStatusFree extends Process
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = null,
+        string $slotType = 'public',
+        int|null $slotsRequired = null,
         $groupData = false
-    ) {
+    ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
         $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
         $processList = new Collection();
@@ -175,7 +180,7 @@ class ProcessStatusFree extends Process
         ];
     }
 
-    public function readReservedProcesses($resolveReferences = 2)
+    public function readReservedProcesses($resolveReferences = 2): Collection
     {
         $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);

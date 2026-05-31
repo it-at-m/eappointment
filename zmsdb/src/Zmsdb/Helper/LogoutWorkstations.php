@@ -9,11 +9,8 @@ class LogoutWorkstations
 {
     /**
      * logout all workstations
-     *
-     * @return Entity
      */
-
-    public static function init($verbose)
+    public static function init($verbose): void
     {
         $query = new \BO\Zmsdb\Query\Workstation(\BO\Zmsdb\Query\Base::SELECT);
         $query

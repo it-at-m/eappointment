@@ -13,9 +13,9 @@ use Exception;
 
 class ClientCreationException extends Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'An Exception with the cURL Client creation occurred.';
+    protected string $message = 'An Exception with the cURL Client creation occurred.';
 
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {

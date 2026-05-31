@@ -11,8 +11,10 @@ class Session extends Base
 
     /**
      * No resolving required here
+     *
+     * @var int
      */
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
     const QUERY_WRITE = '
         REPLACE INTO
@@ -31,7 +33,12 @@ class Session extends Base
             sessionname=?
     ';
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'session.sessionid', name: 'session.sessionname', content: 'session.sessioncontent'}
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'session.sessionid',
@@ -40,19 +47,19 @@ class Session extends Base
         ];
     }
 
-    public function addConditionSessionId($sessionId)
+    public function addConditionSessionId($sessionId): static
     {
         $this->query->where('session.sessionid', '=', $sessionId);
         return $this;
     }
 
-    public function addConditionSessionName($sessionName)
+    public function addConditionSessionName($sessionName): static
     {
         $this->query->where('session.sessionname', '=', $sessionName);
         return $this;
     }
 
-    public function addConditionSessionDeleteInterval($deleteInSeconds)
+    public function addConditionSessionDeleteInterval($deleteInSeconds): static
     {
         $this->query->where(
             self::expression(

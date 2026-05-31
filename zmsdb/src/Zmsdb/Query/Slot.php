@@ -230,17 +230,27 @@ class Slot extends Base implements MappingInterface
     ';
 
 
+    /**
+     * @return array
+     *
+     * @psalm-return array<never, never>
+     */
     public function getEntityMapping()
     {
         return [
         ];
     }
 
+    /**
+     * @return (mixed|string)[]
+     *
+     * @psalm-return array{scopeID: mixed, availabilityID: mixed, version: mixed, year: string, month: string, day: string, time: mixed, public: mixed, intern: mixed, status: mixed, slotTimeInMinutes: mixed}
+     */
     public function reverseEntityMapping(
         \BO\Zmsentities\Slot $slot,
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $date
-    ) {
+    ): array {
         $data = array();
         $data['scopeID'] = $availability->scope->id;
         $data['availabilityID'] = $availability->id;
@@ -256,7 +266,7 @@ class Slot extends Base implements MappingInterface
         return $data;
     }
 
-    public function addConditionSlotId($slotID)
+    public function addConditionSlotId($slotID): static
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;

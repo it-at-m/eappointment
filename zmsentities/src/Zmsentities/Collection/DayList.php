@@ -12,7 +12,7 @@ class DayList extends Base implements JsonUnindexed
      * ATTENTION: Performance critical, keep highly optimized
      *
      */
-    public function getDay($year, $month, $dayNumber, $createDay = true)
+    public function getDay(string $year, string $month, string $dayNumber, bool $createDay = true)
     {
         $dateHash = Day::getCalculatedDayHash($dayNumber, $month, $year);
         if ($this->offsetExists($dateHash)) {
@@ -52,13 +52,13 @@ class DayList extends Base implements JsonUnindexed
     }
 
 
-    public function hasDay($year, $month, $dayNumber)
+    public function hasDay($year, $month, $dayNumber): bool
     {
         $day = $this->getDay($year, $month, $dayNumber, false);
         return ($day === null) ? false : true;
     }
 
-    public function withAssociatedDays($currentDate)
+    public function withAssociatedDays(\DateTimeInterface $currentDate)
     {
         $dayList = new self();
         $lastDay = $currentDate->format('t');
@@ -70,7 +70,7 @@ class DayList extends Base implements JsonUnindexed
         return $dayList->sortByCustomKey('day');
     }
 
-    public function setStatusByType($slotType, \DateTimeInterface $dateTime)
+    public function setStatusByType($slotType, \DateTimeInterface $dateTime): static
     {
         foreach ($this as $day) {
             $day->getWithStatus($slotType, $dateTime);
@@ -78,7 +78,7 @@ class DayList extends Base implements JsonUnindexed
         return $this;
     }
 
-    public function withAddedDayList(DayList $dayList)
+    public function withAddedDayList(DayList $dayList): self
     {
         $merged = new DayList();
         foreach ($dayList as $day) {
@@ -92,7 +92,7 @@ class DayList extends Base implements JsonUnindexed
         return $merged;
     }
 
-    public function setSortByDate()
+    public function setSortByDate(): static
     {
         $this->uasort(function ($dayA, $dayB) {
             return (
@@ -103,7 +103,7 @@ class DayList extends Base implements JsonUnindexed
         return $this;
     }
 
-    public function setSort($property = 'day')
+    public function setSort($property = 'day'): static
     {
         $this->uasort(function ($dayA, $dayB) use ($property) {
             return strnatcmp($dayA[$property], $dayB[$property]);
@@ -111,7 +111,7 @@ class DayList extends Base implements JsonUnindexed
         return $this;
     }
 
-    public function hasDayWithAppointments()
+    public function hasDayWithAppointments(): bool
     {
         foreach ($this as $hash => $day) {
             $hash = null;
@@ -134,7 +134,7 @@ class DayList extends Base implements JsonUnindexed
         return null;
     }
 
-    public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
         foreach ($this as $day) {
@@ -148,7 +148,7 @@ class DayList extends Base implements JsonUnindexed
         return $list;
     }
 
-    public function withDaysFromPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function withDaysFromPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate): self
     {
         $list = new self();
         do {

@@ -35,7 +35,12 @@ class AvailabilityConflicts extends BaseController
         );
     }
 
-    protected static function getAvailabilityData($input)
+    /**
+     * @return (((((mixed|null)[]|mixed)[]|mixed)[]|mixed)[]|mixed)[][]
+     *
+     * @psalm-return array{conflictList: array<list{array{message: mixed, appointments: list{0?: array{startTime: mixed, endTime: mixed, availability: mixed|null},...}},...}>, conflictIdList: list{0?: mixed,...}}
+     */
+    protected static function getAvailabilityData($input): array
     {
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);

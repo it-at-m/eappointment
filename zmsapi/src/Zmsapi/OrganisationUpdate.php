@@ -13,14 +13,11 @@ use BO\Zmsdb\Organisation as Query;
 
 class OrganisationUpdate extends BaseController
 {
-    /**
-     * @return String
-     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Organisation($input);
         $organisation = (new Query())->readEntity($args['id'], 1);

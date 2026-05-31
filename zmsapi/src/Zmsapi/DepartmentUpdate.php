@@ -13,14 +13,11 @@ use BO\Zmsdb\Department as Query;
 
 class DepartmentUpdate extends BaseController
 {
-    /**
-     * @return String
-     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $workstation = (new Helper\User($request, 2));
         $department =  $workstation::checkDepartment($args['id']);

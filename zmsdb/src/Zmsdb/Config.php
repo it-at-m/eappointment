@@ -11,7 +11,7 @@ class Config extends Base
      *
      * @return \BO\Zmsentities\Config
      */
-    public function readEntity($disableCache = false)
+    public function readEntity(bool $disableCache = false)
     {
         $cacheKey = "config";
 
@@ -29,7 +29,7 @@ class Config extends Base
         return $config;
     }
 
-    public function updateEntity(Entity $config)
+    public function updateEntity(Entity $config): Entity|null
     {
         $compareEntity = $this->readEntity(true);
         $result = false;
@@ -63,7 +63,7 @@ class Config extends Base
         return ($result) ? $this->readEntity(true) : null;
     }
 
-    public function readProperty($property, $forUpdate = false)
+    public function readProperty(string $property, bool $forUpdate = false)
     {
         $sql = Query\Config::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {
@@ -72,7 +72,7 @@ class Config extends Base
         return $this->fetchValue($sql, [$property]);
     }
 
-    public function replaceProperty($property, $value)
+    public function replaceProperty(string $property, string $value)
     {
         if (App::$cache && App::$cache->has('config')) {
             App::$cache->delete('config');
@@ -87,10 +87,9 @@ class Config extends Base
     /**
      * remove config data
      *
-     *
-     * @return Resource Status
+     * @return bool Status
      */
-    public function deleteProperty($property)
+    public function deleteProperty($property): bool
     {
         $query = new Query\Config(Query\Base::DELETE);
         $query->addConditionName($property);
@@ -102,7 +101,7 @@ class Config extends Base
         return $this->deleteItem($query);
     }
 
-    protected function fetchData($querySql)
+    protected function fetchData(string $querySql): Entity
     {
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
@@ -112,7 +111,7 @@ class Config extends Base
         return new Entity($splittedHash);
     }
 
-    protected function getSpecifiedValue($value)
+    protected function getSpecifiedValue($value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;

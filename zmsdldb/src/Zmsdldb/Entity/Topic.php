@@ -12,7 +12,10 @@ namespace BO\Zmsdldb\Entity;
  */
 class Topic extends Base
 {
-    public function getServiceIds()
+    /**
+     * @psalm-return list{0?: mixed,...}
+     */
+    public function getServiceIds(): array
     {
         $serviceIds = array();
         foreach ($this['relation']['services'] as $service) {
@@ -21,12 +24,12 @@ class Topic extends Base
         return $serviceIds;
     }
 
-    public function isLinked()
+    public function isLinked(): bool
     {
         return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
-    public function getServiceLocationLinkList()
+    public function getServiceLocationLinkList(): \BO\Zmsdldb\Collection\Base
     {
         $list = new \BO\Zmsdldb\Collection\Base();
         $items = array(

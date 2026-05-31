@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Mail;
  */
 class MailDeleteFailed extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'Failed to delete mail';
+    protected string $message = 'Failed to delete mail';
 }

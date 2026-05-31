@@ -43,7 +43,7 @@ class Client
      * @return \Http\Client\Curl\Client
      * @throws ClientCreationException
      */
-    public static function getCurlClient($curlOptions): ClientInterface
+    public static function getCurlClient(array $curlOptions): ClientInterface
     {
         $curlOptions = $curlOptions + static::$curlopt;
         if (!isset($curlOptions[CURLOPT_USERAGENT])) {
@@ -64,7 +64,7 @@ class Client
         return $client;
     }
 
-    public function send(RequestInterface $request)
+    public function send(RequestInterface $request): ResponseInterface
     {
         return static::readResponse($request);
     }

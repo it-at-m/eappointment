@@ -6,7 +6,12 @@ use Error;
 
 class Service extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{id: 'id', name: 'name', hint: 'hint', leika: 'leika', fees: 'fees', 'appointment.link': 'appointment_all_link', responsibility: 'responsibility', responsibility_all: 'responsibility_all', description: 'description', processing_time: 'processing_time', 'relation.root_topic': 'root_topic_id', 'meta.locale': 'locale', residence: 'residence', representation: 'representation', authorities: 'authorities_json', onlineprocessing: 'onlineprocessing_json', relation: 'relation_json', __RAW__: 'data_json'}
+     */
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'hint' => 'hint',
@@ -28,7 +33,9 @@ class Service extends Base
     ];
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings (PHPMD.ExcessiveMethodLength)
+     *
+     * @return void
      */
     protected function setupMapping()
     {
@@ -264,6 +271,9 @@ class Service extends Base
         ];
     }
 
+    /**
+     * @return void
+     */
     public function preSetup()
     {
         try {

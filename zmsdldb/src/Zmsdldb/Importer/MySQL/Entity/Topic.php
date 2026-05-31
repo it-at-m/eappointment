@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Topic extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{id: 'id', name: 'name', 'meta.locale': 'locale', path: 'path', 'relation.navi': 'navi', 'relation.root': 'root', 'relation.rank': 'rank', __RAW__: 'data_json'}
+     */
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'meta.locale' => 'locale',
@@ -16,7 +21,9 @@ class Topic extends Base
     ];
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings (PHPMD.ExcessiveMethodLength)
+     *
+     * @return void
      */
     protected function setupMapping()
     {
@@ -157,7 +164,7 @@ class Topic extends Base
         \BO\Zmsdldb\Importer\MySQL\Entity\Topic $topic,
         string $tableName,
         string $whereField
-    ) {
+    ): bool {
         $topicId = $topic->get('id');
         try {
             $sql = "DELETE FROM " . $tableName . " WHERE " . $whereField . " = ?";
@@ -173,6 +180,9 @@ class Topic extends Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function preSetup()
     {
         try {

@@ -9,6 +9,11 @@ class Permission extends Base implements MappingInterface
      */
     const TABLE = 'permission';
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'permission.id', name: 'permission.name', description: 'permission.description'}
+     */
     public function getEntityMapping()
     {
         return [

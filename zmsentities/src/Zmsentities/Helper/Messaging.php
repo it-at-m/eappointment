@@ -24,12 +24,22 @@ use Twig\Extra\Intl\IntlExtension;
  */
 class Messaging
 {
-    public static $icsRequiredForStatus = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'confirmed', 'appointment'}
+     */
+    public static array $icsRequiredForStatus = [
         'confirmed',
         'appointment'
     ];
 
-    public static $allowEmptyProcesses = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'overview'}
+     */
+    public static array $allowEmptyProcesses = [
         'overview'
     ];
 
@@ -37,7 +47,7 @@ class Messaging
         \BO\Zmsentities\Config $config,
         \BO\Zmsentities\Process $process,
         $status
-    ) {
+    ): bool {
         $client = $process->getFirstClient();
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
@@ -49,12 +59,17 @@ class Messaging
         return (in_array($status, self::$icsRequiredForStatus));
     }
 
-    public static function isEmptyProcessListAllowed($status)
+    public static function isEmptyProcessListAllowed($status): bool
     {
         return (in_array($status, self::$allowEmptyProcesses));
     }
 
-    protected static $templates = array(
+    /**
+     * @var string[][]
+     *
+     * @psalm-var array{mail: array{queued: 'mail_queued.twig', appointment: 'mail_confirmation.twig', reminder: 'mail_reminder.twig', deleted: 'mail_delete.twig', blocked: 'mail_delete.twig', survey: 'mail_survey.twig', overview: 'mail_processlist_overview.twig', preconfirmed: 'mail_preconfirmed.twig'}, ics: array{appointment: 'icsappointment.twig', deleted: 'icsappointment_delete.twig'}, admin: array{deleted: 'mail_admin_delete.twig', blocked: 'mail_admin_delete.twig', updated: 'mail_admin_update.twig'}}
+     */
+    protected static array $templates = array(
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
@@ -107,7 +122,7 @@ class Messaging
         return $twig;
     }
 
-    protected static function dbTwigView($templateProvider)
+    protected static function dbTwigView($templateProvider): Environment
     {
         $loader = new \Twig\Loader\ArrayLoader($templateProvider->getTemplates());
         $twig = new \Twig\Environment($loader);
@@ -116,7 +131,7 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContentPreview($templateContent, $process)
+    public static function getMailContentPreview($templateContent, $process): string
     {
         $parameters = self::generateMailParameters(
             $process,
@@ -129,7 +144,7 @@ class Messaging
     }
 
     public static function getMailContent(
-        $processList,
+        Process|ProcessList $processList,
         Config $config,
         $initiator = null,
         $status = 'appointment',
@@ -157,7 +172,14 @@ class Messaging
         return $message;
     }
 
-    public static function generateMailParameters($processList, $config, $initiator, $status)
+    /**
+     * @psalm-param 'appointment' $status
+     *
+     * @return ((int|mixed)[][]|Client|\DateTimeImmutable|mixed|string)[]
+     *
+     * @psalm-return array{date: \DateTimeImmutable|mixed, client: Client|mixed, process: mixed, requestGroups: array<array{request: mixed, count: 0|1|2}>, processList: mixed, config: mixed, initiator: mixed, appointmentLink: string}
+     */
+    public static function generateMailParameters(ProcessList $processList, Config $config, $initiator, string $status): array
     {
         $collection = (new ProcessList())
             ->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
@@ -202,7 +224,7 @@ class Messaging
         \BO\Zmsentities\Collection\ProcessList $processList,
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $dateTime
-    ) {
+    ): string {
         $message = self::twigView()->render(
             'messaging/mail_scopeadmin_processlist.twig',
             array(
@@ -214,7 +236,10 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate($type, $status)
+    /**
+     * @psalm-param 'admin'|'ics'|'mail' $type
+     */
+    protected static function getTemplate(string $type, $status)
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -231,7 +256,7 @@ class Messaging
         $initiator = null,
         $status = 'appointment',
         $templateProvider = null
-    ) {
+    ): string {
         $appointment = $process->getFirstAppointment();
         $parameters = [
             'date' => $appointment ? $appointment->toDateTime()->format('U') : null,
@@ -258,9 +283,9 @@ class Messaging
         Config $config,
         $status = 'appointment',
         $initiator = null,
-        $now = false,
+        bool $now = false,
         $templateProvider = false
-    ) {
+    ): \BO\Zmsentities\Ics {
         $ics = new \BO\Zmsentities\Ics();
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
         $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider, $message);
@@ -324,7 +349,7 @@ class Messaging
         return self::getTextWithFoldedLines($icsString);
     }
 
-    public static function getPlainText($content, $lineBreak = "\n")
+    public static function getPlainText($content, $lineBreak = "\n"): string
     {
         $converter = new \League\HTMLToMarkdown\HtmlConverter();
         $converter->getConfig()->setOption('remove_nodes', 'script');
@@ -338,7 +363,7 @@ class Messaging
         return trim($text);
     }
 
-    public static function getTextWithFoldedLines($content)
+    public static function getTextWithFoldedLines(string $content): string
     {
         $newLines = [];
         $lines = explode("\n", $content);

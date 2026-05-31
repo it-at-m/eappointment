@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Ticketprinter;
  */
 class TicketprinterHashNotValid extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = 'No valid hash existing';
+    protected string $message = 'No valid hash existing';
 }

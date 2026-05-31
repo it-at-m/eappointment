@@ -6,7 +6,12 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeRequestscope extends Base
 {
-    protected $groupBy = array(
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{month: '%Y-%m', day: '%Y-%m-%d', hour: '%H-%i'}
+     */
+    protected array $groupBy = array(
         'month' => '%Y-%m',
         'day' => '%Y-%m-%d',
         'hour' => '%H-%i'
@@ -17,7 +22,7 @@ class ExchangeRequestscope extends Base
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'day'
-    ) {
+    ): Exchange {
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik " . $scope->contact->name . " " . $scope->shortName;
@@ -49,7 +54,7 @@ class ExchangeRequestscope extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeRequestscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -65,7 +70,7 @@ class ExchangeRequestscope extends Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();

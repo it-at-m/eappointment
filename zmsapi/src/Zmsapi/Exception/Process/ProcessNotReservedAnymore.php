@@ -7,6 +7,6 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class ProcessNotReservedAnymore extends \Exception
 {
-    protected $code = 404;
-    protected $message = 'Failed to confirm process. Maybe time of reservation went out.';
+    protected int $code = 404;
+    protected string $message = 'Failed to confirm process. Maybe time of reservation went out.';
 }

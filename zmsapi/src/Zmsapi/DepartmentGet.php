@@ -14,14 +14,13 @@ use BO\Zmsdb\Department as Query;
 class DepartmentGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new Query())->readEntity($args['id'], $resolveReferences);

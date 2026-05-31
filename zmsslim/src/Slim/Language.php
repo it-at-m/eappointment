@@ -7,7 +7,7 @@ use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
 class Language
 {
-    public static $supportedLanguages = array();
+    public static array $supportedLanguages = array();
 
     public $current = '';
 
@@ -72,7 +72,7 @@ class Language
         return $this->currentLocale;
     }
 
-    public function setCurrentLocale()
+    public function setCurrentLocale(): void
     {
         if (class_exists("Locale")) {
             \Locale::setDefault($this->currentLocale);
@@ -80,7 +80,12 @@ class Language
         \setlocale(LC_ALL, $this->getLocaleList($this->currentLocale));
     }
 
-    protected function getLocaleList($locale)
+    /**
+     * @return (mixed|string)[]
+     *
+     * @psalm-return array<mixed|string>
+     */
+    protected function getLocaleList($locale): array
     {
         $localeList[] = $this->getCurrentLanguage();
         $localeList[] = $locale;
@@ -122,7 +127,7 @@ class Language
         return $language;
     }
 
-    protected function getLanguageFromUri($request)
+    protected function getLanguageFromUri(RequestInterface $request)
     {
         $requestParamLang = $request->getParam('lang');
         return ($requestParamLang) ? $requestParamLang : $this->getDefault();

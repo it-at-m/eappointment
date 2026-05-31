@@ -14,7 +14,7 @@ class Helper
         return $query;
     }
 
-    public static function localeFilter($locale)
+    public static function localeFilter(string $locale)
     {
         $localeFilter = new \Elastica\Filter\Term(array(
             'meta.locale' => $locale
@@ -22,7 +22,7 @@ class Helper
         return $localeFilter;
     }
 
-    public static function idsFilter($ids)
+    public static function idsFilter(string $ids)
     {
         $filter = new \Elastica\Filter\Ids();
         $filter->setIds($ids);

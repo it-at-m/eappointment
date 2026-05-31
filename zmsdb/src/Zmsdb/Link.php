@@ -45,13 +45,11 @@ class Link extends Base
     /**
      * write a link
      *
-     * @param
+     * @param 
      * entity,
      * organisationId
-     *
-     * @return Entity
      */
-    public function writeEntity(Entity $entity, $departmentId)
+    public function writeEntity(Entity $entity, $departmentId): bool
     {
         $query = new Query\Link(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $departmentId);
@@ -64,7 +62,7 @@ class Link extends Base
         return $this->writeItem($query);
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId): bool
     {
         $query = new Query\Link(Query\Base::DELETE);
         $query->addConditionLinkId($itemId);

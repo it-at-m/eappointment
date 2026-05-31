@@ -12,7 +12,7 @@ namespace BO\Slim;
   */
 class Git
 {
-    public static function readCurrentHead()
+    public static function readCurrentHead(): string|null
     {
         $headString = "no version control";
         $githead = \App::APP_PATH . '/.git/HEAD';
@@ -36,7 +36,12 @@ class Git
         return $githash;
     }
 
-    public static function readCurrentVersion()
+    /**
+     * @return null|string|string[]
+     *
+     * @psalm-return array<string>|null|string
+     */
+    public static function readCurrentVersion(): array|string|null
     {
         $headString = static::readCurrentHead();
         $headString = preg_replace('#refs/heads/#', '', $headString);

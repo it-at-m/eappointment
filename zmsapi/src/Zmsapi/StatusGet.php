@@ -13,14 +13,13 @@ use BO\Zmsdb\Status;
 class StatusGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $includeProcessStats = $validator->getParameter('includeProcessStats')->isNumber()->setDefault(1)->getValue();
         $status = (new Status())->readEntity(\App::$now, $includeProcessStats);

@@ -95,7 +95,7 @@ class WorkstationRequests
     }
 
 
-    public function readNextProcess($excludedIds)
+    public function readNextProcess($excludedIds): \BO\Zmsentities\Schema\Entity|false|null
     {
         if ($this->workstation->isClusterEnabled()) {
             $process = $this->http

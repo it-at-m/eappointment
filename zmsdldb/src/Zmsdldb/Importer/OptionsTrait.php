@@ -11,7 +11,7 @@ trait OptionsTrait
         return $this->options & $optionFlag;
     }
 
-    protected function setOptions(int $options = 0)
+    protected function setOptions(int $options = 0): void
     {
         $this->options = $options;
     }

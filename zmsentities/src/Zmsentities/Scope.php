@@ -13,8 +13,13 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "scope.json";
+    public static string $schema = "scope.json";
 
+    /**
+     * @return (Contact|DayoffList|Provider|int|string)[]
+     *
+     * @psalm-return array{id: 0, source: 'dldb', contact: Contact, provider: Provider, shortName: '', dayoff: DayoffList}
+     */
     public function getDefaults()
     {
         return [
@@ -103,7 +108,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     }
 
 
-    public function getProvider()
+    public function getProvider(): Provider
     {
         if (!isset($this->provider)) {
             throw new Exception\ScopeMissingProvider("Provider is missing", 500);
@@ -124,7 +129,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getProvider()->id;
     }
 
-    public function getDayoffList()
+    public function getDayoffList(): DayoffList
     {
         if (!isset($this->dayoff) || !$this->dayoff instanceof Collection\DayoffList) {
             $this->dayoff = (!isset($this->dayoff) || !is_array($this->dayoff)) ? [] : $this->dayoff;
@@ -138,7 +143,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->dayoff;
     }
 
-    public function getClosureList()
+    public function getClosureList(): ClosureList
     {
         if (!isset($this->closure) || !$this->closure instanceof Collection\ClosureList) {
             $this->closure = (!isset($this->closure) || !is_array($this->closure)) ? [] : $this->closure;
@@ -157,13 +162,22 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getProvider()->getRequestList();
     }
 
-    public function getPreference($preferenceKey, $index, $isBool = false, $default = null)
+    /**
+     * @param false|null|string $isBool
+     *
+     * @psalm-param 'appointment'|'client'|'queue' $preferenceKey
+     * @psalm-param ''|false|null $isBool
+     */
+    public function getPreference(string $preferenceKey, string $index, string|false|null $isBool = false, $default = null)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
         return ($isBool) ? ($preference ? 1 : 0) : $preference;
     }
 
-    public function getStatus($statusKey, $index)
+    /**
+     * @psalm-param 'queue' $statusKey
+     */
+    public function getStatus(string $statusKey, string $index)
     {
         return $this->toProperty()->status->$statusKey->$index->get();
     }
@@ -270,7 +284,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($scopeEndDate) ? $now->modify('+' . $scopeEndDate . 'days') : $now;
     }
 
-    public function updateStatusQueue(\DateTimeInterface $dateTime)
+    public function updateStatusQueue(\DateTimeInterface $dateTime): static
     {
         $lastQueueUpdateDate = Helper\DateTime::create()
             ->setTimestamp($this->getStatus('queue', 'lastGivenNumberTimestamp'));
@@ -290,7 +304,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
-    public function incrementDisplayNumber()
+    public function incrementDisplayNumber(): static
     {
         if ($this->getStatus('queue', 'lastDisplayNumber') >= $this->getStatus('queue', 'maxDisplayNumber')) {
             $this->setStatusQueue('lastDisplayNumber', 1);
@@ -301,25 +315,28 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
-    public function hasEmailFrom()
+    public function hasEmailFrom(): bool
     {
         $emailFrom = $this->getPreference('client', 'emailFrom');
         return ($emailFrom) ? true : false;
     }
 
-    public function isEmailRequired()
+    public function isEmailRequired(): bool
     {
         $emailFrom = $this->getPreference('client', 'emailFrom');
         $emailRequired = $this->getPreference('client', 'emailRequired');
         return ($emailFrom && $emailRequired) ? true : false;
     }
 
-    public function isTelephoneRequired()
+    public function isTelephoneRequired(): bool
     {
         $telephoneRequired = $this->getPreference('client', 'telephoneRequired');
         return $telephoneRequired ? true : false;
     }
 
+    /**
+     * @return bool
+     */
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser']) ||  $useraccount->hasScope($this->id);
@@ -328,6 +345,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData(array $keepArray = [])
     {
@@ -345,13 +363,13 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $entity;
     }
 
-    public function setStatusQueue($key, $value)
+    public function setStatusQueue(string $key, int $value): static
     {
         $this->status['queue'][$key] = $value;
         return $this;
     }
 
-    public function setStatusAvailability($key, $value)
+    public function setStatusAvailability($key, $value): static
     {
         $this->status['availability'][$key] = $value;
         return $this;

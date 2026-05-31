@@ -14,14 +14,13 @@ use BO\Zmsdb\Provider;
 class ProviderGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $requestInterface,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $provider = (new Provider())->readEntity($args['source'], $args['id'], $resolveReferences);
         if (! $provider->hasId()) {

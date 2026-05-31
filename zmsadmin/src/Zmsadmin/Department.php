@@ -65,7 +65,7 @@ class Department extends BaseController
         );
     }
 
-    protected function withCleanupLinks(array $input)
+    protected function withCleanupLinks(array $input): array
     {
         if (!isset($input['links'])) {
             return $input;
@@ -83,7 +83,7 @@ class Department extends BaseController
         return $input;
     }
 
-    protected function withCleanupDayoffs(array $input)
+    protected function withCleanupDayoffs(array $input): array
     {
         if (!isset($input['dayoff'])) {
             return $input;
@@ -96,7 +96,7 @@ class Department extends BaseController
         return $input;
     }
 
-    private function withEmailReminderDefaultValues(array $input)
+    private function withEmailReminderDefaultValues(array $input): array
     {
         if ($input['sendEmailReminderMinutesBefore'] === '') {
             $input['sendEmailReminderMinutesBefore'] = null;

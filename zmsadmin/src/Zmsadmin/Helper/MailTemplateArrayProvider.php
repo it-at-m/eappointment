@@ -20,7 +20,7 @@ class MailTemplateArrayProvider
         return $this->templates;
     }
 
-    public function setTemplates($templates)
+    public function setTemplates(array $templates): void
     {
         $this->templates = $templates;
     }

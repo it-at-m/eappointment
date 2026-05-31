@@ -9,6 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class RoleDelete extends BaseController
 {
+    /**
+     * @return ResponseInterface
+     */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

@@ -12,7 +12,7 @@ class Availability extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "availability.json";
+    public static string $schema = "availability.json";
 
     /**
      * @var array $weekday english localized weekdays to avoid problems with setlocale()
@@ -41,6 +41,10 @@ class Availability extends Schema\Entity
 
     /**
      * Set Default values
+     *
+     * @return (((int|string)[]|int|string)[]|int|string|true)[]
+     *
+     * @psalm-return array{id: 0, weekday: array<0>, repeat: array{afterWeeks: 1, weekOfMonth: 0}, bookable: array{startInDays: 1, endInDays: 60}, workstationCount: array{public: 0, intern: 0}, lastChange: 0, multipleSlotsAllowed: true, slotTimeInMinutes: 10, startDate: 0, endDate: 0, startTime: '0:00', endTime: '23:59', type: 'appointment', version: 1, scope: array{id: 123, provider: array{id: 0, name: '', source: ''}, shortName: ''}}
      */
     public function getDefaults()
     {
@@ -102,7 +106,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function hasBookableDates(\DateTimeInterface $now)
+    public function hasBookableDates(\DateTimeInterface $now): array|false
     {
         if ($this->workstationCount['intern'] <= 0) {
             return false;
@@ -171,14 +175,13 @@ class Availability extends Schema\Entity
      *
      * @param \DateTimeInterface $dateTime
      * @param String $type of "openinghours", "appointment" or false to ignore type
-     *
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = false)
+    public function isOpened(\DateTimeInterface $dateTime, $type = false): bool
     {
         return (!$this->isOpenedOnDate($dateTime, $type) || !$this->hasTime($dateTime)) ? false : true;
     }
 
-    public function hasWeekDay(\DateTimeInterface $dateTime)
+    public function hasWeekDay(\DateTimeInterface $dateTime): bool
     {
         $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
         if (!$this['weekday'][$weekDayName]) {
@@ -188,7 +191,7 @@ class Availability extends Schema\Entity
         return true;
     }
 
-    public function hasAppointment(Appointment $appointment)
+    public function hasAppointment(Appointment $appointment): bool
     {
         $dateTime = $appointment->toDateTime();
         $isOpenedStart = $this->isOpened($dateTime, false);
@@ -434,7 +437,7 @@ class Availability extends Schema\Entity
     /**
      * Check, if a day between two dates is included
      *
-     * @return Array of arrays with the keys time, public, intern
+     * @return bool of arrays with the keys time, public, intern
      */
     public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
@@ -665,9 +668,9 @@ class Availability extends Schema\Entity
     /**
      * Creates a list of slots available on a valid day
      *
-     * @return Array of arrays with the keys time, public, intern
+     * @return Collection\SlotList of arrays with the keys time, public, intern
      */
-    public function getSlotList()
+    public function getSlotList(): Collection\SlotList
     {
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
@@ -693,9 +696,9 @@ class Availability extends Schema\Entity
     /**
      * Get problems on configuration of this availability
      *
-     * @return Collection\ProcessList with processes in status "conflict"
+     * @return Process|false with processes in status "conflict"
      */
-    public function getConflict()
+    public function getConflict(): Process|false
     {
         $start = $this->getStartDateTime()->getSecondsOfDay();
         $end = $this->getEndDateTime()->getSecondsOfDay();
@@ -716,9 +719,8 @@ class Availability extends Schema\Entity
 
     /**
      * Check of a different availability has the same opening configuration
-     *
      */
-    public function isMatchOf(Availability $availability)
+    public function isMatchOf(Availability $availability): bool
     {
         return ($this->type != $availability->type
             || $this->startTime != $availability->startTime
@@ -737,7 +739,7 @@ class Availability extends Schema\Entity
         ) ? false : true;
     }
 
-    public function hasSharedWeekdayWith(Availability $availability)
+    public function hasSharedWeekdayWith(Availability $availability): bool
     {
         return ($this->type == $availability->type
             && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
@@ -936,7 +938,7 @@ class Availability extends Schema\Entity
         return $availability;
     }
 
-    public function withScope(\BO\Zmsentities\Scope $scope)
+    public function withScope(\BO\Zmsentities\Scope $scope): static
     {
         $availability = clone $this;
         $availability->scope = $scope;
@@ -995,6 +997,7 @@ class Availability extends Schema\Entity
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData(array $keepArray = [])
     {

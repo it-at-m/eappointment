@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/officeServiceRelation.json';
+    public static string $schema = 'citizenapi/officeServiceRelation.json';
 
     public int $officeId;
     public int $serviceId;
@@ -37,6 +37,9 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

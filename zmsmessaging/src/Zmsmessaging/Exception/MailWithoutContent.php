@@ -4,7 +4,7 @@ namespace BO\Zmsmessaging\Exception;
 
 class MailWithoutContent extends \Exception
 {
-    protected $code = 428;
+    protected int $code = 428;
 
-    protected $message = 'Queue entry without message content failure';
+    protected string $message = 'Queue entry without message content failure';
 }

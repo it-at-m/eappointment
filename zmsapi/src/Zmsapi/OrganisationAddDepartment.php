@@ -14,14 +14,13 @@ use BO\Zmsdb\Department as Query;
 class OrganisationAddDepartment extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new \BO\Zmsdb\Organisation())->readEntity($args['id'], 1);
         (new Helper\User($request, 2))->checkRights(

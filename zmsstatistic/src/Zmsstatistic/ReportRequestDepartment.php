@@ -13,11 +13,21 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportRequestDepartment extends BaseController
 {
-    protected $hashset = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'requestscount'}
+     */
+    protected array $hashset = [
         'requestscount'
     ];
 
-    protected $groupfields = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'name', 'date'}
+     */
+    protected array $groupfields = [
         'name',
         'date'
     ];

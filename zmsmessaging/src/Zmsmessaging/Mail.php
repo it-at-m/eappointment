@@ -33,7 +33,12 @@ class Mail extends BaseController
         }
     }
 
-    public function initQueueTransmission($action = false)
+    /**
+     * @return (mixed|string[])[]
+     *
+     * @psalm-return list{0?: array{errorInfo: string}|mixed,...}
+     */
+    public function initQueueTransmission($action = false): array
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
@@ -110,7 +115,12 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    public function sendQueueItems($action, array $itemIds)
+    /**
+     * @return ((array|mixed|null|string)[]|string)[]
+     *
+     * @psalm-return array{0?: array{errorInfo?: mixed|string, mailId: mixed, processId: mixed|null, id?: mixed|string, createTimestamp?: mixed, recipients?: array, mime?: string, attachments?: array, customHeaders?: array}, errorInfo?: 'Failed to fetch mail data'|'No mail items found',...}
+     */
+    public function sendQueueItems($action, array $itemIds): array
     {
         $endpoint = '/mails/';
         $params = [
@@ -252,10 +262,10 @@ class Mail extends BaseController
     }
 
     /**
-     * @SuppressWarnings("CyclomaticComplexity")
-     * @SuppressWarnings("NPathComplexity")
+     * @SuppressWarnings ("CyclomaticComplexity")
+     * @SuppressWarnings ("NPathComplexity")
      */
-    protected function readMailer(\BO\Zmsentities\Mail $entity)
+    protected function readMailer(\BO\Zmsentities\Mail $entity): PHPMailer
     {
         $this->testEntity($entity);
         $encoding = 'base64';
@@ -313,7 +323,12 @@ class Mail extends BaseController
         return $mailer;
     }
 
-    private function startProcess($command, $ids)
+    /**
+     * @return (mixed|resource|resource[])[]|null
+     *
+     * @psalm-return array{process: resource, pipes: array<resource>, ids: mixed}|null
+     */
+    private function startProcess(string $command, string $ids): array|null
     {
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin

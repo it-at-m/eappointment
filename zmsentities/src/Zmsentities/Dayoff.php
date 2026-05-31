@@ -6,8 +6,13 @@ class Dayoff extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "dayoff.json";
+    public static string $schema = "dayoff.json";
 
+    /**
+     * @return (int|string)[]
+     *
+     * @psalm-return array{date: 1447924981, name: ''}
+     */
     public function getDefaults()
     {
         return [
@@ -16,7 +21,7 @@ class Dayoff extends Schema\Entity
         ];
     }
 
-    public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
+    public function setTimestampFromDateformat($fromFormat = 'd.m.Y'): static
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
         if ($dateTime) {
@@ -25,7 +30,7 @@ class Dayoff extends Schema\Entity
         return $this;
     }
 
-    public function getDateTime()
+    public function getDateTime(): Helper\DateTime
     {
         return (new \BO\Zmsentities\Helper\DateTime())->setTimestamp($this->date);
     }
@@ -43,7 +48,7 @@ class Dayoff extends Schema\Entity
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
 
-    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now)
+    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now): bool
     {
         return $availabiliy->isBookable($this->getDateTime(), $now);
     }

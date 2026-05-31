@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Exception\Process;
 
 class ProcessCreateFailed extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'Failed to create process.';
+    protected string $message = 'Failed to create process.';
 }

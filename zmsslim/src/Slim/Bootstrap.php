@@ -23,9 +23,9 @@ use Psr\Log\LoggerInterface;
 
 class Bootstrap
 {
-    protected static $instance = null;
+    protected static self|null $instance = null;
 
-    public static function init()
+    public static function init(): void
     {
         Profiler::init();
         $bootstrap = self::getInstance();
@@ -84,19 +84,22 @@ class Bootstrap
         return false;
     }
 
-    public static function getInstance()
+    public static function getInstance(): self
     {
         self::$instance = (self::$instance instanceof Bootstrap) ? self::$instance : new self();
         return self::$instance;
     }
 
-    protected function configureAppStatics()
+    protected function configureAppStatics(): void
     {
         if (getenv('ZMS_URL_SIGNATURE_KEY') !== false) {
             App::$urlSignatureSecret = getenv('ZMS_URL_SIGNATURE_KEY');
         }
     }
 
+    /**
+     * @return never
+     */
     protected function configureLocale(
         $charset = App::CHARSET,
         $timezone = App::TIMEZONE
@@ -202,7 +205,7 @@ class Bootstrap
         App::$log = App::$log;
     }
 
-    protected function configureSlim()
+    protected function configureSlim(): void
     {
         $container = $this->buildContainer();
 
@@ -261,7 +264,10 @@ class Bootstrap
         );
     }
 
-    public static function readCacheDir()
+    /**
+     * @return false|string
+     */
+    public static function readCacheDir(): string|false
     {
         $path = false;
         if (App::TWIG_CACHE) {
@@ -278,26 +284,29 @@ class Bootstrap
         return $path;
     }
 
-    public static function addTwigExtension($extension)
+    public static function addTwigExtension(\Symfony\Bridge\Twig\Extension\TranslationExtension $extension): void
     {
         /** @var Twig $twig */
         $twig = App::$slim->getContainer()->get('view');
         $twig->addExtension($extension);
     }
 
-    public static function addTwigFilter($filter)
+    public static function addTwigFilter($filter): void
     {
         $twig = App::$slim->getContainer()->get('view');
         $twig->getEnvironment()->addFilter($filter);
     }
 
-    public static function addTwigTemplateDirectory($namespace, $path)
+    public static function addTwigTemplateDirectory($namespace, $path): void
     {
         $twig = App::$slim->getContainer()->get('view');
         $loader = $twig->getLoader();
         $loader->addPath($path, $namespace);
     }
 
+    /**
+     * @return void
+     */
     public static function loadRouting($filename)
     {
         $container = App::$slim->getContainer();

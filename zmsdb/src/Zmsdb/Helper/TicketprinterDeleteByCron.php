@@ -7,8 +7,13 @@ namespace BO\Zmsdb\Helper;
  */
 class TicketprinterDeleteByCron
 {
-    protected $verbose = false;
+    protected bool $verbose = false;
 
+    /**
+     * @var \DateTimeImmutable|int
+     *
+     * @psalm-var 0|\DateTimeImmutable
+     */
     protected $deleteDateTime = 0;
 
     public function __construct($verbose = false)
@@ -23,7 +28,7 @@ class TicketprinterDeleteByCron
         $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         $ticketprinterList = (new \BO\Zmsdb\Ticketprinter())->readExpiredTicketprinterList($this->deleteDateTime);
         foreach ($ticketprinterList as $entity) {
@@ -36,7 +41,7 @@ class TicketprinterDeleteByCron
         }
     }
 
-    protected function deleteTicketpinter(\BO\Zmsentities\Ticketprinter $entity)
+    protected function deleteTicketpinter(\BO\Zmsentities\Ticketprinter $entity): void
     {
         $query = new \BO\Zmsdb\Ticketprinter();
         if ($query->deleteEntity($entity->id) && $this->verbose) {

@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Meta extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{object_id: 'object_id', hash: 'hash', locale: 'locale', lastupdate: 'lastupdate', keywords: 'keywords', url: 'url', type: 'type', titles: 'titles_json'}
+     */
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'hash' => 'hash',
         'locale' => 'locale',
@@ -15,6 +20,9 @@ class Meta extends Base
         'titles' => 'titles_json'
     ];
 
+    /**
+     * @return void
+     */
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -68,6 +76,9 @@ class Meta extends Base
         ];
     }
 
+    /**
+     * @return void
+     */
     public function postSetupFields()
     {
         if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {

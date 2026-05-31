@@ -65,7 +65,7 @@ class Render
         return self::$response;
     }
 
-    public static function withXml(ResponseInterface $response, $data, $status = 200)
+    public static function withXml(ResponseInterface $response, $data, $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
@@ -75,7 +75,7 @@ class Render
         return $response;
     }
 
-    public static function withJson(ResponseInterface $response, $data, $status = 200)
+    public static function withJson(ResponseInterface $response, $data, $status = 200): ResponseInterface
     {
         Profiler::add("Controller");
         $response = $response->withStatus($status);
@@ -112,7 +112,7 @@ class Render
      * @return ResponseInterface           A new PSR7 response object with `Last-Modified` header
      * @throws InvalidArgumentException if the last modified date cannot be parsed
      */
-    public static function withLastModified(ResponseInterface $response, $date, $expires = '+5 minutes')
+    public static function withLastModified(ResponseInterface $response, string $date, string $expires = '+5 minutes')
     {
         return self::getCachableResponse($response, $date, $expires);
     }

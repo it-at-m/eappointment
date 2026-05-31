@@ -8,7 +8,7 @@ use BO\Zmsdb\ProcessStatusArchived;
 
 class CleanProcessArchivedToday
 {
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     public function __construct($verbose = false)
     {
@@ -18,14 +18,14 @@ class CleanProcessArchivedToday
         }
     }
 
-    protected function log($message)
+    protected function log(string $message): void
     {
         if ($this->verbose) {
             \App::$log->info($message);
         }
     }
 
-    public static function startProcessing($commit = false)
+    public static function startProcessing($commit = false): void
     {
         $logRepo = new ProcessStatusArchived();
         if ($commit) {

@@ -12,9 +12,10 @@ class Status
 {
     /**
      * throws exception on critical status variables
-     * @SuppressWarnings(Complexity)
+     *
+     * @SuppressWarnings (Complexity)
      */
-    public static function testStatus(ResponseInterface $response, $status)
+    public static function testStatus(ResponseInterface $response, $status): ResponseInterface
     {
         $result = '';
         if ($status instanceof \Closure) {
@@ -82,7 +83,7 @@ class Status
         return $response;
     }
 
-    public static function getDldbUpdateStats($status)
+    public static function getDldbUpdateStats($status): string
     {
         $result = '';
         if (isset($status['sources'])) {

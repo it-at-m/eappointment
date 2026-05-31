@@ -8,7 +8,7 @@ class ExchangeSlotscope extends Base
 {
     public function readEntity(
         $subjectid
-    ) {
+    ): Exchange {
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung " . $scope->contact->name . " " . $scope->shortName;
@@ -37,7 +37,7 @@ class ExchangeSlotscope extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeSlotscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -53,9 +53,9 @@ class ExchangeSlotscope extends Base
     }
 
     /**
-     * @SuppressWarnings(Unused)
+     * @SuppressWarnings (Unused)
      */
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung ";

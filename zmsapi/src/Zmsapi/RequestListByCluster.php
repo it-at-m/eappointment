@@ -14,14 +14,13 @@ use BO\Zmsdb\Request;
 class RequestListByCluster extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $cluster = (new \BO\Zmsdb\Cluster())->readEntity($args['id'], $resolveReferences ? $resolveReferences : 2);
         if (! $cluster) {

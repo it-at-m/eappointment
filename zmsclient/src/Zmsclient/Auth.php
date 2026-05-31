@@ -9,14 +9,12 @@ use App;
  */
 class Auth
 {
-    private static $cookieName = 'X-AuthKey';
+    private static string $cookieName = 'X-AuthKey';
 
     /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @SuppressWarnings (Superglobals)
      */
-    public static function setKey($authKey, $expires = 0)
+    public static function setKey($authKey, $expires = 0): void
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
@@ -35,11 +33,11 @@ class Auth
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @return null|string
      */
-    public static function getKey()
+    public static function getKey(): string|null
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             return $_COOKIE[self::getCookieName()];
@@ -48,11 +46,9 @@ class Auth
     }
 
     /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @SuppressWarnings (Superglobals)
      */
-    public static function removeKey()
+    public static function removeKey(): void
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             $oldKey = $_COOKIE[self::getCookieName()];
@@ -76,17 +72,15 @@ class Auth
         return self::$cookieName;
     }
 
-    protected static function getOidcName()
+    protected static function getOidcName(): string
     {
         return 'OIDC';
     }
 
     /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @SuppressWarnings (Superglobals)
      */
-    public static function setOidcProvider($provider)
+    public static function setOidcProvider($provider): void
     {
         $_COOKIE[self::getOidcName()] = $provider; // for access in the same process
         if (!headers_sent()) {
@@ -95,11 +89,11 @@ class Auth
     }
 
      /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @return false|string
      */
-    public static function getOidcProvider()
+    public static function getOidcProvider(): string|false
     {
         if (array_key_exists(self::getOidcName(), $_COOKIE)) {
             return $_COOKIE[self::getOidcName()];
@@ -108,11 +102,9 @@ class Auth
     }
 
     /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @SuppressWarnings (Superglobals)
      */
-    public static function removeOidcProvider()
+    public static function removeOidcProvider(): void
     {
         if (array_key_exists(self::getOidcName(), $_COOKIE)) {
             unset($_COOKIE[self::getOidcName()]);

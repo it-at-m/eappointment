@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Calldisplay;
  */
 class ScopeAndClusterNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Could not find any scope or cluster in calldisplay entity';
+    protected string $message = 'Could not find any scope or cluster in calldisplay entity';
 }

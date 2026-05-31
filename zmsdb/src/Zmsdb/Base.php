@@ -28,8 +28,9 @@ abstract class Base
     /**
      * Make sure, we do not cache statements on different connections
      *
+     * @var null|string
      */
-    protected static $preparedConnectionId = null;
+    protected static string|null $preparedConnectionId = null;
 
     /**
      * @param \PDO $writeConnection
@@ -41,16 +42,16 @@ abstract class Base
         $this->readDb = $readConnection;
     }
 
-    public static function init(\PDO $writeConnection = null, \PDO $readConnection = null)
+    public static function init(\PDO $writeConnection = null, \PDO $readConnection = null): static
     {
         $instance = new static($writeConnection, $readConnection);
         return $instance;
     }
 
     /**
-     * @return \PDO
+     * @return Connection\PdoInterface|\PDO
      */
-    public function getWriter()
+    public function getWriter(): \PDO|Connection\PdoInterface
     {
         if (null === $this->writeDb) {
             $this->writeDb = Connection\Select::getWriteConnection();
@@ -60,9 +61,9 @@ abstract class Base
     }
 
     /**
-     * @return \PDO
+     * @return Connection\PdoInterface|\PDO
      */
-    public function getReader()
+    public function getReader(): \PDO|Connection\PdoInterface
     {
         if (null !== $this->writeDb) {
             // if readDB gets a reset, still use writeDB
@@ -74,7 +75,7 @@ abstract class Base
         return $this->readDb;
     }
 
-    public function fetchPreparedStatement($query)
+    public function fetchPreparedStatement(Query\Base $query)
     {
         $sql = "$query";
         $reader = $this->getReader();
@@ -90,7 +91,7 @@ abstract class Base
         return static::$preparedCache[$sql];
     }
 
-    public function startExecute($statement, $parameters)
+    public function startExecute($statement, array $parameters)
     {
         $statement = static::pdoExceptionHandler(function () use ($statement, $parameters) {
             $statement->execute($parameters);
@@ -131,7 +132,7 @@ abstract class Base
         return $statement;
     }
 
-    public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity): \BO\Zmsentities\Schema\Entity
     {
         $statement = $this->fetchStatement($query);
         $data = $statement->fetch(\PDO::FETCH_ASSOC);
@@ -143,7 +144,12 @@ abstract class Base
         return $entity;
     }
 
-    public function fetchRow($query, $parameters = null)
+    /**
+     * @param (mixed|string)[]|null $parameters
+     *
+     * @psalm-param array{scopeID?: mixed, availabilityID?: mixed, year?: string, month?: string, day?: string, time?: mixed}|null $parameters
+     */
+    public function fetchRow(string $query, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($query, $parameters) {
             $prepared = $this->fetchPreparedStatement($query);
@@ -154,7 +160,12 @@ abstract class Base
         });
     }
 
-    public function fetchValue($query, $parameters = null)
+    /**
+     * @param (int|mixed|string)[]|null $parameters
+     *
+     * @psalm-param array{0?: mixed, from?: string, until?: string, entityName?: mixed, entityId?: mixed, groupName?: mixed, name?: mixed, processId?: int}|null $parameters
+     */
+    public function fetchValue(string $query, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($query, $parameters) {
             $prepared = $this->fetchPreparedStatement($query);
@@ -165,7 +176,12 @@ abstract class Base
         });
     }
 
-    public function fetchAll($query, $parameters = null)
+    /**
+     * @param (mixed|string)[]|null $parameters
+     *
+     * @psalm-param array{scopeid?: string, generalSearch?: string, start?: string, end?: string, ua_yes?: '%Sachbearbeiter*in%', ua_system?: '%Sachbearbeiter*in\":\"_system_%', from?: string, until?: string, updatedAfter?: string, scopeID?: mixed, year?: string, month?: string, day?: string}|null $parameters
+     */
+    public function fetchAll(string $query, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($query, $parameters) {
             $prepared = $this->fetchPreparedStatement($query);
@@ -176,7 +192,12 @@ abstract class Base
         });
     }
 
-    public function fetchHandle($query, $parameters = null)
+    /**
+     * @param (int|mixed)[]|null $parameters
+     *
+     * @psalm-param array{slotType: mixed, forceRequiredSlots: int}|null $parameters
+     */
+    public function fetchHandle(string $query, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($query, $parameters) {
             $prepared = $this->fetchPreparedStatement($query);
@@ -185,7 +206,10 @@ abstract class Base
         });
     }
 
-    public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity, $resultList = [])
+    /**
+     * @param \BO\Zmsentities\Collection\EventLogList|\BO\Zmsentities\Collection\QueueList|array $resultList
+     */
+    public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity, array|\BO\Zmsentities\Collection\EventLogList|\BO\Zmsentities\Collection\QueueList $resultList = [])
     {
         $statement = $this->fetchStatement($query);
         while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -224,7 +248,7 @@ abstract class Base
         return $this->writeItem($query);
     }
 
-    public function perform($sql, $parameters = null)
+    public function perform(string $sql, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($sql, $parameters) {
             $this->getWriter(); //Switch to writer for perform
@@ -235,7 +259,12 @@ abstract class Base
         });
     }
 
-    public function fetchAffected($sql, $parameters = null)
+    /**
+     * @param (mixed|string)[]|null $parameters
+     *
+     * @psalm-param array{email?: mixed, departmentId?: mixed, sendEmailReminderEnabled?: mixed, sendEmailReminderMinutesBefore?: mixed, availabilityID?: mixed, providedDate?: mixed|string}|null $parameters
+     */
+    public function fetchAffected(string $sql, array|null $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($sql, $parameters) {
             $this->getWriter(); //Switch to writer for perform
@@ -248,11 +277,13 @@ abstract class Base
     }
 
     /**
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
+     *
      * @codeCoverageIgnore
      *
+     * @return \BO\Zmsentities\Schema\Entity
      */
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, int $resolveReferences)
     {
         return $entity;
     }

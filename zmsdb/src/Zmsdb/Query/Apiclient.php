@@ -12,6 +12,11 @@ class Apiclient extends Base implements MappingInterface
      */
     const TABLE = 'apiclient';
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{apiClientID: 'apiclient.apiClientID', clientKey: 'apiclient.clientKey', shortname: 'apiclient.shortname', accesslevel: 'apiclient.accesslevel', lastChange: 'apiclient.updateTimestamp'}
+     */
     public function getEntityMapping()
     {
         $mapping = [
@@ -24,7 +29,7 @@ class Apiclient extends Base implements MappingInterface
         return $mapping;
     }
 
-    public function addConditionApiclientKey($clientKey)
+    public function addConditionApiclientKey($clientKey): static
     {
         $this->query->where('apiclient.clientKey', '=', $clientKey);
         return $this;

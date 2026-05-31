@@ -87,7 +87,7 @@ class Topic extends Base
         }
     }
 
-    public function readSearchResultList($query)
+    public function readSearchResultList($query): Collection
     {
         try {
             #$query = '+' . implode(' +', explode(' ', $query));

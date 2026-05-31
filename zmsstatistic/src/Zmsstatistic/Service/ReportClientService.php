@@ -14,7 +14,12 @@ use Exception;
 
 class ReportClientService
 {
-    protected $totals = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'clientscount', 'missed', 'withappointment', 'missedwithappointment', 'noappointment', 'missednoappointment', 'ticketprinter', 'ticketprintermissed', 'requestscount'}
+     */
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',

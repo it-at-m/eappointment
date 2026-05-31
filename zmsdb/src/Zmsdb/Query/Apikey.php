@@ -14,6 +14,9 @@ class Apikey extends Base implements MappingInterface
 
     const QUOTATABLE = 'apiquota';
 
+    /**
+     * @return void
+     */
     protected function addRequiredJoins()
     {
         $this->leftJoin(
@@ -25,6 +28,11 @@ class Apikey extends Base implements MappingInterface
     }
 
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{key: 'apikey.key', createIP: 'apikey.createIP', apiclient__clientKey: 'apiclientkey.clientKey', apiclient__accesslevel: 'apiclientkey.accesslevel', ts: 'apikey.ts'}
+     */
     public function getEntityMapping()
     {
         $mapping = [
@@ -37,7 +45,7 @@ class Apikey extends Base implements MappingInterface
         return $mapping;
     }
 
-    public function addConditionApikey($apikey)
+    public function addConditionApikey($apikey): static
     {
         $this->query->where('apikey.key', '=', $apikey);
         return $this;

@@ -45,6 +45,9 @@ class Collection implements \Countable, \ArrayAccess
         return count($this->entities);
     }
 
+    /**
+     * @return void
+     */
     public function saveEntities()
     {
         try {

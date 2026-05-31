@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Calendar;
  */
 class AppointmentsMissed extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
     public mixed $data = null;
 }

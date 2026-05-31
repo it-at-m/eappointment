@@ -7,5 +7,5 @@ namespace BO\Zmsentities\Exception;
  */
 class SlotRequiredWithoutReducing extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 }

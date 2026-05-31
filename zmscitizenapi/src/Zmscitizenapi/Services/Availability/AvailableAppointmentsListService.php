@@ -25,7 +25,7 @@ class AvailableAppointmentsListService
         $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
-    public function getAvailableAppointmentsList(array $queryParams, bool $showUnpublished = false): AvailableAppointments|array
+    public function getAvailableAppointmentsList(array $queryParams, bool $showUnpublished = false): array|AvailableAppointmentsByOffice|AvailableAppointments|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);

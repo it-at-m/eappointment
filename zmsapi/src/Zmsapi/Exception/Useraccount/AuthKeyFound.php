@@ -7,9 +7,9 @@ namespace BO\Zmsapi\Exception\Useraccount;
  */
 class AuthKeyFound extends \Exception
 {
-    protected $code = 200;
+    protected int $code = 200;
 
-    protected $message = 'Your client is still logged in with an user account. Logout first.';
+    protected string $message = 'Your client is still logged in with an user account. Logout first.';
 
     public mixed $data = null;
 }

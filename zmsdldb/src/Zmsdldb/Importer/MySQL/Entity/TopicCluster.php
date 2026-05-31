@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicCluster extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{id: 'topic_id', parent_id: 'parent_id', rank: 'rank'}
+     */
+    protected array $fieldMapping = [
         'id' => 'topic_id',
         'parent_id' => 'parent_id',
         'rank' => 'rank'

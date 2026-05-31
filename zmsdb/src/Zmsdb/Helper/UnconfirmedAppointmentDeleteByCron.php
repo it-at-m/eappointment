@@ -17,9 +17,14 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected $time;
 
-    protected $now;
+    protected \DateTimeInterface $now;
 
-    protected $statusListForDeletion = ['preconfirmed'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'preconfirmed'}
+     */
+    protected array $statusListForDeletion = ['preconfirmed'];
 
     protected $scopeList;
 
@@ -32,7 +37,7 @@ class UnconfirmedAppointmentDeleteByCron
         $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
-    protected function log($message, string $level = 'info')
+    protected function log(string $message, string $level = 'info'): void
     {
         $this->writeVerboseCronLog($message, $level);
     }
@@ -42,23 +47,23 @@ class UnconfirmedAppointmentDeleteByCron
         return $this->count;
     }
 
-    public function setLimit($limit)
+    public function setLimit($limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount)
+    public function setLoopCount($loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         $this->deleteUnconfirmedProcesses($commit);
         $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
-    protected function deleteUnconfirmedProcesses($commit)
+    protected function deleteUnconfirmedProcesses($commit): void
     {
         foreach ($this->scopeList as $scope) {
             $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
@@ -89,7 +94,10 @@ class UnconfirmedAppointmentDeleteByCron
         }
     }
 
-    protected function deleteByCallback($commit, \Closure $callback)
+    /**
+     * @psalm-return int<0, max>
+     */
+    protected function deleteByCallback($commit, \Closure $callback): int
     {
         $processCount = 0;
         $startposition = 0;
@@ -113,7 +121,7 @@ class UnconfirmedAppointmentDeleteByCron
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit)
+    protected function removeProcess(\BO\Zmsentities\Process $process, $commit): int
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statusListForDeletion)) {
@@ -127,7 +135,7 @@ class UnconfirmedAppointmentDeleteByCron
         return 0;
     }
 
-    protected function deleteProcess(\BO\Zmsentities\Process $process)
+    protected function deleteProcess(\BO\Zmsentities\Process $process): void
     {
         $verbose = $this->verbose;
         $query = new \BO\Zmsdb\Process();

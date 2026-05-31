@@ -64,6 +64,9 @@ class UrlParameterSigning extends BaseController
         return Render::withJson($response, $data);
     }
 
+    /**
+     * @return void
+     */
     private function testData($data)
     {
         if (!isset($data['section']) || !isset($data['parameters'])) {
@@ -71,6 +74,9 @@ class UrlParameterSigning extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     private function testScopeList($organisation, $collections)
     {
         $scopeIds = [];
@@ -91,6 +97,9 @@ class UrlParameterSigning extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     private function testClusterList($organisation, $collections)
     {
         $clusterIds = [];

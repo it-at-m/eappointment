@@ -8,11 +8,11 @@ use Ulrichsg\Getopt\Option;
 class Status extends Base
 {
     /**
-     * @SuppressWarnings(Parameter)
-     * @codeCoverageIgnore
+     * @SuppressWarnings (Parameter)
      *
+     * @codeCoverageIgnore
      */
-    public function cli(array $argv, \League\CLImate\CLImate $climate)
+    public function cli(array $argv, \League\CLImate\CLImate $climate): void
     {
         $status = (new \BO\Zmsdb\Status())->readEntity(\App::$now);
         $climate->json($status);

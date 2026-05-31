@@ -12,14 +12,11 @@ use BO\Mellon\Validator;
 
 class MailTemplatesDelete extends BaseController
 {
-    /**
-     * @return String
-     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('mailtemplates');
 
         $tamplateId = $args['templateId'];

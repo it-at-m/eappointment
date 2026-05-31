@@ -7,8 +7,8 @@ namespace BO\Zmsdb\Exception\Scope;
  */
 class ScopeHasProcesses extends \Exception
 {
-    protected $code = 428;
+    protected int $code = 428;
 
-    protected $message = 'There are still some processes assigned to this scope. ' .
+    protected string $message = 'There are still some processes assigned to this scope. ' .
          'Please mind to delete all children before delete parent item.';
 }

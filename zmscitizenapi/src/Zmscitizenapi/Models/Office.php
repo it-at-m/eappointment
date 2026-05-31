@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class Office extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/office.json';
+    public static string $schema = 'citizenapi/office.json';
     public int $id;
     public string $name;
     public ?array $address = null;
@@ -64,6 +64,9 @@ class Office extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

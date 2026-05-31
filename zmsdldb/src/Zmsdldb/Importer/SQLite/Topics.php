@@ -6,5 +6,5 @@ use BO\Zmsdldb\Importer\MySQL\Topics as TopicsBase;
 
 class Topics extends TopicsBase
 {
-    protected $entityClass = 'BO\\Zmsdldb\\Importer\\SQLite\\Entity\\Topic';
+    protected string $entityClass = 'BO\\Zmsdldb\\Importer\\SQLite\\Entity\\Topic';
 }

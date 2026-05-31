@@ -6,7 +6,7 @@ use Exception;
 
 class Loader
 {
-    public static function asArray($schemaFilename)
+    public static function asArray(string $schemaFilename): Schema
     {
         $jsonString = self::asJson($schemaFilename);
         $array = json_decode($jsonString, true);
@@ -30,7 +30,10 @@ class Loader
         return $schema;
     }
 
-    public static function asJson($schemaFilename)
+    /**
+     * @return false|string
+     */
+    public static function asJson($schemaFilename): string|false
     {
         if (!$schemaFilename) {
             throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
@@ -40,7 +43,10 @@ class Loader
         return file_get_contents($filename);
     }
 
-    public static function getSchemaPath()
+    /**
+     * @return false|string
+     */
+    public static function getSchemaPath(): string|false
     {
         $pathTrace = [
             __DIR__,

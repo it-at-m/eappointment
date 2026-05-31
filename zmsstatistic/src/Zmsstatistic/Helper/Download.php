@@ -16,11 +16,11 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Download
 {
-    protected $writer = null;
+    protected \PhpOffice\PhpSpreadsheet\Writer\IWriter|null $writer = null;
 
-    protected $spreadsheet = null;
+    protected Spreadsheet|null $spreadsheet = null;
 
-    protected $period = '';
+    protected string $period = '';
 
     protected $title = 'statistik';
 
@@ -72,12 +72,12 @@ class Download
     }
 
     public function setSpreadSheet(
-        $title = 'statistic',
+        string $title = 'statistic',
         $creator = 'berlinonline',
         $subject = '',
         $description = 'statistic document',
         $keywords = 'statistic zms'
-    ) {
+    ): static {
         $this->title = $title;
         $this->spreadsheet = new Spreadsheet();
         $this->spreadsheet

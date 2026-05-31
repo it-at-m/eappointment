@@ -289,7 +289,7 @@ class ExchangeWaitingscope extends Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
+    public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false): string
     {
         $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
 
@@ -321,7 +321,7 @@ class ExchangeWaitingscope extends Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
+    public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false): string
     {
         $hourSuffix = $withAppointment ? 'appointment' : 'spontaneous';
 

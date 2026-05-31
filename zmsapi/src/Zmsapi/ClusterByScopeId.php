@@ -14,14 +14,13 @@ use BO\Zmsdb\Cluster as Query;
 class ClusterByScopeId extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 

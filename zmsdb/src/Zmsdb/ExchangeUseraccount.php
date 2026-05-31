@@ -6,7 +6,7 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeUseraccount extends Base
 {
-    public function readEntity()
+    public function readEntity(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nutzerliste";
@@ -32,7 +32,7 @@ class ExchangeUseraccount extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nutzerliste";
@@ -46,9 +46,9 @@ class ExchangeUseraccount extends Base
     }
 
     /**
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
      */
-    public function readPeriodList()
+    public function readPeriodList(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nutzerliste";

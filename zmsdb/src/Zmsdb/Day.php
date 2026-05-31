@@ -9,9 +9,9 @@ use BO\Zmsentities\Day as Entity;
  */
 class Day extends Base
 {
-    protected $tempScopeListExists = false;
+    protected bool $tempScopeListExists = false;
 
-    public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
+    public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null): void
     {
         $this->getReader()->exec(Query\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
         $monthList = $calendar->getMonthList();
@@ -33,7 +33,7 @@ class Day extends Base
         $this->tempScopeListExists = true;
     }
 
-    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
+    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null): \BO\Zmsentities\Collection\DayList
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->writeTemporaryScopeList($calendar, $slotsRequiredForce);

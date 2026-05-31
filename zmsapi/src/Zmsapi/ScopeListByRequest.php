@@ -14,14 +14,13 @@ use BO\Zmsdb\Scope as Query;
 class ScopeListByRequest extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $requestEntity = (new \BO\Zmsdb\Request())->readEntity($args['source'], $args['id']);

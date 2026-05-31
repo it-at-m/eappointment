@@ -17,14 +17,13 @@ use BO\Zmsticketprinter\Helper\Ticketprinter as Helper;
 class Status extends BaseController
 {
     /**
-     * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @SuppressWarnings (UnusedFormalParameter)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $status['homeurl'] = Home::getHomeUrl($request);
         $status['hash'] = Helper::getHashFromRequest($request);
         if ($status['hash']) {

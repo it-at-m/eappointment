@@ -11,10 +11,17 @@ class Mimepart extends Base
 
     /**
      * No resolving required here
+     *
+     * @var int
      */
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{mime: 'mimepart.mime', content: 'mimepart.content', base64: 'mimepart.base64'}
+     */
+    public function getEntityMapping(): array
     {
         return [
             'mime' => 'mimepart.mime',
@@ -23,7 +30,7 @@ class Mimepart extends Base
         ];
     }
 
-    public function addConditionQueueId($queueId)
+    public function addConditionQueueId($queueId): static
     {
         $this->query->where('mimepart.queueId', '=', $queueId);
         return $this;

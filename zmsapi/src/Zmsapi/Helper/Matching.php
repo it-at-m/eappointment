@@ -37,7 +37,7 @@ class Matching
         return $result;
     }
 
-    public static function isRequestExisting($session)
+    public static function isRequestExisting($session): bool
     {
         $result = true;
         if ($session->hasRequests()) {
@@ -48,7 +48,10 @@ class Matching
         return $result;
     }
 
-    public static function testCurrentScopeHasRequest($process)
+    /**
+     * @return void
+     */
+    public static function testCurrentScopeHasRequest(\BO\Zmsentities\Process $process)
     {
         $testProcess = clone $process;
         $scope = (new \BO\Zmsdb\Scope())->readEntity($testProcess->getScopeId(), 2);

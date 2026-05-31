@@ -17,14 +17,13 @@ use BO\Mellon\Validator;
 class ProcessDeleteQuick extends ProcessDelete
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 2))->checkPermissions('appointment');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
@@ -51,6 +50,9 @@ class ProcessDeleteQuick extends ProcessDelete
         return $response;
     }
 
+    /**
+     * @return void
+     */
     protected function testProcess($workstation, $process)
     {
         if (!$process->hasId()) {

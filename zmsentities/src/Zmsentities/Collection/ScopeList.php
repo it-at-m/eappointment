@@ -77,7 +77,7 @@ class ScopeList extends Base
         return $date;
     }
 
-    public function withoutDublicates($scopeList = null)
+    public function withoutDublicates($scopeList = null): self
     {
         $collection = new self();
         foreach ($this as $scope) {
@@ -88,7 +88,7 @@ class ScopeList extends Base
         return $collection;
     }
 
-    public function withUniqueScopes()
+    public function withUniqueScopes(): self
     {
         $scopeList = new self();
         foreach ($this as $scope) {
@@ -99,7 +99,7 @@ class ScopeList extends Base
         return $scopeList;
     }
 
-    public function addScopeList($scopeList)
+    public function addScopeList($scopeList): static
     {
         foreach ($scopeList as $scope) {
             $this->addEntity($scope);
@@ -107,6 +107,9 @@ class ScopeList extends Base
         return $this;
     }
 
+    /**
+     * @return self
+     */
     public function withLessData(array $keepArray = [])
     {
         $scopeList = new self();
@@ -116,6 +119,9 @@ class ScopeList extends Base
         return $scopeList;
     }
 
+    /**
+     * @return static
+     */
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {
@@ -129,7 +135,7 @@ class ScopeList extends Base
         return $this;
     }
 
-    public function withProviderID($source, $providerID)
+    public function withProviderID($source, $providerID): self
     {
         $list = new ScopeList();
         foreach ($this as $scope) {
@@ -140,7 +146,7 @@ class ScopeList extends Base
         return $list;
     }
 
-    public function addRequiredSlots($source, $providerID, $slotsRequired)
+    public function addRequiredSlots($source, $providerID, $slotsRequired): static
     {
         $scopeList = $this->withProviderID($source, $providerID);
         foreach ($scopeList as $scope) {
@@ -160,7 +166,7 @@ class ScopeList extends Base
         return 0;
     }
 
-    public function hasOpenedScope()
+    public function hasOpenedScope(): bool
     {
         $isOpened = false;
         foreach ($this as $entity) {

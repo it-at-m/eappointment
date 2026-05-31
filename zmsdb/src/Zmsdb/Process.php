@@ -17,7 +17,12 @@ use BO\Zmsdb\Helper\ProcessStatus;
  */
 class Process extends Base implements Interfaces\ResolveReferences
 {
-    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
+    /**
+     * @param Helper\NoAuth|null|string $authKey
+     *
+     * @psalm-param 0|2 $resolveReferences
+     */
+    public function readEntity($processId = null, string|Helper\NoAuth|null $authKey = null, int $resolveReferences = 2)
     {
         if (null === $processId || null === $authKey) {
             return null;
@@ -44,7 +49,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->fetchOne($query, new Entity());
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
+    /**
+     * @psalm-param 1 $resolveReferences
+     *
+     * @return \BO\Zmsentities\Schema\Entity
+     */
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, int $resolveReferences)
     {
         if (0 <= $resolveReferences) {
             if ($process->archiveId) {
@@ -61,8 +71,10 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     /**
      * Update a process without changing appointment or scope
+     *
+     * @psalm-param 0|1 $resolveReferences
      */
-    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, int $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null): Entity|null
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->getId());
@@ -84,7 +96,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function updateEntityDisplayNumber(Entity $process)
+    public function updateEntityDisplayNumber(Entity $process): Entity
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->getId());
@@ -141,7 +153,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $processEntity;
     }
 
-    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null): Entity
     {
         $datetime = \App::$now;
         $process->setStatus('confirmed');
@@ -159,7 +171,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function readSlotCount(\BO\Zmsentities\Process $process)
+    public function readSlotCount(\BO\Zmsentities\Process $process): Entity
     {
         $scope = new \BO\Zmsentities\Scope($process->scope);
         $requestRelationList = (new RequestRelation())
@@ -180,7 +192,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * write a new process with appointment and keep id and authkey from original process
      */
-    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false)
+    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false): Resource
     {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
@@ -212,7 +224,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * update following process with new credentials (also change process id if necessary)
      */
-    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData)
+    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData): void
     {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
             'newProcessId' => $processData->getId(),
@@ -235,7 +247,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * update process requests with new credentials
      */
-    public function updateReassignedRequests($processId, $newProcessId)
+    public function updateReassignedRequests($processId, $newProcessId): void
     {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
             'newProcessId' => $newProcessId,
@@ -246,8 +258,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * write a new process to DB
      *
+     * @psalm-param int<-1, max> $childProcessCount
+     * @psalm-param 0 $parentProcess
      */
-    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, $parentProcess = 0, $childProcessCount = 0, $retry = true, $userAccount = null)
+    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, $userAccount = null)
     {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -308,7 +322,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         ) : null;
     }
 
-    protected function readList($statement, $resolveReferences)
+    protected function readList($statement, $resolveReferences): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
         $processList = new Collection();
@@ -348,16 +362,19 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and DateTime
      *
-     * @param
+     * @param 
      * scopeId
      * dateTime
      *
      * @return Collection processList
+     *
+     * @psalm-param list{0?: mixed,...} $scopeIds
+     * @psalm-param 0|1 $resolveReferences
      */
     public function readProcessListByScopesAndTime(
-        $scopeIds,
+        array $scopeIds,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         $withEntities = []
     ) {
         $query = new Query\Process(Query\Base::SELECT, '', false, null, $withEntities);
@@ -417,8 +434,12 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Read processList by scopeId and status
      *
      * @return Collection processList
+     *
+     * @psalm-param 0 $scopeId
+     * @psalm-param 'blocked' $status
+     * @psalm-param 0 $resolveReferences
      */
-    public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0, $limit = 1000, $offset = null)
+    public function readProcessListByScopeAndStatus(int $scopeId, string $status, int $resolveReferences = 0, $limit = 1000, $offset = null)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
@@ -457,7 +478,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    protected function addSearchConditions(Query\Process $query, $parameter)
+    protected function addSearchConditions(Query\Process $query, array $parameter): Query\Process
     {
         if (isset($parameter['processId']) && $parameter['processId']) {
             $query->addConditionProcessId($parameter['processId']);
@@ -550,8 +571,11 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Read processList by mail address and statuslist
      *
      * @return Collection processList
+     *
+     * @psalm-param 1|2 $resolveReferences
+     * @psalm-param 50|300 $limit
      */
-    public function readListByMailAndStatusList(string $mailAddress, array $statusList, $resolveReferences = 1, $limit = 300): Collection
+    public function readListByMailAndStatusList(string $mailAddress, array $statusList, int $resolveReferences = 1, int $limit = 300): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
@@ -569,12 +593,14 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als bestätigt
      *
-     * @param
+     * @param 
      * process
      *
-     * @return Resource Status
+     * @return Entity Status
+     *
+     * @psalm-param 'confirmed'|'reserved' $status
      */
-    public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
+    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null): Entity
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
@@ -651,12 +677,12 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als abgesagt
      *
-     * @param
+     * @param 
      *            processId and authKey
      *
-     * @return Resource Status
+     * @return Entity|null Status
      */
-    public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null): Entity|null
     {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
         $newAuthKey = bin2hex(random_bytes(32));
@@ -713,7 +739,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $status;
     }
 
-    protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
+    protected function writeRequestsToDb(\BO\Zmsentities\Process $process): void
     {
         // Beware of resolveReferences=0 to not delete the existing requests, except for queued processes
         $hasRequests = ($process->requests && count($process->requests));
@@ -736,7 +762,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
     }
 
-    protected function deleteRequestsForProcessId($processId)
+    protected function deleteRequestsForProcessId($processId): bool
     {
         $status = false;
         if (0 < $processId) {
@@ -789,7 +815,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, $limit = 500, $offset = null, $resolveReferences = 0)
+    /**
+     * @psalm-param 500|10000 $limit
+     */
+    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, int $limit = 500, $offset = null, $resolveReferences = 0)
     {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
@@ -804,7 +833,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, $resolveReferences = 0)
+    /**
+     * @psalm-param 0|2 $resolveReferences
+     */
+    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery

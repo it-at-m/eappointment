@@ -8,15 +8,18 @@ use BO\Zmsentities\Collection\OwnerList as Collection;
 class Owner extends Base
 {
     /**
-    * read entity
-    *
-    * @param
+     * read entity
+     *
+     * @param 
     * itemId
     * resolveReferences
-    *
-    * @return Resource Entity
-    */
-    public function readEntity($itemId, $resolveReferences = 0)
+     * @param false|string $itemId
+     *
+     * @return Resource Entity
+     *
+     * @psalm-param 0|1 $resolveReferences
+     */
+    public function readEntity(string|false $itemId, int $resolveReferences = 0)
     {
         $query = new Query\Owner(Query\Base::SELECT);
         $query
@@ -27,6 +30,9 @@ class Owner extends Base
         return $this->readResolvedReferences($owner, $resolveReferences);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && isset($entity['id'])) {
@@ -38,12 +44,12 @@ class Owner extends Base
      /**
      * read list of owners
      *
-     * @param
+     * @param 
      * resolveReferences
      *
-     * @return Resource Collection
+     * @return Collection Collection
      */
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $ownerList = new Collection();
         $query = new Query\Owner(Query\Base::SELECT);
@@ -72,14 +78,14 @@ class Owner extends Base
     }
 
     /**
-    * remove an owner
-    *
-    * @param
+     * remove an owner
+     *
+     * @param 
     * itemId
-    *
-    * @return Resource Status
-    */
-    public function deleteEntity($itemId)
+     *
+     * @return Resource|null Status
+     */
+    public function deleteEntity($itemId): Resource|null
     {
         $entity = $this->readEntity($itemId, 1);
         if (0 < $entity->toProperty()->organisations->get()->count()) {
@@ -93,12 +99,10 @@ class Owner extends Base
     /**
      * write an owner
      *
-     * @param
+     * @param 
      * entity
-     *
-     * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Owner $entity)
+    public function writeEntity(\BO\Zmsentities\Owner $entity): Resource
     {
         $query = new Query\Owner(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
@@ -111,12 +115,10 @@ class Owner extends Base
     /**
      * update an owner
      *
-     * @param
+     * @param 
      * ownerId, entity
-     *
-     * @return Entity
      */
-    public function updateEntity($ownerId, \BO\Zmsentities\Owner $entity)
+    public function updateEntity($ownerId, \BO\Zmsentities\Owner $entity): Resource
     {
         $query = new Query\Owner(Query\Base::UPDATE);
         $query->addConditionOwnerId($ownerId);

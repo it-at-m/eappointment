@@ -16,7 +16,10 @@ use BO\Zmsentities\Collection\ScopeList;
  */
 class AppointmentFormHelper
 {
-    public static function readFreeProcessList($request, $workstation, $resolveReferences = 1)
+    /**
+     * @psalm-param 1|2 $resolveReferences
+     */
+    public static function readFreeProcessList(\Psr\Http\Message\RequestInterface $request, $workstation, int $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -47,7 +50,7 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
 
-    public static function readRequestList($request, $workstation, $selectedScope = null)
+    public static function readRequestList(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedScope = null)
     {
         $scope = ($selectedScope) ? $selectedScope : static::readSelectedScope($request, $workstation);
         $requestList = null;
@@ -61,7 +64,10 @@ class AppointmentFormHelper
         return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList();
     }
 
-    public static function readSelectedScope($request, $workstation, $selectedProcess = null, $resolveReferences = 1)
+    /**
+     * @psalm-param 1|2 $resolveReferences
+     */
+    public static function readSelectedScope(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedProcess = null, int $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $input = $request->getParsedBody();
@@ -89,7 +95,7 @@ class AppointmentFormHelper
         return $selectedScope;
     }
 
-    public static function readSelectedProcess($request)
+    public static function readSelectedProcess(\Psr\Http\Message\RequestInterface $request)
     {
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -100,7 +106,7 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMail($formData, \BO\Zmsentities\Process $process)
+    public static function updateMail($formData, \BO\Zmsentities\Process $process): void
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
@@ -161,7 +167,7 @@ class AppointmentFormHelper
         return $slotsRequired;
     }
 
-    protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process)
+    protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process): void
     {
         if (
             $mailConfirmation &&

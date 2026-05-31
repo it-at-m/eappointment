@@ -21,22 +21,31 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     use ItemNeedsUpdateTrait;
     use PDOTrait;
 
-    protected $fieldMapping = [];
+    /**
+     * @var array
+     */
+    protected array $fieldMapping = [];
 
     protected $fields = [];
 
-    protected $referanceMapping = [];
+    /**
+     * @var array
+     */
+    protected array $referanceMapping = [];
 
-    protected $preFormatFields = [];
+    /**
+     * @var array
+     */
+    protected array $preFormatFields = [];
 
     protected $references = [];
 
-    protected $dataRaw = [];
+    protected array $dataRaw = [];
 
-    protected $setupFields = true;
-    protected $setupReferences = true;
+    protected bool $setupFields = true;
+    protected bool $setupReferences = true;
 
-    protected $status = 1;
+    protected int $status = 1;
 
     const STATUS_NEW = 1;
     const STATUS_OLD = 0;
@@ -68,7 +77,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         PDOAccess $mySqlAccess,
         array $dataRaw = [],
         bool $setup = true
-    ) {
+    ): object {
         try {
             $className = preg_replace_callback('/[_-]([a-z0-9]*)/i', function ($matches) {
                 return ucfirst($matches[1] ?? '');
@@ -90,7 +99,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function setRawData(array $rawData = [])
+    public function setRawData(array $rawData = []): static
     {
         $this->dataRaw = $rawData;
         return $this;
@@ -101,7 +110,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->dataRaw;
     }
 
-    public function setStatus(int $status = Base::STATUS_NEW)
+    public function setStatus(int $status = Base::STATUS_NEW): void
     {
         $this->status = $status;
     }
@@ -111,7 +120,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->status;
     }
 
-    public function getReferenceMapping($setup = false): array
+    public function getReferenceMapping(bool $setup = false): array
     {
         try {
             if (true === $setup) {
@@ -124,26 +133,41 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    protected function setupPreFormatFields()
+    protected function setupPreFormatFields(): void
     {
     }
 
+    /**
+     * @return void
+     */
     protected function setupMapping()
     {
     }
 
+    /**
+     * @return void
+     */
     public function preSetup()
     {
     }
 
+    /**
+     * @return void
+     */
     public function postSetup()
     {
     }
 
+    /**
+     * @return void
+     */
     public function preSetupFields()
     {
     }
 
+    /**
+     * @return void
+     */
     public function postSetupFields()
     {
     }
@@ -168,7 +192,12 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    protected function getReferenceFields()
+    /**
+     * @return (int|mixed)[]
+     *
+     * @psalm-return array<int<0, max>|mixed>
+     */
+    protected function getReferenceFields(): array
     {
         $referenceFields = array_flip(array_keys(array_filter($this->referanceMapping)));
 
@@ -178,7 +207,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $referenceFields;
     }
 
-    final public function setupReferences()
+    /**
+     * @return true
+     */
+    final public function setupReferences(): bool
     {
         try {
             if (false === $this->setupReferences) {
@@ -247,7 +279,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function addReference(string $name, Base $reference)
+    public function addReference(string $name, Base $reference): void
     {
         if (array_key_exists($name, $this->referanceMapping)) {
             if (!isset($this->references[$name])) {
@@ -328,7 +360,14 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->fields;
     }
 
-    public function get($key = null, $default = null)
+    /**
+     * @param (int|string)|(int|string)[]|null $key
+     * @param null|string $default
+     *
+     * @psalm-param array-key|list{0?: array-key, 1?: array-key, 2?: array-key, 3?: array-key,...}|null $key
+     * @psalm-param 'id'|'locale'|'parent_id'|null $default
+     */
+    public function get($key = null, string|null $default = null)
     {
         if (null === $key) {
             return $this->dataRaw;
@@ -380,7 +419,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $keys;
     }
 
-    public function save()
+    public function save(): bool
     {
         try {
             if (static::STATUS_NEW !== $this->getStatus()) {
@@ -428,8 +467,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings (PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings (PHPMD.UnusedFormalParameter)
+     *
+     * @return void
      */
     public function postSave(\PDOStatement $stm, Base $entity)
     {

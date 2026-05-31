@@ -14,12 +14,13 @@ class Ticketprinter extends Base
     /**
      * read entity
      *
-     * @param
+     * @param 
      * itemId
+     * @param false|string $itemId
      *
      * @return Resource Entity
      */
-    public function readEntity($itemId)
+    public function readEntity(string|false $itemId)
     {
         $query = new Query\Ticketprinter(Query\Base::SELECT);
         $query
@@ -34,9 +35,9 @@ class Ticketprinter extends Base
     /**
      * read list of ticketprinters
      *
-     * @return Resource Collection
+     * @return Collection Collection
      */
-    protected function readList($statement)
+    protected function readList($statement): Collection
     {
         $ticketprinterList = new Collection();
         while ($entityData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -114,6 +115,9 @@ class Ticketprinter extends Base
         return $ticketprinter;
     }
 
+    /**
+     * @return void
+     */
     protected function readExceptions(Entity $ticketprinter)
     {
         $query = new Scope();
@@ -123,7 +127,7 @@ class Ticketprinter extends Base
         }
     }
 
-    protected function readWithContactData(Entity $entity)
+    protected function readWithContactData(Entity $entity): Entity
     {
         $contact = new \BO\Zmsentities\Contact();
 
@@ -167,12 +171,10 @@ class Ticketprinter extends Base
     /**
      * write a cookie for ticketprinter
      *
-     * @param
+     * @param 
      * organisationId
-     *
-     * @return Entity
      */
-    public function writeEntityWithHash($organisationId, $ticketprinterName = '')
+    public function writeEntityWithHash($organisationId, $ticketprinterName = ''): Resource
     {
         $query = new Query\Ticketprinter(Query\Base::INSERT);
         $ticketprinter = (new Entity())->getHashWith($organisationId);
@@ -194,13 +196,11 @@ class Ticketprinter extends Base
     /**
      * write a ticketprinter
      *
-     * @param
+     * @param 
      * entity,
      * organisationId
-     *
-     * @return Entity
      */
-    public function writeEntity(Entity $entity, $organisationId)
+    public function writeEntity(Entity $entity, $organisationId): Resource
     {
         $query = new Query\Ticketprinter(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
@@ -234,21 +234,21 @@ class Ticketprinter extends Base
     }
 
     /**
-    * remove an ticketprinter
-    *
-    * @param
+     * remove an ticketprinter
+     *
+     * @param 
     * itemId
-    *
-    * @return Resource Status
-    */
-    public function deleteEntity($itemId)
+     *
+     * @return bool Status
+     */
+    public function deleteEntity($itemId): bool
     {
         $query =  new Query\Ticketprinter(Query\Base::DELETE);
         $query->addConditionTicketprinterId($itemId);
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($expirationDate)
+    public function readExpiredTicketprinterList($expirationDate): Resource
     {
         $selectQuery = new Query\Ticketprinter(Query\Base::SELECT);
         $selectQuery

@@ -6,7 +6,7 @@ class RequestRelationList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';
 
-    public function hasRequest($requestIdCsv)
+    public function hasRequest($requestIdCsv): bool
     {
         $requestIdCsv = explode(',', $requestIdCsv);
         foreach ($requestIdCsv as $requestId) {
@@ -17,7 +17,7 @@ class RequestRelationList extends Base
         return true;
     }
 
-    public function hasProvider($providerIdCsv)
+    public function hasProvider($providerIdCsv): bool
     {
         $providerIdCsv = explode(',', $providerIdCsv);
         foreach ($providerIdCsv as $providerId) {
@@ -52,7 +52,7 @@ class RequestRelationList extends Base
         return $providerList->withUniqueProvider();
     }
 
-    public function getFilteredByRequestAndProvider($requestList, $providerList)
+    public function getFilteredByRequestAndProvider($requestList, $providerList): self
     {
         $list = new self();
         foreach ($requestList as $request) {

@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class AuthorityLocation extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{authority_id: 'authority_id', id: 'location_id', locale: 'locale'}
+     */
+    protected array $fieldMapping = [
         'authority_id' => 'authority_id',
         'id' => 'location_id',
         'locale' => 'locale'

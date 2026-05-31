@@ -9,16 +9,21 @@ use Error;
 
 class Search
 {
-    protected $objectTypesClasses = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{service: '\BO\Zmsdldb\MySQL\Entity\Service', location: '\BO\Zmsdldb\MySQL\Entity\Location', topic: '\BO\Zmsdldb\MySQL\Entity\Topic'}
+     */
+    protected array $objectTypesClasses = [
         'service' => '\\BO\\Zmsdldb\\MySQL\\Entity\\Service',
         'location' => '\\BO\\Zmsdldb\\MySQL\\Entity\\Location',
         'topic' => '\\BO\\Zmsdldb\\MySQL\\Entity\\Topic',
         #'link' => '\\BO\\Zmsdldb\\MySQL\\Entity\\Link'
     ];
 
-    protected $searchTypes = [];
-    protected $entityTypes = [];
-    protected $mysqlAccess = null;
+    protected array $searchTypes = [];
+    protected array $entityTypes = [];
+    protected MySQLAccess|null $mysqlAccess = null;
 
     protected $entityIds = [];
 
@@ -29,7 +34,7 @@ class Search
         $this->mysqlAccess = $mysqlAccess;
     }
 
-    public function fetchSearchRow($object_id, $locale, $entity_type)
+    public function fetchSearchRow($object_id, $locale, $entity_type): void
     {
         if (!isset($this->entityIds[$entity_type])) {
             $this->entityIds[$entity_type] = [];

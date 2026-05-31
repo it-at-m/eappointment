@@ -18,7 +18,12 @@ use BO\Slim\Helper as SlimHelper;
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-    protected static $hashParameter = ['webcalldisplay' => ['collections', 'queue']];
+    /**
+     * @var string[][]
+     *
+     * @psalm-var array{webcalldisplay: list{'collections', 'queue'}}
+     */
+    protected static array $hashParameter = ['webcalldisplay' => ['collections', 'queue']];
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
@@ -27,7 +32,7 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
-    protected function buildQuery(string $target, RequestInterface $request)
+    protected function buildQuery(string $target, RequestInterface $request): string
     {
         $queryArr  = [];
         $allParams = array_merge(static::$hashParameter[$target], ['template']);
@@ -43,7 +48,7 @@ abstract class BaseController extends \BO\Slim\Controller
         return http_build_query($queryArr);
     }
 
-    protected function buildHashFromParameterList(string $target, RequestInterface $request)
+    protected function buildHashFromParameterList(string $target, RequestInterface $request): string
     {
         $paramsToHash = [];
         $currentQP = $request->getQueryParams();

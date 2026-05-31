@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Exception\Cluster;
 
 class ScopesWithoutWorkstationCount extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = "Workstations count required to calculate waitingtime. No scope with workstations found.";
+    protected string $message = "Workstations count required to calculate waitingtime. No scope with workstations found.";
 }

@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportRequestIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -72,13 +72,13 @@ class ReportRequestIndex extends BaseController
      * Handle download request and return Excel file
      */
     private function handleDownloadRequest(
-        $request,
-        $response,
-        $args,
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args,
         $exchangeRequest,
-        $dateRange,
-        $selectedScopes = [],
-        $reportRequestService = null
+        array|null $dateRange,
+        array $selectedScopes = [],
+        ReportRequestService|null $reportRequestService = null
     ): ResponseInterface {
         if ($reportRequestService === null) {
             $reportRequestService = new ReportRequestService();
@@ -97,12 +97,12 @@ class ReportRequestIndex extends BaseController
      * Render HTML response for the report page
      */
     private function renderHtmlResponse(
-        $response,
-        $args,
+        ResponseInterface $response,
+        array $args,
         $requestPeriod,
-        $dateRange,
+        array|null $dateRange,
         $exchangeRequest,
-        $selectedScopes = []
+        array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(
             $response,

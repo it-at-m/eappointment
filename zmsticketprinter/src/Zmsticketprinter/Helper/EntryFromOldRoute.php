@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
 
 class EntryFromOldRoute
 {
-    protected static function getScopes($request)
+    protected static function getScopes($request): string|null
     {
         $scopes = [ ];
         $validator = $request->getAttribute('validator');
@@ -31,7 +31,7 @@ class EntryFromOldRoute
         return (0 < count($scopes)) ? implode(',', $scopes) : null;
     }
 
-    protected static function getClusters($request)
+    protected static function getClusters($request): string|null
     {
         $clusters = [ ];
         $validator = $request->getAttribute('validator');
@@ -49,7 +49,7 @@ class EntryFromOldRoute
         return (0 < count($clusters)) ? implode(',', $clusters) : null;
     }
 
-    public static function getFromOldMehrfachKiosk($request)
+    public static function getFromOldMehrfachKiosk(\Psr\Http\Message\RequestInterface $request): string
     {
         $buttonList = '';
         $scopes = self::getScopes($request);

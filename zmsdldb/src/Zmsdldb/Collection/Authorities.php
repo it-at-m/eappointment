@@ -20,7 +20,7 @@ class Authorities extends Base
         }
     }
 
-    public function addLocation(\BO\Zmsdldb\Entity\Location $location)
+    public function addLocation(\BO\Zmsdldb\Entity\Location $location): static
     {
         if (
             $location->offsetExists('authority')
@@ -41,7 +41,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function addAuthority($authority_id, $name)
+    public function addAuthority($authority_id, $name): static
     {
         if (! $this->hasAuthority($authority_id)) {
             $authority = \BO\Zmsdldb\Entity\Authority::create($name);
@@ -55,7 +55,7 @@ class Authorities extends Base
         return $this->offsetExists($authority_id);
     }
 
-    public function readByExtendedService($service)
+    public function readByExtendedService($service): static
     {
         foreach ($service['authorities'] as $authority) {
             if (! $this->hasAuthority($authority['id'])) {
@@ -128,9 +128,9 @@ class Authorities extends Base
      *
      * @param Int $locationId
      *
-     * @return clone self
+     * @return static self
      */
-    public function removeLocation($locationId)
+    public function removeLocation($locationId): static
     {
         $authorityList = clone $this;
         foreach ($authorityList as $key => $authority) {
@@ -167,7 +167,7 @@ class Authorities extends Base
         return $this;
     }
 
-    public function removeEmptyAuthorities()
+    public function removeEmptyAuthorities(): self
     {
         $authoritylist = new self();
         foreach ($this as $key => $authority) {
@@ -178,7 +178,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function removeLocations()
+    public function removeLocations(): static
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $authority) {
@@ -211,7 +211,12 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function getAuthorityIds()
+    /**
+     * @return ((int|string)|mixed)[]
+     *
+     * @psalm-return list{0?: array-key|mixed,...}
+     */
+    public function getAuthorityIds(): array
     {
         $ids = [];
 

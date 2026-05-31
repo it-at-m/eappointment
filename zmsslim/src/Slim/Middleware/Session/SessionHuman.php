@@ -13,7 +13,7 @@ class SessionHuman extends SessionContainer
 
     const MIN_TIME = 3;
 
-    public function writeVerifySession($request, $origin = '')
+    public function writeVerifySession($request, $origin = ''): void
     {
         $clientIp = $request->getAttribute('ip_address');
         $this->set('client', 1, 'human');
@@ -24,7 +24,7 @@ class SessionHuman extends SessionContainer
         $this->set('remoteAddress', $clientIp, 'human');
     }
 
-    public function writeBotSession($origin = '')
+    public function writeBotSession($origin = ''): void
     {
         $this->set('client', 0, 'human');
         $this->set('ts', 0, 'human');
@@ -32,10 +32,9 @@ class SessionHuman extends SessionContainer
     }
 
     /**
-     * @SuppressWarnings(Complexity)
-     * @return Boolean
+     * @SuppressWarnings (Complexity)
      */
-    public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false)
+    public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false): bool
     {
         $path = $request->getUri()->getPath();
         if (! $this->isOrigin('captcha')) {
@@ -73,7 +72,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isOverAged()
+    public function isOverAged(): bool
     {
         if (!$this->has('ts', 'human') || time() > ($this->get('ts', 'human') + self::MAX_TIME)) {
             return true;
@@ -81,7 +80,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isUnderAged()
+    public function isUnderAged(): bool
     {
         if (!$this->has('ts', 'human') || time() < ($this->get('ts', 'human') + self::MIN_TIME)) {
             return true;
@@ -89,12 +88,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     *
-     *
-     * @return array
-     */
-    public function addStep($stepName)
+    public function addStep($stepName): void
     {
         if (!$this->has('step', 'human')) {
             $this->set('step', array(), 'human');
@@ -139,7 +133,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    public function isVerified()
+    public function isVerified(): bool
     {
         if ($this->has('client', 'human') && $this->get('client', 'human')) {
             return true;
@@ -151,8 +145,10 @@ class SessionHuman extends SessionContainer
      * check if is origin
      *
      * @return boolean
+     *
+     * @psalm-param 'captcha' $originName
      */
-    protected function isOrigin($originName)
+    protected function isOrigin(string $originName)
     {
         if ($this->has('origin', 'human') && $originName == $this->get('origin', 'human')) {
             return true;
@@ -160,12 +156,7 @@ class SessionHuman extends SessionContainer
         return false;
     }
 
-    /**
-     *
-     *
-     * @return self
-     */
-    protected function writeRedirectCaptcha($path, $referer = false)
+    protected function writeRedirectCaptcha($path, $referer = false): void
     {
         if (false === $referer) {
             $referer = basename($path);

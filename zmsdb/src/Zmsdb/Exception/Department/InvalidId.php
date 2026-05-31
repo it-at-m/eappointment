@@ -7,7 +7,7 @@ namespace BO\Zmsdb\Exception\Department;
  */
 class InvalidId extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'The given department ID is invalid, processing canceled';
+    protected string $message = 'The given department ID is invalid, processing canceled';
 }

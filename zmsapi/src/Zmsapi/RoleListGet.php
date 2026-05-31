@@ -7,6 +7,9 @@ use BO\Zmsdb\Role;
 
 class RoleListGet extends BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function readResponse($request, $response, array $args)
     {
         (new Helper\User($request, 1))->checkPermissions('useraccount');

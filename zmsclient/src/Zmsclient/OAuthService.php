@@ -18,10 +18,8 @@ class OAuthService
 
     /**
      * Retrieve configuration with secure token
-     *
-     * @return Config
      */
-    public function readConfig(): Config
+    public function readConfig(): \BO\Zmsentities\Schema\Entity|false|null
     {
         return $this->http->readGetResult('/config/', [], $this->configSecureToken)->getEntity();
     }

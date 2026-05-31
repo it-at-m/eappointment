@@ -11,6 +11,9 @@ use BO\Mellon\Validator;
 
 class RoleAdd extends BaseController
 {
+    /**
+     * @return ResponseInterface
+     */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

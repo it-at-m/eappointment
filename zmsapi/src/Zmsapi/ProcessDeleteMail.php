@@ -21,14 +21,13 @@ use BO\Zmsentities\Process;
 class ProcessDeleteMail extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return string
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $initiator = Validator::param('initiator')->isString()->getValue();
@@ -48,7 +47,7 @@ class ProcessDeleteMail extends BaseController
         return $response;
     }
 
-    protected static function writeMail(Process $process, $initiator = null)
+    protected static function writeMail(Process $process, $initiator = null): \BO\Zmsentities\Mail
     {
         $config = (new Config())->readEntity();
         $department = (new DepartmentRepository())->readByScopeId($process->scope->id);
@@ -66,7 +65,10 @@ class ProcessDeleteMail extends BaseController
         return $mail;
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {

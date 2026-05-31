@@ -13,5 +13,5 @@ use BO\Zmsentities\Process;
  */
 class Processarchived extends Process
 {
-    public static $schema = "processarchived.json";
+    public static string $schema = "processarchived.json";
 }

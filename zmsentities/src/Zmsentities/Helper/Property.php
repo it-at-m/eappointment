@@ -23,18 +23,23 @@ class Property implements \ArrayAccess
         $this->access = $access;
     }
 
-    public static function create($access)
+    public static function create(\BO\Zmsentities\Availability $access): self
     {
         return new self($access);
     }
 
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         //shorter to avoid extra unit testing
         return (null !== $this->access) ? true : false;
     }
 
-    public function get($default = null)
+    /**
+     * @param null|string $default
+     *
+     * @psalm-param ''|null $default
+     */
+    public function get(string|null $default = null)
     {
         if (null !== $this->access) {
             return $this->access;

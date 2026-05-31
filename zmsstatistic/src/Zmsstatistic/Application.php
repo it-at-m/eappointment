@@ -41,12 +41,22 @@ class Application extends \BO\Slim\Application
 
     const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
-    public static $includeUrl = '/terminvereinbarung/statistic';
+    public static string $includeUrl = '/terminvereinbarung/statistic';
     /**
      * language preferences
+     *
+     * @var string
+     *
+     * @psalm-var 'de'
      */
-    public static $locale = 'de';
-    public static $supportedLanguages = array(
+    public static string $locale = 'de';
+
+    /**
+     * @var (string|true)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE', default: true}, en: array{name: 'English', locale: 'en_GB'}}
+     */
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -62,9 +72,10 @@ class Application extends \BO\Slim\Application
 
     /**
      * image preferences
+     *
+     * @var false
      */
-
-    public static $isImageAllowed = false;
+    public static bool $isImageAllowed = false;
 
     /*
      * -----------------------------------------------------------------------
@@ -72,7 +83,10 @@ class Application extends \BO\Slim\Application
      */
     public static $http = null;
 
-    public static $http_curl_config = array();
+    /**
+     * @var array
+     */
+    public static array $http_curl_config = array();
 
     const JSON_COMPRESS_LEVEL = 1;
 

@@ -11,7 +11,12 @@ use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
-    protected $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'}
+     */
+    protected array $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
 
     /**
      * @SuppressWarnings(Param)

@@ -15,14 +15,13 @@ use BO\Zmsentities\Source as Entity;
 class SourceUpdate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('source');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -38,7 +37,10 @@ class SourceUpdate extends BaseController
         return $response;
     }
 
-    protected function testEntity($entity, $input)
+    /**
+     * @return void
+     */
+    protected function testEntity(Entity $entity, $input)
     {
         try {
             $entity->testValid('de_DE', 1);

@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Mail;
  */
 class MailNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Mail does not exists';
+    protected string $message = 'Mail does not exists';
 }

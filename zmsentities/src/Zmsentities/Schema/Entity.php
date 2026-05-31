@@ -79,6 +79,10 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
     /**
      * Set Default values
+     *
+     * @return array
+     *
+     * @psalm-return array<never, never>
      */
     public function getDefaults()
     {
@@ -87,8 +91,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     /**
      * This method is private, because the used library should not be used outside of this class!
+     *
+     * @psalm-param 'de_DE' $locale
+     * @psalm-param 0 $resolveLevel
      */
-    public function getValidator($locale = 'de_DE', $resolveLevel = 0)
+    public function getValidator(string $locale = 'de_DE', int $resolveLevel = 0): Validator
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
@@ -163,7 +170,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return self::$schemaCache[$class];
     }
 
-    public function getEntityName()
+    public function getEntityName(): string
     {
         $entity = get_class($this);
         $entity = preg_replace('#.*[\\\]#', '', $entity);
@@ -171,7 +178,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $entity;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel)
+    public function setJsonCompressLevel($jsonCompressLevel): static
     {
         $this->jsonCompressLevel = $jsonCompressLevel;
         return $this;
@@ -211,6 +218,8 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Performs a merge with an iterable
      * Sub-entities are preserved
+     *
+     * @return static
      */
     public function addData($mergeData)
     {
@@ -238,14 +247,14 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Performs addData on a cloned entity
      */
-    public function withData($mergeData)
+    public function withData($mergeData): static
     {
         $entity = clone $this;
         $entity->addData($mergeData);
         return $entity;
     }
 
-    public function hasId()
+    public function hasId(): bool
     {
         return (false !== $this->getId()) ? true : false;
     }
@@ -271,7 +280,10 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this->toProperty()->{$propertyName}->isAvailable();
     }
 
-    public function getProperty($propertyName, $default = '')
+    /**
+     * @psalm-param 'scope' $propertyName
+     */
+    public function getProperty(string $propertyName, $default = '')
     {
         return $this->toProperty()->{$propertyName}->get($default);
     }
@@ -279,7 +291,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Change property without changing original
      */
-    public function withProperty($propertyName, $newValue)
+    public function withProperty($propertyName, $newValue): static
     {
         $entity = clone $this;
         $entity[$propertyName] = $newValue;
@@ -289,6 +301,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData()
     {
@@ -298,6 +311,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withCleanedUpFormData()
     {
@@ -357,9 +371,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Replace data with a jsonSchema Reference
      *
      * @param Array $additionalData
-     * @return self
+     *
+     * @return (mixed|string)[]|self
+     *
+     * @psalm-return array{'$ref': string,...}|self
      */
-    public function withReference($additionalData = [])
+    public function withReference($additionalData = []): array|self
     {
         if (isset($this[$this::PRIMARY])) {
             $additionalData['$ref'] =

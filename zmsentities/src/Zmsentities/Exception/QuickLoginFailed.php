@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Exception;
  */
 class QuickLoginFailed extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = "Failed to login with quicklogin url";
+    protected string $message = "Failed to login with quicklogin url";
 }

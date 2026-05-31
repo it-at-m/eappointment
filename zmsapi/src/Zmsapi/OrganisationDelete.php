@@ -16,14 +16,13 @@ use BO\Zmsdb\Organisation as Query;
 class OrganisationDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $query = new Query();
         $organisation = $query->readEntity($args['id'], 1);
         if (! $organisation) {

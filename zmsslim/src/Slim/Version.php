@@ -15,7 +15,12 @@ class Version
         return static::UNKNOWN;
     }
 
-    public static function getArray()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{major: string, minor: string, patch: string}
+     */
+    public static function getArray(): array
     {
         $version = static::getString();
         $array = [];

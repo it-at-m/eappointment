@@ -4,9 +4,12 @@ namespace BO\Zmsapi\Exception\Useraccount;
 
 class InvalidCredentials extends \Exception
 {
-    protected $code = 401;
+    protected int $code = 401;
 
-    protected $message = 'account credentials are invalid';
+    protected string $message = 'account credentials are invalid';
 
-    public $data = [];
+    /**
+     * @var array
+     */
+    public array $data = [];
 }

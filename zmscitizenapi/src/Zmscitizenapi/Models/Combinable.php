@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class Combinable extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/combinable.json';
+    public static string $schema = 'citizenapi/combinable.json';
 
     /** @var array<string, array<int>> */
     private array $combinations = [];
@@ -33,6 +33,9 @@ class Combinable extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

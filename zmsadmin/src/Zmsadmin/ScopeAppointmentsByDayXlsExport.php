@@ -120,7 +120,12 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         return $value;
     }
 
-    protected function convertspecialchars($string)
+    /**
+     * @return string|string[]
+     *
+     * @psalm-return array<string>|string
+     */
+    protected function convertspecialchars(string $string): array|string
     {
 
         $convert = array (

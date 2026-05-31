@@ -14,14 +14,13 @@ use BO\Zmsdb\Availability as Query;
 class AvailabilityGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $availability = (new Query())->readEntity($args['id'], $resolveReferences);

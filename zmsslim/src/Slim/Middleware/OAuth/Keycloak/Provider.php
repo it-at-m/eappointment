@@ -63,8 +63,7 @@ class Provider extends Keycloak
     /**
      * Requests and returns the resource owner data of given access token.
      *
-     * @param  AccessToken $token
-     * @return array
+     * @param AccessToken $token
      */
     public function getResourceOwnerData(AccessToken $token): Useraccount
     {

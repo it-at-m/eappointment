@@ -6,7 +6,12 @@ class Provider extends Base
 {
     const TABLE = 'provider';
 
-    public function getEntityMapping()
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{contact__city: 'provider.contact__city', contact__country: Builder\Expression, contact__name: 'provider.name', contact__postalCode: 'provider.contact__postalCode', contact__region: 'provider.contact__region', contact__street: 'provider.contact__street', contact__streetNumber: 'provider.contact__streetNumber', id: 'provider.id', link: 'provider.link', name: 'provider.name', displayName: 'provider.display_name', source: 'provider.source', parent_id: 'provider.parent_id', data?: 'provider.data'}
+     */
+    public function getEntityMapping(): array
     {
         $mapping = [
             'contact__city' => 'provider.contact__city',
@@ -29,7 +34,7 @@ class Provider extends Base
         return $mapping;
     }
 
-    public function addConditionIsAssigned($isAssigned)
+    public function addConditionIsAssigned($isAssigned): static
     {
         $this->leftJoin(
             new Alias(Scope::TABLE, 'assignedscope'),
@@ -45,13 +50,13 @@ class Provider extends Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProviderId($providerId): static
     {
         $this->query->where('provider.id', '=', $providerId);
         return $this;
     }
 
-    public function addConditionProviderSource($source)
+    public function addConditionProviderSource($source): static
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
@@ -60,7 +65,7 @@ class Provider extends Base
     /**
      * @todo find calls and implement "sourceName"-parameter to remove default value
      */
-    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb')
+    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb'): void
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(

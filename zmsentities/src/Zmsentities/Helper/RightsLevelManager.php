@@ -9,7 +9,12 @@ namespace BO\Zmsentities\Helper;
  */
 class RightsLevelManager
 {
-    public static $possibleRights = array(
+    /**
+     * @var int[]
+     *
+     * @psalm-var array{superuser: 90, organisation: 70, department: 50, cluster: 40, useraccount: 40, scope: 30, departmentStats: 25, availability: 20, ticketprinter: 15, audit: 5, basic: 0}
+     */
+    public static array $possibleRights = array(
         'superuser' => 90,
         'organisation' => 70,
         'department' => 50,
@@ -23,7 +28,12 @@ class RightsLevelManager
         'basic' => 0
     );
 
-    public static $accessRights = array(
+    /**
+     * @var int[]
+     *
+     * @psalm-var array{superuser: 1, audit: 1, organisation: 1, department: 1, scope: 1}
+     */
+    public static array $accessRights = array(
         'superuser' => 1,
         'audit' => 1,
         'organisation' => 1,

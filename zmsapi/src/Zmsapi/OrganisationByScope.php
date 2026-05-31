@@ -18,14 +18,13 @@ use BO\Zmsdb\Scope;
 class OrganisationByScope extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $scope = (new Scope())->readEntity($args['id'], 0);
         if (! $scope) {

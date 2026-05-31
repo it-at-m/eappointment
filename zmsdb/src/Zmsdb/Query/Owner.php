@@ -9,6 +9,11 @@ class Owner extends Base implements MappingInterface
      */
     const TABLE = 'kunde';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{contact__city: Builder\Expression, contact__street: 'owner.Anschrift', contact__country: Builder\Expression, contact__name: 'owner.Kundenname', id: 'owner.KundenID', name: 'owner.Kundenname', url: 'owner.TerminURL'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -35,7 +40,7 @@ class Owner extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->leftJoin(
             new Alias(Organisation::TABLE, 'ownerorganisation'),
@@ -47,13 +52,16 @@ class Owner extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionOwnerId($ownerId)
+    public function addConditionOwnerId($ownerId): static
     {
         $this->query->where('owner.KundenID', '=', $ownerId);
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Owner $entity)
+    /**
+     * @psalm-return array<'Anschrift'|'Kundenname'|'TerminUrl', mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Owner $entity): array
     {
         $data = array();
         $data['Anschrift'] = $entity->contact['street'];

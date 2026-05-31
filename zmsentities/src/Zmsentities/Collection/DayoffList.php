@@ -6,7 +6,7 @@ class DayoffList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Dayoff';
 
-    public function hasEntityByDate($date)
+    public function hasEntityByDate($date): bool
     {
         return $this->getByDate($date) ? true : false;
     }
@@ -33,7 +33,7 @@ class DayoffList extends Base
         return $result;
     }
 
-    public function withTimestampFromDateformat($fromFormat = 'd.m.Y')
+    public function withTimestampFromDateformat($fromFormat = 'd.m.Y'): self
     {
         $collection = new self();
         foreach ($this as $data) {
@@ -45,7 +45,10 @@ class DayoffList extends Base
         return $collection;
     }
 
-    public function testDatesInYear($year)
+    /**
+     * @return true
+     */
+    public function testDatesInYear($year): bool
     {
         foreach ($this as $data) {
             $entity = new \BO\Zmsentities\Dayoff($data); // if source is an array
@@ -57,7 +60,7 @@ class DayoffList extends Base
         return true;
     }
 
-    public function withNew(DayoffList $dayoffList)
+    public function withNew(DayoffList $dayoffList): self
     {
         $list = new self();
         foreach ($dayoffList as $entity) {

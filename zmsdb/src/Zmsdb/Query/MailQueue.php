@@ -23,7 +23,12 @@ class MailQueue extends Base
         WHERE mq.id IN (?)
     ';
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'mailQueue.id', createIP: 'mailQueue.createIP', createTimestamp: 'mailQueue.createTimestamp', subject: 'mailQueue.subject', client__email: 'mailQueue.clientEmail', client__familyName: 'mailQueue.clientFamilyName', process__id: 'mailQueue.processID', department__id: 'mailQueue.departmentID'}
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'mailQueue.id',
@@ -37,19 +42,19 @@ class MailQueue extends Base
         ];
     }
 
-    public function addConditionItemId($itemId)
+    public function addConditionItemId($itemId): static
     {
         $this->query->where('mailQueue.id', '=', $itemId);
         return $this;
     }
 
-    public function addOrderBy($parameter, $order = 'ASC')
+    public function addOrderBy($parameter, $order = 'ASC'): static
     {
         $this->query->orderBy('mailQueue.' . $parameter, $order);
         return $this;
     }
 
-    public function addWhereIn($column, array $itemIds)
+    public function addWhereIn($column, array $itemIds): static
     {
         if (!empty($itemIds)) {
             $this->query->where($column, 'IN', $itemIds);
@@ -57,7 +62,7 @@ class MailQueue extends Base
         return $this;
     }
 
-    public function selectFields(array $fields)
+    public function selectFields(array $fields): static
     {
         $this->query->select($fields);
         return $this;

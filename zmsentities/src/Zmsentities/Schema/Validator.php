@@ -8,14 +8,14 @@ use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
 {
-    protected $schemaObject;
+    protected Schema $schemaObject;
     protected $schemaData;
     protected $locale;
     protected $validator;
     protected $validationResult;
 
-    private static $schemasLoaded = false;
-    private static $validatorInstance = null;
+    private static bool $schemasLoaded = false;
+    private static OpisValidator|null $validatorInstance = null;
 
     public function __construct($data, Schema $schemaObject, $locale)
     {
@@ -44,7 +44,7 @@ class Validator
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
-    private function loadSchemas()
+    private function loadSchemas(): void
     {
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
@@ -80,7 +80,7 @@ class Validator
         return $errorsReducedList;
     }
 
-    private function extractErrors(OpisValidationError $error)
+    private function extractErrors(OpisValidationError $error): array
     {
         $errors = [];
 
@@ -120,7 +120,7 @@ class Validator
         return $error->message();
     }
 
-    public static function getOriginPointer(OpisValidationError $error)
+    public static function getOriginPointer(OpisValidationError $error): string
     {
         $dataInfo = $error->data();
 

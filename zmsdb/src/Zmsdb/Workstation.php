@@ -29,6 +29,9 @@ class Workstation extends Base
         return $this->readResolvedReferences($workstation, $resolveReferences);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
     {
         if (0 < $resolveReferences) {
@@ -60,7 +63,7 @@ class Workstation extends Base
         return ($loggedInWorkstation['hash']) ? $loggedInWorkstation['hash'] : null;
     }
 
-    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new Query\Workstation(Query\Base::SELECT);
@@ -82,7 +85,7 @@ class Workstation extends Base
         return $workstationList;
     }
 
-    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $cluster = (new Cluster())->readEntity($clusterId, $resolveReferences);
@@ -110,7 +113,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
+    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new Query\Workstation(Query\Base::SELECT);
@@ -237,15 +240,12 @@ class Workstation extends Base
     }
 
     /**
-     *
      * remove a process from workstation
      *
-     * @param
+     * @param 
      *            workstation
-     *
-     * @return Boolean
      */
-    public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation)
+    public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation): bool
     {
         $process = new \BO\Zmsentities\Process($workstation->process);
         $query = new Query\Process(Query\Base::UPDATE);

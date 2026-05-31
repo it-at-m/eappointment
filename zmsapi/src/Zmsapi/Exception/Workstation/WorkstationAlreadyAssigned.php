@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Workstation;
  */
 class WorkstationAlreadyAssigned extends \Exception
 {
-    protected $code = 200;
+    protected int $code = 200;
 
-    protected $message = 'workstation is already used by another user';
+    protected string $message = 'workstation is already used by another user';
 }

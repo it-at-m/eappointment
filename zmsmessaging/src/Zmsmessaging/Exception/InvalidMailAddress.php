@@ -4,7 +4,7 @@ namespace BO\Zmsmessaging\Exception;
 
 class InvalidMailAddress extends \Exception
 {
-    protected $code = 422;
+    protected int $code = 422;
 
-    protected $message = 'No valid email exists';
+    protected string $message = 'No valid email exists';
 }

@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Search extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{object_id: 'object_id', locale: 'locale', entity_type: 'entity_type', search_type: 'search_type', search_value: 'search_value'}
+     */
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'locale' => 'locale',
         'entity_type' => 'entity_type',
@@ -12,6 +17,9 @@ class Search extends Base
         'search_value' => 'search_value',
     ];
 
+    /**
+     * @return void
+     */
     public function postSetupFields()
     {
         if (isset($this->fields['search_value']) && !empty($this->fields['search_value'])) {
@@ -22,6 +30,9 @@ class Search extends Base
         $this->fields['search_value'] = trim($this->fields['search_value'] ?? '');
     }
 
+    /**
+     * @return void
+     */
     public function postSetup()
     {
         $val = trim($this->fields['search_value']);

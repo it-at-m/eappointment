@@ -19,14 +19,13 @@ use BO\Zmsdb\Useraccount;
 class WorkstationLogin extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -45,7 +44,7 @@ class WorkstationLogin extends BaseController
         return $response;
     }
 
-    public static function getLoggedInWorkstation($request, $entity, $resolveReferences)
+    public static function getLoggedInWorkstation(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Useraccount $entity, $resolveReferences)
     {
         Helper\UserAuth::testUseraccountExists($entity->getId());
         $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
@@ -74,6 +73,9 @@ class WorkstationLogin extends BaseController
         return $workstation;
     }
 
+    /**
+     * @return void
+     */
     public static function testLoginHash($workstation)
     {
         $useraccount = $workstation->getUseraccount();

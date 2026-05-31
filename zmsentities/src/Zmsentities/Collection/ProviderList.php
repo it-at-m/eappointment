@@ -6,7 +6,7 @@ class ProviderList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Provider';
 
-    public function hasProvider($providerIdCsv)
+    public function hasProvider($providerIdCsv): bool
     {
         $providerFound = false;
         $providerIds = explode(',', $providerIdCsv);
@@ -18,7 +18,7 @@ class ProviderList extends Base
         return $providerFound;
     }
 
-    public function hasProviderStrict($providerIdCsv)
+    public function hasProviderStrict($providerIdCsv): bool
     {
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
@@ -29,7 +29,7 @@ class ProviderList extends Base
         return true;
     }
 
-    public function hasRequest($requestIdCsv)
+    public function hasRequest($requestIdCsv): bool
     {
         $requestIds = explode(',', $requestIdCsv);
         foreach ($this as $entity) {
@@ -42,7 +42,7 @@ class ProviderList extends Base
         return false;
     }
 
-    public function withMatchingByList($providerIdCsv)
+    public function withMatchingByList($providerIdCsv): self
     {
         $collection = new self();
         $providerIds = explode(',', $providerIdCsv);
@@ -54,7 +54,7 @@ class ProviderList extends Base
         return $collection;
     }
 
-    public function withUniqueProvider()
+    public function withUniqueProvider(): self
     {
         $list = new self();
         foreach ($this as $provider) {
@@ -65,7 +65,7 @@ class ProviderList extends Base
         return $list;
     }
 
-    public function withDataAsObject()
+    public function withDataAsObject(): self
     {
         $list = new self();
         foreach ($this as $provider) {

@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Slot extends Schema\Entity
 {
-    public static $schema = "slot.json";
+    public static string $schema = "slot.json";
 
     /**
      *  the values represent possible free appointments without confirmed
@@ -37,6 +37,11 @@ class Slot extends Schema\Entity
      */
     public const TIMESTAMP = 'timestamp';
 
+    /**
+     * @return (int|string)[]
+     *
+     * @psalm-return array{public: 0, intern: 0, type: 'free'}
+     */
     public function getDefaults()
     {
         return [
@@ -46,12 +51,12 @@ class Slot extends Schema\Entity
         ];
     }
 
-    public function setTime(Helper\DateTime $slotTime)
+    public function setTime(Helper\DateTime $slotTime): void
     {
         $this->time = $slotTime->format('H:i');
     }
 
-    public function hasTime()
+    public function hasTime(): bool
     {
         return ($this->toProperty()->time->get()) ? true : false;
     }
@@ -67,7 +72,7 @@ class Slot extends Schema\Entity
         return $this->toProperty()->time->get();
     }
 
-    public function removeAppointment()
+    public function removeAppointment(): static
     {
         if ($this->intern <= 0) {
             throw new Exception\SlotFull("Could not remove another appointment from $this");
@@ -79,7 +84,7 @@ class Slot extends Schema\Entity
         return $this;
     }
 
-    public function withAddedSlot(Slot $slot)
+    public function withAddedSlot(Slot $slot): self
     {
         $slot = clone $slot;
         $slot->type = 'sum';

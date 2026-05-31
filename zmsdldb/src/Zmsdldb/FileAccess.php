@@ -45,8 +45,10 @@ class FileAccess extends AbstractAccess
      * Parameters for json files are deprecated, try using loadFromPath() instead
      *
      * @return self
+     *
+     * @psalm-param '/var/www/html/zmsdldb/src/Zmsdldb/Importer/../../../data/' $path
      */
-    public function loadFromPath($path)
+    public function loadFromPath(string $path)
     {
         if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
@@ -63,36 +65,37 @@ class FileAccess extends AbstractAccess
         return $this;
     }
 
-    public function loadLocationsFromPathByLocale($path, $locale)
+    public function loadLocationsFromPathByLocale($path, $locale): void
     {
         $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json', $locale);
     }
 
-    public function loadServicesFromPathByLocale($path, $locale)
+    public function loadServicesFromPathByLocale($path, $locale): void
     {
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json', $locale);
     }
 
-    public function loadTopicsFromPathByLocale($path, $locale)
+    public function loadTopicsFromPathByLocale($path, $locale): void
     {
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_' . $locale . '.json', $locale);
     }
 
-    public function loadAuthoritiesFromPathByLocale($path, $locale)
+    public function loadAuthoritiesFromPathByLocale($path, $locale): void
     {
         $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authority_' . $locale . '.json', $locale);
     }
 
-    public function loadSettingsFromPath($path)
+    public function loadSettingsFromPath($path): void
     {
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
     }
 
     /**
-     *
      * @return self
+     *
+     * @psalm-param 'de'|'en' $locale
      */
-    public function loadLocations($locationJson, $locale = 'de')
+    public function loadLocations(string $locationJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Location'] = new File\Location($locationJson, $locale);
         $this->accessInstance[$locale]['Location']->setAccessInstance($this);
@@ -100,10 +103,11 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
+     * @psalm-param 'de'|'en' $locale
      */
-    public function loadServices($serviceJson, $locale = 'de')
+    public function loadServices(string $serviceJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Service'] = new File\Service($serviceJson, $locale);
         $this->accessInstance[$locale]['Service']->setAccessInstance($this);
@@ -111,10 +115,11 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
+     * @psalm-param 'de'|'en' $locale
      */
-    public function loadTopics($topicJson, $locale = 'de')
+    public function loadTopics(string $topicJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Topic'] = new File\Topic($topicJson, $locale);
         $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
@@ -127,7 +132,7 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadSettings($settingsJson)
+    public function loadSettings(string $settingsJson)
     {
         $this->accessInstance['de']['Setting'] = new File\Setting($settingsJson);
         $this->accessInstance['de']['Setting']->setAccessInstance($this);
@@ -139,10 +144,11 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     *
      * @return self
+     *
+     * @psalm-param 'de'|'en' $locale
      */
-    public function loadAuthorities($authorityJson, $locale = 'de')
+    public function loadAuthorities(string $authorityJson, string $locale = 'de')
     {
         $this->accessInstance[$locale]['Authority'] = new File\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);

@@ -14,14 +14,13 @@ use BO\Zmsdb\Process;
 class ProcessSearch extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 2))->checkPermissions('customersearch');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();

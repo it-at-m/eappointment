@@ -14,14 +14,13 @@ use BO\Zmsdb\Scope as Query;
 class DepartmentByScopeId extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new \BO\Zmsdb\Department())->readByScopeId($args['id'], $resolveReferences);
         if (! $department) {

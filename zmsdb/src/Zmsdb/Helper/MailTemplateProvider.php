@@ -4,7 +4,12 @@ namespace BO\Zmsdb\Helper;
 
 class MailTemplateProvider
 {
-    protected $templates = false;
+    /**
+     * @var (mixed|string)[]|false
+     *
+     * @psalm-var array<'template is empty'|mixed>|false
+     */
+    protected array|false $templates = false;
     protected $process;
 
     public function __construct($process)
@@ -33,7 +38,7 @@ class MailTemplateProvider
         return $this->templates;
     }
 
-    protected function loadTemplates()
+    protected function loadTemplates(): void
     {
 
         $this->templates = array(

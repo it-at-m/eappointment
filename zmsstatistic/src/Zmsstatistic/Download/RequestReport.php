@@ -21,7 +21,12 @@ class RequestReport extends Base
 
     public $lastDayDate = null;
 
-    protected $dateFormatter = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{day: 'Y-m-d', month: 'Y-m'}
+     */
+    protected array $dateFormatter = [
         'day' => 'Y-m-d',
         'month' => 'Y-m'
     ];
@@ -53,8 +58,8 @@ class RequestReport extends Base
     public function writeReport(
         ReportEntity $report,
         Spreadsheet $spreadsheet,
-        $datePatternCol = 'dd.MM.yyyy'
-    ) {
+        string $datePatternCol = 'dd.MM.yyyy'
+    ): Spreadsheet {
         $sheet = $spreadsheet->getActiveSheet();
 
         $firstDay = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
@@ -68,7 +73,7 @@ class RequestReport extends Base
         return $spreadsheet;
     }
 
-    public function writeHeader(ReportEntity $report, $sheet, $datePatternCol)
+    public function writeHeader(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, $datePatternCol): void
     {
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
@@ -83,9 +88,9 @@ class RequestReport extends Base
     }
 
     /**
-     * @SuppressWarnings(Unused)
+     * @SuppressWarnings (Unused)
      */
-    public function writeReportData(ReportEntity $report, $sheet)
+    public function writeReportData(ReportEntity $report, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet): void
     {
         $reportData = [];
         $rowIndex = $sheet->getHighestRow() + 1;

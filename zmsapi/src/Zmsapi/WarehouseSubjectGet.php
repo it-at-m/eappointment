@@ -13,14 +13,13 @@ use BO\Mellon\Validator;
 class WarehouseSubjectGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject ?? '');

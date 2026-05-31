@@ -19,10 +19,8 @@ class Source extends Base
 {
     /**
      * Fetch source from db
-     *
-     * @return \BO\Zmsentities\Source
      */
-    public function readEntity($sourceName, $resolveReferences = 0, $disableCache = false)
+    public function readEntity($sourceName, $resolveReferences = 0, bool $disableCache = false): Entity|null
     {
         $cacheKey = "source-$sourceName-$resolveReferences";
 
@@ -132,9 +130,8 @@ class Source extends Base
 
     /**
      * delete provider and request relations of source
-     *
      */
-    public function writeInsertRelations(\BO\Zmsentities\Source $entity)
+    public function writeInsertRelations(\BO\Zmsentities\Source $entity): void
     {
         (new Provider())->writeListBySource($entity);
         (new Request())->writeListBySource($entity);
@@ -143,10 +140,8 @@ class Source extends Base
 
     /**
      * delete by sourcename
-     *
-     * @return \BO\Zmsentities\Source
      */
-    public function writeDeleteBySource($sourceName)
+    public function writeDeleteBySource($sourceName): Entity|null
     {
         $entity = $this->readEntity($sourceName);
         $query = new Query\Source(Query\Base::DELETE);
@@ -160,15 +155,17 @@ class Source extends Base
 
     /**
      * delete provider and request relations of source
-     *
      */
-    public function writeDeleteRelations($sourceName)
+    public function writeDeleteRelations($sourceName): void
     {
         (new Provider())->writeDeleteListBySource($sourceName);
         (new Request())->writeDeleteListBySource($sourceName);
         (new RequestRelation())->writeDeleteListBySource($sourceName);
     }
 
+    /**
+     * @return void
+     */
     public function removeCache($sourceName)
     {
         if (!App::$cache) {

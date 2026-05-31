@@ -9,7 +9,7 @@ class RestoreDeletedDataByCron
 {
     protected $scopeList;
 
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     public function __construct($verbose = false)
     {
@@ -20,7 +20,7 @@ class RestoreDeletedDataByCron
         $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         foreach ($this->scopeList as $scope) {
             $time = new \DateTimeImmutable();
@@ -39,7 +39,7 @@ class RestoreDeletedDataByCron
         }
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process)
+    protected function removeProcess(\BO\Zmsentities\Process $process): void
     {
         if ('reserved' == $process->status) {
             $this->deleteProcess($process);
@@ -48,7 +48,7 @@ class RestoreDeletedDataByCron
         }
     }
 
-    protected function deleteProcess(\BO\Zmsentities\Process $process)
+    protected function deleteProcess(\BO\Zmsentities\Process $process): void
     {
         $query = new \BO\Zmsdb\Process();
         if ($query->writeDeletedEntity($process->id) && $this->verbose) {

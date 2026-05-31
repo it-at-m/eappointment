@@ -6,8 +6,13 @@ class Source extends Schema\Entity
 {
     public const PRIMARY = 'source';
 
-    public static $schema = 'source.json';
+    public static string $schema = 'source.json';
 
+    /**
+     * @return (Collection\ProviderList|Collection\RequestList|Collection\RequestRelationList|Contact|false|string)[]
+     *
+     * @psalm-return array{source: '', contact: Contact, providers: Collection\ProviderList, requests: Collection\RequestList, requestrelation: Collection\RequestRelationList, label: '', editable: false}
+     */
     public function getDefaults()
     {
         return [
@@ -39,7 +44,7 @@ class Source extends Schema\Entity
         return $this->toProperty()->contact->get();
     }
 
-    public function getProviderList()
+    public function getProviderList(): Collection\ProviderList
     {
         $providerList = new Collection\ProviderList();
         foreach ($this->toProperty()->providers->get() as $provider) {
@@ -51,7 +56,7 @@ class Source extends Schema\Entity
         return $providerList;
     }
 
-    public function getScopeList()
+    public function getScopeList(): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopes = $this->toProperty()->scopes->get();
@@ -66,7 +71,7 @@ class Source extends Schema\Entity
         return $scopeList;
     }
 
-    public function getRequestList()
+    public function getRequestList(): Collection\RequestList
     {
         $requestList = new Collection\RequestList();
         $requests = $this->toProperty()->requests->get();
@@ -81,7 +86,7 @@ class Source extends Schema\Entity
         return $requestList;
     }
 
-    public function hasProvider($providerIdCsv)
+    public function hasProvider($providerIdCsv): bool
     {
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
@@ -92,7 +97,7 @@ class Source extends Schema\Entity
         return true;
     }
 
-    public function getRequestRelationList()
+    public function getRequestRelationList(): Collection\RequestRelationList
     {
         $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
         if (isset($this['requestrelation'])) {
@@ -106,7 +111,7 @@ class Source extends Schema\Entity
         return $requestRelationList;
     }
 
-    public function hasRequest($requestIdCsv)
+    public function hasRequest($requestIdCsv): bool
     {
         $requestIds = explode(',', $requestIdCsv);
         foreach ($requestIds as $requestId) {
@@ -117,12 +122,12 @@ class Source extends Schema\Entity
         return true;
     }
 
-    public function isEditable()
+    public function isEditable(): bool
     {
         return ($this->toProperty()->editable->get()) ? true : false;
     }
 
-    public function isCompleteAndEditable()
+    public function isCompleteAndEditable(): bool
     {
         $source = $this->getSource();
         if (empty($source) || !is_string($source)) {

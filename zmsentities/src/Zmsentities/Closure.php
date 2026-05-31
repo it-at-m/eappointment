@@ -6,8 +6,13 @@ class Closure extends Schema\Entity
 {
     const PRIMARY = 'id';
 
-    public static $schema = "closure.json";
+    public static string $schema = "closure.json";
 
+    /**
+     * @return int[]
+     *
+     * @psalm-return array{id: 0, lastChange: 1447924981}
+     */
     public function getDefaults()
     {
         return [
@@ -16,7 +21,7 @@ class Closure extends Schema\Entity
         ];
     }
 
-    public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
+    public function setTimestampFromDateformat($fromFormat = 'd.m.Y'): static
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
         if ($dateTime) {
@@ -25,7 +30,7 @@ class Closure extends Schema\Entity
         return $this;
     }
 
-    public function getDateTime()
+    public function getDateTime(): Helper\DateTime
     {
         return (new \BO\Zmsentities\Helper\DateTime($this->year . '-' . $this->month . '-' . $this->day));
     }
@@ -43,7 +48,7 @@ class Closure extends Schema\Entity
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
 
-    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now)
+    public function isAffectingAvailability(Availability $availabiliy, \DateTimeInterface $now): bool
     {
         return $availabiliy->isBookable($this->getDateTime(), $now);
     }

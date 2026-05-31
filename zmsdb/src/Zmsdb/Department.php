@@ -12,9 +12,17 @@ use BO\Zmsentities\Collection\DepartmentList as Collection;
  */
 class Department extends Base
 {
-    public static $departmentCache = array();
+    /**
+     * @var array
+     */
+    public static array $departmentCache = array();
 
-    public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @param false|string $departmentId
+     *
+     * @psalm-param 0|1|2 $resolveReferences
+     */
+    public function readEntity(string|false $departmentId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "department-$departmentId-$resolveReferences";
 
@@ -45,6 +53,9 @@ class Department extends Base
         return null;
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
@@ -65,7 +76,7 @@ class Department extends Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new Query\Department(Query\Base::SELECT);
@@ -83,7 +94,12 @@ class Department extends Base
         return $departmentList;
     }
 
-    public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0)
+    /**
+     * @return Entity[]
+     *
+     * @psalm-return array<Entity>
+     */
+    public function readEntitiesByIds(array $departmentIds, $resolveReferences = 0): array
     {
         if (empty($departmentIds)) {
             return [];
@@ -109,7 +125,10 @@ class Department extends Base
         return $departments;
     }
 
-    public function readByScopeId($scopeId, $resolveReferences = 0)
+    /**
+     * @psalm-param 0 $resolveReferences
+     */
+    public function readByScopeId($scopeId, int $resolveReferences = 0)
     {
         $query = new Query\Department(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -120,7 +139,7 @@ class Department extends Base
         return (isset($department['id']) && $department['id']) ? $department->withOutClusterDuplicates() : null;
     }
 
-    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    public function readByOrganisationId($organisationId, $resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new Query\Department(Query\Base::SELECT);
@@ -223,7 +242,12 @@ class Department extends Base
         return $this->readEntity($departmentId, 0, true);
     }
 
-    protected function writeDepartmentDayoffs($departmentId, $dayoffList)
+    /**
+     * @param false|string $departmentId
+     *
+     * @return void
+     */
+    protected function writeDepartmentDayoffs(string|false $departmentId, $dayoffList)
     {
         if (!$departmentId) {
             throw new Exception\Department\InvalidId();
@@ -249,7 +273,12 @@ class Department extends Base
         }
     }
 
-    protected function writeDepartmentLinks($departmentId, $links)
+    /**
+     * @param false|string $departmentId
+     *
+     * @return void
+     */
+    protected function writeDepartmentLinks(string|false $departmentId, $links)
     {
         if (!$departmentId) {
             throw new Exception\Department\InvalidId();
@@ -269,8 +298,11 @@ class Department extends Base
         }
     }
 
+    /**
+     * @param false|string $departmentId
+     */
     protected function writeDepartmentMail(
-        $departmentId,
+        string|false $departmentId,
         $email,
         $sendEmailReminderEnabled,
         $sendEmailReminderMinutesBefore
@@ -305,7 +337,7 @@ class Department extends Base
         $departmentId,
         \DateTimeInterface $dateTime,
         $resolveReferences = 0
-    ) {
+    ): \BO\Zmsentities\Collection\QueueList {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         $department = $this->readEntity($departmentId, 2);
 
@@ -320,7 +352,10 @@ class Department extends Base
         return $queueList;
     }
 
-    public function removeCache($department)
+    /**
+     * @return void
+     */
+    public function removeCache(Entity $department)
     {
         if (!\App::$cache || !isset($department->id)) {
             return;

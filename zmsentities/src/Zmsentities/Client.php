@@ -4,8 +4,13 @@ namespace BO\Zmsentities;
 
 class Client extends Schema\Entity
 {
-    public static $schema = "client.json";
+    public static string $schema = "client.json";
 
+    /**
+     * @return (false|int|string)[]
+     *
+     * @psalm-return array{familyName: '', email: '', emailSendCount: 0, surveyAccepted: false, telephone: ''}
+     */
     public function getDefaults()
     {
         return [
@@ -17,17 +22,17 @@ class Client extends Schema\Entity
         ];
     }
 
-    public function hasFamilyName()
+    public function hasFamilyName(): bool
     {
         return ($this->toProperty()->familyName->get()) ? true : false;
     }
 
-    public function hasEmail()
+    public function hasEmail(): bool
     {
         return ($this->toProperty()->email->get()) ? true : false;
     }
 
-    public function hasTelephone()
+    public function hasTelephone(): bool
     {
         return ($this->toProperty()->telephone->get()) ? true : false;
     }
@@ -37,7 +42,7 @@ class Client extends Schema\Entity
         return $this->toProperty()->emailSendCount->get();
     }
 
-    public function hasSurveyAccepted()
+    public function hasSurveyAccepted(): bool
     {
         return (1 == $this->toProperty()->surveyAccepted->get()) ? true : false;
     }

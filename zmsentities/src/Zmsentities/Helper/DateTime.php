@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Helper;
 
 class DateTime extends \DateTimeImmutable implements \JsonSerializable
 {
-    public static function create($time = 'now', \DateTimeZone $timezone = null)
+    public static function create(string|\DateTimeInterface|false $time = 'now', \DateTimeZone $timezone = null): self
     {
         if ($time instanceof \BO\Zmsentities\Helper\DateTime) {
             $dateTime = $time;
@@ -25,7 +25,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $dateTime;
     }
 
-    public function getWeekOfMonth()
+    public function getWeekOfMonth(): float
     {
         // Todo: This is correct way of calculating week of month by date, but zms1 has 1-7 = 1, 8-14 = 2,...
         /*
@@ -39,19 +39,19 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $weekOfMonth;
     }
 
-    public function isWeekOfMonth($number)
+    public function isWeekOfMonth($number): bool
     {
         return (int)$this->getWeekOfMonth() === (int)$number;
     }
 
-    public function isLastWeekOfMonth()
+    public function isLastWeekOfMonth(): bool
     {
         $weekOfMonth = $this->getWeekOfMonth();
         $lastDay = $this->modify('last day of this month');
         return $weekOfMonth == $lastDay->getWeekOfMonth();
     }
 
-    public function getSecondsOfDay()
+    public function getSecondsOfDay(): int|float
     {
         $hours = $this->format('G');
         $minutes = $this->format('i');
@@ -59,12 +59,17 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
+    /**
+     * @psalm-param 'EEEE dd. MMMM yyyy'|'MMMM yyyy'|'MMMM' $pattern
+     *
+     * @return false|string
+     */
     public static function getFormatedDates(
         \DateTimeInterface $date,
-        $pattern = 'MMMM',
+        string $pattern = 'MMMM',
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
-    ) {
+    ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
             \IntlDateFormatter::MEDIUM,
@@ -76,7 +81,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $dateFormatter->format($date->getTimestamp());
     }
 
-    public static function getSummerTimeStartDateTime($year = null)
+    public static function getSummerTimeStartDateTime($year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeMarch = new \DateTime($year . '-03-01', new \DateTimeZone('Europe/Berlin'));
@@ -84,7 +89,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $lastSunday->setTime('02', '00', '00');
     }
 
-    public static function getSummerTimeEndDateTime($year = null)
+    public static function getSummerTimeEndDateTime($year = null): \DateTime
     {
         $year = ($year) ? $year : date('Y');
         $dateTimeOctober = new \DateTime($year . '-10-01', new \DateTimeZone('Europe/Berlin'));

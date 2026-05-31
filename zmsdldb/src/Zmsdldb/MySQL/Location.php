@@ -90,6 +90,9 @@ class Location extends Base
         }
     }
 
+    /**
+     * @return Collection
+     */
     public function fetchListByOffice($office, $mixLanguages = false)
     {
         try {
@@ -132,11 +135,7 @@ class Location extends Base
         }
     }
 
-    /**
-     *
-     * @return Collection\Services
-     */
-    public function fetchFromCsv($location_csv, $mixLanguages = false)
+    public function fetchFromCsv($location_csv, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -177,6 +176,9 @@ class Location extends Base
         }
     }
 
+    /**
+     * @return Collection
+     */
     protected function fetchGeoJsonLocations($category, $getAll)
     {
         try {
@@ -234,6 +236,10 @@ class Location extends Base
 
     /**
      * @todo Refactoring required, functions in this class should return entities, not JSON data
+     *
+     * @return ((array|string)[]|bool|mixed|string)[][]
+     *
+     * @psalm-return array<array{name: mixed, type: 'cluster', active: bool, data: array{type: 'FeatureCollection', features: non-empty-list<mixed>}}>
      */
     public function fetchGeoJson($category = null, $getAll = false)
     {
@@ -304,6 +310,9 @@ class Location extends Base
         }
     }
 
+    /**
+     * @return Collection
+     */
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
         try {

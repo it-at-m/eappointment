@@ -16,12 +16,16 @@ abstract class Base implements Options
     use OptionsTrait;
 
     protected $entityClass = null;
-    protected $importData = [];
-    protected $hash = null;
-    protected $locale = 'de';
-    protected $metaObject = null;
-    protected $entitysToDelete = [];
-    protected $getCurrentEntitys = true;
+    protected array $importData = [];
+    protected string|null $hash = null;
+    protected string $locale = 'de';
+    protected MetaEntity|null $metaObject = null;
+    protected array $entitysToDelete = [];
+
+    /**
+     * @var true
+     */
+    protected bool $getCurrentEntitys = true;
 
     public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0)
     {
@@ -60,11 +64,14 @@ abstract class Base implements Options
         return $this->entitysToDelete;
     }
 
-    public function removeEntityFromCurrentList(int $entityId)
+    public function removeEntityFromCurrentList(int $entityId): void
     {
         unset($this->entitysToDelete[$entityId]);
     }
 
+    /**
+     * @return null|true
+     */
     public function setCurrentEntitys()
     {
         try {
@@ -93,6 +100,9 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @return void
+     */
     public function createMetaObject()
     {
         try {
@@ -125,7 +135,7 @@ abstract class Base implements Options
         return $this;
     }
 
-    public function needsUpdate()
+    public function needsUpdate(): bool
     {
         $metaObject = $this->getMetaObject();
         $needsUpdate = $metaObject->itemNeedsUpdateAlt();
@@ -163,7 +173,7 @@ abstract class Base implements Options
         return $this->hash;
     }
 
-    public function createEntity(array $data = array(), bool $setup = true)
+    public function createEntity(array $data = array(), bool $setup = true): object
     {
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
@@ -171,6 +181,9 @@ abstract class Base implements Options
         return new $this->entityClass($this->getPDOAccess(), $data, $setup);
     }
 
+    /**
+     * @return void
+     */
     final public function clearEntity()
     {
         try {
@@ -188,11 +201,11 @@ abstract class Base implements Options
         }
     }
 
-    public function preImport()
+    public function preImport(): void
     {
     }
 
-    public function postImport()
+    public function postImport(): void
     {
     }
 

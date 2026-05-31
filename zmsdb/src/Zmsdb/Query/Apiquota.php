@@ -12,14 +12,14 @@ class Apiquota extends Base implements MappingInterface
      */
     const TABLE = 'apiquota';
 
-    public static function getQueryReadApiQuotaListByKey()
+    public static function getQueryReadApiQuotaListByKey(): string
     {
         return '
             SELECT * FROM `apiquota` WHERE `key` = :key
         ';
     }
 
-    public static function getQueryReadApiQuotaExpired($dateTime)
+    public static function getQueryReadApiQuotaExpired(\DateTimeInterface $dateTime): string
     {
         $timeStamp = $dateTime->getTimestamp();
         return '
@@ -33,6 +33,11 @@ class Apiquota extends Base implements MappingInterface
         ';
     }
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{key: 'apiquota.key', route: 'apiquota.route', period: 'apiquota.period', requests: 'apiquota.requests', ts: 'apiquota.ts'}
+     */
     public function getEntityMapping()
     {
         $mapping = [
@@ -45,19 +50,19 @@ class Apiquota extends Base implements MappingInterface
         return $mapping;
     }
 
-    public function addConditionQuotaId($quotaId)
+    public function addConditionQuotaId($quotaId): static
     {
         $this->query->where('apiquota.quotaid', '=', $quotaId);
         return $this;
     }
 
-    public function addConditionApikey($apikey)
+    public function addConditionApikey($apikey): static
     {
         $this->query->where('apiquota.key', '=', $apikey);
         return $this;
     }
 
-    public function addConditionRoute($route)
+    public function addConditionRoute($route): static
     {
         $this->query->where('apiquota.route', '=', $route);
         return $this;

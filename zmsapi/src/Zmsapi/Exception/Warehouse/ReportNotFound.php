@@ -4,7 +4,7 @@ namespace BO\Zmsapi\Exception\Warehouse;
 
 class ReportNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Failed to read report';
+    protected string $message = 'Failed to read report';
 }

@@ -9,6 +9,9 @@
 
 class MailTemplateDummyPreview extends BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

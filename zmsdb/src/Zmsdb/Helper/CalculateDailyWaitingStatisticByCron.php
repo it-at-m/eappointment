@@ -14,7 +14,7 @@ use DateTimeImmutable;
  */
 class CalculateDailyWaitingStatisticByCron extends Base
 {
-    public function run(DateTimeImmutable $day, bool $commit = false)
+    public function run(DateTimeImmutable $day, bool $commit = false): void
     {
                     \App::$log->info('CalculateDailyWaitingStatisticByCron started', ['date' => $day->format('Y-m-d')]);
 

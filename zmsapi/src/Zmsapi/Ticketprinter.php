@@ -20,14 +20,13 @@ use BO\Zmsentities\Ticketprinter as Entity;
 class Ticketprinter extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $input = Validator::input()->isJson()->assertValid()->getValue();

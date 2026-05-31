@@ -8,6 +8,11 @@ class RequestRelation extends Base implements MappingInterface
 
     const ALIAS = 'request_provider';
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{request__id: 'request_provider.request__id', provider__id: 'request_provider.provider__id', source: 'request_provider.source', slots: 'request_provider.slots', public: 'request_provider.public_visibility', maxQuantity: 'request_provider.max_quantity'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -20,6 +25,11 @@ class RequestRelation extends Base implements MappingInterface
         ];
     }
 
+    /**
+     * @return Builder\Expression[]
+     *
+     * @psalm-return array{'request__$ref': Builder\Expression, 'provider__$ref': Builder\Expression}
+     */
     public function getReferenceMapping()
     {
         return [
@@ -32,25 +42,25 @@ class RequestRelation extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionRequestId($requestId)
+    public function addConditionRequestId($requestId): static
     {
         $this->query->where(self::TABLE . '.request__id', '=', $requestId);
         return $this;
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProviderId($providerId): static
     {
         $this->query->where(self::TABLE . '.provider__id', '=', $providerId);
         return $this;
     }
 
-    public function addConditionBookable()
+    public function addConditionBookable(): static
     {
         $this->query->where(self::TABLE . '.bookable', '=', 1);
         return $this;
     }
 
-    public function addConditionSource($sourceName)
+    public function addConditionSource($sourceName): static
     {
         $this->query->where(self::TABLE . '.source', '=', $sourceName);
         return $this;

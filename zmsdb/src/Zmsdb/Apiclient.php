@@ -6,7 +6,10 @@ use BO\Zmsentities\Apiclient as Entity;
 
 class Apiclient extends Base
 {
-    public static $cache = [];
+    /**
+     * @var array
+     */
+    public static array $cache = [];
 
     public function readEntity($clientKey)
     {

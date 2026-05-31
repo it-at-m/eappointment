@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Ticketprinter;
  */
 class TicketprinterNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Es konnte leider kein Ticketprinter gefunden werden.';
+    protected string $message = 'Es konnte leider kein Ticketprinter gefunden werden.';
 }

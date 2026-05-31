@@ -8,8 +8,13 @@ class Appointment extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "appointment.json";
+    public static string $schema = "appointment.json";
 
+    /**
+     * @return (Availability|Scope|int)[]
+     *
+     * @psalm-return array{date: 0, scope: Scope, availability: Availability, slotCount: 0}
+     */
     public function getDefaults()
     {
         return [
@@ -29,13 +34,13 @@ class Appointment extends Schema\Entity
         );
     }
 
-    public function toTime($lang = 'de')
+    public function toTime($lang = 'de'): string
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
         return date('H:i', $this->date) . $suffix;
     }
 
-    public function hasTime()
+    public function hasTime(): bool
     {
         if ($this->date == 0) {
             return false;
@@ -46,40 +51,39 @@ class Appointment extends Schema\Entity
 
     /**
      * Modify time for appointment
-     *
      */
-    public function setTime($timeString)
+    public function setTime($timeString): static
     {
         $dateTime = $this->toDateTime();
         $this->date = $dateTime->modify($timeString)->getTimestamp();
         return $this;
     }
 
-    public function setDateTime(\DateTimeInterface $dateTime)
+    public function setDateTime(\DateTimeInterface $dateTime): static
     {
         $this->date = $dateTime->getTimestamp();
         return $this;
     }
 
-    public function addDate($date)
+    public function addDate(int $date): static
     {
         $this->date = $date;
         return $this;
     }
 
-    public function addScope($scopeId)
+    public function addScope($scopeId): static
     {
         $this->getScope()->id = $scopeId;
         return $this;
     }
 
-    public function getScope()
+    public function getScope(): Scope
     {
         $this->scope = ($this->toProperty()->scope->isAvailable()) ? new Scope($this['scope']) : new Scope();
         return $this->scope;
     }
 
-    public function addSlotCount($slotCount = null)
+    public function addSlotCount(int|null $slotCount = null): static
     {
         if ($slotCount) {
             $this->slotCount = $slotCount;
@@ -95,7 +99,7 @@ class Appointment extends Schema\Entity
         return $this->slotCount;
     }
 
-    public function getAvailability()
+    public function getAvailability(): Availability
     {
         $data = array();
         if (Property::__keyExists('availability', $this)) {
@@ -104,7 +108,7 @@ class Appointment extends Schema\Entity
         return new Availability($data);
     }
 
-    public function toDateTime($timezone = 'Europe/Berlin')
+    public function toDateTime($timezone = 'Europe/Berlin'): \DateTimeImmutable
     {
         $date = (new \DateTimeImmutable())->setTimestamp($this->date);
         //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
@@ -135,7 +139,7 @@ class Appointment extends Schema\Entity
         return $time->modify('+' . ($slotTimeInMinutes * $this->slotCount) . ' minutes');
     }
 
-    public function setDateByString($dateString, $format = 'Y-m-d H:i')
+    public function setDateByString(string $dateString, $format = 'Y-m-d H:i'): static
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {
@@ -150,9 +154,8 @@ class Appointment extends Schema\Entity
 
     /**
      * Does two appointments match, the matching appointment might have a lower slot count
-     *
      */
-    public function isMatching(self $appointment)
+    public function isMatching(self $appointment): bool
     {
         if (
             $appointment['scope']['id'] == $this['scope']['id']

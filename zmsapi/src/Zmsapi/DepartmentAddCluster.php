@@ -14,14 +14,13 @@ use BO\Zmsdb\Cluster as Query;
 class DepartmentAddCluster extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $department = (new \BO\Zmsdb\Department())->readEntity($args['id'], 1);
         (new Helper\User($request, 2))->checkRights(
             'department',

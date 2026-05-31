@@ -21,15 +21,14 @@ use BO\Zmsdb\Process;
 class ProcessUpdate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @SuppressWarnings(Complexity)
-     * @return String
+     * @SuppressWarnings (Param)
+     * @SuppressWarnings (Complexity)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $clientKey = Validator::param('clientkey')->isString()->getValue();
@@ -101,7 +100,10 @@ class ProcessUpdate extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function testProcessData($entity, bool $checkMailLimit = true)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity, bool $checkMailLimit = true)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
 

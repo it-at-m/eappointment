@@ -22,6 +22,9 @@ class SQLite extends Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function runImport()
     {
         try {
@@ -31,11 +34,17 @@ class SQLite extends Base
             throw $e;
         }
     }
+    /**
+     * @return void
+     */
     public function preImport()
     {
         $this->beginTransaction();
     }
 
+    /**
+     * @return void
+     */
     public function postImport()
     {
         $this->commit();

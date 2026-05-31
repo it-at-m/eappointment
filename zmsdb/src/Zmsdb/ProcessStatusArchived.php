@@ -10,7 +10,10 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusArchived extends Process
 {
-    public function readArchivedEntity($archiveId, $resolveReferences = 0)
+    /**
+     * @param false|string $archiveId
+     */
+    public function readArchivedEntity(string|false $archiveId, $resolveReferences = 0)
     {
         if (!$archiveId) {
             return null;
@@ -96,7 +99,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    protected function readResolvedList($query, $resolveReferences)
+    protected function readResolvedList(Query\ProcessStatusArchived $query, $resolveReferences): Collection
     {
         $processList = new Collection();
         $resultList = $this->fetchList($query, new Entity());
@@ -175,11 +178,12 @@ class ProcessStatusArchived extends Process
     /**
      * write a new archived process to DB
      *
+     * @psalm-param 0 $resolveReferences
      */
     public function writeNewArchivedProcess(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $resolveReferences = 0,
+        int $resolveReferences = 0,
         bool $calculateStatistic = false
     ) {
         $query = new Query\ProcessStatusArchivedToday(Query\Base::INSERT);
@@ -204,7 +208,7 @@ class ProcessStatusArchived extends Process
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
-    protected function writeXRequestsArchived($processId, $archiveId)
+    protected function writeXRequestsArchived($processId, $archiveId): void
     {
         $query = new Query\XRequest(Query\Base::UPDATE);
         $query->addConditionProcessId($processId);

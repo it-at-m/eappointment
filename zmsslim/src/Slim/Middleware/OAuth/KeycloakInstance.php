@@ -11,8 +11,8 @@ use League\OAuth2\Client\Token\AccessToken;
  */
 class KeycloakInstance
 {
-    protected $provider = null;
-    protected $oauthService = null;
+    protected Keycloak\Provider|null $provider = null;
+    protected \BO\Zmsclient\OAuthService|null $oauthService = null;
 
     public function __construct(?\BO\Zmsclient\OAuthService $oauthService = null)
     {
@@ -67,14 +67,14 @@ class KeycloakInstance
         return $response;
     }
 
-    public function doLogout(ResponseInterface $response)
+    public function doLogout(ResponseInterface $response): ResponseInterface
     {
         $this->writeDeleteSession();
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         return $response->withStatus(301)->withHeader('Location', $realmData['logoutUri']);
     }
 
-    public function writeNewAccessTokenIfExpired()
+    public function writeNewAccessTokenIfExpired(): bool
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
@@ -93,6 +93,9 @@ class KeycloakInstance
         return true;
     }
 
+    /**
+     * @return void
+     */
     private function validateAccess(AccessToken $token)
     {
         \App::$log->info('Validating OIDC token', [
@@ -203,6 +206,9 @@ class KeycloakInstance
         ]);
     }
 
+    /**
+     * @return void
+     */
     private function validateOwnerData(array $ownerInputData)
     {
         $config = $this->oauthService->readConfig();
@@ -253,7 +259,7 @@ class KeycloakInstance
         return $sessionHandler->close();
     }
 
-    private function writeDeleteSession()
+    private function writeDeleteSession(): void
     {
         \App::$log->info('Deleting session', [
             'event' => 'oauth_delete_session',

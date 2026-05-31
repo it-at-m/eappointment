@@ -14,14 +14,13 @@ use BO\Zmsdb\Organisation as Query;
 class OwnerAddOrganisation extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('organisation');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsdb\Owner())->readEntity($args['id'], 2);

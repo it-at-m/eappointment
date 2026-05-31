@@ -23,7 +23,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         $this->container = $container;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'dldb';
     }
@@ -59,12 +59,17 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         );
     }
 
-    public function dump($item)
+    public function dump($item): string
     {
         return '<pre>' . print_r($item, 1) . '</pre>';
     }
 
-    public function currentRoute($lang = null)
+    /**
+     * @return (array|mixed|string)[]
+     *
+     * @psalm-return array{name: 'noroute'|mixed, params: array<never, never>|mixed}
+     */
+    public function currentRoute($lang = null): array
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
@@ -91,7 +96,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     }
 
 
-    public function getD115Enabeld()
+    public function getD115Enabeld(): bool
     {
         $settingsRepository = \App::$repository->fromSetting();
         $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
@@ -116,7 +121,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $text;
     }
 
-    public function getBobbiChatButtonEnabeld()
+    public function getBobbiChatButtonEnabeld(): bool
     {
         $settingsRepository = \App::$repository->fromSetting();
         $buttonEnabled = (bool)($settingsRepository->fetchName('frontend.bobbi.chatbutton.enabled') ?? false);
@@ -129,12 +134,12 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return \APP::OSM_ACCESS_TOKEN;
     }
 
-    public function getOSMOptions()
+    public function getOSMOptions(): string
     {
         return 'gestureHandling: ' . \APP::OSM_GESTURE_HANDLING;
     }
 
-    public function formatPhoneNumber($phoneNumber)
+    public function formatPhoneNumber($phoneNumber): string|null
     {
         preg_match_all('/(^\+)?[\d]+/', $phoneNumber, $matches);
         $number = implode($matches[0]);
@@ -142,7 +147,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $phonenumber;
     }
 
-    public function convertOpeningTimes($name)
+    public function convertOpeningTimes($name): string
     {
         $days = array(
             'monday' => 'Montag',
@@ -157,19 +162,27 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $days[$name];
     }
 
-    public function dateToTS($datetime)
+    /**
+     * @return false|int
+     */
+    public function dateToTS($datetime): int|false
     {
         $timestamp = ($datetime === (int)$datetime) ? $datetime : strtotime($datetime);
         return $timestamp;
     }
 
-    public function tsToDate($timestamp)
+    public function tsToDate($timestamp): string
     {
         $date =  date('Y-m-d', $timestamp);
         return $date;
     }
 
-    public function formatDateTime($dateString)
+    /**
+     * @return (false|float|int|mixed|string)[]
+     *
+     * @psalm-return array{date: mixed, fulldate: mixed, weekday: float|int, weekdayfull: mixed, time: false|mixed, timeId: false|string, ts: int, dateId: string, ym: string,...}
+     */
+    public function formatDateTime($dateString): array
     {
         $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
@@ -191,7 +204,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $formatDate;
     }
 
-    public function kindOfPayment($code)
+    public function kindOfPayment($code): string
     {
         $result = '';
         if ($code == 0) {
@@ -208,7 +221,12 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $result;
     }
 
-    public function azPrefixList($list, $property)
+    /**
+     * @return (array|mixed)[][]
+     *
+     * @psalm-return array<array{prefix: mixed, sublist: non-empty-list<mixed>}>
+     */
+    public function azPrefixList($list, $property): array
     {
         $azList = array();
         foreach ((array)$list as $item) {
@@ -228,7 +246,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $azList;
     }
 
-    protected static function sortFirstChar($string)
+    protected static function sortFirstChar($string): string
     {
         $firstChar = mb_substr($string, 0, 1);
         $firstChar = mb_strtoupper($firstChar);
@@ -236,7 +254,10 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $firstChar;
     }
 
-    protected static function sortByName($left, $right)
+    /**
+     * @psalm-return int<-1, 1>
+     */
+    protected static function sortByName($left, $right): int
     {
         return strcmp(
             self::toSortableString(strtolower($left['name'])),
@@ -244,7 +265,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         );
     }
 
-    protected static function toSortableString($string)
+    protected static function toSortableString(string $string): string
     {
         $string = strtr($string, array(
             'Ä' => 'Ae',
@@ -259,7 +280,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $string;
     }
 
-    public function csvProperty($list, $property)
+    public function csvProperty($list, $property): string
     {
         $propertylist = array();
         foreach ($list as $item) {
@@ -270,7 +291,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return implode(',', array_unique($propertylist));
     }
 
-    public function csvAppointmentLocations($list, $service_id = '')
+    public function csvAppointmentLocations($list, $service_id = ''): string
     {
         $propertylist = array();
         foreach ($list as $item) {

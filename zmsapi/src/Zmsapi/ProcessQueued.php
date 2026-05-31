@@ -18,14 +18,13 @@ use BO\Zmsdb\ProcessStatusQueued;
 class ProcessQueued extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request))->checkPermissions('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -60,7 +59,10 @@ class ProcessQueued extends BaseController
         return $response;
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {

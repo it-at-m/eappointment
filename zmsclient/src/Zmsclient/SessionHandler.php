@@ -7,16 +7,21 @@ namespace BO\Zmsclient;
  */
 class SessionHandler implements \SessionHandlerInterface
 {
+    /**
+     * @var null|string
+     */
     public $sessionName;
 
     /**
      * Adds a parameter "sync" on reading the session from the API
      * Use a value of 1 to enable synchronous reads
      * if a former session write happened during a redirect
+     *
+     * @var int
      */
-    public static $useSyncFlag = 0;
+    public static int $useSyncFlag = 0;
 
-    protected static $lastInstance = null;
+    protected static static|null $lastInstance = null;
 
     /**
      * @var \BO\Zmsclient\Http $http

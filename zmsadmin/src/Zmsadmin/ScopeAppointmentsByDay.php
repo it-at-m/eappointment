@@ -54,7 +54,7 @@ class ScopeAppointmentsByDay extends BaseController
          return $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
     }
 
-    public static function readSelectedScope($workstation, $workstationRequest, $scopeId)
+    public static function readSelectedScope(\BO\Zmsentities\Workstation $workstation, \BO\Zmsclient\WorkstationRequests $workstationRequest, $scopeId)
     {
         if ($workstation->getScope()->id != $scopeId) {
             $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
@@ -65,7 +65,7 @@ class ScopeAppointmentsByDay extends BaseController
         return $workstationRequest->getScope();
     }
 
-    public static function readProcessList($workstationRequest, $selectedDateTime)
+    public static function readProcessList(\BO\Zmsclient\WorkstationRequests $workstationRequest, $selectedDateTime)
     {
         $processList = $workstationRequest->readProcessListByDate(
             $selectedDateTime,

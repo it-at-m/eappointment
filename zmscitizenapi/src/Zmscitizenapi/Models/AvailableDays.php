@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class AvailableDays extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/availableDays.json';
+    public static string $schema = 'citizenapi/availableDays.json';
 /** @var array */
     public array $availableDays = [];
     public function __construct(array $availableDays = [])
@@ -19,6 +19,9 @@ class AvailableDays extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

@@ -4,8 +4,13 @@ namespace BO\Zmsentities;
 
 class Config extends Schema\Entity
 {
-    public static $schema = "config.json";
+    public static string $schema = "config.json";
 
+    /**
+     * @return (int|string)[][]
+     *
+     * @psalm-return array{appointments: array{urlChange: 'https://service.berlin.de/terminvereinbarung/termin/manage/', urlAppointments: 'https://service.berlin.de/terminvereinbarung/'}, ticketprinter: array{baseUrl: '/terminvereinbarung/ticketprinter/'}, calldisplay: array{baseUrl: '/terminvereinbarung/calldisplay/'}, emergency: array{refreshInterval: 5}, support: array{eMail: 'hotline@itdz-berlin.de', telephone: '(030) 9222-2000'}}
+     */
     public function getDefaults()
     {
         return [
@@ -29,12 +34,12 @@ class Config extends Schema\Entity
         ];
     }
 
-    public function hasType($type)
+    public function hasType($type): bool
     {
         return (isset($this[$type])) ? true : false;
     }
 
-    public function hasPreference($type, $key)
+    public function hasPreference($type, $key): bool
     {
         return ($this->hasType($type) && isset($this[$type][$key])) ? true : false;
     }
@@ -44,7 +49,7 @@ class Config extends Schema\Entity
         return $this->toProperty()->$type->$key->get();
     }
 
-    public function setPreference($type, $key, $value)
+    public function setPreference($type, $key, $value): static
     {
         $preference = $this->toProperty()->$type->$key->get();
         if (null !== $preference) {

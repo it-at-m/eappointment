@@ -53,6 +53,7 @@ abstract class Base
     /**
      * Name of the query used for caching
      *
+     * @var false|string
      */
     protected $name = false;
 
@@ -64,6 +65,9 @@ abstract class Base
 
     protected static $sqlCache = [];
 
+    /**
+     * @var null|string
+     */
     protected $currentSqlString = null;
 
     /**
@@ -75,6 +79,7 @@ abstract class Base
     /**
      * List of joined queries to avoid double joins
      *
+     * @var array
      */
     protected $joinedQueryList = [];
 
@@ -163,12 +168,12 @@ abstract class Base
         return $this;
     }
 
-    public function setDistinctSelect()
+    public function setDistinctSelect(): void
     {
         $this->query->queryBaseStatement('SELECT DISTINCT');
     }
 
-    public function setResolveLevel($resolveLevel)
+    public function setResolveLevel(int $resolveLevel): static
     {
         if ($resolveLevel !== null) {
             $this->resolveLevel = $resolveLevel;
@@ -246,6 +251,8 @@ abstract class Base
     /**
      * Add joins to table if required
      * Override this method if join are required for a select
+     *
+     * @return void
      */
     protected function addRequiredJoins()
     {
@@ -275,7 +282,7 @@ abstract class Base
         return $this;
     }
 
-    public function setWithEntities($withEntities = [])
+    public function setWithEntities($withEntities = []): void
     {
         $this->withEntities = $withEntities;
     }
@@ -290,7 +297,7 @@ abstract class Base
         return [];
     }
 
-    protected function leftJoin($alias, $left = null, $operator = null, $right = null)
+    protected function leftJoin(Alias $alias, string|Expression|null $left = null, string|null $operator = null, string|null $right = null): Builder\Query
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -302,7 +309,7 @@ abstract class Base
         return $this->query;
     }
 
-    protected function innerJoin($alias, $left = null, $operator = null, $right = null)
+    protected function innerJoin(Alias $alias, string|null $left = null, string|null $operator = null, string|null $right = null): Builder\Query
     {
         $aliasId = $alias->getAliasIdentifier();
         if (!in_array($aliasId, $this->joinedAliasList)) {
@@ -334,6 +341,11 @@ abstract class Base
         return $this->query->params();
     }
 
+    /**
+     * @return array
+     *
+     * @psalm-return array<never, never>
+     */
     public function getReferenceMapping()
     {
         return [
@@ -345,7 +357,7 @@ abstract class Base
      *
      * @return \BO\Zmsdb\Query\Builder\Expression
      */
-    protected static function expression($string)
+    protected static function expression(string $string)
     {
         return new Expression($string);
     }
@@ -354,20 +366,24 @@ abstract class Base
      * Add a select part to the query containing a mapping from the db schema to the entity schema
      *
      * @return self
+     *
+     * @param null|string $type
+     *
+     * @psalm-param 'openinghours'|null $type
      */
-    public function addEntityMapping($type = null)
+    public function addEntityMapping(string|null $type = null)
     {
         $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;
     }
 
-    protected function getPrefixed($prefix)
+    protected function getPrefixed($prefix): string
     {
         return $this->prefix . $prefix;
     }
 
-    protected function getPrefixedList($unprefixedList)
+    protected function getPrefixedList($unprefixedList): array
     {
         $prefixed = [];
         foreach ($unprefixedList as $key => $value) {
@@ -388,7 +404,7 @@ abstract class Base
         return $this;
     }
 
-    public function addLimit($count, $offset = null)
+    public function addLimit($count, $offset = null): static
     {
         $this->query->limit($count);
         if ($offset) {
@@ -402,7 +418,7 @@ abstract class Base
      *
      * @return self
      */
-    public function addValues($values)
+    public function addValues(array $values)
     {
         $this->query->values($values);
         return $this;
@@ -430,7 +446,7 @@ abstract class Base
         return $data;
     }
 
-    public function shouldLoadEntity($name)
+    public function shouldLoadEntity(string $name): bool
     {
         if (empty($this->withEntities)) {
             return true;

@@ -14,7 +14,12 @@ use BO\Zmsentities\Collection\ClusterList as Collection;
  */
 class Cluster extends Base
 {
-    public function readEntity($itemId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @param false|string $itemId
+     *
+     * @psalm-param 0|1 $resolveReferences
+     */
+    public function readEntity(string|false $itemId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
 
@@ -45,6 +50,9 @@ class Cluster extends Base
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
@@ -64,7 +72,7 @@ class Cluster extends Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $clusterList = new Collection();
         $query = new Query\Cluster(Query\Base::SELECT);
@@ -98,7 +106,7 @@ class Cluster extends Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false)
+    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false): Collection
     {
         $clusterList = new Collection();
         $query = new Query\Cluster(Query\Base::SELECT);
@@ -131,7 +139,7 @@ class Cluster extends Base
             ->withSortedWaitingTime();
     }
 
-    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime)
+    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
@@ -147,7 +155,7 @@ class Cluster extends Base
         return $scopeList;
     }
 
-    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime)
+    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         foreach ($this->readOpenedScopeList($clusterId, $dateTime) as $scope) {
@@ -201,7 +209,7 @@ class Cluster extends Base
         return $cluster;
     }
 
-    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
+    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($clusterId);
@@ -222,7 +230,7 @@ class Cluster extends Base
         return $entity;
     }
 
-    public function readImageData($clusterId)
+    public function readImageData($clusterId): \BO\Zmsentities\Mimepart
     {
         $imageName = 'c_' . $clusterId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
@@ -299,7 +307,7 @@ class Cluster extends Base
         return $this->readEntity($clusterId, 1, true);
     }
 
-    protected function writeAssignedScopes($clusterId, $scopeList)
+    protected function writeAssignedScopes(string|false $clusterId, $scopeList): void
     {
         $cluster = $this->readEntity($clusterId);
         $this->perform(
@@ -321,7 +329,10 @@ class Cluster extends Base
         $this->removeCache($cluster);
     }
 
-    public function removeCache($cluster)
+    /**
+     * @return void
+     */
+    public function removeCache(Entity $cluster)
     {
         if (!\App::$cache || !isset($cluster->id)) {
             return;

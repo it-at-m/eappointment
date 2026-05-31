@@ -6,8 +6,13 @@ class Link extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "link.json";
+    public static string $schema = "link.json";
 
+    /**
+     * @return (bool|int|string)[]
+     *
+     * @psalm-return array{name: '', url: '', target: true, public: false, organisation: 0}
+     */
     public function getDefaults()
     {
         return [

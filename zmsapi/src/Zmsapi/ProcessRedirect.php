@@ -21,10 +21,9 @@ use BO\Zmsentities\Collection\RequestList;
 class ProcessRedirect extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
-    public function readResponse(\Psr\Http\Message\RequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+    public function readResponse(\Psr\Http\Message\RequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args): \Psr\Http\Message\ResponseInterface
     {
         $workstation = (new Helper\User($request))->checkPermissions('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -52,6 +51,9 @@ class ProcessRedirect extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($entity)
     {
         $entity->testValid();
@@ -63,6 +65,9 @@ class ProcessRedirect extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessAccess($workstation, $process)
     {
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
@@ -76,7 +81,7 @@ class ProcessRedirect extends BaseController
         }
     }
 
-    protected function readValidProcess($workstation, $entity, $input)
+    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, $input): string|\BO\Zmsentities\Process|null
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);

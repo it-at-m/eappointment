@@ -14,14 +14,13 @@ use BO\Zmsdb\Useraccount;
 class UseraccountAdd extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         (new Helper\User($request, $resolveReferences))->checkPermissions('useraccount');
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -39,7 +38,10 @@ class UseraccountAdd extends BaseController
         return $response;
     }
 
-    protected function testEntity($entity, $input)
+    /**
+     * @return void
+     */
+    protected function testEntity(\BO\Zmsentities\Useraccount $entity, $input)
     {
         if (0 == count($input)) {
             throw new Exception\Useraccount\UseraccountInvalidInput();

@@ -8,7 +8,10 @@ use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @psalm-param 0 $resolveReferences
+     */
+    public function readEntity($source, $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
@@ -34,10 +37,9 @@ class Provider extends Base
     }
 
     /**
-     * @SuppressWarnings(Param)
-     *
+     * @SuppressWarnings (Param)
      */
-    protected function readCollection($query)
+    protected function readCollection(Query\Provider $query): Collection
     {
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -48,7 +50,12 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $requestIdCsv = null)
+    /**
+     * @param null|true $isAssigned
+     *
+     * @psalm-param 0|1 $resolveReferences
+     */
+    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
@@ -148,7 +155,7 @@ class Provider extends Base
         return $provider;
     }
 
-    public function writeDeleteEntity($providerId, $source)
+    public function writeDeleteEntity($providerId, $source): bool
     {
         $provider = $this->readEntity($source, $providerId);
         $query = new Query\Provider(Query\Base::DELETE);
@@ -158,13 +165,16 @@ class Provider extends Base
         return $this->deleteItem($query);
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new Query\Provider(Query\Base::DELETE);
         $query->addConditionProviderSource($source);
         return $this->deleteItem($query);
     }
 
+    /**
+     * @return void
+     */
     protected function testSource($source)
     {
         if (! (new Source())->readEntity($source)) {
@@ -172,6 +182,9 @@ class Provider extends Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeCache(Entity $provider)
     {
         if (!App::$cache || !isset($provider->id)) {

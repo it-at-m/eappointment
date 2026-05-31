@@ -11,11 +11,12 @@ class Ticketprinter
     const HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
 
     /**
-     * @SuppressWarnings(Superglobals)
+     * @SuppressWarnings (Superglobals)
+     *
      * @param string $hash
      * @param \BO\Zmsclient\Psr7\Request $request
      */
-    public static function setHash($hash, $request)
+    public static function setHash($hash, $request): void
     {
         $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
         if (!headers_sent()) {
@@ -31,11 +32,11 @@ class Ticketprinter
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @return false|string
      */
-    public static function getHash()
+    public static function getHash(): string|false
     {
         if (array_key_exists(self::HASH_COOKIE_NAME, $_COOKIE)) {
             return $_COOKIE[self::HASH_COOKIE_NAME];
@@ -44,12 +45,11 @@ class Ticketprinter
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     * @getBasePath() see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
-     *
+     * @getBasePath () see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
      */
-    public static function setHomeUrl($url, $request)
+    public static function setHomeUrl($url, $request): void
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         if (!headers_sent()) {
@@ -66,11 +66,11 @@ class Ticketprinter
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     *
+     * @return false|string
      */
-    public static function getHomeUrl()
+    public static function getHomeUrl(): string|false
     {
         if (array_key_exists(self::HOME_URL_COOKIE_NAME, $_COOKIE)) {
             return $_COOKIE[self::HOME_URL_COOKIE_NAME];

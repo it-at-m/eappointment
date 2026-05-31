@@ -55,7 +55,12 @@ class OrganisationAddDepartment extends BaseController
         );
     }
 
-    protected function withCleanupLinks(array $input)
+    /**
+     * @return (array|mixed)[]
+     *
+     * @psalm-return array{links: array,...}
+     */
+    protected function withCleanupLinks(array $input): array
     {
         $links = $input['links'];
 
@@ -66,7 +71,12 @@ class OrganisationAddDepartment extends BaseController
         return $input;
     }
 
-    protected function withCleanupDayoffs(array $input)
+    /**
+     * @return (array|mixed)[]
+     *
+     * @psalm-return array{dayoff: array,...}
+     */
+    protected function withCleanupDayoffs(array $input): array
     {
         $dayoffs = $input['dayoff'];
         $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {

@@ -6,7 +6,7 @@ class OrganisationList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Organisation';
 
-    public function getByDepartmentId($departmentId)
+    public function getByDepartmentId($departmentId): self
     {
         $organisationList = new self();
         foreach ($this as $entity) {
@@ -18,7 +18,7 @@ class OrganisationList extends Base
         return $organisationList;
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $organisation) {
@@ -35,6 +35,9 @@ class OrganisationList extends Base
         return $list;
     }
 
+    /**
+     * @return static
+     */
     public function sortByName()
     {
         parent::sortByName();
@@ -46,7 +49,7 @@ class OrganisationList extends Base
         return $this;
     }
 
-    public function withMatchingDepartments(DepartmentList $departmentList)
+    public function withMatchingDepartments(DepartmentList $departmentList): static
     {
         $list = new static();
         foreach ($this as $organisation) {

@@ -75,7 +75,10 @@ class SourceEdit extends BaseController
         );
     }
 
-    protected function writeUpdatedEntity($input)
+    /**
+     * @psalm-param array{save: mixed,...} $input
+     */
+    protected function writeUpdatedEntity(array $input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         return $this->handleEntityWrite(function () use ($entity) {

@@ -19,14 +19,13 @@ use BO\Zmsdb\Workstation;
 class ProcessFinished extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request))->checkPermissions('appointment');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $survey = Validator::param('survey')->isNumber()->setDefault(1)->getValue();
@@ -62,14 +61,17 @@ class ProcessFinished extends BaseController
         return $response;
     }
 
-    protected function testProcessInWorkstation($process, $workstation)
+    protected function testProcessInWorkstation(\BO\Zmsentities\Process $process, $workstation): void
     {
         $department = (new \BO\Zmsdb\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
         $workstation->validateProcessScopeAccess($department->getScopeList());
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $process)
     {
         $hasValidId = (
             $process->hasId() &&
@@ -87,7 +89,7 @@ class ProcessFinished extends BaseController
         }
     }
 
-    protected function writeSurveyMail($process)
+    protected function writeSurveyMail(\BO\Zmsentities\Process|null $process): void
     {
         $process = clone $process;
         foreach ($process->getClients() as $client) {

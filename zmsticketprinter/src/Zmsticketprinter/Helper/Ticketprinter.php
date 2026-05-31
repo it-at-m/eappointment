@@ -21,7 +21,7 @@ class Ticketprinter
 
     protected $scopeId = null;
 
-    protected $organisation = null;
+    protected Organisation|null $organisation = null;
 
     protected $requestParams = [];
 

@@ -14,14 +14,13 @@ use BO\Zmsdb\ProcessStatusFree as Query;
 class ProcessFreeUnique extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $groupData = Validator::param('groupData')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();

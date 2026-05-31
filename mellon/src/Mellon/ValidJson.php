@@ -15,6 +15,9 @@ namespace BO\Mellon;
   */
 class ValidJson extends Valid
 {
+    /**
+     * @var null|string
+     */
     protected $originalJsonString = null;
     protected $defaultJsonString = '{}';
 

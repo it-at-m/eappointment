@@ -19,14 +19,13 @@ use BO\Mellon\Validator;
 class ProcessDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request))->readWorkstation();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
@@ -61,7 +60,7 @@ class ProcessDelete extends BaseController
         return $response;
     }
 
-    protected function writeMails($request, $process)
+    protected function writeMails(\Psr\Http\Message\RequestInterface $request, $process): void
     {
         if ($process->hasScopeAdmin() && $process->sendAdminMailOnDeleted() && $process->getStatus() !== 'blocked') {
             $authority = $request->getUri()->getAuthority();
@@ -78,6 +77,9 @@ class ProcessDelete extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($process, $authKey)
     {
         if (!$process) {

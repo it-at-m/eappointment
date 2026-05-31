@@ -30,8 +30,12 @@ class App extends \BO\Zmscitizenapi\Application
 
     /**
      * User for the upstream API
+     *
+     * @var string
+     *
+     * @psalm-var '_system_citizenapi'
      */
-    public static $httpUser = '_system_citizenapi';
+    public static string $httpUser = '_system_citizenapi';
 
     /**
      * Password for the upstream API

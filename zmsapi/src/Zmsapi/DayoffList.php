@@ -13,14 +13,13 @@ use BO\Zmsdb\DayOff as Query;
 class DayoffList extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('dayoff');
         if ($args['year'] > \App::$now->modify('+ 10years')->format('Y') || $args['year'] < \App::$now->format('Y')) {
             throw new Exception\Dayoff\YearOutOfRange();

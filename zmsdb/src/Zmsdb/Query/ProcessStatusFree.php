@@ -52,7 +52,7 @@ class ProcessStatusFree extends Base
     ';
     const GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
 
-    public static function buildDaysCondition($days)
+    public static function buildDaysCondition(array $days): string
     {
         $sql = 'AND (';
         $sqlPats = [];

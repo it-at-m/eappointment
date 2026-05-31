@@ -6,8 +6,13 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "organisation.json";
+    public static string $schema = "organisation.json";
 
+    /**
+     * @return (Collection\DepartmentList|string)[]
+     *
+     * @psalm-return array{departments: Collection\DepartmentList, name: ''}
+     */
     public function getDefaults()
     {
         return [
@@ -21,7 +26,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getDepartmentList()->hasEntity($departmentId);
     }
 
-    public function getDepartmentList()
+    public function getDepartmentList(): Collection\DepartmentList
     {
         if (!$this->departments instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList((array)$this->departments);
@@ -37,6 +42,9 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->preferences->$index->get();
     }
 
+    /**
+     * @return bool
+     */
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser'])
@@ -46,6 +54,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData(array $keepArray = [])
     {

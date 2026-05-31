@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class ServiceList extends Entity implements JsonSerializable
 {
-    public static $schema = "citizenapi/collections/serviceList.json";
+    public static string $schema = "citizenapi/collections/serviceList.json";
 /** @var Service[] */
     public array $services = [];
     public function __construct(array $services = [])
@@ -30,6 +30,9 @@ class ServiceList extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

@@ -9,14 +9,19 @@ namespace BO\Zmsdldb;
 
 class AccessFactory
 {
-    protected static $avilableAccessors = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{file: 'File', elastic: 'Elastic', sqlite: 'SQLite', mysql: 'MySQL'}
+     */
+    protected static array $avilableAccessors = [
         'file' => 'File',
         'elastic' => 'Elastic',
         'sqlite' => 'SQLite',
         'mysql' => 'MySQL',
     ];
 
-    public static function factory(string $type, array $arguments = [])
+    public static function factory(string $type, array $arguments = []): object
     {
         if (!isset(static::$avilableAccessors[$type])) {
             throw new \Exception('Invalid accessor');

@@ -6,8 +6,13 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "owner.json";
+    public static string $schema = "owner.json";
 
+    /**
+     * @return (Collection\OrganisationList|string)[]
+     *
+     * @psalm-return array{organisations: Collection\OrganisationList, name: ''}
+     */
     public function getDefaults()
     {
         return [
@@ -21,7 +26,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getOrganisationList()->hasEntity($organisationId);
     }
 
-    public function getOrganisationList()
+    public function getOrganisationList(): Collection\OrganisationList
     {
         if (!$this->organisations instanceof Collection\OrganisationList) {
             $this->organisations = new Collection\OrganisationList($this->organisations);
@@ -33,6 +38,9 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     }
 
 
+    /**
+     * @return bool
+     */
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser'])
@@ -42,6 +50,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData()
     {

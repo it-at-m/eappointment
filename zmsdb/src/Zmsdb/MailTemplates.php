@@ -18,7 +18,7 @@ class MailTemplates extends Base
     }
 
 
-    public function readList()
+    public function readList(): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping();
@@ -26,7 +26,7 @@ class MailTemplates extends Base
         return $logList;
     }
 
-    public function readListWithoutProvider()
+    public function readListWithoutProvider(): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping();
@@ -35,7 +35,7 @@ class MailTemplates extends Base
         return $logList;
     }
 
-    public function readListByProvider($providerId)
+    public function readListByProvider($providerId): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping();
@@ -68,7 +68,7 @@ class MailTemplates extends Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function deleteTemplateById($templateId)
+    public function deleteTemplateById($templateId): bool
     {
         $query = new Query\Mailtemplate(Query\Base::DELETE);
         $query->addConditionId($templateId);
@@ -109,7 +109,7 @@ class MailTemplates extends Base
         return $this->readTemplate($templateName);
     }
 
-    public function updateEntity(MailTemplate $config)
+    public function updateEntity(MailTemplate $config): Mailtemplate|null
     {
         $compareEntity = $this->readEntity();
         $result = false;
@@ -158,17 +158,16 @@ class MailTemplates extends Base
     /**
      * remove config data
      *
-     *
-     * @return Resource Status
+     * @return bool Status
      */
-    public function deleteProperty($property)
+    public function deleteProperty($property): bool
     {
         $query = new Query\Mailtemplate(Query\Base::DELETE);
         $query->addConditionName($property);
         return $this->deleteItem($query);
     }
 
-    protected function fetchData($querySql)
+    protected function fetchData(string $querySql): Mailtemplate
     {
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
@@ -179,7 +178,7 @@ class MailTemplates extends Base
         return new Mailtemplate($splittedHash);
     }
 
-    protected function getSpecifiedValue($value)
+    protected function getSpecifiedValue($value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;
@@ -187,7 +186,10 @@ class MailTemplates extends Base
         return trim($value);
     }
 
-    protected function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates)
+    /**
+     * @psalm-return list{0?: mixed,...}
+     */
+    protected function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates): array
     {
 
         $customTemplatesByName = [];

@@ -26,7 +26,10 @@ class UserAuth
         return $useraccount;
     }
 
-    public static function testPasswordMatching($useraccount, $password)
+    /**
+     * @return true
+     */
+    public static function testPasswordMatching(array $useraccount, $password): bool
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         // TODO: Remove the password fields when password authentication is removed in the future
@@ -76,9 +79,9 @@ class UserAuth
     /**
      * Test if useraccount exists in db
      *
-     * @return exception $exception
-    */
-    public static function testUseraccountExists($loginName, $password = false)
+     * @return true $exception
+     */
+    public static function testUseraccountExists($loginName, $password = false): bool
     {
         $query = new Useraccount();
         if (! $query->readIsUserExisting($loginName, $password)) {

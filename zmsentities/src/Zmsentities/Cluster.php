@@ -6,8 +6,13 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "cluster.json";
+    public static string $schema = "cluster.json";
 
+    /**
+     * @return Collection\ScopeList[]
+     *
+     * @psalm-return array{scopes: Collection\ScopeList}
+     */
     public function getDefaults()
     {
         return [
@@ -33,6 +38,9 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
         return $workstationCount;
     }
 
+    /**
+     * @return bool
+     */
     public function hasAccess(Useraccount $useraccount)
     {
         if ($useraccount->hasPermissions(['superuser'])) {

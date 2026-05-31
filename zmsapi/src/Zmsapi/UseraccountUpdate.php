@@ -18,14 +18,13 @@ use BO\Zmsdb\Useraccount;
 class UseraccountUpdate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
@@ -49,7 +48,10 @@ class UseraccountUpdate extends BaseController
         return $response;
     }
 
-    protected function testEntity($entity, $input, $args)
+    /**
+     * @return void
+     */
+    protected function testEntity(\BO\Zmsentities\Useraccount $entity, $input, array $args)
     {
         if (0 == count($input)) {
             throw new Exception\Useraccount\UseraccountInvalidInput();

@@ -7,7 +7,10 @@ namespace BO\Mellon;
  */
 class Condition
 {
-    protected $collection = [];
+    /**
+     * @var Collection|array
+     */
+    protected array|Collection $collection = [];
 
     public function __construct(Valid ...$validList)
     {
@@ -17,7 +20,7 @@ class Condition
         }
     }
 
-    public function addValid(Valid $valid)
+    public function addValid(Valid $valid): static
     {
         $this->getCollection()->addValid($valid);
         return $this;

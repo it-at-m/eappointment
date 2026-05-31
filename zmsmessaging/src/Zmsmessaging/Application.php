@@ -41,11 +41,14 @@ class Application extends \BO\Slim\Application
      */
     public static $http = null;
 
-    public static $httpUser = 'test';
+    public static string $httpUser = 'test';
 
-    public static $httpPassword = 'test';
+    public static string $httpPassword = 'test';
 
-    public static $http_curl_config = array();
+    /**
+     * @var array
+     */
+    public static array $http_curl_config = array();
 
     /**
      * config preferences
@@ -61,19 +64,25 @@ class Application extends \BO\Slim\Application
      * -----------------------------------------------------------------------
      * Mail settings
      */
-    public static $mails_per_minute = 300;
+    public static int $mails_per_minute = 300;
 
     /*
      * -----------------------------------------------------------------------
      * SMTP settings
      */
-    public static $smtp_enabled = false;
+    /**
+     * @var false
+     */
+    public static bool $smtp_enabled = false;
 
     public static $smtp_host = null;
 
     public static $smtp_port = null;
 
-    public static $smtp_auth_enabled = true;
+    /**
+     * @var true
+     */
+    public static bool $smtp_auth_enabled = true;
 
     public static $smtp_auth_method = null;
 
@@ -81,9 +90,18 @@ class Application extends \BO\Slim\Application
 
     public static $smtp_password = null;
 
-    public static $smtp_skip_tls_verify = false;
+    /**
+     * @var false
+     */
+    public static bool $smtp_skip_tls_verify = false;
 
-    public static $verify_dns_enabled = false;
+    /**
+     * @var false
+     */
+    public static bool $verify_dns_enabled = false;
 
-    public static $smtp_debug = false;
+    /**
+     * @var false
+     */
+    public static bool $smtp_debug = false;
 }

@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class ProcessDeleteFailed extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Failed to delete process. Please try again.';
+    protected string $message = 'Failed to delete process. Please try again.';
 }

@@ -7,6 +7,6 @@ namespace BO\Zmsapi\Exception\Cluster;
  */
 class ClusterNotFound extends \Exception
 {
-    protected $code = 404;
-    protected $message = 'Failed to get Cluster by given ID';
+    protected int $code = 404;
+    protected string $message = 'Failed to get Cluster by given ID';
 }

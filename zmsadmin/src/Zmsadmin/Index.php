@@ -71,7 +71,12 @@ class Index extends BaseController
         );
     }
 
-    protected function testLogin($input)
+    /**
+     * @return (mixed|string|string[][][])[]|Workstation
+     *
+     * @psalm-return Workstation|array{template: 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'|mixed, data: array{password: array{messages: list{'Der Nutzername oder das Passwort wurden falsch eingegeben'}}}|mixed}
+     */
+    protected function testLogin($input): array|Workstation
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => $input['loginName'],
@@ -141,7 +146,10 @@ class Index extends BaseController
         return $exceptionData;
     }
 
-    protected function getProviderList($config)
+    /**
+     * @psalm-return list<mixed>
+     */
+    protected function getProviderList($config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];

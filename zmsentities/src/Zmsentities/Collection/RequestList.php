@@ -8,7 +8,7 @@ class RequestList extends Base
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Request';
 
-    public function hasRequests($requestIdCsv)
+    public function hasRequests(string $requestIdCsv): bool
     {
         $requestIdCsv = explode(',', $requestIdCsv);
         foreach ($requestIdCsv as $requestId) {
@@ -19,7 +19,12 @@ class RequestList extends Base
         return true;
     }
 
-    public function toSortedByGroup()
+    /**
+     * @return self[]
+     *
+     * @psalm-return array<self>
+     */
+    public function toSortedByGroup(): array
     {
         $list = array();
         foreach ($this as $entity) {
@@ -55,7 +60,7 @@ class RequestList extends Base
         return $requestList;
     }
 
-    public function hasAppointmentFromProviderData()
+    public function hasAppointmentFromProviderData(): bool
     {
         foreach ($this as $entity) {
             if ($entity->hasAppointmentFromProviderData()) {
@@ -65,7 +70,7 @@ class RequestList extends Base
         return false;
     }
 
-    public function withUniqueRequests()
+    public function withUniqueRequests(): self
     {
         $requestList = new self();
         foreach ($this as $request) {
@@ -76,7 +81,7 @@ class RequestList extends Base
         return $requestList;
     }
 
-    public function withDataAsObject()
+    public function withDataAsObject(): self
     {
         $list = new self();
         foreach ($this as $request) {

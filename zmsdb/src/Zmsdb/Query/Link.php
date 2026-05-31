@@ -11,10 +11,17 @@ class Link extends Base
 
     /**
      * No resolving required here
+     *
+     * @var int
      */
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'link.linkid', name: 'link.beschreibung', url: 'link.link', target: 'link.neuerFrame', public: 'link.oeffentlich', organisation: 'link.organisationsid'}
+     */
+    public function getEntityMapping(): array
     {
         return [
             'id' => 'link.linkid',
@@ -26,13 +33,13 @@ class Link extends Base
         ];
     }
 
-    public function addConditionLinkId($linkId)
+    public function addConditionLinkId($linkId): static
     {
         $this->query->where('link.linkid', '=', $linkId);
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new Alias('behoerde', 'link_department'),
@@ -45,7 +52,12 @@ class Link extends Base
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId)
+    /**
+     * @return (int|mixed)[]
+     *
+     * @psalm-return array<string, 0|1|mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId): array
     {
         $data = array();
         $data['behoerdenid'] = ($entity->organisation) ? 0 : $departmentId;

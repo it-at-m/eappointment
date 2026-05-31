@@ -15,14 +15,13 @@ use BO\Zmsentities\Scope as Entity;
 class CounterGhostWorkstation extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request))->checkPermissions('counter');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);

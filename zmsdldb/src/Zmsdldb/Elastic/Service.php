@@ -16,11 +16,7 @@ use BO\Zmsdldb\File\Service as Base;
  */
 class Service extends Base
 {
-    /**
-     *
-     * @return Entity\Service
-     */
-    public function fetchId($service_id)
+    public function fetchId($service_id): Entity|false
     {
         if ($service_id) {
             $query = Helper::boolFilteredQuery();
@@ -39,11 +35,7 @@ class Service extends Base
         return false;
     }
 
-    /**
-     *
-     * @return Collection\Services
-     */
-    public function fetchList($location_csv = false)
+    public function fetchList($location_csv = false): Collection
     {
         $boolquery = Helper::boolFilteredQuery();
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
@@ -65,11 +57,7 @@ class Service extends Base
         return $serviceList;
     }
 
-    /**
-     *
-     * @return Collection\Services
-     */
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv($service_csv): Collection
     {
         $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
@@ -180,6 +168,9 @@ class Service extends Base
         return $serviceList;
     }
 
+    /**
+     * @return Collection
+     */
     public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
     {
         $limit = 1000;

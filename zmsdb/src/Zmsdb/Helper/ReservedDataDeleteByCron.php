@@ -36,7 +36,7 @@ class ReservedDataDeleteByCron
     /** @var Scope */
     protected $scopeRepository;
 
-    protected $processRepository;
+    protected ProcessRepository $processRepository;
 
     public function __construct(\DateTimeInterface $now, bool $verbose = false, bool $isDryRun = false)
     {
@@ -75,7 +75,7 @@ class ReservedDataDeleteByCron
         $this->log(PHP_EOL . "SUMMARY: Processed reservations: " . var_export($filteredCount, true));
     }
 
-    protected function log($message): bool
+    protected function log(string $message): bool
     {
         if ($this->verbose) {
             \App::$log->info($message);
@@ -141,6 +141,9 @@ class ReservedDataDeleteByCron
         return $processList;
     }
 
+    /**
+     * @return void
+     */
     protected function writeDeleteProcess(Process $process)
     {
         if ($this->isDryRun) {

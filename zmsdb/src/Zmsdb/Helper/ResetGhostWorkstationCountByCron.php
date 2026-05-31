@@ -9,11 +9,8 @@ class ResetGhostWorkstationCountByCron
 {
     /**
      * reset ghostWorkstationCount by cron
-     *
-     * @return Entity
      */
-
-    public static function init()
+    public static function init(): void
     {
         $dateTime = new \DateTimeImmutable();
         $query = new \BO\Zmsdb\Scope();

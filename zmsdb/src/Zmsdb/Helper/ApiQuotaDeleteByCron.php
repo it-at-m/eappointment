@@ -7,8 +7,11 @@ namespace BO\Zmsdb\Helper;
  */
 class ApiQuotaDeleteByCron
 {
+    /**
+     * @var \BO\Zmsentities\Apikey
+     */
     protected $quotaList;
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     public function __construct(\DateTimeInterface $dateTime, $verbose = false)
     {
@@ -20,7 +23,7 @@ class ApiQuotaDeleteByCron
         $this->quotaList = $query->readExpiredQuotaListByPeriod($dateTime);
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         $verbose = $this->verbose;
         if ($this->quotaList) {
@@ -37,7 +40,7 @@ class ApiQuotaDeleteByCron
         }
     }
 
-    protected function removeQuota($quotaId)
+    protected function removeQuota($quotaId): void
     {
         $verbose = $this->verbose;
         if (! $verbose) {

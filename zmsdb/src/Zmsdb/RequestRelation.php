@@ -7,7 +7,13 @@ use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends Base
 {
-    public function readEntity($requestId, $providerId, $resolveReferences = 0)
+    /**
+     * @param (int|string) $requestId
+     *
+     * @psalm-param array-key $requestId
+     * @psalm-param 0 $resolveReferences
+     */
+    public function readEntity($requestId, $providerId, int $resolveReferences = 0)
     {
         $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
@@ -124,7 +130,7 @@ class RequestRelation extends Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement)
+    protected function readList($statement): Collection
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -134,7 +140,7 @@ class RequestRelation extends Base
         return $collection;
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new Query\RequestRelation(Query\Base::DELETE);
         $query->addConditionSource($source);

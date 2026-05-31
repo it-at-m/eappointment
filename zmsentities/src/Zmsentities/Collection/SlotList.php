@@ -13,11 +13,16 @@ class SlotList extends Base
 
     /**
      * Compare two slots and return the lower values
+     *
      * @param array $slotA
      * @param array $slotB
-     * @return array $slotA modified
+     *
+     * @return static $slotA modified
+     *
+     * @psalm-param int<0, max> $indexA
+     * @psalm-param int<1, max> $indexB
      */
-    public function takeLowerSlotValue($indexA, $indexB)
+    public function takeLowerSlotValue(int $indexA, int $indexB): static
     {
         $slotA = $this[$indexA];
         $slotB = $this[$indexB];
@@ -30,7 +35,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function setEmptySlotValues($index)
+    public function setEmptySlotValues($index): static
     {
         $slot = $this->getSlot($index);
         if (null !== $slot) {
@@ -41,7 +46,7 @@ class SlotList extends Base
         return $this;
     }
 
-    public function isAvailableForAll($slotType)
+    public function isAvailableForAll($slotType): bool
     {
         foreach ($this as $slot) {
             if ($slot[$slotType] < 1) {
@@ -97,7 +102,7 @@ class SlotList extends Base
         return $slotList;
     }
 
-    public function extendList($slotList, $prevSlot, $appointment)
+    public function extendList(self $slotList, $prevSlot, \BO\Zmsentities\Appointment $appointment)
     {
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
             $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
@@ -160,7 +165,7 @@ class SlotList extends Base
         return $this[$index];
     }
 
-    public function getSummerizedSlot($slot = null)
+    public function getSummerizedSlot($slot = null): Slot
     {
         $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
@@ -174,7 +179,7 @@ class SlotList extends Base
     /*
      * reduce slotlist from slots smaller than reference time (today) + 1800 seconds
      */
-    public function withTimeGreaterThan(\DateTimeInterface $dateTime)
+    public function withTimeGreaterThan(\DateTimeInterface $dateTime): static
     {
         $slotList = clone $this;
         $referenceTime = $dateTime->getTimestamp() + 1800;
@@ -196,7 +201,7 @@ class SlotList extends Base
         $slotType,
         $requests,
         $slotsRequired
-    ) {
+    ): ProcessList {
         $processList = new ProcessList();
         foreach ($this as $slot) {
             if ($slotsRequired > 1 && $slot->type != Slot::REDUCED) {
@@ -228,7 +233,7 @@ class SlotList extends Base
         return $processList;
     }
 
-    public function withReducedSlots($slotsRequired)
+    public function withReducedSlots($slotsRequired): static
     {
         $slotList = clone $this;
         if ($slotsRequired > 1) {

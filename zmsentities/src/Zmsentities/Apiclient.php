@@ -6,8 +6,13 @@ class Apiclient extends Schema\Entity
 {
     public const PRIMARY = 'clientKey';
 
-    public static $schema = "apiclient.json";
+    public static string $schema = "apiclient.json";
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{clientKey: '', shortname: 'default'}
+     */
     public function getDefaults()
     {
         return [

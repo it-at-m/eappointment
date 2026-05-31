@@ -14,6 +14,9 @@ use BO\Zmsdldb\Elastic\Link as Base;
  */
 class Link extends Base
 {
+    /**
+     * @return Collection
+     */
     public function readSearchResultList($query)
     {
         try {

@@ -14,14 +14,13 @@ use BO\Zmsdb\Organisation as Query;
 class OrganisationList extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkRights('basic');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();

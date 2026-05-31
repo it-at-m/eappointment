@@ -23,13 +23,16 @@ class Access extends \BO\Slim\Controller
 
     protected $department = null;
 
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
-    protected $withAccess = true;
+    /**
+     * @var true
+     */
+    protected bool $withAccess = true;
 
     protected $owner = null;
 
-    protected function initAccessRights($request)
+    protected function initAccessRights($request): void
     {
         $this->workstation = $this->readWorkstation();
         if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
@@ -73,13 +76,16 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function validateAccessRights($request)
+    protected function validateAccessRights($request): void
     {
         $path = $request->getUri()->getPath();
         $this->validateAccess($path);
         $this->validateScope($path);
     }
 
+    /**
+     * @return void
+     */
     protected function validateAccess($path)
     {
         if (
@@ -91,6 +97,9 @@ class Access extends \BO\Slim\Controller
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateScope($path)
     {
         if (
@@ -101,7 +110,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function isPathWithoutScope($path)
+    protected function isPathWithoutScope($path): bool
     {
         // TODO: refactor to integrate these access rules in the controller to make them visible
         return (false === strpos($path, 'select')
@@ -110,6 +119,11 @@ class Access extends \BO\Slim\Controller
         );
     }
 
+    /**
+     * @return (mixed|string|string[][][])[]|Workstation
+     *
+     * @psalm-return Workstation|array{template: 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'|mixed, data: array{password: array{messages: list{'Der Nutzername oder das Passwort wurden falsch eingegeben'}}}|mixed}
+     */
     protected function testLogin($input)
     {
         $userAccount = new Useraccount(array(

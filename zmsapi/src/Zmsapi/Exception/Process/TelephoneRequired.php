@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class TelephoneRequired extends \Exception
 {
-    protected $code = 400;
+    protected int $code = 400;
 
-    protected $message = 'Es wurde keine Telefonnummer angegeben. Diese Aktion ist daher nicht möglich.';
+    protected string $message = 'Es wurde keine Telefonnummer angegeben. Diese Aktion ist daher nicht möglich.';
 }

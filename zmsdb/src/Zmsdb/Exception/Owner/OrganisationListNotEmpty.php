@@ -7,8 +7,8 @@ namespace BO\Zmsdb\Exception\Owner;
  */
 class OrganisationListNotEmpty extends \Exception
 {
-    protected $code = 428;
+    protected int $code = 428;
 
-    protected $message = 'There are still some children (organisations) in owner entity. ' .
+    protected string $message = 'There are still some children (organisations) in owner entity. ' .
          'Please mind to delete all children before delete parent item.';
 }

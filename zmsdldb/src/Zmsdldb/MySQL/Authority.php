@@ -16,10 +16,8 @@ class Authority extends Base
 {
     /**
      * fetch locations for a list of service and group by authority
-     *
-     * @return Collection\Authorities
      */
-    public function fetchList($servicelist = [])
+    public function fetchList($servicelist = []): Collection
     {
         try {
             $authorityList = new Collection();

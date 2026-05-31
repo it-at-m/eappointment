@@ -14,13 +14,28 @@ use Exception;
 
 class ReportRequestService
 {
-    protected $totals = ['requestscount'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'requestscount'}
+     */
+    protected array $totals = ['requestscount'];
 
-    protected $hashset = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'requestscount'}
+     */
+    protected array $hashset = [
         'requestscount'
     ];
 
-    protected $groupfields = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'name', 'date'}
+     */
+    protected array $groupfields = [
         'name',
         'date'
     ];

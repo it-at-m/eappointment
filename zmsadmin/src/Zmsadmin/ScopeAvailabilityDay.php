@@ -42,7 +42,12 @@ class ScopeAvailabilityDay extends BaseController
         ])->getEntity();
     }
 
-    protected static function getSlotBuckets($availabilityList, $processList)
+    /**
+     * @return (int|mixed)[][]
+     *
+     * @psalm-return array<array{time: mixed, timeString: mixed, public: mixed, intern: mixed, occupiedCount: int}>
+     */
+    protected static function getSlotBuckets($availabilityList, $processList): array
     {
         $availability = $availabilityList->getFirst();
 
@@ -87,7 +92,12 @@ class ScopeAvailabilityDay extends BaseController
         return $buckets;
     }
 
-    protected static function getAvailabilityData($scopeId, $dateString)
+    /**
+     * @return (array|int|mixed|string)[]
+     *
+     * @psalm-return array{slotBuckets: mixed, scope: mixed, availabilityList: mixed, conflicts: array<never, never>|mixed, processList: array|mixed, dateString: string, timestamp: int, menuActive: 'availability', maxWorkstationCount: mixed, maxSlotsForAvailabilities: mixed, busySlotsForAvailabilities: mixed, today: mixed}
+     */
+    protected static function getAvailabilityData(int $scopeId, $dateString): array
     {
         $scope = static::getScope($scopeId);
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
@@ -126,7 +136,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    public static function readConflictList($scopeId, $dateTime)
+    public static function readConflictList($scopeId, \BO\Zmsentities\Helper\DateTime $dateTime)
     {
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/conflict/', [
@@ -142,7 +152,7 @@ class ScopeAvailabilityDay extends BaseController
             ->toProcessList() : null;
     }
 
-    public static function readAvailabilityList($scopeId, $dateTime)
+    public static function readAvailabilityList($scopeId, \BO\Zmsentities\Helper\DateTime $dateTime)
     {
         try {
             $availabilityList = \App::$http

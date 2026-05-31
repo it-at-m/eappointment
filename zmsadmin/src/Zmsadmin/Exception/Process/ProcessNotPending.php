@@ -7,6 +7,6 @@ namespace BO\Zmsadmin\Exception\Process;
  */
 class ProcessNotPending extends \Exception
 {
-    protected $code = 428;
-    protected $message = 'Process has not status pending, its not allowed to call it as pickup';
+    protected int $code = 428;
+    protected string $message = 'Process has not status pending, its not allowed to call it as pickup';
 }

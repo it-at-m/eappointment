@@ -14,7 +14,7 @@ class Calendar extends Base
     public function readResolvedEntity(
         Entity $calendar,
         \DateTimeInterface $now,
-        $resolveOnlyScopes = false,
+        bool $resolveOnlyScopes = false,
         $slotType = 'public',
         $slotsRequired = 0
     ) {
@@ -34,9 +34,8 @@ class Calendar extends Base
 
     /**
      * Resolve calendar scopes
-     *
      */
-    protected function readResolvedScopes(Entity $calendar)
+    protected function readResolvedScopes(Entity $calendar): Entity
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeReader = new Scope();
@@ -50,9 +49,8 @@ class Calendar extends Base
 
     /**
      * Resolve Reference dayoff for departments, but do not resolve circular scope->department->scopes
-     *
      */
-    protected function readResolvedScopeReferences(Entity $calendar)
+    protected function readResolvedScopeReferences(Entity $calendar): Entity
     {
         foreach ($calendar->scopes as $scope) {
             $scope['dayoff'] = (new DayOff())->readByScopeId($scope['id']);
@@ -60,7 +58,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedRequests(Entity $calendar)
+    protected function readResolvedRequests(Entity $calendar): Entity
     {
         $requestReader = new Request();
         $requestRelationQuery = new RequestRelation();
@@ -82,7 +80,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedClusters(Entity $calendar)
+    protected function readResolvedClusters(Entity $calendar): Entity
     {
         $scopeReader = new Scope();
         foreach ($calendar['clusters'] as $cluster) {
@@ -93,7 +91,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedProviders(Entity $calendar)
+    protected function readResolvedProviders(Entity $calendar): Entity
     {
         $scopeReader = new Scope();
         $providerReader = new Provider();
@@ -112,7 +110,7 @@ class Calendar extends Base
         \DateTimeInterface $now,
         $slotType,
         $slotsRequiredForce
-    ) {
+    ): Entity {
         if (!$resolveOnlyScopes) {
             $dayQuery = new Day();
             $dayList = $dayQuery->readByCalendar($calendar, $slotsRequiredForce);

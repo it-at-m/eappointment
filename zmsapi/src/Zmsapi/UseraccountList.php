@@ -15,14 +15,13 @@ use Psr\Http\Message\ResponseInterface;
 class UseraccountList extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         $helper = new Helper\User($request, 1);
         $helper->checkPermissions('useraccount');
         $parameters = $request->getParams();

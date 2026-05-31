@@ -98,7 +98,7 @@ class AvailabilityListUpdate extends BaseController
         return $updatedAvailabilities;
     }
 
-    protected function updateAvailability($availability, $resolveReferences): ?Availability
+    protected function updateAvailability($availability, int $resolveReferences): ?Availability
     {
         $repository = new AvailabilityRepository();
         $updatedAvailability = null;

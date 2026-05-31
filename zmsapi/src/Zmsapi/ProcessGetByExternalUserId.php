@@ -18,14 +18,13 @@ use BO\Zmsdb\Process;
 class ProcessGetByExternalUserId extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request, 2))->checkRights();
 
         $resolveReferences = (int) (Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue() ?? 2);

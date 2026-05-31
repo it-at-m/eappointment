@@ -113,7 +113,7 @@ class Status extends Base
      *
      * @return string
      */
-    public function getConfigProblems($configVariables)
+    public function getConfigProblems(array $configVariables)
     {
         $problems = [];
         if ($configVariables['tmp_table_size'] < 32000000) {

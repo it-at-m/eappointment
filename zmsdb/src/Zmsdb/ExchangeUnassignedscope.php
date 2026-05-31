@@ -6,7 +6,7 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeUnassignedscope extends Base
 {
-    public function readEntity()
+    public function readEntity(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nicht der DLDB zugeordnete Standorte mit Terminen";
@@ -24,7 +24,7 @@ class ExchangeUnassignedscope extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nicht der DLDB zugeordnete Standorte mit Terminen";
@@ -37,7 +37,7 @@ class ExchangeUnassignedscope extends Base
         return $entity;
     }
 
-    public function readPeriodList()
+    public function readPeriodList(): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Nicht der DLDB zugeordnete Standorte mit Terminen";

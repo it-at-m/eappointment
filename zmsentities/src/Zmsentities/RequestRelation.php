@@ -4,8 +4,13 @@ namespace BO\Zmsentities;
 
 class RequestRelation extends Schema\Entity
 {
-    public static $schema = "requestrelation.json";
+    public static string $schema = "requestrelation.json";
 
+    /**
+     * @return (Provider|Request|null|string|true)[]
+     *
+     * @psalm-return array{provider: Provider, request: Request, source: null, slots: '1', public: true, maxQuantity: null}
+     */
     public function getDefaults()
     {
         return [
@@ -38,7 +43,7 @@ class RequestRelation extends Schema\Entity
         return $this->toProperty()->maxQuantity->get();
     }
 
-    public function isPublic()
+    public function isPublic(): bool
     {
         return (bool) $this->toProperty()->public->get();
     }

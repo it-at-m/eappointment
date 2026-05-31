@@ -13,7 +13,7 @@ namespace BO\Zmsdldb\Entity;
   */
 class SearchResult extends Base
 {
-    public static function create($item)
+    public static function create(object $item): self
     {
         $type = explode('\\', get_class($item));
         $data = array(

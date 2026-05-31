@@ -32,7 +32,7 @@ class WarehouseReport extends Base
         return $download->writeDownload($response);
     }
 
-    protected function writeRawReport(ReportEntity $report, Spreadsheet $spreadsheet)
+    protected function writeRawReport(ReportEntity $report, Spreadsheet $spreadsheet): Spreadsheet
     {
         $sheet = $spreadsheet->getActiveSheet();
         $reportData = [];

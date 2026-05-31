@@ -6,14 +6,20 @@ class GraphQLNode extends GraphQLElement
 {
     public $propertyList = [];
 
+    /**
+     * @var null|self
+     */
     public $parent;
 
-    public function addElement($propertyName): self
+    public function addElement(string $propertyName): self
     {
         $this->propertyList[] = new GraphQLElement($propertyName);
         return $this;
     }
 
+    /**
+     * @return false|key-of<TArray>
+     */
     protected function getLastKey()
     {
         $keys = array_keys($this->propertyList);

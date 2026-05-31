@@ -88,16 +88,24 @@ class Workstation extends Base implements MappingInterface
             `Passworthash` = ?
     ';
 
+    /**
+     * @return void
+     */
     protected function addRequiredJoins()
     {
     }
 
-    public function getLockWorkstationId()
+    public function getLockWorkstationId(): string
     {
         return 'SELECT * FROM `' . self::getTablename() . '` A
             WHERE A.`NutzerID` = :workstationId FOR UPDATE';
     }
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'workstation.NutzerID', hint: 'workstation.aufrufzusatz', name: 'workstation.Arbeitsplatznr', queue__appointmentsOnly: 'workstation.Kalenderansicht', queue__clusterEnabled: 'workstation.clusteransicht', scope__id: 'workstation.StandortID'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -125,7 +133,7 @@ class Workstation extends Base implements MappingInterface
         return $joins;
     }
 
-    public function addJoinScope()
+    public function addJoinScope(): Scope
     {
         $this->leftJoin(
             new Alias(Scope::TABLE, 'scope'),
@@ -138,7 +146,7 @@ class Workstation extends Base implements MappingInterface
     }
 
 
-    public function addJoinUseraccount()
+    public function addJoinUseraccount(): Useraccount
     {
         $this->leftJoin(
             new Alias(Useraccount::TABLE, 'useraccount'),
@@ -150,43 +158,43 @@ class Workstation extends Base implements MappingInterface
         return $joinQuery;
     }
 
-    public function addConditionLoginName($loginName)
+    public function addConditionLoginName($loginName): static
     {
         $this->query->where('workstation.Name', '=', $loginName);
         return $this;
     }
 
-    public function addConditionWorkstationName($workstationName)
+    public function addConditionWorkstationName($workstationName): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
         return $this;
     }
 
-    public function addConditionWorkstationIsNotCounter()
+    public function addConditionWorkstationIsNotCounter(): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '>', 0);
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId)
+    public function addConditionWorkstationId($workstationId): static
     {
         $this->query->where('workstation.NutzerID', '=', $workstationId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('workstation.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionTime($now)
+    public function addConditionTime($now): static
     {
         $this->query->where('workstation.Datum', '=', $now->format('Y-m-d'));
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new Alias(Useraccount::TABLE_ASSIGNMENT, 'workstation_department'),
@@ -198,7 +206,10 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
+    /**
+     * @psalm-return array<string, mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity): array
     {
         $data = array();
         if ((isset($entity['hint']) && '' == $entity['hint']) || ! isset($entity['hint'])) {

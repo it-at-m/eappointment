@@ -32,6 +32,11 @@ class ProcessStatusArchived extends Base implements MappingInterface
             processing_time = :processingTime
     ';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{archiveId: 'process.BuergerarchivID', status: Builder\Expression, appointments__0__date: Builder\Expression, scope__id: 'process.StandortID', __clientsCount: 'process.AnzahlPersonen', waitingTime: 'process.waiting_time', wayTime: 'process.way_time', processingTime: 'process.processing_time', name: 'process.name', services: 'process.dienstleistungen', queue__arrivalTime: Builder\Expression, queue__callTime: Builder\Expression, queue__withAppointment: 'process.mitTermin', withAppointment: 'process.mitTermin', queue__status: Builder\Expression, isTicketprinter: 'process.is_ticketprinter'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -65,19 +70,19 @@ class ProcessStatusArchived extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionArchiveId($archiveId)
+    public function addConditionArchiveId($archiveId): static
     {
         $this->query->where('process.BuergerarchivID', '=', $archiveId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->query->where('process.StandortID', '=', $scopeId);
         return $this;
     }
 
-    public function addConditionScopeIds($scopeIds)
+    public function addConditionScopeIds($scopeIds): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($scopeIds) {
             foreach ($scopeIds as $scopeId) {
@@ -89,13 +94,13 @@ class ProcessStatusArchived extends Base implements MappingInterface
     }
 
 
-    public function addConditionTime(\DateTimeInterface $now)
+    public function addConditionTime(\DateTimeInterface $now): static
     {
         $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
         return $this;
     }
 
-    public function addConditionTimes(array $dateTimes)
+    public function addConditionTimes(array $dateTimes): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($dateTimes) {
             foreach ($dateTimes as $dateTime) {
@@ -106,19 +111,19 @@ class ProcessStatusArchived extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionIsMissed($missed)
+    public function addConditionIsMissed($missed): static
     {
         $this->query->where('process.nicht_erschienen', '=', $missed);
         return $this;
     }
 
-    public function addConditionWithAppointment($withAppointment)
+    public function addConditionWithAppointment($withAppointment): static
     {
         $this->query->where('process.mitTermin', '=', $withAppointment);
         return $this;
     }
 
-    public function addJoinStatisticFailed($dateTime, \BO\Zmsentities\Scope $scope)
+    public function addJoinStatisticFailed($dateTime, \BO\Zmsentities\Scope $scope): static
     {
         //use existing index with StandortID and Datum
         $this->leftJoin(
@@ -140,7 +145,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         });
         return $this;
     }
-    public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
+    public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now): void
     {
         $processingTimeStr = $process->getProcessingTime();
         $bearbeitungszeit = null;
@@ -211,7 +216,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         return $services;
     }
 
-    public function addConditionOlderThanDate(\DateTimeInterface $dateTime)
+    public function addConditionOlderThanDate(\DateTimeInterface $dateTime): static
     {
         // Assuming 'Datum' is the column name that holds the date of the record
         // and you want to select records older than the specified $dateTime

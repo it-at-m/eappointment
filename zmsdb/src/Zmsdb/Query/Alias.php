@@ -6,7 +6,14 @@ class Alias implements \BO\Zmsdb\Query\Builder\ExpressionInterface
 {
     use \BO\Zmsdb\Query\Builder\Dialect\Quote;
 
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var string
+     */
     protected $alias;
 
     public function __construct($name, $alias)

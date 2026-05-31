@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Exception;
  */
 class DayoffMissing extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'Dayoff data is missing but is required';
+    protected string $message = 'Dayoff data is missing but is required';
 }

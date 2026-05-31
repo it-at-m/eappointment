@@ -22,7 +22,7 @@ class ProcessFinishedHelper extends \BO\Zmsentities\Process
         array $input,
         \BO\Zmsentities\Collection\RequestList $requestList,
         $source
-    ) {
+    ): static {
         if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
             $this->requests = new \BO\Zmsentities\Collection\RequestList();
             $request = new \BO\Zmsentities\Request([

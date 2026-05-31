@@ -9,10 +9,8 @@ class TicketprinterAccess
 {
     /**
      * Test if ticketprinter found and if protection is enabled
-     *
-     * @return array $useraccount
-    */
-    public static function testTicketprinter($entity)
+     */
+    public static function testTicketprinter(\BO\Zmsdb\Resource $entity): void
     {
         if ($entity->hasId()) {
             $organisation = (new \BO\Zmsdb\Organisation())->readByHash($entity->hash);
@@ -22,6 +20,9 @@ class TicketprinterAccess
         self::testMatchingClusterAndScopes($entity, $organisation->getId());
     }
 
+    /**
+     * @return void
+     */
     public static function testMatchingClusterAndScopes($entity, $organisationId)
     {
         if (isset($entity->buttons) && $entity->buttons) {
@@ -38,6 +39,9 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @return void
+     */
     public static function testTicketprinterNotFound($entity)
     {
         if (! $entity->hasId() || ! (new \BO\Zmsdb\Ticketprinter())->readByHash($entity->getId())->hasId()) {
@@ -45,6 +49,9 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @return void
+     */
     public static function testTicketprinterIsProtectedEnabled($entity, $isProtectionEnabled)
     {
         if ($isProtectionEnabled && ! $entity->isEnabled()) {
@@ -52,6 +59,9 @@ class TicketprinterAccess
         }
     }
 
+    /**
+     * @return void
+     */
     public static function testTicketprinterValidHash($entity)
     {
         if (

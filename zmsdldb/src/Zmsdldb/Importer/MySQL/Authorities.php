@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Authorities extends Base
 {
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Authority';
+    protected string $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Authority';
 
     public function runImport(): bool
     {

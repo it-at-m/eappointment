@@ -16,7 +16,7 @@ class LoginForm
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromLoginParameters()
+    public static function fromLoginParameters(): \BO\Mellon\Collection
     {
         $collection = array();
         // loginName
@@ -37,7 +37,7 @@ class LoginForm
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromAdditionalParameters()
+    public static function fromAdditionalParameters(): \BO\Mellon\Collection
     {
         $collection = array();
 
@@ -72,7 +72,7 @@ class LoginForm
         return $collection;
     }
 
-    public static function fromQuickLogin()
+    public static function fromQuickLogin(): \BO\Mellon\Collection
     {
         $loginData = static::fromLoginParameters();
         $additionalData = static::fromAdditionalParameters();
@@ -82,7 +82,7 @@ class LoginForm
         return $collection;
     }
 
-    public static function writeWorkstationUpdate($data, $workstation)
+    public static function writeWorkstationUpdate($data, \BO\Zmsentities\Workstation $workstation): bool
     {
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();

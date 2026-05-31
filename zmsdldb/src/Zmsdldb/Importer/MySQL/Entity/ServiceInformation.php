@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class ServiceInformation extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{service_id: 'service_id', locale: 'locale', name: 'name', description: 'description', link: 'link', type: 'type', sort: 'sort'}
+     */
+    protected array $fieldMapping = [
         'service_id' => 'service_id',
         'locale' => 'locale',
         'name' => 'name',

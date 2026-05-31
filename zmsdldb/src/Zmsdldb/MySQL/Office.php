@@ -16,7 +16,10 @@ use BO\Zmsdldb\Elastic\Office as Base;
   */
 class Office extends Base
 {
-    protected static $officeList = [];
+    /**
+     * @var Collection|array
+     */
+    protected static array|Collection $officeList = [];
 
     protected function parseData($data)
     {

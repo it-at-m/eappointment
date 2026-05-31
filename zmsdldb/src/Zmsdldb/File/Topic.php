@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Topics as Collection;
  */
 class Topic extends Base
 {
+    /**
+     * @return Collection
+     */
     protected function parseData($data)
     {
         $itemList = new Collection();

@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Services as Collection;
  */
 class Service extends Base
 {
+    /**
+     * @return Collection
+     */
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -48,10 +51,11 @@ class Service extends Base
     }
 
     /**
-     *
      * @return Collection
+     *
+     * @param false|string $location_csv
      */
-    public function fetchList($location_csv = false)
+    public function fetchList(string|false $location_csv = false)
     {
         #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
@@ -115,7 +119,7 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv(string $service_csv)
     {
         $servicelist = new Collection();
         foreach (explode(',', $service_csv) as $service_id) {

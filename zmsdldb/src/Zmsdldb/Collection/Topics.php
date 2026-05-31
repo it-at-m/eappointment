@@ -9,7 +9,7 @@ namespace BO\Zmsdldb\Collection;
 
 class Topics extends Base
 {
-    public function getNames()
+    public function getNames(): array
     {
         $nameList = array();
         foreach ($this as $topic) {

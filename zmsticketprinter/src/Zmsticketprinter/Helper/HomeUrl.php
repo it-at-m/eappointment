@@ -18,8 +18,7 @@ class HomeUrl
      * otherwise set current uri from request as new home url
      *
      **/
-
-    public static function create($request)
+    public static function create(\Psr\Http\Message\RequestInterface $request)
     {
         $homeUrl = null;
         $validator = $request->getAttribute('validator');
@@ -38,8 +37,12 @@ class HomeUrl
 
     /**
      * Remove accumulated /& patterns from URL that occur due to redirect chain issues
+     *
+     * @return null|string|string[]
+     *
+     * @psalm-return array<string>|null|string
      */
-    public static function sanitizeUrl($url)
+    public static function sanitizeUrl($url): array|string|null
     {
         // Remove repeated /& patterns (e.g., ?/&/&/& becomes ?)
         $url = preg_replace('#\?(/&)+#', '?', $url);

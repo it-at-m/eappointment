@@ -9,6 +9,11 @@ class Role extends Base implements MappingInterface
      */
     const TABLE = 'role';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{id: 'role.id', name: 'role.name', description: 'role.description', permissions: Builder\Expression, assignedUserCount: Builder\Expression}
+     */
     public function getEntityMapping()
     {
         return [

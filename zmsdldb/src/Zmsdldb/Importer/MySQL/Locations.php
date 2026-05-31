@@ -4,7 +4,7 @@ namespace BO\Zmsdldb\Importer\MySQL;
 
 class Locations extends Base
 {
-    protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Location';
+    protected string $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Location';
 
     public function runImport(): bool
     {

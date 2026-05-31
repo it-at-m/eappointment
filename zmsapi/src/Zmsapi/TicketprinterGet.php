@@ -13,14 +13,13 @@ use BO\Zmsdb\Ticketprinter as Query;
 class TicketprinterGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $ticketprinter = (new Query())->readByHash($args['hash']);
         Helper\TicketprinterAccess::testTicketprinter($ticketprinter);
 

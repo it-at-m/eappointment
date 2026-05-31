@@ -74,7 +74,7 @@ class Closure extends Base
         return $result ;
     }
 
-    public function deleteEntity($closure)
+    public function deleteEntity($closure): bool
     {
         $query = new Query\Closure(Query\Base::DELETE);
         $query->addConditionId($closure->getId());
@@ -108,7 +108,10 @@ class Closure extends Base
         return $this->readEntity($id);
     }
 
-    public function readEntity($id)
+    /**
+     * @param false|string $id
+     */
+    public function readEntity(string|false $id)
     {
         $query = new Query\Closure(Query\Base::SELECT);
         $query->addEntityMapping()

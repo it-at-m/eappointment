@@ -13,13 +13,13 @@ class Calldisplay extends Base
     /**
      * read Ticketprinter by comma separated buttonlist
      *
-     * @param
+     * @param 
      * ticketprinter Entity
      * now DateTime
      *
-     * @return Resource Entity
+     * @return Entity Entity
      */
-    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0)
+    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0): Entity
     {
         if ($calldisplay->hasScopeList()) {
             $scopeList = new \BO\Zmsentities\Collection\ScopeList();
@@ -70,7 +70,12 @@ class Calldisplay extends Base
         return $organisation;
     }
 
-    public function readImage(Entity $entity)
+    /**
+     * @return (mixed|string)[]
+     *
+     * @psalm-return array{mime: string, name?: ''|mixed, data?: ''|mixed,...}
+     */
+    public function readImage(Entity $entity): array
     {
         $name = $entity->getImageName();
         $image = null;
@@ -98,7 +103,7 @@ class Calldisplay extends Base
         return $image;
     }
 
-    public function readContactData(Entity $entity)
+    public function readContactData(Entity $entity): \BO\Zmsentities\Contact
     {
         $contact = new \BO\Zmsentities\Contact();
         $contactNames = [];

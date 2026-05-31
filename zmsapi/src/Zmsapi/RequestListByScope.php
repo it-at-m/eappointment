@@ -14,14 +14,13 @@ use BO\Zmsdb\Request;
 class RequestListByScope extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $scope = (new \BO\Zmsdb\Scope())->readEntity($args['id'], $resolveReferences ? $resolveReferences : 1);
         if (! $scope) {

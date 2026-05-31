@@ -8,21 +8,27 @@ namespace BO\Zmsdb\Source;
 class Zmsdldb extends \BO\Zmsdb\Base
 {
     public static $importPath = '';
-    public static $repository = null;
+    public static \BO\Zmsdldb\FileAccess|null $repository = null;
     public static $verbose = false;
 
-    public static function getFixturesImportPath()
+    /**
+     * @return false|string
+     */
+    public static function getFixturesImportPath(): string|false
     {
         $dir = dirname(__FILE__);
         $importPath = realpath($dir . '/../../../tests/Zmsdb/fixtures/');
         return $importPath;
     }
 
-    public static function setImportPath($path)
+    public static function setImportPath(string|false $path): void
     {
         self::$importPath = $path;
     }
 
+    /**
+     * @return void
+     */
     public function startImport($verbose = true, $updateAvailability = true)
     {
         if (!static::$importPath) {
@@ -47,7 +53,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeRequestList()
+    protected function writeRequestList(): void
     {
         $startTime = microtime(true);
         $requestQuery = (new \BO\Zmsdb\Request());
@@ -81,7 +87,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
         return $providers;
     }
 
-    protected function updateAvailability($providers)
+    protected function updateAvailability($providers): void
     {
         foreach ($providers as $provider) {
             $providerData = $provider->data;
@@ -104,7 +110,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeRequestRelationList()
+    protected function writeRequestRelationList(): void
     {
         $startTime = microtime(true);
         (new \BO\Zmsdb\RequestRelation())->writeDeleteListBySource('dldb');
@@ -115,7 +121,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeLastUpdate()
+    protected function writeLastUpdate(): void
     {
         $startTime = microtime(true);
         (new \BO\Zmsdb\Config())->replaceProperty('sources_dldb_last', date('c'));

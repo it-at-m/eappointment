@@ -36,25 +36,37 @@ class Application extends \BO\Slim\Application
 
     /**
      * Default parameters for templates
+     *
+     * @var array
      */
-    public static $templatedefaults = array();
+    public static array $templatedefaults = array();
 
     /**
      * Default parameters for middleware HttpBasicAuth
+     *
+     * @var array
      */
-    public static $httpBasicAuth = array();
+    public static array $httpBasicAuth = array();
 
     /**
      * image preferences
+     *
+     * @var false
      */
-    public static $isImageAllowed = false;
+    public static bool $isImageAllowed = false;
 
     /**
      * language preferences
      */
     const MULTILANGUAGE = true;
-    public static $locale = 'de';
-    public static $supportedLanguages = array(
+    public static string $locale = 'de';
+
+    /**
+     * @var (string|true)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE', default: true}, en: array{name: 'English', locale: 'en_GB'}}
+     */
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',

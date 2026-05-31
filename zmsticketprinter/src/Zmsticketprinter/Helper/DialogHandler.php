@@ -11,14 +11,13 @@ namespace BO\Zmsticketprinter\Helper;
 class DialogHandler extends \BO\Zmsticketprinter\BaseController
 {
     /**
-     * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @SuppressWarnings (UnusedFormalParameter)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $template = $validator->getParameter('template')->isString()->getValue();
         $parameter = $validator->getParameter('parameter')->isArray()->getValue();

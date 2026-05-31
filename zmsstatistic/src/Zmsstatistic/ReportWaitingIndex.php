@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportWaitingIndex extends BaseController
 {
-    protected $resolveLevel = 2;
+    protected int $resolveLevel = 2;
 
     /**
      * @SuppressWarnings(Param)
@@ -72,13 +72,13 @@ class ReportWaitingIndex extends BaseController
      * Handle download request and return Excel file
      */
     private function handleDownloadRequest(
-        $request,
-        $response,
-        $args,
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args,
         $exchangeWaiting,
-        $dateRange,
-        $selectedScopes = [],
-        $reportWaitingService = null
+        array|null $dateRange,
+        array $selectedScopes = [],
+        ReportWaitingService|null $reportWaitingService = null
     ): ResponseInterface {
         if ($reportWaitingService === null) {
             $reportWaitingService = new ReportWaitingService();
@@ -97,12 +97,12 @@ class ReportWaitingIndex extends BaseController
      * Render HTML response for the waiting report page
      */
     private function renderHtmlResponse(
-        $response,
-        $args,
+        ResponseInterface $response,
+        array $args,
         $waitingPeriod,
-        $dateRange,
+        array|null $dateRange,
         $exchangeWaiting,
-        $selectedScopes = []
+        array $selectedScopes = []
     ): ResponseInterface {
         return Render::withHtml(
             $response,

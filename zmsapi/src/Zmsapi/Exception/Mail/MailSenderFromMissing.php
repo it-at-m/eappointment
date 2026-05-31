@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Mail;
  */
 class MailSenderFromMissing extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'There is no sender address specified for sending mail';
+    protected string $message = 'There is no sender address specified for sending mail';
 }

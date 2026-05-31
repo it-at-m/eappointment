@@ -14,14 +14,13 @@ use BO\Zmsdb\Session;
 class SessionUpdate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
         //overwrite sessions content without frontend parameter like basket and human
@@ -41,7 +40,10 @@ class SessionUpdate extends BaseController
         return $response;
     }
 
-    protected function testMatching($session)
+    /**
+     * @return void
+     */
+    protected function testMatching(\BO\Zmsentities\Session $session)
     {
         if (false === Helper\Matching::isProviderExisting($session)) {
             throw new Exception\Matching\ProviderNotFound();

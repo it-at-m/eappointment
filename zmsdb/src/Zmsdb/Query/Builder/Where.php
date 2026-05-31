@@ -76,7 +76,7 @@ trait Where
         return $this;
     }
 
-    public function whereIn(string $field, array $values)
+    public function whereIn(string $field, array $values): array|Update
     {
         if (empty($values)) {
             throw new \InvalidArgumentException('whereIn() requires a non-empty $values array.');

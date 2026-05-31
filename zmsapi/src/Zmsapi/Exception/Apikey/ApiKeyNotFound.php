@@ -4,7 +4,7 @@ namespace BO\Zmsapi\Exception\Apikey;
 
 class ApiKeyNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'Apikey not found';
+    protected string $message = 'Apikey not found';
 }

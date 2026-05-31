@@ -6,6 +6,9 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 {
+    /**
+     * @return Exchange
+     */
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
@@ -61,6 +64,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     public function readSubjectList()
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingscope::QUERY_SUBJECTS, []);
@@ -77,6 +83,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     public function readPeriodList($subjectid, $period = 'day')
     {
         $scope = (new Scope())->readEntity($subjectid);
@@ -146,7 +155,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $now,
         bool $isWithAppointment = false
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }
@@ -180,7 +189,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     public function writeWaitingTime(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }
@@ -215,7 +224,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     public function updateWaitingStatistics(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
-    ) {
+    ): static {
         if ($now > (new \DateTime())) {
             return $this;
         }

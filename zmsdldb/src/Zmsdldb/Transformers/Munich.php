@@ -135,8 +135,8 @@ class Munich
         [10383549, 1064361],
     ];
 
-    protected $publicUrl;
-    protected $logger;
+    protected string $publicUrl;
+    protected LoggerInterface|null $logger;
 
     public function __construct(string $publicUrl = '', ?LoggerInterface $logger = null)
     {

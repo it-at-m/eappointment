@@ -6,8 +6,13 @@ class Request extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "request.json";
+    public static string $schema = "request.json";
 
+    /**
+     * @return (null|string)[]
+     *
+     * @psalm-return array{id: '', name: '', source: 'dldb', parent_id: null, variant_id: null}
+     */
     public function getDefaults()
     {
         return [
@@ -26,7 +31,7 @@ class Request extends Schema\Entity
         return parent::withReference($additionalData);
     }
 
-    public function hasAppointmentFromProviderData()
+    public function hasAppointmentFromProviderData(): bool
     {
         if (isset($this['data']) && isset($this['data']['locations'])) {
             foreach ($this['data']['locations'] as $provider) {

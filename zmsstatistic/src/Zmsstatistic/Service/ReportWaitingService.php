@@ -14,7 +14,12 @@ use Exception;
 
 class ReportWaitingService
 {
-    protected $hashset = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'waitingcount', 'waitingtime', 'waitingcalculated', 'waitingcount_termin', 'waitingtime_termin', 'waitingcalculated_termin', 'waytime', 'waytime_termin', 'waitingcount_total', 'waitingtime_total', 'waytime_total'}
+     */
+    protected array $hashset = [
         'waitingcount',
         'waitingtime',
         'waitingcalculated',
@@ -28,7 +33,12 @@ class ReportWaitingService
         'waytime_total',
     ];
 
-    protected $groupfields = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'date', 'hour'}
+     */
+    protected array $groupfields = [
         'date',
         'hour'
     ];

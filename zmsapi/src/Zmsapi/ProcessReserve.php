@@ -18,15 +18,14 @@ use BO\Zmsdb\ProcessStatusFree;
 class ProcessReserve extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @SuppressWarnings(Complexity)
-     * @return String
+     * @SuppressWarnings (Param)
+     * @SuppressWarnings (Complexity)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $clientKey = Validator::param('clientkey')->isString()->getValue();

@@ -7,6 +7,9 @@ use BO\Zmsdb\Permission as PermissionRepository;
 
 class PermissionListGet extends BaseController
 {
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function readResponse($request, $response, array $args)
     {
         (new Helper\User($request, 1))->checkPermissions('superuser');

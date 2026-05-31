@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Config;
  */
 class ConfigAuthentificationFailed extends \Exception
 {
-    protected $code = 401;
+    protected int $code = 401;
 
-    protected $message = 'Authentification failed - access to config not granted';
+    protected string $message = 'Authentification failed - access to config not granted';
 }

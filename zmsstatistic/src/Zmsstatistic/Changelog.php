@@ -14,7 +14,10 @@ use BO\Zmsstatistic\Helper\ChangelogHelper;
 
 class Changelog extends BaseController
 {
-    protected $withAccess = false;
+    /**
+     * @var false
+     */
+    protected bool $withAccess = false;
     /**
      * @SuppressWarnings(Param)
      * @return ResponseInterface

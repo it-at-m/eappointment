@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
 
 class WorkstationInfo
 {
-    public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $selectedDate)
+    public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, string $selectedDate)
     {
         $infoData = array(
             'waitingTimeEstimate' => 0,
@@ -70,7 +70,7 @@ class WorkstationInfo
         return $infoData;
     }
 
-    public static function stringTimeToMinute($time)
+    public static function stringTimeToMinute($time): int
     {
         $timeArray = explode(':', $time === null ? '' : $time);
 
@@ -100,7 +100,12 @@ class WorkstationInfo
             ->getCollection();
     }
 
-    protected static function getAdditionalInfoData($infoData, $queueListHelper)
+    /**
+     * @param (float|int|mixed)[] $infoData
+     *
+     * @psalm-param array{waitingTimeEstimate: 0, waitingTimeOptimistic: 0, waitingClientsFullList: mixed, waitingClientsBeforeNext: 0, waitingClientsEffective: 0, workstationGhostCount: mixed, workstationList: mixed, averageWaitingTimeWithAppointment: float|int, averageWaitingTimeWithoutAppointment: float|int, countCurrentlyProcessing: int<0, max>} $infoData
+     */
+    protected static function getAdditionalInfoData(array $infoData, QueueListHelper $queueListHelper)
     {
         $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
         $infoData['waitingTimeOptimistic'] = $queueListHelper->getOptimisticWaitingTime();

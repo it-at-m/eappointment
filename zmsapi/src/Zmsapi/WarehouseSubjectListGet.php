@@ -14,14 +14,13 @@ use BO\Zmsdb\Warehouse as Query;
 class WarehouseSubjectListGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
 
         $message = Response\Message::create($request);

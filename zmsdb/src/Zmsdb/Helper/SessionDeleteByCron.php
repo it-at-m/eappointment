@@ -7,7 +7,7 @@ namespace BO\Zmsdb\Helper;
  */
 class SessionDeleteByCron
 {
-    public static function init($sessionName, $timeInterval)
+    public static function init($sessionName, $timeInterval): void
     {
         $deleteInSeconds = $timeInterval * 60;
         $query = new \BO\Zmsdb\Session();

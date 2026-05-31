@@ -7,8 +7,8 @@ namespace BO\Slim\Exception;
  */
 class OAuthInvalid extends \Exception
 {
-    protected $code = 401;
+    protected int $code = 401;
 
-    protected $message =
+    protected string $message =
         'Something went wrong when trying to log in. Possibly the session had not expired yet. Try again. ';
 }

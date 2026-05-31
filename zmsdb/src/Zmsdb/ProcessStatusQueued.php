@@ -14,7 +14,7 @@ class ProcessStatusQueued extends Process
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $dateTime,
         array $requestIds = []
-    ) {
+    ): Entity {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('queued');
         $process->isTicketprinter = true;

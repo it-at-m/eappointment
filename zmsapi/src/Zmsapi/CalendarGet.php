@@ -14,14 +14,13 @@ use BO\Zmsdb\Calendar as Query;
 class CalendarGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $hasGQL = Validator::param('gql')->isString()->getValue();
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();

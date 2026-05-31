@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Availability;
  */
 class AvailabilityListUpdateFailed extends \Exception
 {
-    protected $code = 400;
+    protected int $code = 400;
 
-    protected $message = 'Could not insert or update availablity';
+    protected string $message = 'Could not insert or update availablity';
 }

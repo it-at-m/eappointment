@@ -13,8 +13,13 @@ class Session extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "session.json";
+    public static string $schema = "session.json";
 
+    /**
+     * @return ((int|int[]|string)[]|string)[][]
+     *
+     * @psalm-return array{content: array{basket: array{requests: '', providers: '', scope: '0', process: '0', date: '0', familyName: '', email: '', telephone: '', amendment: '', authKey: ''}, human: array{captcha_text: '', client: 0, ts: 0, origin: '', remoteAddress: '', referer: '', step: array{dayselect: 0, timeselect: 0, register: 0, summary: 0}}, source: 'dldb', status: 'start', 'X-Authkey': '', error: ''}}
+     */
     public function getDefaults()
     {
         return [
@@ -98,6 +103,11 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->basket->authKey->get();
     }
 
+    /**
+     * @return (int|string)|false|null
+     *
+     * @psalm-return array-key|false|null
+     */
     public function getLastStep()
     {
         $steps = $this->toProperty()->content->human->step->get();
@@ -110,7 +120,7 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->status->get();
     }
 
-    public function removeLastStep()
+    public function removeLastStep(): static
     {
         unset($this->content['human']['step'][$this->getLastStep()]);
         return $this;
@@ -138,67 +148,67 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->entry->get();
     }
 
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return (! $this->hasProvider() && ! $this->hasRequests() && ! $this->hasScope()) ? true : false;
     }
 
-    public function isInChange()
+    public function isInChange(): bool
     {
         return ('inChange' == $this->getStatus()) ? true : false;
     }
 
-    public function isStalled()
+    public function isStalled(): bool
     {
         return ('stalled' == $this->getStatus()) ? true : false;
     }
 
-    public function isReserved()
+    public function isReserved(): bool
     {
         return ('reserved' == $this->getStatus()) ? true : false;
     }
 
-    public function isConfirmed()
+    public function isConfirmed(): bool
     {
         return ('confirmed' == $this->getStatus()) ? true : false;
     }
 
-    public function isPreconfirmed()
+    public function isPreconfirmed(): bool
     {
         return ('preconfirmed' == $this->getStatus()) ? true : false;
     }
 
-    public function isFinished()
+    public function isFinished(): bool
     {
         return ('finished' == $this->getStatus()) ? true : false;
     }
 
-    public function isProcessDeleted()
+    public function isProcessDeleted(): bool
     {
         return ! $this->hasProcess();
     }
 
-    public function hasStatus()
+    public function hasStatus(): bool
     {
         return (null === $this->getStatus()) ? false : true;
     }
 
-    public function hasProcess()
+    public function hasProcess(): bool
     {
         return (null === $this->getProcess()) ? false : true;
     }
 
-    public function hasAuthKey()
+    public function hasAuthKey(): bool
     {
         return (null === $this->getAuthKey()) ? false : true;
     }
 
-    public function hasChangedProcess()
+    public function hasChangedProcess(): bool
     {
         return ('inChange' == $this->getStatus()) ? true : false;
     }
 
-    public function hasPreviousAppointmentSearch()
+    public function hasPreviousAppointmentSearch(): bool
     {
         return ('inProgress' == $this->getStatus()) ? true : false;
     }
@@ -266,7 +276,7 @@ class Session extends Schema\Entity
          ) ? true : false;
     }
 
-    public function withOidcDataOnly()
+    public function withOidcDataOnly(): static
     {
         $entity = clone $this;
         if ($entity->toProperty()->content->basket->isAvailable()) {

@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Ticketprinter;
  */
 class TicketprinterNotEnabled extends \Exception
 {
-    protected $code = 200;
+    protected int $code = 200;
 
-    protected $message = 'Ticketprinter not enabled.';
+    protected string $message = 'Ticketprinter not enabled.';
 }

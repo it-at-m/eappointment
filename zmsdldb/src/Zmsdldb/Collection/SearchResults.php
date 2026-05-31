@@ -11,7 +11,7 @@ use BO\Zmsdldb\Entity\SearchResult as Entity;
 
 class SearchResults extends Base
 {
-    public function getNames()
+    public function getNames(): array
     {
         $nameList = array();
         foreach ($this as $item) {
@@ -20,7 +20,7 @@ class SearchResults extends Base
         return $nameList;
     }
 
-    public function toSearchResultData()
+    public function toSearchResultData(): self
     {
         $list = new self();
         foreach ($this as $results) {
@@ -35,7 +35,7 @@ class SearchResults extends Base
         return $list;
     }
 
-    public function addSearchResultsData($data)
+    public function addSearchResultsData($data): static|null
     {
         if ($data) {
             $this[] = $data;
@@ -44,7 +44,7 @@ class SearchResults extends Base
         return null;
     }
 
-    public function sortByType(array $order)
+    public function sortByType(array $order): self
     {
         $list = new self();
         foreach ($order as $type) {

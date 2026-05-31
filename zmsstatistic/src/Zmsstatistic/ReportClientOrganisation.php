@@ -13,7 +13,12 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientOrganisation extends BaseController
 {
-    protected $totals = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'clientscount', 'missed', 'withappointment', 'missedwithappointment', 'requestscount'}
+     */
+    protected array $totals = [
         'clientscount',
         'missed',
         'withappointment',

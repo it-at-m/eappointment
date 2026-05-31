@@ -13,7 +13,7 @@ class EventLog extends Base
     public const TABLE = 'eventlog';
     public const ALIAS = 'eventLog';
 
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
     public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
     {

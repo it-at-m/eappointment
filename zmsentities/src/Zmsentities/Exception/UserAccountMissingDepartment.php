@@ -7,5 +7,5 @@ namespace BO\Zmsentities\Exception;
  */
 class UserAccountMissingDepartment extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 }

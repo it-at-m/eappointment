@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class ThinnedScope extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/thinnedScope.json';
+    public static string $schema = 'citizenapi/thinnedScope.json';
     public int $id;
     public ?ThinnedProvider $provider;
     public ?string $shortName;
@@ -62,6 +62,9 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->ensureValid();
     }
 
+    /**
+     * @return void
+     */
     private function ensureValid()
     {
         if (!$this->testValid()) {

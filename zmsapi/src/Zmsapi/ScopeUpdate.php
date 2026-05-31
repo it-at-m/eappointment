@@ -14,14 +14,13 @@ use BO\Zmsdb\Scope;
 class ScopeUpdate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $scope = (new Scope())->readEntity($args['id'], 1);
         if (! $scope) {

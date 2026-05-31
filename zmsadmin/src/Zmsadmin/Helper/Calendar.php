@@ -17,7 +17,7 @@ use BO\Zmsentities\Scope;
 
 class Calendar
 {
-    protected $calendar;
+    protected Entity $calendar;
 
     protected $dateTime;
 
@@ -39,7 +39,11 @@ class Calendar
         return $this->dateTime;
     }
 
-    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList, $slotType, $slotsRequired)
+    /**
+     * @psalm-param 'intern' $slotType
+     * @psalm-param 0 $slotsRequired
+     */
+    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList, string $slotType, int $slotsRequired)
     {
         // TODO Berechne die Tage im Kalendar
         $this->calendar->scopes = $scopeList;
@@ -63,11 +67,15 @@ class Calendar
         return $calendar->getMonthList();
     }
 
+    /**
+     * @psalm-param 'intern' $slotType
+     * @psalm-param 0 $slotsRequired
+     */
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
-        $slotType = 'intern',
-        $slotsRequired = 0,
-        $forWeek = false
+        string $slotType = 'intern',
+        int $slotsRequired = 0,
+        bool $forWeek = false
     ) {
         $this->calendar->scopes = $scopeList;
 
@@ -159,13 +167,18 @@ class Calendar
         return $this->toDayListByHour($dayList);
     }
 
-    protected function getDateTimeFromWeekAndYear($week, $year)
+    protected function getDateTimeFromWeekAndYear($week, $year): \DateTimeImmutable
     {
         $dateTime = new \DateTimeImmutable();
         return $dateTime->setISODate($year, $week);
     }
 
-    public function toProcessListByHour(ProcessList $processList)
+    /**
+     * @return ProcessList[][]
+     *
+     * @psalm-return array<int, array<int, ProcessList>>
+     */
+    public function toProcessListByHour(ProcessList $processList): array
     {
         $list = array();
         $oldList = $processList;
@@ -191,7 +204,12 @@ class Calendar
         return $list;
     }
 
-    public function toDayListByHour(DayList $dayList)
+    /**
+     * @return ((ProcessList|mixed)[]|mixed)[][]
+     *
+     * @psalm-return array{days?: non-empty-list<mixed>, hours?: array<array<string, ProcessList|mixed>>}
+     */
+    public function toDayListByHour(DayList $dayList): array
     {
         $list = array();
         $hours = array();
@@ -221,7 +239,12 @@ class Calendar
         return $list;
     }
 
-    private function splitByDate(ProcessList $processList)
+    /**
+     * @return ProcessList[]
+     *
+     * @psalm-return array<ProcessList>
+     */
+    private function splitByDate(ProcessList $processList): array
     {
         $list = [];
 

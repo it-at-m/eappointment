@@ -15,10 +15,15 @@ class Mail extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "mail.json";
+    public static string $schema = "mail.json";
 
     protected $templateProvider = false;
 
+    /**
+     * @return (Client|Collection\MimepartList|Department|Process)[]
+     *
+     * @psalm-return array{multipart: Collection\MimepartList, process: Process, department: Department, client: Client}
+     */
     public function getDefaults()
     {
         return [
@@ -39,18 +44,18 @@ class Mail extends Schema\Entity
         return $this->toProperty()->process->authKey->get();
     }
 
-    public function addMultiPart($multiPart)
+    public function addMultiPart($multiPart): static
     {
         $this->multipart = $multiPart;
         return $this;
     }
 
-    public function hasContent()
+    public function hasContent(): bool
     {
         return ($this->getHtmlPart() && $this->getPlainPart());
     }
 
-    public function hasIcs()
+    public function hasIcs(): bool
     {
         return (null != $this->getIcsPart());
     }
@@ -108,7 +113,7 @@ class Mail extends Schema\Entity
         return $client;
     }
 
-    public function toCustomMessageEntity(Process $process, $collection)
+    public function toCustomMessageEntity(Process $process, $collection): static
     {
         $entity = clone $this;
         $message = '';
@@ -210,7 +215,7 @@ class Mail extends Schema\Entity
         Collection\ProcessList $processList,
         Scope $scope,
         \DateTimeInterface $dateTime
-    ) {
+    ): static {
         $entity = clone $this;
         $content = Messaging::getScopeAdminProcessListContent($processList, $scope, $dateTime);
         $entity->subject = 'Termine am ' . $dateTime->format('Y-m-d');
@@ -234,7 +239,7 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
-    public function withDepartment($department)
+    public function withDepartment($department): static
     {
         $this->department = $department;
         return $this;
@@ -251,7 +256,7 @@ class Mail extends Schema\Entity
         return $this['client']['email'];
     }
 
-    public function setTemplateProvider($templateProvider)
+    public function setTemplateProvider($templateProvider): static
     {
         $this->templateProvider = $templateProvider;
         return $this;

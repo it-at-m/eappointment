@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Authority extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{id: 'id', name: 'name', parent_id: 'parent_id', 'meta.locale': 'locale', locations: 'locations_json', relation: 'relation_json', contact: 'contact_json', __RAW__: 'data_json'}
+     */
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'parent_id' => 'parent_id',
@@ -15,6 +20,9 @@ class Authority extends Base
         '__RAW__' => 'data_json'
     ];
 
+    /**
+     * @return void
+     */
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -52,11 +60,17 @@ class Authority extends Base
         ];
     }
 
+    /**
+     * @return void
+     */
     public function preSetupFields()
     {
         $this->dataRaw['parent_id'] = ($this->dataRaw['parent_id'] ?? 0);
     }
 
+    /**
+     * @return void
+     */
     public function preSetup()
     {
         try {

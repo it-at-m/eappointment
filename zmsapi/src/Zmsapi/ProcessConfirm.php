@@ -19,14 +19,13 @@ use BO\Mellon\Validator;
 class ProcessConfirm extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
@@ -60,7 +59,7 @@ class ProcessConfirm extends BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
-    protected function writeMails($request, $process)
+    protected function writeMails(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Process $process): void
     {
         if ($process->hasScopeAdmin() && $process->sendAdminMailOnConfirmation()) {
             $authority = $request->getUri()->getAuthority();
@@ -102,7 +101,10 @@ class ProcessConfirm extends BaseController
         );
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
@@ -112,6 +114,9 @@ class ProcessConfirm extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new Process())->isAppointmentSlotCountAllowed($process)) {

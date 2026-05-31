@@ -33,10 +33,13 @@ class ProcessListSummaryMail extends BaseController
     public const PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
 
     /**
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
+     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
+     *
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
@@ -77,7 +80,7 @@ class ProcessListSummaryMail extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function readDepartment($config, $process = null): Department
+    protected function readDepartment(\BO\Zmsentities\Config $config, $process = null): Department
     {
         $department = (null != $process && null != $process->getScopeId()) ?
             (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0) :
@@ -88,7 +91,7 @@ class ProcessListSummaryMail extends BaseController
         return $department;
     }
 
-    protected function setWithProcessClient(Mail $entity, $mailAddress): Mail
+    protected function setWithProcessClient(Mail $entity, string $mailAddress): Mail
     {
         $process = new Process();
         $client = $entity->getClient();
@@ -97,7 +100,7 @@ class ProcessListSummaryMail extends BaseController
         return $entity;
     }
 
-    protected function writeLogEntry($mailAddress, ProcessList $collection)
+    protected function writeLogEntry(string $mailAddress, ProcessList $collection): void
     {
         $logRepository = new EventLogRepository();
         $newLogEntry = new EventLog();
@@ -112,6 +115,9 @@ class ProcessListSummaryMail extends BaseController
         $logRepository->writeEntity($newLogEntry);
     }
 
+    /**
+     * @return void
+     */
     protected function testEventLogEntries($mailAddress)
     {
         $logRepository = new EventLogRepository();

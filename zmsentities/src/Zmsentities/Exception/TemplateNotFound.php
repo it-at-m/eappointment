@@ -7,9 +7,9 @@ namespace BO\Zmsentities\Exception;
  */
 class TemplateNotFound extends \Exception
 {
-    protected $code = 500;
+    protected int $code = 500;
 
-    protected $message = 'The requested template does not exist';
+    protected string $message = 'The requested template does not exist';
 
     public $data;
 }

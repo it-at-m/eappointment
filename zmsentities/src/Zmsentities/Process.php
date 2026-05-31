@@ -30,7 +30,12 @@ class Process extends Schema\Entity
     public const STATUS_ANONYMIZED = 'anonymized';
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
-    public static $schema = "process.json";
+    public static string $schema = "process.json";
+    /**
+     * @return (Apiclient|Collection\AppointmentList|Collection\ClientList|Collection\RequestList|Queue|Scope|false|int|null|string)[]
+     *
+     * @psalm-return array{amendment: '', customTextfield: '', customTextfield2: '', appointments: Collection\AppointmentList, apiclient: Apiclient, authKey: '', captchaToken: '', clients: Collection\ClientList, createIP: '', createTimestamp: int<1, max>, id: 0, archiveId: 0, queue: Queue, reminderTimestamp: 0, requests: Collection\RequestList, scope: Scope, status: 'free', displayNumber: '', dbstatus: 'free', lastChange: int<1, max>, wasMissed: false, priority: null, externalUserId: null, parkedBy: null}
+     */
     public function getDefaults()
     {
         return [
@@ -61,7 +66,7 @@ class Process extends Schema\Entity
         ];
     }
 
-    public static function createFromScope(Scope $scope, \DateTimeInterface $dateTime)
+    public static function createFromScope(Scope $scope, \DateTimeInterface $dateTime): static
     {
         $appointment = new Appointment();
         $appointment->addScope($scope->id);
@@ -106,13 +111,13 @@ class Process extends Schema\Entity
         return $this->getRequests()->getIdsCsv();
     }
 
-    public function addScope($scopeId)
+    public function addScope($scopeId): static
     {
         $this->scope = new Scope(array('id' => $scopeId));
         return $this;
     }
 
-    public function addQueue($number, \DateTimeInterface $dateTime)
+    public function addQueue($number, \DateTimeInterface $dateTime): static
     {
         $this->queue = new Queue(array(
             'number' => $number,
@@ -122,7 +127,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addRequests($source, $requestCSV)
+    public function addRequests($source, $requestCSV): static
     {
         $requestList = $this->getRequests();
         foreach (explode(',', $requestCSV) as $id) {
@@ -136,7 +141,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function updateRequests($source, $requestCSV = '')
+    public function updateRequests($source, int|string $requestCSV = ''): static
     {
         $this->requests = new Collection\RequestList();
         if ($requestCSV) {
@@ -150,32 +155,32 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function hasScopeAdmin()
+    public function hasScopeAdmin(): bool
     {
         return ('' != $this->toProperty()->scope->contact->email->get());
     }
 
-    public function sendAdminMailOnConfirmation()
+    public function sendAdminMailOnConfirmation(): bool
     {
         return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
     }
 
-    public function sendAdminMailOnDeleted()
+    public function sendAdminMailOnDeleted(): bool
     {
         return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
     }
 
-    public function sendAdminMailOnUpdated()
+    public function sendAdminMailOnUpdated(): bool
     {
         return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
     }
 
-    public function shouldSendAdminMailOnClerkMail()
+    public function shouldSendAdminMailOnClerkMail(): bool
     {
         return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnMailSent->get());
     }
 
-    public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
+    public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = ''): static
     {
         $this->scope = ($scope) ? $scope : $this->scope;
         $this->addAppointmentFromRequest($requestData, $dateTime);
@@ -190,7 +195,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addAppointmentFromRequest($requestData, \DateTimeInterface $dateTime)
+    public function addAppointmentFromRequest($requestData, \DateTimeInterface $dateTime): static
     {
         $this->appointments = null;
         if (isset($requestData['selecteddate'])) {
@@ -211,7 +216,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addClientFromForm($requestData)
+    public function addClientFromForm($requestData): static
     {
         $client = new Client();
         foreach ($requestData as $key => $value) {
@@ -224,7 +229,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function setStatus($status)
+    public function setStatus(string $status): static
     {
         $this->status = $status;
         return $this;
@@ -241,7 +246,7 @@ class Process extends Schema\Entity
         return ($timestamp) ? $timestamp : 0;
     }
 
-    public function addReminderTimestamp($input, \DateTimeInterface $dateTime)
+    public function addReminderTimestamp($input, \DateTimeInterface $dateTime): static
     {
         $this->reminderTimestamp = (
             Property::__keyExists('headsUpTime', $input) &&
@@ -293,7 +298,7 @@ class Process extends Schema\Entity
      * check if process is with appointment and not only queued
      * return Boolean
      */
-    public function isWithAppointment()
+    public function isWithAppointment(): bool
     {
         $appointment = $this->getFirstAppointment();
         if ($appointment->hasTime()) {
@@ -302,19 +307,19 @@ class Process extends Schema\Entity
         return (1 == $this->toProperty()->queue->withAppointment->get());
     }
 
-    public function hasProcessCredentials()
+    public function hasProcessCredentials(): bool
     {
         return (isset($this['id']) && isset($this['authKey']) && $this['id'] && $this['authKey']);
     }
 
-    public function withReassignedCredentials($process)
+    public function withReassignedCredentials($process): static
     {
         $this->id = $process->getId();
         $this->authKey = $process->getAuthKey();
         return $this;
     }
 
-    public function hasQueueNumber()
+    public function hasQueueNumber(): bool
     {
         return (isset($this['queue']) && isset($this['queue']['number']) && $this['queue']['number']);
     }
@@ -324,7 +329,7 @@ class Process extends Schema\Entity
         return $this['queue']['number'];
     }
 
-    public function addAppointment(Appointment $newappointment)
+    public function addAppointment(Appointment $newappointment): static
     {
         $this->appointments[] = $newappointment;
         return $this;
@@ -384,7 +389,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->finishTime->get();
     }
 
-    public function addAmendment($input, $notice = '')
+    public function addAmendment($input, $notice = ''): static
     {
         $this->amendment = $notice;
         $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
@@ -397,7 +402,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->customTextfield->get();
     }
 
-    public function addCustomTextfield($input)
+    public function addCustomTextfield($input): static
     {
         $this->customTextfield = (
             isset($input['customTextfield']) && $input['customTextfield']
@@ -411,7 +416,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->customTextfield2->get();
     }
 
-    public function addCustomTextfield2($input)
+    public function addCustomTextfield2($input): static
     {
         $this->customTextfield2 = (
             isset($input['customTextfield2']) && $input['customTextfield2']
@@ -420,7 +425,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addPriority($input)
+    public function addPriority($input): static
     {
         $this->priority = isset($input['priority']) && $input['priority'] ? $input['priority'] : null;
 
@@ -432,17 +437,17 @@ class Process extends Schema\Entity
         return $this->toProperty()->authKey->get();
     }
 
-    public function getPriority()
+    public function getPriority(): int
     {
         return (int) $this->toProperty()->priority->get();
     }
 
-    public function setRandomAuthKey()
+    public function setRandomAuthKey(): void
     {
         $this->authKey = bin2hex(random_bytes(32));
     }
 
-    public function setCallTime($dateTime = null)
+    public function setCallTime($dateTime = null): static
     {
         $this->queue['callTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
         return $this;
@@ -484,7 +489,7 @@ class Process extends Schema\Entity
         return $appointment;
     }
 
-    public function setStatusBySettings()
+    public function setStatusBySettings(): static
     {
         $scope = new Scope($this->scope);
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
@@ -497,7 +502,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function setClientsCount($count)
+    public function setClientsCount($count): static
     {
         $clientList = $this->getClients();
         while ($clientList->count() < $count) {
@@ -507,7 +512,7 @@ class Process extends Schema\Entity
     }
 
 
-    public function withoutPersonalData()
+    public function withoutPersonalData(): static
     {
         $entity = clone $this;
         if ($this->toProperty()->clients->isAvailable()) {
@@ -521,6 +526,7 @@ class Process extends Schema\Entity
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
+     * @return static
      */
     public function withLessData(array $keepArray = [])
     {
@@ -574,7 +580,7 @@ class Process extends Schema\Entity
         return $entity;
     }
 
-    public function toCalendar()
+    public function toCalendar(): Calendar
     {
         $calendar = new Calendar();
         $dateTime = $this->getFirstAppointment()->toDateTime();
@@ -606,7 +612,7 @@ class Process extends Schema\Entity
         return $queue->setProcess($this);
     }
 
-    public function hasArrivalTime()
+    public function hasArrivalTime(): bool
     {
         $arrivalTime = 0;
         if ($this->isWithAppointment()) {
@@ -617,7 +623,12 @@ class Process extends Schema\Entity
         return ($arrivalTime) ? true : false;
     }
 
-    public function getArrivalTime($default = 'now', $timezone = null)
+    /**
+     * @param \DateTimeInterface|string $default
+     *
+     * @psalm-param 'now'|\DateTimeInterface $default
+     */
+    public function getArrivalTime(string|\DateTimeInterface $default = 'now', $timezone = null)
     {
         $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
 
@@ -638,7 +649,7 @@ class Process extends Schema\Entity
         return $arrivalDateTime;
     }
 
-    public function setArrivalTime(\DateTimeInterface $dateTime = null)
+    public function setArrivalTime(\DateTimeInterface $dateTime = null): static
     {
         $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
         return $this;
@@ -667,7 +678,7 @@ class Process extends Schema\Entity
         return $this->getWaySeconds($defaultTime) / 60;
     }
 
-    public function setWasMissed(bool $bool)
+    public function setWasMissed(bool $bool): static
     {
         $this->wasMissed = $bool;
         $this->status = self::STATUS_MISSED;
@@ -679,7 +690,7 @@ class Process extends Schema\Entity
         return (bool) $this->wasMissed;
     }
 
-    public function toDerefencedAmendment()
+    public function toDerefencedAmendment(): string|null
     {
         $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
         return var_export(array(
@@ -691,7 +702,7 @@ class Process extends Schema\Entity
             ), 1);
     }
 
-    public function toDerefencedCustomTextfield()
+    public function toDerefencedCustomTextfield(): string|null
     {
         $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
         return var_export(array(
@@ -703,7 +714,7 @@ class Process extends Schema\Entity
             ), 1);
     }
 
-    public function toDerefencedCustomTextfield2()
+    public function toDerefencedCustomTextfield2(): string|null
     {
         $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
         return var_export(array(
@@ -740,7 +751,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->externalUserId->get();
     }
 
-    public function setExternalUserId($externalUserId)
+    public function setExternalUserId($externalUserId): static
     {
         $this->externalUserId = $externalUserId;
         return $this;
@@ -751,7 +762,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->parkedBy->get();
     }
 
-    public function setParkedBy($name)
+    public function setParkedBy($name): void
     {
         $this->parkedBy = $name;
     }

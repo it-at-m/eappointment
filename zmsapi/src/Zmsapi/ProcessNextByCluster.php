@@ -15,14 +15,13 @@ use BO\Zmsentities\Helper\DateTime;
 class ProcessNextByCluster extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 1))->checkPermissions('appointment');
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();

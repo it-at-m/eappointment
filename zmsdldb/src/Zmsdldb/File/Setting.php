@@ -16,6 +16,9 @@ use BO\Zmsdldb\Entity\Setting as Entity;
   */
 class Setting extends Base
 {
+    /**
+     * @return Settings
+     */
     protected function parseData($data)
     {
         return new Settings($data['data']['settings']);

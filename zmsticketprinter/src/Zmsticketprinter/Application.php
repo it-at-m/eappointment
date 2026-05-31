@@ -34,15 +34,28 @@ class Application extends \BO\Slim\Application
 
     /**
      * language preferences
+     *
+     * @var string
+     *
+     * @psalm-var 'de'
      */
-    public static $locale = 'de';
+    public static string $locale = 'de';
 
     /**
      * Base path for static assets (_css, _js). Must match routing and js/settings.js.
+     *
+     * @var string
+     *
+     * @psalm-var '/terminvereinbarung/ticketprinter'
      */
-    public static $includeUrl = '/terminvereinbarung/ticketprinter';
+    public static string $includeUrl = '/terminvereinbarung/ticketprinter';
 
-    public static $supportedLanguages = array(
+    /**
+     * @var (bool|string)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE.utf-8', default: true}, en: array{name: 'English', locale: 'en_GB.utf-8', default: false}}
+     */
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name' => 'Deutsch',
@@ -56,7 +69,7 @@ class Application extends \BO\Slim\Application
         )
     );
 
-    public static $now = '';
+    public static string $now = '';
 
     /*
      * -----------------------------------------------------------------------
@@ -65,7 +78,10 @@ class Application extends \BO\Slim\Application
 
     public static $http = null;
 
-    public static $http_curl_config = array();
+    /**
+     * @var array
+     */
+    public static array $http_curl_config = array();
 
     public const JSON_COMPRESS_LEVEL = 1;
 

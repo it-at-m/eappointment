@@ -242,6 +242,10 @@ class Location extends Base
 
     /**
      * @todo Refactoring required, functions in this class should return entities, not JSON data
+     *
+     * @return ((string|string[])[]|bool|mixed|string)[][]
+     *
+     * @psalm-return array<array{name: mixed, type: 'cluster', active: bool, data: array{type: 'FeatureCollection', features: non-empty-list<string>}}>
      */
     public function fetchGeoJson($category = null, $getAll = false)
     {
@@ -275,6 +279,9 @@ class Location extends Base
         return $geoJson;
     }
 
+    /**
+     * @return Collection
+     */
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
         $limit = 1000;

@@ -19,14 +19,13 @@ use BO\Zmsentities\Calldisplay as Entity;
 class CalldisplayGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -41,7 +40,10 @@ class CalldisplayGet extends BaseController
         return $response;
     }
 
-    protected function testScopeAndCluster($calldisplay)
+    /**
+     * @return void
+     */
+    protected function testScopeAndCluster(Entity $calldisplay)
     {
         if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();

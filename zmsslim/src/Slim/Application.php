@@ -72,13 +72,15 @@ class Application
 /**
      * Default parameters for templates
      *
+     * @var array
      */
-    public static $templatedefaults = array();
+    public static array $templatedefaults = array();
 /**
      * Default parameters for middleware HttpBasicAuth
      *
+     * @var array
      */
-    public static $httpBasicAuth = array();
+    public static array $httpBasicAuth = array();
 /*
      * -----------------------------------------------------------------------
      * Logging PSR3 compatible
@@ -86,17 +88,24 @@ class Application
     public static $log = null;
 /**
      * image preferences
+     *
+     * @var true
      */
-
-    public static $isImageAllowed = true;
+    public static bool $isImageAllowed = true;
 /**
      * @var \BO\Slim\Language $language
      *
      */
     const MULTILANGUAGE = true;
-    public static $languagesource = 'json';
+    public static string $languagesource = 'json';
     public static $language = null;
-    public static $supportedLanguages = array(
+
+    /**
+     * @var (bool|string)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE.utf-8', default: true}, en: array{name: 'English', locale: 'en_GB.utf-8', default: false}}
+     */
+    public static array $supportedLanguages = array(
         // Default language
         'de' => array(
             'name'    => 'Deutsch',
@@ -110,5 +119,5 @@ class Application
         )
     );
 // default overwritten with Bootstrap::init()
-    public static $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
+    public static string $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
 }

@@ -26,7 +26,10 @@ class User
         static::readWorkstation($resolveReferences);
     }
 
-    public static function readWorkstation($resolveReferences = 0)
+    /**
+     * @psalm-param 0|2 $resolveReferences
+     */
+    public static function readWorkstation(int $resolveReferences = 0)
     {
         $request = (static::$request) ? static::$request : Render::$request;
         if (! static::$workstation) {
@@ -51,6 +54,7 @@ class User
     /**
      * @throws \BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned
      *
+     * @return void
      */
     public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {
@@ -75,8 +79,9 @@ class User
     /**
      * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed()
      *
+     * @return void
      */
-    public static function testWorkstationAccessRights($useraccount)
+    public static function testWorkstationAccessRights(\BO\Zmsentities\Useraccount $useraccount)
     {
         if (
             (
@@ -93,11 +98,10 @@ class User
     }
 
     /**
-     * @throws  \BO\Zmsentities\Exception\UserAccountMissingRights()
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights()
      *          \BO\Zmsentities\Exception\UserAccountMissingLogin()
-     *
      */
-    public static function testWorkstationAssignedRights($useraccount)
+    public static function testWorkstationAssignedRights($useraccount): void
     {
         static::$workstation
             ->getUseraccount()
@@ -113,8 +117,9 @@ class User
     /**
      * @return \BO\Zmsentities\Workstation
      *
+     * @param \BO\Zmsentities\Useraccount\EntityAccess|string $requiredRights
      */
-    public static function checkRights(...$requiredRights)
+    public static function checkRights(string|\BO\Zmsentities\Useraccount\EntityAccess ...$requiredRights)
     {
         $workstation = static::readWorkstation();
         if (\App::RIGHTSCHECK_ENABLED) {
@@ -123,7 +128,10 @@ class User
         return $workstation;
     }
 
-    public static function checkPermissions(...$requiredPermissions)
+    /**
+     * @param \BO\Zmsentities\Useraccount\EntityAccess|string $requiredPermissions
+     */
+    public static function checkPermissions(string|\BO\Zmsentities\Useraccount\EntityAccess ...$requiredPermissions)
     {
         $workstation = static::readWorkstation();
 
@@ -134,7 +142,10 @@ class User
         return $workstation;
     }
 
-    public static function checkAnyPermission(...$requiredPermissions)
+    /**
+     * @psalm-param 'availability'|'restrictedscope' $requiredPermissions
+     */
+    public static function checkAnyPermission(string ...$requiredPermissions)
     {
         $workstation = static::readWorkstation();
 
@@ -145,7 +156,7 @@ class User
         return $workstation;
     }
 
-    public static function checkDepartments($departmentIds)
+    public static function checkDepartments($departmentIds): DepartmentList
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
         $departments = new DepartmentList();
@@ -241,9 +252,8 @@ class User
 
     /**
      * Get X-Api-Key from header
-     *
-    */
-    public static function hasXApiKey($request)
+     */
+    public static function hasXApiKey(\Psr\Http\Message\RequestInterface $request): bool
     {
         $xApiKeyEntity = null;
         $xApiKey = $request->getHeaderLine('x-api-key');
@@ -253,7 +263,10 @@ class User
         return ($xApiKeyEntity && $xApiKeyEntity->hasId());
     }
 
-    public static function testWorkstationIsOveraged($workstation)
+    /**
+     * @return void
+     */
+    public static function testWorkstationIsOveraged(\BO\Zmsentities\Workstation $workstation)
     {
         if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\AuthKeyFound();
@@ -270,7 +283,12 @@ class User
         return $department;
     }
 
-    public static function normalizeDepartmentIds(array $departmentIds)
+    /**
+     * @return int[]
+     *
+     * @psalm-return list<int>
+     */
+    public static function normalizeDepartmentIds(array $departmentIds): array
     {
         $normalized = [];
         foreach ($departmentIds as $departmentId) {

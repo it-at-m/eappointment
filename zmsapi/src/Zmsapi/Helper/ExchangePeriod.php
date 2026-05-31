@@ -10,13 +10,22 @@ use BO\Slim\Render;
  */
 class ExchangePeriod
 {
+    /**
+     * @var string
+     */
     protected static $year = '';
 
+    /**
+     * @var string
+     */
     protected static $month = '';
 
+    /**
+     * @var string
+     */
     protected static $day = '';
 
-    protected static $periodIdentifier = 'day';
+    protected static string $periodIdentifier = 'day';
 
     protected static $startDateTime = null;
 

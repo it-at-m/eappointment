@@ -16,14 +16,13 @@ use Psr\Http\Message\ResponseInterface;
 class UseraccountListByRoleAndDepartments extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         $roleLevel = $args['level'];
         $workstation = (new Helper\User($request, 2))->checkPermissions('useraccount');
 

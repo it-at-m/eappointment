@@ -10,5 +10,5 @@ namespace BO\Zmsclient\Exception;
 
 class BadRequest extends \BO\Zmsclient\Exception
 {
-    protected $code = 400;
+    protected int $code = 400;
 }

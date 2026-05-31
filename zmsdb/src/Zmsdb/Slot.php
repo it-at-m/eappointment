@@ -28,9 +28,9 @@ class Slot extends Base
      */
     public function readByAppointment(
         \BO\Zmsentities\Appointment $appointment,
-        $overwriteSlotsCount = null,
-        $extendSlotList = false,
-        $lockSlots = false
+        int|null $overwriteSlotsCount = null,
+        bool $extendSlotList = false,
+        bool $lockSlots = false
     ) {
         $appointment = clone $appointment;
         $availability = (new Availability())->readByAppointment($appointment);
@@ -69,6 +69,9 @@ class Slot extends Base
         return $slotID ? $slotID['slotID'] : false ;
     }
 
+    /**
+     * @return null|true
+     */
     public function hasScopeRelevantChanges(
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $slotLastChange = null
@@ -101,7 +104,7 @@ class Slot extends Base
         \DateTimeInterface $now,
         \DateTimeInterface $slotLastChange = null,
         int $oldestSlotVersion = 1
-    ) {
+    ): bool {
         $proposedChange = new Helper\AvailabilitySnapShot($availability, $now);
         $formerChange = new Helper\AvailabilitySnapShot($availability, $slotLastChange);
 
@@ -253,7 +256,7 @@ class Slot extends Base
         return $status || (isset($cancelledSlots) && $cancelledSlots > 0);
     }
 
-    public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
+    public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now): \BO\Zmsentities\Collection\AvailabilityList
     {
         $slotLastChange = $this->readLastChangedTimeByScope($scope);
         $availabilityList = (new \BO\Zmsdb\Availability())
@@ -306,7 +309,7 @@ class Slot extends Base
         return $status;
     }
 
-    protected function writeAncestorIDs($slotID, array $ancestors)
+    protected function writeAncestorIDs($slotID, array $ancestors): void
     {
         $this->perform(Query\Slot::QUERY_DELETE_ANCESTOR, [
             'slotID' => $slotID,
@@ -324,7 +327,7 @@ class Slot extends Base
         }
     }
 
-    public function readLastChangedTime()
+    public function readLastChangedTime(): \DateTimeImmutable
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_CHANGED
@@ -335,7 +338,7 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
-    public function readLastChangedTimeByScope(ScopeEntity $scope)
+    public function readLastChangedTimeByScope(ScopeEntity $scope): \DateTimeImmutable
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_CHANGED_SCOPE,
@@ -349,7 +352,7 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
-    public function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
+    public function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy): \DateTimeImmutable
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_CHANGED_AVAILABILITY,
@@ -363,7 +366,10 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null)
+    /**
+     * @psalm-return int<0, max>
+     */
+    public function updateSlotProcessMapping($scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -381,7 +387,7 @@ class Slot extends Base
         return count($processIdList);
     }
 
-    public function deleteSlotProcessOnSlot($scopeID = null)
+    public function deleteSlotProcessOnSlot($scopeID = null): void
     {
         if ($scopeID) {
             $this->perform(
@@ -394,7 +400,10 @@ class Slot extends Base
         }
     }
 
-    public function deleteSlotProcessOnProcess($scopeID = null)
+    /**
+     * @psalm-return int<0, max>
+     */
+    public function deleteSlotProcessOnProcess($scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -412,7 +421,7 @@ class Slot extends Base
         return count($processIdList);
     }
 
-    public function writeSlotProcessMappingFor($processId)
+    public function writeSlotProcessMappingFor($processId): static
     {
         $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
@@ -420,7 +429,7 @@ class Slot extends Base
         return $this;
     }
 
-    public function deleteSlotProcessMappingFor($processId)
+    public function deleteSlotProcessMappingFor($processId): static
     {
         $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
             'processId' => $processId,
@@ -428,7 +437,7 @@ class Slot extends Base
         return $this;
     }
 
-    public function writeCanceledByTimeAndScope(\DateTimeInterface $dateTime, \BO\Zmsentities\Scope $scope)
+    public function writeCanceledByTimeAndScope(\DateTimeInterface $dateTime, \BO\Zmsentities\Scope $scope): bool
     {
         $status = $this->perform(Query\Slot::QUERY_UPDATE_SLOT_MISSING_AVAILABILITY_BY_SCOPE, [
             'dateString' => $dateTime->format('Y-m-d'),
@@ -444,7 +453,7 @@ class Slot extends Base
         ]) && $status;
     }
 
-    public function writeCanceledByTime(\DateTimeInterface $dateTime)
+    public function writeCanceledByTime(\DateTimeInterface $dateTime): bool
     {
         $status = $this->perform(Query\Slot::QUERY_UPDATE_SLOT_MISSING_AVAILABILITY, [
             'dateString' => $dateTime->format('Y-m-d'),
@@ -457,7 +466,7 @@ class Slot extends Base
         ]) && $status;
     }
 
-    public function deleteSlotsOlderThan(\DateTimeInterface $dateTime)
+    public function deleteSlotsOlderThan(\DateTimeInterface $dateTime): bool
     {
         $status = $this->perform(Query\Slot::QUERY_DELETE_SLOT_OLD, [
             'year' => $dateTime->format('Y'),
@@ -484,7 +493,7 @@ class Slot extends Base
         return $list;
     }
 
-    public function writeOptimizedSlotTables()
+    public function writeOptimizedSlotTables(): bool
     {
         $queries = [
             Query\Slot::QUERY_OPTIMIZE_SLOT,
@@ -507,7 +516,7 @@ class Slot extends Base
         return $status;
     }
 
-    private function getLastGeneratedSlotDate(AvailabilityEntity $availability)
+    private function getLastGeneratedSlotDate(AvailabilityEntity $availability): \DateTimeImmutable|null
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_IN_AVAILABILITY,

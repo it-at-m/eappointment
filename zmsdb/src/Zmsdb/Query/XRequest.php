@@ -10,7 +10,7 @@ class XRequest extends Base
      */
     const TABLE = 'buergeranliegen';
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId($processId): static
     {
         $this->query->where('BuergerID', '=', $processId);
         return $this;

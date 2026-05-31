@@ -102,11 +102,7 @@ class Service extends Base
         }
     }
 
-    /**
-     *
-     * @return Collection\Services
-     */
-    public function fetchFromCsv($service_csv, $mixLanguages = false)
+    public function fetchFromCsv($service_csv, $mixLanguages = false): Collection
     {
         try {
             $sqlArgs = [$this->locale];
@@ -225,6 +221,9 @@ class Service extends Base
         }
     }
 
+    /**
+     * @return Collection
+     */
     public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
     {
         try {

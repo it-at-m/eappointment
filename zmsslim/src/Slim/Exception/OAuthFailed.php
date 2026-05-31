@@ -7,7 +7,7 @@ namespace BO\Slim\Exception;
  */
 class OAuthFailed extends \Exception
 {
-    protected $code = 401;
+    protected int $code = 401;
 
-    protected $message = 'You are not allowed to access this client, please contact your system administrator.';
+    protected string $message = 'You are not allowed to access this client, please contact your system administrator.';
 }

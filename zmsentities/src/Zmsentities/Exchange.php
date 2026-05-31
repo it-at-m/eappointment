@@ -18,8 +18,13 @@ class Exchange extends Schema\Entity
 
     public const REQUEST_STAT_NAME_NONEXISTENT = 'nonexistent';
 
-    public static $schema = "exchange.json";
+    public static string $schema = "exchange.json";
 
+    /**
+     * @return (Day|array|string)[]
+     *
+     * @psalm-return array{firstDay: Day, lastDay: Day, period: 'day', dictionary: array<never, never>, data: array<never, never>}
+     */
     public function getDefaults()
     {
         return [
@@ -31,7 +36,7 @@ class Exchange extends Schema\Entity
         ];
     }
 
-    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'day')
+    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'day'): static
     {
         $this->firstDay = (new Day())->setDateTime($firstDay);
         $this->lastDay = (new Day())->setDateTime($lastDay);
@@ -39,7 +44,7 @@ class Exchange extends Schema\Entity
         return $this;
     }
 
-    public function addDictionaryEntry($variable, $type = 'string', $description = '', $reference = '')
+    public function addDictionaryEntry($variable, $type = 'string', $description = '', $reference = ''): static
     {
         $position = count($this['dictionary']);
         $this['dictionary'][$position] = [
@@ -52,7 +57,14 @@ class Exchange extends Schema\Entity
         return $this;
     }
 
-    public function addDataSet($values)
+    /**
+     * @param (float|int|string)[] $values
+     *
+     * @psalm-param array<'totals'|float|int> $values
+     *
+     * @return void
+     */
+    public function addDataSet(array $values)
     {
         if (!is_array($values) && !$values instanceof \Traversable) {
             throw new \Exception("Values have to be of type array");
@@ -63,6 +75,9 @@ class Exchange extends Schema\Entity
         $this->data[] = $values;
     }
 
+    /**
+     * @return static
+     */
     public function withLessData()
     {
         $entity = clone $this;
@@ -78,7 +93,10 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getPositionByName($name)
+    /**
+     * @psalm-param 'requestscount' $name
+     */
+    public function getPositionByName(string $name)
     {
         if (isset($this->dictionary)) {
             foreach ($this->dictionary as $entry) {
@@ -90,7 +108,7 @@ class Exchange extends Schema\Entity
         return false;
     }
 
-    public function withCalculatedTotals(array $keysToCalculate = ['count'], $dateName = 'name')
+    public function withCalculatedTotals(array $keysToCalculate = ['count'], $dateName = 'name'): static
     {
         $entity = clone $this;
         $namePosition = $this->getPositionByName($dateName);
@@ -112,7 +130,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withMaxByHour(array $keysToCalculate = ['count'])
+    public function withMaxByHour(array $keysToCalculate = ['count']): static
     {
         $entity = clone $this;
         $maxima = [];
@@ -131,7 +149,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withRequestsSum($keysToCalculate = ['requestscount'])
+    public function withRequestsSum($keysToCalculate = ['requestscount']): static
     {
         $entity = clone $this;
         $sum = [];
@@ -149,7 +167,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withAverage($keyToCalculate)
+    public function withAverage($keyToCalculate): static
     {
         $entity = clone $this;
         $average = [];
@@ -232,7 +250,7 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withMaxAndAverageFromWaitingTime()
+    public function withMaxAndAverageFromWaitingTime(): static
     {
         $entity = clone $this;
         foreach ($entity->data as $date => $dateItems) {
@@ -266,7 +284,7 @@ class Exchange extends Schema\Entity
         return null;
     }
 
-    public function toHashed(array $hashfields = [])
+    public function toHashed(array $hashfields = []): static
     {
         $entity = clone $this;
         $entity->data = $this->getHashData($hashfields);
@@ -274,7 +292,12 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function getHashData(array $hashfields = [], $first = false)
+    /**
+     * @return (array|mixed)[]|false
+     *
+     * @psalm-return array<array|mixed>|false
+     */
+    public function getHashData(array $hashfields = [], bool $first = false): array|false
     {
         $hash = [];
         foreach ($this->dictionary as $entry) {
@@ -293,7 +316,7 @@ class Exchange extends Schema\Entity
         return ($first) ? reset($hash) : $hash;
     }
 
-    public function toGrouped(array $fields, array $hashfields)
+    public function toGrouped(array $fields, array $hashfields): static
     {
         $entity = clone $this;
         $entity->data = $this->getGroupedHashSet($fields, $hashfields);

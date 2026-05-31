@@ -16,14 +16,19 @@ abstract class Base implements Options
     use PDOTrait;
     use OptionsTrait;
 
-    protected $fileAccess;
+    protected FileAccess $fileAccess;
 
-    protected $localeList = [
+    protected array $localeList = [
         'de',
         'en'
     ];
 
-    protected $importTypes = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{Services: 'Service', Locations: 'Location', Authorities: 'Authority', Topics: 'Topic', Settings: 'Setting'}
+     */
+    protected array $importTypes = [
         'Services' => 'Service',
         'Locations' => 'Location',
         'Authorities' => 'Authority',
@@ -38,7 +43,7 @@ abstract class Base implements Options
         $this->options = $options;
     }
 
-    public function setLocaleList(array $localeList = ['de', 'en'])
+    public function setLocaleList(array $localeList = ['de', 'en']): void
     {
         $this->localeList = $localeList;
     }
@@ -92,6 +97,9 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @return void
+     */
     public function clearDatabase()
     {
         try {
@@ -136,11 +144,7 @@ abstract class Base implements Options
         }
     }
 
-    /**
-     *
-     * @return self
-     */
-    protected function importSettings()
+    protected function importSettings(): void
     {
         try {
             $importer = $this->getSettingsImporter(
@@ -156,11 +160,7 @@ abstract class Base implements Options
         }
     }
 
-    /**
-     *
-     * @return self
-     */
-    protected function importTopics()
+    protected function importTopics(): void
     {
         try {
             $importer = $this->getTopicsImporter(
@@ -177,11 +177,7 @@ abstract class Base implements Options
         }
     }
 
-    /**
-     *
-     * @return self
-     */
-    protected function importAuthorities()
+    protected function importAuthorities(): void
     {
         try {
             $importer = $this->getAuthoritiesImporter(
@@ -198,10 +194,16 @@ abstract class Base implements Options
         }
     }
 
+    /**
+     * @return void
+     */
     public function preImport()
     {
     }
 
+    /**
+     * @return void
+     */
     public function postImport()
     {
     }

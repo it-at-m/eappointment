@@ -15,7 +15,12 @@ class FileUploader
 {
     public $imageData;
 
-    protected $allowedTypes = array('image/gif','image/jpeg','image/png','image/svg+xml');
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml'}
+     */
+    protected array $allowedTypes = array('image/gif','image/jpeg','image/png','image/svg+xml');
 
     protected $files = null;
 
@@ -23,7 +28,7 @@ class FileUploader
 
     protected $mediaType = '';
 
-    protected $request = null;
+    protected \Psr\Http\Message\RequestInterface|null $request = null;
 
     public function __construct(\Psr\Http\Message\RequestInterface $request, $imageName)
     {
@@ -31,7 +36,7 @@ class FileUploader
         $this->imageData = $this->createImage($imageName);
     }
 
-    public function writeUploadToScope($entityId)
+    public function writeUploadToScope($entityId): static
     {
         $this->imageData = \App::$http->readPostResult(
             '/scope/' . $entityId . '/imagedata/calldisplay/',
@@ -40,7 +45,7 @@ class FileUploader
         return $this;
     }
 
-    public function writeUploadToCluster($entityId)
+    public function writeUploadToCluster($entityId): static
     {
         $this->imageData = \App::$http->readPostResult(
             '/cluster/' . $entityId . '/imagedata/calldisplay/',
@@ -55,7 +60,7 @@ class FileUploader
         return (isset($files[$imageName])) ? $files[$imageName] : false;
     }
 
-    protected function createImage($imageName)
+    protected function createImage($imageName): Mimepart|null
     {
         $image = null;
         $this->uploadFile = $this->getUploadedFile($imageName);

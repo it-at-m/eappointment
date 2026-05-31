@@ -13,14 +13,13 @@ use BO\Zmsdb\Session;
 class SessionDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $session = (new Session())->readEntity($args['name'], $args['id']);
         if (! $session || ! (new Session())->deleteEntity($args['name'], $args['id'])) {
             throw new Exception\Session\SessionDeleteFailed();

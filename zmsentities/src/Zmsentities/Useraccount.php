@@ -13,8 +13,13 @@ class Useraccount extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "useraccount.json";
+    public static string $schema = "useraccount.json";
 
+    /**
+     * @return (Collection\DepartmentList|bool[])[]
+     *
+     * @psalm-return array{rights: array{availability: false, basic: true, cluster: false, department: false, organisation: false, scope: false, superuser: false, ticketprinter: false, useraccount: false}, permissions: array{appointment: false, availability: false, calldisplay: false, cherrypick: false, cluster: false, config: false, counter: false, customersearch: false, dayoff: false, department: false, emergency: false, finishedqueue: false, finishedqueuepast: false, logs: false, mailtemplates: false, missedqueue: false, openqueue: false, organisation: false, overviewcalendar: false, parkedqueue: false, restrictedscope: false, scope: false, source: false, statistic: false, ticketprinter: false, useraccount: false, waitingqueue: false, superuser: false}, departments: Collection\DepartmentList}
+     */
     public function getDefaults()
     {
         return [
@@ -63,7 +68,10 @@ class Useraccount extends Schema\Entity
         ];
     }
 
-    public function hasProperties()
+    /**
+     * @return true
+     */
+    public function hasProperties(): bool
     {
         foreach (func_get_args() as $property) {
             if (!$this->toProperty()->$property->get()) {
@@ -74,7 +82,7 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    public function getDepartmentList()
+    public function getDepartmentList(): Collection\DepartmentList
     {
         if (!$this->departments instanceof Collection\DepartmentList) {
             $this->departments = new Collection\DepartmentList($this->departments);
@@ -85,7 +93,7 @@ class Useraccount extends Schema\Entity
         return $this->departments;
     }
 
-    public function addDepartment($department)
+    public function addDepartment(Department $department): static
     {
         $this->departments[] = $department;
         return $this;
@@ -121,7 +129,7 @@ class Useraccount extends Schema\Entity
         return Helper\RightsLevelManager::getLevel($this->rights);
     }
 
-    public function setRights()
+    public function setRights(): static
     {
         $givenRights = func_get_args();
         foreach ($givenRights as $right) {
@@ -132,7 +140,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function setPermissions()
+    public function setPermissions(): static
     {
         $givenPermissions = func_get_args();
         foreach ($givenPermissions as $permission) {
@@ -252,7 +260,7 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    public function testRights(array $requiredRights)
+    public function testRights(array $requiredRights): static
     {
         if ($this->hasId()) {
             if (!$this->hasRights($requiredRights)) {
@@ -266,7 +274,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function testPermissions(array $requiredPermissions)
+    public function testPermissions(array $requiredPermissions): static
     {
         if (! $this->hasId()) {
             throw new Exception\UserAccountMissingLogin();
@@ -281,7 +289,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function testAnyPermission(array $requiredPermissions)
+    public function testAnyPermission(array $requiredPermissions): static
     {
         if (! $this->hasId()) {
             throw new Exception\UserAccountMissingLogin();
@@ -296,7 +304,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function isOveraged(\DateTimeInterface $dateTime)
+    public function isOveraged(\DateTimeInterface $dateTime): bool
     {
         if (Property::__keyExists('lastLogin', $this)) {
             $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
@@ -312,7 +320,7 @@ class Useraccount extends Schema\Entity
             ?? false;
     }
 
-    public function getDepartmentById($departmentId)
+    public function getDepartmentById($departmentId): Department
     {
         foreach ($this->departments as $department) {
             if ($departmentId == $department['id']) {
@@ -322,7 +330,7 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    public function getDepartmentByIds(array $departmentIds)
+    public function getDepartmentByIds(array $departmentIds): Department
     {
         foreach ($this->departments as $department) {
             if (in_array($department['id'], $departmentIds)) {
@@ -343,7 +351,7 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
-    public function setPassword($input)
+    public function setPassword($input): static
     {
         if (isset($input['password']) && '' != $input['password']) {
             $this->password = $input['password'];
@@ -357,7 +365,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withDepartmentList()
+    public function withDepartmentList(): static
     {
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
@@ -371,6 +379,9 @@ class Useraccount extends Schema\Entity
         return $entity;
     }
 
+    /**
+     * @return static
+     */
     public function withCleanedUpFormData($keepPassword = false)
     {
         unset($this['save']);
@@ -394,9 +405,9 @@ class Useraccount extends Schema\Entity
     /**
      * verify hashed password and create new if needs rehash
      *
-     * @return array $useraccount
-    */
-    public function setVerifiedHash($password)
+     * @return static $useraccount
+     */
+    public function setVerifiedHash($password): static
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
@@ -413,7 +424,7 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function withVerifiedHash($password)
+    public function withVerifiedHash($password): static
     {
         $useraccount = clone $this;
         if ($useraccount->isPasswordNeedingRehash()) {
@@ -422,7 +433,7 @@ class Useraccount extends Schema\Entity
         return $useraccount;
     }
 
-    public function isPasswordNeedingRehash()
+    public function isPasswordNeedingRehash(): bool
     {
         return password_needs_rehash($this->password, PASSWORD_DEFAULT);
     }
@@ -432,12 +443,15 @@ class Useraccount extends Schema\Entity
      *
      * @return string $hash
     */
-    public function getHash($string)
+    public function getHash(string $string)
     {
         $hash = password_hash($string, PASSWORD_DEFAULT);
         return $hash;
     }
 
+    /**
+     * @return static
+     */
     public function withLessData()
     {
         unset($this->departments);
@@ -464,9 +478,9 @@ class Useraccount extends Schema\Entity
     /**
      * get oidc provider from $entity id if it exists
      *
-     * @return string $entity
-    */
-    public function getOidcProviderFromName()
+     * @return null|string $entity
+     */
+    public function getOidcProviderFromName(): string|null
     {
         $providerName = '';
         if (($pos = strpos($this->id, "@")) !== false) {

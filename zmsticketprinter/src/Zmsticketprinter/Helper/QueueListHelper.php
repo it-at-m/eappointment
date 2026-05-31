@@ -18,7 +18,12 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['confirmed', 'queued', 'reserved', 'fake'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'confirmed', 'queued', 'reserved', 'fake'}
+     */
+    protected static array $status = ['confirmed', 'queued', 'reserved', 'fake'];
 
     public function __construct(\BO\Zmsentities\Scope $scope, \BO\Zmsentities\Process $process = null)
     {
@@ -47,7 +52,7 @@ class QueueListHelper
         return (static::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    protected static function createFullList($scope)
+    protected static function createFullList(\BO\Zmsentities\Scope $scope)
     {
         $fullList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/queue/')
@@ -55,7 +60,7 @@ class QueueListHelper
         return ($fullList) ? $fullList : new QueueList();
     }
 
-    protected static function createQueueList($process)
+    protected static function createQueueList(\BO\Zmsentities\Process|null $process): QueueList
     {
         $queueList = new QueueList();
         if (static::$fullList->count()) {

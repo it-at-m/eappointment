@@ -14,14 +14,13 @@ use BO\Zmsdb\Apikey as Query;
 class ApikeyGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $entity = (new Query())->readEntity($args['key']);
         if (! $entity->hasId()) {
             throw new Exception\Apikey\ApiKeyNotFound();

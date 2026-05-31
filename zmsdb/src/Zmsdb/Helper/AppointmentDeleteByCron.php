@@ -9,12 +9,15 @@ class AppointmentDeleteByCron
 {
     use VerboseCronLogTrait;
 
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     protected $limit = 10000;
 
     protected $loopCount = 500;
 
+    /**
+     * @var \DateTimeImmutable
+     */
     protected $time;
 
     protected $statuslist = [
@@ -30,7 +33,12 @@ class AppointmentDeleteByCron
         "processing",
     ];
 
-    protected $archivelist = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'confirmed', 'queued', 'called', 'missed', 'parked', 'processing', 'pending'}
+     */
+    protected array $archivelist = [
         "confirmed",
         "queued",
         "called",
@@ -53,7 +61,7 @@ class AppointmentDeleteByCron
         }
     }
 
-    protected function log($message, string $level = 'info')
+    protected function log(string $message, string $level = 'info'): void
     {
         $this->writeVerboseCronLog($message, $level);
     }
@@ -63,17 +71,17 @@ class AppointmentDeleteByCron
         return $this->count;
     }
 
-    public function setLimit($limit)
+    public function setLimit($limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount)
+    public function setLoopCount($loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit, $pending = false)
+    public function startProcessing($commit, $pending = false): void
     {
         if ($pending) {
             $this->statuslist[] = "pending";
@@ -84,7 +92,7 @@ class AppointmentDeleteByCron
         $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
-    protected function deleteExpiredProcesses($commit)
+    protected function deleteExpiredProcesses($commit): void
     {
         foreach ($this->statuslist as $status) {
             $this->log("\nDelete expired processes with status $status:");
@@ -97,7 +105,7 @@ class AppointmentDeleteByCron
         }
     }
 
-    protected function deleteBlockedProcesses($commit)
+    protected function deleteBlockedProcesses($commit): void
     {
         $this->log("\nDelete blocked processes in the future:");
         $count = $this->deleteByCallback($commit, function ($limit, $offset) {
@@ -108,7 +116,10 @@ class AppointmentDeleteByCron
         $this->count["blocked"] += $count;
     }
 
-    protected function deleteByCallback($commit, \Closure $callback)
+    /**
+     * @psalm-return int<0, max>
+     */
+    protected function deleteByCallback($commit, \Closure $callback): int
     {
         $processCount = 0;
         $startposition = 0;
@@ -127,7 +138,7 @@ class AppointmentDeleteByCron
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit, $processCount)
+    protected function removeProcess(\BO\Zmsentities\Process $process, $commit, int $processCount): int
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statuslist)) {
@@ -149,7 +160,7 @@ class AppointmentDeleteByCron
         return 0;
     }
 
-    protected function updateProcessStatus(\BO\Zmsentities\Process $process)
+    protected function updateProcessStatus(\BO\Zmsentities\Process $process): \BO\Zmsentities\Process
     {
         if (in_array($process->status, ["confirmed", "queued", "called"])) {
             $process->status = 'missed';
@@ -157,7 +168,7 @@ class AppointmentDeleteByCron
         return $process;
     }
 
-    protected function archiveProcess(\BO\Zmsentities\Process $process)
+    protected function archiveProcess(\BO\Zmsentities\Process $process): void
     {
         $verbose = $this->verbose;
         $now = new \DateTimeImmutable();
@@ -169,7 +180,7 @@ class AppointmentDeleteByCron
         }
     }
 
-    protected function deleteProcess(\BO\Zmsentities\Process $process)
+    protected function deleteProcess(\BO\Zmsentities\Process $process): void
     {
         $verbose = $this->verbose;
         $query = new \BO\Zmsdb\Process();

@@ -91,7 +91,7 @@ class Process extends Base implements MappingInterface
         WHERE istFolgeterminvon = :processID
         ";
 
-    public function getQueryNewProcessId()
+    public function getQueryNewProcessId(): string
     {
         $random = rand(20, 999);
         return 'SELECT pseq.processId AS `nextid`
@@ -104,12 +104,12 @@ class Process extends Base implements MappingInterface
             FOR UPDATE';
     }
 
-    public function getLockProcessId()
+    public function getLockProcessId(): string
     {
         return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId FOR UPDATE';
     }
 
-    public function getLockAssignedWorkstationId()
+    public function getLockAssignedWorkstationId(): string
     {
         return 'SELECT p.`NutzerID`
             FROM `' . self::getTablename() . '` p
@@ -135,7 +135,7 @@ class Process extends Base implements MappingInterface
     /**
      * Add Availability to the dataset
      */
-    protected function addJoinAvailability()
+    protected function addJoinAvailability(): Availability
     {
         $this->leftJoin(
             new Alias(Availability::TABLE, 'availability'),
@@ -148,7 +148,7 @@ class Process extends Base implements MappingInterface
     /**
      * Add Scope to the dataset
      */
-    protected function addJoinScope()
+    protected function addJoinScope(): Scope
     {
         $this->leftJoin(
             new Alias(Scope::TABLE, 'scope'),
@@ -165,19 +165,19 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
-    public function addConditionDate($date)
+    public function addConditionDate($date): static
     {
         $this->query->where('process.Datum', '=', $date);
         return $this;
     }
 
-    public function addConditionDisplayNumber($displayNumber)
+    public function addConditionDisplayNumber($displayNumber): static
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;
     }
 
-    protected function calculateStatus()
+    protected function calculateStatus(): string|null
     {
         if ($this->query->value('Name') === '(abgesagt)') {
             return 'deleted';
@@ -250,6 +250,11 @@ class Process extends Base implements MappingInterface
         return null;
     }
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array<string, Builder\Expression|string>
+     */
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -350,7 +355,7 @@ class Process extends Base implements MappingInterface
         ], 'strlen');
     }
 
-    public function addCountValue()
+    public function addCountValue(): static
     {
         $this->query->select([
             'processCount' => self::expression('COUNT(*)'),
@@ -358,7 +363,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionHasTelephone()
+    public function addConditionHasTelephone(): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
@@ -368,7 +373,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate)
+    public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith(
@@ -383,7 +388,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
+    public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith('process.IPTimeStamp', '<=', $expirationDate->getTimestamp());
@@ -392,7 +397,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
+    public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($dateTime) {
             $query
@@ -407,7 +412,7 @@ class Process extends Base implements MappingInterface
         \DateTimeInterface $now,
         \DateTimeInterface $lastRun,
         $defaultReminderInMinutes
-    ) {
+    ): static {
         $this->query
             ->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
                 $query
@@ -454,7 +459,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId(int $processId): static
     {
         $this->query->where('process.BuergerID', '=', $processId);
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
@@ -465,7 +470,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessIdFollow($processId)
+    public function addConditionProcessIdFollow($processId): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($processId) {
             $condition
@@ -475,7 +480,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionIgnoreSlots()
+    public function addConditionIgnoreSlots(): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
@@ -485,7 +490,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId(int $scopeId): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($scopeId) {
             $query
@@ -515,7 +520,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
+    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000): static
     {
         ($queueLimit > $queueNumber)
             ? $this->query->where('process.wartenummer', '=', $queueNumber)
@@ -523,7 +528,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId)
+    public function addConditionWorkstationId($workstationId): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($workstationId) {
             $query->andWith('process.NutzerID', '=', $workstationId);
@@ -532,7 +537,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionTime($dateTime)
+    public function addConditionTime(\DateTimeInterface|null $dateTime): static
     {
         $this->query->where('process.Datum', '=', $dateTime->format('Y-m-d'));
         return $this;
@@ -541,7 +546,7 @@ class Process extends Base implements MappingInterface
     /**
      * Identify processes between two dates
      */
-    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
@@ -551,26 +556,29 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionAuthKey($authKey)
+    public function addConditionAuthKey($authKey): static
     {
         $authKey = urldecode($authKey);
         $this->query->where('process.absagecode', '=', $authKey);
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function addConditionAssigned()
     {
         $this->query->where('process.StandortID', '!=', "0");
         return $this;
     }
 
-    public function addConditionStatus($status)
+    public function addConditionStatus(string $status): static
     {
         $this->query->where('process.status', '=', $status);
         return $this;
     }
 
-    public function addConditionIsReserved()
+    public function addConditionIsReserved(): static
     {
         $this->query->where('process.name', 'NOT IN', array(
             'dereferenced',
@@ -586,9 +594,9 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionSearch($queryString, $orWhere = false)
+    public function addConditionSearch($queryString, bool $orWhere = false): static
     {
-        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString): void {
             $queryString = trim($queryString);
             $query->orWith('process.Name', 'LIKE', "%$queryString%");
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
@@ -604,7 +612,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionName($name, $exactMatching = false)
+    public function addConditionName($name, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($name) {
@@ -618,7 +626,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionMail($mailAddress, $exactMatching = false)
+    public function addConditionMail($mailAddress, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($mailAddress) {
@@ -632,7 +640,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionCustomTextfield($customText, $exactMatching = false)
+    public function addConditionCustomTextfield($customText, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText) {
@@ -646,7 +654,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionCustomTextfield2($customText2, $exactMatching = false)
+    public function addConditionCustomTextfield2($customText2, $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
@@ -660,7 +668,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionAmendment($amendment)
+    public function addConditionAmendment($amendment): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($amendment) {
             $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
@@ -671,7 +679,7 @@ class Process extends Base implements MappingInterface
     /**
      * Add Requests Join
      */
-    public function addConditionRequestId($requestId)
+    public function addConditionRequestId($requestId): static
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
@@ -686,7 +694,7 @@ class Process extends Base implements MappingInterface
     /**
      * add condition to get process if deallocation time < now
      */
-    public function addConditionDeallocate($now)
+    public function addConditionDeallocate($now): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($now) {
             $query
@@ -697,7 +705,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0)
+    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0): void
     {
         $values = [
             'BuergerID' => $process->id,
@@ -719,7 +727,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($values);
     }
 
-    public function getNewDisplayNumber($process)
+    public function getNewDisplayNumber(ProcessEntity $process)
     {
         if (empty($process->scope->getPreference('queue', 'displayNumberPrefix'))) {
             return $process->id;
@@ -745,7 +753,7 @@ class Process extends Base implements MappingInterface
         return $newDisplayNumber;
     }
 
-    public function checkIfDisplayNumberOnSameDateExists($scopeId, $displayNumber, $date): bool
+    public function checkIfDisplayNumberOnSameDateExists($scopeId, string $displayNumber, \DateTime|false $date): bool
     {
         $processWithDisplayNumber = (new \BO\Zmsdb\Process())->readProcessWithSameDayAndDisplayNumber(
             $scopeId,
@@ -759,9 +767,9 @@ class Process extends Base implements MappingInterface
     public function addValuesUpdateProcess(
         ProcessEntity $process,
         \DateTimeInterface $dateTime,
-        $parentProcess = 0,
+        int $parentProcess = 0,
         $previousStatus = null
-    ) {
+    ): void {
         $this->addValuesIPAdress($process);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
@@ -779,14 +787,14 @@ class Process extends Base implements MappingInterface
         $this->addValuesExternalUserId($process);
     }
 
-    public function addValuesIPAdress(ProcessEntity $process)
+    public function addValuesIPAdress(ProcessEntity $process): void
     {
         $data = array();
         $data['IPAdresse'] = $process->createIP;
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData($process, $parentProcess)
+    public function addValuesFollowingProcessData(ProcessEntity $process, $parentProcess): void
     {
         $data = array();
         if (0 === $parentProcess) {
@@ -801,7 +809,7 @@ class Process extends Base implements MappingInterface
 
     public function addValuesAppointmentData(
         ProcessEntity $process
-    ) {
+    ): void {
         $data = array();
         $appointment = $process->getFirstAppointment();
         if (null !== $appointment) {
@@ -814,13 +822,13 @@ class Process extends Base implements MappingInterface
 
     public function addValuesScopeData(
         ProcessEntity $process
-    ) {
+    ): void {
         $data = array();
         $data['StandortID'] = $process->getScopeId();
         $this->addValues($data);
     }
 
-    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime)
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime): void
     {
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
@@ -863,7 +871,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesClientData($process)
+    protected function addValuesClientData(ProcessEntity $process): void
     {
         $data = array();
         $client = $process->getFirstClient();
@@ -889,13 +897,13 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    public function addValueDisplayNumber($process)
+    public function addValueDisplayNumber(ProcessEntity $process): void
     {
         $data['displayNumber'] = $process->displayNumber;
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
+    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
     {
         $data = array();
         $timeoutTime = null;
@@ -976,7 +984,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesQueueData($process)
+    protected function addValuesQueueData(ProcessEntity $process): void
     {
         $data = array();
         $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
@@ -1003,7 +1011,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null)
+    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null): void
     {
         $data = array();
         $hasWaitingTimeAlready = (
@@ -1060,7 +1068,7 @@ class Process extends Base implements MappingInterface
     }
 
 
-    protected function addValuesWayTimeData(ProcessEntity $process)
+    protected function addValuesWayTimeData(ProcessEntity $process): void
     {
         $data = array();
         if ($process->status == 'processing') {
@@ -1073,7 +1081,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesWasMissed($process)
+    protected function addValuesWasMissed(ProcessEntity $process): static
     {
         $data = [
             'wasMissed' => $process->wasMissed ? 1 : 0,
@@ -1083,7 +1091,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    protected function addValuesPriority($process)
+    protected function addValuesPriority(ProcessEntity $process): static
     {
         $data = [
             'priority' => $process->priority,
@@ -1093,7 +1101,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    protected function addValuesExternalUserId($process)
+    protected function addValuesExternalUserId(ProcessEntity $process): static
     {
         $data = [
             'external_user_id' => $process->externalUserId,
@@ -1147,12 +1155,15 @@ class Process extends Base implements MappingInterface
         return $data;
     }
 
-    public function removeDuplicates()
+    public function removeDuplicates(): static
     {
         $this->query->groupBy('process.BuergerID');
         return $this;
     }
 
+    /**
+     * @return void
+     */
     protected function addRequiredJoins()
     {
         if ($this->shouldLoadEntity('processuser')) {
@@ -1174,7 +1185,7 @@ class Process extends Base implements MappingInterface
         }
     }
 
-    public function addConditionExternalUserId(string $externalUserId)
+    public function addConditionExternalUserId(string $externalUserId): static
     {
         $this->query->where('process.external_user_id', '=', $externalUserId);
         return $this;

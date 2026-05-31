@@ -16,14 +16,13 @@ use BO\Zmsentities\Collection\QueueList;
 class ProcessListByScopeAndDate extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));

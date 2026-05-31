@@ -20,7 +20,12 @@ class OwnerList extends Base
         return $organisationList->sortByName();
     }
 
-    public function toDepartmentListByOrganisationName()
+    /**
+     * @return array[]
+     *
+     * @psalm-return array<array>
+     */
+    public function toDepartmentListByOrganisationName(): array
     {
         $list = array();
         foreach ($this as $entity) {
@@ -32,7 +37,7 @@ class OwnerList extends Base
         return $list;
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $owner) {

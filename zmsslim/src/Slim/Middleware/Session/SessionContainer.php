@@ -8,29 +8,45 @@ class SessionContainer implements SessionInterface
 
     private $sessionLoader;
 
-    public static function fromContainer(callable $sessionLoader)
+    public static function fromContainer(callable $sessionLoader): static
     {
         $instance = new static();
         $instance->sessionLoader = $sessionLoader;
         return $instance;
     }
 
+    /**
+     * @return void
+     */
     public function setGroup(array $group, $clear = false)
     {
         $this->getSession()->setGroup($group, $clear);
     }
 
-    public function writeData()
+    public function writeData(): void
     {
         $this->getSession()->writeData();
     }
 
-    public function set($key, $value, $index = null)
+    /**
+     * @param null|string $index
+     *
+     * @psalm-param array|int<0, max> $value
+     * @psalm-param 'human'|null $index
+     *
+     * @return void
+     */
+    public function set(string $key, array|int $value, string|null $index = null)
     {
         $this->getSession()->set($key, $value, $index);
     }
 
-    public function get($key, $index = null, $default = null)
+    /**
+     * @param null|string $index
+     *
+     * @psalm-param 'human'|null $index
+     */
+    public function get(string $key, string|null $index = null, $default = null)
     {
         return $this->getSession()->get($key, $index, $default);
     }
@@ -40,27 +56,41 @@ class SessionContainer implements SessionInterface
         return $this->getSession()->getEntity();
     }
 
+    /**
+     * @return void
+     */
     public function remove($key, $groupIndex = null)
     {
         $this->getSession()->remove($key, $groupIndex);
     }
 
+    /**
+     * @return void
+     */
     public function clear()
     {
         $this->getSession()->clear();
     }
 
-    public function restart()
+    public function restart(): void
     {
         $this->getSession()->restart();
     }
 
+    /**
+     * @return void
+     */
     public function clearGroup($groupIndex = null)
     {
         $this->getSession()->clearGroup($groupIndex);
     }
 
-    public function has($key, $groupIndex = null)
+    /**
+     * @param null|string $groupIndex
+     *
+     * @psalm-param 'human'|null $groupIndex
+     */
+    public function has(string $key, string|null $groupIndex = null)
     {
         return $this->getSession()->has($key, $groupIndex);
     }

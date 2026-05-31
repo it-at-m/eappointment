@@ -102,7 +102,7 @@ class Select
      */
     protected static $useQueryCache = true;
 
-    protected static function sanitizeStackTrace($trace)
+    protected static function sanitizeStackTrace(string $trace)
     {
         return Sanitizer::sanitizeStackTrace($trace);
     }
@@ -140,7 +140,7 @@ class Select
      *
      * @param PdoInterface $connection
      */
-    public static function setReadConnection(PdoInterface $connection)
+    public static function setReadConnection(PdoInterface $connection): void
     {
         self::$readConnection = $connection;
     }
@@ -174,18 +174,16 @@ class Select
 
     /**
      * Test if a read connection is established
-     *
      */
-    public static function hasReadConnection()
+    public static function hasReadConnection(): bool
     {
         return (null === self::$readConnection) ? false : true;
     }
 
     /**
      * Close a connection for reading data
-     *
      */
-    public static function closeReadConnection()
+    public static function closeReadConnection(): void
     {
         self::$readConnection = null;
     }
@@ -194,10 +192,9 @@ class Select
      * Set the write connection.
      * Usually this function is only required to set mockups for testing
      *
-     * @param  PdoInterface $connection
-     * @return self
+     * @param PdoInterface $connection
      */
-    public static function setWriteConnection(PdoInterface $connection)
+    public static function setWriteConnection(PdoInterface $connection): void
     {
         self::$writeConnection = $connection;
     }
@@ -244,18 +241,16 @@ class Select
 
     /**
      * Test if a write connection is established
-     *
      */
-    public static function hasWriteConnection()
+    public static function hasWriteConnection(): bool
     {
         return (null === self::$writeConnection) ? false : true;
     }
 
     /**
      * Close a connection for writing data
-     *
      */
-    public static function closeWriteConnection()
+    public static function closeWriteConnection(): void
     {
         self::$writeConnection = null;
     }
@@ -264,9 +259,8 @@ class Select
      * Set query cache
      *
      * @param Bool $useQueryCache
-     *
      */
-    public static function setQueryCache($useQueryCache = true)
+    public static function setQueryCache($useQueryCache = true): void
     {
         static::$useQueryCache = $useQueryCache;
     }
@@ -275,18 +269,18 @@ class Select
      * Set profiling
      *
      * @param Bool $useProfiling
-     *
      */
-    public static function setProfiling($useProfiling = true)
+    public static function setProfiling($useProfiling = true): void
     {
         static::$useProfiling = $useProfiling;
     }
 
     /**
      * Set cluster wide causality checks, needed for critical reads across different nodes
+     *
      * @param Bool $wsrepStatus Set to true for critical reads
      */
-    public static function setCriticalReadSession($wsrepStatus = true)
+    public static function setCriticalReadSession($wsrepStatus = true): void
     {
         static::$enableWsrepSyncWait = $wsrepStatus;
         static::getWriteConnection();
@@ -296,9 +290,8 @@ class Select
      * Set transaction
      *
      * @param Bool $useTransaction
-     *
      */
-    public static function setTransaction($useTransaction = true)
+    public static function setTransaction($useTransaction = true): void
     {
         static::$useTransaction = $useTransaction;
     }
@@ -329,7 +322,7 @@ class Select
         return null;
     }
 
-    public static function writeCommitWithStartLock()
+    public static function writeCommitWithStartLock(): bool
     {
         return self::writeCommit() && (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastRun', true);
     }

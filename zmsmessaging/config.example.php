@@ -40,7 +40,7 @@ class App extends \BO\Zmsmessaging\Application
      */
     const MODULE_NAME = ZMS_MODULE_NAME;
 
-    public static $httpUser = '_system_messenger';
+    public static string $httpUser = '_system_messenger';
 
     public static $httpPassword = ZMS_API_PASSWORD_MESSAGING;
 

@@ -13,14 +13,11 @@ use BO\Zmsdb\Owner as Query;
 
 class OwnerUpdate extends BaseController
 {
-    /**
-     * @return String
-     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('organisation');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);

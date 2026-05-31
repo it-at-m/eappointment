@@ -6,8 +6,13 @@ class Mimepart extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "mimepart.json";
+    public static string $schema = "mimepart.json";
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{mime: '', content: ''}
+     */
     public function getDefaults()
     {
         return [
@@ -16,22 +21,22 @@ class Mimepart extends Schema\Entity
             ];
     }
 
-    public function isBase64Encoded()
+    public function isBase64Encoded(): bool
     {
         return ($this->base64) ? true : false;
     }
 
-    public function isHtml()
+    public function isHtml(): bool
     {
         return ($this->mime == 'text/html') ? true : false;
     }
 
-    public function isText()
+    public function isText(): bool
     {
         return ($this->mime == 'text/plain') ? true : false;
     }
 
-    public function isIcs()
+    public function isIcs(): bool
     {
         return ($this->mime == 'text/calendar') ? true : false;
     }
@@ -41,7 +46,12 @@ class Mimepart extends Schema\Entity
         return ($this->isBase64Encoded()) ? \base64_decode($this->content) : $this->content;
     }
 
-    public function getExtension()
+    /**
+     * @return null|string|string[]
+     *
+     * @psalm-return array<string>|null|string
+     */
+    public function getExtension(): array|string|null
     {
         return preg_replace('#^.*/#', '', $this->mime);
     }

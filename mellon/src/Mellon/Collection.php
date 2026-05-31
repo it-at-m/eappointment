@@ -86,7 +86,7 @@ class Collection
     }
 
 
-    public function addValid(Valid ...$validList)
+    public function addValid(Valid ...$validList): void
     {
         foreach ($validList as $valid) {
             $this->validatorList[$valid->getName()] = $valid;

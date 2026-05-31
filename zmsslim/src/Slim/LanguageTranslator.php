@@ -14,7 +14,12 @@ class LanguageTranslator
 
     protected $defaultLang;
 
-    protected $loaderTypes = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{pofile: 'setPoFileLoader', json: 'setJsonFileLoader'}
+     */
+    protected array $loaderTypes = [
         'pofile' => 'setPoFileLoader',
         'json' => 'setJsonFileLoader'
     ];
@@ -40,7 +45,7 @@ class LanguageTranslator
         return $this->translator;
     }
 
-    protected function setJsonFileLoader()
+    protected function setJsonFileLoader(): void
     {
         $this->translator->addLoader('json', new JsonFileLoader());
         foreach (\App::$supportedLanguages as $language) {
@@ -52,7 +57,7 @@ class LanguageTranslator
         }
     }
 
-    protected function setPoFileLoader()
+    protected function setPoFileLoader(): void
     {
         $this->translator->addLoader('pofile', new PoFileLoader());
         foreach (\App::$supportedLanguages as $locale => $language) {

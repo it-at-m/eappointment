@@ -13,14 +13,13 @@ use BO\Zmsdb\Process;
 class ProcessListByExternalUserId extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 2))->checkPermissions();
         $externalUserId = $args['externalUserId']; // present and validated because of URL argument
         $status = Validator::param('status')->isString()->setDefault(null)->getValue();

@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class ApiclientInvalid extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = 'Invalid ApiClientKey';
+    protected string $message = 'Invalid ApiClientKey';
 }

@@ -13,14 +13,13 @@ use BO\Zmsdb\Process;
 class WorkstationProcessGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request))->checkPermissions();
         $query = new Process();
         $processId = $args['id'];
@@ -46,6 +45,9 @@ class WorkstationProcessGet extends BaseController
         return $response;
     }
 
+    /**
+     * @return void
+     */
     protected function validateProcessStatus($process)
     {
         $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'called', 'processing'];

@@ -15,7 +15,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         \DateTimeInterface $dateTime,
         $resolveReferences,
         $userAccount
-    ) {
+    ): \BO\Zmsentities\Process|null {
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);

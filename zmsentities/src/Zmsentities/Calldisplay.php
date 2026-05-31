@@ -8,8 +8,13 @@ class Calldisplay extends Schema\Entity
 {
     public const PRIMARY = 'serverTime';
 
-    public static $schema = "calldisplay.json";
+    public static string $schema = "calldisplay.json";
 
+    /**
+     * @return (Collection\ClusterList|Collection\ScopeList|Organisation|int)[]
+     *
+     * @psalm-return array{serverTime: int, clusters: Collection\ClusterList, scopes: Collection\ScopeList, organisation: Organisation}
+     */
     public function getDefaults()
     {
         return [
@@ -20,7 +25,7 @@ class Calldisplay extends Schema\Entity
         ];
     }
 
-    public function withResolvedCollections($input)
+    public function withResolvedCollections($input): static
     {
         $input =  (is_object($input)) ? $input->getArrayCopy() : $input;
         if (Property::__keyExists('scopelist', $input)) {
@@ -32,17 +37,17 @@ class Calldisplay extends Schema\Entity
         return $this;
     }
 
-    public function hasScopeList()
+    public function hasScopeList(): bool
     {
         return (0 < $this->getScopeList()->count());
     }
 
-    public function hasClusterList()
+    public function hasClusterList(): bool
     {
         return (0 < $this->getClusterList()->count());
     }
 
-    public function setServerTime($timestamp)
+    public function setServerTime($timestamp): static
     {
         $this->serverTime = $timestamp;
         return $this;
@@ -64,7 +69,7 @@ class Calldisplay extends Schema\Entity
         return $scopeList;
     }
 
-    public function getScopeList()
+    public function getScopeList(): Collection\ScopeList
     {
         if (!$this->scopes instanceof Collection\ScopeList) {
             $scopeList = new Collection\ScopeList();
@@ -76,7 +81,7 @@ class Calldisplay extends Schema\Entity
         return $this->scopes;
     }
 
-    public function getClusterList()
+    public function getClusterList(): Collection\ClusterList
     {
         if (!$this->clusters instanceof Collection\ClusterList) {
             $clusterList = new Collection\ClusterList();
@@ -88,7 +93,7 @@ class Calldisplay extends Schema\Entity
         return $this->clusters;
     }
 
-    public function getImageName()
+    public function getImageName(): string
     {
         $name = '';
         if (1 == $this->getScopeList()->count()) {
@@ -99,7 +104,7 @@ class Calldisplay extends Schema\Entity
         return $name;
     }
 
-    public function withOutClusterDuplicates()
+    public function withOutClusterDuplicates(): self
     {
         $calldisplay = new self($this);
         if ($calldisplay->hasClusterList() && $calldisplay->hasScopeList()) {
@@ -124,7 +129,7 @@ class Calldisplay extends Schema\Entity
         return $calldisplay;
     }
 
-    protected function getScopeListFromCsv($scopeIds = '')
+    protected function getScopeListFromCsv($scopeIds = ''): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         $scopeIds = explode(',', $scopeIds);
@@ -137,7 +142,7 @@ class Calldisplay extends Schema\Entity
         return $scopeList;
     }
 
-    protected function getClusterListFromCsv($clusterIds = '')
+    protected function getClusterListFromCsv($clusterIds = ''): Collection\ClusterList
     {
         $clusterList = new Collection\ClusterList();
         $clusterIds = explode(',', $clusterIds);

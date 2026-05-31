@@ -6,7 +6,7 @@ use BO\Zmsentities\Schema\Entity;
 
 class Delegate
 {
-    protected $entity;
+    protected Entity $entity;
 
     public function __construct(Entity $entity)
     {

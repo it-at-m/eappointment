@@ -18,11 +18,26 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'}
+     */
+    protected static array $status = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'];
 
-    protected static $missedStatus = ['missed'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'missed'}
+     */
+    protected static array $missedStatus = ['missed'];
 
-    protected static $parkedStatus = ['parked'];
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'parked'}
+     */
+    protected static array $parkedStatus = ['parked'];
 
     public function __construct(ClusterHelper $clusterHelper, $selectedDate)
     {
@@ -70,7 +85,7 @@ class QueueListHelper
         return (self::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    protected static function createFullList($clusterHelper, $dateTime)
+    protected static function createFullList(ClusterHelper $clusterHelper, \DateTimeImmutable|false $dateTime)
     {
         $fullList = $clusterHelper->getProcessList($dateTime->format('Y-m-d'));
         return ($fullList->count()) ? $fullList->toQueueList($dateTime) : new QueueList();

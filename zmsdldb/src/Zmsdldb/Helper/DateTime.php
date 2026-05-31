@@ -4,12 +4,15 @@ namespace BO\Zmsdldb\Helper;
 
 class DateTime extends \DateTimeImmutable
 {
+    /**
+     * @return false|string
+     */
     public static function getFormatedDates(
-        $timestamp,
-        $pattern = 'MMMM',
+        \DateTimeImmutable $timestamp,
+        string $pattern = 'MMMM',
         $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
-    ) {
+    ): string|false {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
             \IntlDateFormatter::MEDIUM,

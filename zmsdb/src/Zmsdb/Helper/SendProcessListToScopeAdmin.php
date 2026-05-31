@@ -11,7 +11,7 @@ class SendProcessListToScopeAdmin
 
     protected $datetime;
 
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     public function __construct($verbose = false, $scopeId = false)
     {
@@ -28,7 +28,7 @@ class SendProcessListToScopeAdmin
         }
     }
 
-    public function startProcessing($commit)
+    public function startProcessing($commit): void
     {
         foreach ($this->scopeList as $scope) {
             if ($this->verbose) {
@@ -55,7 +55,7 @@ class SendProcessListToScopeAdmin
         }
     }
 
-    protected function sendListToQueue($scope, $processList)
+    protected function sendListToQueue($scope, \BO\Zmsentities\Collection\ProcessList $processList): void
     {
         $entity = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $this->dateTime);
         if (! (new \BO\Zmsdb\Mail())->writeInQueueWithDailyProcessList($scope, $entity)) {

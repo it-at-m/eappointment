@@ -13,14 +13,13 @@ use BO\Zmsdb\Department as Query;
 class DepartmentDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $query = new Query();
         (new Helper\User($request, 2))->checkRights('department');
         $department = Helper\User::checkDepartment($args['id']);

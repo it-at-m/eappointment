@@ -16,14 +16,13 @@ use BO\Zmsdb\Owner as Query;
 class OwnerDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('organisation');
         $query = new Query();
         $owner = $query->readEntity($args['id'], 2);

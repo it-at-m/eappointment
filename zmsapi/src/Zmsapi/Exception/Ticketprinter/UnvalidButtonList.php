@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Ticketprinter;
  */
 class UnvalidButtonList extends \Exception
 {
-    protected $code = 428;
+    protected int $code = 428;
 
-    protected $message = "One or more scopes or clusters in buttonlist does not match with organisation";
+    protected string $message = "One or more scopes or clusters in buttonlist does not match with organisation";
 }

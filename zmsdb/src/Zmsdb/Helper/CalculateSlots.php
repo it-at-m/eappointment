@@ -9,6 +9,9 @@ class CalculateSlots
 {
     protected $verbose = false;
 
+    /**
+     * @var float
+     */
     protected $startTime;
 
     protected $logList = [];
@@ -19,7 +22,7 @@ class CalculateSlots
         $this->startTime = microtime(true);
     }
 
-    public function log($message)
+    public function log(string $message): static
     {
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
@@ -35,7 +38,7 @@ class CalculateSlots
         return $this;
     }
 
-    public function dumpLogs()
+    public function dumpLogs(): void
     {
         foreach ($this->logList as $text) {
             if (!$this->verbose) {
@@ -45,7 +48,7 @@ class CalculateSlots
         $this->verbose = true;
     }
 
-    public function getSpendTime()
+    public function getSpendTime(): float
     {
         $time = round(microtime(true) - $this->startTime, 3);
         return $time;
@@ -92,7 +95,7 @@ class CalculateSlots
     }
 
 
-    public function writeCalculations(\DateTimeInterface $now, $daily = false)
+    public function writeCalculations(\DateTimeInterface $now, $daily = false): bool
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -145,7 +148,7 @@ class CalculateSlots
         return true;
     }
 
-    protected function writeCalculatedScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
+    protected function writeCalculatedScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now): bool
     {
         $slotQuery = new \BO\Zmsdb\Slot();
         $updatedList = $slotQuery->writeByScope($scope, $now);
@@ -161,7 +164,7 @@ class CalculateSlots
         return false;
     }
 
-    public function writePostProcessingByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
+    public function writePostProcessingByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now): void
     {
         $slotQuery = new \BO\Zmsdb\Slot();
         if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
@@ -176,7 +179,7 @@ class CalculateSlots
         }
     }
 
-    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+5 minutes')
+    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+5 minutes'): bool
     {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $slotQuery = new \BO\Zmsdb\Slot();
@@ -188,7 +191,7 @@ class CalculateSlots
         return false;
     }
 
-    public function deleteOldSlots(\DateTimeInterface $now)
+    public function deleteOldSlots(\DateTimeInterface $now): void
     {
         $this->log("Maintenance: Delete slots older than " . $now->format('Y-m-d'));
         $slotQuery = new \BO\Zmsdb\Slot();

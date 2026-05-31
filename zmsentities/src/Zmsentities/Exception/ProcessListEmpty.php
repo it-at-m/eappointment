@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Exception;
 
 class ProcessListEmpty extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'There is no process available to resolve the Mail entity.';
+    protected string $message = 'There is no process available to resolve the Mail entity.';
 }

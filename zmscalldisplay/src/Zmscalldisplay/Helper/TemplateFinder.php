@@ -40,8 +40,8 @@ class TemplateFinder
      * department preferred before cluster
      *
      * @param \BO\Zmsentities\Calldisplay $calldisplay
-     **/
-    public function setCustomizedTemplate($calldisplay)
+     */
+    public function setCustomizedTemplate($calldisplay): static
     {
         $template = null;
         if ($this->defaultTemplate == 'defaultplatz') {
@@ -109,7 +109,7 @@ class TemplateFinder
     /**
      * @todo check against ISO definition
      */
-    public function getTemplatePath()
+    public function getTemplatePath(): string
     {
         return realpath(__DIR__) . '/../../../templates';
     }

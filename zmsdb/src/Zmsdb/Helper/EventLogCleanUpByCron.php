@@ -12,7 +12,7 @@ use BO\Zmsdb\EventLog as EventLogRepository;
 
 class EventLogCleanUpByCron
 {
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     public function __construct($verbose = false)
     {
@@ -22,14 +22,14 @@ class EventLogCleanUpByCron
         }
     }
 
-    protected function log($message)
+    protected function log(string $message): void
     {
         if ($this->verbose) {
             \App::$log->info($message);
         }
     }
 
-    public static function startProcessing($commit = false)
+    public static function startProcessing($commit = false): void
     {
         $eventLogRepo  = new EventLogRepository();
         if ($commit) {

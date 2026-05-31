@@ -6,7 +6,7 @@ class Schema extends \ArrayObject
 {
     protected $input = null;
 
-    protected $asObject = null;
+    protected \stdClass|null $asObject = null;
 
     protected $defaults = [];
 
@@ -45,7 +45,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function resolveReferences($hash, $resolveLevel)
+    protected function resolveReferences(array|static $hash, $resolveLevel)
     {
         foreach ($hash as $key => $value) {
             $hash[$key] = $this->resolveKey($key, $value, $resolveLevel);
@@ -69,18 +69,18 @@ class Schema extends \ArrayObject
         return $data;
     }
 
-    public function setJsonObject(\stdClass $asObject)
+    public function setJsonObject(\stdClass $asObject): static
     {
         $this->asObject = $asObject;
         return $this;
     }
 
-    public function setDefaults($defaults)
+    public function setDefaults($defaults): void
     {
         $this->defaults = $defaults;
     }
 
-    public function setJsonCompressLevel($jsonCompressLevel)
+    public function setJsonCompressLevel(int $jsonCompressLevel): static
     {
         $this->jsonCompressLevel = $jsonCompressLevel;
         return $this;
@@ -97,7 +97,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue($value, $keepEmpty = false, $defaults = [])
+    protected function toSanitizedValue(array $value, $keepEmpty = false, $defaults = [])
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
@@ -119,7 +119,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected function toSanitizedList($value, $keepEmpty, $defaults = [])
+    protected function toSanitizedList(array $value, $keepEmpty, $defaults = [])
     {
         foreach ($value as $key => $item) {
             if ($this->jsonCompressLevel > 0 && isset($defaults[$key])) {
@@ -137,7 +137,7 @@ class Schema extends \ArrayObject
         return $value;
     }
 
-    protected static function isItemEmpty($item)
+    protected static function isItemEmpty($item): bool
     {
         return (
             null === $item
@@ -179,7 +179,7 @@ class Schema extends \ArrayObject
         return $this->getWithoutRefs(clone $this);
     }
 
-    protected function getWithoutRefs($data)
+    protected function getWithoutRefs(array|static $data)
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {

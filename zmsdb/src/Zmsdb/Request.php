@@ -12,7 +12,11 @@ use BO\Zmsentities\Collection\RequestList as Collection;
  */
 class Request extends Base
 {
-    public function readEntity($source, $requestId, $resolveReferences = 0, $disableCache = false)
+    /**
+     * @psalm-param 0 $resolveReferences
+     * @psalm-param 'dldb' $source
+     */
+    public function readEntity(string $source, string $requestId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-$source-$requestId-$resolveReferences";
 
@@ -41,10 +45,9 @@ class Request extends Base
     }
 
     /**
-     * @SuppressWarnings(Param)
-     *
+     * @SuppressWarnings (Param)
      */
-    protected function readCollection($query)
+    protected function readCollection(Query\Request $query): Collection
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -131,7 +134,7 @@ class Request extends Base
         return $requestList;
     }
 
-    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
+    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0): Collection
     {
         $intersectList = array();
         if ($cluster->scopes->count()) {
@@ -201,7 +204,7 @@ class Request extends Base
         return $this->readEntity($source, $request['id'], 0, true);
     }
 
-    public function writeDeleteEntity($requestId, $source)
+    public function writeDeleteEntity($requestId, $source): bool
     {
         $query = new Query\Request(Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
@@ -210,13 +213,16 @@ class Request extends Base
         return $this->deleteItem($query);
     }
 
-    public function writeDeleteListBySource($source)
+    public function writeDeleteListBySource(string $source): bool
     {
         $query = new Query\Request(Query\Base::DELETE);
         $query->addConditionRequestSource($source);
         return $this->deleteItem($query);
     }
 
+    /**
+     * @return void
+     */
     protected function testSource($source)
     {
         if (! (new Source())->readEntity($source)) {
@@ -224,6 +230,9 @@ class Request extends Base
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeCache(Entity $request)
     {
         if (!App::$cache) {

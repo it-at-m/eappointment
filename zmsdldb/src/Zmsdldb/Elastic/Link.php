@@ -15,6 +15,9 @@ use BO\Zmsdldb\File\Link as Base;
  */
 class Link extends Base
 {
+    /**
+     * @return Collection
+     */
     public function readSearchResultList($query)
     {
         $boolquery = Helper::boolFilteredQuery();

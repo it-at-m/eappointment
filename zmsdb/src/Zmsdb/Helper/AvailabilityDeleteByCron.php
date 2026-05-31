@@ -7,8 +7,8 @@ namespace BO\Zmsdb\Helper;
  */
 class AvailabilityDeleteByCron
 {
-    protected $verbose = false;
-    protected $query;
+    protected bool $verbose = false;
+    protected \BO\Zmsdb\Availability $query;
 
     public function __construct($verbose = false)
     {
@@ -18,7 +18,7 @@ class AvailabilityDeleteByCron
         }
     }
 
-    public function startProcessing(\DateTimeImmutable $datetime, $commit = false)
+    public function startProcessing(\DateTimeImmutable $datetime, $commit = false): void
     {
         $availabilityList = $this->query->readAvailabilityListBefore($datetime);
         if ($this->verbose) {
@@ -33,7 +33,7 @@ class AvailabilityDeleteByCron
         }
     }
 
-    protected function deleteAvailability(string $availabilityId)
+    protected function deleteAvailability(string $availabilityId): void
     {
         if ($this->query->deleteEntity($availabilityId)) {
             if ($this->verbose) {

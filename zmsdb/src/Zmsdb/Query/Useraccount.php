@@ -104,7 +104,7 @@ class Useraccount extends Base implements MappingInterface
      * Build an SQL expression that checks whether the current useraccount has
      * a permission via user_role -> role_permission -> permission.
      */
-    protected function permissionExists(string $permissionName)
+    protected function permissionExists(string $permissionName): Builder\Expression
     {
         if (!in_array($permissionName, self::VALID_PERMISSION_NAMES, true)) {
             throw new \InvalidArgumentException("Invalid permission name: $permissionName");
@@ -122,6 +122,11 @@ class Useraccount extends Base implements MappingInterface
         );
     }
 
+    /**
+     * @return (Builder\Expression|mixed|string)[]
+     *
+     * @psalm-return array{id: 'useraccount.Name', password: 'useraccount.Passworthash', lastLogin: 'useraccount.lastUpdate', roles: Builder\Expression, rights__superuser: Builder\Expression, rights__organisation: Builder\Expression, rights__department: Builder\Expression, rights__cluster: Builder\Expression, rights__useraccount: Builder\Expression, rights__scope: Builder\Expression, rights__departmentStats: Builder\Expression, rights__availability: Builder\Expression, rights__ticketprinter: Builder\Expression, rights__audit: Builder\Expression, rights__basic: Builder\Expression, permissions__appointment: mixed, permissions__availability: mixed, permissions__calldisplay: mixed, permissions__cherrypick: mixed, permissions__cluster: mixed, permissions__config: mixed, permissions__counter: mixed, permissions__customersearch: mixed, permissions__dayoff: mixed, permissions__department: mixed, permissions__emergency: mixed, permissions__finishedqueue: mixed, permissions__finishedqueuepast: mixed, permissions__logs: mixed, permissions__mailtemplates: mixed, permissions__missedqueue: mixed, permissions__openqueue: mixed, permissions__organisation: mixed, permissions__overviewcalendar: mixed, permissions__parkedqueue: mixed, permissions__restrictedscope: mixed, permissions__scope: mixed, permissions__source: mixed, permissions__statistic: mixed, permissions__ticketprinter: mixed, permissions__useraccount: mixed, permissions__waitingqueue: mixed, permissions__superuser: mixed}
+     */
     public function getEntityMapping()
     {
         return [
@@ -176,40 +181,40 @@ class Useraccount extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionLoginName($loginName)
+    public function addConditionLoginName($loginName): static
     {
         $this->query->where('useraccount.Name', '=', $loginName);
         return $this;
     }
 
-    public function addConditionUserId($userId)
+    public function addConditionUserId($userId): static
     {
         $this->query->where('useraccount.NutzerID', '=', $userId);
         return $this;
     }
 
-    public function addConditionPassword($password)
+    public function addConditionPassword($password): static
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;
     }
 
-    public function addConditionXauthKey($xAuthKey)
+    public function addConditionXauthKey($xAuthKey): static
     {
         $this->query->where('useraccount.SessionID', '=', $xAuthKey);
         $this->query->where('useraccount.SessionExpiry', '>', date('Y-m-d H:i:s', time() - App::SESSION_DURATION));
         return $this;
     }
 
-    public function addConditionRoleLevel($roleLevel)
+    public function addConditionRoleLevel($roleLevel): static
     {
         $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
         return $this;
     }
 
-    public function addConditionSearch($queryString, $orWhere = false)
+    public function addConditionSearch($queryString, bool $orWhere = false): static
     {
-        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString): void {
             $queryString = trim($queryString);
             $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
             $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
@@ -222,7 +227,12 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity)
+    /**
+     * @return (int|mixed)[]
+     *
+     * @psalm-return array<string, 0|mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity): array
     {
         $data = array();
         $data['Name'] = $entity->id;
@@ -268,7 +278,7 @@ class Useraccount extends Base implements MappingInterface
         return $data;
     }
 
-    public function addConditionDepartmentIds(array $departmentIds)
+    public function addConditionDepartmentIds(array $departmentIds): static
     {
         $this->setDistinctSelect();
         $this->innerJoin(
@@ -281,7 +291,7 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, $orWhere = false): self
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, bool $orWhere = false): self
     {
         $this->addConditionDepartmentIds($departmentIds);
 
@@ -305,9 +315,11 @@ class Useraccount extends Base implements MappingInterface
     }
 
     /**
-     * @SuppressWarnings(UnusedFormalParameter)
+     * @SuppressWarnings (UnusedFormalParameter)
+     *
+     * @param false $isWorkstationSuperuser
      */
-    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, $isWorkstationSuperuser = false): self
+    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
     {
         // Superusers can access all useraccounts, no filtering needed
         if ($isWorkstationSuperuser) {

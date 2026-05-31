@@ -15,14 +15,21 @@ use Psr\Http\Message\RequestInterface;
 
 class EntryFromOldRoute
 {
-    protected static $allowedStatus = array(
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{nurabholer: 'pending'}
+     */
+    protected static array $allowedStatus = array(
         'nurabholer' => 'pending'
     );
 
     /**
      * @param Request $request
+     *
+     * @return null|string
      */
-    protected static function getScopes($request)
+    protected static function getScopes($request): string|null
     {
         $scopes = [ ];
         $validator = $request->getAttribute('validator');

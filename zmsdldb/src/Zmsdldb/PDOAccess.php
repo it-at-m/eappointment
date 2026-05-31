@@ -5,11 +5,15 @@ namespace BO\Zmsdldb;
 abstract class PDOAccess extends AbstractAccess
 {
     /**
-     * @SuppressWarnings(PHPMD.LongVariable)
+     * @SuppressWarnings (PHPMD.LongVariable)
+     *
+     * @var ((int|string)|key-of<TArray>)[]
+     *
+     * @psalm-var array<array-key|key-of<TArray>, array-key|key-of<TArray>>
      */
-    protected $accessorClassName = [];
+    protected array $accessorClassName = [];
 
-    protected $accessorNamesPlural = [
+    protected array $accessorNamesPlural = [
         'Authority' => 'Authorities',
         'Borough' => 'Boroughs',
         'Link' => 'Links',
@@ -20,8 +24,11 @@ abstract class PDOAccess extends AbstractAccess
         'Topic' => 'Topics'
     ];
 
-    protected $pdo;
+    protected \PDO $pdo;
 
+    /**
+     * @var string
+     */
     protected $engine = 'SQLite';
 
 
@@ -69,6 +76,9 @@ abstract class PDOAccess extends AbstractAccess
         }
     }
 
+    /**
+     * @return void
+     */
     protected function postConnect()
     {
     }
@@ -111,8 +121,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.exec.php
      */
-
-    public function exec(...$args)
+    public function exec(string ...$args)
     {
         try {
             return $this->pdo->exec(...$args);
@@ -124,8 +133,7 @@ abstract class PDOAccess extends AbstractAccess
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-
-    public function prepare(...$args)
+    public function prepare(string ...$args)
     {
         try {
             return $this->pdo->prepare(...$args);

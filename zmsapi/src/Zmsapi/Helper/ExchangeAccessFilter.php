@@ -10,7 +10,12 @@ use BO\Slim\Render;
  */
 class ExchangeAccessFilter
 {
-    protected static $filterList = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{'scope.id': 'getFilteredEntityByScope', 'department.id': 'getFilteredEntityByDepartment', 'organisation.id': 'getFilteredEntityByOrganisation', 'useraccount.rights': 'getFilteredEntityByUseraccountRights'}
+     */
+    protected static array $filterList = [
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
         'organisation.id' => 'getFilteredEntityByOrganisation',
@@ -51,14 +56,14 @@ class ExchangeAccessFilter
         return static::$filteredEntity;
     }
 
-    protected static function getFilteredEntityByUseraccountRights($right, $filteredKey)
+    protected static function getFilteredEntityByUseraccountRights($right, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasRights([$right])) {
             unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
 
-    protected static function getFilteredEntityByScope($entityId, $filteredKey)
+    protected static function getFilteredEntityByScope($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasRights(['scope'])) {
             if (! static::$workstation->getScopeListFromAssignedDepartments()->hasEntity($entityId)) {
@@ -67,7 +72,7 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getFilteredEntityByDepartment($entityId, $filteredKey)
+    protected static function getFilteredEntityByDepartment($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasRights(['department'])) {
             if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
@@ -76,7 +81,7 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
+    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey): void
     {
         if (static::$workstation->getUseraccount()->hasRights(['organisation'])) {
             if (! static::$organisationList->hasEntity($entityId)) {
@@ -85,7 +90,7 @@ class ExchangeAccessFilter
         }
     }
 
-    protected static function getOrganisationListByDepartments()
+    protected static function getOrganisationListByDepartments(): \BO\Zmsentities\Collection\OrganisationList
     {
         $organisationList = new \BO\Zmsentities\Collection\OrganisationList();
         foreach (static::$workstation->getDepartmentList() as $department) {

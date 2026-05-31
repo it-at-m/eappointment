@@ -27,7 +27,12 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
         );
     }
 
-    public static function readProviderList($source)
+    /**
+     * @return (mixed|string)[][]
+     *
+     * @psalm-return list{array{name: 'assigned', items: mixed}, array{name: 'notAssigned', items: mixed}}
+     */
+    public static function readProviderList($source): array
     {
         return [
             ['name' => 'assigned', 'items' => static::readProviderAssigned($source)],

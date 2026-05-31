@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class AuthKeyMatchFailed extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = 'Der Absagecode ist nicht korrekt.';
+    protected string $message = 'Der Absagecode ist nicht korrekt.';
 }

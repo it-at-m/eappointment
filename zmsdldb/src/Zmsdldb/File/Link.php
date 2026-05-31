@@ -15,6 +15,9 @@ use BO\Zmsdldb\Collection\Links as Collection;
  */
 class Link extends Base
 {
+    /**
+     * @return void
+     */
     public function loadData()
     {
         $data = $this->access()
@@ -23,6 +26,9 @@ class Link extends Base
         $this->setItemList($this->parseData($data));
     }
 
+    /**
+     * @return Collection
+     */
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -58,6 +64,9 @@ class Link extends Base
         return false;
     }
 
+    /**
+     * @return Collection
+     */
     public function readSearchResultList($query)
     {
         $list = $this->getItemList();

@@ -18,14 +18,13 @@ use BO\Zmsentities\Collection\AvailabilityList as Collection;
 class AvailabilityListByScope extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();
         $endDateFormatted = Validator::param('endDate')->isString()->getValue();
@@ -46,13 +45,16 @@ class AvailabilityListByScope extends BaseController
         return $response;
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate)
+    protected function getAvailabilityList($scope, \BO\Zmsentities\Helper\DateTime|null $startDate, \BO\Zmsentities\Helper\DateTime|null $endDate)
     {
         $availabilityList = (new Query())->readList($scope->getId(), 0, $startDate, $endDate);
         $this->validateAvailabilityList($availabilityList);
         return $availabilityList->withScope($scope);
     }
 
+    /**
+     * @return void
+     */
     protected function validateScope($scope)
     {
         if (! $scope) {
@@ -60,6 +62,9 @@ class AvailabilityListByScope extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateAvailabilityList($availabilityList)
     {
         if (! $availabilityList->count()) {
@@ -67,7 +72,10 @@ class AvailabilityListByScope extends BaseController
         }
     }
 
-    protected function validateAccessRights($request, $scope)
+    /**
+     * @return void
+     */
+    protected function validateAccessRights(\Psr\Http\Message\RequestInterface $request, $scope)
     {
         try {
             (new Helper\User($request, 2))->checkRights(

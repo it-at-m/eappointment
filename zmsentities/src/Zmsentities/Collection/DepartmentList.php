@@ -8,7 +8,7 @@ class DepartmentList extends Base implements JsonUnindexed
 {
     public const ENTITY_CLASS = '\BO\Zmsentities\Department';
 
-    public function withOutClusterDuplicates()
+    public function withOutClusterDuplicates(): self
     {
         $departmentList = new self();
         foreach ($this as $department) {
@@ -52,7 +52,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $clusterList->withUniqueClusters();
     }
 
-    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount): static
     {
         $list = new static();
         foreach ($this as $department) {
@@ -66,7 +66,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
-    public function withMatchingScopes(ScopeList $scopeList)
+    public function withMatchingScopes(ScopeList $scopeList): static
     {
         $list = new static();
         foreach ($this as $department) {
@@ -85,6 +85,9 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
+    /**
+     * @return static
+     */
     public function sortByName()
     {
         parent::sortByName();
@@ -99,6 +102,11 @@ class DepartmentList extends Base implements JsonUnindexed
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @psalm-return list{0?: mixed,...}
+     */
     public function getIds()
     {
         $ids = [];

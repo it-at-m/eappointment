@@ -12,7 +12,12 @@ use BO\Zmsentities\Collection\OrganisationList as Collection;
  */
 class Organisation extends Base
 {
-    public function readEntity($itemId, $resolveReferences = 0)
+    /**
+     * @param false|string $itemId
+     *
+     * @psalm-param 0|1 $resolveReferences
+     */
+    public function readEntity(string|false $itemId, int $resolveReferences = 0)
     {
         $query = new Query\Organisation(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -25,6 +30,9 @@ class Organisation extends Base
         return array();
     }
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && $entity->hasId()) {
@@ -65,7 +73,7 @@ class Organisation extends Base
         return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
-    public function readByOwnerId($ownerId, $resolveReferences = 0)
+    public function readByOwnerId($ownerId, $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new Query\Organisation(Query\Base::SELECT);
@@ -93,7 +101,7 @@ class Organisation extends Base
         return $this->readEntity($organisationId);
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new Query\Organisation(Query\Base::SELECT);
@@ -150,7 +158,7 @@ class Organisation extends Base
         return $this->readEntity($organisationId, 1, true);
     }
 
-    protected function writeOrganisationTicketprinters($organisationId, $ticketprinterList)
+    protected function writeOrganisationTicketprinters(string|false $organisationId, $ticketprinterList): void
     {
         $deleteQuery = new Query\Ticketprinter(Query\Base::DELETE);
         $deleteQuery->addConditionOrganisationId($organisationId);
@@ -163,7 +171,7 @@ class Organisation extends Base
         }
     }
 
-    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId)
+    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId): void
     {
         foreach ($ticketprinterList as $item) {
             $query = new Query\Ticketprinter(Query\Base::UPDATE);

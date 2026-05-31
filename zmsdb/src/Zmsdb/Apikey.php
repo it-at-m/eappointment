@@ -6,7 +6,10 @@ use BO\Zmsentities\Apikey as Entity;
 
 class Apikey extends Base
 {
-    public static $cache = [];
+    /**
+     * @var array
+     */
+    public static array $cache = [];
 
     public function readEntity($apiKey)
     {
@@ -105,12 +108,10 @@ class Apikey extends Base
     /**
      * write initial api quotas
      *
-     * @param
+     * @param 
      *      entity
-     *
-     * @return Entity
      */
-    public function writeQuota($apiKey, $route, $period, $requests)
+    public function writeQuota($apiKey, $route, $period, $requests): void
     {
         $query = new Query\Apiquota(Query\Base::INSERT);
         $query->addValues([
@@ -126,13 +127,11 @@ class Apikey extends Base
     /**
      * update api quotas
      *
-     * @param
+     * @param 
      *      apiKey
      *      entity
-     *
-     * @return Entity
      */
-    public function updateQuota($apiKey, Entity $entity)
+    public function updateQuota($apiKey, Entity $entity): void
     {
         if (isset($entity->quota)) {
             foreach ($entity->quota as $quota) {
@@ -195,12 +194,10 @@ class Apikey extends Base
     /**
      * delete an existing outdated apikey
      *
-     * @param
+     * @param 
      *      apikey
-     *
-     * @return Entity
      */
-    public function writeDeletedQuota($quotaId)
+    public function writeDeletedQuota($quotaId): bool
     {
         $query = new Query\Apiquota(Query\Base::DELETE);
         $query->addConditionQuotaId($quotaId);

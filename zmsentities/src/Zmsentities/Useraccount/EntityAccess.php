@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Useraccount;
 
 class EntityAccess implements RightsInterface
 {
-    protected $entity;
+    protected AccessInterface $entity;
 
     public function __construct(AccessInterface $entity)
     {

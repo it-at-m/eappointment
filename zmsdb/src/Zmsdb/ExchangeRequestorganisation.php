@@ -6,7 +6,12 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeRequestorganisation extends Base
 {
-    protected $groupBy = array(
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{month: '%Y-%m', day: '%Y-%m-%d', hour: '%H-%i'}
+     */
+    protected array $groupBy = array(
         'month' => '%Y-%m',
         'day' => '%Y-%m-%d',
         'hour' => '%H-%i'
@@ -17,7 +22,7 @@ class ExchangeRequestorganisation extends Base
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'day'
-    ) {
+    ): Exchange {
         $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik $organisation->name";
@@ -48,7 +53,7 @@ class ExchangeRequestorganisation extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeRequestorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -64,7 +69,7 @@ class ExchangeRequestorganisation extends Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();

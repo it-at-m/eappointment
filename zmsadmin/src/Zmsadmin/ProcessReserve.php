@@ -61,7 +61,7 @@ class ProcessReserve extends BaseController
         );
     }
 
-    protected function getProcess($input, $scope)
+    protected function getProcess($input, $scope): Entity
     {
         $process = new \BO\Zmsentities\Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
@@ -70,7 +70,12 @@ class ProcessReserve extends BaseController
         return $process->withUpdatedData($input, $dateTime, $scope);
     }
 
-    public static function getValidatedForm($validator, $process)
+    /**
+     * @return (bool|mixed)[]
+     *
+     * @psalm-return array{failed: bool,...}
+     */
+    public static function getValidatedForm($validator, \BO\Zmsentities\Schema\Entity $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();

@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Location extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{id: 'id', name: 'name', 'category.name': 'category_name', 'category.identifier': 'category_identifier', 'authority.id': 'authority_id', 'authority.name': 'authority_name', 'meta.locale': 'locale', note: 'note', category: 'category_json', urgent: 'urgent_json', opening_times: 'opening_times_json', transit: 'transit_json', payment_info: 'payment_json', accessibility: 'accessibility_json', appointment: 'appointment_json', __RAW__: 'data_json'}
+     */
+    protected array $fieldMapping = [
         'id' => 'id',
         'name' => 'name',
         'category.name' => 'category_name',
@@ -23,7 +28,9 @@ class Location extends Base
         '__RAW__' => 'data_json'
     ];
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings (PHPMD.ExcessiveMethodLength)
+     *
+     * @return void
      */
     protected function setupMapping()
     {
@@ -157,6 +164,9 @@ class Location extends Base
         ];
     }
 
+    /**
+     * @return void
+     */
     public function preSetupFields()
     {
         #$this->dataRaw['payment'] = [
@@ -170,6 +180,9 @@ class Location extends Base
         #unset($this->dataRaw['paymentcode']);
     }
 
+    /**
+     * @return void
+     */
     public function preSetup()
     {
         try {

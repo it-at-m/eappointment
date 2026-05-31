@@ -15,14 +15,13 @@ use BO\Zmsentities\Helper\DateTime;
 class ProcessNextByScope extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkPermissions('appointment');
         $query = new Query();
 
@@ -43,7 +42,7 @@ class ProcessNextByScope extends BaseController
         return $response;
     }
 
-    public static function getProcess($queueList, $dateTime, $exclude = null)
+    public static function getProcess(\BO\Zmsentities\Collection\QueueList $queueList, \DateTimeInterface $dateTime, $exclude = null)
     {
         $process = $queueList->getNextProcess($dateTime, $exclude);
         return ($process) ? $process : new \BO\Zmsentities\Process();

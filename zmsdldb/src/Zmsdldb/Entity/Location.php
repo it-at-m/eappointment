@@ -33,7 +33,7 @@ class Location extends Base
     /**
      * @return Bool
      */
-    public function isLocale($locale)
+    public function isLocale(string $locale)
     {
         $location = $this->getArrayCopy();
         return $location['meta']['locale'] == $locale;
@@ -123,10 +123,11 @@ class Location extends Base
     /**
      * return geoJson
      *
+     * @return ((array|mixed|string)[]|mixed|string)[]
      *
-     * @return string
+     * @psalm-return array{type: 'Feature', id: mixed, properties: array{name: mixed, description: string, categoryIdentifier: mixed}, geometry: array{type: 'Point', coordinates: list{mixed, mixed}}}
      */
-    public function getGeoJson()
+    public function getGeoJson(): array
     {
         return [
             'type' => 'Feature',

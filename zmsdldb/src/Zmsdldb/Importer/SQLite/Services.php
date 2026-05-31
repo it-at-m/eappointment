@@ -6,5 +6,5 @@ use BO\Zmsdldb\Importer\MySQL\Services as ServicesBase;
 
 class Services extends ServicesBase
 {
-    protected $entityClass = 'BO\\Zmsdldb\\Importer\\SQLite\\Entity\\Service';
+    protected string $entityClass = 'BO\\Zmsdldb\\Importer\\SQLite\\Entity\\Service';
 }

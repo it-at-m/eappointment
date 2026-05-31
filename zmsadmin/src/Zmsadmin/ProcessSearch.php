@@ -108,7 +108,7 @@ class ProcessSearch extends BaseController
         );
     }
 
-    private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
+    private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds): ProcessList
     {
         if (empty($processList)) {
             return new ProcessList();
@@ -125,7 +125,7 @@ class ProcessSearch extends BaseController
         return $list;
     }
 
-    private function filterLogListForUserRights(?LogList $logList, array $scopeIds)
+    private function filterLogListForUserRights(?LogList $logList, array $scopeIds): LogList
     {
         if (!isset($logList) || !$logList) {
             $logList = new LogList();

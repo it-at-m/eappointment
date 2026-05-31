@@ -6,6 +6,9 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubject
 {
+    /**
+     * @return Exchange
+     */
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
@@ -62,6 +65,9 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     public function readSubjectList()
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingdepartment::QUERY_SUBJECTS, []);
@@ -79,6 +85,9 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         return $entity;
     }
 
+    /**
+     * @return Exchange
+     */
     public function readPeriodList($subjectid, $period = 'day')
     {
         $department = (new Department())->readEntity($subjectid);

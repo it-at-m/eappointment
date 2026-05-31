@@ -7,10 +7,10 @@ namespace BO\Zmsentities\Exception;
  */
 class WorkstationProcessMatchScopeFailed extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
     public $data;
 
-    protected $message = "Workstation is not allowed to edit the process,
+    protected string $message = "Workstation is not allowed to edit the process,
         process scope does not match with workstation cluster/scope";
 }

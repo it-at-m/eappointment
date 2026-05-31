@@ -13,14 +13,11 @@ use BO\Zmsdb\Cluster as Query;
 
 class ClusterUpdate extends BaseController
 {
-    /**
-     * @return String
-     */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         (new Helper\User($request))->checkRights('cluster');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Cluster($input);

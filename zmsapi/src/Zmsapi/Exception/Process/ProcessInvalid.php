@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class ProcessInvalid extends \Exception
 {
-    protected $code = 400;
+    protected int $code = 400;
 
-    protected $message = 'The input process is invalid';
+    protected string $message = 'The input process is invalid';
 }

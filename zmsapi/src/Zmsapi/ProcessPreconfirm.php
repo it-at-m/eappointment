@@ -17,14 +17,13 @@ use BO\Zmsdb\Process;
 class ProcessPreconfirm extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
@@ -56,7 +55,10 @@ class ProcessPreconfirm extends BaseController
         return $response;
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
 
@@ -71,6 +73,9 @@ class ProcessPreconfirm extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateProcessLimits(\BO\Zmsentities\Process $process)
     {
         if (! (new Process())->isAppointmentSlotCountAllowed($process)) {

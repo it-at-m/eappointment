@@ -11,9 +11,16 @@ class DayOff extends Base implements MappingInterface
 
     /**
      * No resolving required here
+     *
+     * @var int
      */
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'dayOff.FeiertagID', date: 'dayOff.Datum', lastChange: 'dayOff.updateTimestamp', name: 'dayOff.Feiertag'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -24,37 +31,37 @@ class DayOff extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionYear($year)
+    public function addConditionYear($year): static
     {
         $this->query->where(self::expression('YEAR(`dayOff`.`Datum`)'), '=', $year);
         return $this;
     }
 
-    public function addConditionDate($date)
+    public function addConditionDate(string $date): static
     {
         $this->query->where('dayOff`.`Datum', '=', $date);
         return $this;
     }
 
-    public function addConditionName($name)
+    public function addConditionName($name): static
     {
         $this->query->where('dayOff`.`Feiertag', '=', $name);
         return $this;
     }
 
-    public function addConditionCommon()
+    public function addConditionCommon(): static
     {
         $this->query->where('dayOff.BehoerdenID', '=', 0);
         return $this;
     }
 
-    public function addConditionDayOffId($itemId)
+    public function addConditionDayOffId($itemId): static
     {
         $this->query->where('dayOff.FeiertagID', '=', $itemId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new Alias('standort', 'scope_dayoff'),
@@ -66,13 +73,13 @@ class DayOff extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->query->where('dayOff.BehoerdenID', '=', $departmentId);
         return $this;
     }
 
-    public function addConditionDayoffDeleteInterval($deleteInSeconds)
+    public function addConditionDayoffDeleteInterval($deleteInSeconds): static
     {
         $this->query->where(
             self::expression(

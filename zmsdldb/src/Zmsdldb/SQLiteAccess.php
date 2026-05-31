@@ -15,6 +15,9 @@ class SQLiteAccess extends PDOAccess
     const DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
     const DEFAULT_DATABASE_PATH = __DIR__;
 
+    /**
+     * @return void
+     */
     protected function connect(array $options)
     {
         try {
@@ -32,6 +35,9 @@ class SQLiteAccess extends PDOAccess
         }
     }
 
+    /**
+     * @return void
+     */
     protected function postConnect()
     {
         try {

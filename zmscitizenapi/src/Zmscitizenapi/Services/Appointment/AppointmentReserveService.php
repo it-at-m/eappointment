@@ -114,7 +114,7 @@ class AppointmentReserveService
         return null;
     }
 
-    private function reserveAppointment(Process $process, array $serviceIds, array $serviceCounts, int $officeId): ThinnedProcess
+    private function reserveAppointment(Process $process, array $serviceIds, array $serviceCounts, int $officeId): array|ThinnedProcess
     {
         $process->clients = [
             [

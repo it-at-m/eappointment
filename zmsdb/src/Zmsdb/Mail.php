@@ -17,8 +17,10 @@ class Mail extends Base
      * Fetch status from db
      *
      * @return \BO\Zmsentities\Mail
+     *
+     * @param false|string $itemId
      */
-    public function readEntity($itemId, $resolveReferences = 1)
+    public function readEntity(string|false $itemId, $resolveReferences = 1)
     {
         $query = new Query\MailQueue(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -31,7 +33,7 @@ class Mail extends Base
         return $mail;
     }
 
-    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -68,7 +70,7 @@ class Mail extends Base
         return $this->fetchList($query, new Entity());
     }
 
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -104,6 +106,9 @@ class Mail extends Base
 
 
 
+    /**
+     * @return \BO\Zmsentities\Schema\Entity
+     */
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);
@@ -123,7 +128,7 @@ class Mail extends Base
         return $mail;
     }
 
-    public function writeInQueueWithAdmin(Entity $mail)
+    public function writeInQueueWithAdmin(Entity $mail): Entity
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -145,7 +150,7 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true)
+    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true): Entity
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -180,7 +185,7 @@ class Mail extends Base
     public function writeInQueueWithDailyProcessList(
         \BO\Zmsentities\Scope $scope,
         Entity $mail
-    ) {
+    ): Entity {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $department = (new Department())->readByScopeId($scope->getId(), 0);
         $query->addValues(
@@ -199,7 +204,12 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    protected function writeMimeparts($queueId, $multipart)
+    /**
+     * @param false|string $queueId
+     *
+     * @return true
+     */
+    protected function writeMimeparts(string|false $queueId, $multipart): bool
     {
         $success = true;
         foreach ($multipart as $part) {
@@ -238,14 +248,14 @@ class Mail extends Base
         return $this->perform($query, $itemIds);
     }
 
-    public function readReminderLastRun($now)
+    public function readReminderLastRun(\DateTimeInterface $now)
     {
         $lastRun = (new \BO\Zmsdb\Config())->readProperty('status__mailReminderLastRun', false);
         $lastRunDateTime = ($lastRun) ? new \DateTimeImmutable($lastRun) : $now;
         return $lastRunDateTime;
     }
 
-    public function writeReminderLastRun($now)
+    public function writeReminderLastRun(\DateTimeInterface $now): void
     {
         (new \BO\Zmsdb\Config())->replaceProperty('status__mailReminderLastRun', $now->format('Y-m-d H:i:s'));
     }

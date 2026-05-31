@@ -15,7 +15,12 @@ class Request extends Base
             ba.`BuergerID` = :process_id
     ';
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{id: 'request.id', link: 'request.link', name: 'request.name', group: 'request.group', source: 'request.source', parent_id: 'request.parent_id', variant_id: 'request.variant_id', data?: 'request.data'}
+     */
+    public function getEntityMapping(): array
     {
         $mapping = [
             'id' => 'request.id',
@@ -32,13 +37,13 @@ class Request extends Base
         return $mapping;
     }
 
-    public function addConditionRequestId($requestId)
+    public function addConditionRequestId($requestId): static
     {
         $this->query->where('id', '=', $requestId);
         return $this;
     }
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId($processId): static
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
@@ -52,7 +57,7 @@ class Request extends Base
         return $this;
     }
 
-    public function addConditionArchiveId($archiveId)
+    public function addConditionArchiveId($archiveId): static
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
@@ -66,7 +71,7 @@ class Request extends Base
         return $this;
     }
 
-    public function addConditionProvider($providerId, $source)
+    public function addConditionProvider($providerId, $source): static
     {
         $this->leftJoin(
             new Alias("request_provider", 'xrequest'),
@@ -82,7 +87,7 @@ class Request extends Base
         return $this;
     }
 
-    public function addConditionRequestSource($source)
+    public function addConditionRequestSource($source): static
     {
         $this->query->where('request.source', '=', $source);
         return $this;
@@ -96,7 +101,7 @@ class Request extends Base
         return $data;
     }
 
-    public function addConditionIds($ids)
+    public function addConditionIds($ids): static
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($ids) {
             foreach ($ids as $id) {

@@ -88,13 +88,13 @@ class Http
         $this->client = $client;
     }
 
-    public function setUserInfo($user, $pass)
+    public function setUserInfo(string $user, string|false|null $pass): static
     {
         $this->uri = $this->uri->withUserInfo($user, $pass);
         return $this;
     }
 
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         return $this->uri->getUserInfo();
     }
@@ -152,13 +152,13 @@ class Http
         return $request;
     }
 
-    public function setApiKey($apikeyString)
+    public function setApiKey($apikeyString): static
     {
         $this->apikeyString = $apikeyString;
         return $this;
     }
 
-    public function setWorkflowKey($apikeyString)
+    public function setWorkflowKey($apikeyString): static
     {
         $this->workflowkeyString = $apikeyString;
         return $this;
@@ -169,10 +169,11 @@ class Http
      *
      * @param string $relativeUrl
      * @param array|null $getParameters (optional)
+     * @param null|string $xToken
      *
      * @return Result
      */
-    public function readGetResult($relativeUrl, array $getParameters = null, $xToken = null)
+    public function readGetResult($relativeUrl, array $getParameters = null, string|null $xToken = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {

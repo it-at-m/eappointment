@@ -14,14 +14,13 @@ use BO\Mellon\Validator;
 class SessionGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $session = (new Session())->readEntity($args['name'], $args['id']);
         if (! $session) {

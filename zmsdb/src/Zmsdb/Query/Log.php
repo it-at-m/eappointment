@@ -11,8 +11,10 @@ class Log extends Base
 
     /**
      * No resolving required here
+     *
+     * @var int
      */
-    protected $resolveLevel = 0;
+    protected int $resolveLevel = 0;
 
     const QUERY_DELETE_BY_PROCESS = '
         DELETE mq,  mp
@@ -21,7 +23,12 @@ class Log extends Base
         WHERE mq.processID=?
     ';
 
-    public function getEntityMapping()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{type: 'log.type', reference: 'log.reference_id', scope_id: 'log.scope_id', user_id: 'log.user_id', data: 'log.data', message: 'log.message', ts: 'log.ts'}
+     */
+    public function getEntityMapping(): array
     {
         return [
             'type' => 'log.type',
@@ -34,7 +41,7 @@ class Log extends Base
         ];
     }
 
-    public function addConditionProcessId($processId)
+    public function addConditionProcessId($processId): static
     {
         $this->query->where('log.reference_id', '=', $processId);
         $this->query->where('log.type', '=', 'buerger');
@@ -48,12 +55,12 @@ class Log extends Base
         return $data;
     }
 
-    public function addConditionOlderThan(\DateTime $olderThanDate)
+    public function addConditionOlderThan(\DateTime $olderThanDate): void
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
     }
 
-    public function addConditionDataSearch(string $search)
+    public function addConditionDataSearch(string $search): void
     {
         $this->query->where('log.data', 'LIKE', '%' . $search . '%');
 

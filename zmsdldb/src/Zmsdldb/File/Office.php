@@ -16,6 +16,9 @@ use BO\Zmsdldb\Collection\Offices as Collection;
   */
 class Office extends Base
 {
+    /**
+     * @return Collection
+     */
     protected function parseData($data)
     {
         $itemList = new Collection();

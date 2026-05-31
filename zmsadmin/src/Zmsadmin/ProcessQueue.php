@@ -28,7 +28,9 @@ use Psr\Http\Message\ResponseInterface;
 class ProcessQueue extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
+     *
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
@@ -75,7 +77,12 @@ class ProcessQueue extends BaseController
         );
     }
 
-    public static function getValidatedForm($validator, $process)
+    /**
+     * @return (bool|mixed)[]
+     *
+     * @psalm-return array{failed: bool,...}
+     */
+    public static function getValidatedForm($validator, \BO\Zmsentities\Schema\Entity $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
@@ -146,14 +153,14 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function getProcess($input, $scope)
+    protected function getProcess($input, $scope): Entity
     {
         $process = new \BO\Zmsentities\Process();
         $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         return $process->withUpdatedData($input, \App::$now, $scope, $notice);
     }
 
-    protected function writeQueuedProcess($input, $process)
+    protected function writeQueuedProcess($input, $process): Entity
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
         AppointmentFormHelper::updateMail($input, $process);

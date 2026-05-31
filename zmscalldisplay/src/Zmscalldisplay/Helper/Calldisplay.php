@@ -17,7 +17,7 @@ use Psr\Http\Message\RequestInterface;
 class Calldisplay
 {
     protected $entity;
-    protected $isEntityResolved = false;
+    protected bool $isEntityResolved = false;
 
     const DEFAULT_STATUS = ['called'];
     const WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];

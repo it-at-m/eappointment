@@ -21,10 +21,11 @@ trait TableName
     /**
      * Set/Get the table we're updating
      *
-     * @param   string|null     $table      string to set, null to get
-     * @return  $this|string
+     * @param string|null     $table      string to set, null to get
+     *
+     * @return Update|array
      */
-    public function table($table = null)
+    public function table($table = null): array|Update
     {
         if ($table === null) {
             return $this->table;

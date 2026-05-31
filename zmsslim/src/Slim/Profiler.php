@@ -4,14 +4,16 @@ namespace BO\Slim;
 
 class Profiler
 {
+    /**
+     * @var float|null
+     */
     public static $startupMicrotime = null;
     public static $profileList = [];
 
     /**
-     * @SuppressWarnings(Superglobal)
-     *
+     * @SuppressWarnings (Superglobal)
      */
-    public static function init()
+    public static function init(): void
     {
         static::$startupMicrotime = microtime(true);
         if (isset($_SERVER["REQUEST_TIME_FLOAT"])) {
@@ -19,27 +21,37 @@ class Profiler
         }
     }
 
-    public static function add($message)
+    public static function add(string $message): static
     {
         $profile = new static($message);
         static::$profileList[] = $profile;
         return $profile;
     }
 
-    public static function addMemoryPeak($message = 'Mem')
+    public static function addMemoryPeak($message = 'Mem'): void
     {
         $memoryKb = round(memory_get_peak_usage() / 1024, 0);
         static::add("$message " . $memoryKb . "kb");
     }
 
-    public static function getList()
+    public static function getList(): string
     {
         return implode(";", static::$profileList);
     }
 
     protected $message = '';
+
+    /**
+     * @var float|null
+     */
     protected $instanceMicrotime = null;
-    protected $includedFiles = 0;
+
+    /**
+     * @var int
+     *
+     * @psalm-var int<0, max>
+     */
+    protected int $includedFiles = 0;
 
     public function __construct($message)
     {
@@ -48,7 +60,7 @@ class Profiler
         $this->includedFiles = count(get_included_files());
     }
 
-    public function getSeconds()
+    public function getSeconds(): float
     {
         return round(($this->instanceMicrotime - static::$startupMicrotime), 3);
     }

@@ -19,7 +19,7 @@ class Authority extends Base
         }
     }
 
-    public static function create($name)
+    public static function create($name): self
     {
         $data = array(
             'name' => $name,
@@ -91,9 +91,9 @@ class Authority extends Base
      *
      * @param Int $locationId
      *
-     * @return clone self
+     * @return static self
      */
-    public function removeLocation($locationId)
+    public function removeLocation($locationId): static
     {
         $authority = clone $this;
         $authority['locations'] = $authority['locations']->removeLocation($locationId);
@@ -106,9 +106,9 @@ class Authority extends Base
      * @param String $serviceCsv
      *            only check for this serviceCsv
      *
-     * @return clone self
+     * @return bool self
      */
-    public function isInServiceList($servicelist = array())
+    public function isInServiceList($servicelist = array()): bool
     {
         foreach ($servicelist as $service) {
             if ($service->offsetExists('authorities')) {
@@ -122,12 +122,12 @@ class Authority extends Base
         return false;
     }
 
-    public function clearLocations()
+    public function clearLocations(): void
     {
         $this['locations'] = new \BO\Zmsdldb\Collection\Locations();
     }
 
-    public function addLocation(\BO\Zmsdldb\Entity\Location $location)
+    public function addLocation(\BO\Zmsdldb\Entity\Location $location): void
     {
         $this['locations'][$location['id']] = $location;
     }

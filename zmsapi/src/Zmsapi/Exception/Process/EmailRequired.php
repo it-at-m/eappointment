@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class EmailRequired extends \Exception
 {
-    protected $code = 400;
+    protected int $code = 400;
 
-    protected $message = 'Für den Standort ist eine E-Mail-Adresse ein Pflichtfeld.';
+    protected string $message = 'Für den Standort ist eine E-Mail-Adresse ein Pflichtfeld.';
 }

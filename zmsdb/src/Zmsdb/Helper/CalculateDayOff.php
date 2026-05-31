@@ -6,7 +6,12 @@ class CalculateDayOff
 {
     private \DateTime $dateTime;
 
-    protected $dayOffList = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{'Y-01-01': 'Neujahr', 'Y-03-08': 'Internationaler Frauentag', 'E-2': 'Karfreitag', 'E+0': 'Ostersonntag', 'E+1': 'Ostermontag', 'Y-05-01': 'Maifeiertag', 'E+39': 'Christi Himmelfahrt', 'E+50': 'Pfingstmontag', 'Y-10-03': 'Tag der Deutschen Einheit', 'Y-12-25': '1. Weihnachtstag', 'Y-12-26': '2. Weihnachtstag'}
+     */
+    protected array $dayOffList = [
         'Y-01-01' => 'Neujahr',
         'Y-03-08' => 'Internationaler Frauentag',
         'E-2'    => 'Karfreitag',
@@ -24,7 +29,7 @@ class CalculateDayOff
 
     protected $dateEaster;
 
-    protected $dateFormat = 'Y-m-d';
+    protected string $dateFormat = 'Y-m-d';
 
     protected $verbose = false;
 
@@ -37,7 +42,7 @@ class CalculateDayOff
         $this->verbose = $verbose;
     }
 
-    protected function calculateDayOffByYear($year)
+    protected function calculateDayOffByYear($year): \BO\Zmsentities\Collection\DayoffList
     {
         $collection = new \BO\Zmsentities\Collection\DayoffList();
         $dateEaster = $this->calculateEaster($year);
@@ -62,7 +67,7 @@ class CalculateDayOff
         return $collection;
     }
 
-    protected function calculateEaster($year)
+    protected function calculateEaster($year): \DateTime
     {
         $date = clone $this->dateTime;
         if ($year) {
@@ -92,7 +97,7 @@ class CalculateDayOff
         }
     }
 
-    protected function readDayoffList($query, $year)
+    protected function readDayoffList(\BO\Zmsdb\DayOff $query, string $year)
     {
         $collection = $query->readCommonByYear($year);
         $newDayOffList = $this->calculateDayOffByYear($year);

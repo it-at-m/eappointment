@@ -18,14 +18,13 @@ use BO\Zmsdb\Process as Query;
 class WorkstationProcess extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::setTransaction(true);
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
@@ -89,6 +88,9 @@ class WorkstationProcess extends BaseController
         }
     }
 
+    /**
+     * @return void
+     */
     protected function validateProcessCurrentDate($process)
     {
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
@@ -117,7 +119,10 @@ class WorkstationProcess extends BaseController
         }
     }
 
-    protected function testProcessData($entity)
+    /**
+     * @return void
+     */
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
@@ -128,7 +133,10 @@ class WorkstationProcess extends BaseController
         Helper\Matching::testCurrentScopeHasRequest($entity);
     }
 
-    protected function testProcess($process, $workstation, $allowClusterWideCall)
+    /**
+     * @return void
+     */
+    protected function testProcess(\BO\Zmsentities\Process $process, $workstation, $allowClusterWideCall)
     {
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new Exception\Process\ProcessAlreadyCalled();

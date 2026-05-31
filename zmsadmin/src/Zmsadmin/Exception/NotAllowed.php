@@ -4,7 +4,7 @@ namespace BO\Zmsadmin\Exception;
 
 class NotAllowed extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = 'you are not allowed to access this service';
+    protected string $message = 'you are not allowed to access this service';
 }

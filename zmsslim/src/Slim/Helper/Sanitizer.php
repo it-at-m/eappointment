@@ -13,7 +13,12 @@ final class Sanitizer
         return $trace;
     }
 
-    protected static function applyCatchAllPatterns($trace)
+    /**
+     * @return null|string|string[]
+     *
+     * @psalm-return array<string>|null|string
+     */
+    protected static function applyCatchAllPatterns($trace): array|string|null
     {
         $trace = preg_replace('/mysql:dbname=[^;]+;host=[^;]+;port=\d+/', 'mysql:dbname=***;host=***;port=***', $trace);
         $trace = preg_replace('/sqlite:[^;]+/', 'sqlite:***', $trace);

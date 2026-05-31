@@ -123,7 +123,7 @@ class DayOff extends Base
         return $dayOffListCommon->addList($dayOffList);
     }
 
-    public function readByYear($year)
+    public function readByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
@@ -141,7 +141,7 @@ class DayOff extends Base
         return $dayOffList;
     }
 
-    public function readCommonByYear($year)
+    public function readCommonByYear($year): Collection
     {
         $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
@@ -170,7 +170,7 @@ class DayOff extends Base
      *
      * @return Collection dayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, $year = null, $drop = true)
+    public function writeCommonDayoffsByYear($dayoffList, $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;
@@ -200,12 +200,10 @@ class DayOff extends Base
     /**
      * delete dayoff preferences by time interval
      *
-     * @param
+     * @param 
      *            deleteInSeconds
-     *
-     * @return boolean
      */
-    public function deleteByTimeInterval($deleteInSeconds)
+    public function deleteByTimeInterval($deleteInSeconds): void
     {
         $selectQuery = new Query\DayOff(Query\Base::SELECT);
         $selectQuery
@@ -228,7 +226,7 @@ class DayOff extends Base
         $this->removeCache();
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId): bool
     {
         $query = new Query\DayOff(Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);
@@ -238,6 +236,9 @@ class DayOff extends Base
         return ($this->deleteItem($query));
     }
 
+    /**
+     * @return void
+     */
     public function removeCache()
     {
         if (!App::$cache) {

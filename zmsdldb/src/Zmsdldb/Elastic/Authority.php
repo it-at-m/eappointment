@@ -45,10 +45,8 @@ class Authority extends Base
 
     /**
      * Take an elasticsearch result and return a authority list
-     *
-     * @return Collection\Authorities
      */
-    public function fromLocationResults($resultList)
+    public function fromLocationResults($resultList): Collection
     {
         $authorityList = new Collection();
         foreach ($resultList as $result) {

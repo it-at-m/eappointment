@@ -14,14 +14,13 @@ use BO\Zmsdb\Apikey as Query;
 class ApikeyDelete extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $message = Response\Message::create($request);
         $message->data = (new Query())->deleteEntity($args['key']);
 

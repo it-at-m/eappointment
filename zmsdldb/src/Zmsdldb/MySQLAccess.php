@@ -12,7 +12,7 @@ namespace BO\Zmsdldb;
  */
 class MySQLAccess extends PDOAccess
 {
-    protected $engine = 'MySQL';
+    protected string $engine = 'MySQL';
 
     const DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
     const DEFAULT_DATABASE_HOST = 'mariadb';
@@ -20,6 +20,9 @@ class MySQLAccess extends PDOAccess
     const DEFAULT_DATABASE_USER = 'root';
     const DEFAULT_DATABASE_PASSWORD = 'password';
 
+    /**
+     * @return void
+     */
     protected function connect(array $options)
     {
         $host = $options['host'] ?? static::DEFAULT_DATABASE_HOST;

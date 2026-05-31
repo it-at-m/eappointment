@@ -23,7 +23,7 @@ class TwigExtensionsAndFilter extends TwigExtension
         );
     }
 
-    public function decodeEntities($string)
+    public function decodeEntities($string): string
     {
         return $string === null ? '' : trim(nl2br(html_entity_decode($string)));
     }
@@ -57,7 +57,7 @@ class TwigExtensionsAndFilter extends TwigExtension
         return $array;
     }
 
-    public function getObjectName($object)
+    public function getObjectName($object): string
     {
         return (new \ReflectionClass($object))->getShortName();
     }

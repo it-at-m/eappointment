@@ -14,14 +14,13 @@ use BO\Zmsdb\Cluster as Query;
 class ClusterCalldisplayImageDataGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();

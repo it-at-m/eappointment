@@ -34,6 +34,11 @@ class Department extends Base implements MappingInterface
         DELETE FROM email WHERE BehoerdenID=?
     ';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{contact__city: Builder\Expression, contact__street: 'department.Adresse', contact__country: Builder\Expression, contact__name: 'department.Ansprechpartner', email: 'department_email.absenderadresse', sendEmailReminderEnabled: 'department_email.send_reminder', sendEmailReminderMinutesBefore: 'department_email.send_reminder_minutes_before', id: 'department.BehoerdenID', name: 'department.Name'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -60,6 +65,9 @@ class Department extends Base implements MappingInterface
         ];
     }
 
+    /**
+     * @return void
+     */
     public function addRequiredJoins()
     {
         $this->leftJoin(
@@ -70,7 +78,7 @@ class Department extends Base implements MappingInterface
         );
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new Alias('standort', 'scope_department'),
@@ -82,13 +90,13 @@ class Department extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
         return $this;
     }
 
-    public function addConditionDepartmentIds(array $departmentIds)
+    public function addConditionDepartmentIds(array $departmentIds): static
     {
         if (!empty($departmentIds)) {
             $this->query->whereIn('department.BehoerdenID', $departmentIds);
@@ -96,13 +104,18 @@ class Department extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null)
+    /**
+     * @return (mixed|string)[]
+     *
+     * @psalm-return array<string, ''|mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

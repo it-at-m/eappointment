@@ -48,7 +48,10 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key);
     }
 
-    private static function setMappedCache(string $cacheKey, mixed $data): void
+    /**
+     * @param OfficeList|OfficeServiceAndRelationList|ServiceList|ThinnedScopeList $data
+     */
+    private static function setMappedCache(string $cacheKey, OfficeList|ThinnedScopeList|ServiceList|OfficeServiceAndRelationList $data): void
     {
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);

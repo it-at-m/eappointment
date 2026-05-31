@@ -12,7 +12,12 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Base extends \BO\Zmsstatistic\BaseController
 {
-    public static $ignoreColumns = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var list{'subjectid', 'scopeids', 'max', 'sum', 'ticketprinter', 'ticketprintermissed'}
+     */
+    public static array $ignoreColumns = [
         'subjectid',
         'scopeids',
         'max',
@@ -20,7 +25,13 @@ class Base extends \BO\Zmsstatistic\BaseController
         'ticketprinter',
         'ticketprintermissed'
     ];
-    public static $subjectTranslations = [
+
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{waitingscope: 'Wartesituation', waitingdepartment: 'Wartesituation', waitingorganisation: 'Wartesituation', clientscope: 'Kundenstatistik', clientdepartment: 'Kundenstatistik', clientorganisation: 'Kundenstatistik', requestscope: 'Dienstleistungsstatistik', requestdepartment: 'Dienstleistungsstatistik', requestorganisation: 'Dienstleistungsstatistik', 'raw-waitingscope': 'Rohdaten Wartesituation', 'raw-waitingdepartment': 'Rohdaten Wartesituation', 'raw-waitingorganisation': 'Rohdaten Wartesituation', 'raw-clientscope': 'Rohdaten Wartende', 'raw-clientdepartment': 'Rohdaten Wartende', 'raw-clientorganisation': 'Rohdaten Wartende', 'raw-requestscope': 'Rohdaten Dienstleistungsstatistik', 'raw-requestdepartment': 'Rohdaten Dienstleistungsstatistik', 'raw-requestorganisation': 'Rohdaten Dienstleistungsstatistik'}
+     */
+    public static array $subjectTranslations = [
         'waitingscope' => 'Wartesituation',
         'waitingdepartment' => 'Wartesituation',
         'waitingorganisation' => 'Wartesituation',
@@ -41,7 +52,12 @@ class Base extends \BO\Zmsstatistic\BaseController
         'raw-requestorganisation' => 'Rohdaten Dienstleistungsstatistik'
     ];
 
-    public static $headlines = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{subjectid: 'ID', scopeids: 'Standort IDs', date: 'Datum', clientscount: 'Kunden Erschienen', missed: 'Kunden Nicht Erschienen', withappointment: 'davon Terminkunden Erschienen', missedwithappointment: 'davon Terminkunden Nicht Erschienen', noappointment: 'davon Spontankunden Erschienen', missednoappointment: 'davon Spontankunden Nicht Erschienen', ticketprinter: 'Erschienen (E-Kiosk)', ticketprintermissed: 'Nicht Erschienen (E-Kiosk)', requestscount: 'Dienstleistungen', organisationname: 'Organisation', departmentname: 'Behörde', scopename: 'Standort'}
+     */
+    public static array $headlines = [
         'subjectid' => 'ID',
         'scopeids' => 'Standort IDs',
         'date' => 'Datum',
@@ -59,7 +75,7 @@ class Base extends \BO\Zmsstatistic\BaseController
         'scopename' => 'Standort'
     ];
 
-    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet)
+    protected function writeInfoHeader(array $args, Spreadsheet $spreadsheet): Spreadsheet|null
     {
         $sheet = $spreadsheet->getActiveSheet();
         $infoData[] = static::$subjectTranslations[$args['category']];
@@ -103,7 +119,7 @@ class Base extends \BO\Zmsstatistic\BaseController
         return $spreadsheet;
     }
 
-    protected function setDateTime($dateString)
+    protected function setDateTime($dateString): \DateTime
     {
         $dateArr = explode('-', $dateString);
         if (2 == count($dateArr)) {
@@ -118,7 +134,10 @@ class Base extends \BO\Zmsstatistic\BaseController
         return new \DateTime($dateString);
     }
 
-    protected function getFormatedDates($date, $pattern = 'MMMM')
+    /**
+     * @return false|string
+     */
+    protected function getFormatedDates($date, $pattern = 'MMMM'): string|false
     {
         $dateFormatter = new \IntlDateFormatter(
             'de-DE',

@@ -6,8 +6,13 @@ class Provider extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "provider.json";
+    public static string $schema = "provider.json";
 
+    /**
+     * @return (int|null|string)[]
+     *
+     * @psalm-return array{id: 0, name: '', source: 'dldb', parent_id: null}
+     */
     public function getDefaults()
     {
         return [
@@ -45,7 +50,7 @@ class Provider extends Schema\Entity
         return $this->getRequestList()->hasRequests($requestId);
     }
 
-    public function getRequestList()
+    public function getRequestList(): Collection\RequestList
     {
         $requestList = new \BO\Zmsentities\Collection\RequestList();
         if (isset($this['data']['services'])) {
@@ -76,7 +81,7 @@ class Provider extends Schema\Entity
         return $this->toProperty()->display_name->get();
     }
 
-    public function getContact()
+    public function getContact(): Contact
     {
         $contact = $this->toProperty()->contact->get();
         return new Contact($contact);

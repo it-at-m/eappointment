@@ -6,7 +6,12 @@ class Preferences extends Base
 {
     const REPLACE_SKIPPED = 'skipped';
 
-    public function readProperty($entityName, $entityId, $groupName, $name, $forUpdate = false)
+    /**
+     * @psalm-param 'scope' $entityName
+     * @psalm-param 'appointment' $groupName
+     * @psalm-param 'endInDaysDefault'|'startInDaysDefault' $name
+     */
+    public function readProperty(string $entityName, $entityId, string $groupName, string $name, bool $forUpdate = false)
     {
         $sql = Query\Preferences::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {
@@ -20,7 +25,7 @@ class Preferences extends Base
         ]);
     }
 
-    public function readChangeDateTime($entityName, $entityId, $groupName, $name, $forUpdate = false)
+    public function readChangeDateTime(string $entityName, $entityId, string $groupName, string $name, $forUpdate = false): \DateTimeImmutable
     {
         $sql = Query\Preferences::QUERY_SELECT_TIMESTAMP;
         if ($forUpdate) {
@@ -40,7 +45,10 @@ class Preferences extends Base
         return new \DateTimeImmutable($timeString);
     }
 
-    public function replaceProperty($entityName, $entityId, $groupName, $name, $value)
+    /**
+     * @psalm-param 'scope' $entityName
+     */
+    public function replaceProperty(string $entityName, $entityId, $groupName, $name, $value)
     {
         $this->getWriter();
         $currentValue = $this->readProperty($entityName, $entityId, $groupName, $name, true);
@@ -60,8 +68,12 @@ class Preferences extends Base
      * remove Preferences data
      *
      * @return Resource Status
+     *
+     * @param key-of<TArray> $name
+     *
+     * @psalm-param 'scope' $entityName
      */
-    public function deleteProperty($entityName, $entityId, $groupName, $name)
+    public function deleteProperty(string $entityName, $entityId, $groupName, $name)
     {
         return $this->perform(Query\Preferences::QUERY_DELETE_PROPERTY, [
             "entityName" => $entityName,

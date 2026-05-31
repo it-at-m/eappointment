@@ -19,23 +19,23 @@ class Timer
         }
     }
 
-    public function start()
+    public function start(): void
     {
         $this->start = Timer::getMicroTime();
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->stop = Timer::getMicroTime();
     }
 
-    public function pause()
+    public function pause(): void
     {
         $this->pause = Timer::getMicroTime();
         $this->elapsed += ($this->pause - $this->start);
     }
 
-    public function resume()
+    public function resume(): void
     {
         $this->start = Timer::getMicroTime();
     }
@@ -53,13 +53,13 @@ class Timer
         return $this->timeToString();
     }
 
-    protected static function getMicroTime()
+    protected static function getMicroTime(): float
     {
         list($usec, $sec) = explode(' ', microtime());
         return ((float) $usec + (float) $sec);
     }
 
-    protected function timeToString()
+    protected function timeToString(): string
     {
         $seconds = ($this->stop - $this->start) + $this->elapsed;
         $seconds = Timer::roundMicroTime($seconds);
@@ -69,7 +69,7 @@ class Timer
         return $hours . "h:" . $minutes . "m:" . $seconds . "s";
     }
 
-    protected static function roundMicroTime($microTime)
+    protected static function roundMicroTime($microTime): float
     {
         return round($microTime, 4, PHP_ROUND_HALF_UP);
     }

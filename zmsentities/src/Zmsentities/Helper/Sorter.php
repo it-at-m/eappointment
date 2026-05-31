@@ -10,7 +10,7 @@ class Sorter
     /**
      * @todo check against ISO definition
      */
-    public static function toSortableString($string)
+    public static function toSortableString(string $string): string
     {
         $string = strtr($string, array(
             'Ä' => 'Ae',
@@ -25,7 +25,7 @@ class Sorter
         return $string;
     }
 
-    public static function toSortedCsv($csvString)
+    public static function toSortedCsv($csvString): string
     {
         $csvElements = explode(',', $csvString ?? '');
         sort($csvElements);

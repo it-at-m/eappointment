@@ -9,7 +9,7 @@ class Calldisplay extends Base
      */
     const TABLE = 'imagedata';
 
-    public function getQueryImage()
+    public function getQueryImage(): string
     {
         return 'SELECT imagename as name, imagecontent as data FROM `imagedata`
             WHERE `imagename` LIKE :name LIMIT 1';

@@ -47,27 +47,35 @@ class Application extends \BO\Slim\Application
 
     const SESSION_DURATION = ZMS_ADMIN_SESSION_DURATION;
 
-    public static $includeUrl = '/terminvereinbarung/admin';
+    public static string $includeUrl = '/terminvereinbarung/admin';
 
     /**
      * allow cluster wide process calls
+     *
+     * @var true
      */
-
-    public static $allowClusterWideCall = true;
+    public static bool $allowClusterWideCall = true;
 
     /**
      * image preferences
+     *
+     * @var false
      */
-
-    public static $isImageAllowed = false;
+    public static bool $isImageAllowed = false;
 
     /**
      * language preferences
      */
     const MULTILANGUAGE = true;
 
-    public static $locale = 'de';
-    public static $supportedLanguages = array(
+    public static string $locale = 'de';
+
+    /**
+     * @var (string|true)[][]
+     *
+     * @psalm-var array{de: array{name: 'Deutsch', locale: 'de_DE', default: true}, en: array{name: 'English', locale: 'en_GB'}}
+     */
+    public static array $supportedLanguages = array(
          // Default language
          'de' => array(
              'name'    => 'Deutsch',
@@ -98,7 +106,10 @@ class Application extends \BO\Slim\Application
      */
     public static $http = null;
 
-    public static $http_curl_config = array();
+    /**
+     * @var array
+     */
+    public static array $http_curl_config = array();
 
     const CLIENTKEY = '';
 

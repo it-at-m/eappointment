@@ -69,7 +69,10 @@ class Result
      *
      * @param Valid $body
      * @param ResponseInterface $response
+     *
      * @throws Exception
+     *
+     * @return void
      */
     protected function testMeta($body, ResponseInterface $response)
     {
@@ -179,9 +182,11 @@ class Result
     /**
      * Description
      *
-     * @return Entity[]
+     * @return Entity[]|null
+     *
+     * @psalm-return array<Entity>|null
      */
-    public function getData()
+    public function getData(): array|null
     {
         if (null === $this->data) {
             $this->setResponse($this->response);

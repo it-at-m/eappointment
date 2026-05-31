@@ -9,6 +9,11 @@ class Organisation extends Base implements MappingInterface
      */
     const TABLE = 'organisation';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{contact__city: Builder\Expression, contact__street: 'organisation.Anschrift', contact__country: Builder\Expression, contact__name: 'organisation.Organisationsname', name: 'organisation.Organisationsname', id: 'organisation.OrganisationsID', preferences__ticketPrinterActivation: 'organisation.kiosk_activation'}
+     */
     public function getEntityMapping()
     {
         return [
@@ -35,19 +40,19 @@ class Organisation extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionOrganisationId($organisationId)
+    public function addConditionOrganisationId($organisationId): static
     {
         $this->query->where('organisation.OrganisationsID', '=', $organisationId);
         return $this;
     }
 
-    public function addConditionOwnerId($ownerId)
+    public function addConditionOwnerId($ownerId): static
     {
         $this->query->where('organisation.KundenID', '=', $ownerId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId)
+    public function addConditionScopeId($scopeId): static
     {
         $this->leftJoin(
             new Alias('behoerde', 'department'),
@@ -65,7 +70,7 @@ class Organisation extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId)
+    public function addConditionDepartmentId($departmentId): static
     {
         $this->leftJoin(
             new Alias('behoerde', 'department'),
@@ -77,7 +82,12 @@ class Organisation extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null)
+    /**
+     * @return (int|mixed|string)[]
+     *
+     * @psalm-return array<string, ''|0|1|14|mixed>
+     */
+    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

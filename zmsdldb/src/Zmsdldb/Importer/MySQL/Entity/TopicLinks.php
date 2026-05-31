@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class TopicLinks extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{topic_id: 'topic_id', name: 'name', locale: 'locale', rank: 'rank', link: 'url', search: 'search', highlight: 'highlight', meta: 'meta_json', __RAW__: 'data_json'}
+     */
+    protected array $fieldMapping = [
         'topic_id' => 'topic_id',
         'name' => 'name',
         'locale' => 'locale',
@@ -18,6 +23,9 @@ class TopicLinks extends Base
         '__RAW__' => 'data_json'
     ];
 
+    /**
+     * @return void
+     */
     public function postSetupFields()
     {
         $searchValues = [$this->get('name')];
@@ -66,6 +74,9 @@ class TopicLinks extends Base
         }
     }
 
+    /**
+     * @return true
+     */
     public function postSave(\PDOStatement $stm, Base $entity)
     {
         return true;

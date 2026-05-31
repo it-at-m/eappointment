@@ -61,7 +61,7 @@ class AvailabilitySlotsUpdate extends BaseController
         return $response;
     }
 
-    public static function writeCalculatedSlots(Entity $availability, bool $checkConfigOnSave = false)
+    public static function writeCalculatedSlots(Entity $availability, bool $checkConfigOnSave = false): void
     {
         $config = (new ConfigRepository())->readEntity();
         if (

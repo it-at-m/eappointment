@@ -11,6 +11,11 @@ class Queue extends Process implements MappingInterface
 {
     const ALIAS = 'process';
 
+    /**
+     * @return (Builder\Expression|string)[]
+     *
+     * @psalm-return array{status: Builder\Expression, arrivalTime: Builder\Expression, callCount: 'process.AnzahlAufrufe', priority: 'process.priority', callTime: Builder\Expression, lastCallTime: Builder\Expression, number: Builder\Expression, destination: 'processuser.Arbeitsplatznr', destinationHint: 'processuser.aufrufzusatz', waitingTime: 'process.waiting_time', wayTime: 'process.way_time', withAppointment: Builder\Expression}
+     */
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -83,6 +88,9 @@ class Queue extends Process implements MappingInterface
         ];
     }
 
+    /**
+     * @return static
+     */
     public function addConditionAssigned()
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) {
@@ -117,6 +125,9 @@ class Queue extends Process implements MappingInterface
         return $data;
     }
 
+    /**
+     * @return void
+     */
     protected function addRequiredJoins()
     {
         $this->leftJoin(

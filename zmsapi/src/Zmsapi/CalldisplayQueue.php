@@ -17,14 +17,13 @@ use BO\Mellon\Validator;
 class CalldisplayQueue extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $statusList = Validator::param('statusList')->isArray()->setDefault([])->getValue();
 
@@ -49,7 +48,10 @@ class CalldisplayQueue extends BaseController
 
     protected $scopeCache = [];
 
-    protected function testScopeAndCluster($calldisplay, $resolveReferences)
+    /**
+     * @return void
+     */
+    protected function testScopeAndCluster(\BO\Zmsentities\Calldisplay $calldisplay, $resolveReferences)
     {
         if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
@@ -81,7 +83,7 @@ class CalldisplayQueue extends BaseController
     }
 
     // full queueList for calculation optimistic and estimated waiting Time and number of waiting clients
-    protected function readFullQueueList($calldisplay, $resolveReferences)
+    protected function readFullQueueList(\BO\Zmsentities\Calldisplay $calldisplay, $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
@@ -90,7 +92,7 @@ class CalldisplayQueue extends BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences)
+    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsdb\Process();
         return $query
@@ -100,7 +102,7 @@ class CalldisplayQueue extends BaseController
     }
 
     // short queueList only with status called and processing
-    protected function readQueueListByStatus($calldisplay, $statusList, $resolveReferences)
+    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, $statusList, $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {

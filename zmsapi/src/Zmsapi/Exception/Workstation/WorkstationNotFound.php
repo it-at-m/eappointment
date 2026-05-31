@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Workstation;
  */
 class WorkstationNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'workstation is not logged in anymore';
+    protected string $message = 'workstation is not logged in anymore';
 }

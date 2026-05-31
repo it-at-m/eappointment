@@ -25,7 +25,7 @@ class Session extends Base
         return $session;
     }
 
-    public function updateEntity($session)
+    public function updateEntity($session): Entity
     {
         $query = Query\Session::QUERY_WRITE;
         $this->perform($query, array(
@@ -37,7 +37,7 @@ class Session extends Base
         return $entity;
     }
 
-    public function deleteEntity($sessionName, $sessionId)
+    public function deleteEntity($sessionName, $sessionId): bool
     {
         $query = Query\Session::QUERY_DELETE;
         $result = $this->perform($query, array(
@@ -47,7 +47,7 @@ class Session extends Base
         return ($result) ? true : false;
     }
 
-    public function deleteByTimeInterval($sessionName, $deleteInSeconds)
+    public function deleteByTimeInterval($sessionName, $deleteInSeconds): void
     {
         $selectQuery = new Query\Session(Query\Base::SELECT);
         $selectQuery

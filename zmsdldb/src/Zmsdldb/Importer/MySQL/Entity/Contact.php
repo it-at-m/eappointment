@@ -4,7 +4,12 @@ namespace BO\Zmsdldb\Importer\MySQL\Entity;
 
 class Contact extends Base
 {
-    protected $fieldMapping = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{object_id: 'object_id', locale: 'locale', name: 'name', contact: 'contact_json', address: 'address_json', deviating_postal_address: 'deviating_postal_address_json', geo: 'geo_json'}
+     */
+    protected array $fieldMapping = [
         'object_id' => 'object_id',
         'locale' => 'locale',
         'name' => 'name',

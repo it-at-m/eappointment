@@ -9,7 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 class Roles extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
+     *
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,

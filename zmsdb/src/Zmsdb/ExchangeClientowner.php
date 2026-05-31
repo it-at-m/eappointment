@@ -6,7 +6,12 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeClientowner extends Base
 {
-    protected $groupBy = array(
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{month: '%Y-%m', day: '%Y-%m-%d', hour: '%H-%i'}
+     */
+    protected array $groupBy = array(
         'month' => '%Y-%m',
         'day' => '%Y-%m-%d',
         'hour' => '%H-%i'
@@ -17,7 +22,7 @@ class ExchangeClientowner extends Base
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'day'
-    ) {
+    ): Exchange {
         $owner = (new Owner())->readEntity($subjectid);
         $entity = new Exchange();
         $entity['title'] = "Kundenstatistik $owner->name";
@@ -50,7 +55,7 @@ class ExchangeClientowner extends Base
         return $entity;
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeClientowner::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -65,7 +70,7 @@ class ExchangeClientowner extends Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $owner = (new Owner())->readEntity($subjectid);
         $entity = new Exchange();

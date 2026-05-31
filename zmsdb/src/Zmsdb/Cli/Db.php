@@ -10,7 +10,14 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile($file, $dbname = null, $verbose = true)
+    /**
+     * @param mixed|string $file
+     *
+     * @psalm-param T|string $file
+     *
+     * @return void
+     */
+    public static function startExecuteSqlFile($file, $dbname = null, bool $verbose = true)
     {
         $pdo = self::startUsingDatabase($dbname, $verbose);
         $startTime = microtime(true);
@@ -63,13 +70,18 @@ class Db
         }
     }
 
-    public static function executeSql($query, $dbname = null)
+    public static function executeSql($query, $dbname = null): void
     {
         $pdo = self::startUsingDatabase($dbname, false);
         $pdo->exec($query);
     }
 
-    public static function startUsingDatabase($dbname = null, $verbose = true): \BO\Zmsdb\Connection\Pdo
+    /**
+     * @param null|string $dbname
+     *
+     * @psalm-param 'information_schema'|null $dbname
+     */
+    public static function startUsingDatabase(string|null $dbname = null, bool $verbose = true): \BO\Zmsdb\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
@@ -94,7 +106,7 @@ class Db
         return $pdo;
     }
 
-    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql')
+    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql'): void
     {
         $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 
@@ -105,13 +117,16 @@ class Db
         self::startExecuteSqlFile($fixtures . '/' . $filename);
     }
 
-    public static function startConfigDataImport()
+    public static function startConfigDataImport(): void
     {
         $defaults = new \BO\Zmsentities\Config();
         (new \BO\Zmsdb\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, $commit = true)
+    /**
+     * @psalm-return int<0, max>
+     */
+    public static function startMigrations($migrationList, $commit = true): int
     {
         if (!is_array($migrationList)) {
             $migrationList = glob($migrationList . '/*.sql');
@@ -143,6 +158,9 @@ class Db
         return $addedMigrations;
     }
 
+    /**
+     * @return void
+     */
     public static function executeTestData(string $testName, string $step)
     {
         $fixtures = realpath(__DIR__ . '/../../../tests/Zmsdb/fixtures/');

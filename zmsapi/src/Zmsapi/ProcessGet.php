@@ -14,14 +14,13 @@ use BO\Zmsdb\Process;
 class ProcessGet extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $this->testProcessData($args['id'], $args['authKey']);
 
@@ -33,6 +32,9 @@ class ProcessGet extends BaseController
         return $response;
     }
 
+    /**
+     * @return void
+     */
     protected function testProcessData($processId, $authKey)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($processId);

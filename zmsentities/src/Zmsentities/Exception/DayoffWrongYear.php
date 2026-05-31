@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Exception;
  */
 class DayoffWrongYear extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'A dayoff entity has date with wrong year';
+    protected string $message = 'A dayoff entity has date with wrong year';
 }

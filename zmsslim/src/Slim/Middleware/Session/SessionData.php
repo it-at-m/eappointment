@@ -54,12 +54,15 @@ class SessionData implements SessionInterface
         return $instance;
     }
 
-    public function writeData()
+    public function writeData(): void
     {
         session_write_close();
         $this->isLocked = true;
     }
 
+    /**
+     * @return void
+     */
     public function setGroup(array $group, $clear)
     {
         foreach ($group as $index => $items) {
@@ -75,10 +78,15 @@ class SessionData implements SessionInterface
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
+     * @return void
      *
-     * @return array
+     * @param (int|string) $key
+     * @param (int|string)|null $groupIndex
+     *
+     * @psalm-param array-key $key
+     * @psalm-param array-key|null $groupIndex
      */
     public function set($key, $value, $groupIndex = null)
     {
@@ -114,12 +122,15 @@ class SessionData implements SessionInterface
         return $sessionContent;
     }
 
-    public function setEntityClass($entityClass)
+    public function setEntityClass(object $entityClass): static
     {
         $this->entityClass = $entityClass;
         return $this;
     }
 
+    /**
+     * @return void
+     */
     public function remove($key, $groupIndex = null)
     {
         if (null === $groupIndex) {
@@ -130,10 +141,13 @@ class SessionData implements SessionInterface
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
+     * @return void
      *
-     * @return self
+     * @param (int|string)|null $groupIndex
+     *
+     * @psalm-param array-key|null $groupIndex
      */
     public function clearGroup($groupIndex = null)
     {
@@ -144,10 +158,9 @@ class SessionData implements SessionInterface
     }
 
     /**
+     * @SuppressWarnings (Superglobals)
      *
-     * @SuppressWarnings(Superglobals)
-     *
-     * @return self
+     * @return void
      */
     public function clear()
     {
@@ -159,12 +172,9 @@ class SessionData implements SessionInterface
     }
 
     /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
-     * @return self
+     * @SuppressWarnings (Superglobals)
      */
-    public function restart()
+    public function restart(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
@@ -173,6 +183,9 @@ class SessionData implements SessionInterface
         }
     }
 
+    /**
+     * @return bool|null
+     */
     public function has($key, $groupIndex = null)
     {
         if (null === $groupIndex) {
@@ -184,6 +197,9 @@ class SessionData implements SessionInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isEmpty()
     {
         return empty($this->data);

@@ -17,14 +17,13 @@ use BO\Zmsdb\ProcessStatusQueued;
 class TicketprinterWaitingnumberByScope extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $validator = $request->getAttribute('validator');
         $scope = (new Scope())->readEntity($args['id'], 0);

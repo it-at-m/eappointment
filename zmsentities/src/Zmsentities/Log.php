@@ -6,5 +6,5 @@ class Log extends Schema\Entity
 {
     public const PRIMARY = 'reference';
 
-    public static $schema = "log.json";
+    public static string $schema = "log.json";
 }

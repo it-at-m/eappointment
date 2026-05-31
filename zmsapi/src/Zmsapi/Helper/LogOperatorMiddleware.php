@@ -19,7 +19,12 @@ class LogOperatorMiddleware
         return $next->handle($request);
     }
 
-    private function getAuthorityWithoutPassword($authority)
+    /**
+     * @return null|string|string[]
+     *
+     * @psalm-return array<string>|null|string
+     */
+    private function getAuthorityWithoutPassword(string $authority): array|string|null
     {
         $regex = '/((:)(.+)(?=@))/';
         return preg_replace($regex, '', $authority);

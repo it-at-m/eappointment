@@ -14,14 +14,13 @@ use BO\Zmsdb\Provider;
 class ProviderList extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
         $requestList = Validator::param('requestList')->isString()->getValue();

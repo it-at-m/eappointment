@@ -132,7 +132,7 @@ class IpAddress
         return $ipAddress;
     }
 
-    protected function isCheckProxyHeaders($ipAddress)
+    protected function isCheckProxyHeaders($ipAddress): bool
     {
         $checkProxyHeaders = $this->checkProxyHeaders;
         if ($checkProxyHeaders && ($this->trustedProxies === true || !empty($this->trustedProxies))) {

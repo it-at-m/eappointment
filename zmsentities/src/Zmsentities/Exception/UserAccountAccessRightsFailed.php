@@ -7,9 +7,9 @@ namespace BO\Zmsentities\Exception;
  */
 class UserAccountAccessRightsFailed extends \Exception
 {
-    protected $code = 403;
+    protected int $code = 403;
 
-    protected $message = 'Level of user rights are low, access rejected';
+    protected string $message = 'Level of user rights are low, access rejected';
 
     public $templatedata = null;
 }

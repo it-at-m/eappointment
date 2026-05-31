@@ -77,6 +77,9 @@ class WorkstationProcessFinished extends BaseController
     }
 
 
+    /**
+     * @return void
+     */
     protected function testProcess(\BO\Zmsentities\Workstation $workstation)
     {
         if (! $workstation->process->hasId()) {

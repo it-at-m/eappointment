@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Useraccount;
  */
 class UseraccountNotFound extends \Exception
 {
-    protected $code = 404;
+    protected int $code = 404;
 
-    protected $message = 'useraccount not found';
+    protected string $message = 'useraccount not found';
 }

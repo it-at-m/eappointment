@@ -12,7 +12,10 @@ namespace BO\Zmsdldb;
  */
 class AbstractAccess
 {
-    protected static $showDeprecated = false;
+    /**
+     * @var false
+     */
+    protected static bool $showDeprecated = false;
 
     protected $accessInstance = array(
         'de' => array(
@@ -37,7 +40,12 @@ class AbstractAccess
         )
     );
 
-    protected static $accessInstanceTypes = [
+    /**
+     * @var null[]
+     *
+     * @psalm-var array{Authority: null, Borough: null, Link: null, Location: null, Office: null, Service: null, Setting: null, Topic: null}
+     */
+    protected static array $accessInstanceTypes = [
         'Authority' => null,
         'Borough' => null,
         'Link' => null,
@@ -48,7 +56,7 @@ class AbstractAccess
         'Topic' => null
     ];
 
-    public function addAccessInstanceLocale($locale = 'de')
+    public function addAccessInstanceLocale($locale = 'de'): void
     {
         if (!isset($this->accessInstance[$locale])) {
             $this->accessInstance[$locale] = static::$accessInstanceTypes;
@@ -117,10 +125,11 @@ class AbstractAccess
     }
 
     /**
+     * @return key-of<TArray>|null InstanceName
      *
-     * @return String InstanceName
+     * @psalm-param 0|5|6 $position
      */
-    protected function getInstanceOnName($name, $position = 0)
+    protected function getInstanceOnName($name, int $position = 0)
     {
         foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
@@ -130,7 +139,7 @@ class AbstractAccess
         return null;
     }
 
-    protected function from($instanceName, $locale = 'de')
+    protected function from(string $instanceName, $locale = 'de'): File\Base
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];

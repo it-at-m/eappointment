@@ -6,7 +6,7 @@ class Role extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static $schema = "role.json";
+    public static string $schema = "role.json";
 
     public function getDefaults(): array
     {

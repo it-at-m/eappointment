@@ -75,7 +75,7 @@ class ProcessSave extends BaseController
         );
     }
 
-    protected function getSuccessMessage(Entity $process)
+    protected function getSuccessMessage(Entity $process): string
     {
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
@@ -113,7 +113,7 @@ class ProcessSave extends BaseController
         return $process;
     }
 
-    private function shouldSendNotifications($requestData, \BO\Zmsentities\Schema\Entity $process)
+    private function shouldSendNotifications($requestData, \BO\Zmsentities\Schema\Entity $process): bool
     {
         $requestIds = $requestData['requests'] ?? [];
         $currentRequestIds = [];

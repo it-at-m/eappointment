@@ -14,14 +14,13 @@ use BO\Zmsentities\Useraccount as UseraccountEntity;
 class WorkstationOAuth extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $state  = $validator->getParameter('state')->isString()->isSmallerThan(40)->isBiggerThan(30)->getValue();
@@ -48,7 +47,7 @@ class WorkstationOAuth extends BaseController
         return $response;
     }
 
-    protected function getLoggedInWorkstationByOidc($request, $entity, $resolveReferences)
+    protected function getLoggedInWorkstationByOidc(\Psr\Http\Message\RequestInterface $request, string $entity, $resolveReferences)
     {
         Helper\UserAuth::testUseraccountExists($entity->getId());
 

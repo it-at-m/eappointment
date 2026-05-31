@@ -13,7 +13,7 @@ class ClusterHelper
 {
     protected static $cluster = null;
 
-    protected static $workstation = null;
+    protected static \BO\Zmsentities\Workstation|null $workstation = null;
 
     public function __construct(\BO\Zmsentities\Workstation $workstation)
     {
@@ -69,7 +69,7 @@ class ClusterHelper
         return $nextProcess;
     }
 
-    public static function isClusterEnabled()
+    public static function isClusterEnabled(): bool
     {
         return (static::$workstation->queue['clusterEnabled'] && static::$cluster);
     }

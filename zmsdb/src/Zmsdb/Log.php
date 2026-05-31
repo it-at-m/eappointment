@@ -30,12 +30,15 @@ class Log extends Base
     const ACTION_DELETED = 'Termin wurde gelöscht';
     const ACTION_CANCELED = 'Termin wurde abgesagt';
 
-    public static $operator = 'lib';
+    public static string $operator = 'lib';
 
+    /**
+     * @psalm-param 'buerger' $type
+     */
     public static function writeLogEntry(
-        $message,
+        string $message,
         $referenceId,
-        $type = self::PROCESS,
+        string $type = self::PROCESS,
         ?int $scopeId = null,
         ?string $userId = null,
         ?string $data = null
@@ -62,6 +65,9 @@ class Log extends Base
         return $log->perform($sql, $parameters);
     }
 
+    /**
+     * @return void
+     */
     public static function writeProcessLog(
         string $method,
         string $action,
@@ -106,7 +112,7 @@ class Log extends Base
         );
     }
 
-    public function readByProcessId($processId)
+    public function readByProcessId($processId): LogList
     {
         $query = new Query\Log(Query\Base::SELECT);
         $query->addEntityMapping();
@@ -150,7 +156,7 @@ class Log extends Base
         ?DateTime $date,
         int $perPage,
         int $offset
-    ) {
+    ): LogList {
         $sql = "SELECT * FROM log";
         $conditions = [];
         $params = [];
@@ -208,7 +214,7 @@ class Log extends Base
         return $logs;
     }
 
-    public function delete($processId)
+    public function delete($processId): LogList
     {
         $query = new Query\Log(Query\Base::SELECT);
         $query->addEntityMapping();
@@ -217,7 +223,7 @@ class Log extends Base
         return $logList;
     }
 
-    protected static function backtraceLogEntry()
+    protected static function backtraceLogEntry(): string
     {
         $trace = debug_backtrace();
         $short = '';

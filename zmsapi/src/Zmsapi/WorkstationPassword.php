@@ -14,14 +14,13 @@ use BO\Zmsdb\Useraccount as Query;
 class WorkstationPassword extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return String
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = (new Helper\User($request, 3))->checkPermissions();
         $useraccount = $workstation->getUseraccount();
         $input = Validator::input()->isJson()->assertValid()->getValue();

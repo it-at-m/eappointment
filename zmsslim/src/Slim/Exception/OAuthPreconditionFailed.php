@@ -7,7 +7,7 @@ namespace BO\Slim\Exception;
  */
 class OAuthPreconditionFailed extends \Exception
 {
-    protected $code = 412;
+    protected int $code = 412;
 
-    protected $message = 'A verfied email address is mandatory for login over open id connect';
+    protected string $message = 'A verfied email address is mandatory for login over open id connect';
 }

@@ -8,11 +8,11 @@ use Ulrichsg\Getopt\Option;
 class Info extends Base
 {
     /**
-     * @SuppressWarnings(Parameter)
-     * @codeCoverageIgnore
+     * @SuppressWarnings (Parameter)
      *
+     * @codeCoverageIgnore
      */
-    public function cli(array $argv, \League\CLImate\CLImate $climate)
+    public function cli(array $argv, \League\CLImate\CLImate $climate): void
     {
         $version = \BO\Zmsapi\Helper\Version::getString();
         $climate->out("API Version $version");

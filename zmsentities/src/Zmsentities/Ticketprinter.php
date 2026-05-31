@@ -9,15 +9,25 @@ class Ticketprinter extends Schema\Entity
 {
     public const PRIMARY = 'hash';
 
-    public static $schema = "ticketprinter.json";
+    public static string $schema = "ticketprinter.json";
 
-    protected $allowedButtonTypes = [
+    /**
+     * @var string[]
+     *
+     * @psalm-var array{s: 'scope', l: 'link', r: 'request'}
+     */
+    protected array $allowedButtonTypes = [
         's' => 'scope',
         /*'c' => 'cluster',*/
         'l' => 'link',
         'r' => 'request'
     ];
 
+    /**
+     * @return (false|int)[]
+     *
+     * @psalm-return array{enabled: false, reload: 30}
+     */
     public function getDefaults()
     {
         return [
@@ -26,7 +36,7 @@ class Ticketprinter extends Schema\Entity
         ];
     }
 
-    public function getHashWith($organisiationId)
+    public function getHashWith($organisiationId): static
     {
         $this->hash = $organisiationId . "abcdefghijklmnopqrstuvwxyz";
         //$this->hash = $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
@@ -38,7 +48,7 @@ class Ticketprinter extends Schema\Entity
         return $this->enabled;
     }
 
-    public function toStructuredButtonList()
+    public function toStructuredButtonList(): static
     {
         $ticketprinter = clone $this;
         $ticketprinter->buttons = array();
@@ -55,7 +65,7 @@ class Ticketprinter extends Schema\Entity
         return $ticketprinter;
     }
 
-    public function getScopeList()
+    public function getScopeList(): Collection\ScopeList
     {
         $scopeList = new Collection\ScopeList();
         if ($this->toProperty()->buttons->isAvailable()) {
@@ -68,7 +78,7 @@ class Ticketprinter extends Schema\Entity
         return $scopeList;
     }
 
-    public function getClusterList()
+    public function getClusterList(): Collection\ClusterList
     {
         $clusterList = new Collection\ClusterList();
         if ($this->toProperty()->buttons->isAvailable()) {
@@ -81,7 +91,10 @@ class Ticketprinter extends Schema\Entity
         return $clusterList;
     }
 
-    protected function getValidButtonWithType($string)
+    /**
+     * @psalm-return array{type: mixed}
+     */
+    protected function getValidButtonWithType(string $string): array
     {
         $type = $this->getButtonType($string);
         $value = $this->getButtonValue($string, $type);
@@ -93,7 +106,7 @@ class Ticketprinter extends Schema\Entity
         );
     }
 
-    protected function getButtonData($string, $button)
+    protected function getButtonData(string $string, $button)
     {
         $value = $this->getButtonValue($string, $this->getButtonType($string));
         if ('link' == $button['type']) {
@@ -120,7 +133,7 @@ class Ticketprinter extends Schema\Entity
         return $value->getValue();
     }
 
-    protected function getButtonType($string)
+    protected function getButtonType($string): string
     {
         return substr($string, 0, 1);
     }

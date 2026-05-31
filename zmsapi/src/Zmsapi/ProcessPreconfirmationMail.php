@@ -21,14 +21,13 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
 class ProcessPreconfirmationMail extends BaseController
 {
     /**
-     * @SuppressWarnings(Param)
-     * @return string
+     * @SuppressWarnings (Param)
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
@@ -44,7 +43,7 @@ class ProcessPreconfirmationMail extends BaseController
         return $response;
     }
 
-    protected static function writeMail(Process $process)
+    protected static function writeMail(Process $process): \BO\Zmsentities\Mail
     {
         $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
@@ -63,7 +62,10 @@ class ProcessPreconfirmationMail extends BaseController
         return $mail;
     }
 
-    protected function testProcessData($process)
+    /**
+     * @return void
+     */
+    protected function testProcessData(Process $process)
     {
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
@@ -78,7 +80,7 @@ class ProcessPreconfirmationMail extends BaseController
         }
     }
 
-    public static function getProcessListOverview($process, $config)
+    public static function getProcessListOverview(Process $process, \BO\Zmsentities\Config $config): \BO\Zmsentities\Collection\Base&Collection
     {
         $collection  = (new Collection())->addEntity($process);
         if (

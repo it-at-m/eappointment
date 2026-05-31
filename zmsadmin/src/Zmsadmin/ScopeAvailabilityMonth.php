@@ -19,19 +19,17 @@ class ScopeAvailabilityMonth extends BaseController
     /**
      * Return response.
      *
-     * @SuppressWarnings(Param)
+     * @SuppressWarnings (Param)
      *
      * @param \Psr\Http\Message\RequestInterface  $request  The request instance
      * @param \Psr\Http\Message\ResponseInterface $response The response instance
      * @param array                               $args     The path arguments
-     *
-     * @return string
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
@@ -85,7 +83,7 @@ class ScopeAvailabilityMonth extends BaseController
         );
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate)
+    protected function getAvailabilityList(\BO\Zmsentities\Schema\Entity $scope, $startDate, $endDate)
     {
         try {
             $availabilityList = \App::$http
