@@ -19,19 +19,20 @@ def print_info(string):
 class EappointmentCli:
   """Base CLI: paths, DB/Flyway test data import, module and clean commands."""
 
+  # Dependency-first order (libraries before apps), matching legacy GitLab release order.
   MODULES = [
     "mellon",
+    "zmsslim",
+    "zmsentities",
+    "zmsdldb",
+    "zmsdb",
+    "zmsclient",
     "zmsadmin",
     "zmsapi",
     "zmscalldisplay",
-    "zmscitizenapi",
-    "zmsclient",
-    "zmsdb",
-    "zmsdldb",
-    "zmsentities",
     "zmsmessaging",
-    "zmsslim",
     "zmsstatistic",
+    "zmscitizenapi",
     "zmsticketprinter",
   ]
 
@@ -383,7 +384,15 @@ SET FOREIGN_KEY_CHECKS = 1;"""
 
       for module in module_dependencies:
         module_dir = os.path.join(app.repo_dir, module)
-        os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
+        deps = module_dependencies[module]
+        print_info(f"Updating {module}: {' '.join(deps)}")
+        result = subprocess.run(
+          ["composer", "update", *deps, "--no-scripts", "--no-plugins"],
+          cwd=module_dir,
+        )
+        if result.returncode != 0:
+          print_info(f"composer update failed in {module} (exit {result.returncode})")
+          sys.exit(result.returncode)
 
     @cli_modules.command("check-upgrade")
     @click.argument("php_version")
