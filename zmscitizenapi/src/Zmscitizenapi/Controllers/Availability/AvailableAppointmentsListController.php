@@ -18,12 +18,14 @@ class AvailableAppointmentsListController extends BaseController
 
     private AvailableAppointmentsListService $service;
 
+    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();
         $this->service = new AvailableAppointmentsListService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

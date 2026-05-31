@@ -19,6 +19,7 @@ class ResponseFactory implements ResponseFactoryInterface
      * {@inheritdoc}
      * @return ResponseInterface|Response
      */
+    #[\Override]
     public function createResponse(
         int $code = StatusCodeInterface::STATUS_OK,
         string $reasonPhrase = ''

@@ -18,12 +18,14 @@ class AvailableDaysListByOfficeController extends BaseController
 
     private AvailableDaysListService $service;
 
+    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();
         $this->service = new AvailableDaysListService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

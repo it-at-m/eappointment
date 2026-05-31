@@ -9,6 +9,7 @@ class Organisation extends Base implements MappingInterface
      */
     const TABLE = 'organisation';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

@@ -18,12 +18,14 @@ class AppointmentReserveController extends BaseController
 
     private AppointmentReserveService $service;
 
+    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();
         $this->service = new AppointmentReserveService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);

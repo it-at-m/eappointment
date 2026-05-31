@@ -6,6 +6,7 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 {
+    #[\Override]
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
@@ -61,6 +62,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         return $entity;
     }
 
+    #[\Override]
     public function readSubjectList()
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingscope::QUERY_SUBJECTS, []);
@@ -77,6 +79,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         return $entity;
     }
 
+    #[\Override]
     public function readPeriodList($subjectid, $period = 'day')
     {
         $scope = (new Scope())->readEntity($subjectid);

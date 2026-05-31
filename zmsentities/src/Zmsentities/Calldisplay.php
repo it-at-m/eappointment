@@ -10,6 +10,7 @@ class Calldisplay extends Schema\Entity
 
     public static $schema = "calldisplay.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

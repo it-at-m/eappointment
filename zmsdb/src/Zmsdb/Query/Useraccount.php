@@ -122,6 +122,7 @@ class Useraccount extends Base implements MappingInterface
         );
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -236,12 +237,14 @@ class Useraccount extends Base implements MappingInterface
         $data['notrufinitiierung'] = 0;
         $data['notrufantwort'] = 0;
 
+        #[\Override]
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
         return $data;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?

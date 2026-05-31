@@ -6,6 +6,7 @@ class Services extends Base
 {
     protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Service';
 
+    #[\Override]
     public function runImport(): bool
     {
         try {

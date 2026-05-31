@@ -22,6 +22,7 @@ class MySQL extends Base
         }
     }
 
+    #[\Override]
     public function runImport()
     {
         try {
@@ -31,11 +32,13 @@ class MySQL extends Base
             throw $e;
         }
     }
+    #[\Override]
     public function preImport()
     {
         $this->beginTransaction();
     }
 
+    #[\Override]
     public function postImport()
     {
         $this->commit();

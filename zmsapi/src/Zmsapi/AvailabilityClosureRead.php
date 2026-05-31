@@ -9,6 +9,7 @@ use DateTimeImmutable;
 
 class AvailabilityClosureRead extends BaseController
 {
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

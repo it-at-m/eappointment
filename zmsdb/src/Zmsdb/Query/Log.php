@@ -42,6 +42,7 @@ class Log extends Base
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed('ts')] = strtotime($data[$this->getPrefixed('ts')]);

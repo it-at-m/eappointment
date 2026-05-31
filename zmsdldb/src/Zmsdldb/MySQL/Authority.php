@@ -19,6 +19,7 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
+    #[\Override]
     public function fetchList($servicelist = [])
     {
         try {
@@ -104,6 +105,7 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
+    #[\Override]
     public function fetchId($authorityid)
     {
         try {
@@ -130,6 +132,7 @@ class Authority extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readListByOfficePath($officepath)
     {
         $authorityList = new Collection();

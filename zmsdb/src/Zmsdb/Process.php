@@ -44,6 +44,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->fetchOne($query, new Entity());
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
         if (0 <= $resolveReferences) {
