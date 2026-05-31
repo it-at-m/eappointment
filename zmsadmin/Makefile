@@ -19,7 +19,7 @@ fix: # run code fixing
 	npm run fix
 
 live: # init live system
-	composer install --no-dev --prefer-dist
+	composer install --no-dev --prefer-dist --optimize-autoloader
 	npm install --legacy-peer-deps
 	npm run build
 	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/
