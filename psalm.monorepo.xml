@@ -45,5 +45,20 @@
         <file name="zmsticketprinter/config.example.php" />
         <file name="zmsticketprinter/bootstrap.php" />
         <file name="zmsticketprinter/routing.php" />
+        <ignoreFiles>
+            <directory name="mellon/vendor" />
+            <directory name="zmsadmin/vendor" />
+            <directory name="zmsapi/vendor" />
+            <directory name="zmscalldisplay/vendor" />
+            <directory name="zmscitizenapi/vendor" />
+            <directory name="zmsclient/vendor" />
+            <directory name="zmsdb/vendor" />
+            <directory name="zmsdldb/vendor" />
+            <directory name="zmsentities/vendor" />
+            <directory name="zmsmessaging/vendor" />
+            <directory name="zmsslim/vendor" />
+            <directory name="zmsstatistic/vendor" />
+            <directory name="zmsticketprinter/vendor" />
+        </ignoreFiles>
     </projectFiles>
 </psalm>
