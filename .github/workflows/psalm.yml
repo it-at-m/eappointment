@@ -78,6 +78,7 @@ jobs:
 
       - name: Run Psalm Security Scan
         id: psalm
+        continue-on-error: true
         working-directory: ${{ matrix.project }}
         run: |
           set +e
@@ -86,11 +87,15 @@ jobs:
             --report=../results-${{ matrix.project }}.sarif
           psalm_exit=$?
           set -e
+          echo "exit_code=${psalm_exit}" >> "$GITHUB_OUTPUT"
           if [ ! -f "../results-${{ matrix.project }}.sarif" ]; then
             echo "Psalm did not produce SARIF for ${{ matrix.project }} (exit code: ${psalm_exit})."
             exit 1
           fi
-          echo "Psalm finished for ${{ matrix.project }} with exit code ${psalm_exit}; SARIF written."
+          if [ "${psalm_exit}" -ne 0 ]; then
+            echo "Psalm reported issues for ${{ matrix.project }} (exit code: ${psalm_exit})."
+            exit "${psalm_exit}"
+          fi
 
       - name: Normalize SARIF paths to repository root
         env:
@@ -137,11 +142,18 @@ jobs:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
 
-      - name: Fail job if SARIF generation failed
-        if: steps.sarif.outputs.exists != 'true'
+      - name: Fail job if Psalm scan or SARIF generation failed
+        if: always()
         run: |
-          echo "Missing SARIF output for ${{ matrix.project }} (results-${{ matrix.project }}.sarif)."
-          exit 1
+          if [ "${{ steps.sarif.outputs.exists }}" != "true" ]; then
+            echo "Missing SARIF output for ${{ matrix.project }} (results-${{ matrix.project }}.sarif)."
+            exit 1
+          fi
+          psalm_exit="${{ steps.psalm.outputs.exit_code }}"
+          if [ -z "${psalm_exit}" ] || [ "${psalm_exit}" != "0" ]; then
+            echo "Psalm failed for ${{ matrix.project }} (exit code: ${psalm_exit:-unknown})."
+            exit 1
+          fi
 
   psalm-dead-code:
     runs-on: ubuntu-latest
@@ -178,6 +190,7 @@ jobs:
 
       - name: Run Psalm dead-code scan (monorepo)
         id: psalm_dead_code
+        continue-on-error: true
         run: |
           set +e
           zmsapi/vendor/bin/psalm \
@@ -186,11 +199,15 @@ jobs:
             --report=results-monorepo.sarif
           psalm_exit=$?
           set -e
+          echo "exit_code=${psalm_exit}" >> "$GITHUB_OUTPUT"
           if [ ! -f "results-monorepo.sarif" ]; then
             echo "Psalm did not produce monorepo SARIF (exit code: ${psalm_exit})."
             exit 1
           fi
-          echo "Psalm monorepo scan finished with exit code ${psalm_exit}; SARIF written."
+          if [ "${psalm_exit}" -ne 0 ]; then
+            echo "Psalm monorepo scan reported issues (exit code: ${psalm_exit})."
+            exit "${psalm_exit}"
+          fi
 
       - name: Check monorepo SARIF file exists
         id: sarif_monorepo
@@ -207,8 +224,15 @@ jobs:
         with:
           sarif_file: results-monorepo.sarif
 
-      - name: Fail job if monorepo SARIF generation failed
-        if: steps.sarif_monorepo.outputs.exists != 'true'
+      - name: Fail job if monorepo Psalm scan or SARIF generation failed
+        if: always()
         run: |
-          echo "Missing monorepo SARIF output (results-monorepo.sarif)."
-          exit 1
+          if [ "${{ steps.sarif_monorepo.outputs.exists }}" != "true" ]; then
+            echo "Missing monorepo SARIF output (results-monorepo.sarif)."
+            exit 1
+          fi
+          psalm_exit="${{ steps.psalm_dead_code.outputs.exit_code }}"
+          if [ -z "${psalm_exit}" ] || [ "${psalm_exit}" != "0" ]; then
+            echo "Psalm monorepo scan failed (exit code: ${psalm_exit:-unknown})."
+            exit 1
+          fi
