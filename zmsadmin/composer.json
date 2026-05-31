@@ -42,7 +42,7 @@
         "monolog/monolog": "^2.0",
         "league/csv": "^9.0",
         "phpoffice/phpspreadsheet": "^1.30",
-        "psr/http-message": "^1.0",
+        "psr/http-message": "^2.0",
         "container-interop/container-interop": "^1.2",
         "twig/intl-extra": "^3.4",
         "twig/twig": "3.*",
