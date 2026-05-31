@@ -200,7 +200,7 @@ class DayOff extends Base
     /**
      * delete dayoff preferences by time interval
      *
-     * @param 
+     * @param
      *            deleteInSeconds
      */
     public function deleteByTimeInterval($deleteInSeconds): void

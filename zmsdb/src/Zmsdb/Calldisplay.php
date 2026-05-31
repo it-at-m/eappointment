@@ -13,7 +13,7 @@ class Calldisplay extends Base
     /**
      * read Ticketprinter by comma separated buttonlist
      *
-     * @param 
+     * @param
      * ticketprinter Entity
      * now DateTime
      *

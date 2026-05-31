@@ -242,7 +242,7 @@ class Workstation extends Base
     /**
      * remove a process from workstation
      *
-     * @param 
+     * @param
      *            workstation
      */
     public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation): bool

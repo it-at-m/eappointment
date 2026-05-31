@@ -108,7 +108,7 @@ class Apikey extends Base
     /**
      * write initial api quotas
      *
-     * @param 
+     * @param
      *      entity
      */
     public function writeQuota($apiKey, $route, $period, $requests): void
@@ -127,7 +127,7 @@ class Apikey extends Base
     /**
      * update api quotas
      *
-     * @param 
+     * @param
      *      apiKey
      *      entity
      */
@@ -194,7 +194,7 @@ class Apikey extends Base
     /**
      * delete an existing outdated apikey
      *
-     * @param 
+     * @param
      *      apikey
      */
     public function writeDeletedQuota($quotaId): bool

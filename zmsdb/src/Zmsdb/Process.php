@@ -362,7 +362,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and DateTime
      *
-     * @param 
+     * @param
      * scopeId
      * dateTime
      *
@@ -593,7 +593,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als bestätigt
      *
-     * @param 
+     * @param
      * process
      *
      * @return Entity Status
@@ -677,7 +677,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als abgesagt
      *
-     * @param 
+     * @param
      *            processId and authKey
      *
      * @return Entity|null Status

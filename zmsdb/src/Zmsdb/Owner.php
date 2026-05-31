@@ -10,7 +10,7 @@ class Owner extends Base
     /**
      * read entity
      *
-     * @param 
+     * @param
     * itemId
     * resolveReferences
      * @param false|string $itemId
@@ -44,7 +44,7 @@ class Owner extends Base
      /**
      * read list of owners
      *
-     * @param 
+     * @param
      * resolveReferences
      *
      * @return Collection Collection
@@ -80,7 +80,7 @@ class Owner extends Base
     /**
      * remove an owner
      *
-     * @param 
+     * @param
     * itemId
      *
      * @return Resource|null Status
@@ -99,7 +99,7 @@ class Owner extends Base
     /**
      * write an owner
      *
-     * @param 
+     * @param
      * entity
      */
     public function writeEntity(\BO\Zmsentities\Owner $entity): Resource
@@ -115,7 +115,7 @@ class Owner extends Base
     /**
      * update an owner
      *
-     * @param 
+     * @param
      * ownerId, entity
      */
     public function updateEntity($ownerId, \BO\Zmsentities\Owner $entity): Resource

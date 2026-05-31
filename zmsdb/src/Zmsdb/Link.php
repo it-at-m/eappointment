@@ -45,7 +45,7 @@ class Link extends Base
     /**
      * write a link
      *
-     * @param 
+     * @param
      * entity,
      * organisationId
      */

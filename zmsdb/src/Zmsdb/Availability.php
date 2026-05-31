@@ -251,7 +251,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * update an availability
      *
-     * @param 
+     * @param
      * entityId
      *
      * @return Entity
@@ -273,7 +273,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * remove an availability
      *
-     * @param 
+     * @param
      * availabilityId
      *
      * @return bool Status

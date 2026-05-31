@@ -14,7 +14,7 @@ class Ticketprinter extends Base
     /**
      * read entity
      *
-     * @param 
+     * @param
      * itemId
      * @param false|string $itemId
      *
@@ -171,7 +171,7 @@ class Ticketprinter extends Base
     /**
      * write a cookie for ticketprinter
      *
-     * @param 
+     * @param
      * organisationId
      */
     public function writeEntityWithHash($organisationId, $ticketprinterName = ''): Resource
@@ -196,7 +196,7 @@ class Ticketprinter extends Base
     /**
      * write a ticketprinter
      *
-     * @param 
+     * @param
      * entity,
      * organisationId
      */
@@ -236,7 +236,7 @@ class Ticketprinter extends Base
     /**
      * remove an ticketprinter
      *
-     * @param 
+     * @param
     * itemId
      *
      * @return bool Status

@@ -21,7 +21,7 @@ class SessionHandler implements \SessionHandlerInterface
      */
     public static int $useSyncFlag = 0;
 
-    protected static static|null $lastInstance = null;
+    protected static static |null $lastInstance = null;
 
     /**
      * @var \BO\Zmsclient\Http $http
