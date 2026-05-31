@@ -8,8 +8,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -17,8 +16,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmscitizenview"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -26,8 +24,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmscitizenapi"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -35,8 +32,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmsapi"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -44,8 +40,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmsadmin"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -53,8 +48,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmsstatistic"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -62,8 +56,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmsticketprinter"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -71,8 +64,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/zmscalldisplay"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -84,8 +76,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/mellon"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -93,8 +84,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsadmin"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -102,8 +92,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsapi"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -111,8 +100,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmscalldisplay"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -120,8 +108,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmscitizenapi"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -129,8 +116,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsclient"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -138,8 +124,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsdb"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -147,8 +132,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsdldb"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -156,8 +140,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsentities"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -165,8 +148,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsmessaging"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -174,8 +156,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsslim"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -183,8 +164,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsstatistic"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -192,8 +172,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/zmsticketprinter"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
@@ -205,8 +184,7 @@ updates:
   - package-ecosystem: "maven"
     directory: "/zmsautomation"
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
       time: "04:00"
       timezone: "Europe/Berlin"
     target-branch: "next"
