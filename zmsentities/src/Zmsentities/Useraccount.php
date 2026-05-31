@@ -253,7 +253,6 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    #[\Override]
     public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {
@@ -324,7 +323,6 @@ class Useraccount extends Schema\Entity
         return new Department();
     }
 
-    #[\Override]
     public function getDepartmentByIds(array $departmentIds)
     {
         foreach ($this->departments as $department) {

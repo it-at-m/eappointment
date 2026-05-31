@@ -17,7 +17,6 @@ class AvailableAppointmentsListByOfficeController extends BaseController
     use UnpublishedAccessTrait;
 
     private AvailableAppointmentsListService $service;
-    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

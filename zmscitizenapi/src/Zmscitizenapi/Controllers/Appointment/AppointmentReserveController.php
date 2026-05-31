@@ -18,7 +18,6 @@ class AppointmentReserveController extends BaseController
 
     private AppointmentReserveService $service;
 
-    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

@@ -18,7 +18,6 @@ class AvailableDaysListByOfficeController extends BaseController
 
     private AvailableDaysListService $service;
 
-    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

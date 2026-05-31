@@ -18,7 +18,6 @@ class AvailableAppointmentsListController extends BaseController
 
     private AvailableAppointmentsListService $service;
 
-    #[\Override]
     public function __construct()
     {
         $this->initializeUnpublishedAccess();

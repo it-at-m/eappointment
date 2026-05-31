@@ -237,7 +237,6 @@ class Useraccount extends Base implements MappingInterface
         $data['notrufinitiierung'] = 0;
         $data['notrufantwort'] = 0;
 
-        #[\Override]
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
