@@ -15,7 +15,7 @@ class ClusterCalldisplayImageDataDeleteTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUserAccount()->setRights('cluster');
+        $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay');
         $response = $this->render(['id' => self::CLUSTER_ID], [], []);
         $this->assertStringContainsString('"data":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -32,7 +32,7 @@ class ClusterCalldisplayImageDataDeleteTest extends Base
 
     public function testScopeNotFound()
     {
-        $this->setWorkstation()->getUserAccount()->setRights('cluster');
+        $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);

@@ -609,7 +609,7 @@ class SlotTest extends Base
             'processingNote',
             (isset($availability['processingNote'])) ? json_encode($availability['processingNote']) : 'none'
         );
-        error_log($debug);
+        \App::$log->debug('Slot availability debug', ['details' => $debug]);
     }
 
     protected function readTestAvailability()

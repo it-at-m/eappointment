@@ -8,45 +8,49 @@
     "build": "vite build --mode production && npm run post-build",
     "post-build": "node ./processes/post-build.js",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "type-check:tests": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "prettier src/ --check",
     "format": "prettier --write src/",
     "test": "vitest run",
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "8.1.0",
-    "altcha": "^1.2.0",
-    "jsdom": "^26.0.0",
+    "@muenchen/muc-patternlab-vue": "9.0.2",
+    "altcha": "^3.0.10",
+    "dompurify": "^3.4.5",
+    "jsdom": "^29.0.0",
     "vue": "^3.5.33",
-    "vue-i18n": "11.2.8",
-    "webfontloader": "^1.0.0",
-    "dompurify": "^3.4.1"
+    "vue-i18n": "11.4.4",
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.21.4",
     "@muenchen/prettier-codeformat": "^1.0.2",
     "@types/node": "^25.6.0",
     "@types/webfontloader": "^1.6.35",
-    "@vitejs/plugin-vue": "^6.0.6",
-    "@vitest/coverage-v8": "^4.1.5",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/coverage-v8": "^4.1.6",
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.7.0",
     "@vue/test-utils": "^2.4.10",
     "eslint": "9.39.1",
-    "eslint-plugin-vue": "10.9.0",
+    "eslint-plugin-vue": "10.9.1",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
     "sass": "^1.99.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.10",
+    "vite": "^8.0.11",
     "vitest": "^4.1.4",
-    "vue-tsc": "^3.2.7"
+    "vue-tsc": "^3.3.1"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
+  "// overrides.ws": "jsdom -> ws@8.18.x; force ^8.20.1 (CVE-2026-45736).",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
     },
-    "@tootallnate/once": "^3.0.1"
+    "@tootallnate/once": "^3.0.1",
+    "tmp": "^0.2.6",
+    "ws": "^8.20.1"
   }
 }

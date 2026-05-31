@@ -69,8 +69,8 @@ $errorMiddleware->setErrorHandler(
             ]
         ]);
 
-        error_log($responseBody);
-        
+        \App::$log->info('Method not allowed', ['response' => json_decode($responseBody, true)]);
+
         $response->getBody()->write($responseBody);
         return $response;
     }

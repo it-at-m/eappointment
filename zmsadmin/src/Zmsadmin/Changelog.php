@@ -13,13 +13,13 @@ class Changelog extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         } catch (\Exception $workstationexception) {

@@ -4,11 +4,14 @@ test-automation-framework-example
 test-automation-framework
 zms-test-automation
 eappointment-buergeransicht
-zmsautomation/lib
-
+captchaservice
+muc-patternlab-vue
 dldb-mapper
+# Legacy sibling clone of the old php-base repo; runtime images live in zmsbase/
 eappointment-php-base
 zms-deployment
+
+zmsautomation/lib
 
 # =============== ddev =================
 .ddev/.env
@@ -220,6 +223,7 @@ nbdist/
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/terminals.json
+.continue
 
 # Covers other editors
 *.suo

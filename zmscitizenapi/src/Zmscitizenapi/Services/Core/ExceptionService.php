@@ -57,6 +57,7 @@ class ExceptionService
 
                     break;
                 case 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed':
+                case 'BO\\Zmsapi\\Exception\\Process\\ExternalUserIdMatchFailed':
                     $error = self::getError('authKeyMismatch');
 
                     break;

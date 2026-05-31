@@ -10,7 +10,7 @@ jobs:
   module-code-quality:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev"
     steps:
       - name: Checkout
         uses: actions/checkout@v6

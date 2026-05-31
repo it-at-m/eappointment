@@ -2,6 +2,7 @@
 	{% use "block/calendar/navigation.twig" %}
 	{% use "block/workstation/scopeSwitch.twig" %}
 	{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+	{% set permissions = workstation.useraccount.permissions %}
 
 	{% block board_header_right %}
 		{% if cluster.scopes|length > 1 %}
@@ -68,6 +69,7 @@
 		{% set queueTextColumnCount = 1
 			+ (workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 ? 1 : 0)
 			+ (workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 ? 1 : 0) %}
+		{% if permissions.parkedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -190,7 +192,9 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+		{% endif %}
 
+		{% if permissions.openqueue %}
 		<div class="table-responsive-wrapper">
 			<h2 class="accordion {{ showCalledList ? 'active' : '' }}" id="called-appointments">
 				<span class="color-green">
@@ -264,7 +268,9 @@
 					{% endif %}
 				</div>
 		</div>
+		{% endif %}
 
+		{% if permissions.waitingqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-blue">
@@ -338,7 +344,7 @@
 										{% endif %}
 									</td>
 									<td title="{{ item.amendment|default('')|replace({'\r': ''})|e('html_attr') }}">
-										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday and permissions.cherrypick %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
 												{{ item.displayNumber }}
 											</a>
@@ -377,7 +383,7 @@
 												Uhr nicht anwesend und kann in
 												{{ formattedTime }}
 												Minuten wieder aufgerufen werden.
-											{% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+											{% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday and permissions.cherrypick %}
 												<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a>
 												{{ callCount|raw }}
 											{% else %}
@@ -473,6 +479,8 @@
 		{% else %}
 			Keine Einträge gefunden.
 		{% endif %}
+		{% endif %}
+			{% if permissions.missedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-red">
@@ -590,7 +598,9 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+		{% endif %}
 
+		{% if permissions.finishedqueue %}
 		<div class="table-responsive-wrapper">
 			<h2 id="finished-appointments-control">
 				<span class="color-green">
@@ -692,6 +702,8 @@ content.addClass('hidden')
 				}
 			</style>
 		</div>
+		{% endif %}
+		{% if permissions.parkedqueue or permissions.openqueue or permissions.waitingqueue or permissions.missedqueue or permissions.finishedqueue %}
 		<div class="form-actions">
 			<div class="right">
 				<button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload">
@@ -699,6 +711,7 @@ content.addClass('hidden')
 					Warteschlange aktualisieren</button>
 			</div>
 		</div>
+		{% endif %}
 		{% if (debug)  %}
 			<div
 				id="httplog">

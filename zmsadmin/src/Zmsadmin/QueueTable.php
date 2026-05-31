@@ -15,13 +15,13 @@ class QueueTable extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();

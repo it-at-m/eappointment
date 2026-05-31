@@ -18,3 +18,5 @@ if (file_exists("$dir/bootstrap.php")) {
 } else {
     require("$dir/config.php");
 }
+
+\BO\Slim\Bootstrap::ensureLogger();

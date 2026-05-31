@@ -7,11 +7,11 @@
     {{ parent() }}
     <li><a href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a></li>
     <li><a href="{{ urlGet('organisation', {'id': organisation.id}, {}) }}">{{ organisation.name }}</a></li>
-    <li>Behörde einrichten</li>
+    <li>{{ title|default('Behörde einrichten') }}</li>
 {% endblock %}
 
 {% block headline %}
-    {{ headline1("Behörde einrichten") }}
+    {{ headline1(title|default('Behörde einrichten')) }}
 {% endblock %}
 
 {% block content %}
@@ -21,5 +21,5 @@
 {% endblock %}
 
 {% block javascript %}
-        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
+        <script type="text/javascript" src="{{ includeUrl }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
 {% endblock %}

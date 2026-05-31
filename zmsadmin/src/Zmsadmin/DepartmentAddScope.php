@@ -17,14 +17,17 @@ use BO\Mellon\Validator;
 class DepartmentAddScope extends Scope
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['scope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 0])->getEntity();

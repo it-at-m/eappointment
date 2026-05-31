@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class Cluster extends Schema\Entity
+class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
@@ -31,5 +31,22 @@ class Cluster extends Schema\Entity
             }
         }
         return $workstationCount;
+    }
+
+    public function hasAccess(Useraccount $useraccount)
+    {
+        if ($useraccount->hasPermissions(['superuser'])) {
+            return true;
+        }
+
+        foreach ($this->scopes as $scope) {
+            $scopeEntity = $scope instanceof Scope ? $scope : new Scope($scope);
+
+            if ($useraccount->hasScope($scopeEntity->id)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

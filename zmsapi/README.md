@@ -1,13 +1,10 @@
 # ZMS HTTP API
 
-[![pipeline status](https://gitlab.com/eappointment/zmsapi/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsapi/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsapi/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsapi/_tests/coverage/index.html)
-
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsapi/html/)
 
 This application offers a REST-like interface for ZMS functions and database access.
 
-The OpenApi documentation you will find here: https://eappointment.gitlab.io/zmsapi/doc/
+The OpenAPI documentation you will find here: https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html
 
-For a detailed project description, see https://gitlab.com/eappointment/eappointment
-
-Test2
+For a detailed project description, see https://github.com/it-at-m/eappointment

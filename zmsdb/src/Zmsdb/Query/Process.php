@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Query;
 
 use BO\Zmsdb\Scope as ScopeEntity;
+use BO\Zmsentities\Process as ProcessEntity;
 use BO\Zmsdldb\Helper\DateTime;
 use DateTimeImmutable;
 
@@ -496,7 +497,12 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeIds($scopeIds)
     {
-        if (count($scopeIds) == 1) {
+        if (count($scopeIds) === 0) {
+            $this->query->where(self::expression('1'), '=', 0);
+            return $this;
+        }
+
+        if (count($scopeIds) === 1) {
             return $this->addConditionScopeId($scopeIds[0]);
         }
 
@@ -691,7 +697,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
+    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, $childProcessCount = 0)
     {
         $values = [
             'BuergerID' => $process->id,
@@ -751,7 +757,7 @@ class Process extends Base implements MappingInterface
     }
 
     public function addValuesUpdateProcess(
-        \BO\Zmsentities\Process $process,
+        ProcessEntity $process,
         \DateTimeInterface $dateTime,
         $parentProcess = 0,
         $previousStatus = null
@@ -773,10 +779,10 @@ class Process extends Base implements MappingInterface
         $this->addValuesExternalUserId($process);
     }
 
-    public function addValuesIPAdress($process)
+    public function addValuesIPAdress(ProcessEntity $process)
     {
         $data = array();
-        $data['IPAdresse'] = $process['createIP'];
+        $data['IPAdresse'] = $process->createIP;
         $this->addValues($data);
     }
 
@@ -794,7 +800,7 @@ class Process extends Base implements MappingInterface
     }
 
     public function addValuesAppointmentData(
-        \BO\Zmsentities\Process $process
+        ProcessEntity $process
     ) {
         $data = array();
         $appointment = $process->getFirstAppointment();
@@ -807,24 +813,24 @@ class Process extends Base implements MappingInterface
     }
 
     public function addValuesScopeData(
-        \BO\Zmsentities\Process $process
+        ProcessEntity $process
     ) {
         $data = array();
         $data['StandortID'] = $process->getScopeId();
         $this->addValues($data);
     }
 
-    public function addValuesStatusData($process, \DateTimeInterface $dateTime)
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime)
     {
         $data = array();
-        $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
-        $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
+        $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
+        $data['aufruferfolgreich'] = ($process->status == 'processing') ? 1 : 0;
         if ($process->status == 'called') {
             $data['parked'] = 0;
             $data['nicht_erschienen'] = 0;
         }
         if ($process->status == 'pending') {
-            $data['AbholortID'] = $process->scope['id'];
+            $data['AbholortID'] = $process->scope->id;
             $data['Abholer'] = 1;
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
@@ -834,7 +840,7 @@ class Process extends Base implements MappingInterface
             $data['parked'] = 0;
             if (
                 $process->hasArrivalTime() &&
-                (isset($process->queue['withAppointment']) && $process->queue['withAppointment'])
+                (isset($process->queue->withAppointment) && $process->queue->withAppointment)
             ) {
                 $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
             }
@@ -851,7 +857,7 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
         }
-        $data['status'] = $process['status'] ?? $process->status;
+        $data['status'] = $process->status;
         $data['parkedBy'] = $process->getParkedBy();
 
         $this->addValues($data);
@@ -997,13 +1003,13 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData($process, $previousStatus = null)
+    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null)
     {
         $data = array();
         $hasWaitingTimeAlready = (
-            isset($process->queue['waitingTime'])
-            && $process->queue['waitingTime']
-            && $process->queue['waitingTime'] !== '00:00:00'
+            isset($process->queue->waitingTime)
+            && $process->queue->waitingTime
+            && $process->queue->waitingTime !== '00:00:00'
         );
 
         if (
@@ -1012,17 +1018,17 @@ class Process extends Base implements MappingInterface
             (
                 // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
                 in_array($previousStatus, ['queued', 'missed', 'confirmed'])
-                && $process['status'] == 'called'
+                && $process->status == 'called'
                 && (
                     (
-                        isset($process->queue['callCount'])
-                        && $process->queue['callCount'] <= 0
+                        isset($process->queue->callCount)
+                        && $process->queue->callCount <= 0
                     )
                     || (
                         ($previousStatus === 'queued' || $previousStatus === 'confirmed')
                         && (
-                            !isset($process->queue['callTime'])
-                            || (int) $process->queue['callTime'] === 0
+                            !isset($process->queue->callTime)
+                            || (int) $process->queue->callTime === 0
                         )
                     )
                 )
@@ -1032,8 +1038,8 @@ class Process extends Base implements MappingInterface
                 // Szenario 2: Vorheriger Status ist missed, aktueller Status ist queued,
                 // es gibt den Hinweis wasMissed und die Queue sowie waitingTime sind gesetzt
                 $previousStatus == 'missed'
-                && $process['status'] == 'queued'
-                && !empty($process['wasMissed'])
+                && $process->status == 'queued'
+                && !empty($process->wasMissed)
                 && isset($process->queue)
                 && isset($process->queue->waitingTime)
             )
@@ -1054,10 +1060,10 @@ class Process extends Base implements MappingInterface
     }
 
 
-    protected function addValuesWayTimeData($process)
+    protected function addValuesWayTimeData(ProcessEntity $process)
     {
         $data = array();
-        if ($process['status'] == 'processing') {
+        if ($process->status == 'processing') {
             $wayTimeInSeconds = max(0, (int) $process->getWaySeconds());
             $hours = intdiv($wayTimeInSeconds, 3600);
             $minutes = intdiv($wayTimeInSeconds % 3600, 60);
