@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class CaptchaService extends Entity implements CaptchaInterface
 {
-    public static string $schema = "citizenapi/captcha/altchaCaptcha.json";
+    public static ?string $schema = "citizenapi/captcha/altchaCaptcha.json";
 /** @var string */
     public string $service;
 /** @var string */

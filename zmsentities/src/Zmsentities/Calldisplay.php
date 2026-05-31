@@ -8,7 +8,7 @@ class Calldisplay extends Schema\Entity
 {
     public const PRIMARY = 'serverTime';
 
-    public static string $schema = "calldisplay.json";
+    public static ?string $schema = "calldisplay.json";
 
     /**
      * @return (Collection\ClusterList|Collection\ScopeList|Organisation|int)[]

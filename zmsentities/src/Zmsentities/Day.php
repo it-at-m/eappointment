@@ -16,7 +16,7 @@ class Day extends Schema\Entity
 
     public const DETAIL = 'detail';
 
-    public static string $schema = "day.json";
+    public static ?string $schema = "day.json";
 
     /**
      * @return (Slot|string)[]

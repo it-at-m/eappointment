@@ -6,7 +6,7 @@ class Provider extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "provider.json";
+    public static ?string $schema = "provider.json";
 
     /**
      * @return (int|null|string)[]

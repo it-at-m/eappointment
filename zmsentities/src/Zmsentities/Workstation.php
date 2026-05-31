@@ -12,7 +12,7 @@ class Workstation extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "workstation.json";
+    public static ?string $schema = "workstation.json";
 
     /**
      * @return (Process|Scope|Useraccount|int|string)[]

@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class ThinnedProvider extends Entity implements JsonSerializable
 {
-    public static string $schema = "citizenapi/thinnedProvider.json";
+    public static ?string $schema = "citizenapi/thinnedProvider.json";
 /** @var int|null */
     public ?int $id;
 /** @var string|null */

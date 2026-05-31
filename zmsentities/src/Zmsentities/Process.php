@@ -30,7 +30,7 @@ class Process extends Schema\Entity
     public const STATUS_ANONYMIZED = 'anonymized';
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
-    public static string $schema = "process.json";
+    public static ?string $schema = "process.json";
     /**
      * @return (Apiclient|Collection\AppointmentList|Collection\ClientList|Collection\RequestList|Queue|Scope|false|int|null|string)[]
      *

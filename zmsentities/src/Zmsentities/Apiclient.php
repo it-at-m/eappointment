@@ -6,7 +6,7 @@ class Apiclient extends Schema\Entity
 {
     public const PRIMARY = 'clientKey';
 
-    public static string $schema = "apiclient.json";
+    public static ?string $schema = "apiclient.json";
 
     /**
      * @return string[]

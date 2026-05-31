@@ -6,7 +6,7 @@ class Source extends Schema\Entity
 {
     public const PRIMARY = 'source';
 
-    public static string $schema = 'source.json';
+    public static ?string $schema = 'source.json';
 
     /**
      * @return (Collection\ProviderList|Collection\RequestList|Collection\RequestRelationList|Contact|false|string)[]

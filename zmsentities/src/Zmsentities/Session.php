@@ -13,7 +13,7 @@ class Session extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "session.json";
+    public static ?string $schema = "session.json";
 
     /**
      * @return ((int|int[]|string)[]|string)[][]

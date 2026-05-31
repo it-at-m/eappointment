@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Client extends Schema\Entity
 {
-    public static string $schema = "client.json";
+    public static ?string $schema = "client.json";
 
     /**
      * @return (false|int|string)[]

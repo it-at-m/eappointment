@@ -6,7 +6,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "organisation.json";
+    public static ?string $schema = "organisation.json";
 
     /**
      * @return (Collection\DepartmentList|string)[]

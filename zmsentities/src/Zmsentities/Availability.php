@@ -12,7 +12,7 @@ class Availability extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "availability.json";
+    public static ?string $schema = "availability.json";
 
     /**
      * @var array $weekday english localized weekdays to avoid problems with setlocale()

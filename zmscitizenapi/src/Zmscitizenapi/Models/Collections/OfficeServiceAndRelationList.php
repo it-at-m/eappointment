@@ -13,7 +13,7 @@ use JsonSerializable;
 
 class OfficeServiceAndRelationList extends Entity implements JsonSerializable
 {
-    public static string $schema = "citizenapi/collections/officeServiceAndRelationList.json";
+    public static ?string $schema = "citizenapi/collections/officeServiceAndRelationList.json";
 /** @var OfficeList */
     protected OfficeList $offices;
 /** @var ServiceList */

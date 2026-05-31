@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class Service extends Entity implements JsonSerializable
 {
-    public static string $schema = 'citizenapi/service.json';
+    public static ?string $schema = 'citizenapi/service.json';
     public int $id;
     public string $name;
     public ?int $maxQuantity = null;

@@ -26,7 +26,7 @@ class EventLog extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "eventlog.json";
+    public static ?string $schema = "eventlog.json";
 
     public const LIVETIME_LONGER  = 315360000; // 10 years
     public const LIVETIME_LONG    = 94608000; // 3 years

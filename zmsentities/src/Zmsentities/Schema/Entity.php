@@ -20,7 +20,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * @var String $schema Filename of JSON-Schema file
      */
-    public static $schema = null;
+    public static ?string $schema = null;
 
     /**
      * @var String $schema Filename of JSON-Schema file

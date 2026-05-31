@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class ServiceList extends Entity implements JsonSerializable
 {
-    public static string $schema = "citizenapi/collections/serviceList.json";
+    public static ?string $schema = "citizenapi/collections/serviceList.json";
 /** @var Service[] */
     public array $services = [];
     public function __construct(array $services = [])

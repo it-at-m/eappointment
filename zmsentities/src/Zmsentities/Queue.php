@@ -6,7 +6,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
 {
     public const PRIMARY = 'arrivalTime';
 
-    public static string $schema = "queue.json";
+    public static ?string $schema = "queue.json";
 
     /**
      * @var Process|null

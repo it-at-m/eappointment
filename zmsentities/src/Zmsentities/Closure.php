@@ -6,7 +6,7 @@ class Closure extends Schema\Entity
 {
     const PRIMARY = 'id';
 
-    public static string $schema = "closure.json";
+    public static ?string $schema = "closure.json";
 
     /**
      * @return int[]

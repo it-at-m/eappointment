@@ -6,7 +6,7 @@ class Mimepart extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "mimepart.json";
+    public static ?string $schema = "mimepart.json";
 
     /**
      * @return string[]

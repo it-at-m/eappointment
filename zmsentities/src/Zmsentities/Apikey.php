@@ -6,7 +6,7 @@ class Apikey extends Schema\Entity
 {
     public const PRIMARY = 'key';
 
-    public static string $schema = "apikey.json";
+    public static ?string $schema = "apikey.json";
 
     /**
      * @return Apiclient[]

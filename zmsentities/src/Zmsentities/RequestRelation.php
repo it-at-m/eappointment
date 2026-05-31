@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class RequestRelation extends Schema\Entity
 {
-    public static string $schema = "requestrelation.json";
+    public static ?string $schema = "requestrelation.json";
 
     /**
      * @return (Provider|Request|null|string|true)[]

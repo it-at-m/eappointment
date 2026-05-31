@@ -15,7 +15,7 @@ class Mail extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "mail.json";
+    public static ?string $schema = "mail.json";
 
     protected $templateProvider = false;
 

@@ -8,7 +8,7 @@ class Month extends Schema\Entity
 
     public $calendarDayList;
 
-    public static string $schema = "month.json";
+    public static ?string $schema = "month.json";
 
     /**
      * @return Collection\DayList[]

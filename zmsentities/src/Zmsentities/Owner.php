@@ -6,7 +6,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "owner.json";
+    public static ?string $schema = "owner.json";
 
     /**
      * @return (Collection\OrganisationList|string)[]

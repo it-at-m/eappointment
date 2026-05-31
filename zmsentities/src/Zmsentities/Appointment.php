@@ -8,7 +8,7 @@ class Appointment extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "appointment.json";
+    public static ?string $schema = "appointment.json";
 
     /**
      * @return (Availability|Scope|int)[]

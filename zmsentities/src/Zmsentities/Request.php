@@ -6,7 +6,7 @@ class Request extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "request.json";
+    public static ?string $schema = "request.json";
 
     /**
      * @return (null|string)[]

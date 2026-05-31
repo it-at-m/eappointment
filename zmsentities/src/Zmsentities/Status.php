@@ -5,7 +5,7 @@ namespace BO\Zmsentities;
 class Status extends Schema\Entity
 {
     public const PRIMARY = 'version';
-    public static string $schema = "status.json";
+    public static ?string $schema = "status.json";
 
     /**
      * @return (float|int|string)[][]

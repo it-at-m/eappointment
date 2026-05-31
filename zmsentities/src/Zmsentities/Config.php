@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Config extends Schema\Entity
 {
-    public static string $schema = "config.json";
+    public static ?string $schema = "config.json";
 
     /**
      * @return (int|string)[][]

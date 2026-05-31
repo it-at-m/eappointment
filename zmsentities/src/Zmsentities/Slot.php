@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Slot extends Schema\Entity
 {
-    public static string $schema = "slot.json";
+    public static ?string $schema = "slot.json";
 
     /**
      *  the values represent possible free appointments without confirmed

@@ -6,7 +6,7 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "cluster.json";
+    public static ?string $schema = "cluster.json";
 
     /**
      * @return Collection\ScopeList[]

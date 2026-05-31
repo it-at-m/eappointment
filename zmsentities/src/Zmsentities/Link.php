@@ -6,7 +6,7 @@ class Link extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "link.json";
+    public static ?string $schema = "link.json";
 
     /**
      * @return (bool|int|string)[]

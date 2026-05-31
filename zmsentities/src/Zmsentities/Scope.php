@@ -13,7 +13,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "scope.json";
+    public static ?string $schema = "scope.json";
 
     /**
      * @return (Contact|DayoffList|Provider|int|string)[]

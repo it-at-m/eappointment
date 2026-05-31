@@ -8,7 +8,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "department.json";
+    public static ?string $schema = "department.json";
 
     /**
      * @return (Collection\ClusterList|Collection\DayoffList|Collection\LinkList|Collection\ScopeList|int|string)[]

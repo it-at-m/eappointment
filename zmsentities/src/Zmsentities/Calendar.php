@@ -12,7 +12,7 @@ class Calendar extends Schema\Entity
 {
     public const PRIMARY = 'days';
 
-    public static string $schema = "calendar.json";
+    public static ?string $schema = "calendar.json";
 
     /**
      * @return (Collection\DayList|Day|array|null)[]

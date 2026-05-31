@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class AvailableDaysByOffice extends Entity implements JsonSerializable
 {
-    public static string $schema = 'citizenapi/availableDaysByOffice.json';
+    public static ?string $schema = 'citizenapi/availableDaysByOffice.json';
 /** @var array */
     public array $availableDays = [];
     public function __construct(array $availableDays = [])

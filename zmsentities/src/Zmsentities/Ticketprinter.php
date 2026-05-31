@@ -9,7 +9,7 @@ class Ticketprinter extends Schema\Entity
 {
     public const PRIMARY = 'hash';
 
-    public static string $schema = "ticketprinter.json";
+    public static ?string $schema = "ticketprinter.json";
 
     /**
      * @var string[]

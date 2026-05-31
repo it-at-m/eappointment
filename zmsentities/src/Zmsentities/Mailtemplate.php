@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Mailtemplate extends Schema\Entity
 {
-    public static string $schema = "mailtemplate.json";
+    public static ?string $schema = "mailtemplate.json";
 
     /**
      * @return array

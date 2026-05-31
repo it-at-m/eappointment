@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
-    public static string $schema = 'citizenapi/officeServiceRelation.json';
+    public static ?string $schema = 'citizenapi/officeServiceRelation.json';
 
     public int $officeId;
     public int $serviceId;

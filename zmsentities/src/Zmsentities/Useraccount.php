@@ -13,7 +13,7 @@ class Useraccount extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "useraccount.json";
+    public static ?string $schema = "useraccount.json";
 
     /**
      * @return (Collection\DepartmentList|bool[])[]

@@ -18,7 +18,7 @@ class Exchange extends Schema\Entity
 
     public const REQUEST_STAT_NAME_NONEXISTENT = 'nonexistent';
 
-    public static string $schema = "exchange.json";
+    public static ?string $schema = "exchange.json";
 
     /**
      * @return (Day|array|string)[]

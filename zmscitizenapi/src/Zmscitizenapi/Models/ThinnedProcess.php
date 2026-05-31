@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class ThinnedProcess extends Entity implements JsonSerializable
 {
-    public static string $schema = "citizenapi/thinnedProcess.json";
+    public static ?string $schema = "citizenapi/thinnedProcess.json";
 /** @var int|null */
     public ?int $processId;
 /** @var string|null */

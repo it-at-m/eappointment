@@ -6,7 +6,7 @@ class Dayoff extends Schema\Entity
 {
     public const PRIMARY = 'id';
 
-    public static string $schema = "dayoff.json";
+    public static ?string $schema = "dayoff.json";
 
     /**
      * @return (int|string)[]

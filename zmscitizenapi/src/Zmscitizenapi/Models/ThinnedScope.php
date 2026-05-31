@@ -11,7 +11,7 @@ use JsonSerializable;
 
 class ThinnedScope extends Entity implements JsonSerializable
 {
-    public static string $schema = 'citizenapi/thinnedScope.json';
+    public static ?string $schema = 'citizenapi/thinnedScope.json';
     public int $id;
     public ?ThinnedProvider $provider;
     public ?string $shortName;
