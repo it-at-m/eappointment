@@ -43,7 +43,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     /**
      * @SuppressWarnings(Cyclomatic)
-     * @return String
+     * @return string
      */
     protected function getApiMockup()
     {

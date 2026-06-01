@@ -46,8 +46,8 @@ class Valid extends \BO\Mellon\Parameter
      * validate a value using PHP builtin function filter_var()
      *
      * @param mixed $message error message in case of failure
-     * @param Int|Const $filter see documentation for filter_var()
-     * @param Int|Array|Const $options see documentation for filter_var()
+     * @param int $filter see documentation for filter_var()
+     * @param int|array $options see documentation for filter_var()
      *
      * @return self
      */
@@ -228,7 +228,7 @@ class Valid extends \BO\Mellon\Parameter
     /**
      * Get the validated value or the default value as string
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {

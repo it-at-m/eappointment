@@ -42,7 +42,7 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
     #[\Override]
     public function fetchList($location_csv = false)
@@ -69,7 +69,7 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
     #[\Override]
     public function fetchFromCsv($service_csv)
@@ -96,7 +96,7 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
     #[\Override]
     public function searchAll($querystring, $service_csv = '', $location_csv = '')

@@ -59,7 +59,7 @@ class Authority extends Base
     /**
      * Take an file search result and return a authority list
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
     public function fromLocationResults($resultList)
     {

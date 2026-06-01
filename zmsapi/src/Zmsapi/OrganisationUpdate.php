@@ -14,7 +14,7 @@ use BO\Zmsdb\Organisation as Query;
 class OrganisationUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

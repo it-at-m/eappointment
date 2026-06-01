@@ -18,7 +18,7 @@ class ProcessDeleteQuick extends ProcessDelete
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

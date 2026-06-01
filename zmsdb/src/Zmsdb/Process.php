@@ -349,11 +349,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and DateTime
      *
-     * @param
-     * scopeId
-     * dateTime
+     * @param array|int $scopeIds
+     * @param \DateTimeInterface $dateTime
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readProcessListByScopesAndTime(
         $scopeIds,
@@ -377,11 +376,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read conflictList by scopeId and DateTime
      *
-     * @param
-     * scopeId
-     * dateTime
+     * @param array|int $scopeIds
+     * @param \DateTimeInterface $dateTime
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, $resolveReferences = 1)
     {
@@ -417,7 +415,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and status
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0, $limit = 1000, $offset = null)
     {
@@ -485,11 +483,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by clusterId and DateTime
      *
-     * @param
-     * clusterId
-     * dateTime
+     * @param int $clusterId
+     * @param \DateTimeInterface $dateTime
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
     {
@@ -507,10 +504,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId to get a number of all processes of a scope
      *
-     * @param
-     * scopeId
+     * @param int $scopeId
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readProcessListCountByScope($scopeId)
     {
@@ -528,7 +524,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by mail address
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
     {
@@ -550,7 +546,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by mail address and statuslist
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readListByMailAndStatusList(string $mailAddress, array $statusList, $resolveReferences = 1, $limit = 300): Collection
     {
@@ -570,10 +566,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als bestätigt
      *
-     * @param
-     * process
+     * @param \BO\Zmsentities\Process $process
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
     {
@@ -610,7 +605,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Regulär sollte aber ProcessStatusArchived::writeEntityFinished()
      * oder self::writeBlockedEntity() verwendet werden.
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function writeDeletedEntity($processId): bool
     {
@@ -639,10 +634,10 @@ class Process extends Base implements Interfaces\ResolveReferences
      * ACHTUNG: Nur noch als Helferfunction vor Refactoring durch MF,
      * damit unittests und zmsappointment wie gewohnt funktionieren
      *
-     * @param
-     *            processId and authKey
+     * @param int|string $processId
+     * @param string $authKey
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function deleteEntity($processId, $authKey)
     {
@@ -652,10 +647,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als abgesagt
      *
-     * @param
-     *            processId and authKey
+     * @param int|string $processId
+     * @param string $authKey
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
@@ -676,10 +671,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als dereferenced
      *
-     * @param
-     *            processId and authKey
+     * @param int|string $processId
+     * @param string $authKey
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function writeBlockedEntity(\BO\Zmsentities\Process $process, bool $releaseSlots = false, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {

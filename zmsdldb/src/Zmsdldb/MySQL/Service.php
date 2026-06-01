@@ -106,7 +106,7 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
     #[\Override]
     public function fetchFromCsv($service_csv, $mixLanguages = false)

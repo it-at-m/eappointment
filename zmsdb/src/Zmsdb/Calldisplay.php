@@ -13,11 +13,10 @@ class Calldisplay extends Base
     /**
      * read Ticketprinter by comma separated buttonlist
      *
-     * @param
-     * ticketprinter Entity
-     * now DateTime
+     * @param \BO\Zmsentities\Ticketprinter $ticketprinter
+     * @param \DateTimeInterface $now
      *
-     * @return Resource Entity
+     * @return Entity
      */
     public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0)
     {

@@ -224,8 +224,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * write an availability
      *
-     * @param
-     * entityId
+     * @param int|string $entityId
      *
      * @return Entity
      */
@@ -246,8 +245,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * update an availability
      *
-     * @param
-     * entityId
+     * @param int|string $entityId
      *
      * @return Entity
      */
@@ -266,10 +264,9 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /**
      * remove an availability
      *
-     * @param
-     * availabilityId
+     * @param int|string $availabilityId
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function deleteEntity($availabilityId)
     {

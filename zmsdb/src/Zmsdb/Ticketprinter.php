@@ -14,10 +14,9 @@ class Ticketprinter extends Base
     /**
      * read entity
      *
-     * @param
-     * itemId
+     * @param int|string $itemId
      *
-     * @return Resource Entity
+     * @return Entity
      */
     public function readEntity($itemId)
     {
@@ -34,7 +33,7 @@ class Ticketprinter extends Base
     /**
      * read list of ticketprinters
      *
-     * @return Resource Collection
+     * @return Collection
      */
     protected function readList($statement)
     {
@@ -49,10 +48,9 @@ class Ticketprinter extends Base
     /**
      * read Ticketprinter by Hash
      *
-     * @param
-     * hash
+     * @param string $hash
      *
-     * @return Resource Entity
+     * @return Entity
      */
     public function readByHash($hash)
     {
@@ -69,11 +67,10 @@ class Ticketprinter extends Base
     /**
      * read Ticketprinter by comma separated buttonlist
      *
-     * @param
-     * ticketprinter Entity
-     * now DateTime
+     * @param \BO\Zmsentities\Ticketprinter $ticketprinter
+     * @param \DateTimeInterface $now
      *
-     * @return Resource Entity
+     * @return Entity
      */
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
@@ -167,8 +164,8 @@ class Ticketprinter extends Base
     /**
      * write a cookie for ticketprinter
      *
-     * @param
-     * organisationId
+     * @param int $organisationId
+     * @param string $ticketprinterName
      *
      * @return Entity
      */
@@ -194,9 +191,8 @@ class Ticketprinter extends Base
     /**
      * write a ticketprinter
      *
-     * @param
-     * entity,
-     * organisationId
+     * @param \BO\Zmsentities\Ticketprinter $entity
+     * @param int $organisationId
      *
      * @return Entity
      */
@@ -218,10 +214,9 @@ class Ticketprinter extends Base
     /**
      * read list of ticketprinter by organisation
      *
-     * @param
-     * organisationId
+     * @param int $organisationId
      *
-     * @return Resource Collection
+     * @return Collection
      */
     public function readByOrganisationId($organisationId)
     {
@@ -236,10 +231,9 @@ class Ticketprinter extends Base
     /**
     * remove an ticketprinter
     *
-    * @param
-    * itemId
-    *
-    * @return Resource Status
+     * @param int|string $itemId
+     *
+     * @return Entity|null
     */
     public function deleteEntity($itemId)
     {

@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
 class MailTemplatesUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

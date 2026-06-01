@@ -99,7 +99,7 @@ class Location extends Base
 
     /**
      *
-     * @return \BO\ClientDldb\Collection\Authorities
+     * @return \BO\Zmsdldb\Collection\Authorities
      */
     public function searchAll($querystring, $service_csv = '')
     {
