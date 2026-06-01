@@ -1,58 +1,43 @@
-[![pipeline status](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/badges/master/pipeline.svg)](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/-/commits/master)
-[![coverage report](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/badges/master/coverage.svg)](https://land-intranet.static.berlinonline.net/zmsticketprinter/_tests/coverage/)
-
 # ZMS Ticketprinter
+
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsticketprinter/html/)
+
+Frontend for ticket printers in the ZMS queue system.
 
 ## Requirements
 
-* PHP 5.6+
+* PHP 8.3+
 
 ## Installation
 
 The variable `$WEBROOT` represents the parent path to install the application.
 
 ```bash
-    cd $WEBROOT
-    git clone https://gitlab.berlinonline.net/land-intranet/zmsticketprinter.git
-    cd zmsticketprinter
-    make live
-    cp config.example.php config.php
+cd $WEBROOT
+git clone https://github.com/it-at-m/eappointment.git
+cd eappointment/zmsticketprinter
+make live
+cp config.example.php config.php
 ```
 
 Edit the `config.php` and add/change settings for accessing the API.
 
-To enable the application, you have to point the webserver to the public-path in the installation.
-The following rewrite rules are required, examples for Apache2:
-
-```apache
-    RewriteRule ^/terminvereinbarung/admin/_(.*) $WEBROOT/zmsadmin/public/_$1
-    RewriteRule ^/terminvereinbarung/admin/(.*) $WEBROOT/zmsadmin/public/index.php/$1
-```
-
+To enable the application, point the webserver to the `public/` path in the installation.
 
 ## Development
 
-For development, additional modules are required. Commits from a live environment require to ignore the pre-commit hooks.
+For development, additional modules from the monorepo are required.
 
-    make dev
-    
+```bash
+make dev
+make build
+```
+
 ## Testing
 
-To test application run the following command:
+To test the application run:
 
     bin/test
 
-## Add SCSS module
-
-First add DEPENDENCY to bower
-
-    ./node_modules/.bin/bower install --save-dev DEPENDENCY
-
-Then add `@import()` rules to `scss/admin.scss`.
-
-Finally generate the CSS:
-
-    make
-    # or
-    ./node_modules/.bin/gulp
-
+For a detailed project description, see https://github.com/it-at-m/eappointment
