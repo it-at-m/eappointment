@@ -398,10 +398,10 @@ class Availability extends Schema\Entity
      * Check, if the dateTime contains is within the bookable range (usually for public access)
      * The current time is used to compare the start Time of the availability
      *
-     * @param \DateTimeInterface $dateTime
+     * @param \DateTimeInterface $bookableDate
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return Bool
+     * @return bool
      */
     public function isBookable(\DateTimeInterface $bookableDate, \DateTimeInterface $now)
     {
