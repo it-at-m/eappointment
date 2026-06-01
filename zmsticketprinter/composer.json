@@ -49,10 +49,6 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://gitlab+deploy-token-203:RMAsMMns5SocfWcUnktt@gitlab.berlinonline.net/land-intranet/slim-psr7.git"
-        },
-        {
             "type": "path",
             "url": "../*",
             "options": {
