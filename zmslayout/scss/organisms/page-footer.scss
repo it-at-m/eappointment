@@ -1,0 +1,25 @@
+// Our global page footer
+#{$namespace}#page-footer {
+    background-color:           $color-page-footer;
+    border:                     1px solid $color-page-footer; // Barrierefreiheit hoher Kontrast
+    color:                      $color-text-lightest;
+    margin-top:                 0;
+    padding:                    1em $pagePaddingPalmPx;  
+    min-height:                 3em;
+    position:                   relative;
+    max-width:                      100vw;
+    @include media-query('lap-and-up') {
+        display:                flex;
+        justify-content:        space-between;
+        align-items:            center;
+        padding:                1em $pagePaddingPx; 
+    }
+    a {
+        color:                  $color-text-lightest;
+        margin:                 0;
+        text-decoration:        underline; // Barrierefreiheit
+    }
+    @media print {
+        display: none;
+    }
+}

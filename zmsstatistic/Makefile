@@ -18,9 +18,19 @@ fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 tests/
 	npm run fix
 
+materialize-zmslayout-deps: # copy file:../zmslayout deps (no symlinks; safe for Docker image export)
+	@for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do \
+		name=$${spec%%:*}; dir=$${spec##*:}; \
+		if [ -L "node_modules/$$name" ]; then \
+			rm -f "node_modules/$$name"; \
+			cp -a "../zmslayout/$$dir" "node_modules/$$name"; \
+		fi; \
+	done
+
 live: # init live system
 	composer install --no-dev --prefer-dist --optimize-autoloader
 	npm install --legacy-peer-deps
+	$(MAKE) materialize-zmslayout-deps
 	npm run build
 	npm install requirejs --no-save --legacy-peer-deps
 	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/

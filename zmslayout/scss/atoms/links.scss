@@ -1,0 +1,70 @@
+@mixin link--base() {
+    text-decoration:        none;
+    color:                  $color-text-link;
+    &:hover,
+    &:focus {
+        text-decoration:    underline;
+    }
+}
+
+// Accessibility Focus
+:focus {
+    outline:                none;
+}
+:focus-visible {
+    outline:                3px solid $color-tabfocus;
+    outline-offset:         0px;
+    box-shadow:             0px 0px 0 5px #fff;
+}
+
+#{$namespace}a {
+    @include link--base();
+    &.fa {
+        &:hover,
+        &:focus {
+            text-decoration:        none;
+        }
+    }
+    &::after {
+        text-decoration:    underline; // IE10 fix
+    }
+    &:after,
+    &:hover:after {
+        text-decoration:    none; // IE10 fix
+    }
+}
+
+#{$namespace}a.block {
+    @include getRem('margin-top', $blockBottomMarginPx / 2);
+    @include getRem('margin-bottom', $blockBottomMarginPx / 2);
+    display:            block;
+}
+
+// ##############################
+// Some Links have an icon before
+
+@mixin link_add_icon($color) {
+    .fa,
+    .fas {
+        color:          $color;  
+        font-weight:    900;
+        font-size:      1.2em;
+        vertical-align: -1px;
+        margin-right:   0.2em;
+        display:        inline-block;
+    }
+}
+#{$namespace}a.link--add {
+    @include link_add_icon(#15846E);
+}
+#{$namespace}a.link--save {
+    @include link_add_icon(#15846E);
+}
+
+// move the add- or save-link (if at the top of a page) more to the h1 of the page
+h1 + a[class*="link--"] {
+    margin-top: -1.5em;
+    display: block;
+    position: relative;
+    margin-bottom: 1.5em;
+}

@@ -1,0 +1,157 @@
+$NavigationPrimaryActiveBorderWidth: 5px !default;
+$NavigationPrimaryBGColor: $color-white !default;
+
+#{$namespace}.navigation-primary { 
+    // Desktop AND Mobile Navigation:
+    margin-bottom:                      $blockBottomMarginPx;
+    background-color:                   $NavigationPrimaryBGColor;
+    border:                             1px solid $NavigationPrimaryBGColor; // Barrierefreiheit hoher Kontrast
+    + .navigation-primary {
+        margin-top:                     -$blockBottomMarginPx;
+    }
+    .nav__list {
+        list-style:                     none;
+        padding:                        0;
+        margin:                         0;
+        li {
+                margin:                 0;
+                padding:                0;
+        }
+    }
+    .nav__link a,
+    .nav__heading {
+        color:                          $color-text-base;
+        display:                        block;
+        padding:                        0.6em;
+        @include getRem('padding-left', $pagePaddingPx);
+        a {
+            padding-left:   0;
+        }
+    }
+    .nav__link.active > a,
+    li > a.active {
+        border-left:                    $NavigationPrimaryActiveBorderWidth solid $color-decorative-active;
+        color:                          $color-decorative-active;
+        font-weight:                    bold;
+        @include getRem('padding-left', $pagePaddingPx - $NavigationPrimaryActiveBorderWidth);
+    }
+    .nav__heading {
+        font-weight:                    bold;
+        background-color:               $color-block-seperationheading;
+        padding-top:                    0.9em;
+        padding-bottom:                 0.9em;
+        margin:                         0;
+        color:                          $color-text-seperationheading;
+        &:focus,
+        &:active {
+            outline-offset:             -3px;
+        }
+    }
+
+    // Desktop Navigation only:
+    @include media-query('lap-and-up') {
+        @include getRem('margin-left', -$pagePaddingPx);
+        display:                        block !important;  
+        box-shadow:                         3px 3px 3px rgba(150,150,150,0.2);
+        .nav__header-mobile {
+            display:                        none;
+        } 
+    }
+
+    // Mobile Navigation only:
+    @include media-query('palm') { 
+        position:                       fixed; 
+        top:                            0;
+        left:                           100vw;
+        width:                          90%; // not vw here, because of scrollbar
+        height:                         100vh;
+        margin-left:                    0;
+        z-index:                        10;
+        background:                     white;
+        display:                        none;  // on init!
+        .overlay {
+            position:                   fixed;
+            left:                       0;
+            top:                        0;
+            display:                    block;
+            width:                      100%;
+            height:                     100vh;
+            background-color:           transparent;
+            transition:                 background-color 200ms ease-in-out;
+        }
+        &.opened {
+            display:                    block;
+            left:                        10%;
+            .overlay {
+                background-color:           rgba(0,0,0,0.6);
+            }
+        }
+        
+        .nav__wrapper {
+            overflow-y:                 auto;
+            max-height:                 100%;
+            height:                     100vh;
+            position:                   relative;
+            margin-bottom:              1em;
+            background-color:           $color-white;
+            border:                     1px solid $color-white; // Barrierefreiheit hoher Kontrast
+        }
+        .nav__header-mobile {
+            display:                            block;
+            background-color:                   $color-decorative-primary;
+            color:                              $color-white;
+            position:                           relative;
+            top:                                0;
+            left:                               0;
+            width:                              100%;
+            height:                             4.3em;
+            .nav__close {
+                display:                        block;
+                font-size:                      2em;
+                position:                       absolute;
+                right:                          0em;
+                top:                            0;
+                color:                          $color-white;
+                background:                     transparent;
+                padding:                        0.5em;
+                border:                         0 none;
+            }
+        }
+        .nav__block {
+            border-bottom:                  1px solid darken($color-grey, 5%);
+            .nav__heading {
+                @include getRem('padding-left', $pagePaddingPalmPx);
+                &::after {
+                    content:        "\f078";
+                    float:          right;
+                    display:        inline-block;
+                    font-family:    "Font Awesome 5 Free", "FontAwesome";
+                    font-weight:    900;
+                    font-size:      1.3em;
+                }
+            }
+            > .nav__list {
+                display:                    none;
+            }
+            &.open {
+                .nav__heading {
+                    box-shadow:             0 3px 3px rgba(100,100,100,.2);
+                    &::after {
+                        transform:              rotate(180deg);
+                    }
+                }
+                > .nav__list {
+                    display:                block; 
+                }
+            }
+        }
+        .nav__list .nav__link a {
+            @include getRem('padding-left', $pagePaddingPalmPx+19px);
+        }
+        .nav__list .nav__link.active a {
+            @include getRem('padding-left', $pagePaddingPalmPx+19px - $NavigationPrimaryActiveBorderWidth);
+        }
+    }
+
+}
+

@@ -1,0 +1,9 @@
+table {
+    .typ-error {
+        .field-text {
+            @include getRem('padding', $boxPaddingPx);
+            color:              $color-text-base;
+            background-color:   $color-message-error;
+        }
+    }
+}

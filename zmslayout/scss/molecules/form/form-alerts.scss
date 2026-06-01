@@ -1,0 +1,71 @@
+/*
+ * Our Sticky Formalerts (Flyin)
+ */
+
+$formalertsBgColor:           #ffffff !default;
+$formalertsWrapperWidth:      24em !default;
+
+#{$namespace}.formalerts {
+    @include media-query('lap-and-up') {
+        // sticky flyin only desktop layout
+        &.js-formalerts-flyin {
+            position:               fixed;
+            right:                  (-$formalertsWrapperWidth); // fly-in
+            top:                    0;
+            z-index:                101;
+            height:                 100vh;
+            width:                  $formalertsWrapperWidth;
+            background-color:       $formalertsBgColor;
+            box-shadow:             -2px 0 4px rgba(100,100,100,0.2);
+            border-left:            1px solid $color-border;
+            padding:                2em;
+            -webkit-transition:     opacity 0.2s ease-out, right 0.2s ease-out; /* Safari */
+                    transition:     opacity 0.2s ease-out, right 0.2s ease-out;
+            &.opened {
+                opacity:            1;
+                display:            block;
+                right:              0; // fly-in
+                z-index:            101;
+                .formalerts__trigger {
+                   transform:       rotate(180deg); 
+                   box-shadow:      3px 0 3px rgba(100,100,100,0.2);
+                }
+            }
+            > *:first-child {
+                margin-top:         0;
+            }
+            > *:last-child {
+                margin-bottom:      0;
+            }
+            .formalerts__trigger {
+                display:                block;
+                padding:                0;
+                margin-right:           -4px;
+                border:                 0;
+                background:             $formalertsBgColor;
+                position:               absolute;
+                top:                    46vh;
+                right:                  $formalertsWrapperWidth;
+                margin-bottom:          0.5em;
+                box-shadow:             -3px 0 3px rgba(100,100,100,0.2);
+                outline-offset:         -5px;
+                .fa, .fas, i {
+                    font-size:          1.75em;
+                    color:              $color-text-link;    
+                    padding:            1em .75em 1em .5em;
+                }
+            }
+            .formalerts__wrapper {
+                overflow-y:             auto;
+                max-height:             100%;
+            }
+        }
+    }
+    @include media-query('palm') {
+        &.js-formalerts-flyin {
+            .formalerts__trigger {
+                display:                none;
+            }
+        }
+    }
+}

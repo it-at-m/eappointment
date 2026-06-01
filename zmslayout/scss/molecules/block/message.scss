@@ -1,0 +1,72 @@
+#{$namespace}.message {
+    @include clearfix();
+    @include getRem('padding', $boxPaddingPx);
+    @include getRem('margin-top', 0px); // No margin-top because of possible headings
+    @include getRem('margin-bottom', $blockBottomMarginPx/2);
+    color:              $color-text-base;
+    background-color:   $color-message-default;
+    border:             1px solid darken($color-message-default, 0%);
+    display:            block;
+    width:              fit-content;
+    min-width:          100%;
+    > *:first-child,
+    > :first-child h2,
+    > :first-child h3 {
+        margin-top:     0;
+    }
+    > *:last-child,
+    > :last-child > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+#{$namespace}.message__header {
+    @include blockHeader();
+}
+
+#{$namespace}.message__actions {
+    // sometimes we have some buttons in our messages (leika)
+    margin-top:                     $blockBottomMarginPx/2;
+    display:                        flex;
+    justify-content:                flex-end;
+    align-items:                    center;
+    @include media-query('palm') {
+        flex-direction:         column;
+        justify-content:        flex-start;
+        align-items:            stretch;
+    }
+    @include media-query('lap-and-up') {
+        > * {
+            margin:                 0 0 0 0.5em;
+        }
+        .button, button {
+            margin-bottom:          0;
+        }
+    }
+}
+
+#{$namespace}.message--error {
+    @extend .message;
+    background-color:   $color-message-error;
+    border-color:       darken($color-message-error, 0%);
+    color:              $color-text-error;
+    .message__heading {
+        color:          $color-text-error;
+    }
+}
+
+#{$namespace}.message--success {
+    @extend .message;
+    background-color:   $color-message-success;
+    border-color:       darken($color-message-success, 0%);
+    color:              $color-text-base;
+    .message__heading {
+        color:          $color-text-base;
+    }
+}
+
+#{$namespace}.message--info {
+    @extend .message;
+    background-color:   $color-message-info;
+    border-color:       darken($color-message-info, 0%);
+}
