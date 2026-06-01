@@ -261,7 +261,7 @@ abstract class Base
      * This function produces a hash value that contains info for comparison
      *
      * @param string $value
-     * @param callable|NULL $c (function to be used for hashing)
+     * @param callable|null $callable function to be used for hashing
      * @return string
      */
     public function hashStringValue(string $value, callable $callable = null): string

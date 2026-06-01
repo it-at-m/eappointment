@@ -671,8 +671,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Markiere einen Termin als dereferenced
      *
-     * @param int|string $processId
-     * @param string $authKey
+     * @param \BO\Zmsentities\Process $process
+     * @param bool $releaseSlots
+     * @param \BO\Zmsentities\Useraccount|null $useraccount
      *
      * @return Entity|null
      */
