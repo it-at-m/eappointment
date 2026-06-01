@@ -42,6 +42,7 @@ class Provider extends Keycloak
      * @param  \BO\Zmsclient\PSR7\ClientInterface $client
      * @return self
      */
+    #[\Override]
     public function setHttpClient($client)
     {
         $this->httpClient = $client;
@@ -55,6 +56,7 @@ class Provider extends Keycloak
      * @param AccessToken $token
      * @return ResourceOwner
      */
+    #[\Override]
     protected function createResourceOwner(array $response, AccessToken $token): ResourceOwner
     {
         return new ResourceOwner($response);

@@ -38,6 +38,7 @@ class ProcessListSummaryMail extends BaseController
      * @param ResponseInterface $response
      * @param array $args
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

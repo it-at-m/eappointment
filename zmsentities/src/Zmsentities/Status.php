@@ -7,6 +7,7 @@ class Status extends Schema\Entity
     public const PRIMARY = 'version';
     public static $schema = "status.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

@@ -30,6 +30,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         $this->logger = $logger;
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

@@ -6,6 +6,7 @@ class Locations extends Base
 {
     protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Location';
 
+    #[\Override]
     public function runImport(): bool
     {
         try {

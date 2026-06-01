@@ -60,6 +60,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         }
     }
 
+    #[\Override]
     public function exchangeArray(object|array $input): array
     {
         parent::exchangeArray($this->getDefaults());
@@ -177,6 +178,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $schema = array(

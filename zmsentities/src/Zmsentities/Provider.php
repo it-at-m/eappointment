@@ -8,6 +8,7 @@ class Provider extends Schema\Entity
 
     public static $schema = "provider.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -18,6 +19,7 @@ class Provider extends Schema\Entity
         ];
     }
 
+    #[\Override]
     public function addData($input)
     {
         $refString = '$ref';

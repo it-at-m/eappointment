@@ -6,6 +6,7 @@ class Config extends Schema\Entity
 {
     public static $schema = "config.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

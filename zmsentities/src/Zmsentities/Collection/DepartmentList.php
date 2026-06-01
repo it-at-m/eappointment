@@ -85,6 +85,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
+    #[\Override]
     public function sortByName()
     {
         parent::sortByName();
@@ -99,6 +100,7 @@ class DepartmentList extends Base implements JsonUnindexed
         return $this;
     }
 
+    #[\Override]
     public function getIds()
     {
         $ids = [];

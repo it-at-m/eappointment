@@ -9,6 +9,7 @@ class Permission extends Base implements MappingInterface
      */
     const TABLE = 'permission';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

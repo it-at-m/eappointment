@@ -31,6 +31,7 @@ class UrlParameterSigning extends BaseController
      * @param SlimRequest $request
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

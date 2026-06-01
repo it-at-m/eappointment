@@ -117,6 +117,7 @@ class Process extends Base implements MappingInterface
             FOR UPDATE';
     }
 
+    #[\Override]
     public function addJoin()
     {
         $joins = [];
@@ -250,6 +251,7 @@ class Process extends Base implements MappingInterface
         return null;
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -1103,6 +1105,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointments__0__date")] =
@@ -1153,6 +1156,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     protected function addRequiredJoins()
     {
         if ($this->shouldLoadEntity('processuser')) {

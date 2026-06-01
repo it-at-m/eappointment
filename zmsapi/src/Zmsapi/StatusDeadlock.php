@@ -16,6 +16,7 @@ class StatusDeadlock extends BaseController
      * @codeCoverageIgnore
      * @return String
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

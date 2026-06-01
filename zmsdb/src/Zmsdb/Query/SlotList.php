@@ -404,6 +404,7 @@ class SlotList extends Base
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);

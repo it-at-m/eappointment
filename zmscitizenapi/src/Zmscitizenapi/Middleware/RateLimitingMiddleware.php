@@ -37,6 +37,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
         $this->lockTimeout = $config['lockTimeout'];
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

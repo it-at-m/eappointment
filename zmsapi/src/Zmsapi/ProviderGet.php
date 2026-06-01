@@ -17,6 +17,7 @@ class ProviderGet extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $requestInterface,
         \Psr\Http\Message\ResponseInterface $response,

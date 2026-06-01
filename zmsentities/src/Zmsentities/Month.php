@@ -10,6 +10,7 @@ class Month extends Schema\Entity
 
     public static $schema = "month.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

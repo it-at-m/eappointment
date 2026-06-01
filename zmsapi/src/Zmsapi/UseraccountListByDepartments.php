@@ -19,6 +19,7 @@ class UseraccountListByDepartments extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
