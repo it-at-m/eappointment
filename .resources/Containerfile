@@ -1,12 +1,17 @@
+# syntax=docker/dockerfile:1.4
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev as build
 RUN useradd --shell /bin/bash --create-home build
 COPY --chown=build:build . /build
 ARG MODULE
 WORKDIR /build/${MODULE}
-USER build:build
 ENV COMPOSER_MIRROR_PATH_REPOS=1
-RUN make live
+ENV COMPOSER_CACHE_DIR=/composer-cache
+RUN --mount=type=cache,target=/composer-cache \
+    mkdir -p /composer-cache && chown -R build:build /composer-cache
+USER build:build
+RUN --mount=type=cache,target=/composer-cache \
+    make live
 
 ARG PHP_VERSION
 FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-base

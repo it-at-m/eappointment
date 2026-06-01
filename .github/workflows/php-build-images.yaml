@@ -6,6 +6,7 @@ on:
 permissions:
   contents: read
   packages: write
+  actions: write
 
 jobs:
   build:
@@ -13,17 +14,6 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@v6
-      - name: Configure Git Safe Directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Install python3
-        run: sudo apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Remove host vendor trees before image build
-        run: |
-          # reference-libraries materializes nested vendors for CI; .dockerignore excludes
-          # them from the build context, so drop them here to free runner disk.
-          find . -type d -name vendor -prune -exec rm -rf {} +
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
@@ -41,26 +31,34 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Free disk space before image build
         run: |
-          docker system prune -af --volumes || true
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
           df -h
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
         with:
           swap-size-gb: 10
-      - name: Build Image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Resolve image tag
+        id: meta
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
-            # Sanitize the tag by replacing invalid characters with a hyphen
             tag="branch-$(echo "$tag" | sed 's/[\/:]/-/g')"
           fi
-          docker build . \
-            --file ".resources/Containerfile" \
-            --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
-            --build-arg "MODULE=${{ matrix.module }}" \
-            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .resources/Containerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.module }}:${{ steps.meta.outputs.tag }}
+          build-args: |
+            MODULE=${{ matrix.module }}
+            PHP_VERSION=${{ matrix.php_version }}
+          cache-from: type=gha,scope=image-${{ matrix.module }}
+          cache-to: type=gha,mode=max,scope=image-${{ matrix.module }}
     strategy:
       matrix:
         include:

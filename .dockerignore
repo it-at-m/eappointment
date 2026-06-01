@@ -1,6 +1,5 @@
 # PHP dependencies are installed inside the image by `make live` (composer install).
-# Host `reference-libraries --no-symlink` nests vendors deeply; excluding them keeps
-# the build context small enough for GitHub-hosted runners (~14 GB free disk).
+# Excluding vendor/ keeps the build context small on GitHub-hosted runners (~14 GB free disk).
 **/vendor/
 
 # Node deps are installed in-container for modules that run `npm install` in `make live`.
