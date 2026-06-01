@@ -230,6 +230,7 @@ class Slot extends Base implements MappingInterface
     ';
 
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

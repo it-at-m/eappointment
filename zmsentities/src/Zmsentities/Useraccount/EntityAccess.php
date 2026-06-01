@@ -11,6 +11,7 @@ class EntityAccess implements RightsInterface
         $this->entity = $entity;
     }
 
+    #[\Override]
     public function validateUseraccount(\BO\Zmsentities\Useraccount $useraccount)
     {
         return $this->entity->hasAccess($useraccount);

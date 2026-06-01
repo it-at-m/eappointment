@@ -45,6 +45,7 @@ class Department extends Base
         return null;
     }
 
+    #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,

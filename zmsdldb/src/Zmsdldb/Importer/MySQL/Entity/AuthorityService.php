@@ -10,6 +10,7 @@ class AuthorityService extends Base
         'locale' => 'locale'
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

@@ -58,6 +58,7 @@ class CaptchaService extends Entity implements CaptchaInterface
      *
      * @return array
      */
+    #[\Override]
     public function getCaptchaDetails(): array
     {
         return [
@@ -90,6 +91,7 @@ class CaptchaService extends Entity implements CaptchaInterface
      * @return array
      * @throws \Exception
      */
+    #[\Override]
     public function createChallenge(): array
     {
         try {
@@ -134,6 +136,7 @@ class CaptchaService extends Entity implements CaptchaInterface
      * @return mixed
      * @throws \Exception
      */
+    #[\Override]
     public function verifySolution(?string $payload): array
     {
         if (!$payload) {

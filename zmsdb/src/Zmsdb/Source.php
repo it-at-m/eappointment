@@ -77,6 +77,7 @@ class Source extends Base
      *
      * @return \BO\Zmsentities\Source
      */
+    #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,

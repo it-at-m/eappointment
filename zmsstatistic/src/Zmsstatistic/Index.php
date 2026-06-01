@@ -18,6 +18,7 @@ class Index extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -74,6 +75,7 @@ class Index extends BaseController
         }
     }
 
+    #[\Override]
     protected function testLogin($input)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(

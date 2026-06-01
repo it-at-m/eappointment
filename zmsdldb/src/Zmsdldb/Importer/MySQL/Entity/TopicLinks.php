@@ -18,6 +18,7 @@ class TopicLinks extends Base
         '__RAW__' => 'data_json'
     ];
 
+    #[\Override]
     public function postSetupFields()
     {
         $searchValues = [$this->get('name')];
@@ -44,6 +45,7 @@ class TopicLinks extends Base
         $this->fields['search'] = implode(', ', $searchValues);
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {
@@ -55,6 +57,7 @@ class TopicLinks extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -66,6 +69,7 @@ class TopicLinks extends Base
         }
     }
 
+    #[\Override]
     public function postSave(\PDOStatement $stm, Base $entity)
     {
         return true;

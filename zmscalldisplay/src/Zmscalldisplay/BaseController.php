@@ -20,6 +20,7 @@ abstract class BaseController extends \BO\Slim\Controller
 {
     protected static $hashParameter = ['webcalldisplay' => ['collections', 'queue']];
 
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);

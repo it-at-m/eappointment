@@ -20,6 +20,7 @@ class AppointmentUpdateController extends BaseController
         $this->service = new AppointmentUpdateService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);
