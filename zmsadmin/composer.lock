@@ -312,11 +312,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -362,7 +362,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -422,11 +422,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -480,11 +480,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feature-zmskvr-implement-php-code-scanning-with-psalm",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "0d46775dba0ed63865729096837616ebb05961df"
+                "reference": "df966191e66a04679db2fbff4a04d81ad8dce10f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2626,16 +2626,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.30.4",
+            "version": "1.30.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "02970383cc12e7bf0bc0707ea6e2e8ed23a7aec9"
+                "reference": "97bcabd32a64924688487dcd64aceaf158affb5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/02970383cc12e7bf0bc0707ea6e2e8ed23a7aec9",
-                "reference": "02970383cc12e7bf0bc0707ea6e2e8ed23a7aec9",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/97bcabd32a64924688487dcd64aceaf158affb5c",
+                "reference": "97bcabd32a64924688487dcd64aceaf158affb5c",
                 "shasum": ""
             },
             "require": {
@@ -2728,9 +2728,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.4"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.5"
             },
-            "time": "2026-04-19T06:00:39+00:00"
+            "time": "2026-05-31T05:13:11+00:00"
         },
         {
             "name": "psr/container",
@@ -6414,16 +6414,16 @@
         },
         {
             "name": "amphp/process",
-            "version": "v2.0.3",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/process.git",
-                "reference": "52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d"
+                "reference": "583959df17d00304ad7b0b32285373f985935643"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/process/zipball/52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d",
-                "reference": "52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d",
+                "url": "https://api.github.com/repos/amphp/process/zipball/583959df17d00304ad7b0b32285373f985935643",
+                "reference": "583959df17d00304ad7b0b32285373f985935643",
                 "shasum": ""
             },
             "require": {
@@ -6437,7 +6437,7 @@
                 "amphp/php-cs-fixer-config": "^2",
                 "amphp/phpunit-util": "^3",
                 "phpunit/phpunit": "^9",
-                "psalm/phar": "^5.4"
+                "psalm/phar": "6.16.1"
             },
             "type": "library",
             "autoload": {
@@ -6470,7 +6470,7 @@
             "homepage": "https://amphp.org/process",
             "support": {
                 "issues": "https://github.com/amphp/process/issues",
-                "source": "https://github.com/amphp/process/tree/v2.0.3"
+                "source": "https://github.com/amphp/process/tree/v2.1.0"
             },
             "funding": [
                 {
@@ -6478,7 +6478,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-04-19T03:13:44+00:00"
+            "time": "2026-05-31T15:11:55+00:00"
         },
         {
             "name": "amphp/serialization",
