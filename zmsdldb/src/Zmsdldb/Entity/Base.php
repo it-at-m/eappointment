@@ -88,6 +88,7 @@ class Base extends \ArrayObject
         $this->offsetSet($name, $value);
     }
 
+    #[\Override]
     public function offsetSet($index, $value): void
     {
         if ('data_json' == $index) {

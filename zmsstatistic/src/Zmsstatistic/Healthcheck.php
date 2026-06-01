@@ -18,6 +18,7 @@ class Healthcheck extends BaseController
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

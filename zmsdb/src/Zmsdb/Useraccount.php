@@ -305,6 +305,7 @@ class Useraccount extends Base
         return $useraccount;
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
     {
         if (0 < $resolveReferences && $useraccount->toProperty()->id->get()) {

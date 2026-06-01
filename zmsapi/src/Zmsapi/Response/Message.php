@@ -107,6 +107,7 @@ class Message implements \JsonSerializable
         return $this->statuscode;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $schema = $this->request->getUri()->getScheme();

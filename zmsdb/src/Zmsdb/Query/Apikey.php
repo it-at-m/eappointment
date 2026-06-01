@@ -14,6 +14,7 @@ class Apikey extends Base implements MappingInterface
 
     const QUOTATABLE = 'apiquota';
 
+    #[\Override]
     protected function addRequiredJoins()
     {
         $this->leftJoin(
@@ -25,6 +26,7 @@ class Apikey extends Base implements MappingInterface
     }
 
 
+    #[\Override]
     public function getEntityMapping()
     {
         $mapping = [

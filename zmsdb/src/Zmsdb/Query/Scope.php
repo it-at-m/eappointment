@@ -115,6 +115,7 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
+    #[\Override]
     public function addJoin()
     {
         if ($this->shouldLoadEntity('provider')) {
@@ -129,6 +130,7 @@ class Scope extends Base implements MappingInterface
         return [];
     }
 
+    #[\Override]
     protected function addRequiredJoins()
     {
 
@@ -159,6 +161,7 @@ class Scope extends Base implements MappingInterface
     }
 
     //Todo: now() Parameter to enable query cache
+    #[\Override]
     public function getEntityMapping()
     {
         return array_filter([
@@ -404,6 +407,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data = $this->convertTimestamps($data);

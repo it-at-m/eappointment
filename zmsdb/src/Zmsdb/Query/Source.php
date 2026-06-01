@@ -9,6 +9,7 @@ class Source extends Base implements MappingInterface
      */
     const TABLE = 'source';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -27,6 +28,7 @@ class Source extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastChange")] =

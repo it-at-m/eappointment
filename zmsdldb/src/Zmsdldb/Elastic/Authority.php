@@ -20,6 +20,7 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
+    #[\Override]
     public function fetchList($servicelist = false)
     {
         $boolquery = Helper::boolFilteredQuery();
@@ -48,6 +49,7 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
+    #[\Override]
     public function fromLocationResults($resultList)
     {
         $authorityList = new Collection();

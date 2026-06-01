@@ -19,6 +19,7 @@ class ServerRequestFactory extends \Slim\Psr7\Factory\ServerRequestFactory
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
+    #[\Override]
     public static function createFromGlobals(): PsrRequest
     {
         $psrRequest = parent::createFromGlobals();

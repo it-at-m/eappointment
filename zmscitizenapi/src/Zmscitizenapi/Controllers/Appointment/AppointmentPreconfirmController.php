@@ -20,6 +20,7 @@ class AppointmentPreconfirmController extends BaseController
         $this->service = new AppointmentPreconfirmService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);

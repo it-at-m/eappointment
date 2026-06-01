@@ -28,6 +28,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return clone self::$cache[$cacheKey];
     }
 
+    #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,

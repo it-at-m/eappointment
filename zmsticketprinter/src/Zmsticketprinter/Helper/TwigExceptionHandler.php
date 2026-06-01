@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
 {
+    #[\Override]
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,

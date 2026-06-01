@@ -29,6 +29,7 @@ class Workstation extends Base
         return $this->readResolvedReferences($workstation, $resolveReferences);
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
     {
         if (0 < $resolveReferences) {

@@ -6,6 +6,7 @@ class RequestRelation extends Schema\Entity
 {
     public static $schema = "requestrelation.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

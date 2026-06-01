@@ -21,6 +21,7 @@ class Index extends BaseController
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

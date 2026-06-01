@@ -30,6 +30,7 @@ class ProcessQueue extends BaseController
     /**
      * @SuppressWarnings(Param)
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

@@ -15,6 +15,7 @@ use BO\Zmsdldb\Collection\Services as Collection;
  */
 class Service extends Base
 {
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();

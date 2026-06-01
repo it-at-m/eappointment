@@ -23,6 +23,7 @@ class RequestSizeLimitMiddleware implements MiddlewareInterface
         $this->maxSize = $config['maxSize'];
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

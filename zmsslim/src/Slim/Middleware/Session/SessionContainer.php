@@ -15,6 +15,7 @@ class SessionContainer implements SessionInterface
         return $instance;
     }
 
+    #[\Override]
     public function setGroup(array $group, $clear = false)
     {
         $this->getSession()->setGroup($group, $clear);
@@ -25,26 +26,31 @@ class SessionContainer implements SessionInterface
         $this->getSession()->writeData();
     }
 
+    #[\Override]
     public function set($key, $value, $index = null)
     {
         $this->getSession()->set($key, $value, $index);
     }
 
+    #[\Override]
     public function get($key, $index = null, $default = null)
     {
         return $this->getSession()->get($key, $index, $default);
     }
 
+    #[\Override]
     public function getEntity()
     {
         return $this->getSession()->getEntity();
     }
 
+    #[\Override]
     public function remove($key, $groupIndex = null)
     {
         $this->getSession()->remove($key, $groupIndex);
     }
 
+    #[\Override]
     public function clear()
     {
         $this->getSession()->clear();
@@ -55,16 +61,19 @@ class SessionContainer implements SessionInterface
         $this->getSession()->restart();
     }
 
+    #[\Override]
     public function clearGroup($groupIndex = null)
     {
         $this->getSession()->clearGroup($groupIndex);
     }
 
+    #[\Override]
     public function has($key, $groupIndex = null)
     {
         return $this->getSession()->has($key, $groupIndex);
     }
 
+    #[\Override]
     public function isEmpty()
     {
         return $this->getSession()->isEmpty();
@@ -73,6 +82,7 @@ class SessionContainer implements SessionInterface
     // TODO: Review the use of `mixed` return type.
     // This method delegates to getSession()->jsonSerialize(), which may return various types.
     // Consider adding stricter return typing if getSession() can be more precisely typed.
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->getSession()->jsonSerialize();

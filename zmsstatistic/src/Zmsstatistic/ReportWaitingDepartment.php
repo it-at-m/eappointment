@@ -37,6 +37,7 @@ class ReportWaitingDepartment extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

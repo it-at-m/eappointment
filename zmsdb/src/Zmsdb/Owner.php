@@ -27,6 +27,7 @@ class Owner extends Base
         return $this->readResolvedReferences($owner, $resolveReferences);
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && isset($entity['id'])) {

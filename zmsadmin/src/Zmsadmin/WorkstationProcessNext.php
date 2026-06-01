@@ -30,6 +30,7 @@ class WorkstationProcessNext extends BaseController
         return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

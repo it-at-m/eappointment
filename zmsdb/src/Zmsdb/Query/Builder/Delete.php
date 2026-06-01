@@ -27,6 +27,7 @@ class Delete extends Query
      *
      * @return  string
      */
+    #[\Override]
     public function sql()
     {
         if ($this->table === null) {
@@ -48,6 +49,7 @@ class Delete extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function params()
     {
         return $this->getWhereParams();
@@ -58,6 +60,7 @@ class Delete extends Query
      *
      * @return  $this
      */
+    #[\Override]
     public function reset()
     {
         $this->table = null;
@@ -74,6 +77,7 @@ class Delete extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function allTablesReferenced()
     {
         if ($this->table()) {

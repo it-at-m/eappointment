@@ -6,6 +6,7 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSubject
 {
+    #[\Override]
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
@@ -64,6 +65,7 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         return $entity;
     }
 
+    #[\Override]
     public function readSubjectList()
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingorganisation::QUERY_SUBJECTS, []);
@@ -81,6 +83,7 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         return $entity;
     }
 
+    #[\Override]
     public function readPeriodList($subjectid, $period = 'day')
     {
         $organisation = (new Organisation())->readEntity($subjectid);

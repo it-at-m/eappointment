@@ -23,6 +23,7 @@ class Container extends \ArrayObject implements ContainerInterface
      *
      * @throws NotFoundExceptionInterface
      */
+    #[\Override]
     public function get(string $identifier)
     {
         if (!$this->has($identifier)) {
@@ -37,6 +38,7 @@ class Container extends \ArrayObject implements ContainerInterface
      *
      * @return bool
      */
+    #[\Override]
     public function has(string $identifier): bool
     {
         return $this->offsetExists($identifier);

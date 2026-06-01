@@ -35,6 +35,7 @@ class OrganisationList extends Base
         return $list;
     }
 
+    #[\Override]
     public function sortByName()
     {
         parent::sortByName();

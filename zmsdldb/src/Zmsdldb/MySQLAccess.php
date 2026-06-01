@@ -20,6 +20,7 @@ class MySQLAccess extends PDOAccess
     const DEFAULT_DATABASE_USER = 'root';
     const DEFAULT_DATABASE_PASSWORD = 'password';
 
+    #[\Override]
     protected function connect(array $options)
     {
         $host = $options['host'] ?? static::DEFAULT_DATABASE_HOST;
