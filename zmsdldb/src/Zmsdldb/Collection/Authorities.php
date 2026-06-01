@@ -128,7 +128,7 @@ class Authorities extends Base
      *
      * @param Int $locationId
      *
-     * @return clone self
+     * @return self
      */
     public function removeLocation($locationId)
     {
@@ -199,7 +199,7 @@ class Authorities extends Base
     /**
      * transform list to authorities with accociated locations
      *
-     * @return Collection
+     * @return self
      */
 
     public function toListWithAssociatedLocations($locationlist)

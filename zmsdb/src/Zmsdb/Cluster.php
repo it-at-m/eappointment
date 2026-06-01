@@ -45,6 +45,7 @@ class Cluster extends Base
         return $this->readResolvedReferences($cluster, $resolveReferences, $disableCache);
     }
 
+    #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,

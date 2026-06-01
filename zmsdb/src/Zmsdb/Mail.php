@@ -104,6 +104,7 @@ class Mail extends Base
 
 
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);

@@ -10,7 +10,7 @@ class ResetGhostWorkstationCountByCron
     /**
      * reset ghostWorkstationCount by cron
      *
-     * @return Entity
+     * @return void
      */
 
     public static function init()

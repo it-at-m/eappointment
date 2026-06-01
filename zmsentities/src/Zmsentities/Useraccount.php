@@ -15,6 +15,7 @@ class Useraccount extends Schema\Entity
 
     public static $schema = "useraccount.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -371,6 +372,7 @@ class Useraccount extends Schema\Entity
         return $entity;
     }
 
+    #[\Override]
     public function withCleanedUpFormData($keepPassword = false)
     {
         unset($this['save']);
@@ -438,6 +440,7 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    #[\Override]
     public function withLessData()
     {
         unset($this->departments);

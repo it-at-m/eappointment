@@ -14,6 +14,7 @@ class ServiceInformation extends Base
         'sort' => 'sort'
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

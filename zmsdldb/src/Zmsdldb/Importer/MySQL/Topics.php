@@ -6,6 +6,7 @@ class Topics extends Base
 {
     protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Topic';
 
+    #[\Override]
     public function runImport(): bool
     {
         try {

@@ -15,6 +15,7 @@ class Session extends Schema\Entity
 
     public static $schema = "session.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

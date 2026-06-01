@@ -16,19 +16,18 @@ use Psr\Http\Message\ResponseInterface;
 class ErrorHandler
 {
     /**
-     * @var \BO\Zmsentitie\Session $session;
-     *
+     * @var \BO\Zmsentities\Session|null $session
      */
     public $session = array();
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request;
+     * @var \Psr\Http\Message\RequestInterface|null $request
      *
      */
     public $request = null;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface $response;
+     * @var \Psr\Http\Message\ResponseInterface|null $response
      *
      */
     public $response = null;

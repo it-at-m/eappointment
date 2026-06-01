@@ -316,7 +316,7 @@ abstract class Base
      * get SQL-String
      * Implement a simple caching routine to prevent multiple rebuilds
      *
-     * @return String
+     * @return string
      */
     public function getSql()
     {

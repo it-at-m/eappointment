@@ -21,6 +21,7 @@ class WorkstationSelect extends BaseController
      * @SuppressWarnings(Parameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

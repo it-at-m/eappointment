@@ -8,6 +8,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "owner.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -33,6 +34,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     }
 
 
+    #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser'])
@@ -43,6 +45,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData()
     {
         $entity = clone $this;

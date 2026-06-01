@@ -97,6 +97,7 @@ class DateTime extends \DateTimeImmutable implements \JsonSerializable
         return $this->format(DATE_ATOM);
     }
 
+    #[\Override]
     public function jsonSerialize(): string
     {
         return $this->format(DATE_ATOM);

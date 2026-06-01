@@ -9,11 +9,10 @@ class Queue extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and DateTime
      *
-     * @param
-     * scopeId
-     * dateTime
+     * @param array|int $scopeIds
+     * @param \DateTimeInterface $dateTime
      *
-     * @return Collection processList
+     * @return Collection
      */
     public function readListByScopeAndTime(
         $scopeIds,
