@@ -16,7 +16,7 @@
     "prepare": "cd .. && husky .husky"
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "9.0.2",
+    "@muenchen/muc-patternlab-vue": "10.0.0",
     "altcha": "^3.0.10",
     "dompurify": "^3.4.7",
     "jsdom": "^29.1.1",
