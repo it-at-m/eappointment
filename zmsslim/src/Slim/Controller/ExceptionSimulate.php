@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ExceptionSimulate extends \BO\Slim\Controller
 {
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         throw new \Exception("Unexpected exception simulation");

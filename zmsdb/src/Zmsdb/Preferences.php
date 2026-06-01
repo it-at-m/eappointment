@@ -59,7 +59,7 @@ class Preferences extends Base
     /**
      * remove Preferences data
      *
-     * @return Resource Status
+     * @return Entity|null
      */
     public function deleteProperty($entityName, $entityId, $groupName, $name)
     {

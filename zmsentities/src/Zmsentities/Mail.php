@@ -19,6 +19,7 @@ class Mail extends Schema\Entity
 
     protected $templateProvider = false;
 
+    #[\Override]
     public function getDefaults()
     {
         return [

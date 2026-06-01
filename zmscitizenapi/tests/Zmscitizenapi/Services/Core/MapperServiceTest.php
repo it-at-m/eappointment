@@ -164,9 +164,7 @@ class MapperServiceTest extends TestCase
     public function testProcessToThinnedProcess()
     {
         // Test with full process data
-        $process = new Process();
-        $process->id = 1;
-        $process->authKey = 'test-key';
+        $process = new Process(['id' => 1, 'authKey' => 'test-key']);
         $appointment = new class {
             public $date = '1724907600';
             public function hasTime() { return true; }

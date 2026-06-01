@@ -15,6 +15,7 @@ use BO\Zmsdldb\Collection\Links as Collection;
  */
 class Link extends Base
 {
+    #[\Override]
     public function loadData()
     {
         $data = $this->access()
@@ -23,6 +24,7 @@ class Link extends Base
         $this->setItemList($this->parseData($data));
     }
 
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();

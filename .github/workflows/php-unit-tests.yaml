@@ -24,7 +24,7 @@ jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev"
     env:
       XDEBUG_MODE: coverage
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
@@ -114,7 +114,7 @@ jobs:
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
     services:
       mariadb:
         image: mariadb:10.11
@@ -184,7 +184,7 @@ jobs:
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev"
     services:
       mariadb:
         image: mariadb:10.11

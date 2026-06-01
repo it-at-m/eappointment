@@ -9,6 +9,7 @@ class Role extends Base implements MappingInterface
      */
     const TABLE = 'role';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -27,6 +28,7 @@ class Role extends Base implements MappingInterface
         ];
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $permissionsKey = $this->getPrefixed('permissions');

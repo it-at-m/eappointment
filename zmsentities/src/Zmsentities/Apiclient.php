@@ -8,6 +8,7 @@ class Apiclient extends Schema\Entity
 
     public static $schema = "apiclient.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

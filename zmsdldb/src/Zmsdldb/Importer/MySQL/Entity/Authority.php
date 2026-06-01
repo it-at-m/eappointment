@@ -15,6 +15,7 @@ class Authority extends Base
         '__RAW__' => 'data_json'
     ];
 
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -52,11 +53,13 @@ class Authority extends Base
         ];
     }
 
+    #[\Override]
     public function preSetupFields()
     {
         $this->dataRaw['parent_id'] = ($this->dataRaw['parent_id'] ?? 0);
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
@@ -74,6 +77,7 @@ class Authority extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -85,6 +89,7 @@ class Authority extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

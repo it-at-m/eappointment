@@ -168,7 +168,7 @@ class DayOff extends Base
      *            year,
      *            drop
      *
-     * @return Collection dayoffList
+     * @return \BO\Zmsentities\Collection\DayoffList
      */
     public function writeCommonDayoffsByYear($dayoffList, $year = null, $drop = true)
     {

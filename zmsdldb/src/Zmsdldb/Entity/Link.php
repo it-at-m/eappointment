@@ -17,6 +17,7 @@ class Link extends Base
      * return an ID for this entity
      *
      */
+    #[\Override]
     public function getId()
     {
         return $this['link'];

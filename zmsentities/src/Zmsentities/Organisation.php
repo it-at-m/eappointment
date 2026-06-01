@@ -8,6 +8,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "organisation.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -37,6 +38,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->preferences->$index->get();
     }
 
+    #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser'])
@@ -47,6 +49,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;

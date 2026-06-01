@@ -7,6 +7,7 @@ class Settings extends Base
     protected $getCurrentEntitys = false;
     protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Setting';
 
+    #[\Override]
     public function runImport(): bool
     {
         try {

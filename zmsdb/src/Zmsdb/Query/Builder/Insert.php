@@ -26,6 +26,7 @@ class Insert extends Query
      *
      * @return  string
      */
+    #[\Override]
     public function sql()
     {
         if ($this->table === null) {
@@ -68,6 +69,7 @@ class Insert extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function params()
     {
         return array_values($this->values);
@@ -78,6 +80,7 @@ class Insert extends Query
      *
      * @return  $this
      */
+    #[\Override]
     public function reset()
     {
         $this->table = null;
@@ -94,6 +97,7 @@ class Insert extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function allTablesReferenced()
     {
         if ($this->table()) {

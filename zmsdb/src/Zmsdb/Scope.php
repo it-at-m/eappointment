@@ -92,6 +92,7 @@ class Scope extends Base
         return $ordered;
     }
 
+    #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $scope,
         $resolveReferences,

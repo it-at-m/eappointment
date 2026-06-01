@@ -16,6 +16,7 @@ use BO\Zmsdldb\Collection\Boroughs as Collection;
   */
 class Borough extends Base
 {
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();

@@ -27,7 +27,7 @@ class Message implements \JsonSerializable
 
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request;
+     * @var \Psr\Http\Message\RequestInterface|null $request
      *
      */
     protected $request = null;
@@ -107,6 +107,7 @@ class Message implements \JsonSerializable
         return $this->statuscode;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $schema = $this->request->getUri()->getScheme();

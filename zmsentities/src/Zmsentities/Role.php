@@ -8,6 +8,7 @@ class Role extends Schema\Entity
 
     public static $schema = "role.json";
 
+    #[\Override]
     public function getDefaults(): array
     {
         return [

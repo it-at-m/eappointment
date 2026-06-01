@@ -20,6 +20,7 @@ class Location extends Base
      *
      * @return Entity
      */
+    #[\Override]
     public function fetchId($location_id)
     {
         if ($location_id) {
@@ -42,6 +43,7 @@ class Location extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function fetchList($service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
@@ -72,6 +74,7 @@ class Location extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function fetchFromCsv($location_csv)
     {
         $query = Helper::boolFilteredQuery();
@@ -96,7 +99,7 @@ class Location extends Base
 
     /**
      *
-     * @return \BO\ClientDldb\Collection\Authorities
+     * @return \BO\Zmsdldb\Collection\Authorities
      */
     public function searchAll($querystring, $service_csv = '')
     {
@@ -159,6 +162,7 @@ class Location extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readSearchResultList($querystring, $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();

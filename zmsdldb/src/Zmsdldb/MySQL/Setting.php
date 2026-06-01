@@ -14,6 +14,7 @@ use BO\Zmsdldb\File\Setting as Base;
   */
 class Setting extends Base
 {
+    #[\Override]
     public function fetchName($name)
     {
         try {

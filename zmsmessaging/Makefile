@@ -10,7 +10,7 @@ fix: # run code fixing
 	php ../../bin/phpcbf --standard=psr2 tests/
 
 live: # init live system, delete unnecessary libs
-	composer install --no-dev --prefer-dist
+	composer install --no-dev --prefer-dist --optimize-autoloader
 
 dev: # init development system
 	composer update

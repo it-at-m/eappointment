@@ -16,8 +16,9 @@ class ProcessNextByCluster extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -34,7 +35,7 @@ class ProcessNextByCluster extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        (new Helper\User($request, 1))->checkPermissions(
+        (new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
         );
 

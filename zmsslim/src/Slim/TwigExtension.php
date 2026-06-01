@@ -34,6 +34,7 @@ class TwigExtension extends AbstractExtension
         return 'boslimExtension';
     }
 
+    #[\Override]
     public function getFunctions()
     {
         $safe = array('is_safe' => array('html'));

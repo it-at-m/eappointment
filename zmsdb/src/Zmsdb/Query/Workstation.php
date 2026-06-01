@@ -88,6 +88,7 @@ class Workstation extends Base implements MappingInterface
             `Passworthash` = ?
     ';
 
+    #[\Override]
     protected function addRequiredJoins()
     {
     }
@@ -98,6 +99,7 @@ class Workstation extends Base implements MappingInterface
             WHERE A.`NutzerID` = :workstationId FOR UPDATE';
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -110,6 +112,7 @@ class Workstation extends Base implements MappingInterface
         ];
     }
 
+    #[\Override]
     public function addJoin()
     {
         $joins = [];

@@ -47,6 +47,7 @@ class EventLog extends Schema\Entity
     public const WORKSTATION_PROCESS_START = 'CLIENT_PROCESSLIST_REQUEST';
     public const WORKSTATION_PROCESS_FINISH = 'CLIENT_PROCESSLIST_REQUEST';
 
+    #[\Override]
     public function getDefaults(): array
     {
         return [
@@ -65,6 +66,7 @@ class EventLog extends Schema\Entity
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function addData($mergeData): Schema\Entity
     {
         if (isset($mergeData['creationDateTime']) && is_string($mergeData['creationDateTime'])) {
@@ -77,6 +79,7 @@ class EventLog extends Schema\Entity
         return parent::addData($mergeData);
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $clone = clone $this;

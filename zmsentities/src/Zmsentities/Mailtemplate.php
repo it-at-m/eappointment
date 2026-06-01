@@ -6,6 +6,7 @@ class Mailtemplate extends Schema\Entity
 {
     public static $schema = "mailtemplate.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

@@ -17,6 +17,7 @@ class Closure extends Base implements MappingInterface
      */
     protected $resolveLevel = 0;
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -97,6 +98,7 @@ class Closure extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastChange")] =

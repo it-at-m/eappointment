@@ -72,6 +72,7 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
+    #[\Override]
     public function loadLocations($locationJson, $locale = 'de')
     {
         $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson, $locale);
@@ -83,6 +84,7 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
+    #[\Override]
     public function loadServices($serviceJson, $locale = 'de')
     {
         $this->accessInstance[$locale]['Service'] = new Elastic\Service($serviceJson, $locale);
@@ -94,6 +96,7 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
+    #[\Override]
     public function loadTopics($topicJson, $locale = 'de')
     {
         $this->accessInstance[$locale]['Topic'] = new Elastic\Topic($topicJson, $locale);
@@ -107,6 +110,7 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
+    #[\Override]
     public function loadSettings($settingsJson)
     {
         $this->accessInstance['de']['Setting'] = new Elastic\Setting($settingsJson);
@@ -123,6 +127,7 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
+    #[\Override]
     public function loadAuthorities($authorityJson, $locale = 'de')
     {
         $this->accessInstance[$locale]['Authority'] = new Elastic\Authority($authorityJson, $locale);

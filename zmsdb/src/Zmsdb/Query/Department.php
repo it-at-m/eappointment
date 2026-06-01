@@ -34,6 +34,7 @@ class Department extends Base implements MappingInterface
         DELETE FROM email WHERE BehoerdenID=?
     ';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -60,6 +61,7 @@ class Department extends Base implements MappingInterface
         ];
     }
 
+    #[\Override]
     public function addRequiredJoins()
     {
         $this->leftJoin(
