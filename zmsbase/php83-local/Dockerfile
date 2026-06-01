@@ -1,7 +1,7 @@
 # Global build args
 ARG COMPOSER_VERSION=2
 ARG NODE_MAJOR=18
-ARG PHP_VERSION=8.3-apache
+ARG PHP_VERSION=8.5-apache
 
 # Composer stage
 FROM composer:${COMPOSER_VERSION} AS composer-image

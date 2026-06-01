@@ -1,6 +1,6 @@
 ARG COMPOSER_VERSION="2"
 ARG NODE_MAJOR="18"
-ARG PHP_VERSION="8.3-fpm-bullseye"
+ARG PHP_VERSION="8.4-fpm-bullseye"
 
 # composer version to make available in built image
 FROM composer:${COMPOSER_VERSION} AS composer-image
