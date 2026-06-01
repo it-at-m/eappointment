@@ -1,9 +1,16 @@
 name: ⚙️ zmsautomation
-run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branches main + next' || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
+run-name: ${{ github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | 🦊 firefox + 🌐 chrome | default tags | branches main + next' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix && 'zmsautomation | ▶️ manual | main + next matrix | 🦊 firefox + 🌐 chrome | default tags') || format('zmsautomation | {0} | {1}', ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && (contains(inputs.cucumber_tag_expressions, '@web') || contains(inputs.cucumber_tag_expressions, '@zmsadmin') || contains(inputs.cucumber_tag_expressions, '@zmscitizenview') || contains(inputs.cucumber_tag_expressions, '@zmsstatistic') || contains(inputs.cucumber_tag_expressions, '@zmsticketprinter') || contains(inputs.cucumber_tag_expressions, '@zmscalldisplay') || contains(inputs.cucumber_tag_expressions, '@buergeransicht'))) && format('{0} + 🔌 api', inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome')) || ((contains(inputs.cucumber_tag_expressions, '@rest') || contains(inputs.cucumber_tag_expressions, '@zmsapi') || contains(inputs.cucumber_tag_expressions, '@zmscitizenapi')) && '🔌 api' || (inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'))), inputs.cucumber_tag_expressions) }}
 
 on:
   workflow_dispatch:
     inputs:
+      run_main_next_matrix:
+        description: |
+          Run the full scheduled matrix: branches main + next, browsers chrome + firefox,
+          default tags (@rest or @web) and not @ignore. Ignores browser and tag inputs below.
+        required: true
+        type: boolean
+        default: false
       cucumber_tag_expressions:
         description: |
           Newline-separated Cucumber tag expressions. Each line is executed sequentially.
@@ -50,8 +57,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch: ${{ fromJson(github.event_name == 'schedule' && '["main","next"]' || format('["{0}"]', github.ref_name)) }}
-        browser: ${{ fromJson(github.event_name == 'schedule' && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
+        branch: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["main","next"]' || format('["{0}"]', github.ref_name)) }}
+        browser: ${{ fromJson((github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '["chrome","firefox"]' || format('["{0}"]', inputs.browser)) }}
     env:
       # Align with php-build-images.yaml tagging logic for branches
       # (branch- + sanitize / and :)
@@ -60,7 +67,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'schedule' && matrix.branch || github.ref }}
+          ref: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && matrix.branch || github.ref }}
 
       - name: Create runtime env file
         run: cp .devcontainer/.env.template .devcontainer/.env
@@ -78,8 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           # Schedule events don't provide the target branch as workflow_dispatch does.
-          REF_TYPE="${{ github.event_name == 'schedule' && 'branch' || github.ref_type }}"
-          REF_NAME="${{ github.event_name == 'schedule' && matrix.branch || github.ref_name }}"
+          REF_TYPE="${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && 'branch' || github.ref_type }}"
+          REF_NAME="${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && matrix.branch || github.ref_name }}"
 
           # Match `.github/workflows/php-build-images.yaml` tagging logic:
           # - for branches: branch-<sanitized>
@@ -91,7 +98,10 @@ jobs:
             PHP_TAG="$REF_NAME"
           fi
 
+          BRANCH_SLUG="$(echo "$REF_NAME" | sed 's/[\/:]/-/g')"
+
           echo "branch_name=$REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
           echo "php_tag=$PHP_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Pull prebuilt PHP module images
@@ -224,15 +234,14 @@ jobs:
 
           for m in "${modules[@]}"; do
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
-            temp_id="$(docker create "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG")"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # `docker cp` between two containers is not supported.
-            # Copy temp container -> runner filesystem -> zms-web container.
-            tmp_dir="$(mktemp -d)"
-            docker cp "${temp_id}:/var/www/html/." "$tmp_dir/"
-            docker cp "$tmp_dir/." "$WEB_CONT:/var/www/html/${m}/"
-            rm -rf "$tmp_dir"
-            docker rm "$temp_id" >/dev/null
+            # `docker cp` to the runner fails when vendor contains path-repo symlinks
+            # (e.g. vendor/eappointment/mellon -> ../../../mellon/) because those
+            # targets are outside the module image. Stream tar image -> zms-web instead;
+            # symlinks stay valid against the checked-out monorepo at /var/www/html.
+            docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG" \
+              -cf - -C /var/www/html . \
+              | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
@@ -265,7 +274,7 @@ jobs:
           WEB_CONT="zms-web"
           BROWSER="${{ matrix.browser }}"
           SCREENSHOT="${{ inputs.per_step_screenshots }}"
-          INPUTS="${{ github.event_name == 'schedule' && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
+          INPUTS="${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix)) && '(@rest or @web) and not @ignore' || inputs.cucumber_tag_expressions }}"
 
           # Split by newlines and run sequentially.
           fail_any=0
@@ -329,7 +338,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
+          name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
             zmsautomation/target/site/cucumber-pretty/**
@@ -367,6 +376,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.branch }}-${{ matrix.browser }}
+          name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.browser }}
           path: artifacts/container-logs/**
           if-no-files-found: warn
