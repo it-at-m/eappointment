@@ -20,7 +20,6 @@ class UnflattedArray
       * split fields
       * If a key to a field has two underscores "__" it should go into a subarray
       * ATTENTION: performance critical function, keep highly optimized!
-      * @param  array $hash
       *
       * @return array
       */

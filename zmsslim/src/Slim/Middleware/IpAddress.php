@@ -85,8 +85,7 @@ class IpAddress
      * the proxy header (X-Forwarded-For or from $_SERVER['REMOTE_ADDR']
      *
      * @param ServerRequestInterface $request PSR7 request
-     * @param ResponseInterface $response     PSR7 response
-     * @param callable $next                  Next middleware
+     * @param RequestHandlerInterface|null $next Next middleware
      *
      * @return ResponseInterface
      */
