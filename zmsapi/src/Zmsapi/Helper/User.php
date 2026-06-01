@@ -73,7 +73,7 @@ class User
     }
 
     /**
-     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed()
+     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed
      *
      */
     public static function testWorkstationAccessRights($useraccount)
@@ -93,8 +93,8 @@ class User
     }
 
     /**
-     * @throws  \BO\Zmsentities\Exception\UserAccountMissingRights()
-     *          \BO\Zmsentities\Exception\UserAccountMissingLogin()
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingLogin
      *
      */
     public static function testWorkstationAssignedRights($useraccount)

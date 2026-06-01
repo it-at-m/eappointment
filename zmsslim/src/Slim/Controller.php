@@ -15,13 +15,13 @@ abstract class Controller
     protected $containerInterface = null;
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request;
+     * @var \Psr\Http\Message\RequestInterface|null $request
      *
      */
     protected $request = null;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface $response;
+     * @var \Psr\Http\Message\ResponseInterface|null $response
      *
      */
     protected $response = null;

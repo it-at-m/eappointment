@@ -114,7 +114,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Check if the given data validates against the given jsonSchema
      *
-     * @throws \BO\Zmsentities\Expcetion\SchemaValidation
+     * @throws \BO\Zmsentities\Exception\SchemaValidation
      * @return bool
      */
     public function testValid($locale = 'de_DE', $resolveLevel = 0): bool

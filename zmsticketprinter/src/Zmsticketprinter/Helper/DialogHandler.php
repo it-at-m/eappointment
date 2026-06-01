@@ -12,7 +12,7 @@ class DialogHandler extends \BO\Zmsticketprinter\BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

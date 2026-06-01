@@ -137,7 +137,7 @@ class Location extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
     #[\Override]
     public function fetchFromCsv($location_csv, $mixLanguages = false)

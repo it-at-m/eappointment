@@ -19,8 +19,6 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Helper\Property;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request as SlimRequest;
-
 /**
  * returning Signatures for signing requests
  */
@@ -28,7 +26,7 @@ class UrlParameterSigning extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @param SlimRequest $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]

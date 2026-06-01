@@ -14,7 +14,7 @@ use BO\Zmsdb\Cluster as Query;
 class ClusterUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

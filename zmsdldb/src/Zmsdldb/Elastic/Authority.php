@@ -18,7 +18,7 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
     #[\Override]
     public function fetchList($servicelist = false)
@@ -47,7 +47,7 @@ class Authority extends Base
     /**
      * Take an elasticsearch result and return a authority list
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
     #[\Override]
     public function fromLocationResults($resultList)

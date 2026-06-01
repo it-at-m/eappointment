@@ -194,10 +194,10 @@ class Workstation extends Base
      *
      * assign a process to workstation
      *
-     * @param
-     *            workstation
+     * @param \BO\Zmsentities\Workstation $workstation
+     * @param \BO\Zmsentities\Process $process
      *
-     * @return Resource Process
+     * @return ProcessEntity
      */
     public function writeAssignedProcess(
         \BO\Zmsentities\Workstation $workstation,
@@ -241,10 +241,9 @@ class Workstation extends Base
      *
      * remove a process from workstation
      *
-     * @param
-     *            workstation
+     * @param \BO\Zmsentities\Workstation $workstation
      *
-     * @return Boolean
+     * @return bool
      */
     public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation)
     {
@@ -273,8 +272,7 @@ class Workstation extends Base
     /**
      * update a workstation
      *
-     * @param
-     * useraccountId
+     * @param int|string $useraccountId
      *
      * @return Entity
      */
@@ -294,8 +292,7 @@ class Workstation extends Base
     /**
      * update a workstations authkey - is needed for openid login
      *
-     * @param
-     * useraccountId
+     * @param int|string $useraccountId
      *
      * @return Entity
      */

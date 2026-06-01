@@ -14,13 +14,13 @@ use BO\Zmsentities\Calldisplay as Entity;
 
 /**
  * @SuppressWarnings(Coupling)
- * @return String
+ * @return \Psr\Http\Message\ResponseInterface
  */
 class CalldisplayGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

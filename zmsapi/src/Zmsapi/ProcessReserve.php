@@ -20,7 +20,7 @@ class ProcessReserve extends BaseController
     /**
      * @SuppressWarnings(Param)
      * @SuppressWarnings(Complexity)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

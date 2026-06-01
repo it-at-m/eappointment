@@ -62,7 +62,7 @@ class Location extends Base
 
     /**
      *
-     * @return Collection\Locations
+     * @return Collection
      */
     public function readSearchResultList($query, $service_csv = '')
     {

@@ -98,7 +98,7 @@ class Service extends Base
 
     /**
      *
-     * @return String
+     * @return string
      */
     protected function fetchLocationCsv($service_csv)
     {

@@ -47,7 +47,7 @@ class ProcessStatusQueued extends Process
      * @param
      * scopeId
      *
-     * @return String authKey
+     * @return string authKey
      */
     public function readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences = 0, $queueLimit = 10000)
     {

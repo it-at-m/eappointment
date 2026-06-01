@@ -12,13 +12,13 @@ use BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(Coupling)
- * @return String
+ * @return \Psr\Http\Message\ResponseInterface
  */
 class CalldisplayQueue extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
     public function readResponse(

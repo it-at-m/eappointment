@@ -27,7 +27,7 @@ class Message implements \JsonSerializable
 
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request;
+     * @var \Psr\Http\Message\RequestInterface|null $request
      *
      */
     protected $request = null;
