@@ -34,7 +34,7 @@ class ProcessNextByCluster extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        (new Helper\User($request, 1))->checkPermissions(
+        (new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
         );
 
