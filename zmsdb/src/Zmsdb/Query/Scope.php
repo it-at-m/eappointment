@@ -315,24 +315,32 @@ class Scope extends Base implements MappingInterface
 
     private function normalizeIntegerValue($value): int
     {
-        $value = preg_replace('/\D/', '', (string) $value);
+        $value = is_string($value) ? trim($value) : $value;
 
-        if ($value === '') {
+        $intValue = filter_var($value, FILTER_VALIDATE_INT);
+
+        if ($intValue === false || $intValue < 0) {
             return 0;
         }
 
-        return (int) $value;
+        return $intValue;
     }
 
     private function normalizeNullableIntegerValue($value): ?int
     {
-        $value = preg_replace('/\D/', '', (string) $value);
+        $value = is_string($value) ? trim($value) : $value;
 
-        if ($value === '') {
+        if ($value === null || $value === '') {
             return null;
         }
 
-        return (int) $value;
+        $intValue = filter_var($value, FILTER_VALIDATE_INT);
+
+        if ($intValue === false || $intValue < 0) {
+            return null;
+        }
+
+        return $intValue;
     }
 
     public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
