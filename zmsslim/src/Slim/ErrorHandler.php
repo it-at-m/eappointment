@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 class ErrorHandler
 {
     /**
-     * @var \BO\Zmsentities\Session|null $session
+     * @var array<string, mixed>
      */
     public $session = array();
 

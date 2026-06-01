@@ -20,7 +20,7 @@ class Service extends Base
 {
     /**
      *
-     * @return Entity\Service
+     * @return Entity
      */
     #[\Override]
     public function fetchId($service_id)

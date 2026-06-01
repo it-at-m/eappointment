@@ -158,7 +158,7 @@ class User
         $userAccount = $workstation->getUseraccount();
 
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
 
         if ($userAccount->isSuperUser()) {
@@ -216,7 +216,7 @@ class User
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);

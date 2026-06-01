@@ -12,7 +12,7 @@ class Queue extends Base implements Interfaces\ResolveReferences
      * @param array|int $scopeIds
      * @param \DateTimeInterface $dateTime
      *
-     * @return Collection
+     * @return \BO\Zmsentities\Collection\QueueList
      */
     public function readListByScopeAndTime(
         $scopeIds,
