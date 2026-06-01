@@ -15,9 +15,6 @@ class Provider extends Keycloak
 {
     const PROVIDERNAME = 'keycloak';
 
-    /**
-     * @var \BO\Zmsclient\OAuthService
-     */
     protected $oauthService;
 
     /**
@@ -39,7 +36,7 @@ class Provider extends Keycloak
     /**
      * Sets the HTTP client instance.
      *
-     * @param  \BO\Zmsclient\PSR7\ClientInterface $client
+     * @param \BO\Zmsclient\Psr7\Client $client
      * @return self
      */
     #[\Override]

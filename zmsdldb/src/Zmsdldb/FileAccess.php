@@ -163,7 +163,7 @@ class FileAccess extends AbstractAccess
      *
      * @todo will not work in every edge case, cause authority export does not contain officeinformations
      * @todo returns Collection\Authorities and not locations
-     * @return Collection
+     * @return \BO\Zmsdldb\Collection\Authorities
      */
     public function fetchLocationListByOffice($officepath = false)
     {
