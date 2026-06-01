@@ -37,6 +37,7 @@ class Slot extends Schema\Entity
      */
     public const TIMESTAMP = 'timestamp';
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -99,6 +100,7 @@ class Slot extends Schema\Entity
      * Keep empty, no sub-instances
      * ATTENTION: Keep highly optimized, time critical function
      */
+    #[\Override]
     public function __clone()
     {
     }

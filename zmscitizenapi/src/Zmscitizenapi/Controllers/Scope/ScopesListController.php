@@ -19,6 +19,7 @@ class ScopesListController extends BaseController
         $this->service = new ScopesListService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

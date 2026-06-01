@@ -291,33 +291,39 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
+    #[\Override]
     final public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
 
+    #[\Override]
     final public function offsetGet($offset)
     {
         return $this->__get($offset);
     }
 
+    #[\Override]
     final public function offsetSet($offset, $value): Base
     {
         $this->__set($offset, $value);
         return $this;
     }
 
+    #[\Override]
     final public function offsetUnset($offset): Base
     {
         $this->__unset($offset);
         return $this;
     }
 
+    #[\Override]
     final public function count(): int
     {
         return count($this->fields);
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->fields;

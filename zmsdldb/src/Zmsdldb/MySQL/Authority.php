@@ -17,8 +17,9 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
+    #[\Override]
     public function fetchList($servicelist = [])
     {
         try {
@@ -102,8 +103,9 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
+    #[\Override]
     public function fetchId($authorityid)
     {
         try {
@@ -130,6 +132,7 @@ class Authority extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readListByOfficePath($officepath)
     {
         $authorityList = new Collection();

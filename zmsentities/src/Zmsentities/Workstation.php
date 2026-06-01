@@ -14,6 +14,7 @@ class Workstation extends Schema\Entity
 
     public static $schema = "workstation.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

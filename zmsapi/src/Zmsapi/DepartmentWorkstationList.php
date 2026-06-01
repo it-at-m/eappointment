@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class DepartmentWorkstationList extends BaseController
 {
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

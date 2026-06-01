@@ -8,6 +8,7 @@ class Dayoff extends Schema\Entity
 
     public static $schema = "dayoff.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

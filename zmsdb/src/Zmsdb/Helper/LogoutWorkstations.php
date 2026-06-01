@@ -10,7 +10,7 @@ class LogoutWorkstations
     /**
      * logout all workstations
      *
-     * @return Entity
+     * @return void
      */
 
     public static function init($verbose)

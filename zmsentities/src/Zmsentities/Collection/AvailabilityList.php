@@ -278,6 +278,7 @@ class AvailabilityList extends Base
         return $list;
     }
 
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $list = new self();

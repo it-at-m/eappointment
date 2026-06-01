@@ -60,6 +60,7 @@ class EventLog extends Base
      * @param array $data
      * @return array
      */
+    #[\Override]
     public function postProcess($data): array
     {
         $data['id'] = (int) $data['id'];

@@ -32,6 +32,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             processing_time = :processingTime
     ';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -178,6 +179,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         ]);
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $date = $data[$this->getPrefixed("appointments__0__date")] ?? '';

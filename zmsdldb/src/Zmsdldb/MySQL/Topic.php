@@ -16,6 +16,7 @@ use BO\Zmsdldb\Elastic\Topic as Base;
   */
 class Topic extends Base
 {
+    #[\Override]
     public function fetchList()
     {
         try {
@@ -43,6 +44,7 @@ class Topic extends Base
      *
      * @return Entity
      */
+    #[\Override]
     public function fetchPath($topic_path)
     {
         try {
@@ -67,6 +69,7 @@ class Topic extends Base
      *
      * @return Entity
      */
+    #[\Override]
     public function fetchId($topicId)
     {
         try {
@@ -87,6 +90,7 @@ class Topic extends Base
         }
     }
 
+    #[\Override]
     public function readSearchResultList($query)
     {
         try {

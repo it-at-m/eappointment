@@ -8,6 +8,7 @@ class Mimepart extends Schema\Entity
 
     public static $schema = "mimepart.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

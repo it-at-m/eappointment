@@ -25,6 +25,7 @@ class Organisation extends Base
         return array();
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && $entity->hasId()) {

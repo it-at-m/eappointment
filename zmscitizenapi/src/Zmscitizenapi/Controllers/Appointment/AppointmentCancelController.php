@@ -20,6 +20,7 @@ class AppointmentCancelController extends BaseController
         $this->service = new AppointmentCancelService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);

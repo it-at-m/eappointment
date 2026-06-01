@@ -50,6 +50,7 @@ class AvailableAppointmentsByOffice extends Entity implements JsonSerializable
     /**
      * Implementation of JsonSerializable.
      */
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

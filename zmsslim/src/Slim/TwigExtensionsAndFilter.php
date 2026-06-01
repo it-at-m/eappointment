@@ -13,6 +13,7 @@ namespace BO\Slim;
   */
 class TwigExtensionsAndFilter extends TwigExtension
 {
+    #[\Override]
     public function getFilters()
     {
         return array(

@@ -10,6 +10,7 @@ class TopicCluster extends Base
         'rank' => 'rank'
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

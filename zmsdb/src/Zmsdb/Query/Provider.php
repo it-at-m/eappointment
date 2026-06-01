@@ -76,6 +76,7 @@ class Provider extends Base
         });
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {

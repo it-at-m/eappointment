@@ -62,6 +62,7 @@ class WaitingReport extends Base
         }
     }
 
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
