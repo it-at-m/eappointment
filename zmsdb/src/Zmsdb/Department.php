@@ -298,7 +298,7 @@ class Department extends Base
             $departmentId,
             $email,
             $sendEmailReminderEnabled,
-            $sendEmailReminderMinutesBefore
+            $this->normalizeIntegerValue($sendEmailReminderMinutesBefore)
         ));
         return $result;
     }
