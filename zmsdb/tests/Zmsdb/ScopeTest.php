@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Scope as Query;
 use \BO\Zmsentities\Scope as Entity;
 use \BO\Zmsdb\Query\Scope as ScopeMappingQuery;
+use \BO\Zmsdb\Query\Base as QueryBase;
 
 /**
  * @SuppressWarnings(Public)
@@ -182,6 +183,11 @@ class ScopeTest extends Base
         $this->assertEmpty($readImage->content);
     }
 
+    protected function getScopeMappingQuery()
+    {
+        return new ScopeMappingQuery(QueryBase::INSERT);
+    }
+
     public function testReverseEntityMappingNormalizesIntegerFields()
     {
         $entity = $this->getTestEntity();
@@ -197,7 +203,7 @@ class ScopeTest extends Base
         $entity->preferences['queue']['maxNumberContingent'] = '-1';
         $entity->preferences['queue']['processingTimeAverage'] = '12';
 
-        $data = (new ScopeMappingQuery())->reverseEntityMapping($entity, 74);
+        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
 
         $this->assertSame(0, $data['Termine_ab']);
         $this->assertSame(0, $data['Termine_bis']);
@@ -218,7 +224,7 @@ class ScopeTest extends Base
         $entity->preferences['client']['appointmentsPerMail'] = '';
         $entity->preferences['client']['slotsPerAppointment'] = '';
 
-        $data = (new ScopeMappingQuery())->reverseEntityMapping($entity, 74);
+        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
 
         $this->assertArrayHasKey('appointments_per_mail', $data);
         $this->assertArrayHasKey('slots_per_appointment', $data);
@@ -234,7 +240,7 @@ class ScopeTest extends Base
         $entity->preferences['client']['appointmentsPerMail'] = '1';
         $entity->preferences['client']['slotsPerAppointment'] = '3';
 
-        $data = (new ScopeMappingQuery())->reverseEntityMapping($entity, 74);
+        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
 
         $this->assertSame(1, $data['appointments_per_mail']);
         $this->assertSame(3, $data['slots_per_appointment']);
@@ -247,13 +253,30 @@ class ScopeTest extends Base
         $entity->preferences['client']['appointmentsPerMail'] = '1.5';
         $entity->preferences['client']['slotsPerAppointment'] = '-3';
 
-        $data = (new ScopeMappingQuery())->reverseEntityMapping($entity, 74);
+        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
 
         $this->assertArrayHasKey('appointments_per_mail', $data);
         $this->assertArrayHasKey('slots_per_appointment', $data);
 
         $this->assertNull($data['appointments_per_mail']);
         $this->assertNull($data['slots_per_appointment']);
+    }
+
+    public function testReverseEntityMappingNormalizesLeadingZeroIntegerValues()
+    {
+        $entity = $this->getTestEntity();
+
+        $entity->preferences['appointment']['activationDuration'] = '0005';
+        $entity->preferences['client']['appointmentsPerMail'] = '01';
+        $entity->preferences['client']['slotsPerAppointment'] = '0003';
+        $entity->preferences['queue']['processingTimeAverage'] = '0012';
+
+        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
+
+        $this->assertSame(5, $data['aktivierungsdauer']);
+        $this->assertSame(1, $data['appointments_per_mail']);
+        $this->assertSame(3, $data['slots_per_appointment']);
+        $this->assertSame('00:12', $data['Bearbeitungszeit']);
     }
 
     protected function getTestEntity()

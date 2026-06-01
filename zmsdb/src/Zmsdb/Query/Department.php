@@ -16,7 +16,7 @@ class Department extends Base implements MappingInterface
             absenderadresse=:email,
             serveradresse="localhost",
             send_reminder=:sendEmailReminderEnabled,
-            send_reminder_minutes_before=GREATEST(0, CAST(:sendEmailReminderMinutesBefore AS SIGNED))
+            send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
     const QUERY_MAIL_INSERT = '
@@ -27,7 +27,7 @@ class Department extends Base implements MappingInterface
             serveradresse="localhost",
             absenderadresse=?,
             send_reminder=?,
-            send_reminder_minutes_before=GREATEST(0, CAST(? AS SIGNED))
+            send_reminder_minutes_before=?
     ';
 
     const QUERY_MAIL_DELETE = '

@@ -121,6 +121,20 @@ class DepartmentTest extends Base
         $this->assertSame(0, (int) $entity->sendEmailReminderMinutesBefore);
     }
 
+    public function testUpdateEntityNormalizesLeadingZeroSendEmailReminderMinutesBefore()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+
+        $entity = $query->writeEntity($input, 75);
+
+        $entity->sendEmailReminderMinutesBefore = '0005';
+        $entity = $query->updateEntity($entity->id, $entity);
+        $entity = $query->readEntity($entity->id, 2, true);
+
+        $this->assertSame(5, (int) $entity->sendEmailReminderMinutesBefore);
+    }
+
     protected function getTestEntity()
     {
         return new Entity(array(

@@ -317,6 +317,11 @@ class Scope extends Base implements MappingInterface
     {
         $value = is_string($value) ? trim($value) : $value;
 
+        if (is_string($value) && $value !== '' && ctype_digit($value)) {
+            $value = ltrim($value, '0');
+            $value = $value === '' ? '0' : $value;
+        }
+
         $intValue = filter_var($value, FILTER_VALIDATE_INT);
 
         if ($intValue === false || $intValue < 0) {
@@ -332,6 +337,11 @@ class Scope extends Base implements MappingInterface
 
         if ($value === null || $value === '') {
             return null;
+        }
+
+        if (is_string($value) && ctype_digit($value)) {
+            $value = ltrim($value, '0');
+            $value = $value === '' ? '0' : $value;
         }
 
         $intValue = filter_var($value, FILTER_VALIDATE_INT);
