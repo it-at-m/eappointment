@@ -19,7 +19,7 @@ services:
       - default
 
   citizenview:
-    image: node:22
+    image: node:24
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
