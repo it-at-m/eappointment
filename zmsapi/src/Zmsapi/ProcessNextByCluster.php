@@ -23,7 +23,7 @@ class ProcessNextByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkPermissions('appointment');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('appointment');
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
         $exclude = Validator::param('exclude')->isString()->getValue();
@@ -34,7 +34,7 @@ class ProcessNextByCluster extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        (new Helper\User($request, 1))->checkPermissions(
+        (new Helper\User($request, 2))->checkPermissions(
             new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
         );
 
