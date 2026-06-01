@@ -69,12 +69,7 @@ class Authorities extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv
-     *            only check for this serviceCsv
-     * @param Bool $external
-     *            allow external links, default false
-     *
-     * @return Bool
+     * @return bool
      */
     public function hasLocations()
     {
