@@ -381,6 +381,10 @@ const buildSidebar = (prefix, lang) => {
               link: `${prefix}/setup-and-development/getting-started/ddev-and-devcontainer`,
             },
             {
+              text: t.codeFormatting,
+              link: `${prefix}/setup-and-development/code-formatting`,
+            },
+            {
               text: t.quickReset,
               link: `${prefix}/setup-and-development/getting-started/quick-reset-local-environment`,
             },
@@ -415,10 +419,6 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.keycloakLocal,
           link: `${prefix}/setup-and-development/local-keycloak-setup`,
-        },
-        {
-          text: t.codeFormatting,
-          link: `${prefix}/setup-and-development/code-formatting`,
         },
         {
           text: t.localDbCache,
