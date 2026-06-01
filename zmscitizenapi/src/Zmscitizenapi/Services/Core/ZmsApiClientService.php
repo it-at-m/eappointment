@@ -280,7 +280,7 @@ class ZmsApiClientService
     public static function submitClientData(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -325,7 +325,7 @@ class ZmsApiClientService
     public static function cancelAppointment(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/';
             $result = \App::$http->readDeleteResult($url, []);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -340,7 +340,7 @@ class ZmsApiClientService
     public static function sendConfirmationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/confirmation/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -355,7 +355,7 @@ class ZmsApiClientService
     public static function sendPreconfirmationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/preconfirmation/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -370,7 +370,7 @@ class ZmsApiClientService
     public static function sendCancellationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {

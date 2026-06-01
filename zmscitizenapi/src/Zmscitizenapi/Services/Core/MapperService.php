@@ -634,7 +634,7 @@ class MapperService
             return null;
         }
 
-        $content = ZmsApiClientService::getIcsContent((int)($process->id ?? 0), (string)($process->authKey ?? ''));
+        $content = ZmsApiClientService::getIcsContent((int) $process->getId(), (string) $process->getAuthKey());
         return $content ?: null;
     }
 }
