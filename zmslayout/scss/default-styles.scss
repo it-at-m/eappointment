@@ -1,0 +1,12 @@
+/*!
+ * Berlin.Admin Masterlayout
+ * BerlinOnline Stadtportal GmbH & Co. KG
+ * Author: Tobias Marciniak
+ */
+
+@import "default-settings"; 
+@import "mixins";
+@import "template/**/*.scss";
+@import "atoms/**/*.scss";
+@import "molecules/**/*.scss";
+@import "organisms/**/*.scss";

@@ -1,0 +1,350 @@
+
+/***************************************************
+ *
+ *  px to rem functions
+ *
+ */
+ 
+@mixin fontsize($fontSizePx: 14px, $base: 16px) {
+    font-size:          calc($fontSizePx / $base) * 1rem;
+}
+
+/**
+ * get any css-rule with rem and px from px
+ */
+@mixin getRem($rule: font-size, $sizePx: 16px, $base: 16px) {
+    #{$rule}:              calc($sizePx / $base) * 1rem;
+}
+
+
+
+
+/***************************************************
+ * Micro clearfix, as per: css-101.org/articles/clearfix/latest-new-clearfix-so-far.php
+ * Extend the clearfix class with Sass to avoid the `.clearfix` class appearing
+ * over and over in your markup.
+ */
+@mixin clearfix() {    
+    &:after {
+        content: "";    
+        display: table; 
+        clear: both;
+    }
+}
+.clearfix {
+    @include clearfix();
+}
+
+
+
+
+/***************************************************
+ *
+ *  Headings
+ *
+ */
+ 
+@mixin heading--reset() {
+    font-weight:            bold;
+    color:                  $color-text-base;
+    border:                 0 none;
+    padding-top:            0;
+    padding-bottom:         0;
+}
+
+@mixin heading--base() {
+     @include clearfix();
+    .right {
+        float:              right;
+        width:              auto;
+    }
+}
+
+@mixin headline1() {
+    font-size:              $font-size-h1;
+    color:                  $font-color-h1;
+    margin-top:             0;
+    margin-bottom:          1.3em;
+    line-height:            $line-height-h1;
+    font-weight:            $font-weight-h1;
+    @media print {
+        page-break-after:   avoid !important;
+    }
+}
+
+@mixin headline2() {
+    font-size:              $font-size-h2;
+    color:                  $font-color-h2;
+    margin-top:             1em;
+    margin-bottom:          0.75em;
+    line-height:            $line-height-h2;
+    font-weight:            $font-weight-h2;
+    @media print {
+        page-break-before:  auto;
+        page-break-after:   avoid !important;
+    }
+}
+
+@mixin headline3() {
+    font-size:              $font-size-h3;
+    margin-top:             1em;
+    margin-bottom:          0.4em;
+    line-height:            $line-height-h3;
+    color:                  $font-color-h3;
+    font-weight:            $font-weight-h3;
+    a {
+        color:              $color-text-link;
+    }
+    @media print {
+        page-break-before:  auto;
+        page-break-after:   avoid !important;
+    }
+}
+
+@mixin headline4() {
+    font-size:              $font-size-h4;
+    margin-top:             1em;
+    margin-bottom:          0.4em;
+    color:                  $font-color-h4;
+    font-weight:            $font-weight-h4;
+    line-height:            $line-height-h4;
+    a {
+        color:              $color-text-link;
+    }
+    @media print {
+        page-break-after:   avoid;
+    }
+}
+
+
+@mixin blockHeading() {
+    @if variable-exists(blockHeadingMarginTop) { margin-top:     $blockHeadingMarginTop; }
+    @if variable-exists(blockHeadingMarginRight) { margin-right:     $blockHeadingMarginRight; }
+    @if variable-exists(blockHeadingMarginBottom) { margin-bottom:     $blockHeadingMarginBottom; }
+    @if variable-exists(blockHeadingMarginLeft) { margin-left:     $blockHeadingMarginLeft; }
+    @if variable-exists(blockHeadingPadding) { padding:     $blockHeadingPadding; }
+    @if variable-exists(blockHeadingBackground) { background:     $blockHeadingBackground; }
+    @if variable-exists(blockHeadingColor) { color:     $blockHeadingColor; }
+    @if variable-exists(blockHeadingFontsize) { font-size:     $blockHeadingFontsize; }
+}
+@mixin blockGreyHeading() {
+    @if variable-exists(blockGreyHeadingMarginTop) { margin-top:     $blockGreyHeadingMarginTop; }
+    @if variable-exists(blockGreyHeadingMarginRight) { margin-right:     $blockGreyHeadingMarginRight; }
+    @if variable-exists(blockGreyHeadingMarginBottom) { margin-bottom:     $blockGreyHeadingMarginBottom; }
+    @if variable-exists(blockGreyHeadingMarginLeft) { margin-left:     $blockGreyHeadingMarginLeft; }
+    @if variable-exists(blockGreyHeadingPadding) { padding:     $blockGreyHeadingPadding; }
+    @if variable-exists(blockGreyHeadingBackground) { background:     $blockGreyHeadingBackground; }
+    @if variable-exists(blockGreyHeadingColor) { color:     $blockGreyHeadingColor; }
+    @if variable-exists(blockGreyHeadingFontsize) { font-size:     $blockGreyHeadingFontsize; }
+}
+
+@mixin blockHeader() {
+    // sometimes we need some extra information in the header area
+    display:                flex;
+    justify-content:        space-between;
+    align-items:            center;
+    > * {
+        margin-right:       1em;
+        &:last-child {
+            margin-right:   0;
+        }
+    }
+    .close {
+        align-self:     flex-start;
+    }
+}
+    
+
+/***************************************************
+ * 
+ *  Panel Layout (used in blocks, boards and everywhere else)
+ * 
+ */
+@mixin panel--heavy($border: false) {
+    @include getRem('padding', $boxPaddingPx); 
+    margin-top:                     0;
+    background-color:               $color-block-heavy;
+    border:                         1px solid;
+    @if $border == true {
+        border-color:               $color-border;
+    } @else {
+        border-color:               $color-block-heavy; // Barrierefreiheit 
+    }
+    .block__heading {
+        @include blockGreyHeading();
+    }
+    > *:last-child {
+        margin-bottom:              0;
+    }
+}
+@mixin panel--light() {
+    @include getRem('padding', $boxPaddingPx); 
+    margin-top:                     0;
+    background-color:               $color-block-light;
+    border:                         1px solid $color-border;
+    > *:last-child {
+        margin-bottom:              0;
+    }
+}
+@mixin panel--clean() {
+    @include getRem('padding', $boxPaddingPx); 
+    padding-left:                   0;
+    padding-right:                  0;
+    margin-top:                     0;
+    background-color:               transparent;
+    border:                         1px solid transparent;
+}
+@mixin panel--tiny() {
+    @include getRem('padding', $boxSmallPaddingPx); 
+    //@include getRem('padding-top', $boxSmallPaddingPx); 
+    //@include getRem('padding-bottom', $boxSmallPaddingPx); 
+}
+@mixin panel--bordered() {
+    @include getRem('padding-top', $boxPaddingPx); 
+    @include getRem('padding-bottom', $boxPaddingPx); 
+    padding-left:   0;
+    padding-right:  0;
+    border:         1px solid $color-border;
+    border-width:   1px 0 1px 0;
+}
+
+/***************************************************
+ * 
+ *  List mixins
+ * 
+ */
+
+
+@mixin list--zebra() {
+    > li {
+        padding:                0.45em 0.5em 0.4em 1.5em;
+        &:nth-child(odd) {
+            background-color:   $color-greyDark;
+        }
+    } 
+}
+
+@mixin list--bordered() {
+    > li {
+        border-bottom:          1px solid $color-border;
+        margin-bottom:          1em;
+        padding-bottom:         1em;
+        &:last-child {
+            border-bottom:      0 none;
+        }
+    } 
+}
+
+
+
+/***************************************************
+ * 
+ *  Paginator mixins
+ * 
+ */
+ 
+$color-item-pagination: $color-white !default;
+
+@mixin paginator-item() {
+    margin-bottom:                      0.3em;
+    margin-right:                       0.29em; // (exakt 2 Zeilen bei 26 Buchstaben  und 50% spaltenbreite)
+    > * {
+        border:                         1px solid $color-border;
+        margin-right:                   -1px;
+        color:                          $color-text-link;
+        min-height:                     2.15em; 
+        min-width:                      2.15em; 
+        text-align:                     center;
+        padding:                        0.4em 0.3em 0.4em 0.3em;
+        display:                        block;
+        text-decoration:                none;
+        background-color:               $color-item-pagination;        
+    }
+    a:hover,
+    a:focus {
+        background-color:           darken($color-item-pagination, 7%);
+        color:                      $color-text-link;
+    }
+    .disabled {
+        color:                      $color-text-disabled;
+        background-color:           $color-item-pagination;
+        pointer-events:             none;
+        &:hover,
+        &:focus {
+            background-color:       $color-item-pagination;
+            color:                  $color-text-disabled;
+        }
+    }
+    .active {
+        color:                      $color-white;
+        background-color:           $color-decorative-active;
+        border-color:               $color-decorative-active;
+        pointer-events:             none;
+        &:hover,
+        &:focus {
+            background-color:       $color-blue;
+            color:                  $color-white;
+        }
+    }
+    &:first-child > * {
+    }
+    &:last-child > * {
+        margin-right:               0;
+    }
+}
+
+/* Helper for Styleguide */
+@mixin getColor($colorName) {
+    color:                  $colorName;
+}
+@mixin getBGColor($colorName) {
+    background-color:      $colorName;
+}
+
+/***************************************************
+ * A simple mixin to quickly generate whole media queries from the aliases and
+ * conditions defined in `_settings.responsive.scss`.
+ *
+ * Usage:
+ *
+ * .foo {
+ *     color: green;
+ *
+ *     @include media-query(palm) {
+ *         color: red;
+ *     }
+ *
+ * }
+ */
+@mixin media-query($mq) {
+    $breakpoint-found: false;
+    // Loop through the list of breakpoints we’ve provided in our settings file.
+    @each $breakpoint in $breakpoints {
+        // Grab the alias and the condition from their respective locations in
+        // the list.
+        $alias:     nth($breakpoint, 1);
+        $condition: nth($breakpoint, 2);
+        // If the media query we’ve specified has an alias and a condition...
+        @if $mq == $alias and $condition {
+            $breakpoint-found: true; 
+            
+            // note: 
+            // Opera Browser seems to have 530px width in print layout (so it turns tomobile layout)
+            // so we have to add screen and print mediatype
+            @if $alias == "palm" {
+                @media screen and #{$condition} {
+                    @content;
+                }
+            } @else {
+                @media print, #{$condition} {
+                    @content;
+                }
+            }
+        }
+    }
+    // If the user specifies a non-exitent alias, send them a warning.
+    @if $breakpoint-found == false{
+        @warn "Oops! Breakpoint ‘#{$mq}’ does not exist."
+    }
+}
+

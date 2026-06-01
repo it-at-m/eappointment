@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
-import accordion from 'bo-layout-admin-js/behavior/accordion'
+import accordion from 'bo-zms-layout-js/behavior/accordion'
 const { Description, FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {

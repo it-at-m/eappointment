@@ -1,0 +1,144 @@
+#{$namespace}.table--base {
+    border-collapse:            collapse;
+    border-spacing:             0;
+    background-color:           $color-white; // because of extra large desktop tables
+    width:                      100%;
+    @include getRem('margin-bottom', $blockBottomMarginPx);
+    td,th {
+        text-align:             left;
+        padding:                $table-cell-padding;
+        border:                 1px solid $color-border;
+        vertical-align:         top; // top is default!
+        @include media-query('lap-and-up') {
+            &.limit-width {
+                // in some big tables is usefull to limit the cell width
+                overflow:           auto;
+                max-width:          15rem;
+            }
+        }
+        > *:first-child {
+            margin-top:       0;
+        }
+        > *:last-child {
+            margin-bottom:       0;
+        }
+    }
+    th {
+        color:                  $color-text-seperationheading;
+        background-color:       $color-block-seperationheading;
+        font-weight:            bold;
+        a {
+            color:              $color-text-seperationheading;
+        }
+    }
+    .sort {
+        display:                flex;
+        justify-content:        space-between;
+        &::after {
+            content:            "";
+            font-family:        "Font Awesome 5 Free", "FontAwesome";
+            display:            inline-block;
+        }
+        &.up::after {content:"\f0d8";}
+        &.down::after {content:"\f0d7";}
+        &.updown::after {content:"\f0dc";}
+    }
+    // Zwischenüberschrift als Tablerow
+    #{$namespace}.table__colgroup {
+        color:                      $color-text-seperationheading;
+        background-color:           $color-block-seperationheading-dark;
+        padding-top:                0.3em;
+        padding-bottom:             0.3em;
+        font-weight:                bold;
+    }
+    &.compact {
+        td, th {
+            padding:                0.4em 0.3em;
+        }
+        td {
+            //word-break:             break-word;
+        }
+    }
+    .nowrap {
+        white-space:                nowrap;       
+    }
+    .break-word {
+        word-break:                 break-word;       
+    }
+    .center {
+        text-align:                 center;
+    }
+    + .table-actions {
+        @include getRem('top', -$blockBottomMarginPx/1.5);
+        position:                    relative;
+    }
+}
+
+#{$namespace}.table-responsive-wrapper {
+    // Palm only!
+    @include media-query('palm') {
+        @include getRem('margin-bottom', $blockBottomMarginPx);
+        overflow-x:                 visible;
+        border:                     0px solid $color-border;
+        //overflow-y:                 hidden; // no, we want scrollbars. see #55517
+        width:                      100%;
+        max-width:                  100vw;
+        min-height:                 0.01%;
+        table {
+            width:                  100%;
+            margin-bottom:          0;
+            + .table-actions {
+                top:                0;
+            }
+        }
+
+    }
+}
+
+
+#{$namespace}.table--clean {
+    @extend .table--base;
+    background-color:           transparent;
+    th, td {
+        border:                 0 none;
+        background-color:       transparent;
+    }
+    tr {
+        > *:first-child {
+            padding-left:       0;
+        }
+        > *:last-child {
+            padding-right:       0;
+        }
+    }
+}
+
+
+/*
+#{$namespace}.table--zebra {
+    @extend .table--base;
+    th {
+        background-color:       $color-greyDark;
+    }
+    tr:nth-child(even) {
+        background-color:       $color-greyDark;
+    }
+}
+*/
+
+#{$namespace}.table--searchresult {
+    @extend .table--base;
+    th, td {
+        border:                 1px solid $color-border;
+    }
+    th {
+        a {
+            color:              $color-text-base;
+        }
+    }
+}
+
+// Set this column to maximum width
+#{$namespace}.table__expand {
+    width:                      98%;
+}

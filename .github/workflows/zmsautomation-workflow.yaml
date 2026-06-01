@@ -231,20 +231,50 @@ jobs:
           WEB_CONT="zms-web"
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
           modules=(zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          layout_modules=(zmsadmin zmsstatistic)
+
+          # zmsadmin/zmsstatistic use file:../zmslayout deps (symlinks in node_modules).
+          # Prebuilt images only contain the module tree; provide zmslayout for copy + runtime.
+          echo "Injecting zmslayout from checkout into $WEB_CONT:/var/www/html/zmslayout"
+          docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/zmslayout"
+          docker cp ./zmslayout/. "$WEB_CONT:/var/www/html/zmslayout/"
 
           for m in "${modules[@]}"; do
             echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
-            # `docker cp` to the runner fails when vendor contains path-repo symlinks
-            # (e.g. vendor/eappointment/mellon -> ../../../mellon/) because those
-            # targets are outside the module image. Stream tar image -> zms-web instead;
-            # symlinks stay valid against the checked-out monorepo at /var/www/html.
-            docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG" \
-              -cf - -C /var/www/html . \
-              | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+
+            if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
+              # docker cp to the runner resolves symlinks on the host (../../zmslayout/js does not exist there).
+              # Materialize inside the module image, then stream tarball image -> zms-web.
+              docker run --rm \
+                -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
+                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                bash -lc 'set -euo pipefail
+                  cd /var/www/html
+                  for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
+                    name="${spec%%:*}"
+                    dir="${spec##*:}"
+                    if [[ -L "node_modules/${name}" ]]; then
+                      rm -f "node_modules/${name}"
+                      cp -a "/var/www/zmslayout/${dir}" "node_modules/${name}"
+                    fi
+                  done
+                  tar cf - -C /var/www/html .' \
+                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+            else
+              # `docker cp` to the runner fails when vendor contains path-repo symlinks
+              # (e.g. vendor/eappointment/mellon -> ../../../mellon/) because those
+              # targets are outside the module image. Stream tar image -> zms-web instead;
+              # symlinks stay valid against the checked-out monorepo at /var/www/html.
+              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                -cf - -C /var/www/html . \
+                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+            fi
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
           done
+
+          docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/zmslayout 2>/dev/null || true; chmod -R 755 /var/www/html/zmslayout 2>/dev/null || true"
 
       - name: Ensure writable cache directories
         shell: bash

@@ -1,0 +1,69 @@
+#{$namespace}form .form-actions--sticky {
+    position:                       relative;
+    background-color:               $color-blue;
+    color:                          $color-white;
+    padding:                        14px $pagePaddingPx;
+    position:                       fixed;
+    bottom:                         0;
+    display:                        block;
+    width:                          100%;
+    max-width:                      100%;
+    left:                           0;
+    right:                          0;
+    z-index:                        21;
+    .form-actions--sticky-trigger{
+        display:                    none;
+        background-color:           $color-blue;
+        color:                      $color-white;
+        position:                   absolute;
+        top:                        -1em;
+        left:                       50%;
+        height:                     2em;
+        width:                      10em;
+        margin-left:                -5em;
+        border:                     0 none;
+        @include media-query('palm') { 
+            display:                block;
+        }
+    }
+    .form-actions__container {
+        @include media-query('palm') {
+            display:                    none;
+            flex-direction:             column;
+        }
+    }
+    &.open {
+        .form-actions--sticky-trigger .fa {
+            transform:          rotate(180deg);
+        }
+        .form-actions__container {
+            display:            flex;
+        }
+    }
+    @include media-query('lap-and-up') { 
+        width:          $pageWidthDesk;
+        margin:         0 auto;
+        .form-actions__container {
+            display:                    flex;
+            justify-content:            flex-end;
+            align-items:                center;
+            > * {
+                flex-grow:              1;
+                max-width:              30%;
+                margin-bottom:          0;
+                flex-shrink:            1;
+                margin-left:            1em;
+                &:first-child {
+                    margin-left:        0em;
+                }
+            }
+            .button,
+            button {
+                min-width:              9em;
+                flex-grow:              0;
+                overflow:               hidden;
+                height:                 auto;
+            }
+        }
+    }
+}

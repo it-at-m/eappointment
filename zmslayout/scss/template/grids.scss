@@ -1,0 +1,224 @@
+/***************************************************
+ *
+ *   GRID SETUP
+ *
+ */
+
+@mixin flexgrid--base() {
+    list-style:             none !important;               
+    padding:                0 !important;        
+    margin-left:            -$gridGutter !important; 
+    display:                flex !important;
+    //display:              -webkit-box; //breaks in chrome! webkit 2009 Syntax
+    //display:              -ms-flexbox !important; // breaks in chrome! IE10 2009 Syntax
+    flex-wrap:              wrap !important;
+    //-ms-flex-flow:        wrap; // do not use, breaks in ie!
+    align-items:            flex-start !important;
+    width:                  auto !important; // not 100%!
+}
+
+@mixin flexgrid-item--base() {
+    padding-left:           $gridGutter;      
+    width:                  100%;  
+}
+
+#{$namespace}.flex-column--reversed {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column-reverse;
+    > * {
+        max-width:          100%; // IE fix
+    }
+}
+
+
+#{$namespace}.grid {
+    @include flexgrid--base();
+    + * {
+        margin-top:         0;
+    }
+    @include media-query(lap-and-up) {
+        > .auto {
+            -webkit-flex:   1;
+                    flex:   1;
+        }
+        > .one-half {
+            @include flexgrid-item--base();
+            width:          50%;
+        }
+        > .one-fourth { 
+            @include flexgrid-item--base();
+            width:          25%;
+        }
+        > .two-fourths { 
+            @include flexgrid-item--base();
+            width:          50%;
+        }
+        > .three-fourths { 
+            @include flexgrid-item--base();
+            width:          75%;
+        }
+        > .one-third {
+            @include flexgrid-item--base();
+            width:          33.333%;
+        }
+        > .two-thirds {
+            @include flexgrid-item--base();
+            width:          66.666%;
+        }
+        > .one-fifth { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          20.000%; 
+        }
+        > .two-fifths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          40.000%; 
+        }
+        > .three-fifths{ 
+            @include flexgrid-item--base();
+            width:          60.000%; 
+        }
+        > .four-fifths{ 
+            @include flexgrid-item--base();
+            width:          80.000%; 
+        }
+        > .one-sixth { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          16.666%; 
+        }
+        > .two-sixths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          33.333%; 
+        }
+        > .three-sixths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          50%; 
+        }
+        > .four-sixths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          66.663%; 
+        }
+        > .five-sixths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          83.333%; 
+        }
+        // ### 10
+        > .one-tenth { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          10%; 
+        }
+        > .two-tenths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          20%; 
+        }
+        > .three-tenths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          30%; 
+        }
+        > .nine-tenths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          90%; 
+        }
+        // ### 12
+        > .one-twelfth { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          8.333%; 
+        }
+        > .two-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          16.666%; 
+        }
+        > .three-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          25.00%; 
+        }
+        > .four-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          33.333%; 
+        }
+        > .five-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          41.666%; 
+        }
+        > .six-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          50%; 
+        }
+        > .seven-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          58.333%; 
+        }
+        > .eight-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          66.666%; 
+        }
+        > .nine-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          75%; 
+        }
+        > .ten-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          83.333%; 
+        }
+        > .eleven-twelfths { @include flexgrid-item--base();
+            @include flexgrid-item--base();
+            width:          91.666%; 
+        }
+    }
+}
+
+.grid--reversed {
+    flex-direction:         row-reverse;
+}
+
+/* Make the inner elements (inside the grid-items in a grid row) get on the same height */
+.grid--stretch {
+    align-items:            stretch !important;
+    .grid__item {
+        margin-bottom:      $blockBottomMarginPx;     
+        display:            flex;
+        flex-direction:     column;
+        > .block {
+            height:             100%;
+            margin-bottom:      0 !important;
+        }
+    }
+}
+
+.grid__item {
+    @include flexgrid-item--base();
+    @include media-query('lap-and-up') {
+        &.flexcontent-autoheight {
+            // we can set the height of the widgetform or the tabcontainer to 100% height of its neighbor
+            // (used on homepage and channelpage hero areas)
+            display:                flex;
+            flex-direction:         column;
+            > * {
+                display:            flex;
+                flex:               1 1 0;
+                flex-direction:     column;
+                height:             100%; // ie fix
+                flex-shrink:        1; // ie fix
+            }
+            > .widget form {
+                height:             100%;
+                flex-shrink:        1; // ie fix
+            }
+        }
+        &.max-width {
+            flex-grow:      1; // (Header grid)
+            width:          auto; 
+        }
+        &.min-width {
+            flex-grow:      0; // (Header grid)
+            flex-shrink:    1;
+            width:          auto; 
+        }
+        &.auto-width {
+            width:          auto; 
+        }
+    }
+    > :first-child {
+        margin-top:                 0;
+    }
+}
