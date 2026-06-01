@@ -267,7 +267,7 @@ class Valid extends \BO\Mellon\Parameter
      * Throws exception if validation fails
      *
      * @throws \BO\Mellon\ValidationException
-     * @return Bool
+     * @return self
      */
     public function assertValid()
     {
