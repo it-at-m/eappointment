@@ -59,10 +59,6 @@
         ]
     },
     "additionalProperties": true,
-    "required": [
-        "name",
-        "email"
-    ],
     "properties": {
         "id": {
             "oneOf": [

@@ -41,10 +41,6 @@
         ]
     },
     "additionalProperties": false,
-    "required": [
-        "name",
-        "email"
-    ],
     "properties": {
         "id": {
             "type": "number"
