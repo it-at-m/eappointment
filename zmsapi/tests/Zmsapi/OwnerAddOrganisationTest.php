@@ -8,7 +8,7 @@ class OwnerAddOrganisationTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser')->setPermissions('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
         $response = $this->render(['id' => 23], [
             '__body' => '{
                   "name": "Test Organisation"
@@ -21,7 +21,7 @@ class OwnerAddOrganisationTest extends Base
 
     public function testUnvalidOrganisation()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser')->setPermissions('superuser');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(['id' => 23], [
