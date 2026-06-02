@@ -8,7 +8,11 @@ class OwnerAddOrganisationTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
+            ->setRights('organisation')
+            ->addDepartment([
+                'id' => 96 // Bürgeramt, Treptow-Köpenick (owner Berlin #23)
+            ]);
         $response = $this->render(['id' => 23], [
             '__body' => '{
                   "name": "Test Organisation"
@@ -21,7 +25,11 @@ class OwnerAddOrganisationTest extends Base
 
     public function testUnvalidOrganisation()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('organisation');
+        $this->setWorkstation()->getUseraccount()->setPermissions('organisation')
+            ->setRights('organisation')
+            ->addDepartment([
+                'id' => 96
+            ]);
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(['id' => 23], [
