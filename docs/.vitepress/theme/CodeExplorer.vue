@@ -187,8 +187,8 @@ function fileName(path) {
 }
 
 .code-explorer__sidebar {
-  width: min(34%, 280px);
-  min-width: 200px;
+  width: min(52%, 480px);
+  min-width: 340px;
   background: #252526;
   border-right: 1px solid #1e1e1e;
   overflow: auto;
