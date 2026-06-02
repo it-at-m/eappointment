@@ -142,7 +142,7 @@ Kerndaten werden **über HTTP-Aufrufe an `zmsapi`** geladen, nicht über eine ei
 
 `zmscitizenbackend` behält **eigene bürgerorientierte Modelle** (`Office`, `Service`, `ThinnedScope`, …) in `model/` und `view/`. Es **ruft `zmsbackend` (früher `zmsapi`) nicht per HTTP auf**, sondern nutzt eine **eigene Repository-Schicht** — dasselbe Prinzip wie `zmsdb` im PHP-Stack heute: SQL- (bzw. JPA-) Queries im Besitz des Citizen-Backends, gegen das **gemeinsame MySQL-Schema**.
 
-Gleiches Vertical-Slice-Layout wie `zmsbackend`: `api/`, `model/`, `repository/`, `service/`, `view/`, `exception/` pro Domain (z. B. `office/`, `appointment/`).
+Gleiches Vertical-Slice-Layout wie `zmsbackend`: `api/`, `model/`, `repository/`, `service/`, `view/`, `exception/` pro Domain (z. B. `office/`, `thinnedprocess/`, `availability/`).
 
 Citizen-Modelle bleiben **schlank und API-spezifisch**. Sie müssen `zmsentities`-Schemas nicht eins zu eins abbilden; `zmsbackend` liefert bei Bedarf vollständigere, schema-kompatible Payloads.
 
@@ -164,11 +164,82 @@ Vorteile, **`zmscitizenapi`** und den **`zmsapi`**-Client-Stack durch einen Spri
 
 7. **Gleicher RefArch-Stack wie `zmsbackend` und `refarch-gateway`** — Ein Maven-Projekt, JUnit/Spring Boot Test, Actuator-Metriken, gemeinsame Münchner CI/Container-Muster — kein separates PHP-Modul plus HTTP-Client-Konfiguration (`ZMS_API_URL`, **`zmsclient`**-artige Plumbing).
 
-8. **Klare Verantwortung für die Citizen-Domain** — Vertical Slices (`office/`, `appointment/`, `availability/`) ersetzen eine monolithische Fassade. Jedes Feature besitzt **API, Service, Repository und View** statt neue Zweige in gemeinsamen Mapper-/Facade-Klassen.
+8. **Klare Verantwortung für die Citizen-Domain** — Vertical Slices (`office/`, `thinnedprocess/`, `availability/`) ersetzen eine monolithische Fassade. Jedes Feature besitzt **API, Service, Repository und View** statt neue Zweige in gemeinsamen Mapper-/Facade-Klassen.
 
 9. **Hotpaths gezielt optimierbar** — Verfügbarkeits- und Reservierungsflows können **eigene Read-Modelle und Indizes** bekommen, ohne neue **`zmsapi`**-Endpoints oder aufgeblähte Admin-Entitäten, die Frontends nie sehen.
 
 10. **Einfacher testbar** — Repository- und Service-Tests gegen das gemeinsame Schema ersetzen aufwändiges Mocken von **`ZmsApiClientService`**-HTTP-Antworten und Mapper-Randfällen; ATAF/REST Assured können einen Citizen-Spring-Service End-to-End ansprechen.
+
+### Beispiel: `ThinnedProcess` (Citizen-Buchungs-Slice)
+
+Illustratives Spring-Boot-Layout für die bürgerorientierte **`ThinnedProcess`**-Domain — den öffentlichen API-Typ, den Bürger:innen und `zmscitizenview` bereits nutzen. Tabelle heute: `buerger` (künftige Umbenennung: `process` — siehe [Datenbank-Refactor](../database-refactor/standardize-database-table-and-field-naming.md)).
+
+#### Benennung: `ThinnedProcess`, nicht `Appointment`
+
+PHP **`zmscitizenapi`** mischt Namen: Controller heißen **`Appointment*Controller`**, jede Antwort ist aber ein **`ThinnedProcess`**. In **`zmscitizenbackend`** heißt der Vertical Slice durchgängig **`thinnedprocess/`** — **`ThinnedProcessController`**, **`ThinnedProcessFetchService`**, **`ThinnedProcessView`** — damit Code und Citizen-Vertrag zusammenpassen.
+
+- **HTTP-Pfade bleiben `/appointment`, `/reserve-appointment`, …** — unverändert für `zmscitizenview` und bestehende Clients.
+- **Alle Slice-Typen nutzen das Präfix `ThinnedProcess`** — `ThinnedProcessRepository`, `ThinnedProcessValidationException`, … — keine Verwechslung mit Admin-**`zmsentities\Process`** oder **`zmsdb\Process`**.
+- **JPA-Typen bleiben `ThinnedProcessRecord`** auf `buerger` — nur Persistenzschicht; nicht als Admin-**`zmsentities\Process`**-Graph exponiert.
+
+#### Ordnerstruktur
+
+```
+src/main/java/de/muenchen/zms/citizen/thinnedprocess/
+├── api/                    # heute: zmscitizenapi Appointment*Controller + routing.php
+├── exception/
+├── model/                  # JPA → buerger (ThinnedProcessRecord); nicht das öffentliche ThinnedProcess-DTO
+├── repository/             # heute: ZmsApiClientService HTTP → zmsapi Process*
+├── service/                # heute: Appointment*Service, ZmsApiFacadeService, MapperService
+├── validation/
+└── view/                   # ThinnedProcessView — Citizen-API-Payload
+```
+
+#### PHP heute → Java Ziel (voller `ThinnedProcess`-Slice)
+
+| PHP (heute)                                                              | Java (Ziel)                                                                       |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `zmscitizenapi/routing.php` (`/appointment`, `/reserve-appointment`, …)  | `api/ThinnedProcessController`, `api/ThinnedProcessListController`                |
+| `AppointmentByIdController`                                              | `api/ThinnedProcessController` (GET `/appointment`)                               |
+| `AppointmentReserveController`                                           | `api/ThinnedProcessController` (POST `/reserve-appointment`)                      |
+| `AppointmentUpdateController`                                            | `api/ThinnedProcessController` (POST `/update-appointment`)                       |
+| `AppointmentConfirmController`                                           | `api/ThinnedProcessController` (POST `/confirm-appointment`)                      |
+| `AppointmentPreconfirmController`                                        | `api/ThinnedProcessController` (POST `/preconfirm-appointment`)                   |
+| `AppointmentCancelController`                                            | `api/ThinnedProcessController` (POST `/cancel-appointment`)                       |
+| `MyAppointmentsController`                                               | `api/ThinnedProcessListController` (GET `/my-appointments`)                       |
+| `AppointmentByIdService`                                                 | `service/ThinnedProcessFetchService`                                              |
+| `AppointmentReserveService`                                              | `service/ThinnedProcessReserveService`                                            |
+| `AppointmentUpdateService`                                               | `service/ThinnedProcessUpdateService`                                             |
+| `AppointmentConfirmService`                                              | `service/ThinnedProcessConfirmService`                                            |
+| `AppointmentPreconfirmService`                                           | `service/ThinnedProcessPreconfirmService`                                         |
+| `AppointmentCancelService`                                               | `service/ThinnedProcessCancelService`                                             |
+| `MyAppointmentsService`                                                  | `service/ThinnedProcessListService`                                               |
+| `ZmsApiFacadeService::getThinnedProcessById`                             | `service/ThinnedProcessFetchService` + `service/ThinnedProcessAccessService`      |
+| `ZmsApiClientService::getProcessById` (+ authentifizierte Variante)      | `repository/ThinnedProcessRepository`, `repository/ThinnedProcessQueryRepository` |
+| `ZmsApiClientService::reserveTimeslot`, `submitClientData`, Status-POSTs | `service/ThinnedProcessReserveService`, `ThinnedProcessWriteSupport`, …           |
+| `MapperService::processToThinnedProcess`                                 | `service/ThinnedProcessAssembler`                                                 |
+| `MapperService::thinnedProcessToProcess`                                 | `service/ThinnedProcessWriteSupport` (nur Schreibpfad)                            |
+| `ValidationService` (Process-ID, Auth-Key, not found)                    | `validation/ThinnedProcessValidationService`, `ValidateThinnedProcessAccess`      |
+| `ThinnedProcess` + `citizenapi/thinnedProcess.json`                      | `view/ThinnedProcessView` (Java-Validierung; Schema bleibt für Frontends)         |
+| `ThinnedScope`                                                           | `view/ThinnedScopeView`                                                           |
+| —                                                                        | `model/ThinnedProcessRecord` (JPA → `buerger`)                                    |
+| —                                                                        | `repository/ThinnedProcessProjection` (SQL-Join → nur Citizen-Felder)             |
+
+#### Heute — PHP-Stack durchklicken
+
+Durchsuchen Sie den **vollen Appointment- / `ThinnedProcess`-Slice** über drei Schichten: **`zmscitizenapi`** (Citizen-Schemas, **`ThinnedProcess`**-Modell, **`Appointment*`**-Controller/Services, **`MapperService`** / Facade / Client), **`zmsapi`** (**`Process*`**-Controller und **`routing.php`**-Auszug — die HTTP-Schicht, die **`ZmsApiClientService`** aufruft) und **`zmsdb`** (**`Process`**-Query-Schicht auf **`buerger`**). Zeigt den vollen **`zmscitizenapi` → `zmsapi` → `zmsdb`**-Hop, bevor riesige **`Process`**-Entitäten in **`ThinnedProcess`** gemappt werden.
+
+<ThinnedProcessCodeExplorerToday />
+
+#### Ziel — Spring-Boot-Modul in `zmscitizenbackend`
+
+Durchsuchen Sie das **vollständig übersetzte `thinnedprocess/`-Modul**: **`ThinnedProcessController`** (URL-Pfade unverändert), **`repository/`** mit Join-Projection, **`ThinnedProcessView`**, **`ThinnedProcess*Service`** pro Operation und **`ThinnedProcessAssembler`** statt **`MapperService`**.
+
+<ThinnedProcessCodeExplorerTarget />
+
+Explorer-Daten nach PHP- oder Java-Änderungen neu erzeugen: `npm run docs:thinned-process-explorers` in `docs/`.
+
+Citizen-Frontends (`zmscitizenview`) konsumieren weiter **`ThinnedProcess`**-JSON; das **`citizenapi/thinnedProcess.json`**-Schema in **`zmsentities`** bleibt der Vertrag — nur das produzierende Backend ändert sich.
 
 ---
 

@@ -6,6 +6,8 @@ import DepartmentCodeExplorerTarget from "./DepartmentCodeExplorerTarget.vue";
 import DepartmentCodeExplorerToday from "./DepartmentCodeExplorerToday.vue";
 import LhmThemeExtension from "./LhmThemeExtension.vue";
 import LogInventory from "./LogInventory.vue";
+import ThinnedProcessCodeExplorerTarget from "./ThinnedProcessCodeExplorerTarget.vue";
+import ThinnedProcessCodeExplorerToday from "./ThinnedProcessCodeExplorerToday.vue";
 
 import "./style.css";
 
@@ -25,6 +27,14 @@ export default {
     ctx.app.component(
       "DepartmentCodeExplorerToday",
       DepartmentCodeExplorerToday
+    );
+    ctx.app.component(
+      "ThinnedProcessCodeExplorerTarget",
+      ThinnedProcessCodeExplorerTarget
+    );
+    ctx.app.component(
+      "ThinnedProcessCodeExplorerToday",
+      ThinnedProcessCodeExplorerToday
     );
     ctx.app.component("LogInventory", LogInventory);
   },
