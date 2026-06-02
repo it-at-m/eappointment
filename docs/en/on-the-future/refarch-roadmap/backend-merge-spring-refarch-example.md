@@ -59,6 +59,10 @@ Benefits of merging `zmsdb`, `zmsapi`, and server-side `zmsentities` usage into 
 
 10. **RefArch API gateway with Keycloak SSO for internal frontends** — The RefArch Spring **API gateway** ships with **Keycloak login** out of the box. Once `zmsadmin` and `zmsstatistic` move to Vue/RefArch frontends, they can authenticate through that gateway like `zmscitizenview` already does — instead of maintaining a custom **`zmsclient`** OAuth/Keycloak flow and login controllers in each PHP frontend module.
 
+11. **No more `zmsslim` routing framework** — Today, `zmsapi` (and other PHP modules) bind HTTP routes through **`routing.php`**, Slim middleware (`Route`, `OAuthMiddleware`, …), and `BaseController` patterns from **`zmsslim`**. Spring Boot maps endpoints with **`@RestController`** / **`@RequestMapping`** (or RefArch route registries like `DepartmentRouteRegistry`) — standard Spring MVC, IDE-friendly, no custom Slim bootstrap to maintain.
+
+12. **SLF4J/Logback instead of centralized Monolog in `zmsslim`** — PHP backends log via **`App::$log`**, wired once in **`zmsslim`**'s `Bootstrap::configureLogger()` (Monolog, JSON to stdout). Spring Boot does **not** use Monolog; it ships with **SLF4J + Logback** and RefArch logging config for structured JSON — drop the shared Monolog bootstrap and PSR-3 plumbing from the backend stack.
+
 ### Worked example: `Department` (`behoerde` → `department`)
 
 Illustrative Spring Boot layout. Table rename: `behoerde` → `department`.

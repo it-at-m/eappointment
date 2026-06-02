@@ -59,6 +59,10 @@ Vorteile der Zusammenführung von `zmsdb`, `zmsapi` und der serverseitigen Nutzu
 
 10. **RefArch-API-Gateway mit Keycloak-SSO für interne Frontends** — Das RefArch-Spring-**API-Gateway** bringt **Keycloak-Login** mit. Sobald `zmsadmin` und `zmsstatistic` auf Vue/RefArch-Frontends umgestellt sind, authentifizieren sie sich über dieses Gateway — wie `zmscitizenview` es bereits tut — statt einen eigenen **`zmsclient`**-OAuth/Keycloak-Flow und Login-Controller in jedem PHP-Frontend-Modul zu pflegen.
 
+11. **Kein `zmsslim`-Routing-Framework mehr** — Heute bindet `zmsapi` (und andere PHP-Module) HTTP-Routen über **`routing.php`**, Slim-Middleware (`Route`, `OAuthMiddleware`, …) und `BaseController`-Muster aus **`zmsslim`**. Spring Boot mappt Endpoints mit **`@RestController`** / **`@RequestMapping`** (oder RefArch-Route-Registries wie `DepartmentRouteRegistry`) — Standard-Spring-MVC, IDE-freundlich, kein eigener Slim-Bootstrap mehr zu pflegen.
+
+12. **SLF4J/Logback statt zentralisiertem Monolog in `zmsslim`** — PHP-Backends loggen über **`App::$log`**, einmal verdrahtet in **`zmsslim`**s `Bootstrap::configureLogger()` (Monolog, JSON nach stdout). Spring Boot nutzt **kein Monolog**; es bringt **SLF4J + Logback** und RefArch-Logging-Konfiguration für strukturiertes JSON mit — der gemeinsame Monolog-Bootstrap und PSR-3-Plumbing entfallen im Backend-Stack.
+
 ### Beispiel: `Department` (`behoerde` → `department`)
 
 Illustratives Spring-Boot-Layout. Tabellenumbenennung: `behoerde` → `department`.
