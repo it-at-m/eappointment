@@ -60,12 +60,13 @@ The ticket number is **optional** - you can use either `PROJECT-123` or just `PR
 - `ZMSKVR` - ZMSKVR project
 - `MPDZBS` - MPDZBS project
 - `MUXDBS` - MUXDBS project
+- `GH` - Not related to a specific project
 
 **Examples:**
 ```txt
 feat(ZMS-123): add new feature
 fix(ZMSKVR-456): fix bug in login
-chore(ZMSKVR): clean up
+chore(GH): clean up
 clean(ZMS): remove unused code
 docs(ZMS-654): update README
 ```
