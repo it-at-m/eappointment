@@ -33,7 +33,7 @@ Merges **`zmsdb`**, **`zmsapi`**, and the server-side use of **`zmsentities`** i
 
 Each domain gets a **vertical slice**: `api/`, `model/`, `repository/`, `service/`, `view/`, and `exception/`. Services are **split by operation** (fetch, create, update, delete) rather than one class per PHP module.
 
-API-facing types live in `view/` and should stay **compatible** with **`zmsentities` JSON schemas** (for example `department.json`) so frontends keep working — but **`zmsbackend` does not run JSON Schema validation**. Validation is expressed in Java on `view/` types (RefArch-style validators). JPA types in `model/` map to renamed database tables (see [database refactor](./database-refactor/standardize-database-table-and-field-naming.md)).
+API-facing types live in `view/` and should stay **compatible** with **`zmsentities` JSON schemas** (for example `department.json`) so frontends keep working — but **`zmsbackend` does not run JSON Schema validation**. Validation is expressed in Java on `view/` types (RefArch-style validators). JPA types in `model/` map to renamed database tables (see [database refactor](../database-refactor/standardize-database-table-and-field-naming.md)).
 
 ### Why `zmsbackend`?
 
@@ -49,7 +49,7 @@ Benefits of merging `zmsdb`, `zmsapi`, and server-side `zmsentities` usage into 
 
 5. **Stronger types, fewer runtime surprises** — Java `model/` and `view/` types replace schema-backed PHP `ArrayObject` entities. Refactors and API changes are caught by the compiler and IDE, not only at runtime or in integration tests.
 
-6. **Standard persistence and migrations** — JPA repositories and RefArch-standard database migration tooling replace hand-written query classes and scattered SQL. Aligns with the [database refactor](./database-refactor/standardize-database-table-and-field-naming.md) (clear table/column names in code).
+6. **Standard persistence and migrations** — JPA repositories and RefArch-standard database migration tooling replace hand-written query classes and scattered SQL. Aligns with the [database refactor](../database-refactor/standardize-database-table-and-field-naming.md) (clear table/column names in code).
 
 7. **Operations and security by default** — Spring Boot Actuator, Micrometer metrics, structured logging, and RefArch security patterns (Keycloak, API gateway) match how other Munich IT products are run — not a one-off PHP stack.
 
@@ -175,4 +175,4 @@ Benefits of replacing **`zmscitizenapi`** and its **`zmsapi`** client stack with
 3. **Keep `zmsentities` schemas for frontends** — `zmsbackend` validates with Java on `view/` types; do not run JSON Schema in Spring.
 4. **Package layout** — per domain on both backends: `api/` → `service/` → `repository/` → `model/`, API types in `view/`.
 
-Related: [Modernize ZMS Architecture (3–5 year plan)](./product-oriented-refarch-roadmap.md) · [Standardize database table and field naming](./database-refactor/standardize-database-table-and-field-naming.md)
+Related: [Modernize ZMS Architecture (3–5 year plan)](./product-oriented-refarch-roadmap.md) · [Standardize database table and field naming](../database-refactor/standardize-database-table-and-field-naming.md)

@@ -273,6 +273,7 @@ const sidebarLabels = {
     onTheFuture: "On the Future",
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
+    refarchRoadmap: "RefArch Roadmap",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
     backendMergeRefarch: "Backend Merge Example (Spring RefArch)",
     dynamicCache: "Dynamic Cache Layer and Bulk Queries",
@@ -320,6 +321,7 @@ const sidebarLabels = {
     onTheFuture: "Ausblick",
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
+    refarchRoadmap: "RefArch-Roadmap",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
     backendMergeRefarch: "Backend-Merge-Beispiel (Spring RefArch)",
     dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
@@ -501,12 +503,18 @@ const buildSidebar = (prefix, lang) => {
           ],
         },
         {
-          text: t.modernizeArch,
-          link: `${prefix}/on-the-future/product-oriented-refarch-roadmap`,
-        },
-        {
-          text: t.backendMergeRefarch,
-          link: `${prefix}/on-the-future/backend-merge-spring-refarch-example`,
+          text: t.refarchRoadmap,
+          collapsed: false,
+          items: [
+            {
+              text: t.modernizeArch,
+              link: `${prefix}/on-the-future/refarch-roadmap/product-oriented-refarch-roadmap`,
+            },
+            {
+              text: t.backendMergeRefarch,
+              link: `${prefix}/on-the-future/refarch-roadmap/backend-merge-spring-refarch-example`,
+            },
+          ],
         },
         {
           text: t.dynamicCache,
