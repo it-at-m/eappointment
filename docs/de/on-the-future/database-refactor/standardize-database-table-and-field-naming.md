@@ -199,8 +199,10 @@ Damit gilt:
 | `buergerarchiv`   | `citizen_archive`  | Archived citizen data   |
 | `nutzer`          | `user`             | System users            |
 | `nutzerzuordnung` | `user_assignment`  | User assignments        |
-| `kunde`           | `customer`         | Customer                |
+| `kunde`           | `jurisdiction`     | Owner/jurisdiction (Entity/API today: `owner`) |
 | `kundenlinks`     | `customer_links`   | Customer links          |
+
+> **Hinweis:** Die Tabelle `kunde` und die Entity/API `owner` werden zu `jurisdiction` umbenannt (nicht `customer`). Die Permission `jurisdiction` (ZMSKVR-1345) führt diese Benennung im Berechtigungsmodell bereits ein; die Datenbank-Umbenennung folgt in diesem Refactor.
 
 ### Phase 3: System- & Konfigurations-Tabellen
 

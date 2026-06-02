@@ -199,8 +199,10 @@ This approach ensures:
 | `buergerarchiv`   | `citizen_archive`  | Archived citizen data   |
 | `nutzer`          | `user`             | System users            |
 | `nutzerzuordnung` | `user_assignment`  | User assignments        |
-| `kunde`           | `customer`         | Customer                |
+| `kunde`           | `jurisdiction`     | Owner/jurisdiction (entity/API today: `owner`) |
 | `kundenlinks`     | `customer_links`   | Customer links          |
+
+> **Note:** The `kunde` table and the `owner` entity/API will be renamed to `jurisdiction` (not `customer`). The `jurisdiction` permission (ZMSKVR-1345) already introduces this naming in the permission model; the database rename is planned as part of this refactor.
 
 ### Phase 3: System & Configuration Tables
 
