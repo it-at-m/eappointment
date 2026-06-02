@@ -1,6 +1,7 @@
 package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.*;
+import org.assertj.core.api.Assertions;
 
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,7 @@ public class ZmsApiMailSteps {
 
     @Then("the cancellation mail should indicate the appointment was deleted with the word {word}")
     public void theCancellationMailShouldIndicateTheAppointmentWasDeletedWithTheWord(String expectedWord) {
-        org.assertj.core.api.Assertions.assertThat(lastCancellationMailHtml)
+        Assertions.assertThat(lastCancellationMailHtml)
                 .as("cancellation mail HTML must have been fetched")
                 .isNotBlank();
         String lower = lastCancellationMailHtml.toLowerCase();
@@ -176,7 +177,7 @@ public class ZmsApiMailSteps {
                     .matcher(lower)
                     .find());
 
-        org.assertj.core.api.Assertions.assertThat(hasExpected || hasGeloeschtEncodingVariant)
+        Assertions.assertThat(hasExpected || hasGeloeschtEncodingVariant)
                 .as("cancellation mail HTML should include expected deletion word '%s' (or encoding variant)", expectedWord)
                 .isTrue();
     }
