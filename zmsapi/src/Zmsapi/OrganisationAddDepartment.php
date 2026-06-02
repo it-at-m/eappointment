@@ -24,7 +24,7 @@ class OrganisationAddDepartment extends BaseController
         array $args
     ) {
         $user = new Helper\User($request, 2);
-        $user->checkPermissions('superuser');
+        $user->checkPermissions('department');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new \BO\Zmsdb\Organisation())->readEntity($args['id'], 1);
         $user->checkRights(

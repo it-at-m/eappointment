@@ -44,7 +44,7 @@
 
 	<form method="post" action="./" enctype="multipart/form-data" class="form--base">
 		<div class="scope-form-update">
-			{% if permissions.superuser %}
+			{% if permissions.scope %}
 				<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl }}" data-permissions={{ permissions|json_encode|e('html_attr') }}></div>
 			{% else %}
 				<div class="scope-form-sources-details" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-permissions={{ permissions|json_encode|e('html_attr') }}></div>

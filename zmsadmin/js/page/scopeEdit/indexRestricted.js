@@ -1,21 +1,21 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import SourceDetailsView from '../../block/scope/sourcesDetailsForm'
+import SourceReadView from '../../block/scope/sourceReadForm'
 
-class ScopeDetailsView extends Component {
+class ScopeRestrictedView extends Component {
     render() {
         return (
             <fieldset className="panel--heavy">
-                <SourceDetailsView {...this.props} standalone />
+                <SourceReadView {...this.props} standalone />
             </fieldset>
         )
     }
 }
 
-ScopeDetailsView.propTypes = {
+ScopeRestrictedView.propTypes = {
     labels: PropTypes.object.isRequired,
     scopestate: PropTypes.object.isRequired,
     permissions: PropTypes.object,
 }
 
-export default ScopeDetailsView
+export default ScopeRestrictedView

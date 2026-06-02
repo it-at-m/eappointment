@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
 import { getEntity } from '../../lib/schema'
-import SourceSuperuserSelectView from '../../block/scope/sourcesSuperuserSelectForm'
-import SourceDetailsView from '../../block/scope/sourcesDetailsForm'
+import SourceSelectView from '../../block/scope/sourceSelectForm'
+import SourceReadView from '../../block/scope/sourceReadForm'
 import $ from "jquery"
 
 class ScopeView extends Component {
@@ -51,12 +51,12 @@ class ScopeView extends Component {
 
         return (
             <fieldset className="panel--heavy">
-                <SourceSuperuserSelectView
+                <SourceSelectView
                     {...props}
                     changeHandler={this.changeHandler}
                     onChangeSourceHandler={this.onChangeSourceHandler}
                 />
-                <SourceDetailsView {...props} standalone={false} />
+                <SourceReadView {...props} standalone={false} />
             </fieldset>
         );
     }

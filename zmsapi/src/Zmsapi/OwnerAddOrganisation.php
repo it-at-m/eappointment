@@ -24,7 +24,7 @@ class OwnerAddOrganisation extends BaseController
         array $args
     ) {
         $user = new Helper\User($request, 2);
-        $user->checkPermissions('superuser');
+        $user->checkPermissions('organisation');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsdb\Owner())->readEntity($args['id'], 2);
         $user->checkRights(

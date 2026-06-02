@@ -102,7 +102,7 @@ class Scope extends BaseController
     protected function writeUpdatedEntity($input, $entityId = null, Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
+        if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {
             if (!$existingScope) {
                 throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
             }

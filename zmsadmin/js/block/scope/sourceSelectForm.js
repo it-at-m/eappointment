@@ -4,7 +4,7 @@ import * as Inputs from '../../lib/inputs'
 import { loopWithCallback } from '../../lib/utils'
 import { sortByName } from '../../lib/sort'
 
-class SourceSuperuserSelectView extends Component {
+class SourceSelectView extends Component {
     render() {
         const providerList = Object.values(this.props.scopestate.providerList)
         const sourceList = Object.values(this.props.scopestate.sourcelist)
@@ -114,7 +114,7 @@ class SourceSuperuserSelectView extends Component {
     }
 }
 
-SourceSuperuserSelectView.propTypes = {
+SourceSelectView.propTypes = {
     labels: PropTypes.object.isRequired,
     scopestate: PropTypes.object.isRequired,
     permissions: PropTypes.object.isRequired,
@@ -122,4 +122,4 @@ SourceSuperuserSelectView.propTypes = {
     onChangeSourceHandler: PropTypes.func.isRequired,
 }
 
-export default SourceSuperuserSelectView
+export default SourceSelectView

@@ -43,7 +43,7 @@ class ScopeUpdate extends BaseController
             new \BO\Zmsentities\Useraccount\EntityAccess($existingScope)
         );
 
-        if (! Helper\User::readWorkstation()->getUseraccount()->isSuperUser()) {
+        if (! Helper\User::readWorkstation()->getUseraccount()->hasPermissions(['scope'])) {
             $scope = $scope->withProviderSourceFrom($existingScope);
         }
 

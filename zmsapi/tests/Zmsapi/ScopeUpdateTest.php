@@ -84,11 +84,11 @@ class ScopeUpdateTest extends Base
         $this->assertEquals(141, $responseData['data']['id']);
     }
 
-    public function testProviderSourceNotChangedForNonSuperuser()
+    public function testProviderSourceNotChangedForRestrictedScope()
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 141]);
-        $this->setWorkstation()->getUseraccount()->setPermissions('scope')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setPermissions('restrictedscope')->addDepartment($department);
 
         $body = json_decode($this->readFixture('GetScope_lessData.json'), true);
         $originalProviderId = $body['provider']['id'];

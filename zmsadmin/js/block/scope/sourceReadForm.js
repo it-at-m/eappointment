@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 
-class SourceDetailsView extends Component {
+class SourceReadView extends Component {
     render() {
         const hasProvider = () => {
             return (this.props.scopestate.provider && this.props.scopestate.provider.id) ? true : false;
@@ -71,11 +71,11 @@ class SourceDetailsView extends Component {
     }
 }
 
-SourceDetailsView.propTypes = {
+SourceReadView.propTypes = {
     labels: PropTypes.object.isRequired,
     scopestate: PropTypes.object.isRequired,
     permissions: PropTypes.object,
     standalone: PropTypes.bool,
 }
 
-export default SourceDetailsView
+export default SourceReadView
