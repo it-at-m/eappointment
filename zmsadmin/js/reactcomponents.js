@@ -15,7 +15,7 @@ bindReact('[data-department-links]', DepartmentLinksView)
 bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 bindReact('[data-calldisplay-config]', CallDisplayConfigView)
 bindReact('.source-form-edit', SourceView)
-bindReact('.scope-form-sources', ScopeView)
-bindReact('.scope-form-sources-details', ScopeRestrictedView)
+bindReact('.scope-form-view', ScopeView)
+bindReact('.scope-form-restricted-view', ScopeRestrictedView)
 
 console.log("Loaded react components...");
