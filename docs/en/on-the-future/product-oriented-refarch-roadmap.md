@@ -238,13 +238,13 @@ graph TD;
 
 ### Key Architectural Transformations
 
-| **Aspect**               | **Current State**        | **Target State**             | **Benefits**                        |
-| ------------------------ | ------------------------ | ---------------------------- | ----------------------------------- |
+| **Aspect**               | **Current State**                                                     | **Target State**                          | **Benefits**                                           |
+| ------------------------ | --------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------ |
 | **Frontend**             | Mixed PHP/Twig templates; `zmslayout` for `zmsadmin` / `zmsstatistic` | Vue.js SPA applications (Vuetify/RefArch) | Modern UX; `zmslayout` retired with frontend refactors |
-| **API Layer**            | Direct service calls     | RefArch API Gateways         | Centralized security, monitoring    |
-| **Backend**              | PHP monolith             | Spring Boot microservices    | Better scalability, maintainability |
-| **EAI**                  | Integrated messaging     | Dedicated EAI services       | Clear separation of concerns        |
-| **External Integration** | Direct database access   | Service-oriented integration | Better data governance              |
+| **API Layer**            | Direct service calls                                                  | RefArch API Gateways                      | Centralized security, monitoring                       |
+| **Backend**              | PHP monolith                                                          | Spring Boot microservices                 | Better scalability, maintainability                    |
+| **EAI**                  | Integrated messaging                                                  | Dedicated EAI services                    | Clear separation of concerns                           |
+| **External Integration** | Direct database access                                                | Service-oriented integration              | Better data governance                                 |
 
 ### Implementation Effort Estimation
 

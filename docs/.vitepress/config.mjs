@@ -274,6 +274,7 @@ const sidebarLabels = {
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
+    backendMergeRefarch: "Backend Merge Example (Spring RefArch)",
     dynamicCache: "Dynamic Cache Layer and Bulk Queries",
   },
   de: {
@@ -320,6 +321,7 @@ const sidebarLabels = {
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
+    backendMergeRefarch: "Backend-Merge-Beispiel (Spring RefArch)",
     dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
   },
 };
@@ -501,6 +503,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.modernizeArch,
           link: `${prefix}/on-the-future/product-oriented-refarch-roadmap`,
+        },
+        {
+          text: t.backendMergeRefarch,
+          link: `${prefix}/on-the-future/backend-merge-spring-refarch-example`,
         },
         {
           text: t.dynamicCache,

@@ -193,14 +193,14 @@ This approach ensures:
 
 ### Phase 2: User & Process Tables
 
-| Current           | New (snake_case)   | Reason                  |
-| ----------------- | ------------------ | ----------------------- |
-| `buergeranliegen` | `citizen_requests` | Citizen requests/issues |
-| `buergerarchiv`   | `citizen_archive`  | Archived citizen data   |
-| `nutzer`          | `user`             | System users            |
-| `nutzerzuordnung` | `user_assignment`  | User assignments        |
+| Current           | New (snake_case)   | Reason                                         |
+| ----------------- | ------------------ | ---------------------------------------------- |
+| `buergeranliegen` | `citizen_requests` | Citizen requests/issues                        |
+| `buergerarchiv`   | `citizen_archive`  | Archived citizen data                          |
+| `nutzer`          | `user`             | System users                                   |
+| `nutzerzuordnung` | `user_assignment`  | User assignments                               |
 | `kunde`           | `jurisdiction`     | Owner/jurisdiction (entity/API today: `owner`) |
-| `kundenlinks`     | — (delete)         | Unused; drop table and related code           |
+| `kundenlinks`     | — (delete)         | Unused; drop table and related code            |
 
 > **Note:** The `kunde` table and the `owner` entity/API will be renamed to `jurisdiction` (not `customer`). The `jurisdiction` permission (ZMSKVR-1345) already introduces this naming in the permission model; the database rename is planned as part of this refactor.
 >
