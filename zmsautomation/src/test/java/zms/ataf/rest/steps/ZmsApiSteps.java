@@ -49,12 +49,12 @@ public class ZmsApiSteps {
             .statusCode(200);
     }
     
-    @When("I request the status endpoint")
-    public void iRequestTheStatusEndpoint() {
+    @When("I make a GET request to {string}")
+    public void iMakeAGetRequestTo(String endpoint) {
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
         .when()
-            .get("/status/");
+            .get(endpoint);
         CommonApiSteps.setResponse(response);
     }
 
