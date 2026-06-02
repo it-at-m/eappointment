@@ -8,7 +8,7 @@ commit_msg_file="$1"
 commit_msg=$(head -n 1 "$commit_msg_file")
 
 valid_types="feat|fix|clean|chore|docs"
-valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS"
+valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS|GH"
 
 pattern="^($valid_types)\(($valid_projects)(-[0-9]+)?\): .+"
 
@@ -20,13 +20,13 @@ if ! echo "$commit_msg" | grep -qE "$pattern"; then
   echo "  type(PROJECT): commit message"
   echo ""
   echo "Valid types: feat, fix, clean, chore, docs"
-  echo "Valid projects: ZMS, ZMSKVR, MPDZBS, MUXDBS (must be uppercase)"
+  echo "Valid projects: ZMS, ZMSKVR, MPDZBS, MUXDBS, GH (must be uppercase)"
   echo "Ticket number is optional (e.g., PROJECT-123 or just PROJECT)"
   echo ""
   echo "Examples:"
   echo "  feat(ZMS-123): add new feature"
   echo "  fix(ZMSKVR-123): fix bug in login"
-  echo "  chore(ZMSKVR): clean up"
+  echo "  chore(GH): clean up"
   echo "  clean(ZMS): remove unused code"
   echo "  docs(ZMS-123): update README"
   echo ""
