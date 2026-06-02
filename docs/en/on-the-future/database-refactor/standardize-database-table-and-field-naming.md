@@ -200,9 +200,11 @@ This approach ensures:
 | `nutzer`          | `user`             | System users            |
 | `nutzerzuordnung` | `user_assignment`  | User assignments        |
 | `kunde`           | `jurisdiction`     | Owner/jurisdiction (entity/API today: `owner`) |
-| `kundenlinks`     | `customer_links`   | Customer links          |
+| `kundenlinks`     | — (delete)         | Unused; drop table and related code           |
 
 > **Note:** The `kunde` table and the `owner` entity/API will be renamed to `jurisdiction` (not `customer`). The `jurisdiction` permission (ZMSKVR-1345) already introduces this naming in the permission model; the database rename is planned as part of this refactor.
+>
+> **Note:** The `kundenlinks` table (Favoriten/bookmark links) is no longer used. Planned cleanup: drop the table and remove related code (e.g. `Link` entity, DB query, admin “Favoriten” UI).
 
 ### Phase 3: System & Configuration Tables
 
