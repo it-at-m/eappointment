@@ -65,6 +65,8 @@ Vorteile der Zusammenführung von `zmsdb`, `zmsapi` und der serverseitigen Nutzu
 
 13. **Keine riesige `routing.php` — Routen sitzen an den Controllern** — Heute ist `zmsapi/routing.php` **~6.600 Zeilen** URL-zu-Controller-Zuordnungen in einer Datei, fern vom Handler-Code. In `zmsbackend` steht jeder Endpoint am **`@RestController`** (`@GetMapping`, `@PostMapping`, …) direkt neben der Handler-Methode — die IDE springt von der Route zur Implementierung, und Domain-Slices bleiben in sich geschlossen.
 
+14. **Keine eigene Swagger-Pipeline mehr pflegen** — Heute betreiben **`zmsapi`** und **`zmscitizenapi`** jeweils eine eigene Doc-Toolchain: **`@swagger`**-Blöcke in **`routing.php`**, **`build_swagger.js`**, **`swagger-jsdoc`**, YAML-Partials unter **`public/doc/`**, npm-Skripte (`npm run doc`) und CI-Schritte zum Bündeln von **`swagger.json`** und Ausliefern von Swagger-UI-Assets. Das muss **pro PHP-API** funktionsfähig bleiben. **`zmsbackend`** und **`zmscitizenbackend`** nutzen **Spring OpenAPI** (springdoc-openapi im RefArch-Stack): Controller annotieren, lokal starten, **Swagger UI** unter **`/swagger-ui.html`** öffnen und Endpoints interaktiv testen — kein separates npm-Build oder handgebauter Doc-Generator pro Service.
+
 ### Beispiel: `Department` (`behoerde` → `department`)
 
 Illustratives Spring-Boot-Layout. Tabellenumbenennung: `behoerde` → `department`.
