@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import CodeExplorerTreeNode from "./CodeExplorerTreeNode.vue";
 
@@ -28,6 +28,7 @@ const props = defineProps({
 
 const selectedPath = ref("");
 const expandedFolders = ref(new Set());
+const isFullscreen = ref(false);
 
 function collectFolderPaths(nodes, prefix = "") {
   for (const node of nodes) {
@@ -63,6 +64,12 @@ onMounted(() => {
     firstFilePath(props.tree) ||
     Object.keys(props.files)[0] ||
     "";
+  window.addEventListener("keydown", onKeydown);
+});
+
+onUnmounted(() => {
+  document.documentElement.style.overflow = "";
+  window.removeEventListener("keydown", onKeydown);
 });
 
 const currentFile = computed(() => props.files[selectedPath.value] ?? null);
@@ -93,68 +100,139 @@ function selectFile(path) {
 function fileName(path) {
   return path.split("/").pop() ?? path;
 }
+
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value;
+}
+
+function closeFullscreen() {
+  isFullscreen.value = false;
+}
+
+function onKeydown(event) {
+  if (event.key === "Escape" && isFullscreen.value) {
+    closeFullscreen();
+  }
+}
+
+watch(isFullscreen, (open) => {
+  document.documentElement.style.overflow = open ? "hidden" : "";
+});
 </script>
 
 <template>
-  <div class="code-explorer">
+  <Teleport
+    to="body"
+    :disabled="!isFullscreen"
+  >
     <div
-      v-if="title"
-      class="code-explorer__heading"
+      class="code-explorer"
+      :class="{ 'code-explorer--fullscreen': isFullscreen }"
     >
-      {{ title }}
-    </div>
-    <div class="code-explorer__shell">
-      <aside class="code-explorer__sidebar">
-        <div class="code-explorer__sidebar-title">{{ rootLabel }}</div>
-        <ul class="code-explorer__tree">
-          <CodeExplorerTreeNode
-            v-for="node in tree"
-            :key="node.name"
-            :node="node"
-            :selected-path="selectedPath"
-            :expanded-folders="expandedFolders"
-            @toggle-folder="toggleFolder"
-            @select-file="selectFile"
-          />
-        </ul>
-      </aside>
-      <section class="code-explorer__editor">
-        <div class="code-explorer__tab-bar">
-          <div
-            v-if="selectedPath"
-            class="code-explorer__tab code-explorer__tab--active"
-          >
-            {{ fileName(selectedPath) }}
-          </div>
-        </div>
-        <div
-          v-if="currentFile"
-          class="code-explorer__editor-body"
-        >
-          <div
-            class="code-explorer__gutter"
-            aria-hidden="true"
-          >
-            <span
-              v-for="n in lineCount"
-              :key="n"
-              >{{ n }}</span
+      <div
+        v-if="title"
+        class="code-explorer__heading"
+      >
+        {{ title }}
+      </div>
+      <div class="code-explorer__shell">
+        <aside class="code-explorer__sidebar">
+          <div class="code-explorer__sidebar-title">{{ rootLabel }}</div>
+          <ul class="code-explorer__tree">
+            <CodeExplorerTreeNode
+              v-for="node in tree"
+              :key="node.name"
+              :node="node"
+              :selected-path="selectedPath"
+              :expanded-folders="expandedFolders"
+              @toggle-folder="toggleFolder"
+              @select-file="selectFile"
+            />
+          </ul>
+        </aside>
+        <section class="code-explorer__editor">
+          <div class="code-explorer__tab-bar">
+            <div
+              v-if="selectedPath"
+              class="code-explorer__tab code-explorer__tab--active"
             >
+              {{ fileName(selectedPath) }}
+            </div>
+            <div class="code-explorer__tab-spacer" />
+            <button
+              type="button"
+              class="code-explorer__fullscreen-btn"
+              :aria-label="
+                isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'
+              "
+              :title="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'"
+              @click="toggleFullscreen"
+            >
+              <svg
+                v-if="!isFullscreen"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"
+                />
+              </svg>
+            </button>
           </div>
-          <pre
-            class="code-explorer__code"
-            :class="`code-explorer__code--${currentFile.language}`"
-          ><code>{{ codeText }}</code></pre>
-        </div>
-        <div
-          v-else
-          class="code-explorer__empty"
-        >
-          Select a file in the explorer.
-        </div>
-      </section>
+          <div
+            v-if="currentFile"
+            class="code-explorer__editor-body"
+          >
+            <div
+              class="code-explorer__gutter"
+              aria-hidden="true"
+            >
+              <span
+                v-for="n in lineCount"
+                :key="n"
+                >{{ n }}</span
+              >
+            </div>
+            <pre
+              class="code-explorer__code"
+              :class="`code-explorer__code--${currentFile.language}`"
+            ><code>{{ codeText }}</code></pre>
+          </div>
+          <div
+            v-else
+            class="code-explorer__empty"
+          >
+            Select a file in the explorer.
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -220,9 +298,34 @@ function fileName(path) {
 
 .code-explorer__tab-bar {
   display: flex;
+  align-items: center;
   background: #2d2d2d;
   border-bottom: 1px solid #252526;
   min-height: 35px;
+}
+
+.code-explorer__tab-spacer {
+  flex: 1;
+}
+
+.code-explorer__fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid #252526;
+  background: transparent;
+  color: #969696;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.code-explorer__fullscreen-btn:hover {
+  background: #37373d;
+  color: #ffffff;
 }
 
 .code-explorer__tab {
@@ -321,6 +424,30 @@ function fileName(path) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.code-explorer--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 12px;
+  background: color-mix(in srgb, var(--vp-c-bg) 88%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.code-explorer--fullscreen .code-explorer__heading {
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+.code-explorer--fullscreen .code-explorer__shell {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 768px) {
