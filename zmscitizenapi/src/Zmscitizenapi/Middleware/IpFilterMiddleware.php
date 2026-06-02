@@ -25,6 +25,7 @@ class IpFilterMiddleware implements MiddlewareInterface
         $this->blacklist = \App::getIpBlacklist();
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

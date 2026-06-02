@@ -23,6 +23,7 @@ class AvailableAppointmentsListByOfficeController extends BaseController
         $this->service = new AvailableAppointmentsListService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);

@@ -9,6 +9,7 @@ class Owner extends Base implements MappingInterface
      */
     const TABLE = 'kunde';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

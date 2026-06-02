@@ -7,6 +7,7 @@ eappointment-buergeransicht
 captchaservice
 muc-patternlab-vue
 dldb-mapper
+# Legacy sibling clone of the old php-base repo; runtime images live in zmsbase/
 eappointment-php-base
 zms-deployment
 

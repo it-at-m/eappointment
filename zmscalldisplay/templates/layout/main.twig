@@ -25,8 +25,8 @@
     {% endblock %}      
 
             {% include("element/ring.twig") %}
-			<script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
-            <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl() }}"</script>
+			<script type="text/javascript" src="{{ includeUrl }}/_js/index.js"></script>
+            <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl }}"</script>
             <script type="text/javascript">window.bo.zmscalldisplay.collections.scopelist="{{ scopeList }}"</script>
             {% if zmscalldisplay.reload %}
             <script type="text/javascript">window.bo.zmscalldisplay.reloadInterval={{ zmscalldisplay.reload }}</script>

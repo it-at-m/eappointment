@@ -76,8 +76,8 @@ class UserAuth
     /**
      * Test if useraccount exists in db
      *
-     * @return exception $exception
-    */
+     * @return void
+     */
     public static function testUseraccountExists($loginName, $password = false)
     {
         $query = new Useraccount();

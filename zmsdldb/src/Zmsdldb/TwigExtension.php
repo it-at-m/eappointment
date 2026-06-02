@@ -28,6 +28,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return 'dldb';
     }
 
+    #[\Override]
     public function getFunctions()
     {
         return array(

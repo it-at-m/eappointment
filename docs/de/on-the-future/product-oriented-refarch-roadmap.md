@@ -31,6 +31,8 @@ Wichtige Treiber:
 
 `zmscitizenview` und `refarch-gateway` setzen auf `zmscitizenapi` auf, ziehen aber keine direkten Abhängigkeiten von dort. Ebenso sendet `zmscitizenapi` Anfragen an `zmsapi`, doch `zmsapi` ist keine direkte Abhängigkeit von `zmscitizenapi`.
 
+`zmsadmin` und `zmsstatistic` teilen eingebettete Layout-Assets in `zmslayout` (npm-`file:`-Abhängigkeiten). `zmscalldisplay` und `zmsticketprinter` nutzen eigene PHP/Twig-Stacks und hängen heute nicht von `zmslayout` ab. Ein Refactoring der internen PHP-Frontends auf Vue/Vuetify (Zielarchitektur unten) ersetzt `zmslayout` durch RefArch-UI-Muster, statt die Legacy-SCSS/JS-Bibliothek auszubauen.
+
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 graph TD;
@@ -49,6 +51,10 @@ graph TD;
 
     %% zmscitizenapi dependencies
     zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+
+    %% npm-file:-Abhängigkeiten (gestrichelt)
+    zmsadmin -.-> zmslayout;
+    zmsstatistic -.-> zmslayout;
 
     %% Build dependencies (dashed lines)
     zmscitizenapi -.-> zmsapi;
@@ -80,14 +86,21 @@ graph TD;
         zmscitizenapi
     end
 
+    subgraph shared_frontend [Gemeinsame Layout-Assets]
+        style shared_frontend stroke-dasharray: 5, 2, 1, 2
+        zmslayout["zmslayout<br/>eingebettetes SCSS/JS"]
+    end
+
     %% Styling for the three modules
     classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
     classDef citizenview fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
+    classDef layout fill:#fff8e1,stroke:#f9a825,stroke-width:2px;
 
     class zmscitizenapi citizenapi;
     class refarch-gateway gateway;
     class zmscitizenview citizenview;
+    class zmslayout layout;
 ```
 
 ## Zukünftige Architektur (3–5 Jahre)
@@ -207,7 +220,7 @@ graph TD;
 
 ### Wesentliche Architekturänderungen
 
-- **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen
+- **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen. Refactoring von `zmsadmin`, `zmsstatistic`, `zmsticketprinter` und `zmscalldisplay` auf Vue/Vuetify ersetzt `zmslayout` (heute gemeinsame BO-SCSS/JS-Hülle für `zmsadmin` und `zmsstatistic`) durch RefArch/Vuetify-Komponenten — analog zu `zmscitizenview`.
 - **API-Gateway-Muster**: Getrennte Gateways für interne und bürgerorientierte Anwendungen
 - **Backend-Refactoring**: Kerndienste werden nach Spring Boot migriert (`zmsbackend`)
 - **EAI-Dienste**: `zmsmessaging` und `zmsdldb` als eigene Spring-Boot-EAI-Dienste
@@ -216,7 +229,7 @@ graph TD;
 
 ### Wesentliche Architekturänderungen (Detail)
 
-- **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen
+- **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen; `zmsadmin` und `zmsstatistic` hängen nicht mehr von `zmslayout` ab
 - **API-Gateway-Muster**: Getrennte Gateways für interne und bürgerorientierte Anwendungen
 - **Backend-Refactoring**: Kern nach Spring Boot konsolidiert: `zmsapi`, `zmsdb`, `zmsclient`, `zmsentities`, `zmsslim`, `mellon` → (`zmsbackend`)
 - **zmsmessaging**: Dedizierter EAI-Dienst für Benachrichtigungen
@@ -227,7 +240,7 @@ graph TD;
 
 | **Aspekt**              | **Ist**                      | **Soll**                       | **Nutzen**                            |
 | ----------------------- | ---------------------------- | ------------------------------ | ------------------------------------- |
-| **Frontend**            | Gemischte PHP/Twig-Templates | Vue.js-SPA-Anwendungen         | Moderne UX, bessere Wartbarkeit       |
+| **Frontend**            | Gemischte PHP/Twig-Templates; `zmslayout` für `zmsadmin` / `zmsstatistic` | Vue.js-SPA-Anwendungen (Vuetify/RefArch) | Moderne UX; `zmslayout` entfällt mit Frontend-Refactoring |
 | **API-Schicht**         | Direkte Service-Aufrufe      | RefArch-API-Gateways           | Zentralisierte Sicherheit, Monitoring |
 | **Backend**             | PHP-Monolith                 | Spring-Boot-Microservices      | Bessere Skalierbarkeit, Wartbarkeit   |
 | **EAI**                 | Integriertes Messaging       | Dedizierte EAI-Dienste         | Klare Trennung                        |

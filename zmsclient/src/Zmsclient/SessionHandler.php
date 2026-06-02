@@ -44,17 +44,20 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
+    #[\Override]
     public function open(string $save_path, string $name): bool
     {
         $this->sessionName = $name;
         return true;
     }
 
+    #[\Override]
     public function close(): bool
     {
         return true;
     }
 
+    #[\Override]
     public function read(string $sessionId, array $params = []): string
     {
         $hashedSessionId = hash('sha256', $sessionId);
@@ -80,6 +83,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
+    #[\Override]
     public function write(string $sessionId, string $sessionData, array $params = []): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
@@ -101,6 +105,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
+    #[\Override]
     public function destroy(string $sessionId): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
@@ -113,6 +118,7 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
      */
+    #[\Override]
     public function gc(int $max_lifetime): int|false
     {
         /*

@@ -59,4 +59,29 @@ class ProcessNextByClusterTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }
+
+    public function testEntityAccessRequiresAssignedDepartmentScopes()
+    {
+        $cluster = (new \BO\Zmsdb\Cluster())->readEntity(109, 1);
+        $scopeId = $cluster->scopes->getFirst()->id;
+
+        $useraccount = $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
+        $useraccount->departments = [];
+
+        $entityAccess = new \BO\Zmsentities\Useraccount\EntityAccess($cluster);
+        $this->assertFalse(
+            $useraccount->hasPermissions([$entityAccess]),
+            'Without department scopes, cluster EntityAccess must fail'
+        );
+
+        $useraccount->addDepartment(new \BO\Zmsentities\Department([
+            'id' => 1,
+            'scopes' => [
+                ['id' => $scopeId],
+            ],
+        ]));
+        $this->assertTrue($useraccount->hasPermissions([$entityAccess]));
+    }
 }

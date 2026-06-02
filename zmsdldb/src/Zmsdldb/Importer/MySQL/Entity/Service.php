@@ -30,6 +30,7 @@ class Service extends Base
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -264,6 +265,7 @@ class Service extends Base
         ];
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
@@ -288,6 +290,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -299,6 +302,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

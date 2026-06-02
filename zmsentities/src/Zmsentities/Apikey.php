@@ -8,6 +8,7 @@ class Apikey extends Schema\Entity
 
     public static $schema = "apikey.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [

@@ -11,13 +11,14 @@ class OwnerOverview extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (!$workstation->getUseraccount()->hasAnyPermission(['restrictedscope','scope','organisation','department','cluster'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();

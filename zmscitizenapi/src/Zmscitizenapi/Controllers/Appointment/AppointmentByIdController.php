@@ -20,6 +20,7 @@ class AppointmentByIdController extends BaseController
         $this->service = new AppointmentByIdService();
     }
 
+    #[\Override]
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
 

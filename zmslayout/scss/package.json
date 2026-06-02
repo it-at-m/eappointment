@@ -1,0 +1,13 @@
+{
+  "name": "bo-zms-layout-scss",
+  "version": "1.0.0",
+  "description": "Shared ZMS layout styles (zmsadmin, zmsstatistic)",
+  "main": "index.js",
+  "private": true,
+  "keywords": [],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12"
+  }
+}

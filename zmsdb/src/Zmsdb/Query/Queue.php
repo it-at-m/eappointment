@@ -11,6 +11,7 @@ class Queue extends Process implements MappingInterface
 {
     const ALIAS = 'process';
 
+    #[\Override]
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -83,6 +84,7 @@ class Queue extends Process implements MappingInterface
         ];
     }
 
+    #[\Override]
     public function addConditionAssigned()
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) {
@@ -92,6 +94,7 @@ class Queue extends Process implements MappingInterface
     }
 
 
+    #[\Override]
     public function postProcess($data)
     {
         if (false === strpos($data[$this->getPrefixed("callTime")], '00:00:00')) {
@@ -117,6 +120,7 @@ class Queue extends Process implements MappingInterface
         return $data;
     }
 
+    #[\Override]
     protected function addRequiredJoins()
     {
         $this->leftJoin(

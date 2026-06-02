@@ -16,13 +16,14 @@ class Scope extends BaseController
 {
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/', [
@@ -96,7 +97,7 @@ class Scope extends BaseController
 
     /**
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
-     * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
+     * @param int|null $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
     protected function writeUpdatedEntity($input, $entityId = null)
     {

@@ -6,6 +6,7 @@ class Authorities extends Base
 {
     protected $entityClass = '\\BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Authority';
 
+    #[\Override]
     public function runImport(): bool
     {
         try {

@@ -32,6 +32,7 @@ class RequestLoggingMiddleware implements MiddlewareInterface
      * @return ResponseInterface The resulting response
      * @throws \Throwable If an error occurs during request handling
      */
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

@@ -76,7 +76,7 @@ class ValidJson extends Valid
     /**
      * Get the validated value or the default value as string
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {
