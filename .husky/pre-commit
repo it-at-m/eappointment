@@ -23,7 +23,9 @@ fi
 
 if [ -n "$container_engine" ]; then
   echo "Running PHP code style check..."
-  if ! phpcs_output=$($container_engine exec zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" 2>&1); then
+  phpcs_output=$($container_engine exec zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" 2>&1)
+  phpcs_status=$?
+  if [ "$phpcs_status" -gt 2 ]; then
     printf "${RED}✗ PHP CodeSniffer failed to run (container exec error).${NC}\n"
     echo "$phpcs_output"
     exit 1
