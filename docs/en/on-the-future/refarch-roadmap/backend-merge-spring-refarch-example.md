@@ -63,6 +63,8 @@ Benefits of merging `zmsdb`, `zmsapi`, and server-side `zmsentities` usage into 
 
 12. **SLF4J/Logback instead of centralized Monolog in `zmsslim`** — PHP backends log via **`App::$log`**, wired once in **`zmsslim`**'s `Bootstrap::configureLogger()` (Monolog, JSON to stdout). Spring Boot does **not** use Monolog; it ships with **SLF4J + Logback** and RefArch logging config for structured JSON — drop the shared Monolog bootstrap and PSR-3 plumbing from the backend stack.
 
+13. **No giant `routing.php` — routes live on controllers** — Today, `zmsapi/routing.php` is **~6,600 lines** of URL-to-controller mappings in one file, far from the handler code. In `zmsbackend`, each endpoint is declared on its **`@RestController`** (`@GetMapping`, `@PostMapping`, …) next to the method that handles it — the IDE jumps straight from route to implementation, and domain slices stay self-contained.
+
 ### Worked example: `Department` (`behoerde` → `department`)
 
 Illustrative Spring Boot layout. Table rename: `behoerde` → `department`.
