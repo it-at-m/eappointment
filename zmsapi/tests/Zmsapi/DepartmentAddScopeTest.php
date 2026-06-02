@@ -8,7 +8,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('scope')
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department')
             ->addDepartment([
                 'id' => 72
             ]);
@@ -29,7 +29,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testUnvalidScope()
     {
-        $this->setWorkstation()->getUseraccount()->setPermissions('scope')
+        $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department')
             ->addDepartment([
                 'id' => 72
             ]);
