@@ -277,6 +277,7 @@ class Department extends Base
         $sendEmailReminderMinutesBefore
     ) {
         self::$departmentCache = [];
+        $this->perform(Query\Department::QUERY_MAIL_DELETE, array($departmentId));
         $result = $this->perform(Query\Department::QUERY_MAIL_INSERT, array(
             $departmentId,
             $email,
