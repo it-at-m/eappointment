@@ -5,7 +5,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 commit_msg_file="$1"
-commit_msg=$(cat "$commit_msg_file")
+commit_msg=$(head -n 1 "$commit_msg_file")
 
 valid_types="feat|fix|clean|chore|docs"
 valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS"
