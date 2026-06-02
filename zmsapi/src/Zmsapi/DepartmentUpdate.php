@@ -14,8 +14,9 @@ use BO\Zmsdb\Department as Query;
 class DepartmentUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

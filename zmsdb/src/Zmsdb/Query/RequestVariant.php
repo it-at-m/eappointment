@@ -7,6 +7,7 @@ class RequestVariant extends Base implements MappingInterface
     const TABLE = 'request_variant';
     const ALIAS = 'request_variant';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

@@ -45,9 +45,8 @@ class Link extends Base
     /**
      * write a link
      *
-     * @param
-     * entity,
-     * organisationId
+     * @param \BO\Zmsentities\Ticketprinter $entity
+     * @param int $organisationId
      *
      * @return Entity
      */

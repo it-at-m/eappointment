@@ -1,9 +1,12 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
-// @ts-expect-error: SFC import for test
 import AppointmentPreview from "@/components/Appointment/AppointmentSelection/AppointmentPreview.vue";
 
 const t = vi.fn((key: string) => key);
+
+const svgUseHref = (element: Element): string | null =>
+  element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ??
+  element.getAttribute("href");
 
 const calloutStub = {
   template:
@@ -73,7 +76,18 @@ describe("AppointmentPreview", () => {
         },
       });
 
-      expect(wrapper.find(`use[xlink:href="#${variant.icon}"]`).exists()).toBe(true);
+      const iconUse = Array.from(
+        (wrapper.element as HTMLElement).querySelectorAll("use")
+      ).find(
+        (element: Element) =>
+          element.getAttribute("xlink:href") === `#${variant.icon}` ||
+          element.getAttributeNS("http://www.w3.org/1999/xlink", "href") ===
+            `#${variant.icon}`
+      );
+      expect(iconUse).toBeTruthy();
+      const useElement = wrapper.find("use");
+      expect(useElement.exists()).toBe(true);
+      expect(svgUseHref(useElement.element)).toBe(`#${variant.icon}`);
       expect(wrapper.text()).toContain(t(variant.textKey));
       expect(wrapper.text()).not.toContain("Elm");
       expect(wrapper.text()).not.toContain("99");
@@ -100,8 +114,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 
@@ -135,8 +151,10 @@ describe("AppointmentPreview", () => {
     });
 
     const hintHeading = Array.from(
-      wrapper.element.querySelectorAll("h3")
-    ).find((element) => element.textContent?.trim() === "hint");
+      (wrapper.element as HTMLElement).querySelectorAll("h3")
+    ).find(
+      (element: Element) => element.textContent?.trim() === "hint"
+    ) as HTMLElement | undefined;
 
     expect(hintHeading).toBeTruthy();
 

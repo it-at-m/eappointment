@@ -11,7 +11,7 @@ class WarehousePeriodListGetTest extends Base
     public function testRendering()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->setPermissions('statistic');
         $response = $this->render(['subject' => 'waitingscope', 'subjectId' => 141], [], []);
         $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertStringContainsString('"period":"month"', (string)$response->getBody());
@@ -21,7 +21,7 @@ class WarehousePeriodListGetTest extends Base
     public function testWaitingDepartmentByMonth()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('scope', 'department');
+        $workstation->getUseraccount()->setPermissions('statistic');
         $response = $this->render(['subject' => 'waitingdepartment', 'subjectId' => 74], ['period' => 'month'], []);
         $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertStringContainsString('"period":"month"', (string)$response->getBody());
@@ -31,7 +31,7 @@ class WarehousePeriodListGetTest extends Base
     public function testWaitingOrganisationByYear()
     {
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('scope', 'department', 'organisation');
+        $workstation->getUseraccount()->setPermissions('statistic');
         $response = $this->render(['subject' => 'waitingorganisation', 'subjectId' => 71], ['period' => 'year'], []);
         $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertStringContainsString('"period":"year"', (string)$response->getBody());
@@ -42,7 +42,7 @@ class WarehousePeriodListGetTest extends Base
     {
         $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('scope');
+        $workstation->getUseraccount()->setPermissions('statistic');
         $response = $this->render(['subject' => 'unittest', 'subjectId' => 141], [], []);
     }
 }

@@ -21,6 +21,7 @@
         }
     },
     "require-dev": {
+        "vimeo/psalm": "6.5.0",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^11",
@@ -47,10 +48,6 @@
         }
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://gitlab+deploy-token-203:RMAsMMns5SocfWcUnktt@gitlab.berlinonline.net/land-intranet/slim-psr7.git"
-        },
         {
             "type": "path",
             "url": "../*",

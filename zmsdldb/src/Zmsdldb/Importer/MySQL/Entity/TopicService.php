@@ -9,6 +9,7 @@ class TopicService extends Base
         'topic_id' => 'topic_id',
     ];
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {

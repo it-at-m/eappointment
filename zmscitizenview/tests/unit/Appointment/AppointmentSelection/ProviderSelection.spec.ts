@@ -2,7 +2,6 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ref, nextTick } from "vue";
 // Mount parent to exercise logic and assert ProviderSelection UI
-// @ts-expect-error: Vue SFC import for test
 import AppointmentSelection from "@/components/Appointment/AppointmentSelection.vue";
 
 // Mock API to avoid real network calls

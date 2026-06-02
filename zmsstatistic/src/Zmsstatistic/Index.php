@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsentities\Workstation;
 
 class Index extends BaseController
@@ -15,13 +16,14 @@ class Index extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
@@ -35,7 +37,8 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                return ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $loginData, $response)
+                    ?? \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
 
             return \BO\Slim\Render::withHtml(
@@ -52,6 +55,11 @@ class Index extends BaseController
                 )
             );
         } else {
+            if ($workstation instanceof Workstation && $workstation->hasId()) {
+                if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
+                    return $wrongModuleResponse;
+                }
+            }
             return \BO\Slim\Render::withHtml(
                 $response,
                 'page/index.twig',
@@ -67,6 +75,7 @@ class Index extends BaseController
         }
     }
 
+    #[\Override]
     protected function testLogin($input)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(

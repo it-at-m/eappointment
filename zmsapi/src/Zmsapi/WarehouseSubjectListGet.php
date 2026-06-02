@@ -15,14 +15,15 @@ class WarehouseSubjectListGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('scope');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('statistic');
 
         $message = Response\Message::create($request);
         $subjectsList = (new Query())->readSubjectsList();

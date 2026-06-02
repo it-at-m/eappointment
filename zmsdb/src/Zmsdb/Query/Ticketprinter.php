@@ -24,6 +24,7 @@ class Ticketprinter extends Base implements MappingInterface
             WHERE ticketprinter.`cookiecode` = :hash';
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [

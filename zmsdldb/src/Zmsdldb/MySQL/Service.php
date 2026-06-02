@@ -20,8 +20,9 @@ class Service extends Base
 {
     /**
      *
-     * @return Entity\Service
+     * @return Entity
      */
+    #[\Override]
     public function fetchId($service_id)
     {
         try {
@@ -48,6 +49,7 @@ class Service extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function fetchList($location_csv = false, $mixLanguages = false)
     {
         #--IF(s2.id, s2.data_json, s.data_json)  AS data_json
@@ -104,8 +106,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchFromCsv($service_csv, $mixLanguages = false)
     {
         try {
@@ -151,6 +154,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function fetchListRelated($service_id)
     {
         try {
@@ -186,6 +190,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function readSearchResultList($query, $service_csv = null)
     {
         try {
@@ -225,6 +230,7 @@ class Service extends Base
         }
     }
 
+    #[\Override]
     public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
     {
         try {

@@ -73,7 +73,6 @@
         </tr>
         {% if workstation %}
         {% set permissions = workstation.useraccount.permissions %}
-        {% set versionstring = 'v' ~ status.version.major ~ '.' ~  status.version.minor ~ '.' ~  status.version.patch %}
         {% if permissions.superuser %}
         <tr>
             <th colspan="2">
@@ -81,12 +80,14 @@
                 <small>(Nur für technische Administration sichtbar)</small>
             </th>
         </tr>
-        {% for application in ['zmsapi', 'zmsentities', 'zmsdb', 'zmsclient', 'zmsadmin', 'zmsappointment', 'zmscalldisplay', 'zmsmessaging', 'zmssoap', 'zmsstatistic', 'zmsticketprinter', 'zmswebcalldisplay', 'zmsmanual'] %}
         <tr class="status-api-version">
-            <th>{{application}} {{versionstring}}</th>
-            <td><img src="https://gitlab.berlinonline.net/land-intranet/{{application}}/badges/{{versionstring}}/pipeline.svg" /></td>
+            <th>zmsautomation (main)</th>
+            <td>
+                <a href="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml?query=branch%3Amain">
+                    <img src="https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml/badge.svg?branch=main" alt="zmsautomation CI status" />
+                </a>
+            </td>
         </tr>
-    {% endfor %}
         {% endif %}
         {% endif %}
 </table>

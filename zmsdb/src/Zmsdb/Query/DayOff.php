@@ -14,6 +14,7 @@ class DayOff extends Base implements MappingInterface
      */
     protected $resolveLevel = 0;
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -84,6 +85,7 @@ class DayOff extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();

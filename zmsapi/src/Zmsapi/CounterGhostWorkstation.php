@@ -16,14 +16,15 @@ class CounterGhostWorkstation extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights('basic');
+        $workstation = (new Helper\User($request))->checkPermissions('counter');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);
         $entity->testValid();

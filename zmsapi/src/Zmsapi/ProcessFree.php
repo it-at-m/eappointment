@@ -15,8 +15,9 @@ class ProcessFree extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -27,7 +28,7 @@ class ProcessFree extends BaseController
         $slotType = Validator::param('slotType')->isString()->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkRights();
+            (new Helper\User($request))->checkPermissions();
         } else {
             $slotsRequired = 0;
             $slotType = 'public';

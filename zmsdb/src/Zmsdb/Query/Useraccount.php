@@ -122,6 +122,7 @@ class Useraccount extends Base implements MappingInterface
         );
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -242,6 +243,7 @@ class Useraccount extends Base implements MappingInterface
         return $data;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?

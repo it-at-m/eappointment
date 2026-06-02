@@ -19,6 +19,7 @@ class ClientReport extends Base
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -61,13 +62,8 @@ class ClientReport extends Base
         if ('totals' == end($report->data)['date'] || 'month' == $report->period) {
             $reportHeader[] = null;
         }
-        $columnIndex = 0;
-        foreach (array_keys($report->data[0]) as $headline) {
-            $columnIndex++;
-            if ($columnIndex == 3 || $columnIndex == 4) {
-                continue;
-            }
 
+        foreach (array_keys($report->data[0]) as $headline) {
             if (!in_array($headline, static::$ignoreColumns)) {
                 if (isset(static::$headlines[$headline])) {
                     $reportHeader[] = static::$headlines[$headline];
@@ -99,13 +95,7 @@ class ClientReport extends Base
             $dateCol2 = $this->setDateTime($dateString)->format('Y');
             $reportTotal = [$dateCol1, $dateCol2];
 
-            $columnIndex = 0;
             foreach ($totals as $key => $item) {
-                $columnIndex++;
-                if ($columnIndex == 3 || $columnIndex == 4) {
-                    continue;
-                }
-
                 if (! in_array($key, static::$ignoreColumns) && 'date' != $key) {
                     $reportTotal[] = (string)($item);
                 }
@@ -131,14 +121,8 @@ class ClientReport extends Base
 
         foreach ($report->data as $row => $entry) {
             $processedRow = [];
-            $columnIndex = 0;
 
             foreach ($entry as $key => $item) {
-                $columnIndex++;
-                if ($columnIndex == 3 || $columnIndex == 4) {
-                    continue;
-                }
-
                 if (!in_array($key, static::$ignoreColumns)) {
                     if ('date' == $key) {
                         $dateCol1 = $this->getFormatedDates($this->setDateTime($item), $datePatternCol1);

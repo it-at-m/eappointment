@@ -15,6 +15,7 @@ use BO\Zmsdldb\Collection\Services as Collection;
  */
 class Service extends Base
 {
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -97,7 +98,7 @@ class Service extends Base
 
     /**
      *
-     * @return String
+     * @return string
      */
     protected function fetchLocationCsv($service_csv)
     {

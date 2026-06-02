@@ -25,6 +25,7 @@ class Location extends Base
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -157,6 +158,7 @@ class Location extends Base
         ];
     }
 
+    #[\Override]
     public function preSetupFields()
     {
         #$this->dataRaw['payment'] = [
@@ -170,25 +172,10 @@ class Location extends Base
         #unset($this->dataRaw['paymentcode']);
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
-            /*
-            if (false === $this->get('meta.translated')) {
-                $this->setStatus(static::STATUS_OLD);
-                error_log(
-                    'not translated location - (' . $this->get('id') . ' | ' .
-                    $this->get('meta.locale') . ') - ' . $this->get('name')
-                );
-                return false;
-            }
-            else {
-                error_log(
-                    'translated location - (' . $this->get('id') . ' | ' .
-                    $this->get('meta.locale') . ') - ' . $this->get('name')
-                );
-            }
-            */
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
             $this->setStatus(static::STATUS_OLD);
@@ -203,6 +190,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -214,6 +202,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

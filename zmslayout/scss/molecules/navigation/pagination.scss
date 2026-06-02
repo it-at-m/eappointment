@@ -1,0 +1,14 @@
+#{$namespace}.pagination { 
+    @include clearfix();
+    @include getRem('margin-bottom', $blockBottomMarginPx / 2.5); // AZ Pager, if you need more, use block class
+    ul {
+        list-style:                     none;
+        padding:                        0;
+        display:                        flex;
+        flex-wrap:                      wrap;
+        margin:                         0;
+    }
+    li {
+        @include paginator-item();
+    }
+}

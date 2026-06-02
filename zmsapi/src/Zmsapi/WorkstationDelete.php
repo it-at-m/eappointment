@@ -17,15 +17,16 @@ class WorkstationDelete extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $workstation = (new Helper\User($request, 1))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkPermissions();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         if (! (new Useraccount())->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();

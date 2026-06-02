@@ -17,14 +17,15 @@ class UserQueue extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
+        (new Helper\User($request))->checkPermissions('waitingqueue');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $statusParameter = Validator::param('status')->isString()->getValue();
         $statuses = empty($statusParameter) ? [] : explode(',', $statusParameter);
@@ -33,7 +34,7 @@ class UserQueue extends BaseController
 
         $message = Response\Message::create($request);
 
-        $workstation = (new Helper\User($request, 2))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkPermissions();
         $queueList = new QueueList();
         foreach ($workstation->getUseraccount()['departments'] as $department) {
             $queueList->addList((new Department())->readQueueList($department->id, $dateTime, 2));

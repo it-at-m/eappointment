@@ -15,6 +15,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "scope.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -320,6 +321,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $telephoneRequired ? true : false;
     }
 
+    #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser']) ||  $useraccount->hasScope($this->id);
@@ -340,6 +342,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;

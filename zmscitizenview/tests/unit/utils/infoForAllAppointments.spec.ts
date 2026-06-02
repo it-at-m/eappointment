@@ -4,7 +4,6 @@ import {
   optimizeProviderNames,
   generateAvailabilityInfoHtml,
   type ProviderInfo,
-// @ts-expect-error: Vue SFC import for test
 } from "@/utils/infoForAllAppointments";
 
 // Mock sanitizeHtml function

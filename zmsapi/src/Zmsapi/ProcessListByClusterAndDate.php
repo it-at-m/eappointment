@@ -18,14 +18,14 @@ class ProcessListByClusterAndDate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
         $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
@@ -47,6 +47,11 @@ class ProcessListByClusterAndDate extends BaseController
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
+
+        (new Helper\User($request, 2))->checkPermissions(
+            'appointment',
+            new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
+        );
 
         $shortNames = [];
         foreach ($cluster->scopes as $scope) {

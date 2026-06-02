@@ -88,6 +88,7 @@ class Request extends Base
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {

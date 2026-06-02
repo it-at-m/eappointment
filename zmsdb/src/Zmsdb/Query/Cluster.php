@@ -83,6 +83,7 @@ class Cluster extends Base
         return $data;
     }
 
+    #[\Override]
     public function addRequiredJoins()
     {
         $this->leftJoin(
