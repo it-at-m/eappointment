@@ -13,7 +13,7 @@ https://refarch.oss.muenchen.de/
 https://github.com/it-at-m/refarch
 https://github.com/it-at-m/refarch-templates
 
-Diese Roadmap verbindet Geschäftsergebnisse mit technischer Umsetzung: Kernfähigkeiten in einen gemeinsamen Spring-Boot-Backend-Dienst (zmsbackend) zusammenführen, API-Gateways für klare Eingangsgrenzen einführen, alle Frontends auf Vue.js modernisieren und EAI-Themen (Messaging, externe Datenflüsse) als eigene Dienste isolieren. Der Zielzustand reduziert kognitive Last, verbessert Sicherheit und Betrieb und ermöglicht Teams, Arbeit unabhängig zu skalieren ohne fragile Querkopplung.
+Diese Roadmap verbindet Geschäftsergebnisse mit technischer Umsetzung: Admin-Kernfähigkeiten in **`zmsbackend`**, die Bürger-API in **`zmscitizenbackend`** (jeweils eigener Spring-Boot-Dienst mit Repository-Schicht auf dem gemeinsamen MySQL-Schema), API-Gateways für klare Eingangsgrenzen, Modernisierung aller Frontends auf Vue.js sowie Isolation von EAI-Themen (Messaging, externe Datenflüsse) als eigene Dienste. Der Zielzustand reduziert kognitive Last, verbessert Sicherheit und Betrieb und ermöglicht Teams, Arbeit unabhängig zu skalieren ohne fragile Querkopplung.
 
 Wichtige Treiber:
 
@@ -124,10 +124,13 @@ graph TD;
 
     %% Backend Services
     zmsbackend[zmsbackend<br/>Spring Boot]
-    zmscitizenapi[zmscitizenapi<br/>Spring Boot]
+    zmscitizenbackend[zmscitizenbackend<br/>Spring Boot]
     zmsmessaging[zmsmessaging<br/>Spring Boot EAI]
     zmsdldb[zmsdldb<br/>Spring Boot EAI]
     other_eai[Other EAI<br/>Spring Boot EAI]
+
+    %% Shared database
+    mysql[(Shared MySQL<br/>Schema)]
 
     %% External Systems
     stadt_muenchen[Stadt München<br/>Services/Locations]
@@ -146,10 +149,11 @@ graph TD;
 
     %% API Gateway Dependencies
     internal_gateway --> zmsbackend;
-    citizen_gateway --> zmscitizenapi;
+    citizen_gateway --> zmscitizenbackend;
 
     %% Backend Service Dependencies
-    zmscitizenapi --> zmsbackend;
+    zmsbackend --> mysql;
+    zmscitizenbackend --> mysql;
     zmsmessaging --> zmsbackend;
     zmsdldb --> stadt_muenchen;
     zmsmessaging --> messaging_eai;
@@ -181,10 +185,11 @@ graph TD;
     subgraph backend [Backend Services - Spring]
         style backend fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
         zmsbackend
-        zmscitizenapi
+        zmscitizenbackend
         zmsmessaging
         zmsdldb
         other_eai
+        mysql
     end
 
     %% RefArch System Boundary
@@ -214,7 +219,7 @@ graph TD;
 
     class zmsadmin_vue,zmsstatistic_vue,zmscalldisplay_vue,zmsticketprinter_vue,zmscallcenter_vue,zmscitizenview_vue frontend;
     class internal_gateway,citizen_gateway gateway;
-    class zmsbackend,zmscitizenapi,zmsmessaging,zmsdldb,other_eai backend;
+    class zmsbackend,zmscitizenbackend,zmsmessaging,zmsdldb,other_eai backend;
     class stadt_muenchen,external_apis,messaging_eai external;
 ```
 
@@ -222,7 +227,7 @@ graph TD;
 
 - **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen. Refactoring von `zmsadmin`, `zmsstatistic`, `zmsticketprinter` und `zmscalldisplay` auf Vue/Vuetify ersetzt `zmslayout` (heute gemeinsame BO-SCSS/JS-Hülle für `zmsadmin` und `zmsstatistic`) durch RefArch/Vuetify-Komponenten — analog zu `zmscitizenview`.
 - **API-Gateway-Muster**: Getrennte Gateways für interne und bürgerorientierte Anwendungen
-- **Backend-Refactoring**: Kerndienste werden nach Spring Boot migriert (`zmsbackend`)
+- **Backend-Refactoring**: Admin-Kern nach Spring Boot (`zmsbackend`); Bürger-API nach **`zmscitizenbackend`** — beide mit eigener Repository-Schicht auf dem **gemeinsamen MySQL-Schema** (kein HTTP-Hop zwischen Bürger- und Admin-Backend)
 - **EAI-Dienste**: `zmsmessaging` und `zmsdldb` als eigene Spring-Boot-EAI-Dienste
 - **Externe Integration**: `zmsdldb` übernimmt Stadt-München-Leistungen/-Standorte-Mapping
 - **Microservices-Architektur**: Klare Zuständigkeit durch dedizierte Dienste
@@ -231,7 +236,8 @@ graph TD;
 
 - **Frontend-Modernisierung**: Alle Frontend-Module werden zu Vue.js-Anwendungen; `zmsadmin` und `zmsstatistic` hängen nicht mehr von `zmslayout` ab
 - **API-Gateway-Muster**: Getrennte Gateways für interne und bürgerorientierte Anwendungen
-- **Backend-Refactoring**: Kern nach Spring Boot konsolidiert: `zmsapi`, `zmsdb`, `zmsclient`, `zmsentities`, `zmsslim`, `mellon` → (`zmsbackend`)
+- **Backend-Refactoring**: Admin-Kern konsolidiert in Spring Boot: `zmsapi`, `zmsdb`, `zmsclient`, `zmsentities`, `zmsslim`, `mellon` → **`zmsbackend`**
+- **Citizen-Backend**: `zmscitizenapi` → **`zmscitizenbackend`**; entfällt `ZmsApiClientService` / `ZmsApiFacadeService`-HTTP zu `zmsapi` zugunsten direkter JPA/SQL-Queries auf dem gemeinsamen Schema
 - **zmsmessaging**: Dedizierter EAI-Dienst für Benachrichtigungen
 - **zmsdldb**: EAI-Dienst für Stadt-München-Datenintegration mit `zmsdldbmapper`; weitere Mapper für andere Städte möglich
 - **Microservices-Architektur**: Klare Zuständigkeit durch dedizierte Dienste
@@ -248,18 +254,19 @@ graph TD;
 
 ### Aufwandsschätzung
 
-| **Komponente**                                                                      | **Aufgabe**                                      | **Schätzung** | **Schwierigkeit** |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------ | ------------- | ----------------- |
-| `zmsdldbmapper`                                                                     | Open-Source-Stellung                             | 4 Wochen      | Mittel            |
-| `zmsdldbmapper`, `zmsdldb`                                                          | Ein Modul nach Spring Boot EAI                   | 8 Wochen      | Mittel            |
-| `zmsmessaging`                                                                      | Nach Spring Boot EAI                             | 4 Wochen      | Einfach           |
-| `zmsdeployment`                                                                     | Open-Source-Stellung                             | 8 Wochen      | Schwer            |
-| `zmscallcenter`                                                                     | Neue Vue/Vuetify-UI + API-Gateway mit SSO        | 8 Wochen      | Einfach           |
-| `zmscalldisplay`                                                                    | Refactoring zu Vue/Vuetify + API-Gateway         | 4 Wochen      | Einfach           |
-| `zmsticketprinter`                                                                  | Refactoring zu Vue/Vuetify + API-Gateway         | 4 Wochen      | Einfach           |
-| `zmsstatistic`                                                                      | Refactoring zu Vue/Vuetify + API-Gateway mit SSO | 8 Wochen      | Mittel            |
-| `zmsadmin`                                                                          | Refactoring zu Vue/Vuetify + API-Gateway mit SSO | 9–12 Monate   | Sehr schwer       |
-| `zmsdb`, `zmsentities`, `zmsapi`, `zmscitizenapi`, `mellon`, `zmsclient`, `zmsslim` | Backend-Refactoring zu Spring Boot (RefArch)     | 18–24 Monate  | Sehr schwer       |
+| **Komponente**                                                     | **Aufgabe**                                                          | **Schätzung** | **Schwierigkeit** |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------- | ------------- | ----------------- |
+| `zmsdldbmapper`                                                    | Open-Source-Stellung                                                 | 4 Wochen      | Mittel            |
+| `zmsdldbmapper`, `zmsdldb`                                         | Ein Modul nach Spring Boot EAI                                       | 8 Wochen      | Mittel            |
+| `zmsmessaging`                                                     | Nach Spring Boot EAI                                                 | 4 Wochen      | Einfach           |
+| `zmsdeployment`                                                    | Open-Source-Stellung                                                 | 8 Wochen      | Schwer            |
+| `zmscallcenter`                                                    | Neue Vue/Vuetify-UI + API-Gateway mit SSO                            | 8 Wochen      | Einfach           |
+| `zmscalldisplay`                                                   | Refactoring zu Vue/Vuetify + API-Gateway                             | 4 Wochen      | Einfach           |
+| `zmsticketprinter`                                                 | Refactoring zu Vue/Vuetify + API-Gateway                             | 4 Wochen      | Einfach           |
+| `zmsstatistic`                                                     | Refactoring zu Vue/Vuetify + API-Gateway mit SSO                     | 8 Wochen      | Mittel            |
+| `zmsadmin`                                                         | Refactoring zu Vue/Vuetify + API-Gateway mit SSO                     | 9–12 Monate   | Sehr schwer       |
+| `zmsdb`, `zmsentities`, `zmsapi`, `mellon`, `zmsclient`, `zmsslim` | Admin-Backend-Refactoring → **`zmsbackend`** (Spring Boot / RefArch) | 12–18 Monate  | Sehr schwer       |
+| `zmscitizenapi`                                                    | Citizen-Backend-Refactoring → **`zmscitizenbackend`** (Spring Boot)  | 6–12 Monate   | Schwer            |
 
 \*Die Roh-Schätzung für die Entwicklung umfasst kein UI/UX, Planung, Testing usw.
 
