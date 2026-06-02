@@ -24,6 +24,7 @@ class ErrorHandler implements ErrorHandlerInterface
      * @param bool $logErrorDetails
      * @return ResponseInterface
      */
+    #[\Override]
     public function __invoke(
         ServerRequestInterface $request,
         \Throwable $exception,

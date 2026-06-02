@@ -15,7 +15,7 @@ class Timer
     {
         $this->start();
         if (true === DEBUG) {
-            echo 'Working - please wait...' . PHP_EOL;
+            fwrite(STDERR, 'Working - please wait...' . PHP_EOL);
         }
     }
 
@@ -77,12 +77,7 @@ class Timer
     public function __destruct()
     {
         if (true === DEBUG) {
-            echo 'Job finished in ' . $this->getTime() . PHP_EOL;
+            fwrite(STDERR, 'Job finished in ' . $this->getTime() . PHP_EOL);
         }
     }
-}
-
-function print_rFnArgs()
-{
-    print_r(func_get_args());
 }

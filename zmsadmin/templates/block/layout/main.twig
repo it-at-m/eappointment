@@ -12,8 +12,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>{{ title }} - ZMS</title>
-    <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl() }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
-    {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css">#}
+    <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
+    {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl }}/_css/print.css">#}
 </head>
 <body>
     <span id="js-is_palm"></span>
@@ -83,9 +83,9 @@
         
 
     </div>
-    {#<script src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
-    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
-    {#<script src="{{ includeUrl() }}/_js/index.js?2"></script>#}
+    {#<script src="{{ includeUrl }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
+    <script src="{{ includeUrl }}/_js/index.js?version={{ currentVersion() }}"></script>
+    {#<script src="{{ includeUrl }}/_js/index.js?2"></script>#}
     {% block javascript %}
     {%- endblock %}
     {% if (debug)  %}

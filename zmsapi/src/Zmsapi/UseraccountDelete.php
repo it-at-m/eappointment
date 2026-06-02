@@ -15,8 +15,9 @@ class UseraccountDelete extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -24,7 +25,7 @@ class UseraccountDelete extends BaseController
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
-        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
+        (new Helper\User($request, $resolveReferences))->checkPermissions('useraccount');
         $useraccountModel = new Useraccount();
         $useraccount = $useraccountModel->readEntity($args['loginname'], $resolveReferences);
         if (! $useraccount || ! $useraccount->hasId()) {

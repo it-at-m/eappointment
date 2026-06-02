@@ -15,9 +15,6 @@ class Provider extends Keycloak
 {
     const PROVIDERNAME = 'keycloak';
 
-    /**
-     * @var \BO\Zmsclient\OAuthService
-     */
     protected $oauthService;
 
     /**
@@ -26,7 +23,7 @@ class Provider extends Keycloak
      * @param array $options An array of options to set on this provider.
      *     Options include `clientId`, `clientSecret`, `redirectUri`, `authServerurl` and `realm`.
      *     Individual providers may introduce more options, as needed.
-     * @return parent
+     * @return void
      */
     public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
     {
@@ -39,9 +36,10 @@ class Provider extends Keycloak
     /**
      * Sets the HTTP client instance.
      *
-     * @param  \BO\Zmsclient\PSR7\ClientInterface $client
+     * @param \BO\Zmsclient\Psr7\Client $client
      * @return self
      */
+    #[\Override]
     public function setHttpClient($client)
     {
         $this->httpClient = $client;
@@ -53,8 +51,9 @@ class Provider extends Keycloak
      *
      * @param array $response
      * @param AccessToken $token
-     * @return ResourceOwner
+     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
+    #[\Override]
     protected function createResourceOwner(array $response, AccessToken $token): ResourceOwner
     {
         return new ResourceOwner($response);

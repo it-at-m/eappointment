@@ -33,6 +33,7 @@ class Apiquota extends Base implements MappingInterface
         ';
     }
 
+    #[\Override]
     public function getEntityMapping()
     {
         $mapping = [

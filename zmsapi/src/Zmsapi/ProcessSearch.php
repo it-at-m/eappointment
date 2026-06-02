@@ -15,14 +15,15 @@ class ProcessSearch extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkPermissions('customersearch');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();

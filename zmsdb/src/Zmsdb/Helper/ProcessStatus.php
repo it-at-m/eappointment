@@ -52,7 +52,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
     /**
      * get the current process status from given Id and authKey
      *
-     * @return String
+     * @return string
      */
     public function readProcessStatus($processId, $authKey)
     {

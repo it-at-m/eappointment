@@ -3,20 +3,20 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 if (!\BO\Zmsdb\Source\Zmsdldb::$importPath) {
-    echo "MISSING dldb \data directory. Does a config.php exists?\n\n";
+            \App::$log->error('MISSING dldb data directory. Does a config.php exist?');
 }
 
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Zmsdldb();
-    print("Starting services import.\n\n");
-    print("Arguments: " . (is_array($argv) ? json_encode($argv) : $argv) . "\n\n");
+            \App::$log->info('Starting services import', [
+            'arguments' => is_array($argv) ? $argv : [$argv],
+        ]);
     $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
-    print("Finished services import.\n\n");
+            \App::$log->info('Finished services import');
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
-    echo "Usage: {$argv[0]} --commit [--verbose]\n"
-        . "\tATTENTION! Replaces dldb source data in $dbname. USE WITH CAUTION!\n\n"
-        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
-        . "\t!! DATA LOSS WARNING !!\n"
-        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+            \App::$log->notice('updateDldbData usage', [
+            'usage' => "Usage: {$argv[0]} --commit [--verbose]",
+            'database' => $dbname,
+        ]);
 }

@@ -15,14 +15,15 @@ class ScopeEmergencyRespond extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkPermissions();
         if (! $workstation->getScopeList()->hasEntity($args['id'])) {
             throw new Exception\Scope\ScopeNoAccess();
         }

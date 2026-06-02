@@ -9,6 +9,7 @@ class Permission extends Base implements MappingInterface
      */
     const TABLE = 'permission';
 
+    #[\Override]
     public function getEntityMapping()
     {
         return [
@@ -16,6 +17,12 @@ class Permission extends Base implements MappingInterface
             'name' => 'permission.name',
             'description' => 'permission.description',
         ];
+    }
+
+    public function addOrderByName(string $order = 'ASC'): self
+    {
+        $this->query->orderBy('permission.name', $order);
+        return $this;
     }
 
     public function addConditionName(string $name): self

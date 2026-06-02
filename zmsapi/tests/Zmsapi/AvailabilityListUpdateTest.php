@@ -8,7 +8,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -71,7 +71,7 @@ class AvailabilityListUpdateTest extends Base
     
     public function testAvailabilityListUpdateFailsWithDifferentScopes()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('BO\\Zmsapi\\Exception\\BadRequest');
         $this->expectExceptionMessage('All availabilities must belong to the same scope');
         
@@ -135,14 +135,14 @@ class AvailabilityListUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testEmptyBody()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsapi\Exception\BadRequest');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -152,7 +152,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testUpdateFailed()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -192,7 +192,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testWeekdayValidation()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -243,7 +243,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testStartTimeValidation()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -294,7 +294,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testSlotTimeValidation()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->render([], [
             '__body' => '{
@@ -331,7 +331,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testBookableDayRangeValidation()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -386,7 +386,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testTypeValidation()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->render([], [
             '__body' => '{
@@ -424,7 +424,7 @@ class AvailabilityListUpdateTest extends Base
 
     public function testMultipleValidationErrors()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [

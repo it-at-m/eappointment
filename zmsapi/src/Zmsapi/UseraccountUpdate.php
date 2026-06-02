@@ -13,20 +13,21 @@ use BO\Zmsdb\Useraccount;
 
 /**
  * @SuppressWarnings(Coupling)
- * @return String
+ * @return \Psr\Http\Message\ResponseInterface
  */
 class UseraccountUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 2))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();

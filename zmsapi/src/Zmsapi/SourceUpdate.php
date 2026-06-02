@@ -16,14 +16,15 @@ class SourceUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
+        (new Helper\User($request))->checkPermissions('source');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
 

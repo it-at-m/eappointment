@@ -20,7 +20,7 @@ class ProcessSearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -60,7 +60,7 @@ class ProcessSearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -96,7 +96,7 @@ class ProcessSearchTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testNoSuperuser()
+    public function testNoAuditAccount()
     {
         $this->setApiCalls(
             [

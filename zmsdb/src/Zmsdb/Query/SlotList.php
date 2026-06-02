@@ -276,7 +276,6 @@ class SlotList extends Base
             $slot = $slotList->getSlot($slotnumber);
             if (null === $slot) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                // error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
                 throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
@@ -405,6 +404,7 @@ class SlotList extends Base
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);

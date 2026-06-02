@@ -16,8 +16,9 @@ class ScopeQueue extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -36,7 +37,7 @@ class ScopeQueue extends BaseController
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('basic');
+            (new Helper\User($request))->checkPermissions();
         } else {
             $queueList = $queueList->withLessData();
             $message->meta->reducedData = true;

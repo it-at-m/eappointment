@@ -23,8 +23,7 @@ class ServiceList extends Entity implements JsonSerializable
                 }
                 $this->services[] = $service;
             } catch (\Exception $e) {
-                error_log("Invalid Service encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid Service skipped', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -50,6 +49,7 @@ class ServiceList extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

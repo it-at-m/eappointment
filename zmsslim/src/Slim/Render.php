@@ -44,6 +44,12 @@ class Render
         $response  = $response->withStatus($status);
         $response  = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
         App::$templatedefaults['debug'] = App::DEBUG;
+        $request = self::$request;
+        if (null === $request && null !== self::$container) {
+            $request = self::$container->get('request');
+        }
+        App::$templatedefaults['includeUrl'] = Helper\TemplateUrls::resolveIncludeUrl($request);
+        App::$templatedefaults['baseUrl'] = Helper\TemplateUrls::resolveBaseUrl($request);
         $parameters = array_merge(App::$templatedefaults, $parameters);
         $response  = App::$slim->getContainer()->get('view')->render($response, $template, $parameters);
         Profiler::add("Rendering");

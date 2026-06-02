@@ -14,13 +14,14 @@ class CalendarWeek extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         // parameters
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
         $selectedWeek = Validator::value($args['weeknr'])->isString()->getValue();

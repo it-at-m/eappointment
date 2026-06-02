@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 class ScopeAppointmentsByDayXlsExportTest extends Base
 {
     protected $arguments = [
@@ -38,8 +40,13 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'download; filename="Tagesuebersicht',
+            'attachment; filename="Tagesuebersicht',
             $response->getHeader('Content-Disposition')[0]
+        );
+        $this->assertStringContainsString('.xlsx', $response->getHeader('Content-Disposition')[0]);
+        $this->assertEquals(
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            $response->getHeader('Content-Type')[0]
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -68,8 +75,18 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString("'=HYPERLINK", (string)$response->getBody());
-        $this->assertStringContainsString("'=SUMME", (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+
+        if (method_exists($response->getBody(), 'rewind')) {
+            $response->getBody()->rewind();
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'scope_day_xlsx_');
+        file_put_contents($tmp, (string) $response->getBody());
+        $sheet = IOFactory::load($tmp)->getActiveSheet();
+        @unlink($tmp);
+
+        $this->assertStringStartsWith("'=", (string) $sheet->getCell('F2')->getValue());
+        $this->assertStringStartsWith("'=", (string) $sheet->getCell('H2')->getValue());
     }
 }

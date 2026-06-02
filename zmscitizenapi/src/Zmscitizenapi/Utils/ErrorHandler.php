@@ -13,6 +13,7 @@ use Slim\Interfaces\ErrorHandlerInterface;
 
 class ErrorHandler implements ErrorHandlerInterface
 {
+    #[\Override]
     public function __invoke(
         ServerRequestInterface $request,
         \Throwable $exception,

@@ -15,8 +15,9 @@ class ClusterByScopeId extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -27,7 +28,7 @@ class ClusterByScopeId extends BaseController
 
         if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
             $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
-            (new Helper\User($request))->checkRights('basic');
+            (new Helper\User($request))->checkPermissions();
         } else {
             $message->meta->reducedData = true;
         }

@@ -19,8 +19,9 @@ class WorkstationProcess extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -30,7 +31,7 @@ class WorkstationProcess extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
         try {
-            $workstation = (new Helper\User($request, 1))->checkRights();
+            $workstation = (new Helper\User($request, 1))->checkPermissions();
             $input = Validator::input()->isJson()->assertValid()->getValue();
             $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
             if ($workstation->process && $workstation->process->hasId() && $workstation->process->getId() != $input['id']) {

@@ -1,0 +1,385 @@
+$form-namespace:                $namespace !default;
+
+$formfieldMaxWidth:             none !default;
+$formElementBorderColor:        #888888 !default;
+
+// Global Form Rules
+#{$form-namespace}.form {
+    @include clearfix();
+}
+
+#{$form-namespace}fieldset {
+    // Reset
+    border:         0 none;
+    padding:        0;
+    margin-bottom:  1.5em;
+    > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
+#{$form-namespace}.fieldset {
+    margin-bottom:  1.5em;
+    // padding: 0; -> not here, overwrites panel--heavy padding!
+    > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
+#{$form-namespace}legend {
+    font-weight:    bold;
+    font-size:      $font-size-h2;
+    padding:        0;
+    margin:         0 0 0.75em 0;
+}
+/*
+.panel--heavy,
+.panel--light {
+    legend {
+        @include getRem('margin-left', -($boxPaddingPx + 2px)); 
+        @include getRem('margin-right', -($boxPaddingPx + 2px)); 
+        background-color:   $color-block-seperationheading-dark;
+        color:              $color-text-seperationheading; 
+        padding:            0.75em  ($boxPaddingPx + 2px);
+        box-sizing:         content-box;
+        display:            block;
+        width:              100%;
+    }
+}
+*/
+/*
+.panel--light {
+    legend {
+        background-color:   $color-block-seperationheading;
+    }
+}
+*/
+
+
+// Our Base Form Rules
+#{$form-namespace}.form--base {
+    margin-bottom:                  $blockBottomMarginPx;
+    position:                       relative; // important for form-description
+    &.panel--heavy > .form-description {
+        display:                    block;
+        position:                   absolute; 
+        bottom:                     -$boxPaddingPx*1.2;
+        left:                       0;
+    }
+}
+
+#{$form-namespace}.form-group {
+    @include getRem('margin-bottom', $formgoupBottomMarginPx);
+    max-width:              $formfieldMaxWidth;
+    display:                block;
+    .message {
+        margin:             0;
+    }
+    + .message {
+        // move the message directly under the field
+        @include getRem('margin-top', -($formgoupBottomMarginPx + 1px));
+    }
+    .controls {
+        margin-bottom: 2px;
+    }
+}
+
+#{$form-namespace}.form-group--inline {
+    @include media-query('lap-and-up') {
+        display:                flex;
+        flex-wrap:              wrap;
+        align-items:            center;
+        .controls {
+            margin-right:       $gridGutter;
+            &:last-child {
+                margin-right:   0;
+            }
+        }
+        > label {
+            // if controls are inside label
+            display:            flex;
+            align-items:        center;
+            > span {
+                margin-right:       0.4em;
+            }
+        }
+        > *  {
+            margin-right:       1em;
+            margin-bottom:      0;
+        }
+        .form-control {
+            width:              auto;
+            float:              none;
+            display:            inline-block;
+            vertical-align:     middle;
+            margin-bottom:      0;
+            white-space: nowrap; // important for button text
+        }
+        > span,
+        .controls > span {
+            margin-right:       0.5em;
+        }
+        .form-check {
+            margin-bottom:      0;
+        }
+        .form-check label,
+        .form-check-label {
+            display:            inline-block;
+        }
+        .delimiter {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        > .formgroup__help {
+            display:            block;
+            width:              100%;
+        }
+    }
+    &.stretch {
+        // stretch all inputs, not the buttons
+        input, select, textarea {
+            flex-grow:          1;
+        }
+        button, a {
+            flex-grow:          0;
+        }
+    }
+    @include media-query('palm') {
+        > * {
+            @include getRem('margin-bottom', $formgoupBottomMarginPx); 
+        }
+    }
+
+}
+
+#{$namespace}.form-actions {
+    margin-top:                     $blockBottomMarginPx/2;
+    display:                        flex;
+    justify-content:                flex-end;
+    align-items:                    center;
+    @include media-query('palm') {
+        flex-direction:         column;
+        justify-content:        flex-start;
+        align-items:            stretch;
+    }
+    @include media-query('lap-and-up') {
+        > * {
+            margin:                 0 0 0 0.5em;
+            &:first-child {
+                margin-left:        0;
+            }
+        }
+        .button, button, a {
+            margin-bottom:          0;
+        }
+    }
+}
+
+#{$form-namespace}label, 
+#{$form-namespace}.label {
+    display:        inline-block; // inline-block because of our info icons
+    font-size:      $base-font-size;
+    font-weight:    bold;
+    margin-bottom:  0.4em;
+    margin-top:     0;
+    margin-right:   0.4em;
+    &.light {
+        font-weight: normal;
+    }
+}      
+
+button, input, optgroup, select, textarea {
+    margin:         0;
+    font-family:    inherit;
+    font-size:      inherit;
+    line-height:    inherit;
+    max-width:      90vw;
+}
+
+#{$form-namespace}.form-control {
+    // input, textarea, select
+    border-radius:          0px;
+    font-size:              1em;
+    line-height:            1rem; // ie und safari fix
+    width:                  100%;
+    font-family:            $base-font-family;
+    background-color:       $color-white;
+    background-image:       none;
+    border:                 1px solid $formElementBorderColor;
+    color:                  $color-text-base;
+    padding:                $formItemPaddingPx;
+    transition:             border-color 0.16s ease-in-out 0s, box-shadow 0.16s ease-in-out 0s;
+    max-width:              $formfieldMaxWidth;
+    &:focus {
+        border:             1px solid #0076dd;
+        box-shadow:         0 1px 1px rgb(0 0 0 / 8%) inset, 0 0px 2px 3px rgb(0 118 221 / 100%);
+        outline:            1px solid #fff;
+        outline-offset:     0px;
+    }
+}
+
+
+
+// Checkbox / Radio
+#{$form-namespace}input[type=checkbox], 
+#{$form-namespace}input[type=radio] {
+    box-sizing:             border-box;
+    padding:                0;
+}
+#{$form-namespace}.form-check {
+    position:               relative;
+    display:                block;
+    padding-left:           1.4em;
+    margin-bottom:          0.5em;
+    .form-check-input {
+        position:           absolute;
+        margin-top:         .1em;
+        margin-left:        -1.4em;
+        width:              auto;
+    }
+    label,
+    .form-check-label {
+        margin-bottom:      0;
+        font-weight:        normal;
+    }
+    :focus-visible {
+        outline-offset: 2px;
+    }
+}
+.form-check-inline {
+    display:            -ms-inline-flexbox;
+    display:                inline-flex;
+    -ms-flex-align:         center;
+    align-items:            center;
+    padding-left:           0;
+    margin-right:           1em;
+    margin-bottom:          0;
+    .form-check-input {
+        position:           static;
+        margin-top:         0;
+        margin-right:       .4em;
+        margin-left:        0;
+    }
+}
+
+
+
+
+// Readonly, Disabled
+#{$form-namespace}.form-control:disabled, 
+#{$form-namespace}.form-control[readonly] {
+    cursor:                 not-allowed;
+    background-color:       $color-text-disabled !important;
+    opacity:                1;
+    color:                  $color-text-lightest !important;
+}
+.form-check-input:disabled {
+    cursor:                 not-allowed;
+}
+.form-check-input:disabled~.form-check-label {
+    color:                  $color-text-lightest;
+    cursor:                 not-allowed;
+}
+
+// Plaintext
+#{$form-namespace}.form-control-plaintext {
+    display:                block;
+    width:                  100%;
+    //padding-top:            .375rem;
+    //padding-bottom:         .375rem;
+    margin-bottom:          0;
+    //line-height: 1.5;
+    color:                  $color-text-base;
+    background-color:       transparent;
+    border:                 solid transparent;
+    border-width:           1px 0;
+}
+
+
+// A short field description below an input field
+#{$form-namespace}.formgroup__help {
+    @include fontsize($smallest-font-size);
+    display:                    block;
+    color:                      $color-text-lightest;
+    margin-bottom:              0;
+}
+#{$form-namespace}.formgroup__help.highlighted {
+    @include fontsize($base-font-size);
+}
+
+
+// VALIDATION
+
+// validation - error field:
+.form-control.is-invalid,
+.form-check-input.is-invalid,
+.was-validated .form-control:invalid,
+.was-validated .form-check-input:invalid {
+    border-color:           $color-errorRed;
+    border-width:           1px 1px 1px 5px;
+    &~.form-check-label {
+        color:                  $color-text-error;
+    }
+}
+// validation - success field:
+.form-control.is-valid,
+.form-check-input.is-valid,
+.was-validated .form-control:valid,
+.was-validated .form-check-input:valid {
+    background-color:       $color-white;
+    &:focus {
+        border-color:       $color-text-base;
+    }
+    &~.form-check-label {
+        color:                  $color-text-base;
+    }
+}
+// OLD error markup (zms)
+.form-group.has-error {
+    input, 
+    select, 
+    textarea,
+    .checkboxselect .inner,
+    .checkboxdeselect .inner {
+        border-color:       $color-errorRed;
+        border-width:       1px 1px 1px 5px;
+    }
+}
+
+// Datepicker
+.datepicker-icon-wrapper {
+    //display:                table; // inline-block;
+    width:                  auto; //100%;
+    background-color:       white;
+    $icon-width:            2em;
+    position:               relative; 
+    max-width:              $formfieldMaxWidth;
+    input,
+    input[type="date"],
+    .datepicker-input {
+        padding-right:      $icon-width;    
+        background-color:   $color-white;    
+        cursor:             pointer;
+        background-color:   transparent;
+        position:           relative;
+        z-index:            1; // input has to be over the icon to be clickable
+    }
+    &:hover {
+        cursor:             pointer;
+    }
+    &::after {
+        z-index:            0; // icon has to be under the input to not block mouseclick
+        content:            "\f073";
+        font-family:        "Font Awesome 5 Free", "FontAwesome";
+        display:            block;
+        @include getRem('height', $formInputHeightPx);
+        position:           absolute;
+        right:              1px;
+        top:                1px;
+        width:              $icon-width;
+        text-align:         center;
+        line-height:        $formInputHeightPx;
+    }
+}
+
+

@@ -187,8 +187,8 @@ class ProcessStatusFree extends Process
         $resultData = $this->fetchList($query, new Entity());
         foreach ($resultData as $process) {
             if (2 == $resolveReferences) {
-                $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
-                $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+                $process->requests = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
+                $process->scope = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
             }
             if ($process instanceof Entity) {
                 $processList->addEntity($process);

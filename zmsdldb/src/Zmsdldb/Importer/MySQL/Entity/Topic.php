@@ -18,6 +18,7 @@ class Topic extends Base
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
+    #[\Override]
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -173,6 +174,7 @@ class Topic extends Base
         }
     }
 
+    #[\Override]
     public function preSetup()
     {
         try {
@@ -190,6 +192,7 @@ class Topic extends Base
         }
     }
 
+    #[\Override]
     public function deleteEntity(): bool
     {
         try {
@@ -201,6 +204,7 @@ class Topic extends Base
         }
     }
 
+    #[\Override]
     public function clearEntity(array $addWhere = []): bool
     {
         try {

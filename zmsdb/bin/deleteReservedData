@@ -2,18 +2,6 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-$usage = <<<EOS
-
-Usage: {$argv[0]} [--verbose] --commit
-        ATTENTION! Delete reserved Appointment Data based on reservation duration set for scope. USE WITH CAUTION!
-        --commit        no dry run, delete processes
-        --verbose       only shows what would be deleted
-
-        !!!!!!!!!!!!!!!!!!!!!!!
-        !! DATA LOSS WARNING !!
-        !!!!!!!!!!!!!!!!!!!!!!!
-EOS;
-
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
@@ -27,5 +15,5 @@ $job = new \BO\Zmsdb\Helper\ReservedDataDeleteByCron($now, (bool) $verbose, !$co
 $job->startProcessing();
 
 if (!$commit) {
-    error_log("Use with --commit to delete entries.");
+    \App::$log->notice('Use with --commit to delete entries.');
 }

@@ -24,8 +24,7 @@ class OfficeServiceRelationList extends Entity implements JsonSerializable
                 }
                 $this->relations[] = $relation;
             } catch (\Exception $e) {
-                error_log("Invalid OfficeServiceRelation encountered: " . $e->getMessage());
-            //Gracefully handle
+                \App::$log->warning('Invalid OfficeServiceRelation skipped', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -46,6 +45,7 @@ class OfficeServiceRelationList extends Entity implements JsonSerializable
         ];
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

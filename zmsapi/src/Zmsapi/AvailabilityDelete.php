@@ -21,12 +21,13 @@ class AvailabilityDelete extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkPermissions('availability');
         $repository = new AvailabilityRepository();
         $entity = $repository->readEntity($args['id'], 2);
 

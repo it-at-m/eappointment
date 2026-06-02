@@ -1,0 +1,26 @@
+body #{$namespace}.fa-stack {
+    // (z.B. Statusicons)
+    width:                      1.0em; // overwrite fontawesome stacked icon base width
+    height:                     1.0em;
+    line-height:                1;
+    margin-right:               0.2em;
+    display:                    inline-flex;
+    align-items:                center;
+    vertical-align:             inherit;
+    color:                      $color-text-lightest; // We use a dark grey instead of text color (black) for icon background
+    &.fa-1x {
+        .fa-stack-1x {
+            font-size:          0.6em; // pixel center fix
+        }
+    }
+}
+
+body #{$namespace}.fa-stack-1x {
+    font-size:                      0.5em; // overwrite fontawesome 
+}
+body #{$namespace}.fa-stack-2x {
+    font-size:                      1em; // overwrite fontawesome 
+}
+body #{$namespace}.fa-lg {
+    font-size:                      1.5em; // overwrite fontawesome
+}

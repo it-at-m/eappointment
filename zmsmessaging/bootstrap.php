@@ -19,7 +19,7 @@ require_once(VENDOR_PATH . '/autoload.php');
 // initialize the static \App singleton
 require(APP_PATH . '/config.php');
 
-\App::$log = new \Monolog\Logger('Zmsmessaging');
+\BO\Slim\Bootstrap::ensureLogger();
 \App::$now = (\App::$now instanceof \DateTimeInterface) ? \App::$now : new \DateTimeImmutable();
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);

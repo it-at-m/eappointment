@@ -20,6 +20,7 @@ class Exchange extends Schema\Entity
 
     public static $schema = "exchange.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -63,6 +64,7 @@ class Exchange extends Schema\Entity
         $this->data[] = $values;
     }
 
+    #[\Override]
     public function withLessData()
     {
         $entity = clone $this;

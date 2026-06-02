@@ -42,6 +42,7 @@ class Availability extends Schema\Entity
     /**
      * Set Default values
      */
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -397,10 +398,10 @@ class Availability extends Schema\Entity
      * Check, if the dateTime contains is within the bookable range (usually for public access)
      * The current time is used to compare the start Time of the availability
      *
-     * @param \DateTimeInterface $dateTime
+     * @param \DateTimeInterface $bookableDate
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
-     * @return Bool
+     * @return bool
      */
     public function isBookable(\DateTimeInterface $bookableDate, \DateTimeInterface $now)
     {
@@ -412,12 +413,10 @@ class Availability extends Schema\Entity
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
 
         if ($bookableCurrentTime->getTimestamp() < $startDate->getTimestamp()) {
-            //error_log("START " . $bookableCurrentTime->format('c').'<'.$startDate->format('c'). " " . $this);
             return false;
         }
         $endDate = $this->getBookableEnd($now)->modify('23:59:59');
         if ($bookableCurrentTime->getTimestamp() > $endDate->getTimestamp()) {
-            //error_log("END " . $bookableCurrentTime->format('c').'>'.$endDate->format('c'). " " . $this);
             return false;
         }
         if (
@@ -427,10 +426,6 @@ class Availability extends Schema\Entity
             // Avoid releasing all appointments on midnight, allow smaller contingents distributed over the day
             $delayedStart = $this->getBookableEnd($now)->modify($this->getStartDateTime()->format('H:i:s'));
             if ($bookableCurrentTime->getTimestamp() < $delayedStart->getTimestamp()) {
-                //error_log(
-                //    sprintf("DELAY %s<%s", $bookableCurrentTime->format('c'), $delayedStart->format('c'))
-                //    ." $this"
-                //);
                 return false;
             }
         }
@@ -981,6 +976,7 @@ class Availability extends Schema\Entity
      * Delete cache on changes
      *
      */
+    #[\Override]
     public function offsetSet(mixed $index, mixed $value): void
     {
         $this->startTimeCache = null;
@@ -1002,6 +998,7 @@ class Availability extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;

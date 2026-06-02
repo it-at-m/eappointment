@@ -1,0 +1,31 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-21T10:30:36+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+        "useraccount": {
+            "roles": ["reporting_viewer"],
+            "permissions": {
+                "statistic": "1"
+            },
+            "departments": [
+                {
+                    "id": "74"
+                }
+            ],
+            "id": "reporting.user",
+            "lastLogin": 1459461600
+        },
+        "name": "12",
+        "id": "136",
+        "authkey": "8520c285985b5bd209a0110442dc4e45",
+        "scope": {
+            "id": "141"
+        }
+    }
+}

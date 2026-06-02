@@ -15,13 +15,14 @@ class AppointmentForm extends BaseController
      * @SuppressWarnings(Param)
      * @SuppressWarnings(Cyclomatic)
      * @SuppressWarnings(Complexity)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 2,

@@ -14,7 +14,9 @@ class ProcessDeleteQuickTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation(123, 'testuser', 167);
+        $this->setWorkstation(123, 'testuser', 167)
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render(['id' => 10029], [], []);
         $this->assertStringContainsString('blocked', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -22,7 +24,9 @@ class ProcessDeleteQuickTest extends Base
 
     public function testIsCalled()
     {
-        $this->setWorkstation(123, 'testuser', 141);
+        $this->setWorkstation(123, 'testuser', 141)
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessAlreadyCalled');
         $this->expectExceptionCode(404);
         $this->render(['id' => '9999999'], [], []);
@@ -30,7 +34,9 @@ class ProcessDeleteQuickTest extends Base
 
     public function testRenderingWithInitiator()
     {
-        $this->setWorkstation(123, 'testuser', 451);
+        $this->setWorkstation(123, 'testuser', 451)
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $response = $this->render(['id' => 27147], ['initiator' => 1], []);
         $this->assertStringContainsString('blocked', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -38,7 +44,9 @@ class ProcessDeleteQuickTest extends Base
 
     public function testAuthFailed()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessNoAccess');
         $this->expectExceptionCode(403);
         $this->render(['id' => '10030'], [], []);
@@ -46,7 +54,9 @@ class ProcessDeleteQuickTest extends Base
 
     public function testFailedDelete()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setPermissions('appointment');
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 0 ], [], []);

@@ -14,7 +14,7 @@ class RestoreDeletedDataByCron
     public function __construct($verbose = false)
     {
         if ($verbose) {
-            error_log("INFO: Restoring deleted appointments based on delay time");
+            \App::$log->info('Restoring deleted appointments based on delay time');
             $this->verbose = true;
         }
         $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
@@ -30,7 +30,7 @@ class RestoreDeletedDataByCron
 
             foreach ($processList as $process) {
                 if ($this->verbose) {
-                    error_log("INFO: Processing $process");
+                    \App::$log->info('Processing process', ['process' => (string) $process]);
                 }
                 if ($commit) {
                     $this->removeProcess($process);
@@ -44,7 +44,7 @@ class RestoreDeletedDataByCron
         if ('reserved' == $process->status) {
             $this->deleteProcess($process);
         } elseif ($this->verbose) {
-            error_log("INFO: Keep process $process->id");
+            \App::$log->info('Keep process', ['processId' => $process->id]);
         }
     }
 
@@ -52,9 +52,9 @@ class RestoreDeletedDataByCron
     {
         $query = new \BO\Zmsdb\Process();
         if ($query->writeDeletedEntity($process->id) && $this->verbose) {
-            error_log("INFO: Process $process->id successfully removed");
+            \App::$log->info('Process successfully removed', ['processId' => $process->id]);
         } elseif ($this->verbose) {
-            error_log("WARN: Could not remove process '$process->id'!");
+            \App::$log->warning('Could not remove process', ['processId' => $process->id]);
         }
     }
 }

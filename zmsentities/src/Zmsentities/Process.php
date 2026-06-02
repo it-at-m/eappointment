@@ -31,6 +31,7 @@ class Process extends Schema\Entity
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
     public static $schema = "process.json";
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -522,6 +523,7 @@ class Process extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;

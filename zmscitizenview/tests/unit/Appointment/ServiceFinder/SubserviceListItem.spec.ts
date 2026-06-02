@@ -2,7 +2,6 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 
-// @ts-expect-error: Vue SFC import for test
 import SubserviceListItem from "@/components/Appointment/ServiceFinder/SubserviceListItem.vue";
 
 describe("SubserviceListItem", () => {

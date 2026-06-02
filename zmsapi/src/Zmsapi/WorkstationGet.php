@@ -14,15 +14,16 @@ class WorkstationGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $workstation = (new Helper\User($request, $resolveReferences))->checkRights();
+        $workstation = (new Helper\User($request, $resolveReferences))->checkPermissions();
 
         // Check if the password field exists and remove it from the response
         if (isset($workstation['useraccount']['password'])) {

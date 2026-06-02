@@ -20,8 +20,9 @@ class ProcessReserve extends BaseController
     /**
      * @SuppressWarnings(Param)
      * @SuppressWarnings(Complexity)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -40,7 +41,7 @@ class ProcessReserve extends BaseController
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         if ($slotType || $slotsRequired) {
-            $workstation = (new Helper\User($request))->checkRights();
+            $workstation = (new Helper\User($request))->checkPermissions();
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);

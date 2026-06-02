@@ -1,0 +1,16 @@
+@import "../payment-settings"; 
+@import "../mixins";
+@import "./styleguide";
+
+$styleguide-namespace:              '' !default;
+
+/*
+#{$styleguide-namespace}.styelguide-colors {
+    .sg-color-blockGreyHeadingBackground {
+        background-color: $blockGreyHeadingBackground;
+    }
+    .sg-color-emergency {
+        background-color: $emergency;
+    }
+}
+*/

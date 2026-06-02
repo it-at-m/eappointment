@@ -15,14 +15,15 @@ class DayoffUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkPermissions('dayoff');
 
         $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();

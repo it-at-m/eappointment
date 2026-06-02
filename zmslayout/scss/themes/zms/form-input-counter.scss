@@ -1,0 +1,53 @@
+.form-input-counter {
+    display:                        flex; 
+    flex-direction:                 row-reverse;
+    justify-content:                flex-end;
+    align-items:                    center;  
+    margin-bottom:                  0.5em;
+    label {
+        font-weight:                normal;
+        @include media-query('palm') { 
+            word-break:                 break-word;
+        }
+    }
+    &:hover {
+        background:                 #fff;
+        cursor:                     pointer;
+    }
+    .input-counter {
+        margin-right:               1em;
+        display:                    flex;
+        align-items:                center;  
+        .increment, 
+        .decrement {
+            cursor:                 pointer;
+            margin:                 0;
+        }
+        input {
+            color:                  #000 !important;
+            background-color:       #ffffff !important;
+            height:                 2.1em;
+            font-weight:            bold;
+        }
+        input[value="0"] {
+            background-color:       #f0f0f0 !important;
+            font-weight:            normal;
+        }
+        input[type='number'] {
+            width:                  3em;
+            padding-left:           1em;
+        }
+    }
+    .form-control {
+        background-color:           transparent;
+        border:                     0 none;
+        margin:                     0;
+        min-width:                  0;
+        padding:                    0;
+        text-align:                 center;
+        width:                      2em;
+    }
+    
+}
+
+

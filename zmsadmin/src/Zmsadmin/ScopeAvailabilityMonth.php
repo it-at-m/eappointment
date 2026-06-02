@@ -27,6 +27,7 @@ class ScopeAvailabilityMonth extends BaseController
      *
      * @return string
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -36,7 +37,9 @@ class ScopeAvailabilityMonth extends BaseController
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-
+        if (!$workstation->getUseraccount()->hasPermissions(['availability'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
         $startDate = $dateTime->modify('first day of this month');
         $endDate = $dateTime->modify('last day of this month');

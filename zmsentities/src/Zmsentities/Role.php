@@ -8,10 +8,12 @@ class Role extends Schema\Entity
 
     public static $schema = "role.json";
 
-    public function getDefaults()
+    #[\Override]
+    public function getDefaults(): array
     {
         return [
             'permissions' => [],
+            'assignedUserCount' => 0,
         ];
     }
 }

@@ -27,5 +27,5 @@ $job = new \BO\Zmsdb\Helper\AppointmentDeallocateByCron($now, $verbose);
 $job->startProcessing($commit);
 
 if (!$commit) {
-    error_log("Use with --commit to delete entries.");
+    \App::$log->notice('Use with --commit to deallocate entries.');
 }

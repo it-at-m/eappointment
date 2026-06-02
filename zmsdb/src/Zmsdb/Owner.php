@@ -10,11 +10,10 @@ class Owner extends Base
     /**
     * read entity
     *
-    * @param
-    * itemId
-    * resolveReferences
-    *
-    * @return Resource Entity
+     * @param int|string $itemId
+     * @param int $resolveReferences
+     *
+     * @return Entity
     */
     public function readEntity($itemId, $resolveReferences = 0)
     {
@@ -27,10 +26,10 @@ class Owner extends Base
         return $this->readResolvedReferences($owner, $resolveReferences);
     }
 
+    #[\Override]
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && isset($entity['id'])) {
-            //error_log("Owner Level $resolveReferences");
             $entity['organisations'] = (new Organisation())->readByOwnerId($entity['id'], $resolveReferences - 1);
         }
         return $entity;
@@ -39,10 +38,9 @@ class Owner extends Base
      /**
      * read list of owners
      *
-     * @param
-     * resolveReferences
+     * @param int $resolveReferences
      *
-     * @return Resource Collection
+     * @return Collection
      */
     public function readList($resolveReferences = 0)
     {
@@ -75,10 +73,9 @@ class Owner extends Base
     /**
     * remove an owner
     *
-    * @param
-    * itemId
-    *
-    * @return Resource Status
+     * @param int|string $itemId
+     *
+     * @return Entity|null
     */
     public function deleteEntity($itemId)
     {
@@ -94,8 +91,7 @@ class Owner extends Base
     /**
      * write an owner
      *
-     * @param
-     * entity
+     * @param \BO\Zmsentities\Owner $entity
      *
      * @return Entity
      */
@@ -112,8 +108,8 @@ class Owner extends Base
     /**
      * update an owner
      *
-     * @param
-     * ownerId, entity
+     * @param int|string $ownerId
+     * @param \BO\Zmsentities\Owner $entity
      *
      * @return Entity
      */

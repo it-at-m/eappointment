@@ -18,8 +18,9 @@ class AppointmentUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -42,7 +43,7 @@ class AppointmentUpdate extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkRights();
+            (new Helper\User($request))->checkPermissions('appointment');
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);

@@ -16,15 +16,16 @@ class UseraccountList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ) {
         $helper = new Helper\User($request, 1);
-        $helper->checkRights('useraccount');
+        $helper->checkPermissions('useraccount');
         $parameters = $request->getParams();
 
         $workstation = Helper\User::$workstation;

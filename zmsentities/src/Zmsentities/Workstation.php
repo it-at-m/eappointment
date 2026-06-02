@@ -14,6 +14,7 @@ class Workstation extends Schema\Entity
 
     public static $schema = "workstation.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -81,6 +82,15 @@ class Workstation extends Schema\Entity
         return $rights;
     }
 
+    public function getUseraccountPermissions()
+    {
+        $rights = null;
+        if (Property::__keyExists('permissions', $this->useraccount)) {
+            $rights = $this->useraccount['permissions'];
+        }
+        return $rights;
+    }
+
     public function hasSuperUseraccount()
     {
         $isSuperuser = false;
@@ -93,6 +103,11 @@ class Workstation extends Schema\Entity
 
     public function hasAuditAccount()
     {
+        $userPermissions = $this->getUseraccountPermissions();
+        if (isset($userPermissions['logs']) && $userPermissions['logs']) {
+            return true;
+        }
+
         $userRights = $this->getUseraccountRights();
         if (isset($userRights['audit']) && $userRights['audit']) {
             return true;

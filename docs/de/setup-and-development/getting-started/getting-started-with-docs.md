@@ -39,6 +39,16 @@ VitePress gibt eine lokale URL aus (typischerweise `http://localhost:5173`). Öf
 - **`npm run format:check`** — prüft die Formatierung, ohne Dateien zu schreiben (nützlich in CI)
 - **`npm run docs:build`** — Produktions-Build; Ausgabe nach `docs/.vitepress/dist`
 - **`npm run docs:preview`** — serviert die gebaute Site lokal, um den Build zu prüfen
+- **`npm run docs:log-inventory`** — erzeugt `docs/.vitepress/data/log-inventory.json` neu (läuft auch automatisch bei `docs:dev` / `docs:build`)
+
+## Automatisch erzeugte Dokumentation
+
+Einige Seiten werden beim Start oder Build von VitePress generiert:
+
+- **Cucumber-Feature-Liste** — aus `zmsautomation/src/test/resources/features`
+- **Monolog-Log-Inventar** — scannt `App::$log`-Aufrufe in ZMS-Modul-PHP; siehe [Monolog-Logging](/de/operations/monolog-logging)
+
+`log-inventory.json` wird lokal und in CI erzeugt und **nicht** committed (siehe `docs/.gitignore`).
 
 ## Konfiguration und Theme
 

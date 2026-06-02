@@ -16,6 +16,7 @@ use BO\Zmsdldb\Elastic\Location as Base;
  */
 class Location extends Base
 {
+    #[\Override]
     public function fetchId($location_id)
     {
         try {
@@ -38,6 +39,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function fetchList($service_csv = false, $mixLanguages = false)
     {
         # COALESCE(l2.data_json, l.data_json) AS data_json
@@ -90,6 +92,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function fetchListByOffice($office, $mixLanguages = false)
     {
         try {
@@ -134,8 +137,9 @@ class Location extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchFromCsv($location_csv, $mixLanguages = false)
     {
         try {
@@ -177,6 +181,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     protected function fetchGeoJsonLocations($category, $getAll)
     {
         try {
@@ -235,6 +240,7 @@ class Location extends Base
     /**
      * @todo Refactoring required, functions in this class should return entities, not JSON data
      */
+    #[\Override]
     public function fetchGeoJson($category = null, $getAll = false)
     {
         $locationList = $this->fetchGeoJsonLocations($category, $getAll);
@@ -265,6 +271,7 @@ class Location extends Base
         return $geoJson;
     }
 
+    #[\Override]
     public function readSearchResultList($query, $service_csv = null)
     {
         try {
@@ -304,6 +311,7 @@ class Location extends Base
         }
     }
 
+    #[\Override]
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
         try {

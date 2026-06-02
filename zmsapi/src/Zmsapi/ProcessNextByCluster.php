@@ -16,14 +16,15 @@ class ProcessNextByCluster extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkPermissions('appointment');
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
         $exclude = Validator::param('exclude')->isString()->getValue();
@@ -33,6 +34,11 @@ class ProcessNextByCluster extends BaseController
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
+
+        (new Helper\User($request, 2))->checkPermissions(
+            new \BO\Zmsentities\Useraccount\EntityAccess($cluster)
+        );
+
         $queueList = $query->readQueueList($cluster->id, $dateTime, 1);
         if (! $allowClusterWideCall) {
             $queueList = $queueList

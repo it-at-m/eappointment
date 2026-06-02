@@ -17,15 +17,16 @@ class UseraccountListByRoleAndDepartments extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ) {
         $roleLevel = $args['level'];
-        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('useraccount');
 
         $rawIds = array_map('trim', explode(',', $args['ids']));
         $rawIds = array_filter($rawIds, 'strlen');

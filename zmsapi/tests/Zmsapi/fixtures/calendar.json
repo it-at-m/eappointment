@@ -79,6 +79,7 @@
                         "type": "object",
                         "properties": {
                           "processId": { "type": "integer" },
+                          "displayNumber": { "type": ["string", "null"] },
                           "start":     { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
                           "end":       { "type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$" },
                           "status":    { "type": "string", "enum": ["confirmed","cancelled"] },

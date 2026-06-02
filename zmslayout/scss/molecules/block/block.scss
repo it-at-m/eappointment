@@ -1,0 +1,43 @@
+
+$blockSmallBottomMarginPx:  calc($blockBottomMarginPx / 2.5);
+$boxSmallPaddingPx:         calc($boxPaddingPx / 2);
+
+
+#{$namespace}.block {
+    //border: 2px solid green !important; // for testing!
+    @include clearfix();
+    @include getRem('margin-bottom', $blockBottomMarginPx);
+    display:                    block;
+    width:                      100%;
+    overflow:                   visible;
+    position:                   relative;
+    > *:first-child {
+        margin-top:                 0;
+    }
+    > *:last-child {
+        margin-bottom:              0;
+        > *:last-child {
+            margin-bottom:              0;
+        }
+    }
+    &.panel--tiny {
+        @include getRem('margin-bottom', $blockSmallBottomMarginPx);
+    }
+}
+
+#{$namespace}.block__header {
+    @include blockHeader();
+}
+
+#{$namespace}.block__heading {
+    @include blockHeading();
+}
+
+// Status of an searchresult entry (Onlinestatus, Locked,...)
+#{$namespace}.block--bordered {
+    @include panel--bordered();
+    + .block--bordered {
+        border-top: 0 none;
+        @include getRem('margin-top', -$blockBottomMarginPx);
+    }
+}

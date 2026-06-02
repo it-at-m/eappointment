@@ -18,6 +18,8 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [API reference](./operations/api-reference.md) — ReDoc and diagrams
 - [Module READMEs](./reference/module-readmes.md)
 - [DLDB Interface Documentation](./operations/dldb-interface-documentation.md)
+- [Monolog logging](./operations/monolog-logging.md) — `App::$log`, `DEBUGLEVEL`
+- [Monitoring and status](./operations/monitoring-and-status.md) — Grafana, `GET /status/`
 
 ## Repository Scope
 

@@ -159,7 +159,7 @@ class MailTemplates extends Base
      * remove config data
      *
      *
-     * @return Resource Status
+     * @return bool
      */
     public function deleteProperty($property)
     {

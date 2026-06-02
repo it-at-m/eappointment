@@ -15,14 +15,15 @@ class ClusterCalldisplayImageDataUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
+        (new Helper\User($request))->checkPermissions('calldisplay');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {

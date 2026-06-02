@@ -23,6 +23,7 @@ class ANSI implements DialectInterface
      * @param   string $table
      * @return  string
      */
+    #[\Override]
     public function quoteTable($table)
     {
         return $this->quoteStructureParts($table, '"');
@@ -34,6 +35,7 @@ class ANSI implements DialectInterface
      * @param   string $field
      * @return  string
      */
+    #[\Override]
     public function quoteField($field)
     {
         return $this->quoteStructureParts($field, '"', ['*']);

@@ -25,12 +25,13 @@ class AvailabilityClosureToggle extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkPermissions('availability');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         if (! $input || count($input) === 0) {
             throw new BadRequestException();

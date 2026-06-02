@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { writeLogInventory } from "../scripts/generate-log-inventory.mjs";
+
 const FEATURES_ROOT = path.resolve(
   import.meta.dirname,
   "../../zmsautomation/src/test/resources/features"
@@ -168,6 +170,7 @@ const renderCucumberDoc = () => {
 };
 
 renderCucumberDoc();
+writeLogInventory();
 
 // docs/en/ is the single on-disk source for English content. We use VitePress
 // `rewrites` so every docs/en/<path>.md is rendered at URL /<path>.html (the
@@ -237,6 +240,8 @@ const sidebarLabels = {
     dependencyGraph: "Dependency Graph",
     branchingStrategy: "Branching Strategy",
     commitMessageConvention: "Commit Message Convention",
+    monologLogging: "Monolog logging",
+    statusMonitoring: "Monitoring and status",
     codeOfConduct: "Code of Conduct",
     contributing: "Contributing",
     security: "Security",
@@ -269,6 +274,7 @@ const sidebarLabels = {
     databaseRefactor: "Database Refactor",
     standardizeDb: "Standardize Database Table and Field Naming",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
+    dynamicCache: "Dynamic Cache Layer and Bulk Queries",
   },
   de: {
     overview: "Übersicht",
@@ -280,6 +286,8 @@ const sidebarLabels = {
     dependencyGraph: "Abhängigkeitsgraph",
     branchingStrategy: "Branching-Strategie",
     commitMessageConvention: "Commit-Message-Konvention",
+    monologLogging: "Monolog-Logging",
+    statusMonitoring: "Monitoring und Status",
     codeOfConduct: "Verhaltenskodex",
     contributing: "Mitwirken",
     security: "Sicherheit",
@@ -312,6 +320,7 @@ const sidebarLabels = {
     databaseRefactor: "Datenbank-Refactoring",
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
+    dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
   },
 };
 
@@ -372,6 +381,10 @@ const buildSidebar = (prefix, lang) => {
               link: `${prefix}/setup-and-development/getting-started/ddev-and-devcontainer`,
             },
             {
+              text: t.codeFormatting,
+              link: `${prefix}/setup-and-development/code-formatting`,
+            },
+            {
               text: t.quickReset,
               link: `${prefix}/setup-and-development/getting-started/quick-reset-local-environment`,
             },
@@ -406,10 +419,6 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.keycloakLocal,
           link: `${prefix}/setup-and-development/local-keycloak-setup`,
-        },
-        {
-          text: t.codeFormatting,
-          link: `${prefix}/setup-and-development/code-formatting`,
         },
         {
           text: t.localDbCache,
@@ -457,6 +466,14 @@ const buildSidebar = (prefix, lang) => {
           text: t.dldb,
           link: `${prefix}/operations/dldb-interface-documentation`,
         },
+        {
+          text: t.monologLogging,
+          link: `${prefix}/operations/monolog-logging`,
+        },
+        {
+          text: t.statusMonitoring,
+          link: `${prefix}/operations/monitoring-and-status`,
+        },
       ],
     },
     {
@@ -484,6 +501,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.modernizeArch,
           link: `${prefix}/on-the-future/product-oriented-refarch-roadmap`,
+        },
+        {
+          text: t.dynamicCache,
+          link: `${prefix}/on-the-future/dynamic-cache-and-bulk-queries`,
         },
       ],
     },

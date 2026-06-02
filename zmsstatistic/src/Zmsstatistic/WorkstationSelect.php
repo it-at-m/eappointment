@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Slim\Render;
 use BO\Zmsstatistic\Helper\LoginForm;
 use BO\Mellon\Validator;
@@ -20,6 +21,7 @@ class WorkstationSelect extends BaseController
      * @SuppressWarnings(Parameter)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -29,6 +31,9 @@ class WorkstationSelect extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
+        }
+        if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $workstation, $response)) {
+            return $wrongModuleResponse;
         }
         $input = $request->getParsedBody();
         $formData = [];

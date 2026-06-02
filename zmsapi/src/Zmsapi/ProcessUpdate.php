@@ -16,15 +16,16 @@ use BO\Zmsdb\Process;
 
 /**
  * @SuppressWarnings(Coupling)
- * @return String
+ * @return \Psr\Http\Message\ResponseInterface
  */
 class ProcessUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
      * @SuppressWarnings(Complexity)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

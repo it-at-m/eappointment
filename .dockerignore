@@ -1,0 +1,24 @@
+# PHP dependencies are installed inside the image by `make live` (composer install).
+# Host `reference-libraries --no-symlink` nests vendors deeply; excluding them keeps
+# the build context small enough for GitHub-hosted runners (~14 GB free disk).
+**/vendor/
+
+# Node deps are installed in-container for modules that run `npm install` in `make live`.
+**/node_modules/
+
+.git/
+.github/
+.devcontainer/
+
+# Not used by .resources/Containerfile image builds (see php-build-images matrix).
+zmscitizenview/
+zmsautomation/
+
+# CI / dev artifacts
+**/.cache/
+**/.phpunit.result.cache
+**/public/_tests/
+**/artifacts/
+**/.idea/
+**/*.swp
+tags
