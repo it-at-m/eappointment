@@ -269,24 +269,6 @@ class Department extends Base
         }
     }
 
-    private function normalizeIntegerValue($value): int
-    {
-        $value = is_string($value) ? trim($value) : $value;
-
-        if (is_string($value) && $value !== '' && ctype_digit($value)) {
-            $value = ltrim($value, '0');
-            $value = $value === '' ? '0' : $value;
-        }
-
-        $intValue = filter_var($value, FILTER_VALIDATE_INT);
-
-        if ($intValue === false || $intValue < 0) {
-            return 0;
-        }
-
-        return $intValue;
-    }
-
     protected function writeDepartmentMail(
         $departmentId,
         $email,
@@ -298,7 +280,7 @@ class Department extends Base
             $departmentId,
             $email,
             $sendEmailReminderEnabled,
-            $this->normalizeIntegerValue($sendEmailReminderMinutesBefore)
+            $sendEmailReminderMinutesBefore
         ));
         return $result;
     }
@@ -315,7 +297,7 @@ class Department extends Base
             'email' => $email,
             'departmentId' => $departmentId,
             'sendEmailReminderEnabled' => $sendEmailReminderEnabled,
-            'sendEmailReminderMinutesBefore' => $this->normalizeIntegerValue($sendEmailReminderMinutesBefore)
+            'sendEmailReminderMinutesBefore' => $sendEmailReminderMinutesBefore
         ));
     }
 

@@ -17,7 +17,6 @@ class DepartmentTest extends Base
         $this->assertNotEmpty($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
-        $this->assertSame(5, (int) $entity->sendEmailReminderMinutesBefore);
 
         $this->assertEquals(1, count($entity->links));
         $this->assertFalse(null === $entity->dayoff->getEntityByName('Test Feiertag'));
@@ -65,74 +64,6 @@ class DepartmentTest extends Base
         $query = new Query();
         $entity = $query->readEntity(99999);
         $this->assertEquals(null, $entity);
-    }
-
-    public function testWriteEntityKeepsValidSendEmailReminderMinutesBefore()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-
-        $input->sendEmailReminderMinutesBefore = 15;
-
-        $entity = $query->writeEntity($input, 75);
-        $entity = $query->readEntity($entity->id, 2, true);
-
-        $this->assertSame(15, (int) $entity->sendEmailReminderMinutesBefore);
-    }
-
-    public function testWriteEntityNormalizesEmptySendEmailReminderMinutesBeforeToZero()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-
-        $input->sendEmailReminderMinutesBefore = '';
-
-        $entity = $query->writeEntity($input, 75);
-        $entity = $query->readEntity($entity->id, 2, true);
-
-        $this->assertSame(0, (int) $entity->sendEmailReminderMinutesBefore);
-    }
-
-    public function testUpdateEntityNormalizesNegativeSendEmailReminderMinutesBeforeToZero()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-
-        $entity = $query->writeEntity($input, 75);
-
-        $entity->sendEmailReminderMinutesBefore = -5;
-        $entity = $query->updateEntity($entity->id, $entity);
-        $entity = $query->readEntity($entity->id, 2, true);
-
-        $this->assertSame(0, (int) $entity->sendEmailReminderMinutesBefore);
-    }
-
-    public function testUpdateEntityNormalizesNonNumericSendEmailReminderMinutesBeforeToZero()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-
-        $entity = $query->writeEntity($input, 75);
-
-        $entity->sendEmailReminderMinutesBefore = 'abc';
-        $entity = $query->updateEntity($entity->id, $entity);
-        $entity = $query->readEntity($entity->id, 2, true);
-
-        $this->assertSame(0, (int) $entity->sendEmailReminderMinutesBefore);
-    }
-
-    public function testUpdateEntityNormalizesLeadingZeroSendEmailReminderMinutesBefore()
-    {
-        $query = new Query();
-        $input = $this->getTestEntity();
-
-        $entity = $query->writeEntity($input, 75);
-
-        $entity->sendEmailReminderMinutesBefore = '0005';
-        $entity = $query->updateEntity($entity->id, $entity);
-        $entity = $query->readEntity($entity->id, 2, true);
-
-        $this->assertSame(5, (int) $entity->sendEmailReminderMinutesBefore);
     }
 
     protected function getTestEntity()
