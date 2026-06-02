@@ -41,6 +41,10 @@
         ]
     },
     "additionalProperties": false,
+    "required": [
+        "name",
+        "email"
+    ],
     "properties": {
         "id": {
             "type": "number"
@@ -209,12 +213,14 @@
         },
         "email": {
             "type": "string",
+            "minLength": 1,
             "description": "sender address for reminder mails to the clients",
-            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$",
             "x-locale": {
                 "de_DE": {
-                    "pointer": "E-Mail",
+                    "pointer": "Absender-Adresse",
                     "messages": {
+                        "minLength": "Bitte geben Sie eine Absender-Adresse an.",
                         "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
                     }
                 }
