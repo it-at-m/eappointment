@@ -25,6 +25,10 @@ class OwnerDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         \App::$http->readDeleteResult('/owner/' . $entityId . '/')->getEntity();
         return \BO\Slim\Render::redirect(

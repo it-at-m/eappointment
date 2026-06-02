@@ -24,7 +24,7 @@ class OwnerAdd extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (!$workstation->getUseraccount()->hasPermissions(['superuser'])) {
+        if (!$workstation->getUseraccount()->hasPermissions(['jurisdiction'])) {
             throw new UserAccountMissingRights();
         }
         $input = $request->getParsedBody();
