@@ -185,7 +185,7 @@ class Department extends Base
             $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
         }
         if ($entity->toProperty()->email->isAvailable()) {
-            $this->writeDepartmentMail(
+            $this->updateDepartmentMail(
                 $lastInsertId,
                 $entity->email,
                 $entity->sendEmailReminderEnabled,
@@ -268,23 +268,6 @@ class Department extends Base
             $query = new Link();
             $query->writeEntity($link, $departmentId);
         }
-    }
-
-    protected function writeDepartmentMail(
-        $departmentId,
-        $email,
-        $sendEmailReminderEnabled,
-        $sendEmailReminderMinutesBefore
-    ) {
-        self::$departmentCache = [];
-        $this->perform(Query\Department::QUERY_MAIL_DELETE, array($departmentId));
-        $result = $this->perform(Query\Department::QUERY_MAIL_INSERT, array(
-            $departmentId,
-            $email,
-            $sendEmailReminderEnabled,
-            $sendEmailReminderMinutesBefore
-        ));
-        return $result;
     }
 
     protected function updateDepartmentMail(

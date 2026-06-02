@@ -19,17 +19,6 @@ class Department extends Base implements MappingInterface
             send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
-    const QUERY_MAIL_INSERT = '
-        REPLACE INTO
-            email
-        SET
-            BehoerdenID=?,
-            serveradresse="localhost",
-            absenderadresse=?,
-            send_reminder=?,
-            send_reminder_minutes_before=?
-    ';
-
     const QUERY_MAIL_DELETE = '
         DELETE FROM email WHERE BehoerdenID=?
     ';
