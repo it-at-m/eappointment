@@ -55,7 +55,7 @@ abstract class Parameter
     }
 
     /**
-     * @return String
+     * @return string
      */
     public function getName()
     {

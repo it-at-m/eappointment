@@ -71,6 +71,7 @@ class Combinable extends Entity implements JsonSerializable
         return $result;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

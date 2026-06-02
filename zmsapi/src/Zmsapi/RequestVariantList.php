@@ -6,6 +6,7 @@ use BO\Slim\Render;
 
 class RequestVariantList extends BaseController
 {
+    #[\Override]
     public function readResponse($request, $response, array $args)
     {
         $list = (new \BO\Zmsdb\RequestVariant())->readAll();

@@ -18,6 +18,7 @@ class Ticketprinter extends Schema\Entity
         'r' => 'request'
     ];
 
+    #[\Override]
     public function getDefaults()
     {
         return [

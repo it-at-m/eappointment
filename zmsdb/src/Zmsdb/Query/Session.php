@@ -68,6 +68,7 @@ class Session extends Base
      * postProcess data if necessary
      *
      */
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed('content')] = json_decode($data[$this->getPrefixed('content')], 1);

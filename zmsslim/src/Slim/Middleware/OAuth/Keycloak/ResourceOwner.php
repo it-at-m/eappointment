@@ -26,6 +26,7 @@ class ResourceOwner extends KeycloakResourceOwner
     /**
      * Get resource owner id
      */
+    #[\Override]
     public function getId(): ?string
     {
         return \array_key_exists('sub', $this->response) ? $this->response['sub'] : null;
@@ -34,6 +35,7 @@ class ResourceOwner extends KeycloakResourceOwner
     /**
      * Get resource owner email
      */
+    #[\Override]
     public function getEmail(): ?string
     {
         return \array_key_exists('email', $this->response) ? $this->response['email'] : null;
@@ -42,6 +44,7 @@ class ResourceOwner extends KeycloakResourceOwner
     /**
      * Get resource owner name
      */
+    #[\Override]
     public function getName(): ?string
     {
         return \array_key_exists('preferred_username', $this->response) ? $this->response['preferred_username'] : null;
@@ -50,6 +53,7 @@ class ResourceOwner extends KeycloakResourceOwner
     /**
      * Return all of the owner details available as an array.
      */
+    #[\Override]
     public function toArray(): array
     {
         return $this->response;

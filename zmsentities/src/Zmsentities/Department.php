@@ -10,6 +10,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
 
     public static $schema = "department.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -132,6 +133,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $scopeList;
     }
 
+    #[\Override]
     public function hasAccess(Useraccount $useraccount)
     {
         return $useraccount->hasRights(['superuser']) || $useraccount->hasDepartment($this->id);
@@ -141,6 +143,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
+    #[\Override]
     public function withLessData()
     {
         $entity = clone $this;

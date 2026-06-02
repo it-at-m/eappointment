@@ -279,7 +279,7 @@ class ZmsApiClientService
     public static function submitClientData(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -324,7 +324,7 @@ class ZmsApiClientService
     public static function cancelAppointment(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/';
             $result = \App::$http->readDeleteResult($url, []);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -339,7 +339,7 @@ class ZmsApiClientService
     public static function sendConfirmationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/confirmation/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -354,7 +354,7 @@ class ZmsApiClientService
     public static function sendPreconfirmationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/preconfirmation/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -369,7 +369,7 @@ class ZmsApiClientService
     public static function sendCancellationEmail(Process $process): Process
     {
         try {
-            $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
+            $url = '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/mail/';
             $result = \App::$http->readPostResult($url, $process);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
@@ -398,14 +398,22 @@ class ZmsApiClientService
         }
     }
 
-    public static function getProcessByIdAuthenticated(int $processId): Process
+    /**
+     * Load a process for a citizen authenticated via JWT (validated in zmscitizenapi).
+     * Calls zmsapi ProcessGetByExternalUserId — not WorkstationProcessGet — so access
+     * is limited to processes owned by the given external user id (GH-1582).
+     */
+    public static function getProcessByIdAuthenticated(int $processId, string $externalUserId): Process
     {
         try {
             $resolveReferences = 2;
-            // This endpoint is normally reserved for workstation (zmsadmin) Users.
-            $result = \App::$http->readGetResult("/process/{$processId}/", [
-                'resolveReferences' => $resolveReferences
-            ]);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
+            $result = \App::$http->readGetResult(
+                "/process/{$processId}/externaluserid/{$externalUserIdUrlEncoded}/",
+                [
+                    'resolveReferences' => $resolveReferences,
+                ]
+            );
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();
@@ -499,7 +507,7 @@ class ZmsApiClientService
             if (!is_null($status)) {
                 $params['status'] = $status;
             }
-            $externalUserIdUrlEncoded = urlencode($externalUserId);
+            $externalUserIdUrlEncoded = rawurlencode($externalUserId);
             $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserIdUrlEncoded}/", $params);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {

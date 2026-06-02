@@ -1,7 +1,7 @@
 # Slimframework project base
 
-[![pipeline status](https://gitlab.com/eappointment/zmsslim/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsslim/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsslim/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsslim/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsslim/html/)
 
 
 This module is intended to help with the creation of a Slim based framework application.

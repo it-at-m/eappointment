@@ -12,6 +12,7 @@ class Apiclient extends Base implements MappingInterface
      */
     const TABLE = 'apiclient';
 
+    #[\Override]
     public function getEntityMapping()
     {
         $mapping = [
@@ -30,6 +31,7 @@ class Apiclient extends Base implements MappingInterface
         return $this;
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastChange")] =

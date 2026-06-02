@@ -426,6 +426,7 @@ class Select extends Query
      *
      * @return  string
      */
+    #[\Override]
     public function sql()
     {
         $candidateParts = [
@@ -454,6 +455,7 @@ class Select extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function params()
     {
         return array_merge($this->getWhereParams(), $this->getHavingParams());
@@ -464,6 +466,7 @@ class Select extends Query
      *
      * @return  $this
      */
+    #[\Override]
     public function reset()
     {
         return $this
@@ -487,6 +490,7 @@ class Select extends Query
      *
      * @return  array
      */
+    #[\Override]
     public function allTablesReferenced()
     {
         $tables = [];

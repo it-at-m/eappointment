@@ -118,7 +118,7 @@ class AbstractAccess
 
     /**
      *
-     * @return String InstanceName
+     * @return string InstanceName
      */
     protected function getInstanceOnName($name, $position = 0)
     {

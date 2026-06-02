@@ -19,7 +19,6 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Helper\Property;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request as SlimRequest;
 
 /**
  * returning Signatures for signing requests
@@ -28,14 +27,15 @@ class UrlParameterSigning extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @param SlimRequest $request
-     * @return String
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $data = $validator->getInput()->isJson()->assertValid()->getValue();
         $this->testData($data);

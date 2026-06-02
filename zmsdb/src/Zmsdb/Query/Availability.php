@@ -18,6 +18,7 @@ class Availability extends Base implements MappingInterface
         SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 
+    #[\Override]
     public function addRequiredJoins()
     {
          $this->leftJoin(
@@ -28,6 +29,7 @@ class Availability extends Base implements MappingInterface
          );
     }
 
+    #[\Override]
     public function getEntityMapping($type = null)
     {
         $mapping = [
@@ -81,6 +83,7 @@ class Availability extends Base implements MappingInterface
         return $mapping;
     }
 
+    #[\Override]
     public function getReferenceMapping()
     {
         return [
@@ -306,6 +309,7 @@ class Availability extends Base implements MappingInterface
             ");
     }
 
+    #[\Override]
     public function postProcess($data)
     {
         $startDateKey = $this->getPrefixed("startDate");

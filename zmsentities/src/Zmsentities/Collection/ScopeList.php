@@ -107,6 +107,7 @@ class ScopeList extends Base
         return $this;
     }
 
+    #[\Override]
     public function withLessData(array $keepArray = [])
     {
         $scopeList = new self();
@@ -116,6 +117,7 @@ class ScopeList extends Base
         return $scopeList;
     }
 
+    #[\Override]
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {

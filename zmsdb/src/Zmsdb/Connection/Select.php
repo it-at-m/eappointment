@@ -75,12 +75,12 @@ class Select
     protected static $writeConnection = null;
 
     /**
-     * @var \Aura\Sql\Profiler $readProfiler for read only requests
+     * @var object|null $readProfiler for read only requests
      */
     protected static $readProfiler = null;
 
     /**
-     * @var \Aura\Sql\Profiler $writeProfiler for write only requests
+     * @var object|null $writeProfiler for write only requests
      */
     protected static $writeProfiler = null;
 

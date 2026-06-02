@@ -8,6 +8,7 @@ class Request extends Schema\Entity
 
     public static $schema = "request.json";
 
+    #[\Override]
     public function getDefaults()
     {
         return [
@@ -19,6 +20,7 @@ class Request extends Schema\Entity
         ];
     }
 
+    #[\Override]
     public function withReference($additionalData = [])
     {
         $additionalData['id'] = $this->getId();

@@ -10,6 +10,7 @@ class TwigExceptionViewer extends \BO\Slim\Controller
     /**
      * @SuppressWarnings(Superglobals)
      */
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);

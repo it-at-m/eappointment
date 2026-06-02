@@ -10,10 +10,9 @@ class RequestException extends \Exception
     public $request;
 
     /**
-     * @param String $message
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
-     * @param \Exception $previous
+     * @param string $message
+     * @param \Psr\Http\Message\RequestInterface|null $request reference for better error messages
+     * @param \Exception|null $previous
      */
     public function __construct(
         $message = '',

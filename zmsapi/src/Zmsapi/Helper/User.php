@@ -73,7 +73,7 @@ class User
     }
 
     /**
-     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed()
+     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed
      *
      */
     public static function testWorkstationAccessRights($useraccount)
@@ -93,8 +93,8 @@ class User
     }
 
     /**
-     * @throws  \BO\Zmsentities\Exception\UserAccountMissingRights()
-     *          \BO\Zmsentities\Exception\UserAccountMissingLogin()
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingLogin
      *
      */
     public static function testWorkstationAssignedRights($useraccount)
@@ -158,7 +158,7 @@ class User
         $userAccount = $workstation->getUseraccount();
 
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
 
         if ($userAccount->isSuperUser()) {
@@ -216,7 +216,7 @@ class User
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);

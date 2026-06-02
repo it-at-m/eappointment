@@ -15,6 +15,7 @@ use BO\Zmsdldb\Collection\Locations as Collection;
  */
 class Location extends Base
 {
+    #[\Override]
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -61,7 +62,7 @@ class Location extends Base
 
     /**
      *
-     * @return Collection\Locations
+     * @return Collection
      */
     public function readSearchResultList($query, $service_csv = '')
     {

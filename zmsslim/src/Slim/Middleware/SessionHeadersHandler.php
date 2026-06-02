@@ -112,10 +112,7 @@ class SessionHeadersHandler
      * Sends the session headers in the Response.
      *
      * @param Request $request The HTTP request.
-     *
-     * @param Response $response The HTTP response.
-     *
-     * @param callable $next The next middleware in the queue.
+     * @param RequestHandlerInterface|null $next The next middleware in the queue.
      *
      * @return Response
      *

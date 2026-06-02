@@ -1,0 +1,34 @@
+// Some simple responsive helper classes
+
+@include media-query(lap-and-up) {
+    #{$namespace}.desk-hide {
+        display:    none !important;
+    }
+    #{$namespace}.palm-show {
+        display:    none !important;
+    }
+}
+
+@include media-query(lap-and-up) {
+    #{$namespace}.palm-show {
+        display:    none !important;
+    }
+}
+
+@include media-query(palm) {
+    #{$namespace}.palm-hide {
+        display:    none !important;
+    }
+    #{$namespace}.palm-show {
+        display:    inline-block !important;
+    }
+}
+
+@include media-query(smallest) {
+    #{$namespace}.smallest-hide {
+        display:    none !important;
+    }
+    #{$namespace}.smallest-show {
+        display:    inline-block !important;
+    }
+}

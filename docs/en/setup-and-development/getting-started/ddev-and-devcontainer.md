@@ -2,13 +2,15 @@
 
 ## Start local stack
 
+### DDEV
+
 ```bash
-# DDEV
 ddev start
 ```
 
+### Devcontainer (Podman)
+
 ```bash
-# Devcontainer (Podman)
 devcontainer up --workspace-folder .
 ```
 
@@ -43,15 +45,17 @@ This means `ddev start` and `devcontainer up --workspace-folder .` already inclu
 
 You can still rerun module dependency/build commands at any time:
 
+### DDEV
+
 ```bash
-# DDEV
 ddev exec ./cli modules loop composer install
 ddev exec ./cli modules loop npm install
 ddev exec ./cli modules loop npm build
 ```
 
+### Podman
+
 ```bash
-# Podman
 podman exec -it zms-web bash -lc "./cli modules loop composer install"
 podman exec -it zms-web bash -lc "./cli modules loop npm install"
 podman exec -it zms-web bash -lc "./cli modules loop npm build"
@@ -69,13 +73,15 @@ The local setup runs `./cli db full-setup`, which:
 
 You can rerun full setup at any time:
 
+### DDEV
+
 ```bash
-# DDEV
 ddev exec ./cli db full-setup
 ```
 
+### Podman
+
 ```bash
-# Podman
 podman exec -it zms-web bash -lc "./cli db full-setup"
 ```
 
