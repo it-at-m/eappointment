@@ -127,7 +127,7 @@
 {% macro inputfield(args, fieldId, groupargs) %}
     {% import _self as self %}
     <input
-        type="{{ args.type|default('text') }}" 
+        type="{% if args.integer|default(false) %}number{% else %}{{ args.type|default('text') }}{% endif %}"
         title="{{ args.title|default('') }}"
         {% if args.autofocus %}autofocus{% endif %}
         tabindex="{{ args.tabindex|default(0)}}"
@@ -137,9 +137,41 @@
         {% if args.readonly %}readonly="readonly"{% endif %}
         {% if args.maxlength %}maxlength="{{ args.maxlength }}"{% endif %}
         {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
+        {% if args.integer|default(false) %}
+            inputmode="numeric"
+            step="{{ args.step|default(1) }}"
+            min="{{ args.min|default(0) }}"
+            {% if args.max is defined %}max="{{ args.max }}"{% endif %}
+        {% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {% if groupargs.required or args.required %}required aria-required="true"{% endif %}
+        {% if args.integer|default(false) %}
+            oninput="
+                if (this.value !== '') {
+                    if (this.max !== '' && Number(this.value) > Number(this.max)) {
+                        this.value = this.max;
+                    }
+                    if (this.min !== '' && Number(this.value) < Number(this.min)) {
+                        this.value = this.min;
+                    }
+                }
+            "
+            onblur="
+                if (this.value === '') {
+                    {% if not args.integerNullable|default(false) %}
+                        this.value = '0';
+                    {% endif %}
+                } else {
+                    if (this.max !== '' && Number(this.value) > Number(this.max)) {
+                        this.value = this.max;
+                    }
+                    if (this.min !== '' && Number(this.value) < Number(this.min)) {
+                        this.value = this.min;
+                    }
+                }
+            "
+        {% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
         {{ self.eventHandler(args, fieldId, groupargs) }}
     >
