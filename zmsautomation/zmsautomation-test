@@ -572,7 +572,12 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
     HAS_CUCUMBER_TAGS=true
     value="${arg#-Dcucumber.filter.tags=}"
     if [[ "$value" != *@ignore* ]]; then
-      ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
+      # When only API tests run, exclude UI (@web) scenarios even if they share the same Jira tag.
+      if [[ "$RUN_UI_TESTS" != true ]]; then
+        ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore and not @web")
+      else
+        ATAF_MAVEN_ARGS+=("-Dcucumber.filter.tags=($value) and not @ignore")
+      fi
     else
       ATAF_MAVEN_ARGS+=("$arg")
     fi
