@@ -1,5 +1,5 @@
 # Workflow for advanced CodeQL setup used for scanning Java/JavaScript/TypeScript/Vue/Python based source files
-name: 🛡️ CodeQL Advanced
+name: 🛡️ ☕ 📜 🐍 CodeQL Advanced
 env:
   # Whether to analyze Java code or not (only set to true if repo has Java source code)
   analyze-java: true
@@ -40,10 +40,10 @@ jobs:
       python: ${{ steps.filter.outputs.python }}
     steps:
       - name: Checkout repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+        uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
       - name: Path Filter
         id: filter
-        uses: it-at-m/lhm_actions/action-templates/actions/action-filter@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+        uses: it-at-m/lhm_actions/action-templates/actions/action-filter@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
   codeql-java:
     name: Analyze Java source files
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       matrix:
         build-path: ["./zmsautomation"] # java project root containing pom.xml
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
         if: ${{ env.analyze-java == 'true' && (github.ref_name == 'main' || needs.check-changes.outputs.java == 'true') }}
         with:
           codeql-language: java-kotlin
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-changes
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
         if: ${{ env.analyze-javascript-typescript-vue == 'true' && (github.ref_name == 'main' || needs.check-changes.outputs.javascript-typescript-vue == 'true') }}
         with:
           codeql-language: javascript-typescript
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-changes
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@7cb754b2056cebda6c36db344434f85be398c493 # v1.0.25
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-codeql@b088b94cad35e50b197104c9e2ac8fb25a7116b3 # v1.0.33
         if: ${{ env.analyze-python == 'true' && (github.ref_name == 'main' || needs.check-changes.outputs.python == 'true') }}
         with:
           codeql-language: python

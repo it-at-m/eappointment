@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -17,6 +18,7 @@ class UseraccountListByRole extends BaseController
      * @SuppressWarnings(Param)
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
@@ -24,6 +26,10 @@ class UseraccountListByRole extends BaseController
     ) {
         $roleLevel = $args['level'];
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (! $workstation->getUseraccount()->hasPermissions(['useraccount'])) {
+            throw new UserAccountMissingRights();
+        }
+
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 

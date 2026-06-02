@@ -13,14 +13,18 @@ class MailTemplates extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['mailtemplates'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $providerId = $workstation->scope['provider']['id'];
 
         $scopeName = $workstation->scope['contact']['name'];
@@ -75,7 +79,7 @@ class MailTemplates extends BaseController
             $response,
             'page/mailtemplates.twig',
             array(
-                'title' => 'Konfiguration System',
+                'title' => 'Mail Templates',
                 'pageTitle' => 'Mail Templates für ' . $scopeName,
                 'providerId' => $providerId,
                 'workstation' => $workstation,

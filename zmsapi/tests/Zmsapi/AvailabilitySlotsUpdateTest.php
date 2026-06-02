@@ -8,7 +8,7 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $response = $this->render([], [
             '__body' => '[
                 {
@@ -32,14 +32,14 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testEmptyBody()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsapi\Exception\BadRequest');
         $this->expectExceptionCode(400);
         $this->render([], [
@@ -49,7 +49,7 @@ class AvailabilitySlotsUpdateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation();
+        $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [

@@ -65,6 +65,7 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
      *
      * @return mixed
      */
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

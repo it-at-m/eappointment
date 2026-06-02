@@ -18,14 +18,15 @@ class ProcessDeleteQuick extends ProcessDelete
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('basic');
+        $workstation = (new Helper\User($request, 2))->checkPermissions('appointment');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
 

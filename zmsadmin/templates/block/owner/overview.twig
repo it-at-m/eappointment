@@ -1,10 +1,11 @@
 {% from 'element/helper/form.twig' import providername %}
 {% set rights = workstation.useraccount.rights %}
+{% set permissions = workstation.useraccount.permissions %}
 <!-- owner overview -->
 {% for owner in ownerList %}
 <div class="owner-list owner-overview">
     <h2 class="owner-title">{{ owner.name }}
-        {% if rights.superuser %}
+        {% if permissions.superuser %}
             <a class="float-right" href="{{ urlGet('owner', {'id':owner.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
         {% endif %}
     </h2>
@@ -13,7 +14,7 @@
             <li>
                 <h3 class="organisation-title owner-overview_organisation-list_title">
                 {{ organisation.name }}
-                {% if rights.department or rights.superuser %}
+                {% if permissions.organisation %}
                     <a class="float-right" href="{{ urlGet('organisation', {'id': organisation.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
                 {% endif %}
                 </h3>
@@ -22,7 +23,7 @@
                     <li>
                         <h4 class="department-title owner-overview_department-list_title">
                             {% if rights.superuser %}(Id: {{ department.id }}) {% endif %}{{ department.name }}
-                            {% if rights.department or rights.superuser %}
+                            {% if permissions.department %}
                                 <a class="float-right" href="{{ urlGet('department', {'id':department.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
                             {% endif %}
                         </h4>
@@ -32,7 +33,7 @@
                                 {% set clusterText %}
                                 <strong>Cluster - {{cluster.name}}</strong>
                                 {% endset %}
-                                {% if rights.cluster or rights.superuser %}
+                                {% if permissions.cluster %}
                                     <a  class="cluster-title" href="{{ urlGet('cluster', {'clusterId':cluster.id, 'departmentId': department.id}, {}) }}">{{clusterText}}</a>
                                 {% else %}
                                     <span class="cluster-title">{{clusterText}}</span>
@@ -40,15 +41,15 @@
                                 <ul class="list--clean scope-list owner-overview_scope-list">
                                 {% for clusterScope in cluster.scopes %}
                                     <li>
-                                        {% if rights.scope or rights.superuser %}
+                                        {% if permissions.scope or permissions.restrictedscope %}
                                             <a class="scope-title" href="{{ urlGet('scope', {'id':clusterScope.id}, {}) }}"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(clusterScope) }}</a>
                                         {% else %}
                                             <span class="scope-title">└ {{ providername(clusterScope) }}</span>
                                         {% endif %}
-                                        {% if rights.availability or rights.superuser %}
+                                        {% if permissions.availability %}
                                             <a  class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':clusterScope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
                                         {% endif %}
-                                        {% if rights.superuser %}
+                                        {% if permissions.mailtemplates %}
                                             <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': clusterScope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                         {% endif %}
                                     </li>
@@ -60,15 +61,15 @@
                         <ul class="list--clean scope-list owner-overview_scope-list">
                             {% for scope in department.scopes %}
                                 <li>
-                                    {% if rights.scope or rights.superuser %}
+                                    {% if permissions.scope or permissions.restrictedscope %}
                                         <a class="scope-title"  href="{{ urlGet('scope', {'id':scope.id}, {}) }}">{{ providername(scope) }}</a>
                                     {% else %}
                                         <span class="scope-title"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(scope) }}</span>
                                     {% endif %}
-                                    {% if rights.availability or rights.superuser %}
+                                    {% if permissions.availability %}
                                         <a class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':scope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
                                     {% endif %}
-                                    {% if rights.superuser %}
+                                    {% if permissions.mailtemplates %}
                                         <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': scope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                     {% endif %}
                                 </li>

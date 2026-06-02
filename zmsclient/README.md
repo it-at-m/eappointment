@@ -1,11 +1,11 @@
 # Eappointment HTTP client
 
-[![pipeline status](https://gitlab.com/eappointment/zmsclient/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsclient/-/commits/main)
-[![coverage report](https://gitlab.com/eappointment/zmsclient/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsclient/_tests/coverage/index.html)
+[![CI](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml/badge.svg?branch=main)](https://github.com/it-at-m/eappointment/actions/workflows/combined-workflow-with-docs.yaml)
+[![coverage report](https://img.shields.io/badge/coverage-report-blue)](https://it-at-m.github.io/eappointment/coverage/coverage-zmsclient/html/)
 
 Use this library to fetch data from the eappointment API via HTTP.
 
-For a detailed project description, see https://gitlab.com/eappointment/eappointment
+For a detailed project description, see https://github.com/it-at-m/eappointment
 
 ## Requirements
 

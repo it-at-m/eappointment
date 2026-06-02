@@ -25,7 +25,7 @@ class ScopeAvailabilityDayTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1
                     ],
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'response' => $this->readFixture("GET_workstation_appointment_admin.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -80,7 +80,7 @@ class ScopeAvailabilityDayTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1
                     ],
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'response' => $this->readFixture("GET_workstation_appointment_admin.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -131,7 +131,7 @@ class ScopeAvailabilityDayTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1
                     ],
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'response' => $this->readFixture("GET_workstation_appointment_admin.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -187,7 +187,7 @@ class ScopeAvailabilityDayTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1
                     ],
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'response' => $this->readFixture("GET_workstation_appointment_admin.json")
                 ],
                 [
                     'function' => 'readGetResult',

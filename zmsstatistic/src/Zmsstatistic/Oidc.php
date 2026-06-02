@@ -7,6 +7,7 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsclient\ModuleAccess;
 use BO\Zmsclient\OidcHandler;
 
 class Oidc extends BaseController
@@ -15,6 +16,7 @@ class Oidc extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -24,6 +26,10 @@ class Oidc extends BaseController
             $state = $request->getParam('state');
             $handler = new OidcHandler(\App::$http);
             $result = $handler->handleCallback($state, 'zmsstatistic');
+
+            if ($wrongModuleResponse = ModuleAccess::rejectWrongModuleAccess(ModuleAccess::MODULE_STATISTIC, $result['workstation'], $response)) {
+                return $wrongModuleResponse;
+            }
 
             if ($result['redirect_to_index']) {
                 return \BO\Slim\Render::redirect(

@@ -112,6 +112,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    #[\Override]
     public function offsetSet(mixed $index, mixed $value): void
     {
         $className = $this::ENTITY_CLASS;
@@ -237,6 +238,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $array;
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         return $this->getArrayCopy();

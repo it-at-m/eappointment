@@ -13,7 +13,7 @@ class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
 
     public function timeToUnix($timeValue): ?int
@@ -30,11 +30,12 @@ class WorkstationProcessNext extends BaseController
         return $unixTimestamp !== false ? $unixTimestamp : null;
     }
 
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()

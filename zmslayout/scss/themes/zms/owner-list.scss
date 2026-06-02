@@ -1,0 +1,76 @@
+
+$ownerlist-item-padding: 0.5rem 0.75rem;
+$ownerlist-organisation-title-bg: #dddddd;
+
+$ownerlist-border-color: #dddddd;
+$ownerlist-border-color-light: #f1f1f1;
+
+.owner-list {
+    ul, li {
+        margin: 0;
+    }
+    .fa-edit {
+        font-size:  14px;
+    }
+    .owner-title {
+        display: block;
+        padding: $ownerlist-item-padding;
+        padding-top: 0;
+        padding-left: 0;
+        margin: 0;
+    }
+    .organisation-list {
+        > li {
+            margin-bottom: 2em;
+        }
+        .organisation-title {
+            padding: $ownerlist-item-padding;
+            background-color: $ownerlist-organisation-title-bg;
+            color:$color-text-seperationheading;
+            margin: 0;
+            display: block;
+            a {
+                //color:$color-text-seperationheading;
+            }
+        }
+        .department-list {
+            .department-title {
+                background-color: $color-block-seperationheading;
+                border-bottom: 1px solid $ownerlist-border-color;
+                padding: $ownerlist-item-padding;
+                margin: 0;
+                display: block;
+                color:  $color-text-seperationheading;
+                a {
+                    //color:$color-text-seperationheading;
+                }
+            }
+            .cluster-list {
+                > li {
+                    border-bottom: 1px solid $ownerlist-border-color;
+                    &:last-child {
+                        border-bottom: 0;
+                    }
+                }
+                .cluster-title  {
+                    padding: $ownerlist-item-padding;
+                    border-bottom: 1px dotted $ownerlist-border-color-light;
+                    display: block;
+                    margin: 0;
+                }
+                + .scope-list > li:first-child {
+                    border-top: 1px solid $ownerlist-border-color;
+                }
+            }
+            .scope-list {
+                > li  {
+                    padding: $ownerlist-item-padding;
+                    border-bottom: 1px dotted $ownerlist-border-color-light;
+                    &:last-child {
+                         border-bottom: 0;
+                     }
+                }
+            }
+        }
+    }
+}

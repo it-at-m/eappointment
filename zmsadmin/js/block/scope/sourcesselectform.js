@@ -85,8 +85,14 @@ class SourceSelectView extends Component {
                                 name="provider[source]"
                                 options={sourceOptions}
                                 onChange={onChangeSource}
-                                attributes={{ "id": "scopeProviderSource" }}
+                                attributes={{ "id": "scopeProviderSource", "disabled": !this.props.permissions.scope }}
                             />
+                            {!this.props.permissions.scope && (
+                            <Inputs.Hidden
+                                name="provider[source]"
+                                value={(hasSource()) ? this.props.scopestate.source.source : ''}
+                            />
+                        )}
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                 </div>
@@ -99,12 +105,21 @@ class SourceSelectView extends Component {
                         />
                         <Inputs.Controls>
                             <Inputs.Select
-                                attributes={(!hasSource()) ? { "disabled": true, "id": "scopeProviderId" } : { "id": "scopeProviderId" }}
+                                attributes={{
+                                    "id": "scopeProviderId",
+                                    "disabled": !this.props.permissions.scope || !hasSource()
+                                }}
                                 value={(hasProvider()) ? this.props.scopestate.provider.id : 0}
                                 name="provider[id]"
                                 groups={providerGroups}
                                 onChange={onChangeProvider}
                             />
+                            {!this.props.permissions.scope && (
+                                <Inputs.Hidden
+                                    name="provider[id]"
+                                    value={(hasProvider()) ? this.props.scopestate.provider.id : ''}
+                                />
+                            )}
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                 </div>

@@ -15,8 +15,9 @@ class ScopeList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -29,7 +30,7 @@ class ScopeList extends BaseController
             throw new Exception\Scope\ScopeNotFound(); // @codeCoverageIgnore
         }
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('scope');
+            (new Helper\User($request))->checkAnyPermission('restrictedscope', 'scope');
         } else {
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;

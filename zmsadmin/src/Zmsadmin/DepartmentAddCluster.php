@@ -13,14 +13,18 @@ use BO\Mellon\Validator;
 class DepartmentAddCluster extends BaseController
 {
     /**
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        if (!$workstation->getUseraccount()->hasPermissions(['cluster'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->getEntity();
@@ -47,7 +51,7 @@ class DepartmentAddCluster extends BaseController
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/cluster.twig', array(
-            'title' => 'Cluster',
+            'title' => 'Cluster einrichten',
             'action' => 'add',
             'menuActive' => 'owner',
             'workstation' => $workstation,

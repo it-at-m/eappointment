@@ -15,8 +15,9 @@ class ScopeUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -28,8 +29,14 @@ class ScopeUpdate extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $scope->addData($input)->testValid('de_DE', 1);
-        (new Helper\User($request, 2))->checkRights(
-            'scope',
+        $user = new Helper\User($request, 2);
+
+        $user->checkAnyPermission(
+            'restrictedscope',
+            'scope'
+        );
+
+        $user->checkRights(
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 

@@ -18,8 +18,9 @@ class Service extends Base
 {
     /**
      *
-     * @return Entity\Service
+     * @return Entity
      */
+    #[\Override]
     public function fetchId($service_id)
     {
         if ($service_id) {
@@ -41,8 +42,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchList($location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
@@ -67,8 +69,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function fetchFromCsv($service_csv)
     {
         $query = Helper::boolFilteredQuery();
@@ -93,8 +96,9 @@ class Service extends Base
 
     /**
      *
-     * @return Collection\Services
+     * @return Collection
      */
+    #[\Override]
     public function searchAll($querystring, $service_csv = '', $location_csv = '')
     {
         $query = new \Elastica\Query();
@@ -148,6 +152,7 @@ class Service extends Base
      *
      * @return Collection
      */
+    #[\Override]
     public function readSearchResultList($query, $service_csv = '')
     {
         $boolquery = Helper::boolFilteredQuery();

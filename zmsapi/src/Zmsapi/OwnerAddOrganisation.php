@@ -15,13 +15,15 @@ class OwnerAddOrganisation extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkPermissions('organisation');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsdb\Owner())->readEntity($args['id'], 2);
         (new Helper\User($request, 2))->checkRights(

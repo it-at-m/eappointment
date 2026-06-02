@@ -16,25 +16,28 @@ class Scope extends BaseController
 {
     /**
      *
-     * @return String
+     * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ): \Psr\Http\Message\ResponseInterface {
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-
+        if (!$workstation->getUseraccount()->hasAnyPermission(['scope','restrictedscope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http
             ->readGetResult('/scope/' . $entityId . '/', [
                 'resolveReferences' => 1,
-                'accessRights' => 'scope',
+                'accessRights' => 'restrictedscope',
                 'gql' => Helper\GraphDefaults::getScope()
             ])
             ->getEntity();
@@ -50,7 +53,9 @@ class Scope extends BaseController
         if ($request->getMethod() === 'POST') {
             $result = $this->writeUpdatedEntity($input, $entityId);
             if ($result instanceof Entity) {
-                $this->writeUploadedImage($request, $entityId, $input);
+                if ($workstation->getUseraccount()->hasPermissions(['scope'])) {
+                    $this->writeUploadedImage($request, $entityId, $input);
+                }
                 return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
                     'success' => 'scope_saved'
                 ]);
@@ -92,7 +97,7 @@ class Scope extends BaseController
 
     /**
      * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
-     * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
+     * @param int|null $entityId Might be the entity scope or department if called from DepartmentAddScope
      */
     protected function writeUpdatedEntity($input, $entityId = null)
     {

@@ -1,0 +1,21 @@
+.queue-table {
+    table tr.future .queue-status {
+        background-color: rgb(116, 202, 240);
+    }
+    td.queue-status, th.queue-status {
+        padding: 0.2em;
+    }
+    table tr.reserved {
+        background-color:       $color-disabled !important;
+        opacity:                0.45;
+        a {
+            cursor:             not-allowed;
+        }
+    }
+    td {
+        // bigger items
+        .fa, .fas, .far {
+            font-size:          $icon-size-big;
+        }
+    }
+}

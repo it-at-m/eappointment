@@ -1,6 +1,6 @@
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5.3@sha256:5a236ae4dd8ece77490115bace15a11a4d15e9cbcf58a490b95a7da2cd71d32a
+    image: quay.io/keycloak/keycloak:26.6.2@sha256:f9ba7b2af90db8dc749a57ca9aedca51e840cb9224441ab546a968da941da900
     container_name: ddev-${DDEV_SITENAME}-keycloak
     command:
       - start-dev
@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   init-keycloak:
-    image: klg71/keycloakmigration:0.2.125@sha256:a326d3e50e2a35b70a3cf3a5d33288af9bcba27fef89146a2107622583e34231
+    image: klg71/keycloakmigration:0.2.127@sha256:a48ce70ba2698e055d96184ce058cdd473e23707366955fe687707457730a073
     depends_on:
       keycloak:
         condition: service_started

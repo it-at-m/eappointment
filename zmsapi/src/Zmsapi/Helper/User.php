@@ -3,7 +3,6 @@
 namespace BO\Zmsapi\Helper;
 
 use BO\Slim\Render;
-use BO\Zmsdb\Useraccount;
 use BO\Zmsdb\Workstation;
 use BO\Zmsapi\Helper\UserAuth;
 use BO\Zmsentities\Collection\DepartmentList;
@@ -74,7 +73,7 @@ class User
     }
 
     /**
-     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed()
+     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed
      *
      */
     public static function testWorkstationAccessRights($useraccount)
@@ -94,8 +93,8 @@ class User
     }
 
     /**
-     * @throws  \BO\Zmsentities\Exception\UserAccountMissingRights()
-     *          \BO\Zmsentities\Exception\UserAccountMissingLogin()
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingRights
+     * @throws \BO\Zmsentities\Exception\UserAccountMissingLogin
      *
      */
     public static function testWorkstationAssignedRights($useraccount)
@@ -124,6 +123,28 @@ class User
         return $workstation;
     }
 
+    public static function checkPermissions(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testPermissions($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
+    public static function checkAnyPermission(...$requiredPermissions)
+    {
+        $workstation = static::readWorkstation();
+
+        if (\App::RIGHTSCHECK_ENABLED) {
+            $workstation->getUseraccount()->testAnyPermission($requiredPermissions);
+        }
+
+        return $workstation;
+    }
+
     public static function checkDepartments($departmentIds)
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
@@ -137,7 +158,7 @@ class User
         $userAccount = $workstation->getUseraccount();
 
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
 
         if ($userAccount->isSuperUser()) {
@@ -195,7 +216,7 @@ class User
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);

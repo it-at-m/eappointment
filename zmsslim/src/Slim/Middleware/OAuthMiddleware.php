@@ -49,8 +49,7 @@ class OAuthMiddleware
      * Set the authorizsationType attribute to request and init authorization method
      *
      * @param ServerRequestInterface $request PSR7 request
-     * @param ResponseInterface $response     PSR7 response
-     * @param callable $next                  Next middleware
+     * @param RequestHandlerInterface $next Next middleware
      *
      * @return ResponseInterface
      */
