@@ -275,7 +275,7 @@ const sidebarLabels = {
     standardizeDb: "Standardize Database Table and Field Naming",
     refarchRoadmap: "RefArch Roadmap",
     modernizeArch: "Modernize ZMS Architecture (3-5 Year Plan)",
-    backendMergeRefarch: "Backend Merge Example (Spring RefArch)",
+    backendMergeRefarch: "Merging ZMS Backends into Spring RefArch",
     dynamicCache: "Dynamic Cache Layer and Bulk Queries",
   },
   de: {
@@ -323,7 +323,7 @@ const sidebarLabels = {
     standardizeDb: "Datenbanktabellen- und Feldbenennung standardisieren",
     refarchRoadmap: "RefArch-Roadmap",
     modernizeArch: "ZMS-Architektur modernisieren (3-5-Jahresplan)",
-    backendMergeRefarch: "Backend-Merge-Beispiel (Spring RefArch)",
+    backendMergeRefarch: "ZMS Backends in Spring RefArch zusammenführen",
     dynamicCache: "Dynamische Cache-Schicht und Bulk-Queries",
   },
 };

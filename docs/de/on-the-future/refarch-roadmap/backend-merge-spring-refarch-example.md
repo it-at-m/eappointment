@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# Backend-Merge-Beispiel: von ZMS-PHP-Modulen zur Spring-RefArch
+# ZMS PHP Backends in Spring RefArch zusammenführen
 
 ## Einführung
 
