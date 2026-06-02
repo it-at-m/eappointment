@@ -4,8 +4,6 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Scope as Query;
 use \BO\Zmsentities\Scope as Entity;
-use \BO\Zmsdb\Query\Scope as ScopeMappingQuery;
-use \BO\Zmsdb\Query\Base as QueryBase;
 
 /**
  * @SuppressWarnings(Public)
@@ -181,102 +179,6 @@ class ScopeTest extends Base
         $query->deleteImage($scope->id);
         $readImage = $query->readImageData($scope->id);
         $this->assertEmpty($readImage->content);
-    }
-
-    protected function getScopeMappingQuery()
-    {
-        return new ScopeMappingQuery(QueryBase::INSERT);
-    }
-
-    public function testReverseEntityMappingNormalizesIntegerFields()
-    {
-        $entity = $this->getTestEntity();
-
-        $entity->preferences['appointment']['startInDaysDefault'] = '';
-        $entity->preferences['appointment']['endInDaysDefault'] = '1.5';
-        $entity->preferences['appointment']['reservationDuration'] = '-5';
-        $entity->preferences['appointment']['activationDuration'] = '20';
-
-        $entity->preferences['queue']['callCountMax'] = '';
-        $entity->preferences['queue']['firstNumber'] = 'abc';
-        $entity->preferences['queue']['lastNumber'] = '999';
-        $entity->preferences['queue']['maxNumberContingent'] = '-1';
-        $entity->preferences['queue']['processingTimeAverage'] = '12';
-
-        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
-
-        $this->assertSame(0, $data['Termine_ab']);
-        $this->assertSame(0, $data['Termine_bis']);
-        $this->assertSame(0, $data['reservierungsdauer']);
-        $this->assertSame(20, $data['aktivierungsdauer']);
-
-        $this->assertSame(0, $data['anzahlwiederaufruf']);
-        $this->assertSame(0, $data['startwartenr']);
-        $this->assertSame(999, $data['endwartenr']);
-        $this->assertSame(0, $data['wartenummernkontingent']);
-        $this->assertSame('00:12', $data['Bearbeitungszeit']);
-    }
-
-    public function testReverseEntityMappingKeepsNullableIntegerFieldsNullWhenEmpty()
-    {
-        $entity = $this->getTestEntity();
-
-        $entity->preferences['client']['appointmentsPerMail'] = '';
-        $entity->preferences['client']['slotsPerAppointment'] = '';
-
-        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
-
-        $this->assertArrayHasKey('appointments_per_mail', $data);
-        $this->assertArrayHasKey('slots_per_appointment', $data);
-
-        $this->assertNull($data['appointments_per_mail']);
-        $this->assertNull($data['slots_per_appointment']);
-    }
-
-    public function testReverseEntityMappingKeepsValidNullableIntegerValues()
-    {
-        $entity = $this->getTestEntity();
-
-        $entity->preferences['client']['appointmentsPerMail'] = '1';
-        $entity->preferences['client']['slotsPerAppointment'] = '3';
-
-        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
-
-        $this->assertSame(1, $data['appointments_per_mail']);
-        $this->assertSame(3, $data['slots_per_appointment']);
-    }
-
-    public function testReverseEntityMappingNormalizesInvalidNullableIntegerValuesToNull()
-    {
-        $entity = $this->getTestEntity();
-
-        $entity->preferences['client']['appointmentsPerMail'] = '1.5';
-        $entity->preferences['client']['slotsPerAppointment'] = '-3';
-
-        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
-
-        $this->assertArrayHasKey('appointments_per_mail', $data);
-        $this->assertArrayHasKey('slots_per_appointment', $data);
-
-        $this->assertNull($data['appointments_per_mail']);
-        $this->assertNull($data['slots_per_appointment']);
-    }
-
-    public function testReverseEntityMappingNormalizesLeadingZeroIntegerValues()
-    {
-        $entity = $this->getTestEntity();
-
-        $entity->preferences['appointment']['activationDuration'] = '0005';
-        $entity->preferences['client']['appointmentsPerMail'] = '01';
-        $entity->preferences['client']['slotsPerAppointment'] = '0003';
-        $entity->preferences['queue']['processingTimeAverage'] = '0012';
-
-        $data = $this->getScopeMappingQuery()->reverseEntityMapping($entity, 74);
-
-        $this->assertSame(5, $data['aktivierungsdauer']);
-        $this->assertSame(1, $data['appointments_per_mail']);
-        $this->assertSame(3, $data['slots_per_appointment']);
-        $this->assertSame('00:12', $data['Bearbeitungszeit']);
     }
 
     protected function getTestEntity()

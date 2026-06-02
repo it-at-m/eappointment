@@ -36,7 +36,6 @@ import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
-import integerFields from './element/form/integerFields'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
@@ -125,7 +124,6 @@ $('form').each(function () {
     if ($(this).find('#scope-validation-error').length > 0) {
         validateClusterScopes(this);
     }
-    integerFields(this);
     preventFormResubmit(this);
     focusFirstErrorElement(this);
 })
