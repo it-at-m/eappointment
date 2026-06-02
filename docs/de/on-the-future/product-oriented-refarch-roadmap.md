@@ -238,13 +238,13 @@ graph TD;
 
 ### Architektur-Transformationen
 
-| **Aspekt**              | **Ist**                      | **Soll**                       | **Nutzen**                            |
-| ----------------------- | ---------------------------- | ------------------------------ | ------------------------------------- |
+| **Aspekt**              | **Ist**                                                                   | **Soll**                                 | **Nutzen**                                                |
+| ----------------------- | ------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
 | **Frontend**            | Gemischte PHP/Twig-Templates; `zmslayout` für `zmsadmin` / `zmsstatistic` | Vue.js-SPA-Anwendungen (Vuetify/RefArch) | Moderne UX; `zmslayout` entfällt mit Frontend-Refactoring |
-| **API-Schicht**         | Direkte Service-Aufrufe      | RefArch-API-Gateways           | Zentralisierte Sicherheit, Monitoring |
-| **Backend**             | PHP-Monolith                 | Spring-Boot-Microservices      | Bessere Skalierbarkeit, Wartbarkeit   |
-| **EAI**                 | Integriertes Messaging       | Dedizierte EAI-Dienste         | Klare Trennung                        |
-| **Externe Integration** | Direkter DB-Zugriff          | Serviceorientierte Integration | Bessere Daten-Governance              |
+| **API-Schicht**         | Direkte Service-Aufrufe                                                   | RefArch-API-Gateways                     | Zentralisierte Sicherheit, Monitoring                     |
+| **Backend**             | PHP-Monolith                                                              | Spring-Boot-Microservices                | Bessere Skalierbarkeit, Wartbarkeit                       |
+| **EAI**                 | Integriertes Messaging                                                    | Dedizierte EAI-Dienste                   | Klare Trennung                                            |
+| **Externe Integration** | Direkter DB-Zugriff                                                       | Serviceorientierte Integration           | Bessere Daten-Governance                                  |
 
 ### Aufwandsschätzung
 

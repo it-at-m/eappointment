@@ -6,6 +6,7 @@
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
     "docs:log-inventory": "node scripts/generate-log-inventory.mjs",
+    "docs:department-explorers": "node .vitepress/scripts/generate-department-explorers.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
