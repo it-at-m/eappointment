@@ -8,7 +8,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 72
             ]);
@@ -29,7 +29,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testUnvalidScope()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department')
+        $this->setWorkstation()->getUseraccount()->setPermissions('department')
             ->addDepartment([
                 'id' => 72
             ]);
@@ -39,7 +39,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setPermissions('statistic');
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(['id' => 72], [
