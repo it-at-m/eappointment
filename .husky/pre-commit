@@ -13,6 +13,16 @@ if ! (cd zmscitizenview && npm run lint); then
 fi
 printf "${GREEN}✓ Vue code style OK.${NC}\n"
 
+# ---- Docs formatting check ----
+echo "Running docs formatting check..."
+if ! (cd docs && npm run format:check); then
+  printf "${RED}✗ Docs Prettier check failed. Please fix the errors before committing.${NC}\n"
+  echo "  cd docs && npm run format"
+  echo "  (Run 'cd docs && npm install' first if dependencies are missing.)"
+  exit 1
+fi
+printf "${GREEN}✓ Docs formatting OK.${NC}\n"
+
 # ---- PHP code style check ----
 container_engine=""
 if command -v podman >/dev/null 2>&1 && podman ps --format "{{.Names}}" | grep -q "^zms-web$"; then

@@ -38,6 +38,17 @@ cd zmscitizenview
 npm run format
 ```
 
+## VitePress-Docs-Formatierung
+
+Die `docs/`-Site nutzt Prettier (`@muenchen/prettier-codeformat`). Der Pre-Commit-Hook führt `npm run format:check` aus, wenn Husky aktiv ist.
+
+```bash
+cd docs
+npm install   # einmal pro Rechner
+npm run format:check
+npm run format   # Korrekturen anwenden
+```
+
 ## Maven-Formatierung von zmsautomation
 
 `zmsautomation` nutzt das Maven-Spotless-Plugin für die Java-Formatierung.

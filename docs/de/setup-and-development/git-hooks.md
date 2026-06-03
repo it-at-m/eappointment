@@ -18,7 +18,7 @@ Damit zeigt Git auf das `.husky`-Verzeichnis im Repository-Root.
 > [!NOTE]
 > Husky wird über `zmscitizenview` (Node.js-Tooling) installiert, die Hooks gelten aber für den **gesamten Monorepo**. Die Verwaltung liegt am Root, die Node-Einrichtung kommt aus `zmscitizenview`.
 
-Nach dem Klonen einmal `npm run prepare` ausführen (steht auch im [Root-README](https://github.com/it-at-m/eappointment/blob/main/README.md)).
+Nach dem Klonen einmal `npm run prepare` ausführen (steht auch im [Root-README](https://github.com/it-at-m/eappointment/blob/main/README.md)). Für Doc-Änderungen einmal Docs-Abhängigkeiten installieren: `cd docs && npm install`.
 
 ## Hooks
 
@@ -29,7 +29,8 @@ Läuft vor jedem Commit und prüft die Codequalität.
 **Prüfungen:**
 
 1. **Vue-Code-Stil** — Prettier-Check in `zmscitizenview` (`npm run lint`)
-2. **PHP-Code-Stil** — PHP CodeSniffer (PSR-12) über alle PHP-Module im Container `zms-web`
+2. **Docs-Formatierung** — Prettier-Check in `docs/` (`npm run format:check`)
+3. **PHP-Code-Stil** — PHP CodeSniffer (PSR-12) über alle PHP-Module im Container `zms-web`
 
 **Container-Erkennung**
 
@@ -41,7 +42,7 @@ Die PHP-Prüfung erkennt die Laufzeit automatisch:
 
 **Verhalten**
 
-- Vue-Prüfungen laufen immer und **blockieren** den Commit bei Fehlern
+- Vue- und Docs-Prüfungen laufen immer und **blockieren** den Commit bei Fehlern
 - PHP-Prüfungen nur bei laufendem `zms-web`; sonst Warnung und Überspringen
 
 Siehe auch [Code-Formatierung](./code-formatting.md) für manuelle PHPCS-/Prettier-Befehle.
@@ -75,6 +76,17 @@ npm run format
 ```
 
 Danach erneut committen.
+
+### Docs-Formatierung schlägt fehl
+
+Wenn Prettier unter `docs/` Fehler meldet:
+
+```bash
+cd docs
+npm run format
+```
+
+Bei Bedarf zuerst Abhängigkeiten installieren: `cd docs && npm install`.
 
 ### PHP CodeSniffer schlägt fehl
 
