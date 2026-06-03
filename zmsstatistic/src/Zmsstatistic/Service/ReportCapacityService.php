@@ -82,9 +82,12 @@ class ReportCapacityService
     public function getCapacityPeriod(string $scopeId): mixed
     {
         try {
-            $periodList = \App::$http
-                ->readGetResult('/warehouse/slotscope/' . $scopeId . '/')
-                ->getEntity();
+            $result = \App::$http->readGetResult('/warehouse/slotscope/' . $scopeId . '/');
+            if (!$result) {
+                return null;
+            }
+
+            $periodList = $result->getEntity();
 
             return $this->enrichPeriodList($periodList, $scopeId);
         } catch (Exception $exception) {
@@ -103,6 +106,8 @@ class ReportCapacityService
             return null;
         }
 
+        $exchange->data = $this->filterRowsByBounds($exchange->data, $dateRange);
+
         return $this->finalizeExchange($exchange, $dateRange['from'], $dateRange['to']);
     }
 
@@ -110,6 +115,15 @@ class ReportCapacityService
     {
         $exchange = $this->fetchAggregatedReport($scopeId, null, $period);
         if (!$exchange || empty($exchange->data)) {
+            return null;
+        }
+
+        $bounds = $this->resolveTimelineBounds(null, $period);
+        if ($bounds) {
+            $exchange->data = $this->filterRowsByBounds($exchange->data, $bounds);
+        }
+
+        if (empty($exchange->data)) {
             return null;
         }
 
@@ -222,10 +236,15 @@ class ReportCapacityService
                 $urlPeriod = $dateRange['from'];
             }
 
-            $exchange = \App::$http
-                ->readGetResult('/warehouse/slotscope/' . $scopeId . '/' . $urlPeriod . '/', $params)
-                ->getEntity();
+            $result = \App::$http->readGetResult(
+                '/warehouse/slotscope/' . $scopeId . '/' . $urlPeriod . '/',
+                $params === [] ? null : $params
+            );
+            if (!$result) {
+                return null;
+            }
 
+            $exchange = $result->getEntity();
             if (!$exchange instanceof Exchange) {
                 return null;
             }
@@ -437,6 +456,28 @@ class ReportCapacityService
         }
 
         return null;
+    }
+
+    /**
+     * @param array<int, array<int, mixed>> $rows
+     * @param array{from: string, to: string} $bounds
+     * @return array<int, array<int, mixed>>
+     */
+    private function filterRowsByBounds(array $rows, array $bounds): array
+    {
+        $from = $bounds['from'];
+        $to = $bounds['to'];
+
+        return array_values(array_filter($rows, static function ($row) use ($from, $to) {
+            $date = (string) ($row[1] ?? '');
+            if ($date === '') {
+                return false;
+            }
+
+            $day = substr($date, 0, 10);
+
+            return $day >= $from && $day <= $to;
+        }));
     }
 
     private function finalizeExchange(Exchange $exchange, ?string $fromDate = null, ?string $toDate = null): Exchange

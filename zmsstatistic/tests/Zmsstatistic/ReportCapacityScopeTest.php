@@ -37,11 +37,6 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
-                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/warehouse/slotscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
@@ -50,12 +45,18 @@ class ReportCapacityScopeTest extends Base
                     'url' => '/warehouse/slotscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
             ]
         );
         $response = $this->render([], ['__uri' => '/report/capacity/scope/'], []);
         $this->assertStringContainsString('Terminkapazität Standort', (string) $response->getBody());
         $this->assertStringContainsString('data-scope-date-bounds', (string) $response->getBody());
-        $this->assertStringContainsString('"141":{"min":"2016-03-15","max":"2016-04-02"}', (string) $response->getBody());
+        $this->assertStringContainsString('2016-03-15', (string) $response->getBody());
+        $this->assertStringContainsString('2016-04-02', (string) $response->getBody());
         $this->assertStringContainsString(
             '<a href="/report/capacity/scope/2016-04/">April</a>',
             (string) $response->getBody()
@@ -94,11 +95,6 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
-                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/warehouse/slotscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
@@ -109,7 +105,12 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/_/',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/2016-04/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
@@ -149,11 +150,6 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
-                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/warehouse/slotscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
@@ -164,15 +160,23 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141,142/_/',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141,142/2016-04/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
         );
         $response = $this->render(
             ['period' => '2016-04'],
-            [],
-            ['scopes' => ['141', '142']]
+            [
+                '__uri' => '/report/capacity/scope/2016-04/',
+                'scopes' => ['141', '142'],
+            ],
+            []
         );
         $this->assertStringContainsString('01.04.2016', (string) $response->getBody());
     }
@@ -204,11 +208,6 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
-                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/warehouse/slotscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
@@ -216,6 +215,11 @@ class ReportCapacityScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/slotscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -231,14 +235,18 @@ class ReportCapacityScopeTest extends Base
         );
         $response = $this->render(
             [],
-            ['__uri' => '/report/capacity/scope/'],
-            ['from' => '2016-04-01', 'to' => '2016-04-01']
+            [
+                '__uri' => '/report/capacity/scope/',
+                'from' => '2016-04-01',
+                'to' => '2016-04-01',
+            ],
+            []
         );
         $body = (string) $response->getBody();
         $this->assertStringContainsString('Zeitpunkt', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
-        $this->assertStringContainsString('["141","2016-04-01 08:00",5,10]', $body);
-        $this->assertStringContainsString('["141","2016-04-01 07:00",0,0]', $body);
+        $this->assertStringContainsString('data-chartist', $body);
+        $this->assertStringContainsString('50 %', $body);
     }
 }

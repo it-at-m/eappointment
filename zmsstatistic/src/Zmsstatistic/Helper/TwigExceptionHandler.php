@@ -19,6 +19,12 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');
         }
 
+        try {
+            \App::$http->readGetResult('/workstation/');
+        } catch (\Throwable $workstationexception) {
+            // ignore — error page should still render
+        }
+
         return parent::withHtml($request, $response, $exception, $status);
     }
 
@@ -28,8 +34,11 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
         $extendedInfo = parent::getExtendedExceptionInfo($exception, $request);
 
         try {
-            $extendedInfo['workstation'] = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
+            $workstationResult = \App::$http->readGetResult('/workstation/');
+            if ($workstationResult) {
+                $extendedInfo['workstation'] = $workstationResult->getEntity();
+            }
+        } catch (\Throwable $workstationexception) {
             // ignore
         }
 
