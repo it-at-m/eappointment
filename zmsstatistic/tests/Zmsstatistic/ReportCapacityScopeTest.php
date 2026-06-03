@@ -1,0 +1,244 @@
+<?php
+
+namespace BO\Zmsstatistic\Tests;
+
+class ReportCapacityScopeTest extends Base
+{
+    protected $classname = "ReportCapacityIndex";
+
+    protected $arguments = [];
+
+    protected $parameters = [];
+
+    public function testRendering()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render([], ['__uri' => '/report/capacity/scope/'], []);
+        $this->assertStringContainsString('Terminkapazität Standort', (string) $response->getBody());
+        $this->assertStringContainsString('data-scope-date-bounds', (string) $response->getBody());
+        $this->assertStringContainsString('"141":{"min":"2016-03-15","max":"2016-04-02"}', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/capacity/scope/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+    }
+
+    public function testWithPeriod()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(['period' => '2016-04'], [], []);
+        $this->assertStringContainsString('01.04.2016', (string) $response->getBody());
+        $this->assertStringContainsString('02.04.2016', (string) $response->getBody());
+        $this->assertStringNotContainsString('15.03.2016', (string) $response->getBody());
+        $this->assertStringContainsString('50 %', (string) $response->getBody());
+        $this->assertStringContainsString('data-chartist', (string) $response->getBody());
+    }
+
+    public function testWithMultipleScopes()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141,142/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(
+            ['period' => '2016-04'],
+            [],
+            ['scopes' => ['141', '142']]
+        );
+        $this->assertStringContainsString('01.04.2016', (string) $response->getBody());
+    }
+
+    public function testHourlyDateRange()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/',
+                    'response' => $this->readFixture("GET_warehouse_slotscope.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/',
+                    'response' => $this->readFixture("GET_slotscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/_/',
+                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/slotscope/141/2016-04-01/',
+                    'parameters' => [
+                        'fromDate' => '2016-04-01',
+                        'toDate' => '2016-04-01',
+                        'groupby' => 'hour',
+                    ],
+                    'response' => $this->readFixture("GET_slotscope_141_hourly_report.json")
+                ],
+            ]
+        );
+        $response = $this->render(
+            [],
+            ['__uri' => '/report/capacity/scope/'],
+            ['from' => '2016-04-01', 'to' => '2016-04-01']
+        );
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Zeitpunkt', $body);
+        $this->assertStringContainsString('2016-04-01 08:00', $body);
+        $this->assertStringContainsString('2016-04-01 09:00', $body);
+        $this->assertStringContainsString('["141","2016-04-01 08:00",5,10]', $body);
+        $this->assertStringContainsString('["141","2016-04-01 07:00",0,0]', $body);
+    }
+}

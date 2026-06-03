@@ -49,6 +49,21 @@ class OverviewTest extends Base
                   'function' => 'readGetResult',
                   'url' => '/warehouse/requestscope/141/',
                   'response' => $this->readFixture("GET_requestscope_141.json")
+              ],
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/warehouse/slotscope/',
+                  'response' => $this->readFixture("GET_warehouse_slotscope.json")
+              ],
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/warehouse/slotscope/141/',
+                  'response' => $this->readFixture("GET_slotscope_141.json")
+              ],
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/warehouse/slotscope/141/_/',
+                  'response' => $this->readFixture("GET_slotscope_141_report.json")
               ]
             ]
         );

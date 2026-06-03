@@ -7,34 +7,71 @@ use BO\Zmsentities\Exchange;
 class ExchangeSlotscope extends Base
 {
     public function readEntity(
-        $subjectid
+        $subjectid,
+        \DateTimeInterface $datestart = null,
+        \DateTimeInterface $dateend = null,
+        $period = 'day'
     ) {
-        $scope = (new Scope())->readEntity($subjectid);
+        $subjectIdList = explode(',', $subjectid);
+        $firstScopeId = $subjectIdList[0];
+        $scope = (new Scope())->readEntity($firstScopeId);
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung " . $scope->contact->name . " " . $scope->shortName;
-        //$entity->setPeriod($datestart, $dateend, $period);
+
+        $unfiltered = $datestart === null || $dateend === null;
+        if ($unfiltered) {
+            $datestart = new \DateTimeImmutable('1970-01-01');
+            $dateend = new \DateTimeImmutable('2099-12-31');
+            $period = 'day';
+        } else {
+            $entity->setPeriod($datestart, $dateend, $period);
+        }
+
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
-        $entity->addDictionaryEntry('date', 'string', 'Date of day');
+        $dateDescription = $period === 'hour'
+            ? 'Clock hour (slot start times in this hour)'
+            : 'Date of day';
+        $entity->addDictionaryEntry('date', 'string', $dateDescription);
         $entity->addDictionaryEntry('bookedcount', 'number', 'booked slots');
-        $entity->addDictionaryEntry('plannedcount', 'number', 'planned slots');
-        $subjectIdList = explode(',', $subjectid);
+        $entity->addDictionaryEntry(
+            'plannedcount',
+            'number',
+            'planned slots (one per slot, any slot duration)'
+        );
 
         $entity['visualization']['xlabel'] = ["date"];
         $entity['visualization']['ylabel'] = ["bookedcount", "plannedcount"];
 
-        foreach ($subjectIdList as $subjectid) {
-            $raw = $this
-                ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeSlotscope::QUERY_READ_REPORT"),
-                    [
-                        'scopeid' => $subjectid,
-                    ]
-                );
+        $queryConstant = $this->resolveQueryConstant($period, $unfiltered);
+
+        foreach ($subjectIdList as $scopeId) {
+            $raw = $this->fetchAll(
+                constant($queryConstant),
+                [
+                    'scopeid' => $scopeId,
+                    'datestart' => $datestart->format('Y-m-d'),
+                    'dateend' => $dateend->format('Y-m-d'),
+                ]
+            );
             foreach ($raw as $entry) {
                 $entity->addDataSet(array_values($entry));
             }
         }
+
         return $entity;
+    }
+
+    private function resolveQueryConstant(string $period, bool $unfiltered): string
+    {
+        if ($unfiltered) {
+            return '\BO\Zmsdb\Query\ExchangeSlotscope::QUERY_READ_REPORT';
+        }
+
+        if ($period === 'hour') {
+            return '\BO\Zmsdb\Query\ExchangeSlotscope::QUERY_READ_REPORT_HOURLY';
+        }
+
+        return '\BO\Zmsdb\Query\ExchangeSlotscope::QUERY_READ_REPORT_FILTERED';
     }
 
     public function readSubjectList()

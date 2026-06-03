@@ -8,6 +8,7 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsstatistic\Service\ReportCapacityService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -34,6 +35,7 @@ class Overview extends BaseController
         $requestPeriod = \App::$http
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
+        $capacityPeriod = (new ReportCapacityService())->getCapacityPeriod($this->workstation->scope['id']);
 
         return Render::withHtml(
             $response,
@@ -46,6 +48,7 @@ class Overview extends BaseController
                 'waitingPeriod' => $waitingPeriod,
                 'clientPeriod' => $clientPeriod,
                 'requestPeriod' => $requestPeriod,
+                'capacityPeriod' => $capacityPeriod,
                 'scopeId' => $this->workstation->scope['id'],
                 'showAll' => 0
             )

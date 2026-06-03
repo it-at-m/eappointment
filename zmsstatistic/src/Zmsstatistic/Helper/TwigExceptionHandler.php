@@ -18,14 +18,21 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             \BO\Slim\Controller::prepareRequest($request);
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');
         }
+
+        return parent::withHtml($request, $response, $exception, $status);
+    }
+
+    #[\Override]
+    public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
+    {
+        $extendedInfo = parent::getExtendedExceptionInfo($exception, $request);
+
         try {
-            $exception->templatedata = [
-                'workstation' => \App::$http->readGetResult('/workstation/')->getEntity(),
-            ];
+            $extendedInfo['workstation'] = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
             // ignore
         }
 
-        return parent::withHtml($request, $response, $exception, $status);
+        return $extendedInfo;
     }
 }

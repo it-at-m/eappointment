@@ -1,0 +1,49 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T15:26:41+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "title": "Slotbelegung Bürgeramt Heerstraße 141",
+    "period": "hour",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "ID of a scope",
+        "reference": "scope.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "Date and time of slot"
+      },
+      {
+        "position": 2,
+        "variable": "bookedcount",
+        "type": "number",
+        "description": "booked slots"
+      },
+      {
+        "position": 3,
+        "variable": "plannedcount",
+        "type": "number",
+        "description": "planned slots"
+      }
+    ],
+    "visualization": {
+      "xlabel": ["date"],
+      "ylabel": ["bookedcount", "plannedcount"]
+    },
+    "data": [
+      ["141", "2016-04-01 08:00", 5, 10],
+      ["141", "2016-04-01 09:00", 8, 12]
+    ]
+  }
+}

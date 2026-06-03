@@ -5,10 +5,55 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
+        this.allowFutureDates = this.$main.is('[data-allow-future-dates]');
+        this.scopeDateBounds = this.parseScopeDateBounds();
+        this.pickerScopeIds = this.parsePickerScopeIds();
+        this.defaultScopeId = this.$main.attr('data-default-scope-id') || '';
         this.bindEvents();
         this.initializeFilters();
         this.addErrorDisplayElements();
         console.log('Component: ReportFilter', this, options);
+    }
+
+    parseScopeDateBounds() {
+        const raw = this.$main.attr('data-scope-date-bounds');
+        if (!raw) {
+            return null;
+        }
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            console.warn('ReportFilter: invalid scope date bounds', error);
+            return null;
+        }
+    }
+
+    parsePickerScopeIds() {
+        const raw = this.$main.attr('data-picker-scope-ids');
+        if (!raw) {
+            return [];
+        }
+        try {
+            const ids = JSON.parse(raw);
+            return Array.isArray(ids) ? ids.map(String) : [];
+        } catch (error) {
+            console.warn('ReportFilter: invalid picker scope ids', error);
+            return [];
+        }
+    }
+
+    /**
+     * Date limits: selected scopes, else all scopes in the picker (not workstation alone).
+     */
+    getBoundsScopeIds() {
+        const selectedScopes = this.getSelectedScopes();
+        if (selectedScopes.length > 0) {
+            return selectedScopes;
+        }
+        if (this.pickerScopeIds.length > 0) {
+            return this.pickerScopeIds;
+        }
+        return this.defaultScopeId ? [this.defaultScopeId] : [];
     }
 
     bindEvents() {
@@ -23,6 +68,7 @@ class View extends BaseView {
 
         this.$main.find('#scope-select').on('change', () => {
             this.updateSelectAllButton();
+            this.updateDateRangeLimits();
         });
 
         this.setupDateRangeLimiting();
@@ -87,51 +133,142 @@ class View extends BaseView {
         });
     }
 
+    getTodayIso() {
+        return moment().format('YYYY-MM-DD');
+    }
+
+    getMaxRangeEndIso(fromIso) {
+        return moment(fromIso, 'YYYY-MM-DD').add(366, 'days').format('YYYY-MM-DD');
+    }
+
+    getMinRangeStartIso(toIso) {
+        return moment(toIso, 'YYYY-MM-DD').subtract(366, 'days').format('YYYY-MM-DD');
+    }
+
+    getActiveScopeDateBounds() {
+        if (!this.scopeDateBounds) {
+            return null;
+        }
+
+        const scopeIds = this.getBoundsScopeIds();
+
+        if (scopeIds.length === 0) {
+            return null;
+        }
+
+        let min = null;
+        let max = null;
+
+        scopeIds.forEach((scopeId) => {
+            const entry = this.scopeDateBounds[String(scopeId)];
+            if (!entry || !entry.min || !entry.max) {
+                return;
+            }
+            min = min === null ? entry.min : moment.min(moment(min), moment(entry.min)).format('YYYY-MM-DD');
+            max = max === null ? entry.max : moment.max(moment(max), moment(entry.max)).format('YYYY-MM-DD');
+        });
+
+        if (min === null || max === null) {
+            return null;
+        }
+
+        return { min, max };
+    }
+
+    setDateInputBound($input, attribute, value) {
+        if (value) {
+            $input.attr(attribute, value);
+        } else {
+            $input.removeAttr(attribute);
+        }
+    }
+
+    clampIso(iso, minIso, maxIso) {
+        let value = moment(iso, 'YYYY-MM-DD');
+        if (minIso) {
+            value = moment.max(value, moment(minIso, 'YYYY-MM-DD'));
+        }
+        if (maxIso) {
+            value = moment.min(value, moment(maxIso, 'YYYY-MM-DD'));
+        }
+        return value.format('YYYY-MM-DD');
+    }
+
     updateDateRangeLimits() {
         const fromInput = this.$main.find('#calendar-date-from');
         const toInput = this.$main.find('#calendar-date-until');
-        const today = new Date();
-        const todayIso = today.toISOString().slice(0, 10);
+        const todayIso = this.getTodayIso();
+        const apiBounds = this.allowFutureDates ? this.getActiveScopeDateBounds() : null;
+        const apiMin = apiBounds ? apiBounds.min : null;
+        const apiMax = apiBounds ? apiBounds.max : null;
+        let globalMax = this.allowFutureDates
+            ? (apiMax || null)
+            : (apiMax ? moment.min(moment(apiMax), moment(todayIso)).format('YYYY-MM-DD') : todayIso);
+        const globalMin = apiMin || null;
 
-        fromInput.attr('max', todayIso);
-        toInput.attr('max', todayIso);
+        if (this.allowFutureDates && !globalMax) {
+            globalMax = null;
+        }
+
+        this.setDateInputBound(fromInput, 'min', globalMin);
+        this.setDateInputBound(fromInput, 'max', globalMax);
+        this.setDateInputBound(toInput, 'min', globalMin);
+        this.setDateInputBound(toInput, 'max', globalMax);
 
         if (fromInput.val()) {
-            const fromDate = new Date(fromInput.val());
-            const maxToDate = new Date(fromDate);
-            maxToDate.setDate(maxToDate.getDate() + 366);
-            
-            const maxAllowedDate = new Date(Math.min(maxToDate.getTime(), today.getTime()));
-            const maxAllowedIso = maxAllowedDate.toISOString().slice(0, 10);
-            
-            toInput.attr('min', fromInput.val());
-            toInput.attr('max', maxAllowedIso);
-            
-            if (toInput.val() && (toInput.val() < fromInput.val() || toInput.val() > maxAllowedIso)) {
-                toInput.val(fromInput.val());
+            const maxToIso = this.getMaxRangeEndIso(fromInput.val());
+            let maxAllowedIso = this.allowFutureDates
+                ? maxToIso
+                : moment.min(moment(maxToIso), moment(todayIso)).format('YYYY-MM-DD');
+            if (globalMax) {
+                maxAllowedIso = moment.min(moment(maxAllowedIso), moment(globalMax)).format('YYYY-MM-DD');
+            }
+
+            let minToIso = fromInput.val();
+            if (globalMin) {
+                minToIso = moment.max(moment(minToIso), moment(globalMin)).format('YYYY-MM-DD');
+            }
+
+            this.setDateInputBound(toInput, 'min', minToIso);
+            this.setDateInputBound(toInput, 'max', maxAllowedIso);
+
+            if (toInput.val() && (toInput.val() < minToIso || toInput.val() > maxAllowedIso)) {
+                toInput.val(minToIso);
             }
         } else {
-            toInput.attr('min', '');
-            toInput.attr('max', todayIso);
+            this.setDateInputBound(toInput, 'min', globalMin);
+            this.setDateInputBound(toInput, 'max', globalMax);
         }
-        
+
         if (toInput.val()) {
-            const toDate = new Date(toInput.val());
-            const minFromDate = new Date(toDate);
-            minFromDate.setDate(minFromDate.getDate() - 366);
-            
-            const minAllowedDate = new Date(Math.max(minFromDate.getTime(), 0));
-            const minAllowedIso = minAllowedDate.toISOString().slice(0, 10);
-            
-            fromInput.attr('min', minAllowedIso);
-            fromInput.attr('max', toInput.val());
-            
-            if (fromInput.val() && (fromInput.val() < minAllowedIso || fromInput.val() > toInput.val())) {
-                fromInput.val(toInput.val());
+            let minFromIso = this.getMinRangeStartIso(toInput.val());
+            if (globalMin) {
+                minFromIso = moment.max(moment(minFromIso), moment(globalMin)).format('YYYY-MM-DD');
+            }
+
+            let maxFromIso = toInput.val();
+            if (globalMax) {
+                maxFromIso = moment.min(moment(maxFromIso), moment(globalMax)).format('YYYY-MM-DD');
+            }
+
+            this.setDateInputBound(fromInput, 'min', minFromIso);
+            this.setDateInputBound(fromInput, 'max', maxFromIso);
+
+            if (fromInput.val() && (fromInput.val() < minFromIso || fromInput.val() > maxFromIso)) {
+                fromInput.val(minFromIso);
             }
         } else {
-            fromInput.attr('min', '');
-            fromInput.attr('max', todayIso);
+            this.setDateInputBound(fromInput, 'min', globalMin);
+            this.setDateInputBound(fromInput, 'max', globalMax);
+        }
+
+        if (globalMin || globalMax) {
+            if (fromInput.val()) {
+                fromInput.val(this.clampIso(fromInput.val(), globalMin, globalMax));
+            }
+            if (toInput.val()) {
+                toInput.val(this.clampIso(toInput.val(), globalMin, globalMax));
+            }
         }
     }
 
@@ -162,9 +299,24 @@ class View extends BaseView {
             } else if (moment(fromDate).isAfter(moment(toDate))) {
                 dateError.text('Das Startdatum muss vor dem Enddatum liegen.').show();
                 hasDateErrors = true;
-            } else if (moment(fromDate).isAfter(moment()) || moment(toDate).isAfter(moment())) {
+            } else if (
+                !this.allowFutureDates
+                && (moment(fromDate).isAfter(moment(), 'day') || moment(toDate).isAfter(moment(), 'day'))
+            ) {
                 dateError.text('Nur vergangene Daten sind erlaubt. Zukünftige Daten sind nicht zulässig.').show();
                 hasDateErrors = true;
+            } else if (moment(toDate).diff(moment(fromDate), 'days') > 366) {
+                dateError.text('Der gewählte Zeitraum darf höchstens 366 Tage umfassen.').show();
+                hasDateErrors = true;
+            } else if (this.allowFutureDates) {
+                const apiBounds = this.getActiveScopeDateBounds();
+                if (apiBounds && (fromDate < apiBounds.min || toDate > apiBounds.max)) {
+                    dateError.text(
+                        `Der Zeitraum muss zwischen ${moment(apiBounds.min).format('DD.MM.YYYY')} `
+                        + `und ${moment(apiBounds.max).format('DD.MM.YYYY')} liegen.`
+                    ).show();
+                    hasDateErrors = true;
+                }
             }
         }
         

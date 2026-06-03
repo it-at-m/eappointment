@@ -26,6 +26,9 @@
                         <li class="nav__link{{ menuActive == 'waiting'? ' active' }}">
                             <a title="{% trans %}Ausgabe der Wartestatistik{% endtrans %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
                         </li>
+                        <li class="nav__link{{ menuActive == 'capacity'? ' active' }}">
+                            <a title="{% trans %}Auswertung geplanter und gebuchter Terminkapazitäten{% endtrans %}" href="{{ urlGet('ReportCapacityIndex', {}, {}) }}">Terminkapazität</a>
+                        </li>
                     </ul>
                 </li>
             {% endif %}

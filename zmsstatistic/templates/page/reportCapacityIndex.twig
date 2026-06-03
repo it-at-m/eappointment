@@ -1,0 +1,101 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Terminkapazität") }}
+{% endblock %}
+
+{% block content %}
+    <div class="counter-view" data-includeurl="{{ includeUrl }}">
+        <div class="report-index warehouse-report">
+            {% embed "block/report/period.twig" with {"source":source, "items": capacityPeriod, "selected": period} %}
+            {% endembed %}
+
+            <form class="form--base panel--heavy">
+            {% embed "block/report/reportFilter.twig" with {
+                allowFutureDates: true,
+                scopeDateBounds: scopeDateBounds,
+                defaultScopeId: workstation.scope.id,
+                selectedScopeIds: selectedScopeIds is not empty ? selectedScopeIds : [workstation.scope.id],
+                dateRange: dateRange
+            } %}
+            {% endembed %}
+            </form>
+
+            {% embed "block/report/board.twig" with {
+                'class': 'board--spaceless',
+                'source': source,
+                'selected': period,
+                'dateRange': dateRange,
+                'selectedScopeIds': selectedScopeIds
+            } %}
+                {% block board_header_right %}
+                    {{ parent() }}
+                    {% if selected or dateRange %}
+                        <button type="button" class="button button--diamond report-board--refresh" title="{% trans %}Daten aktualisieren{% endtrans %}" aria-label="{% trans %}Daten aktualisieren{% endtrans %}">
+                            <i class="fas fa-sync" aria-hidden="true"></i>
+                        </button>
+                    {% endif %}
+                {% endblock %}
+                {% block board_body %}
+                {% if selected or dateRange %}
+                    {% if exchangeCapacityChart and exchangeCapacityChart.visualization %}
+                        <div class="chartist table--base" data-chartist="{{ exchangeCapacityChart|json_encode|e('html_attr') }}">(loading chart...)</div>
+                    {% elseif exchangeCapacity and exchangeCapacity.visualization %}
+                        <div class="chartist table--base" data-chartist="{{ exchangeCapacity|json_encode|e('html_attr') }}">(loading chart...)</div>
+                    {% endif %}
+                    {% set isHourly = exchangeCapacity.period is defined and exchangeCapacity.period == 'hour' %}
+                    <table class="table--base">
+                        <thead>
+                            <tr>
+                                <th>{% if isHourly %}{% trans %}Zeitpunkt{% endtrans %}{% else %}{% trans %}Datum{% endtrans %}{% endif %}</th>
+                                <th>{% trans %}Geplante Kapazität{% endtrans %}</th>
+                                <th>{% trans %}Gebuchte Kapazität{% endtrans %}</th>
+                                <th>{% trans %}Auslastung{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if exchangeCapacity.data %}
+                                {% set totalPlanned = 0 %}
+                                {% set totalBooked = 0 %}
+                                {% for row in exchangeCapacity.data %}
+                                    {% set planned = row[3]|default(0) %}
+                                    {% set booked = row[2]|default(0) %}
+                                    {% set totalPlanned = totalPlanned + planned %}
+                                    {% set totalBooked = totalBooked + booked %}
+                                    {% set utilization = planned > 0 ? ((booked / planned) * 100)|round(1) : 0 %}
+                                    <tr>
+                                        <td class="colDatumTag statistik">
+                                            {% if isHourly %}
+                                                {{ row[1] }}
+                                            {% else %}
+                                                {{ row[1]|date("d.m.Y") }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="statistik">{{ planned }}</td>
+                                        <td class="statistik">{{ booked }}</td>
+                                        <td class="statistik">{{ utilization }} %</td>
+                                    </tr>
+                                {% endfor %}
+                                {% set totalUtilization = totalPlanned > 0 ? ((totalBooked / totalPlanned) * 100)|round(1) : 0 %}
+                                <tr>
+                                    <td class="report-board--summary">{% trans %}Gesamt{% endtrans %}</td>
+                                    <td class="report-board--summary">{{ totalPlanned }}</td>
+                                    <td class="report-board--summary">{{ totalBooked }}</td>
+                                    <td class="report-board--summary">{{ totalUtilization }} %</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    {{ block("board_body_noperiod") }}
+                {% endif %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
