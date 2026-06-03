@@ -7,6 +7,12 @@ NC='\033[0m' # No Color
 commit_msg_file="$1"
 commit_msg=$(head -n 1 "$commit_msg_file")
 
+# Git merge commits (e.g. "Merge branch 'main' into feature-branch")
+if [ -f .git/MERGE_HEAD ] || echo "$commit_msg" | grep -qE '^Merge '; then
+  printf "${GREEN}✓ Merge commit message accepted.${NC}\n"
+  exit 0
+fi
+
 valid_types="feat|fix|clean|chore|docs"
 valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS|GH"
 

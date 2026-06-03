@@ -26,17 +26,18 @@ Die Antwort folgt [`status.json`](https://github.com/it-at-m/eappointment/blob/m
 Für häufige Liveness-Probes `includeProcessStats=0`; für Dashboards zu Terminmengen `1`.
 
 Um die `processes`-Aggregationen in der Antwort zu erhalten, den Endpunkt mit `includeProcessStats=1` (Standard) aufrufen. Die Aggregationen sind unter `.data.processes` verfügbar.
+
 ### Metriken unter `processes` (Überblick)
 
 Zählungen gelten für Nicht-Folgetermin-Zeilen in `buerger` (`istFolgeterminvon` leer), analog zur Status-SQL.
 
-| Feld                                                                                   | Bedeutung                                                                  |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Anzahl pro `buerger.status`                                                |
-| `withExternalUserId`                                                                   | Prozesse mit gesetztem OIDC-/Bürger-`external_user_id` (beliebiger Status) |
+| Feld                                                                                   | Bedeutung                                                                                                               |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `confirmed`, `reserved`, `called`, `parked`, `missed`, `deleted`, `blocked`, `pending` | Anzahl pro `buerger.status`                                                                                             |
+| `withExternalUserId`                                                                   | Prozesse mit gesetztem OIDC-/Bürger-`external_user_id` (beliebiger Status)                                              |
 | `confirmedWithExternalUserId`                                                          | Bestätigte Termine mit externem Nutzer (wird in `zmscitizenapi` beim Appointment-Update gesetzt, nach der Reservierung) |
-| `sinceMidnight`, `last7days`, `lastInsert`                                             | Buchungsaktivität (kein Gesamtbestand aller Prozesse)                      |
-| `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot-Wartung (wenn Statistik aktiv)                                        |
+| `sinceMidnight`, `last7days`, `lastInsert`                                             | Buchungsaktivität (kein Gesamtbestand aller Prozesse)                                                                   |
+| `outdated`, `outdatedOldest`, `freeSlots`, `lastCalculate`                             | Slot-Wartung (wenn Statistik aktiv)                                                                                     |
 
 Die OIDC-Zähler unterstützen die Beobachtung von Bürgerlogin und „Meine Termine“ (`zmscitizenapi`).
 
