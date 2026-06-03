@@ -15,8 +15,8 @@
             {% embed "block/report/reportFilter.twig" with {
                 allowFutureDates: true,
                 scopeDateBounds: scopeDateBounds,
-                defaultScopeId: workstation.scope.id,
-                selectedScopeIds: selectedScopeIds is not empty ? selectedScopeIds : [workstation.scope.id],
+                defaultScopeId: workstation.scope.id|default(null),
+                selectedScopeIds: selectedScopeIds is not empty ? selectedScopeIds : (workstation.scope.id ? [workstation.scope.id] : []),
                 dateRange: dateRange
             } %}
             {% endembed %}

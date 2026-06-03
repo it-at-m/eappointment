@@ -21,6 +21,10 @@ class ReportCapacityService
      */
     public function getExchangeCapacityData(string $scopeId, ?array $dateRange, array $args): mixed
     {
+        if ($scopeId === '') {
+            return null;
+        }
+
         if ($dateRange) {
             return $this->getExchangeCapacityForDateRange($scopeId, $dateRange);
         }

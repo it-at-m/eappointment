@@ -36,9 +36,12 @@ class ReportCapacityIndex extends BaseController
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
 
-        $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+        $workstationScopeId = $reportHelper->getWorkstationScopeId($this->workstation);
+        $scopeId = $reportHelper->resolveScopeIdParam($selectedScopes, $workstationScopeId);
 
-        $capacityPeriod = $reportCapacityService->getCapacityPeriod($this->workstation->scope['id']);
+        $capacityPeriod = $workstationScopeId !== null
+            ? $reportCapacityService->getCapacityPeriod((string) $workstationScopeId)
+            : null;
         $scopeDateBounds = $reportCapacityService->getScopeDateBoundsByScopeId();
 
         $dateRange = $reportHelper->extractDateRange(
