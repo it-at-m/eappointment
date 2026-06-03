@@ -4,7 +4,7 @@ outline: deep
 
 # Podman and Dev Containers on macOS
 
-These steps extend [Using Podman (Devcontainer)](https://github.com/it-at-m/eappointment/blob/main/README.md#using-podman-devcontainer) in the repository `README` when you work on **macOS** with Podman and Dev Containers.
+These steps extend [DDEV and Devcontainer — Devcontainer (Podman)](https://it-at-m.github.io/eappointment/en/setup-and-development/getting-started/ddev-and-devcontainer.html#devcontainer-podman) when you work on **macOS** with Podman and Dev Containers.
 
 You may need to install the missing `krunkit` package before installing Podman, and set `export DOCKER_HOST=unix:///var/run/docker.sock` in your `~/.zshrc` or `~/.bashrc` (or export it in the terminal) before using `devcontainer` commands.
 
