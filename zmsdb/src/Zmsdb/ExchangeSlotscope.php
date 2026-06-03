@@ -45,14 +45,13 @@ class ExchangeSlotscope extends Base
         $queryConstant = $this->resolveQueryConstant($period, $unfiltered);
 
         foreach ($subjectIdList as $scopeId) {
-            $raw = $this->fetchAll(
-                constant($queryConstant),
-                [
-                    'scopeid' => $scopeId,
-                    'datestart' => $datestart->format('Y-m-d'),
-                    'dateend' => $dateend->format('Y-m-d'),
-                ]
-            );
+            $parameters = ['scopeid' => $scopeId];
+            if (!$unfiltered) {
+                $parameters['datestart'] = $datestart->format('Y-m-d');
+                $parameters['dateend'] = $dateend->format('Y-m-d');
+            }
+
+            $raw = $this->fetchAll(constant($queryConstant), $parameters);
             foreach ($raw as $entry) {
                 $entity->addDataSet(array_values($entry));
             }

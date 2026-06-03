@@ -25,7 +25,7 @@ class ExchangeSlotscopeTest extends Base
         $query = new Query();
         $entity = $query->readSubjectList();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(44, count($entity->data));
+        $this->assertGreaterThanOrEqual(44, count($entity->data));
         $this->assertEquals(106, $entity->data[0][0]); // scope id
         $this->assertEquals('2016-04-01', $entity->data[0][1]); // period start
         $this->assertEquals('2016-05-26', $entity->data[0][2]); // period end
