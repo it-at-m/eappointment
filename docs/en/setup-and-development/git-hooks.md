@@ -23,13 +23,16 @@ After cloning, run `npm install` once at the repo root (also in the [root README
 
 ### `pre-commit`
 
-Runs before each commit to validate code quality.
+No-op placeholder. Git always runs `pre-commit` before `commit-msg`; the real checks are in `commit-msg` so the **commit subject is validated before** Vue/docs/PHP.
 
-**Checks:**
+### `commit-msg`
 
-1. **Vue code style** — Prettier check in `zmscitizenview` (`npm run lint`)
-2. **Docs formatting** — Prettier check in `docs/` (`npm run format:check`)
-3. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
+All checks run in this hook, in **fail-fast** order:
+
+1. **Commit message** — subject line from the message file Git passes to this hook
+2. **Vue code style** — Prettier check in `zmscitizenview` (`npm run lint`)
+3. **Docs formatting** — Prettier check in `docs/` (`npm run format:check`)
+4. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
 
 **Container detection**
 
@@ -41,16 +44,12 @@ The PHP check detects your runtime automatically:
 
 **Behavior**
 
-- Vue and docs checks always run and **block** the commit on failure
+- Commit message, Vue, and docs checks **block** the commit on failure
 - PHP checks run only when `zms-web` is up; otherwise they are skipped with a warning
 
 See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier commands.
 
-### `commit-msg`
-
-Validates the **first line** of the commit message (subject only) so multi-line bodies cannot bypass the rules.
-
-**Format**
+**Commit message format** (step 1):
 
 ```txt
 type(PROJECT-123): commit message

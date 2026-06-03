@@ -23,13 +23,16 @@ Nach dem Klonen einmal `npm install` im Repo-Root ausführen (steht auch im [Roo
 
 ### `pre-commit`
 
-Läuft vor jedem Commit und prüft die Codequalität.
+Leerer Platzhalter. Git führt immer zuerst `pre-commit`, dann `commit-msg` aus; die Prüfungen liegen in `commit-msg`, damit die **Commit-Message vor** Vue/Docs/PHP läuft.
 
-**Prüfungen:**
+### `commit-msg`
 
-1. **Vue-Code-Stil** — Prettier-Check in `zmscitizenview` (`npm run lint`)
-2. **Docs-Formatierung** — Prettier-Check in `docs/` (`npm run format:check`)
-3. **PHP-Code-Stil** — PHP CodeSniffer (PSR-12) über alle PHP-Module im Container `zms-web`
+Alle Prüfungen laufen in diesem Hook, in **Fail-Fast**-Reihenfolge:
+
+1. **Commit-Message** — Subject aus der Message-Datei, die Git übergibt
+2. **Vue-Code-Stil** — Prettier-Check in `zmscitizenview` (`npm run lint`)
+3. **Docs-Formatierung** — Prettier-Check in `docs/` (`npm run format:check`)
+4. **PHP-Code-Stil** — PHP CodeSniffer (PSR-12) über alle PHP-Module im Container `zms-web`
 
 **Container-Erkennung**
 
@@ -41,16 +44,12 @@ Die PHP-Prüfung erkennt die Laufzeit automatisch:
 
 **Verhalten**
 
-- Vue- und Docs-Prüfungen laufen immer und **blockieren** den Commit bei Fehlern
+- Commit-Message-, Vue- und Docs-Prüfungen **blockieren** den Commit bei Fehlern
 - PHP-Prüfungen nur bei laufendem `zms-web`; sonst Warnung und Überspringen
 
 Siehe auch [Code-Formatierung](./code-formatting.md) für manuelle PHPCS-/Prettier-Befehle.
 
-### `commit-msg`
-
-Validiert nur die **erste Zeile** der Commit-Message (Subject), damit mehrzeilige Bodies die Regeln nicht umgehen können.
-
-**Format**
+**Commit-Message-Format** (Schritt 1):
 
 ```txt
 type(PROJECT-123): commit message

@@ -2,47 +2,58 @@
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+YELLOW='\033[0;33m'
+NC='\033[0m'
 
-commit_msg_file="$1"
-commit_msg=$(head -n 1 "$commit_msg_file")
+. "$(dirname "$0")/validate-commit-message.sh"
 
-# Git merge commits (e.g. "Merge branch 'main' into feature-branch")
-if [ -f .git/MERGE_HEAD ] || echo "$commit_msg" | grep -qE '^Merge '; then
-  printf "${GREEN}✓ Merge commit message accepted.${NC}\n"
-  exit 0
-fi
+commit_msg=$(head -n 1 "$1")
 
-valid_types="feat|fix|clean|chore|docs"
-valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS|GH"
+echo "Running commit message check..."
+validate_commit_message "$commit_msg" || exit 1
 
-pattern="^($valid_types)\(($valid_projects)(-[0-9]+)?\): .+"
-
-if ! echo "$commit_msg" | grep -qE "$pattern"; then
-  printf "${RED}✗ Invalid commit message format!${NC}\n"
-  echo ""
-  echo "Commit messages must follow the conventional commits format:"
-  echo "  type(PROJECT-123): commit message"
-  echo "  type(PROJECT): commit message"
-  echo ""
-  echo "Valid types: feat, fix, clean, chore, docs"
-  echo "Valid projects: ZMS, ZMSKVR, MPDZBS, MUXDBS, GH (must be uppercase)"
-  echo "Ticket number is optional (e.g., PROJECT-123 or just PROJECT)"
-  echo ""
-  echo "Examples:"
-  echo "  feat(ZMS-123): add new feature"
-  echo "  fix(ZMSKVR-123): fix bug in login"
-  echo "  chore(GH): clean up"
-  echo "  clean(ZMS): remove unused code"
-  echo "  docs(ZMS-123): update README"
-  echo ""
-  echo "For more information, see:"
-  echo "  docs/en/setup-and-development/git-hooks.md"
-  echo "  https://www.conventionalcommits.org/en/v1.0.0/"
-  echo ""
-  echo "Your commit message:"
-  echo "  $commit_msg"
+echo "Running Vue code style check..."
+if ! (cd zmscitizenview && npm run lint); then
+  printf "${RED}✗ Vue lint failed. Please fix the errors before committing.${NC}\n"
   exit 1
 fi
+printf "${GREEN}✓ Vue code style OK.${NC}\n"
 
-printf "${GREEN}✓ Commit message format is valid.${NC}\n"
+echo "Running docs formatting check..."
+if ! (cd docs && npm run format:check); then
+  printf "${RED}✗ Docs Prettier check failed. Please fix the errors before committing.${NC}\n"
+  echo "  cd docs && npm run format"
+  echo "  (Run 'cd docs && npm install' first if dependencies are missing.)"
+  exit 1
+fi
+printf "${GREEN}✓ Docs formatting OK.${NC}\n"
+
+container_engine=""
+if command -v podman >/dev/null 2>&1 && podman ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+  container_engine="podman"
+elif command -v docker >/dev/null 2>&1 && docker ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+  container_engine="docker"
+fi
+
+if [ -n "$container_engine" ]; then
+  echo "Running PHP code style check..."
+  phpcs_output=$($container_engine exec zms-web bash -lc "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" 2>&1)
+  phpcs_status=$?
+  if [ "$phpcs_status" -gt 2 ]; then
+    printf "${RED}✗ PHP CodeSniffer failed to run (container exec error).${NC}\n"
+    echo "$phpcs_output"
+    exit 1
+  fi
+  total_error_count=$(echo "$phpcs_output" | grep -Eo "FOUND [0-9]+ ERROR" | awk '{sum+=$2} END {print sum+0}')
+
+  if [ "$total_error_count" -gt 0 ]; then
+    printf "${RED}✗ PHP CodeSniffer found $total_error_count error(s).${NC}\n"
+    echo "You can fix them with:"
+    echo "  $container_engine exec -it zms-web bash -lc \"./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'\""
+    exit 1
+  else
+    printf "${GREEN}✓ PHP code style OK.${NC}\n"
+  fi
+else
+  printf "${YELLOW}⚠ zms-web container is not running. Skipping PHP code style check.${NC}\n"
+fi
