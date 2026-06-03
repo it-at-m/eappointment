@@ -132,7 +132,7 @@ graph TD;
 
 ### Gemeinsame Layout-Assets
 
-- `zmslayout`: eingebettetes Berlin-Online-Layout-SCSS und -JavaScript (`bo-zms-layout-js`, `bo-zms-layout-scss`), von `zmsadmin` und `zmsstatistic` per npm-`file:`-Abhängigkeit genutzt. `zmscalldisplay` und `zmsticketprinter` haben eigene PHP/Twig-UI-Stacks und hängen heute nicht von `zmslayout` ab. Ein RefArch-/Vue-Refactoring von `zmsadmin`, `zmsstatistic` und den übrigen internen PHP-Frontends (siehe [Produktorientierte RefArch-Roadmap](/on-the-future/product-oriented-refarch-roadmap)) würde `zmslayout` durch Vue/Vuetify ersetzen, statt es auszubauen.
+- `zmslayout`: eingebettetes Berlin-Online-Layout-SCSS und -JavaScript (`bo-zms-layout-js`, `bo-zms-layout-scss`), von `zmsadmin` und `zmsstatistic` per npm-`file:`-Abhängigkeit genutzt. `zmscalldisplay` und `zmsticketprinter` haben eigene PHP/Twig-UI-Stacks und hängen heute nicht von `zmslayout` ab. Ein RefArch-/Vue-Refactoring von `zmsadmin`, `zmsstatistic` und den übrigen internen PHP-Frontends (siehe [Produktorientierte RefArch-Roadmap](/on-the-future/refarch-roadmap/product-oriented-refarch-roadmap)) würde `zmslayout` durch Vue/Vuetify ersetzen, statt es auszubauen.
 
 `zmscitizenview` folgt den RefArch-Referenzarchitekturmustern und nutzt `refarch-gateway` als Gateway-Schicht.
 Das bedeutet, Anfragen aus `zmscitizenview` werden zunächst über `refarch-gateway` geleitet, bevor sie `zmscitizenapi` erreichen.

@@ -6,7 +6,7 @@ outline: deep
 
 > **Status:** Zukunftskonzept — derzeit nicht implementiert.  
 > **Ursprung:** [GitHub Issue #1203](https://github.com/it-at-m/eappointment/issues/1203)  
-> **Bezug:** Teil des breiteren RefArch-Refactorings aus [Issue #730](https://github.com/it-at-m/eappointment/issues/730) und der [produktorientierten RefArch-Roadmap](./product-oriented-refarch-roadmap.md).
+> **Bezug:** Teil des breiteren RefArch-Refactorings aus [Issue #730](https://github.com/it-at-m/eappointment/issues/730) und der [produktorientierten RefArch-Roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md).
 
 ## Ziel
 
@@ -51,7 +51,7 @@ Mögliche Richtungen:
 
 - **Einheitlicher Cache-Namespace** mit expliziter Invalidierung oder Versionierung bei Admin- oder Cron-Änderungen.
 - **Event-gesteuerte Invalidierung** (Publish/Subscribe auf dem Cache-Bus oder Message Queue), damit alle API-Instanzen betroffene Keys gemeinsam verwerfen oder erneuern.
-- **Langfristig:** Zusammenführung von `zmscitizenapi` und `zmsapi` zu einer **einheitlichen API** hinter einem Gateway, um geteilte Cache-Verantwortung zu vermeiden (siehe [RefArch-Roadmap](./product-oriented-refarch-roadmap.md)).
+- **Langfristig:** Zusammenführung von `zmscitizenapi` und `zmsapi` zu einer **einheitlichen API** hinter einem Gateway, um geteilte Cache-Verantwortung zu vermeiden (siehe [RefArch-Roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
 
 ## Erwartete Vorteile
 

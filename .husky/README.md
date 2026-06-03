@@ -38,7 +38,7 @@ The PHP check automatically detects your container environment:
 
 ### `commit-msg`
 
-Validates commit message format to ensure consistency across the repository.
+Validates commit message format to ensure consistency across the repository. **Merge commits** (for example `Merge branch 'main' into …`) are allowed automatically so `git merge` can finish without a custom subject line.
 
 **Format Required:**
 ```txt

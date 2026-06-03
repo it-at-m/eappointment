@@ -6,7 +6,7 @@ outline: deep
 
 > **Status:** Future concept — not implemented today.  
 > **Origin:** [GitHub issue #1203](https://github.com/it-at-m/eappointment/issues/1203)  
-> **Related:** Part of the broader RefArch refactor discussed in [issue #730](https://github.com/it-at-m/eappointment/issues/730) and the [product-oriented RefArch roadmap](./product-oriented-refarch-roadmap.md).
+> **Related:** Part of the broader RefArch refactor discussed in [issue #730](https://github.com/it-at-m/eappointment/issues/730) and the [product-oriented RefArch roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md).
 
 ## Goal
 
@@ -51,7 +51,7 @@ Possible directions:
 
 - **Unified cache namespace** with explicit invalidation or versioning when admin or cron-driven changes occur.
 - **Event-driven invalidation** (publish/subscribe on the cache bus or message queue) so all API instances drop or refresh affected keys together.
-- **Longer term:** merge `zmscitizenapi` and `zmsapi` into a **single unified API** behind one gateway, reducing split-brain cache ownership (see the [RefArch roadmap](./product-oriented-refarch-roadmap.md)).
+- **Longer term:** merge `zmscitizenapi` and `zmsapi` into a **single unified API** behind one gateway, reducing split-brain cache ownership (see the [RefArch roadmap](./refarch-roadmap/product-oriented-refarch-roadmap.md)).
 
 ## Expected benefits
 
