@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# ZMS PHP Backends in Spring RefArch zusammenführen
+# Refactoring der ZMS PHP Backends in Spring RefArch
 
 ## Einführung
 
