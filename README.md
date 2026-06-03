@@ -137,7 +137,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm run build`
 - `npm run dev`
 - `npm run test`
-- Run once to enable husky hooks (optional): `cd zmscitizenview && npm run prepare` — see [Git hooks (Husky)](docs/en/setup-and-development/git-hooks.md)
+- Run once to enable husky hooks (optional, repository root): `npm install` — see [Git hooks (Husky)](docs/en/setup-and-development/git-hooks.md)
 
 ## Keycloak Setup
 

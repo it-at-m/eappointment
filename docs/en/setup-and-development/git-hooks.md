@@ -6,19 +6,18 @@ Hook scripts live in [`.husky/`](https://github.com/it-at-m/eappointment/tree/ma
 
 ## Setup
 
-Hooks are configured when you run:
+Hooks are configured when you run at the **repository root**:
 
 ```bash
-cd zmscitizenview
-npm run prepare
+npm install
 ```
 
-This points Git at the repository-root `.husky` directory.
+The `prepare` script runs automatically and points Git at `.husky/`.
 
 > [!NOTE]
-> Husky is installed via `zmscitizenview` (Node.js tooling), but the hooks apply to the **entire monorepo**. Hook management stays at the repository root while reusing the Node setup from `zmscitizenview`.
+> Husky lives in the **root** `package.json` because hooks apply to the **entire monorepo**. Vue lint still uses `zmscitizenview`; docs formatting uses `docs/`.
 
-After cloning, run `npm run prepare` once (also listed in the [root README](https://github.com/it-at-m/eappointment/blob/main/README.md)). For doc changes, install docs dependencies once: `cd docs && npm install`.
+After cloning, run `npm install` once at the repo root (also in the [root README](https://github.com/it-at-m/eappointment/blob/main/README.md)). For doc changes, install docs dependencies once: `cd docs && npm install`.
 
 ## Hooks
 

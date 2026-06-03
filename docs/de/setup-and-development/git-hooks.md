@@ -6,19 +6,18 @@ Die Skripte liegen in [`.husky/`](https://github.com/it-at-m/eappointment/tree/m
 
 ## Einrichtung
 
-Die Hooks werden eingerichtet mit:
+Die Hooks werden im **Repository-Root** eingerichtet:
 
 ```bash
-cd zmscitizenview
-npm run prepare
+npm install
 ```
 
-Damit zeigt Git auf das `.husky`-Verzeichnis im Repository-Root.
+Das `prepare`-Skript läuft automatisch und zeigt Git auf `.husky/`.
 
 > [!NOTE]
-> Husky wird über `zmscitizenview` (Node.js-Tooling) installiert, die Hooks gelten aber für den **gesamten Monorepo**. Die Verwaltung liegt am Root, die Node-Einrichtung kommt aus `zmscitizenview`.
+> Husky liegt im **Root-**`package.json`, weil die Hooks für den **gesamten Monorepo** gelten. Vue-Lint nutzt weiter `zmscitizenview`; Docs-Formatierung nutzt `docs/`.
 
-Nach dem Klonen einmal `npm run prepare` ausführen (steht auch im [Root-README](https://github.com/it-at-m/eappointment/blob/main/README.md)). Für Doc-Änderungen einmal Docs-Abhängigkeiten installieren: `cd docs && npm install`.
+Nach dem Klonen einmal `npm install` im Repo-Root ausführen (steht auch im [Root-README](https://github.com/it-at-m/eappointment/blob/main/README.md)). Für Doc-Änderungen einmal Docs-Abhängigkeiten installieren: `cd docs && npm install`.
 
 ## Hooks
 
