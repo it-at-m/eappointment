@@ -52,12 +52,12 @@ class OverviewTest extends Base
               ],
               [
                   'function' => 'readGetResult',
-                  'url' => '/warehouse/slotscope/141/',
+                  'url' => '/warehouse/capacityscope/141/',
                   'response' => $this->readFixture("GET_slotscope_141.json")
               ],
               [
                   'function' => 'readGetResult',
-                  'url' => '/warehouse/slotscope/141/_/',
+                  'url' => '/warehouse/capacityscope/141/_/',
                   'response' => $this->readFixture("GET_slotscope_141_report.json")
               ]
             ]

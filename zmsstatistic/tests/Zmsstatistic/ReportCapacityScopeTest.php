@@ -37,17 +37,17 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/',
+                    'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/_/',
+                    'url' => '/warehouse/capacityscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
+                    'url' => '/warehouse/capacityscope/',
                     'response' => $this->readFixture("GET_warehouse_slotscope.json")
                 ],
             ]
@@ -95,22 +95,22 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/',
+                    'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/_/',
+                    'url' => '/warehouse/capacityscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
+                    'url' => '/warehouse/capacityscope/',
                     'response' => $this->readFixture("GET_warehouse_slotscope.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/2016-04/',
+                    'url' => '/warehouse/capacityscope/141/2016-04/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
@@ -150,22 +150,22 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/',
+                    'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/_/',
+                    'url' => '/warehouse/capacityscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
+                    'url' => '/warehouse/capacityscope/',
                     'response' => $this->readFixture("GET_warehouse_slotscope.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141,142/2016-04/',
+                    'url' => '/warehouse/capacityscope/141,142/2016-04/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
             ]
@@ -208,22 +208,22 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/',
+                    'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/_/',
+                    'url' => '/warehouse/capacityscope/141/_/',
                     'response' => $this->readFixture("GET_slotscope_141_report.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/',
+                    'url' => '/warehouse/capacityscope/',
                     'response' => $this->readFixture("GET_warehouse_slotscope.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/slotscope/141/2016-04-01/',
+                    'url' => '/warehouse/capacityscope/141/2016-04-01/',
                     'parameters' => [
                         'fromDate' => '2016-04-01',
                         'toDate' => '2016-04-01',

@@ -41,7 +41,7 @@ class ReportCapacityService
     {
         try {
             $subjectList = \App::$http
-                ->readGetResult('/warehouse/slotscope/')
+                ->readGetResult('/warehouse/capacityscope/')
                 ->getEntity();
 
             if (!$subjectList instanceof Exchange || empty($subjectList->data)) {
@@ -77,12 +77,12 @@ class ReportCapacityService
     }
 
     /**
-     * Period list for navigation; derived from slotscope report dates when API only returns "_".
+     * Period list for navigation; derived from capacityscope report dates when API only returns "_".
      */
     public function getCapacityPeriod(string $scopeId): mixed
     {
         try {
-            $result = \App::$http->readGetResult('/warehouse/slotscope/' . $scopeId . '/');
+            $result = \App::$http->readGetResult('/warehouse/capacityscope/' . $scopeId . '/');
             if (!$result) {
                 return null;
             }
@@ -237,7 +237,7 @@ class ReportCapacityService
             }
 
             $result = \App::$http->readGetResult(
-                '/warehouse/slotscope/' . $scopeId . '/' . $urlPeriod . '/',
+                '/warehouse/capacityscope/' . $scopeId . '/' . $urlPeriod . '/',
                 $params === [] ? null : $params
             );
             if (!$result) {
