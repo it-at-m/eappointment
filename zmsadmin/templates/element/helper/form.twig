@@ -369,7 +369,7 @@ aria-describedby="{%
         'copy', 'cut', 'paste', 'scroll','select']
     %}
 
-    {% set integerInputHandler %}
+    {% set integerClampHandler %}
         if (this.value !== '') {
             if (this.max !== '' && Number(this.value) > Number(this.max)) {
                 this.value = this.max;
@@ -385,14 +385,8 @@ aria-describedby="{%
             {% if not args.integerNullable|default(false) %}
                 this.value = '0';
             {% endif %}
-        } else {
-            if (this.max !== '' && Number(this.value) > Number(this.max)) {
-                this.value = this.max;
-            }
-            if (this.min !== '' && Number(this.value) < Number(this.min)) {
-                this.value = this.min;
-            }
         }
+        {{ integerClampHandler }}
     {% endset %}
 
     {% set eventHandlers = {} %}
@@ -412,7 +406,7 @@ aria-describedby="{%
         {% set blurHandler = eventHandlers.onblur|default('') %}
 
         {% set eventHandlers = eventHandlers|merge({
-            'oninput': integerInputHandler ~ ';' ~ inputHandler,
+            'oninput': integerClampHandler ~ ';' ~ inputHandler,
             'onblur': integerBlurHandler ~ ';' ~ blurHandler
         }) %}
     {% endif %}
