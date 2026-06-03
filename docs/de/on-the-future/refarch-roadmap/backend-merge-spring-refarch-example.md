@@ -67,6 +67,8 @@ Vorteile der Zusammenführung von `zmsdb`, `zmsapi` und der serverseitigen Nutzu
 
 14. **Keine eigene Swagger-Pipeline mehr pflegen** — Heute betreiben **`zmsapi`** und **`zmscitizenapi`** jeweils eine eigene Doc-Toolchain: **`@swagger`**-Blöcke in **`routing.php`**, **`build_swagger.js`**, **`swagger-jsdoc`**, YAML-Partials unter **`public/doc/`**, npm-Skripte (`npm run doc`) und CI-Schritte zum Bündeln von **`swagger.json`** und Ausliefern von Swagger-UI-Assets. Das muss **pro PHP-API** funktionsfähig bleiben. **`zmsbackend`** und **`zmscitizenbackend`** nutzen **Spring OpenAPI** (springdoc-openapi im RefArch-Stack): Controller annotieren, lokal starten, **Swagger UI** unter **`/swagger-ui.html`** öffnen und Endpoints interaktiv testen — kein separates npm-Build oder handgebauter Doc-Generator pro Service.
 
+15. **Domain-Controller statt ~166 Einzelaktions-Klassen** — `zmsapi` implementiert fast jede HTTP-Aktion als **eigene PHP-Klasse** (`DepartmentGet`, `DepartmentList`, `ProcessFree`, …), jeweils mit wiederholtem Mellon-Parsing, Berechtigungsprüfung, `Response\Message::create()` und Übergabe an `zmsdb`. In `zmsbackend` bündelt ein **`@RestController` pro Domain** verwandte Endpoints, teilt Security und Exception-Handling und hält Request/Response-Mapping neben der Service-Schicht — weniger Copy-Paste und deutlich weniger Dateien, wenn ein Feature geändert wird.
+
 ### Beispiel: `Department` (`behoerde` → `department`)
 
 Illustratives Spring-Boot-Layout. Tabellenumbenennung: `behoerde` → `department`.
