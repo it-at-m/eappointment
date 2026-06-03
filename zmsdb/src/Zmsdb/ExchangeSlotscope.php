@@ -7,10 +7,7 @@ use BO\Zmsentities\Exchange;
 class ExchangeSlotscope extends Base
 {
     public function readEntity(
-        $subjectid,
-        \DateTimeInterface $datestart = null,
-        \DateTimeInterface $dateend = null,
-        $period = 'day'
+        $subjectid
     ) {
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
