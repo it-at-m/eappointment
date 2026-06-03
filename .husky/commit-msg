@@ -37,6 +37,7 @@ if ! echo "$commit_msg" | grep -qE "$pattern"; then
   echo "  docs(ZMS-123): update README"
   echo ""
   echo "For more information, see:"
+  echo "  docs/en/setup-and-development/git-hooks.md"
   echo "  https://www.conventionalcommits.org/en/v1.0.0/"
   echo ""
   echo "Your commit message:"

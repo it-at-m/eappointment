@@ -257,6 +257,7 @@ const sidebarLabels = {
     localHttpsDdev: "Local HTTPS SSL (DDEV)",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
+    gitHooks: "Git Hooks (Husky)",
     localDbCache: "Local Database and Cache Operations",
     dependencyUpgrade: "Dependency Upgrade Check",
     phpBaseImages: "PHP Base Images",
@@ -305,6 +306,7 @@ const sidebarLabels = {
     localHttpsDdev: "Lokales HTTPS-SSL (DDEV)",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
+    gitHooks: "Git-Hooks (Husky)",
     localDbCache: "Lokale Datenbank- und Cache-Operationen",
     dependencyUpgrade: "Abhängigkeits-Aktualisierungsprüfung",
     phpBaseImages: "PHP-Basis-Images",
@@ -387,6 +389,10 @@ const buildSidebar = (prefix, lang) => {
             {
               text: t.codeFormatting,
               link: `${prefix}/setup-and-development/code-formatting`,
+            },
+            {
+              text: t.gitHooks,
+              link: `${prefix}/setup-and-development/git-hooks`,
             },
             {
               text: t.quickReset,
