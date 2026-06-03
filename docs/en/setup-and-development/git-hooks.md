@@ -18,7 +18,7 @@ This points Git at the repository-root `.husky` directory.
 > [!NOTE]
 > Husky is installed via `zmscitizenview` (Node.js tooling), but the hooks apply to the **entire monorepo**. Hook management stays at the repository root while reusing the Node setup from `zmscitizenview`.
 
-After cloning, run `npm run prepare` once (also listed in the [root README](https://github.com/it-at-m/eappointment/blob/main/README.md)).
+After cloning, run `npm run prepare` once (also listed in the [root README](https://github.com/it-at-m/eappointment/blob/main/README.md)). For doc changes, install docs dependencies once: `cd docs && npm install`.
 
 ## Hooks
 
@@ -29,7 +29,8 @@ Runs before each commit to validate code quality.
 **Checks:**
 
 1. **Vue code style** — Prettier check in `zmscitizenview` (`npm run lint`)
-2. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
+2. **Docs formatting** — Prettier check in `docs/` (`npm run format:check`)
+3. **PHP code style** — PHP CodeSniffer (PSR-12) across PHP modules via the `zms-web` container
 
 **Container detection**
 
@@ -41,7 +42,7 @@ The PHP check detects your runtime automatically:
 
 **Behavior**
 
-- Vue checks always run and **block** the commit on failure
+- Vue and docs checks always run and **block** the commit on failure
 - PHP checks run only when `zms-web` is up; otherwise they are skipped with a warning
 
 See also [Code formatting](./code-formatting.md) for manual PHPCS/Prettier commands.
@@ -75,6 +76,17 @@ npm run format
 ```
 
 Then commit again.
+
+### Docs formatting fails
+
+If Prettier reports issues under `docs/`:
+
+```bash
+cd docs
+npm run format
+```
+
+Install dependencies first if needed: `cd docs && npm install`.
 
 ### PHP CodeSniffer fails
 
