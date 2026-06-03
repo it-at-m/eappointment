@@ -1,7 +1,41 @@
--- Workstation test users for zmsautomation (login: test_role_<role_name>, password: vorschau).
--- Role assignment: zmsdb migration 91777900000-zmsautomation-assign-test-role-users.sql (runs via zmsapi migrate).
--- Berechtigung 1 avoids extra user_role rows from migrate-users-to-new-roles; permissions come from user_role.
--- Scope 169 -> BehoerdenID 40; user_admin / system_admin -> 0 (all authorities).
+-- Flyway migration: Add workstation test users per role (login test_role_<role>, password vorschau)
+-- role/user_role are not in .resources/zms.sql; bootstrap them here so Flyway can run before zmsapi migrate
+-- Berechtigung 1 avoids extra user_role rows from migrate-users-to-new-roles.
+
+CREATE TABLE IF NOT EXISTS role
+(
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT         NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uniq_role_name (name)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO role (name, description)
+VALUES ('agent_basic', NULL),
+       ('agent_queue', NULL),
+       ('agent_queue_plus', NULL),
+       ('appointment_admin', NULL),
+       ('reporting_viewer', NULL),
+       ('user_admin', NULL),
+       ('audit_viewer', NULL),
+       ('system_admin', NULL)
+ON DUPLICATE KEY UPDATE description = VALUES(description);
+
+CREATE TABLE IF NOT EXISTS user_role
+(
+    user_id INT(5) UNSIGNED NOT NULL,
+    role_id INT UNSIGNED    NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_user_role_user
+        FOREIGN KEY (user_id) REFERENCES nutzer (NutzerID),
+    CONSTRAINT fk_user_role_role
+        FOREIGN KEY (role_id) REFERENCES role (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `nutzer`
 (`NutzerID`, `Name`, `Passworthash`, `Frage`, `Antworthash`, `Berechtigung`, `KundenID`, `BehoerdenID`, `SessionID`, `StandortID`, `Arbeitsplatznr`, `Datum`, `Kalenderansicht`, `clusteransicht`, `notrufinitiierung`, `notrufantwort`, `aufrufzusatz`, `lastUpdate`, `sessionExpiry`)
@@ -25,3 +59,51 @@ VALUES
   (5138, 40),
   (5137, 0),
   (5139, 0);
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'agent_basic'
+WHERE u.Name = 'test_role_agent_basic';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'agent_queue'
+WHERE u.Name = 'test_role_agent_queue';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'agent_queue_plus'
+WHERE u.Name = 'test_role_agent_queue_plus';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'appointment_admin'
+WHERE u.Name = 'test_role_appointment_admin';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'reporting_viewer'
+WHERE u.Name = 'test_role_reporting_viewer';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'user_admin'
+WHERE u.Name = 'test_role_user_admin';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'audit_viewer'
+WHERE u.Name = 'test_role_audit_viewer';
+
+INSERT IGNORE INTO user_role (user_id, role_id)
+SELECT u.NutzerID, r.id
+FROM nutzer u
+         JOIN role r ON r.name = 'system_admin'
+WHERE u.Name = 'test_role_system_admin';
