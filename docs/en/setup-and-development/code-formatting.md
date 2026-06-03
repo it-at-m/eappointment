@@ -2,7 +2,7 @@
 
 This page summarizes formatting and code-quality checks used across the eappointment modules.
 Because the repository contains PHP, JavaScript/TypeScript, and Java components, each module area uses its own tooling and commands.
-We also plan to add git hooks soon so these checks can run automatically before commits.
+Git hooks ([Git hooks (Husky)](./git-hooks.md)) run many of these checks automatically before each commit when Husky is set up.
 
 ## PHP Formatting
 
