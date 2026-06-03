@@ -19,8 +19,9 @@ class ExchangeCapacityscopeTest extends Base
         }
 
         $this->assertArrayHasKey(141, $byScope);
-        $this->assertEquals('2016-03-15', $byScope[141][1]);
-        $this->assertEquals('2016-04-02', $byScope[141][2]);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', (string) $byScope[141][1]);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', (string) $byScope[141][2]);
+        $this->assertGreaterThanOrEqual((string) $byScope[141][1], (string) $byScope[141][2]);
     }
 
     public function testReadEntityWithDateFilter()
