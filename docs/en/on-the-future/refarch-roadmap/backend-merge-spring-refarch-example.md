@@ -67,6 +67,8 @@ Benefits of merging `zmsdb`, `zmsapi`, and server-side `zmsentities` usage into 
 
 14. **No custom Swagger pipeline to maintain** — Today, **`zmsapi`** and **`zmscitizenapi`** each run their own doc toolchain: **`@swagger`** blocks in **`routing.php`**, **`build_swagger.js`**, **`swagger-jsdoc`**, YAML partials under **`public/doc/`**, npm scripts (`npm run doc`), and CI steps to bundle **`swagger.json`** and ship Swagger UI assets. That must be kept working **per PHP API**. **`zmsbackend`** and **`zmscitizenbackend`** use **Spring's OpenAPI support** (springdoc-openapi on the RefArch stack): annotate controllers, run locally, open **Swagger UI** at **`/swagger-ui.html`**, and try endpoints interactively — no separate npm build or hand-rolled doc generator per service.
 
+15. **Domain controllers instead of ~166 single-action classes** — `zmsapi` implements almost every HTTP action as its **own PHP class** (`DepartmentGet`, `DepartmentList`, `ProcessFree`, …), each repeating Mellon parsing, permission checks, `Response\Message::create()`, and a hand-off to `zmsdb`. In `zmsbackend`, a **`@RestController` per domain** groups related endpoints, shares security and exception handling, and keeps request/response mapping next to the service layer — less copy-paste and far fewer files to open when changing one feature.
+
 ### Worked example: `Department` (`behoerde` → `department`)
 
 Illustrative Spring Boot layout. Table rename: `behoerde` → `department`.
