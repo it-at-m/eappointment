@@ -1,0 +1,92 @@
+name: ✨ Feature request
+description: Suggest an idea or possible new feature for this project.
+title: "[Feature] "
+labels: ["Type: Feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+        To expedite issue processing, please search open and closed issues before submitting a new one.
+        Please read our [Code of Conduct](../blob/main/.github/CODE_OF_CONDUCT.md).
+  - type: markdown
+    attributes:
+      value: "## General"
+  - type: dropdown
+    id: module
+    attributes:
+      label: Relevant module
+      multiple: true
+      description: Name(s) of the affected module(s) (if applicable)
+      options:
+        - mellon
+        - zmsadmin
+        - zmsapi
+        - zmsautomation
+        - zmsbase
+        - zmscalldisplay
+        - zmscitizenapi
+        - zmscitizenview
+        - zmsclient
+        - zmsdb
+        - zmsdldb
+        - zmsentities
+        - zmslayout
+        - zmsmessaging
+        - zmsslim
+        - zmsstatistic
+        - zmsticketprinter
+    validations:
+      required: false
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem description (optional)
+      description: A clear and concise description of what the problem is (if related to problem)
+      placeholder: |
+        e.g. I'm always frustrated when ...
+    validations:
+      required: false
+  - type: textarea
+    id: desired-solution
+    attributes:
+      label: Desired solution
+      description: A clear and concise description of what you want to happen
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Considered alternatives (optional)
+      description: A clear and concise description of any alternative solutions or features you've considered
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "## Extras"
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context (optional)
+      description: Additional context (references, links, screenshots, ...) that might be helpful
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "## Confirmations"
+  - type: checkboxes
+    id: check-duplicate
+    attributes:
+      label: No duplicate
+      description: By submitting this issue, you confirm to have checked for duplicate issues beforehand.
+      options:
+        - label: I confirm that this issue is not a duplicate
+          required: true
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](../blob/main/.github/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
