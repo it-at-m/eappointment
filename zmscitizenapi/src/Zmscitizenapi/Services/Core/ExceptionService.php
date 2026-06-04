@@ -21,7 +21,6 @@ class ExceptionService
     public static function handleException(\Exception $e): never
     {
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-        $error = null;
 
         if ($e instanceof RequestException) {
             $error = self::getError('zmsClientCommunicationError');
