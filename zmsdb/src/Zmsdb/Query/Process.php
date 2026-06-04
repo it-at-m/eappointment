@@ -901,7 +901,6 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         $timeoutTime = null;
-        $showUpTime = null;
         $finishTime = null;
 
         if (
