@@ -35,7 +35,7 @@
 
 "Infrastructure: actions":
   - changed-files:
-    - any-glob-to-any-file: ['.github/workflows/**']
+    - any-glob-to-any-file: ['.github/**']
 
 "Infrastructure: devcontainer":
   - changed-files:
@@ -44,6 +44,18 @@
 "Infrastructure: ddev":
   - changed-files:
     - any-glob-to-any-file: ['.ddev/**']
+
+"Infrastructure: husky":
+  - changed-files:
+    - any-glob-to-any-file: ['.husky/**']
+
+"Infrastructure: resources":
+  - changed-files:
+    - any-glob-to-any-file: ['.resources/**']
+
+"Infrastructure: vscode":
+  - changed-files:
+    - any-glob-to-any-file: ['.vscode/**']
 
 "Module: mellon":
   - changed-files:
@@ -60,6 +72,10 @@
 "Module: zmsautomation":
   - changed-files:
     - any-glob-to-any-file: ['zmsautomation/**']
+
+"Module: zmsbase":
+  - changed-files:
+    - any-glob-to-any-file: ['zmsbase/**']
 
 "Module: zmscalldisplay":
   - changed-files:
@@ -88,6 +104,10 @@
 "Module: zmsentities":
   - changed-files:
     - any-glob-to-any-file: ['zmsentities/**']
+
+"Module: zmslayout":
+  - changed-files:
+    - any-glob-to-any-file: ['zmslayout/**']
 
 "Module: zmsmessaging":
   - changed-files:
