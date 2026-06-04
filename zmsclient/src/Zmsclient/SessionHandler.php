@@ -92,15 +92,8 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->name = $this->sessionName;
         $entity->content = unserialize($sessionData);
 
-        try {
-            $session = $this->http->readPostResult('/session/', $entity, $params)
-                ->getEntity();
-        } catch (Exception $exception) {
-            if ($exception->getCode() == 404) {
-                $session = null;
-            }
-            throw $exception;
-        }
+        $session = $this->http->readPostResult('/session/', $entity, $params)
+            ->getEntity();
 
         return (null !== $session) ? true : false;
     }
