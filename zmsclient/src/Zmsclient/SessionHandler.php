@@ -45,7 +45,7 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(UnusedFormalParameter)
      */
     #[\Override]
-    public function open(string $save_path, string $name): bool
+    public function open(string $path, string $name): bool
     {
         $this->sessionName = $name;
         return true;
