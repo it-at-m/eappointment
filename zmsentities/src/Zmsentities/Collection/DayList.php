@@ -113,8 +113,7 @@ class DayList extends Base implements JsonUnindexed
 
     public function hasDayWithAppointments()
     {
-        foreach ($this as $hash => $day) {
-            $hash = null;
+        foreach ($this as $day) {
             $day = new Day($day);
             if ($day->hasAppointments()) {
                 return true;
