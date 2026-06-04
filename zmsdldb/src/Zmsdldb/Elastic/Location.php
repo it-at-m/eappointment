@@ -137,7 +137,6 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $query->getQuery()->addShould($searchquery);
-        $filter = null;
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
@@ -202,7 +201,6 @@ class Location extends Base
             'address.postal_code^9'
         ]);
         $query->getQuery()->addShould($searchquery);
-        $filter = null;
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
