@@ -19,7 +19,7 @@ class ProviderGet extends BaseController
      */
     #[\Override]
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $requestInterface,
+        \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
@@ -29,7 +29,7 @@ class ProviderGet extends BaseController
             throw new Exception\Provider\ProviderNotFound();
         }
 
-        $message = Response\Message::create($requestInterface);
+        $message = Response\Message::create($request);
         $message->data = $provider;
 
         $response = Render::withLastModified($response, time(), '0');
