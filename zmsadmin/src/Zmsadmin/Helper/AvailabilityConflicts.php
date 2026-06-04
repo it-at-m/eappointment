@@ -38,7 +38,6 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($input)
     {
-        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
 
