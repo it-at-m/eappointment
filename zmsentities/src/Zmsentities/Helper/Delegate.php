@@ -21,15 +21,23 @@ class Delegate
     public function setter(...$propertyPath): callable
     {
         $entity = $this->getEntity();
+
         return function ($newValue) use ($propertyPath, $entity): Entity {
-            $reference = $entity;
-            $lastProperty = array_pop($propertyPath);
-            foreach ($propertyPath as $property) {
-                $reference =& $reference[$property];
-            }
-            $reference[$lastProperty] = $newValue;
+            self::setValueAtPath($entity, $propertyPath, $newValue);
 
             return $entity;
         };
+    }
+
+    private static function setValueAtPath(&$container, array $propertyPath, mixed $newValue): void
+    {
+        $property = array_shift($propertyPath);
+        if ($propertyPath === []) {
+            $container[$property] = $newValue;
+
+            return;
+        }
+
+        self::setValueAtPath($container[$property], $propertyPath, $newValue);
     }
 }
