@@ -51,6 +51,10 @@
   - changed-files:
     - any-glob-to-any-file: ['.ddev/**']
 
+"Infrastructure: cli":
+  - changed-files:
+    - any-glob-to-any-file: ['cli', 'cli_base.py', 'cli_test.py']
+
 "Infrastructure: husky":
   - changed-files:
     - any-glob-to-any-file: ['.husky/**']
