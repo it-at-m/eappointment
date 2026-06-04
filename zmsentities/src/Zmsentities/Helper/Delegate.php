@@ -23,10 +23,12 @@ class Delegate
         $entity = $this->getEntity();
         return function ($newValue) use ($propertyPath, $entity): Entity {
             $reference = $entity;
+            $lastProperty = array_pop($propertyPath);
             foreach ($propertyPath as $property) {
                 $reference =& $reference[$property];
             }
-            $reference = $newValue;
+            $reference[$lastProperty] = $newValue;
+
             return $entity;
         };
     }
