@@ -92,9 +92,11 @@ class ProcessListSummaryMail extends BaseController
     protected function setWithProcessClient(Mail $entity, $mailAddress): Mail
     {
         $process = new Process();
-        $client = $entity->getClient();
-        $client = ($client->hasEmail()) ? $client : $process->getFirstClient()->email = $mailAddress;
+        if (!$entity->getClient()->hasEmail()) {
+            $process->getFirstClient()->email = $mailAddress;
+        }
         $entity->process = $process ;
+
         return $entity;
     }
 
