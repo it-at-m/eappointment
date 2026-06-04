@@ -47,7 +47,7 @@ class QuickLogin extends BaseController
         $workstation->scope = new \BO\Zmsentities\Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
-        $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+        \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         $basePath = $request->getBasePath();
 
         return $response->withRedirect($basePath . '/' . trim($loginData['redirectUrl']['value'], "/"));
