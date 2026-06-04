@@ -22,7 +22,7 @@ class Calldisplay extends Base
     {
         if ($calldisplay->hasScopeList()) {
             $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-            foreach ($calldisplay->scopes as $key => $entity) {
+            foreach ($calldisplay->scopes as $entity) {
                 $query = new Scope();
                 $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
                 /* test in zmsapi CalldisplayGet
@@ -36,7 +36,7 @@ class Calldisplay extends Base
         }
         if ($calldisplay->hasClusterList()) {
             $clusterList = new \BO\Zmsentities\Collection\ClusterList();
-            foreach ($calldisplay->clusters as $key => $entity) {
+            foreach ($calldisplay->clusters as $entity) {
                 $query = new Cluster();
                 $cluster = $query->readEntity($entity['id'], $resolveReferences);
                 /* test in zmsapi CalldisplayGet
