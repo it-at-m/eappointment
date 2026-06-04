@@ -5,7 +5,7 @@ contact_links:
     about: Open an issue in eappointment if the topic is related to the web documentation
   - name: 💡 Discussions - Ideas
     url: https://github.com/it-at-m/eappointment/discussions/categories/ideas
-    about: Feel free to share ideas for the project that are to vague to create a dedicated issue beforehand
+    about: Feel free to share ideas for the project that are too vague to create a dedicated issue beforehand
   - name: ⁉ Discussions - Q&A
     url: https://github.com/it-at-m/eappointment/discussions/categories/q-a
     about: Please ask questions here
