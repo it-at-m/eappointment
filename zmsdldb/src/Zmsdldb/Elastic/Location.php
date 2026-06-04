@@ -21,11 +21,11 @@ class Location extends Base
      * @return Entity
      */
     #[\Override]
-    public function fetchId($location_id)
+    public function fetchId($itemId)
     {
-        if ($location_id) {
+        if ($itemId) {
             $query = Helper::boolFilteredQuery();
-            $query->getFilter()->addMust(Helper::idsFilter($this->locale . $location_id));
+            $query->getFilter()->addMust(Helper::idsFilter($this->locale . $itemId));
             $result = $this->access()
                 ->getIndex()
                 ->getType('location')
@@ -162,17 +162,17 @@ class Location extends Base
      * @return Collection
      */
     #[\Override]
-    public function readSearchResultList($querystring, $service_csv = '')
+    public function readSearchResultList($query, $service_csv = '')
     {
-        $query = Helper::boolFilteredQuery();
-        $query->getFilter()->addMust(Helper::localeFilter($this->locale));
+        $boolquery = Helper::boolFilteredQuery();
+        $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $mainquery = new \Elastica\Query();
         $limit = 1000;
         //$sort = true;
         $searchquery = new \Elastica\Query\QueryString();
-        if ($querystring > 10000 && $querystring < 15000) {
+        if ($query > 10000 && $query < 15000) {
             // if it is a postal code, sort by distance and limit results
-            $coordinates = \BO\Zmsdldb\Plz\Coordinates::zip2LatLon($querystring);
+            $coordinates = \BO\Zmsdldb\Plz\Coordinates::zip2LatLon($query);
             if (false !== $coordinates) {
                 $searchquery->setQuery('*');
                 $mainquery->addSort([
@@ -188,11 +188,11 @@ class Location extends Base
                 $limit = 5;
                 //$sort = false;
             }
-        } elseif ('' === trim($querystring)) {
+        } elseif ('' === trim($query)) {
             // if empty, find all and trust in the filter
             $searchquery->setQuery('*');
         } else {
-            $searchquery->setQuery($querystring);
+            $searchquery->setQuery($query);
         }
         $searchquery->setFields([
             'name^9',
@@ -200,16 +200,16 @@ class Location extends Base
             'address.street',
             'address.postal_code^9'
         ]);
-        $query->getQuery()->addShould($searchquery);
+        $boolquery->getQuery()->addShould($searchquery);
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
                 $filter = new \Elastica\Filter\Term(array(
                     'services.service' => $service_id
                 ));
-                $query->getFilter()->addMust($filter);
+                $boolquery->getFilter()->addMust($filter);
             }
         }
-        $mainquery->setQuery($query);
+        $mainquery->setQuery($boolquery);
         $resultList = $this->access()
             ->getIndex()
             ->getType('location')

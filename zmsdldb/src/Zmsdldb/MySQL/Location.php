@@ -272,11 +272,11 @@ class Location extends Base
     }
 
     #[\Override]
-    public function readSearchResultList($querystring, $service_csv = null)
+    public function readSearchResultList($query, $service_csv = null)
     {
         try {
-            #$querystring = '+' . implode(' +', explode(' ', $querystring));
-            $sqlArgs = [$this->locale, $this->locale, $querystring];
+            #$query = '+' . implode(' +', explode(' ', $query));
+            $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT l.data_json 
             FROM search AS se
             LEFT JOIN location AS l ON l.id = se.object_id AND l.locale = ?
