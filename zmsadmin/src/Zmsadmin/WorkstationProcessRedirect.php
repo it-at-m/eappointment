@@ -52,8 +52,7 @@ class WorkstationProcessRedirect extends BaseController
                     ['resolveReferences' => 2]
                 )->getEntity();
 
-            $process = $workstation->process;
-            $newProcess = clone $process;
+            $newProcess = clone $workstation->process;
             $newProcess->scope = $scope;
             $newProcess->appointments[0]->scope = $scope;
             $newProcess->amendment = ProcessPlainText::normalize($input['amendment'] ?? '');
