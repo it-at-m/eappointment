@@ -86,8 +86,6 @@ class ProcessConfirm extends BaseController
         $timezone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
         $startsAt = (new \DateTimeImmutable('@' . $appointment->date))->setTimezone($timezone);
 
-        $durationMinutes = null;
-
         $slotCount = (int)($appointment->slotCount ?? 0);
         $slotTimeInMinutes = (int)($appointment->availability->slotTimeInMinutes ?? 0);
         $durationMinutes   = $slotCount * $slotTimeInMinutes;
