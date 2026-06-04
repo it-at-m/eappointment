@@ -63,7 +63,6 @@ class ConditionBuilder
      */
     protected function addCondition($join, $field, $operator, $value)
     {
-        $newParams = [];
         if ($field instanceof \Closure) {
             // Return and merge the result of these queries
             $subQuery = new ConditionBuilder();
