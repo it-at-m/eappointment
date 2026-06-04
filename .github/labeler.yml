@@ -1,17 +1,19 @@
 "Type: Feature":
   - head-branch: [ '^feat', '-feature-' ]
 "Type: Bug":
-  - head-branch: [ '^bug', '-bug-' ]
+  - head-branch: [ '^bug', '^fix', '-bug-', '-fix-' ]
 "Type: Maintenance":
   - head-branch: [ '^maint', '-maintenance-' ]
 "Type: Documentation":
   - head-branch: [ '^docs', '-documentation-' ]
 "Type: Dependency":
-  - head-branch: [ '^dep', '-dependency-' ]
+  - head-branch: [ '^dep', '^renovate', '-dependency-', '-renovate-' ]
 "Type: Security":
   - head-branch: [ '^sec', '-security-' ]
 "Type: Chore":
   - head-branch: [ '^chore', '-chore-' ]
+"Type: Clean":
+  - head-branch: [ '^clean', '-cleanup-', '-clean-' ]
 
 "Documentation: README":
   - changed-files:
