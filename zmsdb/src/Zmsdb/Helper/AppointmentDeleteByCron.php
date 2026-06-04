@@ -162,7 +162,6 @@ class AppointmentDeleteByCron
         $verbose = $this->verbose;
         $now = new \DateTimeImmutable();
         $archiver = new \BO\Zmsdb\ProcessStatusArchived();
-        $archived = null;
         $archived = $archiver->writeEntityFinished($process, $now);
         if ($archived && $verbose) {
             $this->log("INFO: Archived with Status=$process->status and Id=" . $archived->archiveId);
