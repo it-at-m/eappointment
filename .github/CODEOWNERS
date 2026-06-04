@@ -1,1 +1,8 @@
-@manjencic @ThomasAFink @tobiasholler @lehju @matthilo96 @MoDaae @Fabinatix97
+# These owners will be the default owners for everything in the repo.
+* @it-at-m/eappointment_admin @it-at-m/eappointment_devs @it-at-m/eappointment_maintainer
+
+# Protect CODEOWNERS file itself against modification
+/.github/CODEOWNERS @it-at-m/eappointment_admin
+
+# Protect GitHub Actions against modification
+/.github/workflows @it-at-m/eappointment_admin
