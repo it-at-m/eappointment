@@ -36,6 +36,7 @@ body:
         - zmsslim
         - zmsstatistic
         - zmsticketprinter
+        - other
     validations:
       required: false
   - type: textarea
