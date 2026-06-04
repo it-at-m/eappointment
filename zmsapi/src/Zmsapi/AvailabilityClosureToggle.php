@@ -39,7 +39,6 @@ class AvailabilityClosureToggle extends BaseController
 
         $scopeId = $args['id'];
         $date = $args['date'];
-        $closure = null;
 
         try {
             $closure = (new Closure())->readByScopeIdAndDate($scopeId, new DateTime($date));
