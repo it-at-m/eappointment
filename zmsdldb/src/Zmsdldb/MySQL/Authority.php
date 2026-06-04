@@ -106,10 +106,10 @@ class Authority extends Base
      * @return Collection
      */
     #[\Override]
-    public function fetchId($authorityid)
+    public function fetchId($itemId)
     {
         try {
-            $sqlArgs = [$this->locale, $authorityid];
+            $sqlArgs = [$this->locale, $itemId];
 
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
             $stm = $this->access()->prepare($sql);
