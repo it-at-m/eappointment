@@ -15,6 +15,10 @@
 "Type: Clean":
   - head-branch: [ '^clean', '-cleanup-', '-clean-' ]
 
+"Documentation: docs":
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**']
+
 "Documentation: README":
   - changed-files:
     - any-glob-to-any-file: ['README.md']
