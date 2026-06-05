@@ -89,6 +89,26 @@
             <directory name="zmsticketprinter/vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <!-- PHPUnit discovers test classes by name; they are never referenced in PHP code. -->
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="mellon/tests" />
+                <directory name="zmsadmin/tests" />
+                <directory name="zmsapi/tests" />
+                <directory name="zmscalldisplay/tests" />
+                <directory name="zmscitizenapi/tests" />
+                <directory name="zmsclient/tests" />
+                <directory name="zmsdb/tests" />
+                <directory name="zmsdldb/tests" />
+                <directory name="zmsentities/tests" />
+                <directory name="zmsmessaging/tests" />
+                <directory name="zmsslim/tests" />
+                <directory name="zmsstatistic/tests" />
+                <directory name="zmsticketprinter/tests" />
+            </errorLevel>
+        </UnusedClass>
+    </issueHandlers>
     <stubs>
         <file name="zmsdldb/stubs/elastica.php" />
     </stubs>
