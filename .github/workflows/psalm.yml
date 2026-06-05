@@ -215,6 +215,37 @@ jobs:
             echo "Psalm monorepo scan reported issues (exit code: ${psalm_exit}); SARIF will still be uploaded."
           fi
 
+      - name: Normalize monorepo SARIF for Code Scanning
+        run: |
+          python - <<'PY'
+          import json
+
+          sarif_path = "results-monorepo.sarif"
+          with open(sarif_path, "r", encoding="utf-8") as file:
+              sarif = json.load(file)
+
+          fixed_regions = 0
+          for run in sarif.get("runs", []):
+              for result in run.get("results", []):
+                  for location in result.get("locations", []):
+                      region = (
+                          location.get("physicalLocation", {})
+                          .get("region")
+                      )
+                      if not isinstance(region, dict):
+                          continue
+                      for key in ("startLine", "startColumn", "endLine", "endColumn"):
+                          value = region.get(key)
+                          if value is None or value < 1:
+                              region[key] = 1
+                              fixed_regions += 1
+
+          with open(sarif_path, "w", encoding="utf-8") as file:
+              json.dump(sarif, file)
+
+          print(f"Normalized {fixed_regions} invalid SARIF region value(s).")
+          PY
+
       - name: Check monorepo SARIF file exists
         id: sarif_monorepo
         run: |
