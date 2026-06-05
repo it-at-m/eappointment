@@ -275,10 +275,10 @@ SET FOREIGN_KEY_CHECKS = 1;"
 }
 
 run_hourly_with_retries() {
-  # Run hourly cronjob with up to 5 retries (6 attempts total)
-  # Waits between attempts: 1, 2, 3, 5, 10 seconds
+  # Run hourly cronjob with up to 5 retries (6 attempts total).
+  # Munich index fetch uses a 45s HTTP timeout — short delays rarely help; use longer backoff.
   local cmd=("$PROJECT_ROOT/zmsapi/cron/cronjob.hourly" --city=munich)
-  local delays=(0 1 2 3 5 10) # initial attempt has no delay
+  local delays=(0 15 30 45 60 90) # initial attempt has no delay
   local max_attempts=${#delays[@]}
   local attempt delay
 
@@ -449,6 +449,13 @@ wait_http_direct() { # name url
 }
 
 fail=false
+
+DLDB_SERVICES_JSON="$PROJECT_ROOT/zmsapi/data/services_de.json"
+if [[ ! -f "$DLDB_SERVICES_JSON" ]]; then
+  warn "Missing $DLDB_SERVICES_JSON after hourly cron — Munich SADB fetch/import failed."
+  warn "citizenapi-available-days needs DLDB data (officeId=10502, serviceId=1063441); health checks will fail until import succeeds."
+  fail=true
+fi
 wait_http "zmsapi"                     "$ZMS_API_HEALTH_URL"          || fail=true
 info "citizenapi ping uses direct PHP route (not gateway): ${CITIZEN_API_HEALTH_URL}"
 wait_http "citizenapi"                 "$CITIZEN_API_HEALTH_URL"      || fail=true
