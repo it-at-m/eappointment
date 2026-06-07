@@ -16,9 +16,9 @@ use Slim\Psr7\Headers;
 class Http
 {
     /**
-     * @var ClientInterface|null
+     * @var ClientInterface
      */
-    protected $client = null;
+    protected ClientInterface $client;
 
     /**
      * @var string
@@ -32,9 +32,9 @@ class Http
     public static $authEnabled = true;
 
     /**
-     * @var Psr7\Uri|null
+     * @var UriInterface
      */
-    protected $uri = null;
+    protected UriInterface $uri;
 
     /**
      * @var bool
@@ -67,7 +67,7 @@ class Http
      *
      * @param ClientInterface $client
      */
-    public function __construct($baseUrl, ClientInterface $client = null)
+    public function __construct($baseUrl, ?ClientInterface $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
