@@ -806,11 +806,9 @@ class Process extends Base implements MappingInterface
     ) {
         $data = array();
         $appointment = $process->getFirstAppointment();
-        if (null !== $appointment) {
-            $datetime = $appointment->toDateTime();
-            $data['Datum'] = $datetime->format('Y-m-d');
-            $data['Uhrzeit'] = $datetime->format('H:i:s');
-        }
+        $datetime = $appointment->toDateTime();
+        $data['Datum'] = $datetime->format('Y-m-d');
+        $data['Uhrzeit'] = $datetime->format('H:i:s');
         $this->addValues($data);
     }
 
