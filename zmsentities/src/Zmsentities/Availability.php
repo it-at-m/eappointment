@@ -435,7 +435,7 @@ class Availability extends Schema\Entity
     /**
      * Check, if a day between two dates is included
      *
-     * @return Array of arrays with the keys time, public, intern
+     * @return bool
      */
     public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
