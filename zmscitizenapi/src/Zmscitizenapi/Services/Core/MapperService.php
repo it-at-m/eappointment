@@ -291,58 +291,38 @@ class MapperService
         return new OfficeServiceRelationList($relations);
     }
 
-    public static function resolveProviderForScope(Scope $scope, ProviderList $providerList): ?Provider
-    {
-        $scopeProvider = $scope->getProvider();
-        if (!$scopeProvider) {
-            return null;
-        }
-
-        $providerKey = $scopeProvider->getSource() . '_' . $scopeProvider->id;
-        foreach ($providerList as $provider) {
-            if ($provider->getSource() . '_' . $provider->id === $providerKey) {
-                return $provider;
-            }
-        }
-
-        return $scopeProvider;
-    }
-
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public static function scopeToThinnedScope(
-        Scope $scope,
-        ?Provider $providerOverride = null,
-        bool $emptyStringDefaults = false
-    ): ThinnedScope {
+    public static function scopeToThinnedScope(Scope $scope): ThinnedScope
+    {
         if (!$scope || !isset($scope->id)) {
             return new ThinnedScope();
         }
 
         $thinnedProvider = null;
         try {
-            $provider = $providerOverride ?? $scope->getProvider();
-            if ($provider instanceof Provider) {
-                $thinnedProvider = self::providerToThinnedProvider($provider);
+            if (isset($scope->provider)) {
+                $provider = $scope->provider;
+                $contact = $provider->contact ?? null;
+                $thinnedProvider = new ThinnedProvider(
+                    id: isset($provider->id) ? (int)$provider->id : null,
+                    name: $provider->name ?? null,
+                    displayName: $provider->displayName ?? null,
+                    source: $provider->source ?? null,
+                    contact: $contact ? self::contactToThinnedContact($contact) : null
+                );
             }
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
             $thinnedProvider = null;
         }
 
-        $shortName = $emptyStringDefaults
-            ? (string) ($scope->getShortName() ?? '')
-            : (isset($scope->shortName) ? (string) $scope->shortName : null);
-        $emailFrom = $emptyStringDefaults
-            ? (string) ($scope->getEmailFrom() ?? '')
-            : ($scope->getEmailFrom() === null ? null : (string) $scope->getEmailFrom());
-
         return new ThinnedScope(
             id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
-            shortName: $shortName,
-            emailFrom: $emailFrom,
+            shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
+            emailFrom: (string) $scope->getEmailFrom() ?? null,
             emailRequired: $scope->getEmailRequired() === null
                 ? null
                 : (bool) $scope->getEmailRequired(),
@@ -633,8 +613,8 @@ class MapperService
     {
         return new ThinnedProvider(
             id: isset($provider->id) ? (int) $provider->id : null,
-            name: (string) ($provider->name ?? ''),
-            displayName: (string) ($provider->displayName ?? ''),
+            name: isset($provider->name) ? $provider->name : null,
+            displayName: isset($provider->displayName) ? $provider->displayName : null,
             source: isset($provider->source) ? $provider->source : null,
             lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null,
             lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
