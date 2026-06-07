@@ -31,7 +31,7 @@ class IpFilterMiddleware implements MiddlewareInterface
         try {
             $ip = ClientIpHelper::getClientIp();
             $uri = (string)$request->getUri();
-            if ($ip === null || !filter_var($ip, FILTER_VALIDATE_IP)) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP)) {
                 $this->logger->logInfo('Invalid IP address detected', [
                     'ip' => $ip,
                     'uri' => $uri

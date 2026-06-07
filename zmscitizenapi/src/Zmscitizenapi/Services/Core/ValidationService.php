@@ -339,7 +339,7 @@ class ValidationService
 
     public static function validateScopesNotFound(?ScopeList $scopes): array
     {
-        return empty($scopes) || $scopes === null || $scopes->count() === 0
+        return empty($scopes) || $scopes->count() === 0
             ? ['errors' => [self::getError('scopesNotFound')]]
             : [];
     }
