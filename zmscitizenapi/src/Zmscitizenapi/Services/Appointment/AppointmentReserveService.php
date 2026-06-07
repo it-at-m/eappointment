@@ -125,7 +125,7 @@ class AppointmentReserveService
         if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
             $scopeId = $reservedProcess->scope->id;
             $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
-            if (!isset($scope['errors']) && isset($scope) && !empty($scope)) {
+            if (!is_array($scope)) {
                 $reservedProcess->scope = $scope;
                 $reservedProcess->officeId = $officeId;
             }
