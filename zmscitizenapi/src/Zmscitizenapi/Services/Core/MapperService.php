@@ -322,7 +322,7 @@ class MapperService
             id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
             shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
-            emailFrom: (string) $scope->getEmailFrom() ?? null,
+            emailFrom: $scope->getEmailFrom() === null ? null : (string) $scope->getEmailFrom(),
             emailRequired: $scope->getEmailRequired() === null
                 ? null
                 : (bool) $scope->getEmailRequired(),
