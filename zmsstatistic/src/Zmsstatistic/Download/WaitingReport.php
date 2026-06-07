@@ -41,7 +41,6 @@ class WaitingReport extends Base
 
     /**
      * @SuppressWarnings(Param)
-     * @return ResponseInterface
      */
     private function createAndPopulateSheet(
         Spreadsheet $spreadsheet,
