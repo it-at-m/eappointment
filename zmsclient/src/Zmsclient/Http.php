@@ -4,7 +4,6 @@ namespace BO\Zmsclient;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
-use Psr\Http\Client\ClientInterface;
 use Slim\Psr7\Headers;
 
 /**
@@ -15,10 +14,7 @@ use Slim\Psr7\Headers;
  */
 class Http
 {
-    /**
-     * @var ClientInterface
-     */
-    protected ClientInterface $client;
+    protected Psr7\Client $client;
 
     /**
      * @var string
@@ -63,11 +59,7 @@ class Http
      */
     public static $jsonCompressLevel = null;
 
-    /**
-     *
-     * @param ClientInterface $client
-     */
-    public function __construct($baseUrl, ?ClientInterface $client = null)
+    public function __construct($baseUrl, ?Psr7\Client $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
