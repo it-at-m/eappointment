@@ -306,12 +306,12 @@ class Useraccount extends Base
     }
 
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
-        if (0 < $resolveReferences && $useraccount->toProperty()->id->get()) {
-            $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
+        if (0 < $resolveReferences && $entity->toProperty()->id->get()) {
+            $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
         }
-        return $useraccount;
+        return $entity;
     }
 
     /**

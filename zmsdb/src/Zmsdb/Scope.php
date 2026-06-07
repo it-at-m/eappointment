@@ -94,15 +94,15 @@ class Scope extends Base
 
     #[\Override]
     public function readResolvedReferences(
-        \BO\Zmsentities\Schema\Entity $scope,
+        \BO\Zmsentities\Schema\Entity $entity,
         $resolveReferences,
         $disableCache = false
     ) {
         if (0 < $resolveReferences) {
-            $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id, $disableCache);
-            $scope['closure'] = (new Closure())->readByScopeId($scope->id, $disableCache);
+            $entity['dayoff'] = (new DayOff())->readByScopeId($entity->id, $disableCache);
+            $entity['closure'] = (new Closure())->readByScopeId($entity->id, $disableCache);
         }
-        return $scope;
+        return $entity;
     }
 
     public function readByClusterId(

@@ -27,17 +27,18 @@ class ClientReport extends Base
     ) {
         $title = 'clientstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeInfoHeader($args, $spreadsheet);
+
+        $this->writeInfoHeader($args, $download->getSpreadSheet());
         if ($args['reports']) {
             foreach ($args['reports'] as $report) {
                 if ('month' == $report->period) {
-                    $spreadsheet = $this->writeReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM', 'yyyy');
+                    $this->writeReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM', 'yyyy');
                 } else {
-                    $spreadsheet = $this->writeReport($report, $download->getSpreadSheet());
+                    $this->writeReport($report, $download->getSpreadSheet());
                 }
             }
         }
+
         return $download->writeDownload($response);
     }
 

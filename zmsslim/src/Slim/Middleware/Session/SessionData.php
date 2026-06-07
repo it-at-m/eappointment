@@ -38,7 +38,6 @@ class SessionData implements SessionInterface
      */
     public static function getSession(Request $request)
     {
-        $session = array();
         if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
             if (!count($_SESSION)) {

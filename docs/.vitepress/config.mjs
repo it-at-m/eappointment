@@ -362,7 +362,7 @@ const buildSidebar = (prefix, lang) => {
             },
             {
               text: t.codeOfConduct,
-              link: `${GH_REPO}/blob/main/CODE_OF_CONDUCT.md`,
+              link: `${GH_REPO}/blob/main/.github/CODE_OF_CONDUCT.md`,
             },
             {
               text: t.contributing,
