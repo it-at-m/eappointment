@@ -179,7 +179,7 @@ class Result
     /**
      * Description
      *
-     * @return Entity[]
+     * @return Entity[]|null
      */
     public function getData()
     {

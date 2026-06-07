@@ -18,13 +18,13 @@ use BO\Slim\Response;
 class Render
 {
     /**
-     * @var ContainerInterface $containerInterface
+     * @var ContainerInterface|null $containerInterface
      *
      */
     public static $container = null;
 
     /**
-     * @var RequestInterface $request;
+     * @var RequestInterface|null $request;
      *
      */
     public static $request = null;
