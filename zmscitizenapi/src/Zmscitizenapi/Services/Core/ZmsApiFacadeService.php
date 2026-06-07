@@ -257,6 +257,7 @@ class ZmsApiFacadeService
      */
 
     /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
@@ -286,9 +287,65 @@ class ZmsApiFacadeService
             return ['errors' => [self::getError('scopeNotFound')]];
         }
 
-        $finalProvider = MapperService::resolveProviderForScope($matchingScope, $providerList);
+        $providerMap = [];
+        foreach ($providerList as $prov) {
+            $key = ($prov->source ?? '') . '_' . $prov->id;
+            $providerMap[$key] = $prov;
+        }
 
-        return MapperService::scopeToThinnedScope($matchingScope, $finalProvider, true);
+        $scopeProvider = $matchingScope->getProvider();
+        $providerKey = $scopeProvider ? (($scopeProvider->source ?? '') . '_' . $scopeProvider->id) : null;
+        $finalProvider = ($providerKey && isset($providerMap[$providerKey]))
+            ? $providerMap[$providerKey]
+            : $scopeProvider;
+        $result = [
+            'id' => $matchingScope->id,
+            'provider' => MapperService::providerToThinnedProvider($finalProvider) ?? null,
+            'shortName' => (string) $matchingScope->getShortName() ?? null,
+            'emailFrom' => (string) $matchingScope->getEmailFrom() ?? null,
+            'emailRequired' => (bool) $matchingScope->getEmailRequired() ?? null,
+            'telephoneActivated' => (bool) $matchingScope->getTelephoneActivated() ?? null,
+            'telephoneRequired' => (bool) $matchingScope->getTelephoneRequired() ?? null,
+            'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
+            'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
+            'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
+            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
+            'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
+            'infoForAppointment' => $matchingScope->getInfoForAppointment() ?? null,
+            'infoForAllAppointments' => $matchingScope->getInfoForAllAppointments() ?? null,
+            'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
+            'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
+            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
+            'activationDuration' => MapperService::extractActivationDuration($matchingScope),
+            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint()
+        ];
+        return new ThinnedScope(
+            id: (int) $result['id'],
+            provider: $result['provider'],
+            shortName: $result['shortName'],
+            emailFrom: $result['emailFrom'],
+            emailRequired: $result['emailRequired'],
+            telephoneActivated: $result['telephoneActivated'],
+            telephoneRequired: $result['telephoneRequired'],
+            customTextfieldActivated: $result['customTextfieldActivated'],
+            customTextfieldRequired: $result['customTextfieldRequired'],
+            customTextfieldLabel: $result['customTextfieldLabel'],
+            customTextfield2Activated: $result['customTextfield2Activated'],
+            customTextfield2Required: $result['customTextfield2Required'],
+            customTextfield2Label: $result['customTextfield2Label'],
+            captchaActivatedRequired: $result['captchaActivatedRequired'],
+            infoForAppointment: $result['infoForAppointment'],
+            infoForAllAppointments: $result['infoForAllAppointments'],
+            slotsPerAppointment: $result['slotsPerAppointment'],
+            appointmentsPerMail: $result['appointmentsPerMail'],
+            whitelistedMails: $result['whitelistedMails'],
+            reservationDuration: $result['reservationDuration'],
+            activationDuration: $result['activationDuration'],
+            hint: $result['hint']
+        );
     }
 
     /* Todo add method
@@ -365,6 +422,7 @@ class ZmsApiFacadeService
     }
 
     /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -388,9 +446,41 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        $matchingProv = MapperService::resolveProviderForScope($matchingScope, $providerList);
+        $providerMap = [];
+        foreach ($providerList as $provider) {
+            $key = $provider->source . '_' . $provider->id;
+            $providerMap[$key] = $provider;
+        }
 
-        return MapperService::scopeToThinnedScope($matchingScope, $matchingProv, true);
+        $scopeProvider = $matchingScope->getProvider();
+        $providerKey = $scopeProvider ? ($scopeProvider->source . '_' . $scopeProvider->id) : null;
+        $matchingProv = ($providerKey && isset($providerMap[$providerKey]))
+            ? $providerMap[$providerKey]
+            : $scopeProvider;
+        return new ThinnedScope(
+            id: (int) $matchingScope->id,
+            provider: MapperService::providerToThinnedProvider($matchingProv),
+            shortName: (string) $matchingScope->getShortName() ?? null,
+            emailFrom: (string) $matchingScope->getEmailFrom() ?? null,
+            emailRequired: (bool) $matchingScope->getEmailRequired() ?? null,
+            telephoneActivated: (bool) $matchingScope->getTelephoneActivated() ?? null,
+            telephoneRequired: (bool) $matchingScope->getTelephoneRequired() ?? null,
+            customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
+            customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
+            customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
+            captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
+            infoForAppointment: $matchingScope->getInfoForAppointment() ?? null,
+            infoForAllAppointments: $matchingScope->getInfoForAllAppointments() ?? null,
+            slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
+            appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
+            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+            activationDuration: MapperService::extractActivationDuration($matchingScope),
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()) ?? null
+        );
     }
 
     public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
@@ -722,6 +812,7 @@ class ZmsApiFacadeService
     }
 
     /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
@@ -733,14 +824,46 @@ class ZmsApiFacadeService
         }
         $thinnedProcess = MapperService::processToThinnedProcess($process);
 
-        if ($process->scope instanceof Scope) {
-            $matchingProvider = MapperService::resolveProviderForScope(
-                $process->scope,
-                ZmsApiClientService::getOffices()
-            );
-            $thinnedProcess->scope = MapperService::scopeToThinnedScope($process->scope, $matchingProvider, true);
+        $providerList = ZmsApiClientService::getOffices();
+        $providerMap = [];
+        foreach ($providerList as $provider) {
+            $key = $provider->getSource() . '_' . $provider->id;
+            $providerMap[$key] = $provider;
         }
 
+        $thinnedScope = null;
+        if ($process->scope instanceof Scope) {
+            $scopeProvider = $process->scope->getProvider();
+            $providerKey = $scopeProvider ? ($scopeProvider->getSource() . '_' . $scopeProvider->id) : null;
+            $matchingProvider = $providerKey && isset($providerMap[$providerKey]) ? $providerMap[$providerKey] : $scopeProvider;
+            $thinnedProvider = MapperService::providerToThinnedProvider($matchingProvider);
+            $thinnedScope = new ThinnedScope(
+                id: (int) $process->scope->id,
+                provider: $thinnedProvider,
+                shortName: (string) $process->scope->getShortName() ?? null,
+                emailFrom: (string) $process->scope->getEmailFrom() ?? null,
+                emailRequired: (bool) $process->scope->getEmailRequired() ?? false,
+                telephoneActivated: (bool) $process->scope->getTelephoneActivated() ?? false,
+                telephoneRequired: (bool) $process->scope->getTelephoneRequired() ?? false,
+                customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,
+                customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired() ?? false,
+                customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
+                customTextfield2Activated: (bool) $process->scope->getCustomTextfield2Activated() ?? false,
+                customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
+                customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
+                captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
+                infoForAppointment: $process->scope->getInfoForAppointment() ?? null,
+                infoForAllAppointments: $process->scope->getInfoForAllAppointments() ?? null,
+                slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
+                appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
+                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
+                reservationDuration: (int) MapperService::extractReservationDuration($process->scope),
+                activationDuration: MapperService::extractActivationDuration($process->scope),
+                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint()) ?? null
+            );
+        }
+
+        $thinnedProcess->scope = $thinnedScope;
         return $thinnedProcess;
     }
 
