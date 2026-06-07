@@ -236,7 +236,7 @@ class ZmsApiClientService
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
-            $requestList = self::getServices() ?? new RequestList();
+            $requestList = self::getServices();
             $requestSource = [];
             foreach ($requestList as $r) {
                 $requestSource[(string)$r->id] = (string)($r->source ?? '');
