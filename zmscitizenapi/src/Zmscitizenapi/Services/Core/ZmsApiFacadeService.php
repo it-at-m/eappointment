@@ -446,6 +446,10 @@ class ZmsApiFacadeService
             return $errors;
         }
 
+        if ($matchingScope === null) {
+            return ValidationService::validateScopesNotFound(new ScopeList());
+        }
+
         $providerMap = [];
         foreach ($providerList as $provider) {
             $key = $provider->source . '_' . $provider->id;
