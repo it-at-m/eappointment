@@ -1,28 +1,27 @@
 {% from 'element/helper/form.twig' import formgroup, providername %}
 
-<div data-report-filter{% if allowFutureDates|default(false) %} data-allow-future-dates="1"{% endif %}{% if scopeDateBounds is defined and scopeDateBounds %} data-scope-date-bounds="{{ scopeDateBounds|json_encode|e('html_attr') }}"{% endif %}{% if defaultScopeId is defined and defaultScopeId %} data-default-scope-id="{{ defaultScopeId }}"{% endif %}{% if pickerScopeIds is defined and pickerScopeIds %} data-picker-scope-ids="{{ pickerScopeIds|json_encode|e('html_attr') }}"{% endif %}>
-    <!-- Scope Selection -->
-    {% set scopeOptions = [] %}
-    {% set pickerScopeIds = [] %}
-    {% for department in workstation.useraccount.departments %}
-        {% set scopeOptionsGroupOptions = [] %}
-        {% for scope in department.scopes %}
+{% set scopeOptions = [] %}
+{% set pickerScopeIds = [] %}
+{% for department in workstation.useraccount.departments %}
+    {% set scopeOptionsGroupOptions = [] %}
+    {% for scope in department.scopes %}
+        {% if scope.contact.name %}
+            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+            {% set pickerScopeIds = pickerScopeIds|merge([scope.id]) %}
+        {% endif %}
+    {% endfor %}
+    {% for cluster in department.clusters %}
+        {% for scope in cluster.scopes %}
             {% if scope.contact.name %}
                 {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
                 {% set pickerScopeIds = pickerScopeIds|merge([scope.id]) %}
             {% endif %}
         {% endfor %}
-        {% for cluster in department.clusters %}
-            {% for scope in cluster.scopes %}
-                {% if scope.contact.name %}
-                    {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
-                    {% set pickerScopeIds = pickerScopeIds|merge([scope.id]) %}
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-        {% set scopeOptions = scopeOptions|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
     {% endfor %}
+    {% set scopeOptions = scopeOptions|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+{% endfor %}
 
+<div data-report-filter{% if allowFutureDates|default(false) %} data-allow-future-dates="1"{% endif %}{% if scopeDateBounds is defined and scopeDateBounds %} data-scope-date-bounds="{{ scopeDateBounds|json_encode|e('html_attr') }}"{% endif %}{% if defaultScopeId is defined and defaultScopeId %} data-default-scope-id="{{ defaultScopeId }}"{% endif %}{% if pickerScopeIds %} data-picker-scope-ids="{{ pickerScopeIds|json_encode|e('html_attr') }}"{% endif %}>
     <fieldset class="scope-picker">
         <div class="header">
             <label for="scope-select">Standortauswahl</label>

@@ -9,7 +9,6 @@ namespace BO\Zmsstatistic\Service;
 
 use BO\Zmsentities\Exchange;
 use DateTimeImmutable;
-use Exception;
 
 class ReportCapacityService
 {
@@ -44,9 +43,12 @@ class ReportCapacityService
     public function getScopeDateBoundsByScopeId(): array
     {
         try {
-            $subjectList = \App::$http
-                ->readGetResult('/warehouse/capacityscope/')
-                ->getEntity();
+            $result = \App::$http->readGetResult('/warehouse/capacityscope/');
+            if (!$result) {
+                return [];
+            }
+
+            $subjectList = $result->getEntity();
 
             if (!$subjectList instanceof Exchange || empty($subjectList->data)) {
                 return [];
@@ -75,7 +77,7 @@ class ReportCapacityService
             }
 
             return $bounds;
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             return [];
         }
     }
@@ -94,7 +96,7 @@ class ReportCapacityService
             $periodList = $result->getEntity();
 
             return $this->enrichPeriodList($periodList, $scopeId);
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             return null;
         }
     }
@@ -257,7 +259,7 @@ class ReportCapacityService
             $exchange->data = $this->aggregateRowsByDate($exchange->data, $sourceHourly);
 
             return $exchange;
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             return null;
         }
     }

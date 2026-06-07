@@ -164,11 +164,15 @@ class View extends BaseView {
             if (!entry || !entry.min || !entry.max) {
                 return;
             }
-            min = min === null ? entry.min : moment.min(moment(min), moment(entry.min)).format('YYYY-MM-DD');
-            max = max === null ? entry.max : moment.max(moment(max), moment(entry.max)).format('YYYY-MM-DD');
+            min = min === null ? entry.min : moment.max(moment(min), moment(entry.min)).format('YYYY-MM-DD');
+            max = max === null ? entry.max : moment.min(moment(max), moment(entry.max)).format('YYYY-MM-DD');
         });
 
         if (min === null || max === null) {
+            return null;
+        }
+
+        if (moment(min).isAfter(moment(max))) {
             return null;
         }
 
@@ -232,8 +236,8 @@ class View extends BaseView {
             this.setDateInputBound(toInput, 'min', minToIso);
             this.setDateInputBound(toInput, 'max', maxAllowedIso);
 
-            if (toInput.val() && (toInput.val() < minToIso || toInput.val() > maxAllowedIso)) {
-                toInput.val(minToIso);
+            if (toInput.val()) {
+                toInput.val(this.clampIso(toInput.val(), minToIso, maxAllowedIso));
             }
         } else {
             this.setDateInputBound(toInput, 'min', globalMin);
@@ -254,8 +258,8 @@ class View extends BaseView {
             this.setDateInputBound(fromInput, 'min', minFromIso);
             this.setDateInputBound(fromInput, 'max', maxFromIso);
 
-            if (fromInput.val() && (fromInput.val() < minFromIso || fromInput.val() > maxFromIso)) {
-                fromInput.val(minFromIso);
+            if (fromInput.val()) {
+                fromInput.val(this.clampIso(fromInput.val(), minFromIso, maxFromIso));
             }
         } else {
             this.setDateInputBound(fromInput, 'min', globalMin);

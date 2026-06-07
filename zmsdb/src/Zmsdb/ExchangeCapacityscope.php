@@ -11,7 +11,11 @@ class ExchangeCapacityscope extends Base
         \DateTimeInterface $datestart = null,
         \DateTimeInterface $dateend = null,
         $period = 'day'
-    ) {
+    ): Exchange {
+        if (trim((string) $subjectid) === '') {
+            throw new \InvalidArgumentException('Subject ID cannot be empty');
+        }
+
         $subjectIdList = explode(',', $subjectid);
         $firstScopeId = $subjectIdList[0];
         $scope = (new Scope())->readEntity($firstScopeId);
@@ -73,7 +77,7 @@ class ExchangeCapacityscope extends Base
         return '\BO\Zmsdb\Query\ExchangeCapacityscope::QUERY_READ_REPORT_FILTERED';
     }
 
-    public function readSubjectList()
+    public function readSubjectList(): Exchange
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeCapacityscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
@@ -90,9 +94,11 @@ class ExchangeCapacityscope extends Base
     }
 
     /**
+     * Aggregate period placeholder required by ExchangeSubject interface.
+     *
      * @SuppressWarnings(Unused)
      */
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Terminkapazität ";

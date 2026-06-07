@@ -55,6 +55,7 @@ class ReportCapacityScopeTest extends Base
         $response = $this->render([], ['__uri' => '/report/capacity/scope/'], []);
         $this->assertStringContainsString('Terminkapazität Standort', (string) $response->getBody());
         $this->assertStringContainsString('data-scope-date-bounds', (string) $response->getBody());
+        $this->assertStringContainsString('data-picker-scope-ids', (string) $response->getBody());
         $this->assertStringContainsString('2016-03-15', (string) $response->getBody());
         $this->assertStringContainsString('2016-04-02', (string) $response->getBody());
         $this->assertStringContainsString(
@@ -166,7 +167,7 @@ class ReportCapacityScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141,142/2016-04/',
-                    'response' => $this->readFixture("GET_slotscope_141_report.json")
+                    'response' => $this->readFixture("GET_slotscope_141_142_report.json")
                 ],
             ]
         );
@@ -178,7 +179,15 @@ class ReportCapacityScopeTest extends Base
             ],
             []
         );
-        $this->assertStringContainsString('01.04.2016', (string) $response->getBody());
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('01.04.2016', $body);
+        $this->assertStringContainsString('02.04.2016', $body);
+        $this->assertStringContainsString('>15<', $body);
+        $this->assertStringContainsString('>30<', $body);
+        $this->assertStringContainsString('>20<', $body);
+        $this->assertStringContainsString('>35<', $body);
+        $this->assertStringContainsString('50 %', $body);
+        $this->assertStringContainsString('57.1 %', $body);
     }
 
     public function testHourlyDateRange()
