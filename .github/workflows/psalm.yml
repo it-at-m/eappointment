@@ -236,7 +236,7 @@ jobs:
                           continue
                       for key in ("startLine", "startColumn", "endLine", "endColumn"):
                           value = region.get(key)
-                          if value is None or value < 1:
+                          if not isinstance(value, int) or value < 1:
                               region[key] = 1
                               fixed_regions += 1
 
