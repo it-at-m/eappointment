@@ -255,11 +255,6 @@ class ReportCapacityScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/',
-                    'response' => $this->readFixture("GET_scope_list.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/warehouse/capacityscope/141/',
                     'response' => $this->readFixture("GET_slotscope_141.json")
                 ],
