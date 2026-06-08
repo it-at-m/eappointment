@@ -605,7 +605,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Regulär sollte aber ProcessStatusArchived::writeEntityFinished()
      * oder self::writeBlockedEntity() verwendet werden.
      *
-     * @return Entity|null
+     * @return bool
      */
     public function writeDeletedEntity($processId): bool
     {

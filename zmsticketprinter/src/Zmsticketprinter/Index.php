@@ -112,7 +112,7 @@ class Index extends BaseController
         if (!strpos($queryString, 'lang=')) {
             $queryString .= '&lang=de';
         }
-        return str_replace('/&', '', $queryString ?? '');
+        return str_replace('/&', '', $queryString);
     }
 
     private function getTranslations($languageConfig, $currentLang)

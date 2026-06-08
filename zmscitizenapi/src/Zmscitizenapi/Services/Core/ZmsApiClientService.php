@@ -81,7 +81,7 @@ class ZmsApiClientService
 
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
-                $list = $src?->getProviderList();
+                $list = $src->getProviderList();
 
                 if ($list instanceof ProviderList) {
                     foreach ($list as $provider) {
@@ -108,7 +108,7 @@ class ZmsApiClientService
 
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
-                $list = $src?->getRequestList();
+                $list = $src->getRequestList();
 
                 if ($list instanceof RequestList) {
                     foreach ($list as $request) {
@@ -135,7 +135,7 @@ class ZmsApiClientService
 
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
-                $list = $src?->getRequestRelationList();
+                $list = $src->getRequestRelationList();
 
                 if ($list instanceof RequestRelationList) {
                     foreach ($list as $rel) {
@@ -165,7 +165,7 @@ class ZmsApiClientService
 
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
-                $list = $src?->getScopeList();
+                $list = $src->getScopeList();
 
                 if ($list instanceof ScopeList) {
                     foreach ($list as $scope) {
@@ -236,7 +236,7 @@ class ZmsApiClientService
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
-            $requestList = self::getServices() ?? new RequestList();
+            $requestList = self::getServices();
             $requestSource = [];
             foreach ($requestList as $r) {
                 $requestSource[(string)$r->id] = (string)($r->source ?? '');

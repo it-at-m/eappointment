@@ -98,6 +98,7 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
+DLDB_FIXTURE_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/dldb"
 
 info "Test URLs: BASE_URI=$BASE_URI"
 info "Test URLs: CITIZEN_API_BASE_URI=$CITIZEN_API_BASE_URI"
@@ -274,6 +275,30 @@ SET FOREIGN_KEY_CHECKS = 1;"
   info "Tables dropped."
 }
 
+install_dldb_bundled_fixtures() {
+  # Offline copy of a Munich SADB export (same shape as cronjob.hourly → updateDldbData).
+  info "Installing bundled DLDB fixtures from $DLDB_FIXTURE_DIR ..."
+  if [[ ! -f "$DLDB_FIXTURE_DIR/services_de.json" || ! -f "$DLDB_FIXTURE_DIR/locations_de.json" ]]; then
+    warn "Bundled DLDB fixtures are missing under $DLDB_FIXTURE_DIR"
+    return 1
+  fi
+  mkdir -p "$PROJECT_ROOT/zmsapi/data"
+  for f in services_de.json locations_de.json topic_de.json services_en.json locations_en.json authority_de.json settings.json; do
+    if [[ -f "$DLDB_FIXTURE_DIR/$f" ]]; then
+      cp -f "$DLDB_FIXTURE_DIR/$f" "$PROJECT_ROOT/zmsapi/data/$f"
+    fi
+  done
+  (
+    cd "$PROJECT_ROOT/zmsapi"
+    vendor/bin/updateDldbData --commit
+  ) || {
+    warn "updateDldbData failed after copying bundled DLDB fixtures"
+    return 1
+  }
+  info "Bundled DLDB fixtures installed."
+  return 0
+}
+
 run_hourly_with_retries() {
   # Run hourly cronjob with up to 5 retries (6 attempts total).
   # Munich index fetch uses a 45s HTTP timeout — short delays rarely help; use longer backoff.
@@ -302,7 +327,7 @@ run_hourly_with_retries() {
     fi
   done
 
-  warn "Hourly cronjob failed after ${max_attempts} attempts; continuing."
+  warn "Hourly cronjob failed after ${max_attempts} attempts."
   return 1
 }
 
@@ -374,7 +399,14 @@ section "6. PHP Migrations"
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
-run_hourly_with_retries || true
+if ! run_hourly_with_retries; then
+  if [[ "${SKIP_DDLDB_FALLBACK:-}" == "1" ]]; then
+    warn "SKIP_DDLDB_FALLBACK=1 — hourly DLDB import failed and bundled fixtures are disabled"
+    exit 1
+  fi
+  warn "Live Munich SADB import failed; falling back to bundled DLDB fixtures."
+  install_dldb_bundled_fixtures || exit 1
+fi
 clear_caches
 
 section "8. Minutly Cronjob"
