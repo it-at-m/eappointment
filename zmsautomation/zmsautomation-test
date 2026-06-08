@@ -302,7 +302,7 @@ run_hourly_with_retries() {
     fi
   done
 
-  warn "Hourly cronjob failed after ${max_attempts} attempts; continuing."
+  warn "Hourly cronjob failed after ${max_attempts} attempts; aborting setup."
   return 1
 }
 
@@ -374,7 +374,7 @@ section "6. PHP Migrations"
 section "7. Hourly Cronjob"
 export ZMS_CRONROOT=1
 export ZMS_ENV="${ZMS_ENV:-dev}"
-run_hourly_with_retries || true
+run_hourly_with_retries
 clear_caches
 
 section "8. Minutly Cronjob"
