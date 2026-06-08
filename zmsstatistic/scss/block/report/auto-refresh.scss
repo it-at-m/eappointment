@@ -1,0 +1,32 @@
+.warehouse-report .board__actions {
+    padding-right: 0.35em;
+}
+
+.warehouse-report .board__actions .right {
+    margin-left: auto;
+}
+
+.board__actions .report-board--auto-refresh {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    min-width:       4.75em;
+    margin-bottom:   0;
+    padding:         0 1.25em 0 0.75em;
+    cursor:          pointer;
+    font-weight:     700;
+
+    .report-board--auto-refresh-interval {
+        margin:      0;
+        padding:     0;
+        border:      0;
+        background:  transparent;
+        color:       inherit;
+        font:        inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        cursor:      pointer;
+        appearance:  none;
+        text-align:  center;
+    }
+}

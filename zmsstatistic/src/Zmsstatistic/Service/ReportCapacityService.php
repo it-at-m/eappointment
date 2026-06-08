@@ -15,6 +15,9 @@ class ReportCapacityService
     /** Fetch hour-level warehouse data up to this range length (chart buckets are derived in PHP). */
     private const MAX_HOURLY_FETCH_HOURS = 336;
 
+    /** Above this count, slot-time hints group by duration instead of listing scope names. */
+    private const SLOT_TIME_HINT_MAX_NAMED_SCOPES = 4;
+
     /**
      * Get exchange slot capacity data for period or custom date range.
      */
@@ -83,6 +86,180 @@ class ReportCapacityService
     }
 
     /**
+     * @param array<int, string|int> $scopeIds
+     * @return array<int, array{id: string, name: string, slotTimeInMinutes: ?int}>
+     */
+    public function getSelectedScopeSlotTimes(array $scopeIds): array
+    {
+        if ($scopeIds === []) {
+            return [];
+        }
+
+        try {
+            $result = \App::$http->readGetResult('/scope/');
+            if (!$result) {
+                return [];
+            }
+
+            $scopeList = $result->getData();
+            if (!is_array($scopeList) && !($scopeList instanceof \Traversable)) {
+                return [];
+            }
+
+            $scopeById = [];
+            foreach ($scopeList as $scope) {
+                $id = (string) ($scope->id ?? '');
+                if ($id !== '') {
+                    $scopeById[$id] = $scope;
+                }
+            }
+
+            $items = [];
+            foreach ($scopeIds as $scopeId) {
+                $id = (string) $scopeId;
+                if (!isset($scopeById[$id])) {
+                    continue;
+                }
+
+                $scope = $scopeById[$id];
+                $items[] = [
+                    'id' => $id,
+                    'name' => $this->resolveScopeDisplayName($scope, $id),
+                    'slotTimeInMinutes' => $this->resolveScopeSlotTimeMinutes($scope),
+                ];
+            }
+
+            return $items;
+        } catch (\Throwable $exception) {
+            return [];
+        }
+    }
+
+    /**
+     * @param array<int, array{id: string, name: string, slotTimeInMinutes: ?int}> $scopeSlotTimes
+     */
+    public function formatScopeSlotTimeHint(array $scopeSlotTimes): ?string
+    {
+        if ($scopeSlotTimes === []) {
+            return null;
+        }
+
+        $knownTimes = array_values(array_filter(
+            array_map(
+                static fn (array $item): ?int => $item['slotTimeInMinutes'] ?? null,
+                $scopeSlotTimes
+            ),
+            static fn (?int $minutes): bool => $minutes !== null
+        ));
+
+        if ($knownTimes === []) {
+            return null;
+        }
+
+        if (count($scopeSlotTimes) === 1) {
+            return sprintf(
+                'Zeitschlitzdauer laut Öffnungszeit: %d Min.',
+                $knownTimes[0]
+            );
+        }
+
+        $uniqueTimes = array_values(array_unique($knownTimes));
+        if (count($uniqueTimes) === 1 && count($knownTimes) === count($scopeSlotTimes)) {
+            return sprintf(
+                'Zeitschlitzdauer laut Öffnungszeit: %d Min. (alle ausgewählten Standorte)',
+                $uniqueTimes[0]
+            );
+        }
+
+        if (count($scopeSlotTimes) > self::SLOT_TIME_HINT_MAX_NAMED_SCOPES) {
+            return $this->formatGroupedScopeSlotTimeHint($scopeSlotTimes);
+        }
+
+        $parts = [];
+        foreach ($scopeSlotTimes as $item) {
+            if (($item['slotTimeInMinutes'] ?? null) === null) {
+                continue;
+            }
+
+            $parts[] = sprintf(
+                '%s: %d Min.',
+                $item['name'],
+                $item['slotTimeInMinutes']
+            );
+        }
+
+        return $parts === []
+            ? null
+            : 'Zeitschlitzdauer laut Öffnungszeit: ' . implode('; ', $parts);
+    }
+
+    /**
+     * @param array<int, array{id: string, name: string, slotTimeInMinutes: ?int}> $scopeSlotTimes
+     */
+    private function formatGroupedScopeSlotTimeHint(array $scopeSlotTimes): ?string
+    {
+        $byMinutes = [];
+        foreach ($scopeSlotTimes as $item) {
+            $minutes = $item['slotTimeInMinutes'] ?? null;
+            if ($minutes === null) {
+                continue;
+            }
+
+            $byMinutes[$minutes] = ($byMinutes[$minutes] ?? 0) + 1;
+        }
+
+        if ($byMinutes === []) {
+            return null;
+        }
+
+        ksort($byMinutes, SORT_NUMERIC);
+
+        $parts = [];
+        foreach ($byMinutes as $minutes => $count) {
+            $parts[] = sprintf(
+                '%d Min. (%d %s)',
+                $minutes,
+                $count,
+                $count === 1 ? 'Standort' : 'Standorte'
+            );
+        }
+
+        return 'Zeitschlitzdauer laut Öffnungszeit: ' . implode(', ', $parts);
+    }
+
+    private function resolveScopeDisplayName(mixed $scope, string $id): string
+    {
+        if (!is_object($scope)) {
+            return 'Standort ' . $id;
+        }
+
+        $contactName = '';
+        if (isset($scope->contact)) {
+            $contactName = (string) ($scope->contact->name ?? '');
+        }
+
+        $shortName = (string) ($scope->shortName ?? '');
+        $name = trim($contactName . ' ' . $shortName);
+
+        return $name !== '' ? $name : 'Standort ' . $id;
+    }
+
+    private function resolveScopeSlotTimeMinutes(mixed $scope): ?int
+    {
+        if (!is_object($scope) || !isset($scope->provider) || !is_object($scope->provider)) {
+            return null;
+        }
+
+        if (!method_exists($scope->provider, 'getSlotTimeInMinutes')) {
+            return null;
+        }
+
+        $slotTime = $scope->provider->getSlotTimeInMinutes();
+
+        return $slotTime !== null ? (int) $slotTime : null;
+    }
+
+    /**
      * Period list for navigation; derived from capacityscope report dates when API only returns "_".
      */
     public function getCapacityPeriod(string $scopeId): mixed
@@ -137,6 +314,14 @@ class ReportCapacityService
     }
 
     /**
+     * Sparse API rows for the chart (same as legacy warehouse reports).
+     */
+    public function buildSparseChartExchange(Exchange $exchange, ?array $dateRange, ?string $period): Exchange
+    {
+        return $this->applyChartVisualizationSettings(clone $exchange, $dateRange, $period);
+    }
+
+    /**
      * Full timeline for the chart (zeros for closed hours/days). Table uses sparse API data.
      */
     public function buildChartExchange(Exchange $exchange, ?array $dateRange, ?string $period): Exchange
@@ -151,11 +336,20 @@ class ReportCapacityService
             $useHourlyTimeline
         );
 
+        return $this->applyChartVisualizationSettings($chart, $dateRange, $period);
+    }
+
+    private function applyChartVisualizationSettings(
+        Exchange $chart,
+        ?array $dateRange,
+        ?string $period
+    ): Exchange {
         $visualization = $chart['visualization'] ?? [];
         if (!is_array($visualization)) {
             $visualization = [];
         }
         $visualization['labelIntervalHours'] = $this->resolveChartLabelIntervalHours($dateRange, $period);
+        $visualization['allowSparseTimeline'] = true;
         $chart['visualization'] = $visualization;
 
         return $chart;
@@ -271,7 +465,7 @@ class ReportCapacityService
      * @param bool $useHourlyKeys true = one row per clock hour, false = per calendar day
      * @return array<int, array<int, mixed>>
      */
-    private function aggregateRowsByDate(array $rows, bool $useHourlyKeys): array
+    public function aggregateRowsByDate(array $rows, bool $useHourlyKeys): array
     {
         $byDate = [];
 
@@ -293,6 +487,8 @@ class ReportCapacityService
 
             $byDate[$key][2] += $normalized[2];
             $byDate[$key][3] += $normalized[3];
+            $byDate[$key][4] += $normalized[4];
+            $byDate[$key][5] += $normalized[5];
         }
 
         ksort($byDate);
@@ -352,7 +548,7 @@ class ReportCapacityService
                     $cursor->format('Y-m-d') . ' ' . $cursor->format('H') . ':00',
                     true
                 );
-                $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0];
+                $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0, 0, 0];
                 $cursor = $cursor->modify('+1 hour');
             }
 
@@ -365,7 +561,7 @@ class ReportCapacityService
 
         while ($cursor <= $end) {
             $key = $cursor->format('Y-m-d');
-            $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0];
+            $filled[] = $byKey[$key] ?? [$subjectId, $key, 0, 0, 0, 0];
             $cursor = $cursor->modify('+1 day');
         }
 
@@ -392,7 +588,7 @@ class ReportCapacityService
 
     /**
      * @param array<int|string, mixed> $row
-     * @return array{0: string, 1: string, 2: int, 3: int}
+     * @return array{0: string, 1: string, 2: int, 3: int, 4: int, 5: int}
      */
     private function normalizeDataRow(array $row, bool $useHourlyKeys): array
     {
@@ -403,6 +599,8 @@ class ReportCapacityService
             $this->normalizeTimelineKey($date, $useHourlyKeys),
             $this->rowNumericValue($row, 'bookedcount', 2),
             $this->rowNumericValue($row, 'plannedcount', 3),
+            $this->rowNumericValue($row, 'bookedminutes', 4),
+            $this->rowNumericValue($row, 'plannedminutes', 5),
         ];
     }
 
@@ -560,5 +758,36 @@ class ReportCapacityService
         }
 
         return $periodList;
+    }
+
+    /**
+     * Prepare download arguments for capacity report Excel export.
+     */
+    public function prepareDownloadArgs(
+        array $args,
+        string $scopeId,
+        mixed $exchangeCapacity,
+        ?array $dateRange,
+        array $selectedScopes = []
+    ): array {
+        $args['category'] = 'raw-capacityscope';
+        $args['subject'] = 'capacityscope';
+        $args['subjectid'] = $scopeId;
+
+        if ($dateRange) {
+            $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
+        } elseif (!isset($args['period']) || $args['period'] === null || $args['period'] === '') {
+            $args['period'] = '_';
+        }
+
+        if (!empty($selectedScopes)) {
+            $args['selectedScopes'] = $selectedScopes;
+        }
+
+        if ($exchangeCapacity instanceof Exchange) {
+            $args['report'] = $exchangeCapacity;
+        }
+
+        return $args;
     }
 }

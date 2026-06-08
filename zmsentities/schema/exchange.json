@@ -134,6 +134,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "ylabelMinutes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labelIntervalHours": {
+          "type": "number"
+        },
+        "allowSparseTimeline": {
+          "type": "boolean"
         }
       }
     }

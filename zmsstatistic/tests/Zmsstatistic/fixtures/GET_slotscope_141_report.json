@@ -15,36 +15,49 @@
         "position": 0,
         "variable": "subjectid",
         "type": "string",
-        "description": "ID of a scope",
+        "description": "Standort-ID",
         "reference": "scope.id"
       },
       {
         "position": 1,
         "variable": "date",
         "type": "string",
-        "description": "Date of day"
+        "description": "Datum"
       },
       {
         "position": 2,
         "variable": "bookedcount",
         "type": "number",
-        "description": "booked slots"
+        "description": "Gebuchte Kapazität (Zeitschlitze)"
       },
       {
         "position": 3,
         "variable": "plannedcount",
         "type": "number",
-        "description": "planned slots"
+        "description": "Geplante Kapazität (Zeitschlitze)"
+      },
+      {
+        "position": 4,
+        "variable": "bookedminutes",
+        "type": "number",
+        "description": "Gebuchte Kapazität (Minuten)"
+      },
+      {
+        "position": 5,
+        "variable": "plannedminutes",
+        "type": "number",
+        "description": "Geplante Kapazität (Minuten)"
       }
     ],
     "visualization": {
       "xlabel": ["date"],
-      "ylabel": ["bookedcount", "plannedcount"]
+      "ylabel": ["bookedcount", "plannedcount"],
+      "ylabelMinutes": ["bookedminutes", "plannedminutes"]
     },
     "data": [
-      ["141", "2016-04-01", 10, 20],
-      ["141", "2016-04-02", 15, 25],
-      ["141", "2016-03-15", 5, 10]
+      ["141", "2016-04-01", 10, 20, 100, 200],
+      ["141", "2016-04-02", 15, 25, 150, 250],
+      ["141", "2016-03-15", 5, 10, 50, 100]
     ]
   }
 }

@@ -51,14 +51,43 @@ class ReportCapacityIndex extends BaseController
 
         $exchangeCapacity = $reportCapacityService->getExchangeCapacityData($scopeId, $dateRange, $args);
         $exchangeCapacityChart = null;
+        $exchangeCapacityChartSparse = null;
 
         if ($exchangeCapacity instanceof Exchange) {
+            $period = $args['period'] ?? null;
+            $exchangeCapacityChartSparse = $reportCapacityService->buildSparseChartExchange(
+                $exchangeCapacity,
+                $dateRange,
+                $period
+            );
             $exchangeCapacityChart = $reportCapacityService->buildChartExchange(
                 $exchangeCapacity,
                 $dateRange,
-                $args['period'] ?? null
+                $period
             );
         }
+
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            return $this->handleDownloadRequest(
+                $request,
+                $response,
+                $args,
+                $scopeId,
+                $exchangeCapacity,
+                $dateRange,
+                $selectedScopes,
+                $reportCapacityService
+            );
+        }
+
+        $displayScopeIds = $selectedScopes;
+        if ($displayScopeIds === [] && $workstationScopeId !== null) {
+            $displayScopeIds = [(string) $workstationScopeId];
+        }
+        $scopeSlotTimeHint = $reportCapacityService->formatScopeSlotTimeHint(
+            $reportCapacityService->getSelectedScopeSlotTimes($displayScopeIds)
+        );
 
         return $this->renderHtmlResponse(
             $response,
@@ -67,9 +96,37 @@ class ReportCapacityIndex extends BaseController
             $dateRange,
             $exchangeCapacity,
             $exchangeCapacityChart,
+            $exchangeCapacityChartSparse,
             $selectedScopes,
-            $scopeDateBounds
+            $scopeDateBounds,
+            $scopeSlotTimeHint
         );
+    }
+
+    private function handleDownloadRequest(
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args,
+        string $scopeId,
+        mixed $exchangeCapacity,
+        ?array $dateRange,
+        array $selectedScopes = [],
+        ?ReportCapacityService $reportCapacityService = null
+    ): ResponseInterface {
+        if ($reportCapacityService === null) {
+            $reportCapacityService = new ReportCapacityService();
+        }
+
+        $args = $reportCapacityService->prepareDownloadArgs(
+            $args,
+            $scopeId,
+            $exchangeCapacity,
+            $dateRange,
+            $selectedScopes
+        );
+
+        return (new Download\WarehouseReport(\App::$slim->getContainer()))
+            ->readResponse($request, $response, $args);
     }
 
     private function renderHtmlResponse(
@@ -79,8 +136,10 @@ class ReportCapacityIndex extends BaseController
         $dateRange,
         $exchangeCapacity,
         $exchangeCapacityChart,
+        $exchangeCapacityChartSparse,
         $selectedScopes = [],
-        array $scopeDateBounds = []
+        array $scopeDateBounds = [],
+        ?string $scopeSlotTimeHint = null
     ): ResponseInterface {
         return Render::withHtml(
             $response,
@@ -98,8 +157,10 @@ class ReportCapacityIndex extends BaseController
                 'dateRange' => $dateRange,
                 'exchangeCapacity' => $exchangeCapacity,
                 'exchangeCapacityChart' => $exchangeCapacityChart,
+                'exchangeCapacityChartSparse' => $exchangeCapacityChartSparse,
                 'source' => ['entity' => 'CapacityIndex'],
                 'selectedScopeIds' => $selectedScopes,
+                'scopeSlotTimeHint' => $scopeSlotTimeHint,
                 'workstation' => $this->workstation->getArrayCopy(),
             ]
         );

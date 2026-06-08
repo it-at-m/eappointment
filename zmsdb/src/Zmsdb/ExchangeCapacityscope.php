@@ -31,20 +31,17 @@ class ExchangeCapacityscope extends Base
             $entity->setPeriod($datestart, $dateend, $period);
         }
 
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
-        $dateDescription = $period === 'hour'
-            ? 'Clock hour (slot start times in this hour)'
-            : 'Date of day';
+        $entity->addDictionaryEntry('subjectid', 'string', 'Standort-ID', 'scope.id');
+        $dateDescription = $period === 'hour' ? 'Zeitpunkt' : 'Datum';
         $entity->addDictionaryEntry('date', 'string', $dateDescription);
-        $entity->addDictionaryEntry('bookedcount', 'number', 'booked slots');
-        $entity->addDictionaryEntry(
-            'plannedcount',
-            'number',
-            'planned slots (one per slot, any slot duration)'
-        );
+        $entity->addDictionaryEntry('bookedcount', 'number', 'Gebuchte Kapazität (Zeitschlitze)');
+        $entity->addDictionaryEntry('plannedcount', 'number', 'Geplante Kapazität (Zeitschlitze)');
+        $entity->addDictionaryEntry('bookedminutes', 'number', 'Gebuchte Kapazität (Minuten)');
+        $entity->addDictionaryEntry('plannedminutes', 'number', 'Geplante Kapazität (Minuten)');
 
         $entity['visualization']['xlabel'] = ["date"];
         $entity['visualization']['ylabel'] = ["bookedcount", "plannedcount"];
+        $entity['visualization']['ylabelMinutes'] = ["bookedminutes", "plannedminutes"];
 
         $queryConstant = $this->resolveQueryConstant($period, $unfiltered);
 
