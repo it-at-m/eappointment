@@ -221,7 +221,11 @@ class View extends BaseView {
 
         const rows = Array.isArray(tableRows) ? tableRows : Object.values(tableRows);
         if (rows.length === 0) {
-            $tbody.html(`<tr><td colspan="4">${this.tableLabelEmpty}</td></tr>`);
+            $tbody.empty().append(
+                $('<tr/>').append(
+                    $('<td/>', { colspan: 4, text: this.tableLabelEmpty }),
+                ),
+            );
             return;
         }
 
