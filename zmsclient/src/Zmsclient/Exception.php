@@ -10,7 +10,7 @@ class Exception extends \Exception
     public $response;
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request
+     * @var \Psr\Http\Message\RequestInterface|null $request
      */
     public $request;
 

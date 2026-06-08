@@ -176,7 +176,6 @@ class Ticketprinter extends Base
         $ticketprinter->name = $ticketprinterName;
 
         $organisation = (new Organisation())->readEntity($organisationId);
-        $owner = (new Owner())->readByOrganisationId($organisationId);
 
         $values = $query->reverseEntityMapping($ticketprinter, $organisation->id);
         //get owner by organisation

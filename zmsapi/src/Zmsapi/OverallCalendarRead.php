@@ -36,7 +36,7 @@ class OverallCalendarRead extends BaseController
 
         $deletedProcessIds = [];
         if ($updateAfter !== null) {
-            $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter) ?? [];
+            $changedPids = $bookingDb->readChangedProcessIdsSince($scopeIds, $updateAfter);
             $processIdsInWindow = array_unique(array_map(fn($r) => (int)$r['process_id'], $bookings));
             $deletedProcessIds   = array_values(array_diff($changedPids, $processIdsInWindow));
         }

@@ -27,7 +27,6 @@ class Authority extends Base
         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
         $limit = 1000;
-        $filter = null;
 
         if ($servicelist && count($servicelist)) {
             $filter = new \Elastica\Filter\Terms('services.service', (array)$servicelist);

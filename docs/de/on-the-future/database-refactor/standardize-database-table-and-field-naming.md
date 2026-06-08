@@ -193,16 +193,18 @@ Damit gilt:
 
 ### Phase 2: Benutzer- & Prozess-Tabellen
 
-| Current           | New (snake_case)   | Reason                  |
-| ----------------- | ------------------ | ----------------------- |
-| `buergeranliegen` | `citizen_requests` | Citizen requests/issues |
-| `buergerarchiv`   | `citizen_archive`  | Archived citizen data   |
-| `nutzer`          | `user`             | System users            |
-| `nutzerzuordnung` | `user_assignment`  | User assignments        |
+| Current           | New (snake_case)   | Reason                                         |
+| ----------------- | ------------------ | ---------------------------------------------- |
+| `buergeranliegen` | `citizen_requests` | Citizen requests/issues                        |
+| `buergerarchiv`   | `citizen_archive`  | Archived citizen data                          |
+| `nutzer`          | `user`             | System users                                   |
+| `nutzerzuordnung` | `user_assignment`  | User assignments                               |
 | `kunde`           | `jurisdiction`     | Owner/jurisdiction (Entity/API today: `owner`) |
-| `kundenlinks`     | `customer_links`   | Customer links          |
+| `kundenlinks`     | — (delete)         | Unused; drop table and related code            |
 
 > **Hinweis:** Die Tabelle `kunde` und die Entity/API `owner` werden zu `jurisdiction` umbenannt (nicht `customer`). Die Permission `jurisdiction` (ZMSKVR-1345) führt diese Benennung im Berechtigungsmodell bereits ein; die Datenbank-Umbenennung folgt in diesem Refactor.
+>
+> **Hinweis:** Die Tabelle `kundenlinks` (Favoriten-Links) wird nicht mehr genutzt. Geplant sind Löschung der Tabelle sowie des zugehörigen Codes (z. B. `Link`-Entity, DB-Query, Admin-UI „Favoriten“).
 
 ### Phase 3: System- & Konfigurations-Tabellen
 

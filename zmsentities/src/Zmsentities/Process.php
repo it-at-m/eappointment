@@ -610,7 +610,6 @@ class Process extends Schema\Entity
 
     public function hasArrivalTime()
     {
-        $arrivalTime = 0;
         if ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {

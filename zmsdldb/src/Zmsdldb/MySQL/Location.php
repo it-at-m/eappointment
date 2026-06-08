@@ -17,11 +17,11 @@ use BO\Zmsdldb\Elastic\Location as Base;
 class Location extends Base
 {
     #[\Override]
-    public function fetchId($location_id)
+    public function fetchId($itemId)
     {
         try {
-            if ($location_id) {
-                $sqlArgs = [$this->locale, (int)$location_id];
+            if ($itemId) {
+                $sqlArgs = [$this->locale, (int)$itemId];
                 $sql = 'SELECT data_json FROM location WHERE locale = ? AND id = ?';
 
                 $stm = $this->access()->prepare($sql);
