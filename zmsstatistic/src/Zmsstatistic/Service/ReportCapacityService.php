@@ -431,6 +431,8 @@ class ReportCapacityService
 
             if ($fetchHourly) {
                 $params['groupby'] = 'hour';
+            } elseif ($dateRange !== null || ($period !== null && $period !== '_')) {
+                $params['groupby'] = 'day';
             }
 
             if ($period && $period !== '_') {
@@ -452,8 +454,16 @@ class ReportCapacityService
                 return null;
             }
 
-            $sourceHourly = ($exchange->period ?? 'day') === 'hour';
-            $exchange->data = $this->aggregateRowsByDate($exchange->data, $sourceHourly);
+            $exchange->data = $this->aggregateRowsByDate($exchange->data, $fetchHourly);
+
+            if (!$fetchHourly) {
+                if ($this->exchangeDataLooksHourly($exchange->data)) {
+                    $exchange->data = $this->aggregateRowsByDate($exchange->data, false);
+                }
+                $exchange->period = 'day';
+            } elseif (($exchange->period ?? 'day') === 'hour') {
+                $exchange->period = 'hour';
+            }
 
             return $exchange;
         } catch (\Throwable $exception) {
@@ -530,9 +540,16 @@ class ReportCapacityService
                 continue;
             }
 
-            $byKey[$key] = $normalized;
-            if ($subjectId === '' && $normalized[0] !== '') {
-                $subjectId = $normalized[0];
+            if (!isset($byKey[$key])) {
+                $byKey[$key] = $normalized;
+                if ($subjectId === '' && $normalized[0] !== '') {
+                    $subjectId = $normalized[0];
+                }
+                continue;
+            }
+
+            for ($column = 2; $column <= 9; $column++) {
+                $byKey[$key][$column] += $normalized[$column];
             }
         }
 
@@ -568,6 +585,25 @@ class ReportCapacityService
         }
 
         return $filled;
+    }
+
+    /**
+     * @param array<int, array<int, mixed>> $rows
+     */
+    private function exchangeDataLooksHourly(array $rows): bool
+    {
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $date = $this->rowDateValue($row);
+            if ($date !== '' && preg_match('/\d{2}:\d{2}/', $date)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function rowDateValue(array $row): string

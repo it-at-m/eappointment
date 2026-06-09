@@ -2,6 +2,7 @@
 
 namespace BO\Zmsstatistic\Tests;
 
+use BO\Zmsentities\Exchange;
 use BO\Zmsstatistic\Service\ReportCapacityService;
 
 class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
@@ -105,6 +106,67 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(350, $aggregated[1][5]);
         $this->assertSame(11, $aggregated[1][6]);
         $this->assertSame(19, $aggregated[1][7]);
+    }
+
+    public function testAggregateHourlyRowsToDailySumsAllHours(): void
+    {
+        $rows = [
+            ['141', '2026-06-09 08:00', 1, 12, 10, 120, 0, 6, 0, 60],
+            ['141', '2026-06-09 09:00', 2, 12, 20, 120, 0, 6, 0, 60],
+            ['141', '2026-06-09 18:00', 0, 6, 0, 60, 0, 6, 0, 60],
+        ];
+
+        $aggregated = $this->service->aggregateRowsByDate($rows, false);
+
+        $this->assertCount(1, $aggregated);
+        $this->assertSame('2026-06-09', $aggregated[0][1]);
+        $this->assertSame(3, $aggregated[0][2]);
+        $this->assertSame(30, $aggregated[0][3]);
+        $this->assertSame(30, $aggregated[0][4]);
+        $this->assertSame(300, $aggregated[0][5]);
+    }
+
+    public function testLongRangeChartModesUseDailyTimelineWithMatchingSums(): void
+    {
+        $range = ['from' => '2026-06-08', 'to' => '2026-06-23'];
+        $rows = [];
+
+        for ($day = 9; $day <= 10; $day++) {
+            for ($hour = 0; $hour < 24; $hour++) {
+                $planned = ($hour >= 8 && $hour < 16) ? 12 : 6;
+                $rows[] = [
+                    '141',
+                    sprintf('2026-06-%02d %02d:00', $day, $hour),
+                    0,
+                    $planned,
+                    0,
+                    $planned * 10,
+                    0,
+                    $planned,
+                    0,
+                    $planned * 10,
+                ];
+            }
+        }
+
+        $exchange = new Exchange();
+        $exchange->data = $this->service->aggregateRowsByDate($rows, false);
+        $exchange->period = 'day';
+        $exchange->dictionary = [
+            ['position' => 2, 'variable' => 'bookedcount'],
+            ['position' => 3, 'variable' => 'plannedcount'],
+        ];
+
+        $sparse = $this->service->buildSparseChartExchange($exchange, $range, null);
+        $full = $this->service->buildChartExchange($exchange, $range, null);
+
+        $this->assertFalse($this->service->shouldFetchHourlyFromApi($range, null));
+        $this->assertSame('2026-06-09', $sparse->data[0][1]);
+        $this->assertSame('2026-06-08', $full->data[0][1]);
+        $this->assertCount(16, $full->data);
+        $this->assertSame(192, $sparse->data[0][3]);
+        $this->assertSame(192, $full->data[1][3]);
+        $this->assertSame(0, $full->data[0][3]);
     }
 
     public function testFormatScopeSlotTimeHintForSingleScope(): void
