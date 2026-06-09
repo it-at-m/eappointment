@@ -1,5 +1,6 @@
 import BaseView from "../../lib/baseview"
 import moment from 'moment'
+import { parseJsonText } from "../../lib/utils"
 
 class View extends BaseView {
 
@@ -20,12 +21,11 @@ class View extends BaseView {
         if (!raw) {
             return null;
         }
-        try {
-            return JSON.parse(raw);
-        } catch (error) {
-            console.warn('ReportFilter: invalid scope date bounds', error);
-            return null;
+        const parsed = parseJsonText(raw, 'scope-date-bounds');
+        if (parsed === null) {
+            console.warn('ReportFilter: invalid scope date bounds');
         }
+        return parsed;
     }
 
     parsePickerScopeIds() {
@@ -33,13 +33,12 @@ class View extends BaseView {
         if (!raw) {
             return [];
         }
-        try {
-            const ids = JSON.parse(raw);
-            return Array.isArray(ids) ? ids.map(String) : [];
-        } catch (error) {
-            console.warn('ReportFilter: invalid picker scope ids', error);
+        const ids = parseJsonText(raw, 'picker-scope-ids');
+        if (!Array.isArray(ids)) {
+            console.warn('ReportFilter: invalid picker scope ids');
             return [];
         }
+        return ids.map(String);
     }
 
     /**

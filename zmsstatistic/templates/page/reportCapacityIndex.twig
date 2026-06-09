@@ -92,11 +92,15 @@
                         or (exchangeCapacityChart and exchangeCapacityChart.visualization)
                         or (exchangeCapacity and exchangeCapacity.visualization) %}
                     {% if exchangeCapacityChartSparse and exchangeCapacityChart and exchangeCapacityChartSparse.visualization %}
-                        <div class="chartist table--base" data-chartist-sparse="{{ exchangeCapacityChartSparse|json_encode|e('html_attr') }}" data-chartist-full="{{ exchangeCapacityChart|json_encode|e('html_attr') }}" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                        <script type="application/json" class="report-board--chart-data-sparse">{{ exchangeCapacityChartSparse|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--chart-data-full">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
                     {% elseif exchangeCapacityChart and exchangeCapacityChart.visualization %}
-                        <div class="chartist table--base" data-chartist="{{ exchangeCapacityChart|json_encode|e('html_attr') }}" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacityChart|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
                     {% elseif exchangeCapacity and exchangeCapacity.visualization %}
-                        <div class="chartist table--base" data-chartist="{{ exchangeCapacity|json_encode|e('html_attr') }}" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
+                        <script type="application/json" class="report-board--chart-data">{{ exchangeCapacity|json_encode(64)|raw }}</script>
+                        <div class="chartist table--base" data-chart-period="{{ selected|default('')|e('html_attr') }}"{% if dateRange %} data-chart-date-from="{{ dateRange.from|e('html_attr') }}" data-chart-date-to="{{ dateRange.to|e('html_attr') }}"{% endif %}>(loading chart...)</div>
                     {% endif %}
                     {% if hasCapacityChart or scopeSlotTimeHint %}
                         <p class="report-board--chart-hint">
@@ -120,7 +124,11 @@
                     {% else %}
                         {% set capacitySummaryLabel = 'Summe' %}
                     {% endif %}
-                    <table class="table--base report-board--capacity-table" data-table-is-hourly="{{ isHourly ? '1' : '0' }}" data-label-summary="{{ capacitySummaryLabel|e('html_attr') }}" data-label-empty="{% trans %}Es wurden keine Daten gefunden{% endtrans %}" data-label-planned-slots="Geplante Kapazität (Zeitschlitze)" data-label-booked-slots="Gebuchte Kapazität (Zeitschlitze)" data-label-planned-minutes="Geplante Kapazität (Minuten)" data-label-booked-minutes="Gebuchte Kapazität (Minuten)"{% if exchangeCapacity.data and exchangeCapacityChart and exchangeCapacityChart.data %} data-table-sparse="{{ exchangeCapacity.data|json_encode|e('html_attr') }}" data-table-full="{{ exchangeCapacityChart.data|json_encode|e('html_attr') }}"{% endif %}>
+                    {% if exchangeCapacity.data and exchangeCapacityChart and exchangeCapacityChart.data %}
+                        <script type="application/json" class="report-board--table-data-sparse">{{ exchangeCapacity.data|json_encode(64)|raw }}</script>
+                        <script type="application/json" class="report-board--table-data-full">{{ exchangeCapacityChart.data|json_encode(64)|raw }}</script>
+                    {% endif %}
+                    <table class="table--base report-board--capacity-table" data-table-is-hourly="{{ isHourly ? '1' : '0' }}" data-label-summary="{{ capacitySummaryLabel|e('html_attr') }}" data-label-empty="{% trans %}Es wurden keine Daten gefunden{% endtrans %}" data-label-planned-slots="Geplante Kapazität (Zeitschlitze)" data-label-booked-slots="Gebuchte Kapazität (Zeitschlitze)" data-label-planned-minutes="Geplante Kapazität (Minuten)" data-label-booked-minutes="Gebuchte Kapazität (Minuten)">
                         <thead>
                             <tr>
                                 <th>{% if isHourly %}{% trans %}Zeitpunkt{% endtrans %}{% else %}{% trans %}Datum{% endtrans %}{% endif %}</th>

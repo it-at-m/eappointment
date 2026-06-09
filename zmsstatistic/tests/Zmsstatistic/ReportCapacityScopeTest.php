@@ -136,8 +136,8 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('Summe ·', (string) $response->getBody());
         $this->assertStringContainsString('report-board--capacity-summary', (string) $response->getBody());
         $this->assertStringContainsString('50 %', (string) $response->getBody());
-        $this->assertStringContainsString('data-chartist-sparse', (string) $response->getBody());
-        $this->assertStringContainsString('data-chartist-full', (string) $response->getBody());
+        $this->assertStringContainsString('report-board--chart-data-sparse', (string) $response->getBody());
+        $this->assertStringContainsString('report-board--chart-data-full', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-minutes', (string) $response->getBody());
         $this->assertStringContainsString('report-board--chart-download', (string) $response->getBody());
         $this->assertStringContainsString('report-board--auto-refresh-interval', (string) $response->getBody());
@@ -218,7 +218,7 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('>30<', $body);
         $this->assertStringContainsString('>20<', $body);
         $this->assertStringContainsString('>35<', $body);
-        $this->assertStringContainsString('data-table-sparse', $body);
+        $this->assertStringContainsString('report-board--table-data-sparse', $body);
         $this->assertStringContainsString(',150,300', $body);
         $this->assertStringContainsString(',200,350', $body);
         $this->assertStringContainsString(
@@ -396,8 +396,8 @@ class ReportCapacityScopeTest extends Base
         $this->assertStringContainsString('Zeitpunkt', $body);
         $this->assertStringContainsString('2016-04-01 08:00', $body);
         $this->assertStringContainsString('2016-04-01 09:00', $body);
-        $this->assertStringContainsString('data-chartist-sparse', $body);
-        $this->assertStringContainsString('data-chartist-full', $body);
+        $this->assertStringContainsString('report-board--chart-data-sparse', $body);
+        $this->assertStringContainsString('report-board--chart-data-full', $body);
         $this->assertStringContainsString('50 %', $body);
     }
 }

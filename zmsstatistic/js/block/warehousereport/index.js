@@ -1,5 +1,6 @@
 import BaseView from "../../lib/baseview"
 import Chart from "chart.js/auto"
+import { parseJsonText } from "../../lib/utils"
 
 class View extends BaseView {
     static AUTO_REFRESH_STORAGE_KEY = 'zmsstatistic.capacityAutoRefreshSeconds';
@@ -70,12 +71,59 @@ class View extends BaseView {
         this.chartHideEmptySlots = $button.attr('aria-pressed') !== 'false';
     }
 
+    readJsonPayload($root, scriptSelector, attributeName, label) {
+        const $script = $root.find(scriptSelector).first();
+        if ($script.length) {
+            const parsed = parseJsonText($script.text(), label);
+            if (parsed !== null) {
+                $script.remove();
+                return parsed;
+            }
+        }
+
+        if (!attributeName) {
+            return null;
+        }
+
+        const $host = $root.find(`[${attributeName}]`).first();
+        if (!$host.length) {
+            return null;
+        }
+
+        const parsed = parseJsonText($host.attr(attributeName), label);
+        if (parsed !== null) {
+            $host.attr(attributeName, '');
+        }
+
+        return parsed;
+    }
+
     initChartFromDom() {
         const $chartist = this.$main.find('.chartist').first();
-        const sparseData = $chartist.attr('data-chartist-sparse');
-        const fullData = $chartist.attr('data-chartist-full');
-        const chartData = $chartist.attr('data-chartist');
-        if (!$chartist.length || (!sparseData && !fullData && !chartData)) {
+        if (!$chartist.length) {
+            return;
+        }
+
+        const sparseData = this.readJsonPayload(
+            this.$main,
+            'script.report-board--chart-data-sparse',
+            'data-chartist-sparse',
+            'chart-sparse'
+        );
+        const fullData = this.readJsonPayload(
+            this.$main,
+            'script.report-board--chart-data-full',
+            'data-chartist-full',
+            'chart-full'
+        );
+        const chartData = this.readJsonPayload(
+            this.$main,
+            'script.report-board--chart-data',
+            'data-chartist',
+            'chart'
+        );
+
+        if (!sparseData && !fullData && !chartData) {
             return;
         }
 
@@ -83,16 +131,23 @@ class View extends BaseView {
         this.chartPeriod = $chartist.attr('data-chart-period') || '';
         this.chartDateFrom = $chartist.attr('data-chart-date-from') || '';
         this.chartDateTo = $chartist.attr('data-chart-date-to') || '';
+
         if (sparseData && fullData) {
-            this.chartDataSparse = JSON.parse(sparseData);
-            this.chartDataFull = JSON.parse(fullData);
-            $chartist.attr('data-chartist-sparse', '');
-            $chartist.attr('data-chartist-full', '');
+            this.chartDataSparse = sparseData;
+            this.chartDataFull = fullData;
         } else if (chartData) {
             this.chartDataSparse = null;
-            this.chartDataFull = JSON.parse(chartData);
-            $chartist.attr('data-chartist', '');
+            this.chartDataFull = chartData;
+        } else {
+            $chartist.text('Diagrammdaten konnten nicht geladen werden.');
+            console.error('Warehouse report: incomplete chart payload', {
+                sparseData: Boolean(sparseData),
+                fullData: Boolean(fullData),
+                chartData: Boolean(chartData),
+            });
+            return;
         }
+
         this.applyChartDataSelection();
         this.syncChartModeButton();
         this.syncSparseTimelineButton();
@@ -117,16 +172,25 @@ class View extends BaseView {
             return;
         }
 
-        const sparseData = $table.attr('data-table-sparse');
-        const fullData = $table.attr('data-table-full');
+        const sparseData = this.readJsonPayload(
+            this.$main,
+            'script.report-board--table-data-sparse',
+            'data-table-sparse',
+            'table-sparse'
+        );
+        const fullData = this.readJsonPayload(
+            this.$main,
+            'script.report-board--table-data-full',
+            'data-table-full',
+            'table-full'
+        );
+
         if (!sparseData || !fullData) {
             return;
         }
 
-        this.tableDataSparse = JSON.parse(sparseData);
-        this.tableDataFull = JSON.parse(fullData);
-        $table.attr('data-table-sparse', '');
-        $table.attr('data-table-full', '');
+        this.tableDataSparse = sparseData;
+        this.tableDataFull = fullData;
     }
 
     getCapacityTableRowValue(row, variable, position) {
@@ -703,32 +767,57 @@ class View extends BaseView {
     }
 
     parseRefreshPayload($newBoard) {
-        const $chartist = $newBoard.find('.chartist').first();
-        if (!$chartist.length) {
+        const hasChartPayload = $newBoard.find('.chartist, script.report-board--chart-data, script.report-board--chart-data-sparse').length > 0;
+        if (!hasChartPayload) {
             return null;
         }
 
-        const sparseAttr = $chartist.attr('data-chartist-sparse');
-        const fullAttr = $chartist.attr('data-chartist-full');
-        const singleAttr = $chartist.attr('data-chartist');
         const payload = {};
+        const sparseData = this.readJsonPayload(
+            $newBoard,
+            'script.report-board--chart-data-sparse',
+            'data-chartist-sparse',
+            'refresh-chart-sparse'
+        );
+        const fullData = this.readJsonPayload(
+            $newBoard,
+            'script.report-board--chart-data-full',
+            'data-chartist-full',
+            'refresh-chart-full'
+        );
+        const chartData = this.readJsonPayload(
+            $newBoard,
+            'script.report-board--chart-data',
+            'data-chartist',
+            'refresh-chart'
+        );
 
-        if (sparseAttr && fullAttr) {
-            payload.chartDataSparse = JSON.parse(sparseAttr);
-            payload.chartDataFull = JSON.parse(fullAttr);
-        } else if (singleAttr) {
+        if (sparseData && fullData) {
+            payload.chartDataSparse = sparseData;
+            payload.chartDataFull = fullData;
+        } else if (chartData) {
             payload.chartDataSparse = null;
-            payload.chartDataFull = JSON.parse(singleAttr);
+            payload.chartDataFull = chartData;
         } else {
             return null;
         }
 
         const $table = $newBoard.find('.report-board--capacity-table').first();
-        const tableSparseAttr = $table.attr('data-table-sparse');
-        const tableFullAttr = $table.attr('data-table-full');
-        if (tableSparseAttr && tableFullAttr) {
-            payload.tableDataSparse = JSON.parse(tableSparseAttr);
-            payload.tableDataFull = JSON.parse(tableFullAttr);
+        const tableSparseData = this.readJsonPayload(
+            $newBoard,
+            'script.report-board--table-data-sparse',
+            'data-table-sparse',
+            'refresh-table-sparse'
+        );
+        const tableFullData = this.readJsonPayload(
+            $newBoard,
+            'script.report-board--table-data-full',
+            'data-table-full',
+            'refresh-table-full'
+        );
+        if (tableSparseData && tableFullData) {
+            payload.tableDataSparse = tableSparseData;
+            payload.tableDataFull = tableFullData;
         }
 
         const summaryLabel = $table.attr('data-label-summary');
